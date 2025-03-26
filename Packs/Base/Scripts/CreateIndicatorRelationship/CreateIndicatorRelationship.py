@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 BRAND = "XSOAR"
 PAGE_SIZE = 2000
-
+MAX_BATCH_SIZE = 100
 
 # --------------------------------------------------- Helper functions---------------------------------------------
 
@@ -45,18 +45,21 @@ def remove_existing_entity_b_indicators(entity_b_list: list, entity_b_query: str
     :return: A list of entity_b's that do not exist in the system that we will need to add.
     :rtype: ``list``
     """
-    entity_b_list_to_remove = entity_b_list[:]
     if entity_b_query:
         return []
-    else:
-        query = f'value:"{entity_b_list_to_remove[0]}"'
-        for entity_b in entity_b_list_to_remove[1:]:
-            query += f' or value:"{entity_b}"'
-    result_indicators_by_query = find_indicators_by_query(query)
-    for indicator in result_indicators_by_query:
-        if indicator.get('entity_b') in entity_b_list_to_remove:
-            entity_b_list_to_remove.remove(indicator.get('entity_b'))
-    return entity_b_list_to_remove
+
+    # Split entity_b_list into batches to prevent query length issues
+    entity_b_list_to_remove = set(entity_b_list)
+    existing_indicators: set[str] = set()
+
+    for i in range(0, len(entity_b_list), MAX_BATCH_SIZE):
+        batch = entity_b_list[i:i + MAX_BATCH_SIZE]
+        query = ' or '.join(f'value:"{entity}"' for entity in batch)
+        batch_results = find_indicators_by_query(query)
+        existing_indicators.update(indicator.get('entity_b', '') for indicator in batch_results)
+
+    entity_b_list_to_remove.difference_update(existing_indicators)
+    return list(entity_b_list_to_remove)
 
 
 def create_relation_command_using_query(args: dict) -> List[EntityRelationship]:

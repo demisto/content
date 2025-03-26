@@ -1,6 +1,7 @@
 import functools
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 # Std imports
 from datetime import datetime, timezone
@@ -12,6 +13,7 @@ from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
+
 # Local imports
 from CommonServerUserPython import *
 import concurrent.futures
@@ -32,9 +34,9 @@ Attributes:
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
-INTEGRATION_NAME = 'Akamai SIEM'
-INTEGRATION_COMMAND_NAME = 'akamai-siem'
-INTEGRATION_CONTEXT_NAME = 'Akamai'
+INTEGRATION_NAME = "Akamai SIEM"
+INTEGRATION_COMMAND_NAME = "akamai-siem"
+INTEGRATION_CONTEXT_NAME = "Akamai"
 
 
 VENDOR = "Akamai"
@@ -44,16 +46,21 @@ TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 MAX_ALLOWED_FETCH_LIMIT = 80000
-SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10 ** 6)  # 9 MB
+SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10**6)  # 9 MB
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_events(self, config_ids: str, offset: str | None = '', limit: str | int | None = None,
-                   from_epoch: str | None = '', to_epoch: str | None = '') \
-            -> tuple[list[Any], Any]:
+    def get_events(
+        self,
+        config_ids: str,
+        offset: str | None = "",
+        limit: str | int | None = None,
+        from_epoch: str | None = "",
+        to_epoch: str | None = "",
+    ) -> tuple[list[Any], Any]:
         """
             Get security events from Akamai WAF service by - https://developer.akamai.com/api/cloud_security/siem/v1.html,
             Pay attention response as text of multiple json objects
@@ -84,19 +91,18 @@ class Client(BaseClient):
             Multiple json objects as list of dictionaries, offset for next pagination
         """
         params = {
-            'offset': offset,
-            'limit': limit,
-            'to': to_epoch,
-            'from': from_epoch,
+            "offset": offset,
+            "limit": limit,
+            "to": to_epoch,
+            "from": from_epoch,
         }
-        raw_response: str = self._http_request(method='GET',
-                                               url_suffix=f'/{config_ids}',
-                                               params=assign_params(**params),
-                                               resp_type='text')
+        raw_response: str = self._http_request(
+            method="GET", url_suffix=f"/{config_ids}", params=assign_params(**params), resp_type="text"
+        )
         events: list = []
         if '{ "total": 0' not in raw_response:
-            events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
-            new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
+            events = [json.loads(event) for event in raw_response.split("\n")[:-2]]
+            new_offset = str(max([int(event.get("httpMessage", {}).get("start")) for event in events]))
         else:
             new_offset = str(from_epoch)
         return events, new_offset
@@ -104,18 +110,16 @@ class Client(BaseClient):
     def execute_get_events_request(self, params: dict[str, int | str], config_ids: str, prefix_msg: str = ""):
         demisto.info(f"{prefix_msg}Init session and sending request.")
         raw_response: str = self._http_request(
-            method='GET',
-            url_suffix=f'/{config_ids}',
+            method="GET",
+            url_suffix=f"/{config_ids}",
             params=params,
-            resp_type='text',
+            resp_type="text",
         )
         demisto.info(f"{prefix_msg}Finished executing request to Akamai, processing")
         return raw_response
 
     def prepare_params(self, limit, offset, from_epoch, prefix_msg: str = "") -> dict[str, int | str]:
-        params: dict[str, int | str] = {
-            'limit': limit
-        }
+        params: dict[str, int | str] = {"limit": limit}
         if offset:
             demisto.info(f"{prefix_msg}received {offset=} will run an offset based request.")
             params["offset"] = offset
@@ -128,13 +132,13 @@ class Client(BaseClient):
     def get_events_with_offset(
         self,
         config_ids: str,
-        offset: str | None = '',
+        offset: str | None = "",
         limit: int = 20,
-        from_epoch: str = '',
+        from_epoch: str = "",
     ) -> tuple[list[str], str | None]:
         params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch)
         raw_response = self.execute_get_events_request(params, config_ids)
-        events: list[str] = raw_response.split('\n')
+        events: list[str] = raw_response.split("\n")
         offset = None
         try:
             if events and events[-1] == "":
@@ -147,12 +151,7 @@ class Client(BaseClient):
         return events, offset
 
     async def get_events_concurrently(
-        self,
-        config_ids: str,
-        offset: str | None = '',
-        limit: int = 200000,
-        from_epoch: str = '',
-        counter: int = 0
+        self, config_ids: str, offset: str | None = "", limit: int = 200000, from_epoch: str = "", counter: int = 0
     ) -> tuple[list[str], str | None]:
         """Send request to get events from Akamai.
 
@@ -166,17 +165,24 @@ class Client(BaseClient):
         Returns:
             tuple[list[str], str | None]: The events and offset obtained from last request.
         """
-        params = self.prepare_params(offset=offset, limit=limit, from_epoch=from_epoch,
-                                     prefix_msg=f"Running in interval = {counter}. ")
+        params = self.prepare_params(
+            offset=offset, limit=limit, from_epoch=from_epoch, prefix_msg=f"Running in interval = {counter}. "
+        )
         loop = asyncio.get_event_loop()
-        raw_response = await loop.run_in_executor(None, functools.partial(self.execute_get_events_request,
-                                                                          config_ids=config_ids,
-                                                                          params=params,
-                                                                          prefix_msg=f"Running in interval = {counter}. "
-                                                                          ))
-        events: list[str] = raw_response.split('\n')
+        raw_response = await loop.run_in_executor(
+            None,
+            functools.partial(
+                self.execute_get_events_request,
+                config_ids=config_ids,
+                params=params,
+                prefix_msg=f"Running in interval = {counter}. ",
+            ),
+        )
+        events: list[str] = raw_response.split("\n")
         new_offset = None
         try:
+            if events and events[-1] == "":
+                events.pop()
             offset_context = events.pop()
             loaded_offset_context = json.loads(offset_context)
             new_offset = loaded_offset_context.get("offset")
@@ -186,10 +192,10 @@ class Client(BaseClient):
         return events, new_offset
 
 
-'''HELPER FUNCIONS'''
+"""HELPER FUNCIONS"""
 
 
-def date_format_converter(from_format: str, date_before: str, readable_format: str = '%Y-%m-%dT%H:%M:%SZ%Z') -> str:
+def date_format_converter(from_format: str, date_before: str, readable_format: str = "%Y-%m-%dT%H:%M:%SZ%Z") -> str:
     """
         Convert datatime object from epoch time to follow format %Y-%m-%dT%H:%M:%SZ
     Args:
@@ -207,13 +213,12 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     Returns:
         Converted date as Datetime object or string object
     """
-    converted_date: str | int = ''
-    if from_format == 'epoch':
+    converted_date: str | int = ""
+    if from_format == "epoch":
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
-    elif from_format == 'readable':
-        date_before += 'UTC'
-        converted_date = int(datetime.strptime(date_before,
-                                               readable_format).replace(tzinfo=timezone.utc).timestamp())  # noqa: UP017
+    elif from_format == "readable":
+        date_before += "UTC"
+        converted_date = int(datetime.strptime(date_before, readable_format).replace(tzinfo=timezone.utc).timestamp())  # noqa: UP017
 
     return str(converted_date)
 
@@ -239,9 +244,9 @@ def decode_message(msg: str) -> Sequence[str | None]:
         ['Custom_RegEX_Rule', 'No Accept Header AND No User Agent Header']
     """
     readable_msg = []
-    translated_msg = urllib.parse.unquote(msg).split(';')
+    translated_msg = urllib.parse.unquote(msg).split(";")
     for word in translated_msg:
-        word = b64decode(word).decode('utf-8', errors='replace')
+        word = b64decode(word).decode("utf-8", errors="replace")
         if word:
             readable_msg.append(word)
     return readable_msg
@@ -264,66 +269,68 @@ def events_to_ec(raw_response: list) -> tuple[list, list, list]:
         events_ec.append(
             {
                 "AttackData": assign_params(
-                    ConfigID=event.get('attackData', {}).get('configId'),
-                    PolicyID=event.get('attackData', {}).get('policyId'),
-                    ClientIP=event.get('attackData', {}).get('clientIP'),
-                    Rules=decode_message(event.get('attackData', {}).get('rules')),
-                    RuleMessages=decode_message(event.get('attackData', {}).get('ruleMessages')),
-                    RuleTags=decode_message(event.get('attackData', {}).get('ruleTags')),
-                    RuleData=decode_message(event.get('attackData', {}).get('ruleData')),
-                    RuleSelectors=decode_message(event.get('attackData', {}).get('ruleSelectors')),
-                    RuleActions=decode_message(event.get('attackData', {}).get('ruleActions'))
+                    ConfigID=event.get("attackData", {}).get("configId"),
+                    PolicyID=event.get("attackData", {}).get("policyId"),
+                    ClientIP=event.get("attackData", {}).get("clientIP"),
+                    Rules=decode_message(event.get("attackData", {}).get("rules")),
+                    RuleMessages=decode_message(event.get("attackData", {}).get("ruleMessages")),
+                    RuleTags=decode_message(event.get("attackData", {}).get("ruleTags")),
+                    RuleData=decode_message(event.get("attackData", {}).get("ruleData")),
+                    RuleSelectors=decode_message(event.get("attackData", {}).get("ruleSelectors")),
+                    RuleActions=decode_message(event.get("attackData", {}).get("ruleActions")),
                 ),
                 "HttpMessage": assign_params(
-                    RequestId=event.get('httpMessage', {}).get('requestId'),
-                    Start=event.get('httpMessage', {}).get('start'),
-                    Protocol=event.get('httpMessage', {}).get('protocol'),
-                    Method=event.get('httpMessage', {}).get('method'),
-                    Host=event.get('httpMessage', {}).get('host'),
-                    Port=event.get('httpMessage', {}).get('port'),
-                    Path=event.get('httpMessage', {}).get('path'),
-                    RequestHeaders=event.get('httpMessage', {}).get('requestHeaders'),
-                    Status=event.get('httpMessage', {}).get('status'),
-                    Bytes=event.get('httpMessage', {}).get('bytes'),
-                    ResponseHeaders=event.get('httpMessage', {}).get('responseHeaders')
+                    RequestId=event.get("httpMessage", {}).get("requestId"),
+                    Start=event.get("httpMessage", {}).get("start"),
+                    Protocol=event.get("httpMessage", {}).get("protocol"),
+                    Method=event.get("httpMessage", {}).get("method"),
+                    Host=event.get("httpMessage", {}).get("host"),
+                    Port=event.get("httpMessage", {}).get("port"),
+                    Path=event.get("httpMessage", {}).get("path"),
+                    RequestHeaders=event.get("httpMessage", {}).get("requestHeaders"),
+                    Status=event.get("httpMessage", {}).get("status"),
+                    Bytes=event.get("httpMessage", {}).get("bytes"),
+                    ResponseHeaders=event.get("httpMessage", {}).get("responseHeaders"),
                 ),
                 "Geo": assign_params(
-                    Continent=event.get('geo', {}).get('continent'),
-                    Country=event.get('geo', {}).get('country'),
-                    City=event.get('geo', {}).get('city'),
-                    RegionCode=event.get('geo', {}).get('regionCode'),
-                    Asn=event.get('geo', {}).get('asn')
-                )
+                    Continent=event.get("geo", {}).get("continent"),
+                    Country=event.get("geo", {}).get("country"),
+                    City=event.get("geo", {}).get("city"),
+                    RegionCode=event.get("geo", {}).get("regionCode"),
+                    Asn=event.get("geo", {}).get("asn"),
+                ),
             }
         )
 
-        ip_ec.append(assign_params(
-            Address=event.get('attackData', {}).get('clientIP'),
-            ASN=event.get('geo', {}).get('asn'),
-            Geo={
-                "Country": event.get('geo', {}).get('country')
-            }
-        ))
+        ip_ec.append(
+            assign_params(
+                Address=event.get("attackData", {}).get("clientIP"),
+                ASN=event.get("geo", {}).get("asn"),
+                Geo={"Country": event.get("geo", {}).get("country")},
+            )
+        )
 
-        events_human_readable.append(assign_params(**{
-            'Attacking IP': event.get('attackData', {}).get('clientIP'),
-            "Config ID": event.get('attackData', {}).get('configId'),
-            "Policy ID": event.get('attackData', {}).get('policyId'),
-            "Rules": decode_message(event.get('attackData', {}).get('rules')),
-            "Rule messages": decode_message(event.get('attackData', {}).get('ruleMessages')),
-            "Rule actions": decode_message(event.get('attackData', {}).get('ruleActions')),
-            'Date occured': date_format_converter(from_format='epoch',
-                                                  date_before=event.get('httpMessage', {}).get('start')),
-            "Location": {
-                'Country': event.get('geo', {}).get('country'),
-                'City': event.get('geo', {}).get('city')
-            }
-        }))
+        events_human_readable.append(
+            assign_params(
+                **{
+                    "Attacking IP": event.get("attackData", {}).get("clientIP"),
+                    "Config ID": event.get("attackData", {}).get("configId"),
+                    "Policy ID": event.get("attackData", {}).get("policyId"),
+                    "Rules": decode_message(event.get("attackData", {}).get("rules")),
+                    "Rule messages": decode_message(event.get("attackData", {}).get("ruleMessages")),
+                    "Rule actions": decode_message(event.get("attackData", {}).get("ruleActions")),
+                    "Date occured": date_format_converter(
+                        from_format="epoch", date_before=event.get("httpMessage", {}).get("start")
+                    ),
+                    "Location": {"Country": event.get("geo", {}).get("country"), "City": event.get("geo", {}).get("city")},
+                }
+            )
+        )
 
     return events_ec, ip_ec, events_human_readable
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 @logger
@@ -341,21 +348,16 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
         DemistoException: If test failed.
     """
     # Test on the following date Monday, 6 March 2017 16:07:22
-    events, offset = client.get_events(config_ids=demisto.params().get('configIds'),
-                                       from_epoch='1488816442',
-                                       limit='1')
+    events, offset = client.get_events(config_ids=demisto.params().get("configIds"), from_epoch="1488816442", limit="1")
     if isinstance(events, list):
-        return None, None, 'ok'
-    raise DemistoException(f'Test module failed, {events}')
+        return None, None, "ok"
+    raise DemistoException(f"Test module failed, {events}")
 
 
 @logger
 def fetch_incidents_command(
-        client: Client,
-        fetch_time: str,
-        fetch_limit: str | int,
-        config_ids: str,
-        last_run: str | None = None) -> tuple[list[dict[str, Any]], dict]:
+    client: Client, fetch_time: str, fetch_limit: str | int, config_ids: str, last_run: str | None = None
+) -> tuple[list[dict[str, Any]], dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -371,26 +373,34 @@ def fetch_incidents_command(
     """
     raw_response: list | None = []
     if not last_run:
-        last_run, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+        last_run, _ = parse_date_range(date_range=fetch_time, date_format="%s")
     raw_response, offset = client.get_events(config_ids=config_ids, from_epoch=last_run, limit=fetch_limit)
 
     incidents = []
     if raw_response:
         for event in raw_response:
-            attack_data = event.get('attackData', {})
-            http_message = event.get('httpMessage', {})
-            incidents.append({
-                'name': f"{INTEGRATION_NAME}: {attack_data.get('configId')} - {http_message.get('requestId')}",
-                'occurred': date_format_converter(from_format='epoch', date_before=http_message.get('start')),
-                'rawJSON': json.dumps(event)
-            })
+            attack_data = event.get("attackData", {})
+            http_message = event.get("httpMessage", {})
+            incidents.append(
+                {
+                    "name": f"{INTEGRATION_NAME}: {attack_data.get('configId')} - {http_message.get('requestId')}",
+                    "occurred": date_format_converter(from_format="epoch", date_before=http_message.get("start")),
+                    "rawJSON": json.dumps(event),
+                }
+            )
 
-    return incidents, {'lastRun': offset}
+    return incidents, {"lastRun": offset}
 
 
-def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
-                       from_epoch: str | None = None, to_epoch: str | None = None, time_stamp: str | None = None) \
-        -> tuple[object, dict, list | dict]:
+def get_events_command(
+    client: Client,
+    config_ids: str,
+    offset: str | None = None,
+    limit: str | None = None,
+    from_epoch: str | None = None,
+    to_epoch: str | None = None,
+    time_stamp: str | None = None,
+) -> tuple[object, dict, list | dict]:
     """
         Get security events from Akamai WAF service
         Allowed query parameters combinations:
@@ -421,28 +431,23 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         Human readable, entry context, raw response
     """
     if time_stamp:
-        from_epoch, to_epoch = parse_date_range(date_range=time_stamp,
-                                                date_format="%s")
-    raw_response, offset = client.get_events(config_ids=config_ids,
-                                             offset=offset,
-                                             limit=limit,
-                                             from_epoch=from_epoch,
-                                             to_epoch=to_epoch)
+        from_epoch, to_epoch = parse_date_range(date_range=time_stamp, date_format="%s")
+    raw_response, offset = client.get_events(
+        config_ids=config_ids, offset=offset, limit=limit, from_epoch=from_epoch, to_epoch=to_epoch
+    )
     if raw_response:
         events_ec, ip_ec, events_human_readable = events_to_ec(raw_response)
         entry_context = {
             "Akamai.SIEM(val.HttpMessage.RequestId && val.HttpMessage.RequestId == obj.HttpMessage.RequestId)": events_ec,
-            outputPaths.get('ip'): ip_ec
+            outputPaths.get("ip"): ip_ec,
         }
-        title = f'{INTEGRATION_NAME} - Attacks data'
+        title = f"{INTEGRATION_NAME} - Attacks data"
 
-        human_readable = tableToMarkdown(name=title,
-                                         t=events_human_readable,
-                                         removeNull=True)
+        human_readable = tableToMarkdown(name=title, t=events_human_readable, removeNull=True)
 
         return human_readable, entry_context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
 
 
 def reset_offset_command(client: Client):  # pragma: no cover
@@ -450,7 +455,7 @@ def reset_offset_command(client: Client):  # pragma: no cover
     if "offset" in ctx:
         del ctx["offset"]
     set_integration_context(ctx)
-    return 'Offset was reset successfully.', {}, {}
+    return "Offset was reset successfully.", {}, {}
 
 
 def is_last_request_smaller_than_page_size(num_events_from_previous_request: int, page_size: int) -> bool:
@@ -481,7 +486,7 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
     Returns:
         bool: Return True if there's not enough time. Otherwise, return False.
     """
-    timeout_time_nano_seconds = demisto.callingContext.get('context', {}).get('TimeoutDuration')
+    timeout_time_nano_seconds = demisto.callingContext.get("context", {}).get("TimeoutDuration")
     demisto.info(f"Got {timeout_time_nano_seconds} non seconds for the execution.")
     timeout_time_seconds = timeout_time_nano_seconds / 1_000_000_000
     now = datetime.now()
@@ -494,13 +499,7 @@ def is_interval_doesnt_have_enough_time_to_run(min_allowed_delta: int, max_time_
 
 @logger
 def fetch_events_command(
-    client: Client,
-    fetch_time: str,
-    fetch_limit: int,
-    config_ids: str,
-    ctx: dict,
-    page_size: int,
-    should_skip_decode_events: bool
+    client: Client, fetch_time: str, fetch_limit: int, config_ids: str, ctx: dict, page_size: int, should_skip_decode_events: bool
 ) -> Iterator[Any]:
     """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
 
@@ -519,7 +518,7 @@ def fetch_events_command(
     """
     total_events_count = 0
     offset = ctx.get("offset")
-    from_epoch, _ = parse_date_range(fetch_time, date_format='%s')
+    from_epoch, _ = parse_date_range(fetch_time, date_format="%s")
     auto_trigger_next_run = False
     worst_case_time: float = 0
     execution_counter = 0
@@ -543,13 +542,16 @@ def fetch_events_command(
         except DemistoException as e:
             demisto.error(f"Got an error when trying to request for new events from Akamai\n{e}")
             if "Requested Range Not Satisfiable" in str(e):
-                err_msg = f'Got offset out of range error when attempting to fetch events from Akamai.\n' \
-                    "This occurred due to offset pointing to events older than 12 hours.\n" \
-                    "Restarting fetching events after 11 hours ago. Some events were missed.\n" \
-                    "If you wish to fetch more up to date events, " \
-                    "please run 'akamai-siem-reset-offset' on the specific instance.\n" \
-                    'For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
-                    f'original error: [{e}]'
+                err_msg = (
+                    f"Got offset out of range error when attempting to fetch events from Akamai.\n"
+                    "This occurred due to offset pointing to events older than 12 hours.\n"
+                    "Restarting fetching events after 11 hours ago. Some events were missed.\n"
+                    "If you wish to fetch more up to date events, "
+                    "please run 'akamai-siem-reset-offset' on the specific instance.\n"
+                    "For more information, please refer to the Troubleshooting section in the integration documentation.\n"
+                    f"original error: [{e}]"
+                )
+                reset_offset_command(client)
                 raise DemistoException(err_msg)
             else:
                 raise DemistoException(e)
@@ -568,16 +570,28 @@ def fetch_events_command(
                 try:
                     event = json.loads(event)
                     if "attackData" in event:
-                        for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
-                                                'ruleActions', 'ruleVersions']:
-                            event['attackData'][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
-                                event.get('attackData',  # type: ignore[attr-defined]
-                                          {}).get(attack_data_key, ""))
+                        for attack_data_key in [
+                            "rules",
+                            "ruleMessages",
+                            "ruleTags",
+                            "ruleData",
+                            "ruleSelectors",
+                            "ruleActions",
+                            "ruleVersions",
+                        ]:
+                            event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
+                                event.get(  # type: ignore[attr-defined]
+                                    "attackData",
+                                    {},
+                                ).get(attack_data_key, "")
+                            )
                     if "httpMessage" in event:
-                        event['httpMessage']['requestHeaders'] = decode_url(  # type: ignore[index]
-                            event.get('httpMessage', {}).get('requestHeaders', ""))  # type: ignore[attr-defined]
-                        event['httpMessage']['responseHeaders'] = decode_url(  # type: ignore[index]
-                            event.get('httpMessage', {}).get('responseHeaders', ""))  # type: ignore[attr-defined]
+                        event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
+                            event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
+                        )
+                        event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
+                            event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
+                        )
                 except Exception as e:
                     demisto.debug(f"Couldn't decode {event=}, reason: {e}")
                 finally:
@@ -600,10 +614,10 @@ def decode_url(headers: str) -> dict:
     decoded_lines = urllib.parse.unquote(headers).replace("\r", "").split("\n")
     decoded_dict = {}
     for line in decoded_lines:
-        parts = line.split(': ', 1)
+        parts = line.split(": ", 1)
         if len(parts) == 2:
             key, value = parts
-            decoded_dict[key.replace("-", "_")] = value.replace('"', '')
+            decoded_dict[key.replace("-", "_")] = value.replace('"', "")
     return decoded_dict
 
 
@@ -612,7 +626,8 @@ def post_latest_event_time(latest_event, base_msg):
         if isinstance(latest_event, str):
             latest_event = json.loads(latest_event)
         latest_event_time = date_format_converter(
-            from_format='epoch', date_before=latest_event.get("httpMessage", {}).get("start", "0"))
+            from_format="epoch", date_before=latest_event.get("httpMessage", {}).get("start", "0")
+        )
         demisto.info(f"{base_msg} latest event time is: {latest_event_time}")
     except Exception as e:
         demisto.debug(f"caught an exception when attempting to execute latest_event_time {e}")
@@ -624,7 +639,7 @@ BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
 MAX_ALLOWED_CONCURRENT_TASKS = 10000
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 async def wait_until_tasks_load_decrease(counter: int, max_concurrent_tasks: int):
@@ -635,19 +650,23 @@ async def wait_until_tasks_load_decrease(counter: int, max_concurrent_tasks: int
         max_concurrent_tasks (int): The maximum number of tasks allowed to run concurrently.
     """
     while (num_of_tasks := len(asyncio.all_tasks())) > max_concurrent_tasks:
-        demisto.info(f"Running in interval = {counter}. current tasks total size = {num_of_tasks} is larger than the max allowed"
-                     f" number of tasks {max_concurrent_tasks}. sleeping for 30 seconds to let other tasks finish.")
+        demisto.info(
+            f"Running in interval = {counter}. current tasks total size = {num_of_tasks} is larger than the max allowed"
+            f" number of tasks {max_concurrent_tasks}. sleeping for 30 seconds to let other tasks finish."
+        )
         await asyncio.sleep(30)
 
 
 @logger
-async def fetch_events_long_running_command(client: Client,
-                                            from_time: str,
-                                            page_size: int,
-                                            config_ids: str,
-                                            ctx: dict,
-                                            should_skip_decode_events: bool,
-                                            max_concurrent_tasks: int):
+async def fetch_events_long_running_command(
+    client: Client,
+    from_time: str,
+    page_size: int,
+    config_ids: str,
+    ctx: dict,
+    should_skip_decode_events: bool,
+    max_concurrent_tasks: int,
+):
     """Asynchronously gathers events from Akamai SIEM. Decode them, and send them to xsiam.
 
     Args:
@@ -661,10 +680,17 @@ async def fetch_events_long_running_command(client: Client,
 
     """
     offset = ctx.get("offset")
-    async for events, counter, last_offset in get_events_from_akamai(client, config_ids, from_time, page_size,
-                                                                     offset, max_concurrent_tasks):
-        asyncio.create_task(process_and_send_events_to_xsiam(events, should_skip_decode_events,  # noqa: RUF006
-                                                             last_offset, counter))
+    async for events, counter, last_offset in get_events_from_akamai(
+        client, config_ids, from_time, page_size, offset, max_concurrent_tasks
+    ):
+        asyncio.create_task(    # noqa: RUF006
+            process_and_send_events_to_xsiam(
+                events,
+                should_skip_decode_events,  # noqa: RUF006
+                last_offset,
+                counter,
+            )
+        )
         offset = last_offset
 
 
@@ -691,43 +717,60 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
             try:
                 event = json.loads(event)
                 if "attackData" in event:
-                    for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
-                                            'ruleActions', 'ruleVersions']:
-                        event['attackData'][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
-                            event.get('attackData',  # type: ignore[attr-defined]
-                                      {}).get(attack_data_key, ""))
+                    for attack_data_key in [
+                        "rules",
+                        "ruleMessages",
+                        "ruleTags",
+                        "ruleData",
+                        "ruleSelectors",
+                        "ruleActions",
+                        "ruleVersions",
+                    ]:
+                        event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
+                            event.get(  # type: ignore[attr-defined]
+                                "attackData",  # type: ignore[attr-defined]
+                                {},
+                            ).get(attack_data_key, "")
+                        )
                 if "httpMessage" in event:
-                    event['httpMessage']['requestHeaders'] = decode_url(  # type: ignore[index]
-                        event.get('httpMessage', {}).get('requestHeaders', ""))  # type: ignore[attr-defined]
-                    event['httpMessage']['responseHeaders'] = decode_url(  # type: ignore[index]
-                        event.get('httpMessage', {}).get('responseHeaders', ""))  # type: ignore[attr-defined]
+                    event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
+                        event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
+                    )  # type: ignore[attr-defined]
+                    event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
+                        event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
+                    )
             except Exception as e:
                 demisto.debug(f"Couldn't decode {event=}, reason: {e}")
             finally:
                 processed_events.append(event)
     post_latest_event_time(
         latest_event=processed_events[-1],
-        base_msg=f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam."
+        base_msg=f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam.",
     )
-    tasks = send_events_to_xsiam_akamai(processed_events, VENDOR, PRODUCT, should_update_health_module=False,
-                                        chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE, send_events_asynchronously=True,
-                                        url_key="host", data_format="json", data_size_expected_to_split_evenly=True,
-                                        counter=counter)
+    tasks = send_events_to_xsiam_akamai(
+        processed_events,
+        VENDOR,
+        PRODUCT,
+        should_update_health_module=False,
+        chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+        send_events_asynchronously=True,
+        url_key="host",
+        data_format="json",
+        data_size_expected_to_split_evenly=True,
+        counter=counter,
+    )
     demisto.info(f"Running in interval = {counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
     await asyncio.gather(*tasks)
     demisto.info(f"Running in interval = {counter}. Finished gathering all tasks.")
     demisto.info(f"Running in interval = {counter}. Updating module health.")
     set_integration_context({"offset": offset})
-    demisto.updateModuleHealth({'eventsPulled': len(processed_events)})
+    demisto.updateModuleHealth({"eventsPulled": len(processed_events)})
     demisto.info(f"Running in interval = {counter}. Finished updating module health.")
 
 
-async def get_events_from_akamai(client: Client,
-                                 config_ids: str,
-                                 from_time: str,
-                                 page_size: int,
-                                 offset: str | None,
-                                 max_concurrent_tasks: int):
+async def get_events_from_akamai(
+    client: Client, config_ids: str, from_time: str, page_size: int, offset: str | None, max_concurrent_tasks: int
+):
     """Iteratively checks for condition where the loop should wait due to multiple reasons
     and then gathers events from Akamai SIEM.
 
@@ -748,14 +791,13 @@ async def get_events_from_akamai(client: Client,
             demisto.info("counter reach 100k, bringing it back to 0.")
             counter = 0
         counter += 1
-        from_epoch, _ = parse_date_range(date_range=from_time, date_format='%s')
+        from_epoch, _ = parse_date_range(date_range=from_time, date_format="%s")
         demisto.info(f"Running in interval = {counter}. Preparing to get events with {offset=}, and {page_size=}.")
         try:
             demisto.info(f"Running in interval = {counter}. Testing for possible tasks qt overflow.")
             await wait_until_tasks_load_decrease(counter, max_concurrent_tasks)
             demisto.info(f"Running in interval = {counter}. Finished testing for possible tasks qt overflow.")
-            get_events_task = client.get_events_concurrently(
-                config_ids, offset, page_size, from_epoch, counter=counter)
+            get_events_task = client.get_events_concurrently(config_ids, offset, page_size, from_epoch, counter=counter)
             events, offset = None, None
             events, offset = await get_events_task
             demisto.info(f"Running in interval = {counter}. got {len(events)} events and {offset=}.")
@@ -763,11 +805,13 @@ async def get_events_from_akamai(client: Client,
             demisto.error(f"{e.message}")
             err = str(e)
             if "Requested Range Not Satisfiable" in err:
-                err = f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from " \
-                    "Akamai.\nThis occurred due to offset pointing to events older than 12 hours which isn't supported by " \
-                    f"akamai.\nRestarting fetching events to start from {from_time} ago." \
-                    ' For more information, please refer to the Troubleshooting section in the integration documentation.\n' \
-                    f'original error: [{err}]'
+                err = (
+                    f"Running in interval = {counter}. Got offset out of range error when attempting to fetch events from "
+                    "Akamai.\nThis occurred due to offset pointing to events older than 12 hours which isn't supported by "
+                    f"akamai.\nRestarting fetching events to start from {from_time} ago."
+                    " For more information, please refer to the Troubleshooting section in the integration documentation.\n"
+                    f"original error: [{err}]"
+                )
                 offset = None
             demisto.updateModuleHealth(err, is_error=True)
             demisto.info(f"Running in interval = {counter}. Going to sleep for 60 seconds.")
@@ -777,11 +821,14 @@ async def get_events_from_akamai(client: Client,
             yield events, counter, offset
         if not events or is_last_request_smaller_than_page_size(len(events), page_size):
             if not events:
-                demisto.debug(f"Running in interval = {counter}. No events were received from Akamai,"
-                              "going to sleep for 60 seconds.")
+                demisto.debug(
+                    f"Running in interval = {counter}. No events were received from Akamai,going to sleep for 60 seconds."
+                )
             else:
-                demisto.debug(f"Running in interval = {counter}. got {len(events)} events which is less"
-                              f" than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}, going to sleep for 60 seconds.")
+                demisto.debug(
+                    f"Running in interval = {counter}. got {len(events)} events which is less"
+                    f" than {ALLOWED_PAGE_SIZE_DELTA_RATIO} % of the {page_size=}, going to sleep for 60 seconds."
+                )
             await asyncio.sleep(60)
             demisto.info(f"Running in interval = {counter}. Finished sleeping for 60 seconds.")
 
@@ -789,10 +836,23 @@ async def get_events_from_akamai(client: Client,
 ############################################## Beginning of CSP copy-paste part ##############################################
 
 
-def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                              chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                              add_proxy_to_request=False, snapshot_id='', items_count=None, send_events_asynchronously=False,
-                              data_size_expected_to_split_evenly=False, counter=0):  # pragma: no cover
+def akamai_send_data_to_xsiam(
+    data,
+    vendor,
+    product,
+    data_format=None,
+    url_key="url",
+    num_of_attempts=3,
+    chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+    data_type=EVENTS,
+    should_update_health_module=True,
+    add_proxy_to_request=False,
+    snapshot_id="",
+    items_count=None,
+    send_events_asynchronously=False,
+    data_size_expected_to_split_evenly=False,
+    counter=0,
+):  # pragma: no cover
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -852,61 +912,65 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
     data_size = 0
     params = demisto.params()
     url = params.get(url_key)
-    calling_context = demisto.callingContext.get('context', {})
-    instance_name = calling_context.get('IntegrationInstance', '')
-    collector_name = calling_context.get('IntegrationBrand', '')
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
     if not items_count:
         items_count = len(data) if isinstance(data, list) else 1
     if data_type not in DATA_TYPES:
-        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
-        return
+        demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
+        return None
 
     if not data:
-        demisto.debug('send_data_to_xsiam function received no {data_type}, '
-                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-        return
+        demisto.debug(
+            f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM"
+        )
+        demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
+        return None
 
     # only in case we have data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
+        demisto.debug(f"Sending {len(data)} {data_type} to XSIAM")
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
-            data_format = 'json'
+            data_format = "json"
         # Separating each event with a new line
-        data = '\n'.join(data)
+        data = "\n".join(data)
     elif not isinstance(data, str):
-        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
-                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
+        raise DemistoException(
+            f"Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list."
+        )
     if not data_format:
-        data_format = 'text'
+        data_format = "text"
 
-    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
-    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    headers = remove_empty_elements({
-        'authorization': xsiam_api_token,
-        'format': data_format,
-        'product': product,
-        'vendor': vendor,
-        'content-encoding': 'gzip',
-        'collector-name': collector_name,
-        'instance-name': instance_name,
-        'final-reporting-device': url,
-        'collector-type': ASSETS if data_type == ASSETS else EVENTS
-    })
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+    headers = remove_empty_elements(
+        {
+            "authorization": xsiam_api_token,
+            "format": data_format,
+            "product": product,
+            "vendor": vendor,
+            "content-encoding": "gzip",
+            "collector-name": collector_name,
+            "instance-name": instance_name,
+            "final-reporting-device": url,
+            "collector-type": ASSETS if data_type == ASSETS else EVENTS,
+        }
+    )
     if data_type == ASSETS:
         if not snapshot_id:
             snapshot_id = str(round(time.time() * 1000))
 
         # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
         # alphabetical order such that first_snapshot < second_snapshot etc.
-        headers['snapshot-id'] = snapshot_id + instance_name
-        headers['total-items-count'] = str(items_count)
+        headers["snapshot-id"] = snapshot_id + instance_name
+        headers["total-items-count"] = str(items_count)
 
-    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
+    header_msg = f"Error sending new {data_type} into XSIAM.\n"
 
     def data_error_handler(res):
         """
@@ -915,23 +979,23 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         try:
             response = res.json()
             error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
+            if response.get("error").lower() == "false":
+                xsiam_server_err_msg = response.get("error")
                 error += ": " + xsiam_server_err_msg
 
         except ValueError:
             if res.text:
-                error = '\n{}'.format(res.text)
+                error = f"\n{res.text}"
             else:
                 error = "Received empty response from the server"
 
         api_call_info = (
-            'Parameters used:\n'
-            '\tURL: {xsiam_url}\n'
-            '\tHeaders: {headers}\n\n'
-            'Response status code: {status_code}\n'
-            'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
+            "Parameters used:\n"
+            f"\tURL: {xsiam_url}\n"
+            f"\tHeaders: {json.dumps(headers, indent=8)}\n\n"
+            f"Response status code: {res.status_code}\n"
+            f"Error received:\n\t{error}"
+        )
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
@@ -944,21 +1008,28 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
 
     def send_events(data_chunk):
         chunk_size = len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(
+            client=client,
+            events_error_handler=data_error_handler,
+            error_msg=header_msg,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            xsiam_url=xsiam_url,
+            zipped_data=zipped_data,
+            is_json_response=True,
+            data_type=data_type,
+        )
         return chunk_size
 
     async def send_events_async(data_chunk):
         chunk_size = len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        _ = await xsiam_api_call_async_with_retries(headers=headers,
-                                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                                    zipped_data=zipped_data, data_type=data_type)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
+        _ = await xsiam_api_call_async_with_retries(
+            headers=headers, num_of_attempts=num_of_attempts, xsiam_url=xsiam_url, zipped_data=zipped_data, data_type=data_type
+        )
         return chunk_size
 
     if send_events_asynchronously:
@@ -967,7 +1038,7 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
         demisto.info(f"Running in interval = {counter}. Finished appending all data_chunks to a list.")
         tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in all_chunks]
 
-        demisto.info(f'Finished submiting {len(tasks)} tasks for the {counter} time')
+        demisto.info(f"Finished submiting {len(tasks)} tasks for the {counter} time")
         return tasks
     else:
         demisto.info("Sending events to xsiam synchronously.")
@@ -975,8 +1046,8 @@ def akamai_send_data_to_xsiam(data, vendor, product, data_format=None, url_key='
             data_size += send_events(chunk)
 
         if should_update_health_module:
-            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-    return
+            demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
+    return None
 
 
 def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
@@ -994,11 +1065,11 @@ def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
     """
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     if isinstance(data, str):
-        data = data.split('\n')
+        data = data.split("\n")
     entry_size = sys.getsizeof(data[0])
     num_of_entries_per_chunk = target_chunk_size // entry_size
     for i in range(0, len(data), num_of_entries_per_chunk):
-        chunk = data[i:i + num_of_entries_per_chunk]
+        chunk = data[i: i + num_of_entries_per_chunk]
         yield chunk
 
 
@@ -1029,12 +1100,13 @@ async def xsiam_api_call_async_with_retries(
     attempt_num = 1
     response = None
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
-            data_type=data_type, attempt_num=attempt_num))
+        demisto.debug(
+            f"Sending {data_type} into xsiam, attempt number {attempt_num}"
+        )
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with aiohttp.ClientSession() as session:
-            async with session.post(urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data, headers=headers) as response:
+        async with aiohttp.ClientSession() as session:    # noqa: SIM117
+            async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
                 try:
                     response.raise_for_status()  # This raises an exception for non-2xx status codes
                     status_code = response.status
@@ -1042,31 +1114,40 @@ async def xsiam_api_call_async_with_retries(
                     if ok_codes and e.status in ok_codes:
                         continue
                     else:
-                        header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
+                        header_msg = f"Error sending new {data_type} into XSIAM.\n"
                         api_call_info = (
-                            'Parameters used:\n'
-                            '\tURL: {xsiam_url}\n'
-                            '\tHeaders: {headers}\n\n'
-                            'Response status code: {status_code}\n'
-                            'Error received:\n\t{error}\n'
-                            'additional request info: \n\t{additional_info}'
-                        ).format(xsiam_url=xsiam_url, headers=json.dumps(e.headers, indent=8), status_code=e.status,
-                                 error=e.message, additional_info=e.request_info)
+                            "Parameters used:\n"
+                            f"\tURL: {xsiam_url}\n"
+                            f"\tHeaders: {json.dumps(e.headers, indent=8)}\n\n"
+                            f"Response status code: {e.status}\n"
+                            f"Error received:\n\t{e.message}\n"
+                            f"additional request info: \n\t{e.request_info}"
+                        )
 
                         demisto.error(header_msg + api_call_info)
                         demisto.updateModuleHealth(header_msg + e.message, is_error=True)
 
-        demisto.debug('received status code: {status_code}'.format(status_code=status_code))
+        demisto.debug(f"received status code: {status_code}")
         if status_code == 429:
             await asyncio.sleep(1)
         attempt_num += 1
     return response
 
 
-def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                                chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                                add_proxy_to_request=False, send_events_asynchronously=False,
-                                data_size_expected_to_split_evenly=False, counter=0):  # pragma: no cover
+def send_events_to_xsiam_akamai(
+    events,
+    vendor,
+    product,
+    data_format=None,
+    url_key="url",
+    num_of_attempts=3,
+    chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+    should_update_health_module=True,
+    add_proxy_to_request=False,
+    send_events_asynchronously=False,
+    data_size_expected_to_split_evenly=False,
+    counter=0,
+):  # pragma: no cover
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -1126,7 +1207,7 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
         add_proxy_to_request=add_proxy_to_request,
         send_events_asynchronously=send_events_asynchronously,
         data_size_expected_to_split_evenly=data_size_expected_to_split_evenly,
-        counter=counter
+        counter=counter,
     )
 
 
@@ -1136,46 +1217,50 @@ def send_events_to_xsiam_akamai(events, vendor, product, data_format=None, url_k
 ############################################## end of beta part ##############################################
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():  # pragma: no cover
     params = demisto.params()
     client = Client(
-        base_url=urljoin(params.get('host'), '/siem/v1/configs'),
-        verify=not params.get('insecure', False),
-        proxy=params.get('proxy'),
+        base_url=urljoin(params.get("host"), "/siem/v1/configs"),
+        verify=not params.get("insecure", False),
+        proxy=params.get("proxy"),
         auth=EdgeGridAuth(
-            client_token=params.get('clienttoken_creds', {}).get('password') or params.get('clientToken'),
-            access_token=params.get('accesstoken_creds', {}).get('password') or params.get('accessToken'),
-            client_secret=params.get('clientsecret_creds', {}).get('password') or params.get('clientSecret'),
-        )
+            client_token=params.get("clienttoken_creds", {}).get("password") or params.get("clientToken"),
+            access_token=params.get("accesstoken_creds", {}).get("password") or params.get("accessToken"),
+            client_secret=params.get("clientsecret_creds", {}).get("password") or params.get("clientSecret"),
+        ),
     )
     commands = {
         "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command,
-        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command
+        f"{INTEGRATION_COMMAND_NAME}-reset-offset": reset_offset_command,
     }
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
-        if params.get("isFetch") and not (0 < (arg_to_number(params.get('fetchLimit')) or 20) <= 2000):
-            raise DemistoException('Fetch limit must be an integer between 1 and 2000')
+        if params.get("isFetch") and not (0 < (arg_to_number(params.get("fetchLimit")) or 20) <= 2000):
+            raise DemistoException("Fetch limit must be an integer between 1 and 2000")
 
-        if command == 'fetch-incidents':
-            incidents, new_last_run = fetch_incidents_command(client,
-                                                              fetch_time=params.get('fetchTime'),
-                                                              fetch_limit=params.get('fetchLimit'),
-                                                              config_ids=params.get('configIds'),
-                                                              last_run=demisto.getLastRun().get('lastRun'))
+        if command == "fetch-incidents":
+            incidents, new_last_run = fetch_incidents_command(
+                client,
+                fetch_time=params.get("fetchTime"),
+                fetch_limit=params.get("fetchLimit"),
+                config_ids=params.get("configIds"),
+                last_run=demisto.getLastRun().get("lastRun"),
+            )
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
             if params.get("longRunning", False):
-                raise DemistoException("Cannot run both fetch events and long-running command simultaneously.\n"
-                                       "Please make sure to set either isFetchEvents or longRunning to false in"
-                                       " the integration configuration.")
+                raise DemistoException(
+                    "Cannot run both fetch events and long-running command simultaneously.\n"
+                    "Please make sure to set either isFetchEvents or longRunning to false in"
+                    " the integration configuration."
+                )
             page_size = int(params.get("page_size", FETCH_EVENTS_MAX_PAGE_SIZE))
             limit = int(params.get("fetchLimit", 300000))
             if limit > MAX_ALLOWED_FETCH_LIMIT:
@@ -1186,31 +1271,47 @@ def main():  # pragma: no cover
                 page_size = limit
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
-            fetch_events_command(
-                client,
-                params.get("fetchTime", "5 minutes"),
-                fetch_limit=limit,
-                config_ids=params.get("configIds", ""),
-                ctx=get_integration_context() or {},
-                page_size=page_size,
-                should_skip_decode_events=should_skip_decode_events
-            )):
+                fetch_events_command(
+                    client,
+                    params.get("fetchTime", "5 minutes"),
+                    fetch_limit=limit,
+                    config_ids=params.get("configIds", ""),
+                    ctx=get_integration_context() or {},
+                    page_size=page_size,
+                    should_skip_decode_events=should_skip_decode_events,
+                )
+            ):
                 if events:
                     post_latest_event_time(
-                        latest_event=events[-1],
-                        base_msg=f"Sending {len(events)} events to xsiam using multithreads."
+                        latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using multithreads."
                     )
-                    futures = send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False,
-                                                   chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
-                                                   multiple_threads=True, data_format="json")
+                    futures = send_events_to_xsiam(
+                        events,
+                        VENDOR,
+                        PRODUCT,
+                        should_update_health_module=False,
+                        chunk_size=SEND_EVENTS_TO_XSIAM_CHUNK_SIZE,
+                        multiple_threads=True,
+                        data_format="json",
+                    )
                     demisto.info("Finished executing send_events_to_xsiam, waiting for futures to end.")
                     data_size = 0
+                    should_fail = False
                     for future in concurrent.futures.as_completed(futures):
-                        data_size += future.result()
-                    demisto.info(f"Done sending {data_size} events to xsiam."
-                                 f"sent {total_events_count} events to xsiam in total during this interval.")
+                        try:
+                            data_size += future.result()
+                        except Exception as e:
+                            demisto.info(f"Got an error when executing send_events_to_xsiam: {e}")
+                            should_fail = True
+                    if should_fail:
+                        raise DemistoException(
+                            "Encountered an error while sending events to xsiam, will attempt to send all events to xsiam again.")
+                    demisto.info(
+                        f"Done sending {data_size} events to xsiam."
+                        f"sent {total_events_count} events to xsiam in total during this interval."
+                    )
                 set_integration_context({"offset": offset})
-            demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
+            demisto.updateModuleHealth({"eventsPulled": (total_events_count or 0)})
             next_run = {}
             if auto_trigger_next_run or total_events_count >= limit:
                 demisto.info(f"got {auto_trigger_next_run=} or at least {limit} events this interval - setting nextTrigger=0.")
@@ -1220,30 +1321,36 @@ def main():  # pragma: no cover
             demisto.setLastRun(next_run)
         elif command == "long-running-execution":
             if params.get("isFetchEvents", False):
-                raise DemistoException("Cannot run both fetch events and long-running command simultaneously.\n"
-                                       "Please make sure to set either isFetchEvents or longRunning to false in"
-                                       " the integration configuration.")
+                raise DemistoException(
+                    "Cannot run both fetch events and long-running command simultaneously.\n"
+                    "Please make sure to set either isFetchEvents or longRunning to false in"
+                    " the integration configuration."
+                )
             page_size = min(int(params.get("beta_page_size", BETA_FETCH_EVENTS_MAX_PAGE_SIZE)), BETA_FETCH_EVENTS_MAX_PAGE_SIZE)
             should_skip_decode_events = params.get("should_skip_decode_events", False)
             max_concurrent_tasks = min(int(params.get("max_concurrent_tasks", 100)), MAX_ALLOWED_CONCURRENT_TASKS)
             demisto.info("Starting long-running execution.")
 
-            asyncio.run(fetch_events_long_running_command(client,
-                                                          from_time=params.get('fetchTime', '5 minutes'),
-                                                          page_size=page_size,
-                                                          config_ids=params.get("configIds", ""),
-                                                          ctx=get_integration_context() or {},
-                                                          should_skip_decode_events=should_skip_decode_events,
-                                                          max_concurrent_tasks=max_concurrent_tasks))
+            asyncio.run(
+                fetch_events_long_running_command(
+                    client,
+                    from_time=params.get("fetchTime", "5 minutes"),
+                    page_size=page_size,
+                    config_ids=params.get("configIds", ""),
+                    ctx=get_integration_context() or {},
+                    should_skip_decode_events=should_skip_decode_events,
+                    max_concurrent_tasks=max_concurrent_tasks,
+                )
+            )
 
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
 
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
+if __name__ in ["__builtin__", "builtins", "__main__"]:  # pragma: no cover
     main()
