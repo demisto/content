@@ -1,6 +1,6 @@
 commonfields:
   id: JSONDiff
-  version: 9
+  version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: JSONDiff
 script: ''
@@ -11,18 +11,19 @@ comment: compares two JSON files and returns their differences, such as added, r
 enabled: true
 args:
 - name: old_json
+  description: The old value of the JSON
   required: true
 - name: new_json
+  description: The new value of the JSON
   required: true
 outputs:
 - contextPath: new_json
-  description: The JSON object loaded from input.
+  description: The JSON differences in a structured format
 scripttarget: 0
 subtype: python3
 pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.11.10.115186
-runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+dockerimage: demisto/python3:3.12.8.1983910
+tests:
+- JSONtoCSV-Test
 fromversion: 5.0.0
