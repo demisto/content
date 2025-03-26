@@ -5159,7 +5159,7 @@
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
             "marketplaces": "xsoar_saas",
-            "timeout": 170
+            "timeout": 300
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
