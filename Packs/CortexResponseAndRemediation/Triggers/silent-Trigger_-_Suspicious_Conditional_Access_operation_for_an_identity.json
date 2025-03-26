@@ -8,13 +8,9 @@
         "filter": {
             "AND": [
                 {
-                    "OR": [
-                        {
-                            "SEARCH_FIELD": "alert_name",
-                            "SEARCH_TYPE": "EQ",
-                            "SEARCH_VALUE": "Suspicious Conditional Access operation for an identity"
-                        }
-                    ]
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Suspicious Conditional Access operation for an identity"
                 },
                 {
                     "SEARCH_FIELD": "alert_type",
