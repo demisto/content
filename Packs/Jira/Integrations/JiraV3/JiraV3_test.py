@@ -2385,7 +2385,7 @@ class TestJiraFetchIncidents:
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
         expected_last_run = {'issue_ids': [1, 2], 'id': 2, 'created_date': '2023-12-11 22:09',
-                             'updated_date': '2023-12-12 22:09'}
+                             'updated_date': '2023-12-12 22:09', 'timezone': 'UTC'}
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
     def test_set_last_run_when_last_run_is_not_empty(self, mocker):
@@ -2427,7 +2427,7 @@ class TestJiraFetchIncidents:
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
         expected_last_run = {'issue_ids': [3, 4], 'id': 4, 'created_date': '2024-01-11 22:09',
-                             'updated_date': '2024-01-12 22:09'}
+                             'updated_date': '2024-01-12 22:09', 'timezone': 'UTC'}
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
     def test_set_last_run_when_we_did_not_progress_in_created_time(self, mocker):
@@ -2471,7 +2471,7 @@ class TestJiraFetchIncidents:
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
         expected_last_run = {'issue_ids': [3, 4, 1, 2], 'id': 4, 'created_date': '2023-12-11 22:09',
-                             'updated_date': '2024-01-12 22:09'}
+                             'updated_date': '2024-01-12 22:09', 'timezone': 'UTC'}
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
     def test_set_last_run_when_we_did_not_progress_in_updated_time(self, mocker):
@@ -2515,7 +2515,7 @@ class TestJiraFetchIncidents:
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
         expected_last_run = {'issue_ids': [3, 4, 1, 2], 'id': 4, 'created_date': '2022-01-11 22:09',
-                             'updated_date': '2023-12-12 22:09'}
+                             'updated_date': '2023-12-12 22:09', 'timezone': 'UTC'}
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
     def test_create_incident_from_issue(self, mocker):
