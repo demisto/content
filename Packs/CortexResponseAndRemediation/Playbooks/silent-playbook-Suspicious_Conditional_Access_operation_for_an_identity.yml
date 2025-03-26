@@ -795,8 +795,6 @@ tasks:
         optionsarg:
         - simple: No Action
         - simple: Disable ${Core.OriginalAlert.event.identity_name}
-        - simple: Disable ${Core.OriginalAlert.event.referenced_resource_name}
-        - simple: Disable Both Users
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -825,11 +823,11 @@ tasks:
     nexttasks:
       '#default#':
       - "33"
-      Disable Source User:
+      Disable User:
       - "59"
     separatecontext: false
     conditions:
-    - label: Disable Source User
+    - label: Disable User
       condition:
       - - operator: containsString
           left:
@@ -840,27 +838,6 @@ tasks:
             value:
               simple: ${Core.OriginalAlert.event.identity_name}
           ignorecase: true
-    - label: Disable Destination User
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: Analyst Action.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: ${Core.OriginalAlert.event.referenced_resource_name}
-          ignorecase: true
-    - label: Disable Both
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Analyst Action.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Disable Both Users
     continueonerrortype: ""
     view: |-
       {
