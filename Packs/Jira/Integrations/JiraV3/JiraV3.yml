@@ -1745,6 +1745,65 @@ script:
     - contextPath: Jira.IssueField.Schema.configuration
       description: If the field is a custom field, the configuration of the field.
       type: Object
+  - arguments:
+    - description: 'A summary of the issue. Use issue fields as variables to enrich the text. Example: ${issue.name}.'
+      name: summary
+      prettyname: Summary
+      required: true
+    - description: The Jira project key where the issue will be created.
+      name: project_key
+      prettyname: Project Key
+      required: true
+    - description: 'Selects an issue type by name, for example: "Bug" or "Task".'
+      name: issue_type_name
+      prettyname: Issue Type
+      required: true
+    - description: 'A description of the issue. Use issue fields as variables to enrich the text. Example: ${issue.details}.'
+      name: description
+      prettyname: Description
+      required: true
+    - description: A CSV list of labels.
+      isArray: true
+      name: labels
+    - name: priority
+      description: Priority of the ticket.
+      predefined:
+      - 1 - High
+      - 2 - Medium
+      - 3 - Low
+    - description: The due date for the issue (in the format yyyy-mm-dd).
+      name: due_date
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+      name: assignee
+    - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    - description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: reporter_id
+    - description: The name of the of the reporter. Relevant for Jira Server only. Use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
+      name: reporter
+    - description: The parent issue key (if you're creating a sub-task).
+      name: parent_issue_key
+    - description: The parent issue ID (if you're creating a sub-task).
+      name: parent_issue_id
+    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+      name: environment
+    - description: The security level of the issue. For example security="Anyone".
+      name: security
+    - description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem instance, the entered components must already exist.
+      isArray: true
+      name: components
+    description: Creates a new issue in Jira.
+    name: jira-create-issue-quick-action
+    prettyname: Create Jira Ticket
+    hidden: true
+    quickaction: true
+    outputs:
+      - contextPath: Ticket.Id
+        description: The ticket ID.
+        type: String
+      - contextPath: Ticket.Key
+        description: The ticket key.
+        type: String
   dockerimage: demisto/btfl-soup:1.0.1.2129515
   isfetch: true
   ismappable: true
@@ -1757,5 +1816,6 @@ script:
 tests:
 - JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
+supportsquickactions: true
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0

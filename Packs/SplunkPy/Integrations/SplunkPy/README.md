@@ -7,9 +7,92 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 
 ## Use Cases
 ---
-* Query Splunk for events.
-* Create a new event in Splunk.
-* Get results of a search that was executed in Splunk.
+
+### User Configuration Requirements
+
+#### Option one:
+Assign the following roles to the user: admin, ess_admin (for working with Splunk Enterprise Security).
+
+#### Option two:
+When assigning admin is not an option.  
+Define a custom role and include all necessary capabilities: (permissions)
+![image](../../doc_files/edit-role-non-admin-capabilities.png)
+Define the indexes configuration for the custom role:
+![image](../../doc_files/edit-role-non-admin-indexes.png)
+At the end of the process, the Splunk user (not admin user) should receive the previously created role. Following is the list of capabilities that covers both the Splunk UI access and using the SplunkPy integration including Enterprise security:  
+
+<ul class="bullet-list">
+  <li>accelerate_search</li>
+  <li>admin_all_objects</li>
+  <li>can_own_notable_events</li>
+  <li>change_own_password</li>
+  <li>edit_analyticstories</li>
+  <li>edit_cam_queue</li>
+  <li>edit_correlationsearches</li>
+  <li>edit_lookups</li>
+  <li>edit_notable_events</li>
+  <li>edit_own_objects</li>
+  <li>edit_tcp</li>
+  <li>edit_tcp_stream</li>
+  <li>edit_upload_and_index</li>
+  <li>get_metadata</li>
+  <li>get_typeahead</li>
+  <li>input_file</li>
+  <li>list_accelerate_search</li>
+  <li>list_all_objects</li>
+  <li>list_inputs</li>
+  <li>list_introspection</li>
+  <li>list_metrics_catalog</li>
+  <li>list_search_head_clustering</li>
+  <li>manage_all_investigations</li>
+  <li>manage_behavioral_analytics</li>
+  <li>output_file</li>
+  <li>rest_access_server_endpoints</li>
+  <li>rest_apps_view</li>
+  <li>rest_properties_get</li>
+  <li>rest_properties_set</li>
+  <li>rtsearch</li>
+  <li>run_collect</li>
+  <li>run_mcollect</li>
+  <li>run_msearch</li>
+  <li>run_sendalert</li>
+  <li>schedule_rtsearch</li>
+  <li>schedule_search</li>
+  <li>search</li>
+  <li>search_process_config_refresh</li>
+  <li>upload_lookup_files</li>
+</ul>
+
+
+#### SplunkPy command permissions by example:
+`splunk-notable-event-edit`
+
+custom roles required: (at least one)  
+ess_analyst, ess_admin  
+Can replace the Splunk power role for ES users.
+
+User-Level Permissions:  
+Read: Access to view resources (e.g., dashboards, reports).  
+Write: Ability to modify existing resources or create new ones.
+
+
+### Query Load Analysis
+#### Mirroring
+
+When mirroring in enabled, 2-3 simultaneous queries are expected. 
+Each query can have more that one API call. On mirror out - API call for updating each notable event that changed. This also includes User mapping queries and mirroring queries.
+
+#### Enrichment
+
+Fetching notable event - for each fetch iteration 2 queries.  
+For each notable event that fetched - we have 3 enrichments(max).  
+`<Amount of fetched notables> * <amount of defined enrichments>`  
+In case of more that one drilldown - number of drilldown queries.  
+Each query can have more that one API call.
+
+#### Fetch
+
+Configured by the instance configuration fetch_limit (behind the scenes an query can made few API calls).
 
 ## Configure SplunkPy in Cortex
 

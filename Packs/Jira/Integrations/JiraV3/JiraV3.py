@@ -4525,6 +4525,7 @@ def main():  # pragma: no cover
         'jira-get-comments': get_comments_command,
         'jira-get-issue': get_issue_command,
         'jira-create-issue': create_issue_command,
+        'jira-create-issue-quick-action': create_issue_command,
         'jira-issue-assign': update_issue_assignee_command,
         'jira-edit-issue': edit_issue_command,
         'jira-delete-issue': delete_issue_command,

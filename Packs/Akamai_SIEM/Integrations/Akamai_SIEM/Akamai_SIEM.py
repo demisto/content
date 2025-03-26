@@ -181,6 +181,8 @@ class Client(BaseClient):
         events: list[str] = raw_response.split("\n")
         new_offset = None
         try:
+            if events and events[-1] == "":
+                events.pop()
             offset_context = events.pop()
             loaded_offset_context = json.loads(offset_context)
             new_offset = loaded_offset_context.get("offset")
