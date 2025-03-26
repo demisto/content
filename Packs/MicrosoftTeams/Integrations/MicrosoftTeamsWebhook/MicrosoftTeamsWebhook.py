@@ -1,9 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -69,9 +65,18 @@ def create_teams_message(
         Returns:
         messagecard (dict): dict the adaptive card to send to Teams.
     """
+    demisto.debug(
+        f"Creating Teams message with parameters: message={message},\n"
+        f"title={title}, serverurls={serverurls}, adaptive_cards_format={adaptive_cards_format}, is_workflow={is_workflow}"
+    )
+    message = message.replace('\\n', '\n')
+    message = message.replace('\\r', '\r')
+    
     messagecard: dict = {}
     if adaptive_cards_format:
+        demisto.debug("Using adaptive cards format")
         if overwrite_adaptive_card_json is None:
+            demisto.debug("Using default adaptive card format")
             messagecard = {
                 "type": "message",
                 "attachments": [
@@ -107,9 +112,11 @@ def create_teams_message(
                 ]
             }
         else:
+            demisto.debug("Using overwritten adaptive card format")
             messagecard = overwrite_adaptive_card_json
     else:
         if is_workflow:
+            demisto.debug("Creating message for workflow")
             messagecard = {
                 "type": "message",
                 "attachments": [
@@ -130,6 +137,7 @@ def create_teams_message(
                 ]
             }
         else:
+            demisto.debug("Creating message for non-workflow")
             messagecard = {
                 "@type": "MessageCard",
                 "@context": "http://schema.org/extensions",
@@ -199,7 +207,7 @@ def send_teams_message_command(
                                        is_workflow=client.is_workflow,
                                        overwrite_adaptive_card_json=overwrite_adaptive_card_json)
     client.send_teams_message(messagecard, adaptive_cards_format)
-    return CommandResults(readable_output='message sent successfully')
+    return CommandResults(readable_output='Message sent successfully')
 
 
 def main() -> None:    # pragma: no cover
@@ -209,6 +217,8 @@ def main() -> None:    # pragma: no cover
     """
     params = demisto.params()
     args = demisto.args()
+    command = demisto.command()
+    serverurls = demisto.demistoUrls()
 
     title = args.get('url_title', 'Cortex XSOAR URL')
     webhook = args.get('team_webhook', params.get('webhookurl'))
@@ -219,14 +229,14 @@ def main() -> None:    # pragma: no cover
     overwrite_adaptive_card_json: dict | None = json.loads(
         overwrite_adaptive_card_json_param) if overwrite_adaptive_card_json_param else None
 
-    serverurls = demisto.demistoUrls()
+    
 
     if args.get('alternative_url'):
-        serverurls = args.get('alternative_url')
+        serverurls = args.get('alternative_url', '')
     else:
         serverurls = serverurls.get("investigation", serverurls["server"])
 
-    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             base_url=webhook,
@@ -245,7 +255,11 @@ def main() -> None:    # pragma: no cover
             raise NotImplementedError(f"command {command} is not implemented.")
 
     except Exception as e:
-        return_error(str(e), error=traceback.format_exc())
+        return_error(
+            f'Failed to execute {command} command.\n'
+            f'{str(e)}',
+            error=traceback.format_exc()
+        )
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
