@@ -32,5 +32,5 @@ Retrieves the current date and time.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| TimeNowUnix | number of milliseconds since 1970/01/01. | Number |
-| TimeNow | current time. | String |
+| TimeNowUnix | Number of milliseconds since 1970/01/01. | Number |
+| TimeNow | Current time. | String |
