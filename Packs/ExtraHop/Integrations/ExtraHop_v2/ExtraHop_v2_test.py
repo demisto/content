@@ -1,12 +1,13 @@
 """Test File for ExtraHop Integration."""
-from copy import copy
-import datetime
-from unittest import mock
-import ExtraHop_v2
-import json
-import pytest
-import os
 
+import datetime
+import json
+import os
+from copy import copy
+from unittest import mock
+
+import ExtraHop_v2
+import pytest
 from CommonServerPython import DemistoException
 
 BASE_URL = "https://dummy-base-url.com"
@@ -54,7 +55,7 @@ def get_device_tag_args():
 @pytest.fixture
 def argtest():
     def _argtest(**_kwargs):
-        class TestArgs(object):
+        class TestArgs:
             def __call__(self, *args, **kwargs):
                 self.args = list(args)
                 self.kwargs = kwargs
@@ -73,9 +74,7 @@ def get_devices_by_ip_or_id_fixture(mocker):
     Args:
         mocker: An object to mock specific function of ExtraHop_v2 module.
     """
-    return mocker.patch(
-        "ExtraHop_v2.get_devices_by_ip_or_id", side_effect=[[1, 2], [3, 4]]
-    )
+    return mocker.patch("ExtraHop_v2.get_devices_by_ip_or_id", side_effect=[[1, 2], [3, 4]])
 
 
 def init_mock_client(requests_mock, on_cloud):
@@ -111,7 +110,6 @@ def load_mock_response(file_name: str) -> dict:
     """
     with open(
         os.path.join(os.path.dirname(__file__), f"test_data/{file_name}"),
-        mode="r",
         encoding="utf-8",
     ) as json_file:
         return json.loads(json_file.read())
@@ -124,9 +122,7 @@ def load_file(file_name: str) -> str:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(
-        os.path.join(os.path.dirname(__file__), f"test_data/{file_name}"), mode="r"
-    ) as file:
+    with open(os.path.join(os.path.dirname(__file__), f"test_data/{file_name}")) as file:
         return file.read()
 
 
@@ -185,9 +181,7 @@ def test_create_or_edit_alert_rule_command(on_cloud, requests_mock) -> None:
 
 
 @pytest.mark.parametrize("on_cloud", [False, True])
-def test_create_or_edit_alert_rule_command_invalid_type(
-    on_cloud, requests_mock
-) -> None:
+def test_create_or_edit_alert_rule_command_invalid_type(on_cloud, requests_mock) -> None:
     """
     Test case scenario for invalid type of create-or-edit-alert-rule command.
 
@@ -206,9 +200,7 @@ def test_create_or_edit_alert_rule_command_invalid_type(
 
 
 @pytest.mark.parametrize("on_cloud", [False, True])
-def test_create_or_edit_alert_rule_command_invalid_object_type(
-    on_cloud, requests_mock
-) -> None:
+def test_create_or_edit_alert_rule_command_invalid_object_type(on_cloud, requests_mock) -> None:
     """
     Test case scenario for invalid object type of create-or-edit-alert-rule command.
 
@@ -219,9 +211,7 @@ def test_create_or_edit_alert_rule_command_invalid_object_type(
     Then:
      - Ensure appropriate error is raised.
     """
-    alert_mock_response = load_mock_response(
-        "/alerts/create_alert_validation_object_type.json"
-    )
+    alert_mock_response = load_mock_response("/alerts/create_alert_validation_object_type.json")
     client = init_mock_client(requests_mock, on_cloud)
 
     with pytest.raises(ExtraHop_v2.InvalidValueError):
@@ -232,9 +222,7 @@ def test_create_or_edit_alert_rule_command_invalid_object_type(
     ("refire_interval", "severity", "on_cloud"),
     [["10", "1", True], ["300", "8", True], ["10", "1", False], ["300", "8", False]],
 )
-def test_create_or_edit_alert_rule_command_invalid_rule_arguments(
-    on_cloud, refire_interval, severity, requests_mock
-) -> None:
+def test_create_or_edit_alert_rule_command_invalid_rule_arguments(on_cloud, refire_interval, severity, requests_mock) -> None:
     """
     Test case scenario for invalid rule arguments of create-or-edit-alert-rule command.
 
@@ -466,8 +454,7 @@ def test_metrics_list_commands_using_advance_filter_invalid_args(requests_mock):
     with pytest.raises(Exception) as error:
         ExtraHop_v2.metrics_list_command(client, advanced_filter=advanced_filter)
     assert (
-        str(error.value)
-        == "cycles is an invalid value for keys. Possible values are: ['cycle', 'from', "
+        str(error.value) == "cycles is an invalid value for keys. Possible values are: ['cycle', 'from', "
         "'metric_category', 'metric_specs', 'object_ids', 'object_type', 'until']"
     )
 
@@ -503,8 +490,7 @@ def test_metrics_list_command_error_code_400(requests_mock):
     with pytest.raises(Exception) as error:
         ExtraHop_v2.metrics_list_command(client, args)
     assert (
-        str(error.value)
-        == 'Error in API call [400] - None\n{"type": "invalid_request", "detail": "The JSON '
+        str(error.value) == 'Error in API call [400] - None\n{"type": "invalid_request", "detail": "The JSON '
         'payload specified in the request is invalid."}'
     )
 
@@ -536,10 +522,7 @@ def test_metrics_list_command_error_code_401(requests_mock):
 
     with pytest.raises(Exception) as error:
         ExtraHop_v2.metrics_list_command(client, args)
-    assert (
-        str(error.value)
-        == 'Error in API call [401] - None\n{"error_message": "API Key is invalid"}'
-    )
+    assert str(error.value) == 'Error in API call [401] - None\n{"error_message": "API Key is invalid"}'
 
 
 @pytest.mark.parametrize(
@@ -588,9 +571,7 @@ def test_detections_list_command_invalid_args(requests_mock, args, error_msg):
     Then:
      - Ensure appropriate error is raised.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud=False)
     with pytest.raises(Exception) as error:
         ExtraHop_v2.detections_list_command(client, args)
@@ -608,15 +589,10 @@ def test_detections_list_command_failure_when_firmware_version_is_outdated(reque
        - Returns a valid error message.
     """
     client = init_mock_client(requests_mock, on_cloud=False)
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"})
     with pytest.raises(DemistoException) as err:
-        ExtraHop_v2.detections_list_command(client, {}, True, '{}')
-    assert (
-        str(err.value)
-        == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
-    )
+        ExtraHop_v2.detections_list_command(client, {}, True, "{}")
+    assert str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
 
 
 @pytest.mark.parametrize("on_cloud", [False, True])
@@ -631,9 +607,7 @@ def test_list_detections_command_successful_execution_with_categories(on_cloud, 
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "2",
@@ -670,9 +644,7 @@ def test_list_detections_command_successful_execution_with_category(on_cloud, re
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "2",
@@ -709,9 +681,7 @@ def test_list_detections_command_successful_execution_without_category(on_cloud,
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "2",
@@ -747,9 +717,7 @@ def test_list_detections_command_when_description_has_metric_link(on_cloud, requ
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "1",
@@ -787,9 +755,7 @@ def test_list_detections_command_when_description_has_complete_metric_link(on_cl
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "1",
@@ -825,9 +791,7 @@ def test_list_detections_command_using_advanced_filter(requests_mock):
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {}
     advanced_filter = """{\"filter\": {\"categories\": [\"sec.attack\"],\"risk_score_min\": 51},
@@ -846,9 +810,7 @@ def test_list_detections_command_using_advanced_filter(requests_mock):
 
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=response)
 
-    results = ExtraHop_v2.detections_list_command(
-        client, args, json.loads(advanced_filter)
-    )
+    results = ExtraHop_v2.detections_list_command(client, args, json.loads(advanced_filter))
     assert results.readable_output == expected_hr
 
 
@@ -862,9 +824,7 @@ def test_list_detections_command_using_advanced_filter_invalid_arg(requests_mock
     Then:
      - Ensure appropriate error is raised.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {}
     advanced_filter = """{\"filter\": {\"categories\": [\"sec.attack\"],\"risk_score_min\": 51},
@@ -883,8 +843,10 @@ def test_list_detections_command_using_advanced_filter_invalid_arg(requests_mock
 
     with pytest.raises(Exception) as error:
         ExtraHop_v2.detections_list_command(client, args, advanced_filter=json.loads(advanced_filter))
-    assert str(error.value) == "invalid_arg is an invalid value for key. Possible values are: ['filter', 'limit', " \
-                               "'offset', 'from', 'until', 'sort', 'mod_time']"
+    assert (
+        str(error.value) == "invalid_arg is an invalid value for key. Possible values are: ['filter', 'limit', "
+        "'offset', 'from', 'until', 'sort', 'mod_time']"
+    )
 
 
 def test_list_detections_command_error_code_400(requests_mock):
@@ -897,9 +859,7 @@ def test_list_detections_command_error_code_400(requests_mock):
     Then:
      - Ensure error is raised with error code.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {
         "limit": "2",
@@ -908,14 +868,11 @@ def test_list_detections_command_error_code_400(requests_mock):
         "type": "invalid_request",
         "detail": "The JSON payload specified in the request is invalid.",
     }
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/detections/search", json=response, status_code=400
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=response, status_code=400)
     with pytest.raises(Exception) as error:
         ExtraHop_v2.detections_list_command(client, args)
     assert (
-        str(error.value)
-        == 'Error in API call [400] - None\n{"type": "invalid_request", "detail": "The JSON '
+        str(error.value) == 'Error in API call [400] - None\n{"type": "invalid_request", "detail": "The JSON '
         'payload specified in the request is invalid."}'
     )
 
@@ -930,9 +887,7 @@ def test_list_detections_command_error_code_502(requests_mock):
     Then:
      - Ensure error is raised with error code.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {}
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", status_code=502)
@@ -951,21 +906,14 @@ def test_list_detections_command_error_code_401(requests_mock):
     Then:
      - Ensure error is raised with error code.
     """
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {"limit": "2"}
     response = {"error_message": "API Key is invalid"}
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/detections/search", status_code=401, json=response
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", status_code=401, json=response)
     with pytest.raises(Exception) as error:
         ExtraHop_v2.detections_list_command(client, args)
-    assert (
-        str(error.value)
-        == 'Error in API call [401] - None\n{"error_message": "API Key is invalid"}'
-    )
+    assert str(error.value) == 'Error in API call [401] - None\n{"error_message": "API Key is invalid"}'
 
 
 @pytest.mark.parametrize(
@@ -1036,15 +984,10 @@ def test_ticket_track_command_successful_execution(
     result = ExtraHop_v2.ticket_track_command(client, args)
 
     assert result.outputs_prefix == "ExtraHop"
-    assert (
-        result.readable_output
-        == "Successfully linked detection(detection_id) with incident(incident_id)"
-    )
+    assert result.readable_output == "Successfully linked detection(detection_id) with incident(incident_id)"
     assert result.outputs == {"TicketId": "incident_id"}
 
-    ExtraHop_v2.ExtraHopClient.patch_detections.assert_called_once_with(
-        "detection_id", expected
-    )
+    ExtraHop_v2.ExtraHopClient.patch_detections.assert_called_once_with("detection_id", expected)
 
 
 def test_validate_ticket_track_arguments_failed_execution():
@@ -1062,10 +1005,7 @@ def test_validate_ticket_track_arguments_failed_execution():
     with pytest.raises(ExtraHop_v2.InvalidValueError) as err:
         ExtraHop_v2.validate_ticket_track_arguments("4")
 
-    assert (
-        str(err.value)
-        == "4 is an invalid value for incident_status. Possible values are: ['0', '1', '2', '3']"
-    )
+    assert str(err.value) == "4 is an invalid value for incident_status. Possible values are: ['0', '1', '2', '3']"
 
 
 def test_validate_ticket_track_arguments_successful_execution():
@@ -1096,14 +1036,11 @@ def test_validate_ticket_track_arguments_successful_execution():
         [
             "id1, id2",
             "id3",
-            "Successfully added new devices(id1, id2) in the watchlist \n"
-            "Successfully removed devices(id3) from the watchlist",
+            "Successfully added new devices(id1, id2) in the watchlist \nSuccessfully removed devices(id3) from the watchlist",
         ],
     ],
 )
-def test_watch_list_edit_command_successful_execution(
-    requests_mock, mocker, add_arg, remove_arg, expected
-):
+def test_watch_list_edit_command_successful_execution(requests_mock, mocker, add_arg, remove_arg, expected):
     """
     Test case scenario for successful execution of watchlist-edit command.
 
@@ -1140,13 +1077,8 @@ def test_packets_search_invalid_output(requests_mock):
     args_copy = copy(get_packets_search_args())
     args_copy["output"] = "gzip"
     with pytest.raises(ExtraHop_v2.InvalidValueError) as e:
-        ExtraHop_v2.packets_search_command(
-            init_mock_client(requests_mock, False), args_copy
-        )
-    assert (
-        str(e.value)
-        == "gzip is an invalid value for output. Possible values are: ['pcap', 'keylog_txt', 'zip']"
-    )
+        ExtraHop_v2.packets_search_command(init_mock_client(requests_mock, False), args_copy)
+    assert str(e.value) == "gzip is an invalid value for output. Possible values are: ['pcap', 'keylog_txt', 'zip']"
 
 
 def test_packets_search_204_status_code(requests_mock):
@@ -1163,9 +1095,7 @@ def test_packets_search_204_status_code(requests_mock):
 
     requests_mock.get(BASE_URL + PACKETS_SEARCH_URL, status_code=204)
 
-    response = ExtraHop_v2.packets_search_command(
-        init_mock_client(requests_mock, False), get_packets_search_args()
-    )
+    response = ExtraHop_v2.packets_search_command(init_mock_client(requests_mock, False), get_packets_search_args())
 
     assert response == "Search matched no packets."
 
@@ -1190,9 +1120,7 @@ def test_packets_search_invalid_filename_headers(requests_mock):
     )
 
     with pytest.raises(ExtraHop_v2.DemistoException) as e:
-        ExtraHop_v2.packets_search_command(
-            init_mock_client(requests_mock, False), get_packets_search_args()
-        )
+        ExtraHop_v2.packets_search_command(init_mock_client(requests_mock, False), get_packets_search_args())
 
     assert str(e.value) == "Error filename could not be found in response header."
 
@@ -1214,9 +1142,7 @@ def test_packets_search_file_data(requests_mock):
         content="this is dummy packets".encode("ascii"),
     )
 
-    response = ExtraHop_v2.packets_search_command(
-        init_mock_client(requests_mock, False), get_packets_search_args()
-    )
+    response = ExtraHop_v2.packets_search_command(init_mock_client(requests_mock, False), get_packets_search_args())
 
     assert response.get("File") == "packets.zip"
 
@@ -1249,9 +1175,7 @@ def test_devices_tag_invalid_args(requests_mock):
         (None, "1,2", '{"unassign": [1, 2]}'),
     ],
 )
-def test_devices_tag(
-    add, remove, expected_data, requests_mock, get_devices_by_ip_or_id_fixture
-):
+def test_devices_tag(add, remove, expected_data, requests_mock, get_devices_by_ip_or_id_fixture):
     """Test case scenario to verify devices-tag command when valid arguments provided.
 
     Given:
@@ -1276,9 +1200,7 @@ def test_devices_tag(
 
     requests_mock.post(BASE_URL + TAG_DEVICE_URL)
 
-    response = ExtraHop_v2.devices_tag_command(
-        init_mock_client(requests_mock, False), args_copy
-    )
+    response = ExtraHop_v2.devices_tag_command(init_mock_client(requests_mock, False), args_copy)
 
     assert response == "Successfully tagged untagged the device/s."
     assert requests_mock.request_history[1].text == expected_data
@@ -1291,9 +1213,7 @@ def test_devices_tag(
         ("1,2", None, '{"assign": [1, 2]}'),
     ],
 )
-def test_devices_tag_create_new_tag(
-    add, remove, expected_data, get_devices_by_ip_or_id_fixture, requests_mock
-):
+def test_devices_tag_create_new_tag(add, remove, expected_data, get_devices_by_ip_or_id_fixture, requests_mock):
     """
     Test case scenario for creating new Tag with tag name if no tag is found with
     expected name from the tags list, and call "tag_untag_devices" for that tag.
@@ -1322,9 +1242,7 @@ def test_devices_tag_create_new_tag(
 
     requests_mock.post(BASE_URL + GET_ALL_TAGS_URL, headers={"location": "US/12"})
 
-    response = ExtraHop_v2.devices_tag_command(
-        init_mock_client(requests_mock, False), args_copy
-    )
+    response = ExtraHop_v2.devices_tag_command(init_mock_client(requests_mock, False), args_copy)
 
     assert response == "Successfully tagged untagged the device/s."
     assert requests_mock.request_history[2].path == TAG_DEVICE_URL
@@ -1358,9 +1276,7 @@ def test_devices_tag_nothing_to_remove(requests_mock, get_devices_by_ip_or_id_fi
     requests_mock.post(BASE_URL + TAG_DEVICE_URL)
 
     with pytest.raises(ExtraHop_v2.DemistoException) as e:
-        ExtraHop_v2.devices_tag_command(
-            init_mock_client(requests_mock, False), args_copy
-        )
+        ExtraHop_v2.devices_tag_command(init_mock_client(requests_mock, False), args_copy)
 
     assert str(e.value) == "The tag MyTag does not exist, nothing to remove."
 
@@ -1374,9 +1290,7 @@ def test_devices_tag_nothing_to_remove(requests_mock, get_devices_by_ip_or_id_fi
         ("0.0.0.0", False, [{"id": 1, "ip": "0.0.0.0"}]),
     ],
 )
-def test_get_devices_by_ip_or_id(
-    devices_str, id_only, expected_data, requests_mock, mocker
-):
+def test_get_devices_by_ip_or_id(devices_str, id_only, expected_data, requests_mock, mocker):
     """
     Test case scenario to return devices list by IP address or device ID.
 
@@ -1390,13 +1304,9 @@ def test_get_devices_by_ip_or_id(
     """
     requests_mock.get(BASE_URL + "/api/v1/devices/1", json={"id": 1, "ip": "0.0.0.0"})
 
-    mocker.patch(
-        "ExtraHop_v2.get_device_by_ip", return_value={"id": 1, "ip": "0.0.0.0"}
-    )
+    mocker.patch("ExtraHop_v2.get_device_by_ip", return_value={"id": 1, "ip": "0.0.0.0"})
 
-    devices = ExtraHop_v2.get_devices_by_ip_or_id(
-        init_mock_client(requests_mock, False), devices_str, id_only=id_only
-    )
+    devices = ExtraHop_v2.get_devices_by_ip_or_id(init_mock_client(requests_mock, False), devices_str, id_only=id_only)
 
     assert devices == expected_data
 
@@ -1414,9 +1324,7 @@ def test_get_devices_by_ip_or_id_invalid_ip_address(requests_mock):
         Raise error with informative error message.
     """
     with pytest.raises(ExtraHop_v2.DemistoException) as e:
-        ExtraHop_v2.get_devices_by_ip_or_id(
-            init_mock_client(requests_mock, False), "10.0.0.0.1"
-        )
+        ExtraHop_v2.get_devices_by_ip_or_id(init_mock_client(requests_mock, False), "10.0.0.0.1")
     assert str(e.value) == "Error parsing IP Address 10.0.0.0.1"
 
 
@@ -1435,9 +1343,7 @@ def test_parse_location_header_invalid_location(location):
     """
     with pytest.raises(ExtraHop_v2.DemistoException) as e:
         ExtraHop_v2.parse_location_header(location)
-    assert (
-        str(e.value) == "Error unable to parse ExtraHop API response location header."
-    )
+    assert str(e.value) == "Error unable to parse ExtraHop API response location header."
 
 
 def test_parse_location_header():
@@ -1474,9 +1380,7 @@ def test_extrahop_devices_search_command_success(on_cloud, requests_mock):
     expected_response = load_mock_response("devices_search_response_success.json")
     networks = load_mock_response("get_networks.json")
     expected_readable_output = load_file("devices_search_response_success.md")
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200)
     requests_mock.get(f"{BASE_URL}/api/v1/networks", json=networks, status_code=200)
 
     result = ExtraHop_v2.devices_search_command(client, args, False)
@@ -1501,9 +1405,7 @@ def test_extrahop_devices_search_command_success_empty_response(requests_mock):
     expected_response = []
     networks = load_mock_response("get_networks.json")
     expected_readable_output = "No Devices found"
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200)
     requests_mock.get(f"{BASE_URL}/api/v1/networks", json=networks, status_code=200)
 
     result = ExtraHop_v2.devices_search_command(client, args, False)
@@ -1540,9 +1442,7 @@ def test_extrahop_devices_search_command_success_empty_response(requests_mock):
         ),
     ],
 )
-def test_extrahop_devices_search_command_with_invalid_arguments(
-    args, message, requests_mock
-):
+def test_extrahop_devices_search_command_with_invalid_arguments(args, message, requests_mock):
     """
     Test case scenario for invalid arguments while execution of device search command.
 
@@ -1577,14 +1477,11 @@ def test_extrahop_devices_search_command_failure_400(requests_mock):
         "type": "invalid_request",
         "detail": "'limit' must be one of the following types: int",
     }
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=400
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=400)
     with pytest.raises(Exception) as error:
         ExtraHop_v2.devices_search_command(client, args, False)
     assert (
-        str(error.value)
-        == 'Error in API call [400] - None\n{"type": "invalid_request", "detail": "\'limit\' must be one'
+        str(error.value) == 'Error in API call [400] - None\n{"type": "invalid_request", "detail": "\'limit\' must be one'
         ' of the following types: int"}'
     )
 
@@ -1604,17 +1501,10 @@ def test_extrahop_devices_search_command_failure_401(requests_mock):
     args = {"limit": 2}
     expected_response = {"error_message": INVALID_AUTH_HEADER}
 
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=401
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=401)
     with pytest.raises(Exception) as error:
         ExtraHop_v2.devices_search_command(client, args, False)
-    assert (
-        str(error.value)
-        == 'Error in API call [401] - None\n{"error_message": "'
-        + INVALID_AUTH_HEADER
-        + '"}'
-    )
+    assert str(error.value) == 'Error in API call [401] - None\n{"error_message": "' + INVALID_AUTH_HEADER + '"}'
 
 
 @pytest.mark.parametrize(
@@ -1663,8 +1553,7 @@ def test_extrahop_protocols_get_failure_404(requests_mock):
     with pytest.raises(Exception) as error:
         ExtraHop_v2.protocols_get_command(client, args, False)
     assert (
-        str(error.value)
-        == 'Error in API call [404] - None\n"{\\"error_message\\": \\"The specified object was '
+        str(error.value) == 'Error in API call [404] - None\n"{\\"error_message\\": \\"The specified object was '
         'not found.\\"}"'
     )
 
@@ -1691,12 +1580,7 @@ def test_extrahop_protocols_get_failure_401(requests_mock):
     )
     with pytest.raises(Exception) as error:
         ExtraHop_v2.protocols_get_command(client, args, False)
-    assert (
-        str(error.value)
-        == 'Error in API call [401] - None\n{"error_message": "'
-        + INVALID_AUTH_HEADER
-        + '"}'
-    )
+    assert str(error.value) == 'Error in API call [401] - None\n{"error_message": "' + INVALID_AUTH_HEADER + '"}'
 
 
 @pytest.mark.parametrize("on_cloud", [False, True])
@@ -1714,9 +1598,7 @@ def test_extrahop_protocols_get_success_get_device_by_id(on_cloud, requests_mock
     """
     client = init_mock_client(requests_mock, on_cloud=on_cloud)
     args = {"ip_or_id": "3564"}
-    expected_response = load_mock_response(
-        "protocols_get_success_get_device_by_id.json"
-    )
+    expected_response = load_mock_response("protocols_get_success_get_device_by_id.json")
     expected_readable_output = load_file("get_protocol_readable_output.md")
     expected_activity_map = load_mock_response(GET_PROTOCOL_FILE)
     expected_networks = load_mock_response(GET_PROTOCOL_NETWORKS_FILE)
@@ -1730,9 +1612,7 @@ def test_extrahop_protocols_get_success_get_device_by_id(on_cloud, requests_mock
         json=expected_activity_map,
         status_code=200,
     )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", json=expected_networks, status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", json=expected_networks, status_code=200)
     result = ExtraHop_v2.protocols_get_command(client, args, False)
 
     assert result.outputs_prefix == EXTRAHOP_DEVICE
@@ -1753,23 +1633,17 @@ def test_extrahop_protocols_get_success_get_device_by_ip(requests_mock):
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {"ip_or_id": "0.0.0.0"}
-    expected_response = load_mock_response(
-        "protocols_get_success_get_device_by_ip.json"
-    )
+    expected_response = load_mock_response("protocols_get_success_get_device_by_ip.json")
     expected_readable_output = load_file("get_protocol_readable_output.md")
     expected_activity_map = load_mock_response(GET_PROTOCOL_FILE)
     expected_networks = load_mock_response(GET_PROTOCOL_NETWORKS_FILE)
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200)
     requests_mock.post(
         f"{BASE_URL}/api/v1/activitymaps/query",
         json=expected_activity_map,
         status_code=200,
     )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", json=expected_networks, status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", json=expected_networks, status_code=200)
     result = ExtraHop_v2.protocols_get_command(client, args, False)
 
     assert result.outputs_prefix == EXTRAHOP_DEVICE
@@ -1788,13 +1662,9 @@ def test_extrahop_protocols_get_ip_not_present_in_extrahop(requests_mock):
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {"ip_or_id": "0.0.0.0"}
-    expected_error_message = (
-        f"Error the IP Address {args['ip_or_id']} was not found in ExtraHop."
-    )
+    expected_error_message = f"Error the IP Address {args['ip_or_id']} was not found in ExtraHop."
     expected_response = []
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200)
     with pytest.raises(DemistoException) as error:
         ExtraHop_v2.protocols_get_command(client, args, False)
 
@@ -1815,9 +1685,7 @@ def test_extrahop_protocols_get_device_by_id_discovery(requests_mock):
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {"ip_or_id": "567"}
-    expected_response = load_mock_response(
-        "protocols_get_success_get_device_by_id_discovery.json"
-    )
+    expected_response = load_mock_response("protocols_get_success_get_device_by_id_discovery.json")
     expected_activity_map = load_mock_response(GET_PROTOCOL_FILE)
     expected_networks = load_mock_response(GET_PROTOCOL_NETWORKS_FILE)
     requests_mock.get(
@@ -1830,9 +1698,7 @@ def test_extrahop_protocols_get_device_by_id_discovery(requests_mock):
         json=expected_activity_map,
         status_code=200,
     )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", json=expected_networks, status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", json=expected_networks, status_code=200)
     result = ExtraHop_v2.protocols_get_command(client, args, False)
 
     assert result.outputs_prefix == EXTRAHOP_DEVICE
@@ -1875,9 +1741,7 @@ def test_alerts_rules_get_command_success_no_alerts(requests_mock):
     client = init_mock_client(requests_mock, on_cloud=False)
     expected_response = []
     expected_readable_output = "No Alerts were found."
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/alerts", json=expected_response, status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts", json=expected_response, status_code=200)
     result = ExtraHop_v2.alerts_rules_get_command(client)
 
     assert result.outputs_prefix == "ExtraHop.Alert"
@@ -1897,17 +1761,10 @@ def test_alerts_rules_get_command_failure_401(requests_mock):
     client = init_mock_client(requests_mock, on_cloud=False)
     expected_response = {"error_message": INVALID_AUTH_HEADER}
 
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/alerts", json=expected_response, status_code=401
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts", json=expected_response, status_code=401)
     with pytest.raises(Exception) as error:
         ExtraHop_v2.alerts_rules_get_command(client)
-    assert (
-        str(error.value)
-        == 'Error in API call [401] - None\n{"error_message": "'
-        + INVALID_AUTH_HEADER
-        + '"}'
-    )
+    assert str(error.value) == 'Error in API call [401] - None\n{"error_message": "' + INVALID_AUTH_HEADER + '"}'
 
 
 def test_activity_map_get_command_failure_401(requests_mock):
@@ -1931,12 +1788,7 @@ def test_activity_map_get_command_failure_401(requests_mock):
     )
     with pytest.raises(Exception) as error:
         ExtraHop_v2.activity_map_get_command(client, args, False)
-    assert (
-        str(error.value)
-        == 'Error in API call [401] - None\n{"error_message": "'
-        + INVALID_AUTH_HEADER
-        + '"}'
-    )
+    assert str(error.value) == 'Error in API call [401] - None\n{"error_message": "' + INVALID_AUTH_HEADER + '"}'
 
 
 def test_activity_map_get_command_failure_404(requests_mock):
@@ -1960,8 +1812,7 @@ def test_activity_map_get_command_failure_404(requests_mock):
     with pytest.raises(Exception) as error:
         ExtraHop_v2.activity_map_get_command(client, args, False)
     assert (
-        str(error.value)
-        == 'Error in API call [404] - None\n"{\\"error_message\\": \\"The specified object was '
+        str(error.value) == 'Error in API call [404] - None\n"{\\"error_message\\": \\"The specified object was '
         'not found.\\"}"'
     )
 
@@ -1975,8 +1826,7 @@ def test_activity_map_get_command_failure_404(requests_mock):
         ),
         (
             {"ip_or_id": "0.0.0.0", "time_interval": "1 hour"},
-            f"1 hour is an invalid value for time_interval. "
-            f"Possible values are: {ExtraHop_v2.VALID_TIME_INTERVALS}",
+            f"1 hour is an invalid value for time_interval. Possible values are: {ExtraHop_v2.VALID_TIME_INTERVALS}",
         ),
         (
             {"ip_or_id": "0.0.0.0", "from_time": "30m"},
@@ -1988,13 +1838,11 @@ def test_activity_map_get_command_failure_404(requests_mock):
         ),
         (
             {"ip_or_id": "0.0.0.0", "peer_role": "temp"},
-            f"temp is an invalid value for peer_role. "
-            f"Possible values are: {ExtraHop_v2.VALID_PEER_ROLES}",
+            f"temp is an invalid value for peer_role. Possible values are: {ExtraHop_v2.VALID_PEER_ROLES}",
         ),
         (
             {"ip_or_id": "0.0.0.0", "protocol": "ICAMP"},
-            f"ICAMP is an invalid value for protocol. "
-            f"Possible values are: {ExtraHop_v2.VALID_PROTOCOLS}",
+            f"ICAMP is an invalid value for protocol. Possible values are: {ExtraHop_v2.VALID_PROTOCOLS}",
         ),
     ],
 )
@@ -2019,19 +1867,15 @@ def test_activity_map_get_command_invalid_arguments(args, message, requests_mock
     [
         (
             {"ip_or_id": "3564", "from_time": "30"},
-            "When using a fixed time range both from_time and until_time "
-            "timestamps need to be provided.",
+            "When using a fixed time range both from_time and until_time timestamps need to be provided.",
         ),
         (
             {"ip_or_id": "3564", "until_time": "30"},
-            "When using a fixed time range both from_time and until_time "
-            "timestamps need to be provided.",
+            "When using a fixed time range both from_time and until_time timestamps need to be provided.",
         ),
     ],
 )
-def test_activity_map_get_command_failure_when_either_from_time_or_until_time_is_given(
-    args, message, requests_mock
-):
+def test_activity_map_get_command_failure_when_either_from_time_or_until_time_is_given(args, message, requests_mock):
     """Test case scenario for execution of activity map get command when either from_time or until_time is given.
 
     Given:
@@ -2075,9 +1919,7 @@ def test_activity_map_get_command_success_id(on_cloud, requests_mock):
         json=expected_response,
         status_code=200,
     )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", json=expected_network, status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", json=expected_network, status_code=200)
     result = ExtraHop_v2.activity_map_get_command(client, args, False)
 
     assert result.outputs_prefix == "ExtraHop.ActivityMap"
@@ -2100,21 +1942,15 @@ def test_activity_map_get_command_success_ip(requests_mock):
     expected_response = load_mock_response("activity_map_devices_by_ip.json")
     expected_network = load_mock_response("activity_get_networks.json")
     expected_readable_output = load_file("activity_map_get_readable_output.md")
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200
-    )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", json=expected_network, status_code=200
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200)
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", json=expected_network, status_code=200)
     result = ExtraHop_v2.activity_map_get_command(client, args, False)
 
     assert result.outputs_prefix == "ExtraHop.ActivityMap"
     assert result.readable_output == str(expected_readable_output)
 
 
-def setup_peers_get_command_by_id(
-    is_discovery: bool, is_check_for_empty: bool, requests_mock
-) -> ExtraHop_v2.CommandResults:
+def setup_peers_get_command_by_id(is_discovery: bool, is_check_for_empty: bool, requests_mock) -> ExtraHop_v2.CommandResults:
     """Mock the result of extrahop-peers-get command.
 
     Args:
@@ -2139,9 +1975,7 @@ def setup_peers_get_command_by_id(
         status_code=200,
         json=mock_response_for_activity_map,
     )
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", status_code=200, json=mock_response_uuid
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", status_code=200, json=mock_response_uuid)
     requests_mock.get(
         f"{BASE_URL}/api/v1/devices/206",
         status_code=200,
@@ -2178,18 +2012,14 @@ def test_peers_get_command_on_prem_by_ip_success(requests_mock) -> None:
     mock_response_for_activity_map = load_mock_response("get_peers_activity_maps.json")
     mock_response_for_get_device_id = load_mock_response("get_peer_device_by_id.json")
 
-    requests_mock.post(
-        f"{BASE_URL}/api/v1/devices/search", status_code=200, json=mock_response_devices
-    )
+    requests_mock.post(f"{BASE_URL}/api/v1/devices/search", status_code=200, json=mock_response_devices)
     requests_mock.post(
         f"{BASE_URL}/api/v1/activitymaps/query",
         status_code=200,
         json=mock_response_for_activity_map,
     )
 
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/networks", status_code=200, json=mock_response_uuid
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/networks", status_code=200, json=mock_response_uuid)
     requests_mock.get(
         f"{BASE_URL}/api/v1/devices/3564",
         status_code=200,
@@ -2206,15 +2036,11 @@ def test_peers_get_command_on_prem_by_ip_success(requests_mock) -> None:
 
     result = ExtraHop_v2.peers_get_command(mock_client, args, False)
 
-    peer_get_success_result = load_mock_response(
-        "peer_get_command_on_prem_ip_success.json"
-    )
+    peer_get_success_result = load_mock_response("peer_get_command_on_prem_ip_success.json")
 
     peer_get_hr_result = load_file("peer_get_command_on_prem_ip_success.md")
 
-    assert result.outputs == ExtraHop_v2.remove_empty_elements_from_response(
-        peer_get_success_result
-    )
+    assert result.outputs == ExtraHop_v2.remove_empty_elements_from_response(peer_get_success_result)
     assert result.readable_output == peer_get_hr_result
     assert result.outputs_key_field == "id"
     assert result.raw_response == peer_get_success_result
@@ -2234,15 +2060,11 @@ def test_peers_get_command_on_prem_by_id_success(requests_mock) -> None:
 
     """
     result = setup_peers_get_command_by_id(False, False, requests_mock)
-    peer_get_success_result = load_mock_response(
-        "peer_get_command_on_prem_id_success.json"
-    )
+    peer_get_success_result = load_mock_response("peer_get_command_on_prem_id_success.json")
 
     peer_get_hr_result = load_file("peer_get_command_on_prem_id_success.md")
 
-    assert result.outputs == ExtraHop_v2.remove_empty_elements_from_response(
-        peer_get_success_result
-    )
+    assert result.outputs == ExtraHop_v2.remove_empty_elements_from_response(peer_get_success_result)
     assert result.readable_output == peer_get_hr_result
     assert result.outputs_key_field == "id"
     assert result.raw_response == peer_get_success_result
@@ -2294,9 +2116,7 @@ def test_peers_get_command_with_discovery_success(requests_mock) -> None:
         ),
     ],
 )
-def test_validate_arguments_for_get_peer_command_failure(
-    args: dict, error_message: str, requests_mock
-) -> None:
+def test_validate_arguments_for_get_peer_command_failure(args: dict, error_message: str, requests_mock) -> None:
     """Test case scenario for invalid arguments while execution of peers-get-command.
 
     Given:
@@ -2326,7 +2146,7 @@ def test_validate_ip_for_get_peer_command_failure(requests_mock) -> None:
     mock_client = init_mock_client(on_cloud=False, requests_mock=requests_mock)
     with pytest.raises(ExtraHop_v2.DemistoException) as error:
         _ = ExtraHop_v2.peers_get_command(mock_client, args, False)
-    assert "Error parsing IP Address 1:1:1" == str(error.value)
+    assert str(error.value) == "Error parsing IP Address 1:1:1"
 
 
 def test_empty_response_of_device_failure_for_peers_get_command(requests_mock) -> None:
@@ -2349,7 +2169,7 @@ def test_empty_response_of_device_failure_for_peers_get_command(requests_mock) -
     }
     with pytest.raises(ExtraHop_v2.DemistoException) as error:
         _ = ExtraHop_v2.peers_get_command(mock_client, args, False)
-    assert "Error in API call [404] - None\n[]" == str(error.value)
+    assert str(error.value) == "Error in API call [404] - None\n[]"
 
 
 def test_for_prepare_device_get_output_success(requests_mock) -> None:
@@ -2364,8 +2184,8 @@ def test_for_prepare_device_get_output_success(requests_mock) -> None:
     """
     result = setup_peers_get_command_by_id(False, True, requests_mock)
 
-    assert "No Devices found" == result.readable_output
-    assert [] == result.raw_response
+    assert result.readable_output == "No Devices found"
+    assert result.raw_response == []
 
 
 def test_module_on_prem_success(requests_mock) -> None:
@@ -2380,9 +2200,7 @@ def test_module_on_prem_success(requests_mock) -> None:
     """
     mock_client = init_mock_client(on_cloud=False, requests_mock=requests_mock)
     success_response = load_mock_response("test_module_on_prem.json")
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop", status_code=200, json=success_response
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop", status_code=200, json=success_response)
     requests_mock.get(
         f"{BASE_URL}/api/v1/extrahop/version",
         status_code=200,
@@ -2405,9 +2223,7 @@ def test_module_on_cloud(requests_mock) -> None:
     """
     mock_client = init_mock_client(on_cloud=False, requests_mock=requests_mock)
     success_response = load_mock_response("test_module_on_cloud.json")
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop", status_code=200, json=success_response
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop", status_code=200, json=success_response)
     requests_mock.get(
         f"{BASE_URL}/api/v1/extrahop/version",
         status_code=200,
@@ -2447,9 +2263,7 @@ def test_module_failure_on_prem_failure(requests_mock) -> None:
         ),
     ],
 )
-def test_fetch_detection_when_invalid_arguments_provided(
-    parameters, error_msg, last_run, requests_mock
-):
+def test_fetch_detection_when_invalid_arguments_provided(parameters, error_msg, last_run, requests_mock):
     """Test case scenario for execution of fetch_detections when invalid arguments are provided.
 
     Given:
@@ -2460,9 +2274,7 @@ def test_fetch_detection_when_invalid_arguments_provided(
        - Returns a valid error message.
     """
     client = init_mock_client(requests_mock, on_cloud=False)
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     with pytest.raises(ValueError) as err:
         ExtraHop_v2.fetch_incidents(client, parameters, last_run, False)
     assert str(err.value) == error_msg
@@ -2479,15 +2291,10 @@ def test_fetch_detections_failure_when_firmware_version_is_outdated(requests_moc
        - Returns a valid error message.
     """
     client = init_mock_client(requests_mock, on_cloud=False)
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"})
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.fetch_incidents(client, {}, {}, False)
-    assert (
-        str(err.value)
-        == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
-    )
+    assert str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
 
 
 @pytest.mark.parametrize("advanced_filter", ["{}", '{"categories":["sec.attack"]}'])
@@ -2503,9 +2310,7 @@ def test_fetch_detection_success_with_last_run(requests_mock, advanced_filter):
     """
     incidents = load_mock_response("mock_incidents.json")
 
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
 
     mock_response = load_mock_response("fetch_detections_success.json")
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=mock_response)
@@ -2514,23 +2319,20 @@ def test_fetch_detection_success_with_last_run(requests_mock, advanced_filter):
     requests_mock.get(f"{BASE_URL}/api/v1/devices/1904", json=mock_device_data)
 
     mock_time = datetime.datetime.now()
-    mock_time = int(
-        (mock_time.timestamp() + 10) * 1000
-    )  # adding 10 seconds to time and then convert to milliseconds
+    mock_time = int((mock_time.timestamp() + 10) * 1000)  # adding 10 seconds to time and then convert to milliseconds
     client = init_mock_client(requests_mock, on_cloud=False)
     last_run = {
         "detection_start_time": 1676896891452,
         "offset": 0,
         "version_recheck_time": mock_time,
     }
-    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(
-        client, {"advanced_filter": advanced_filter}, last_run, False)
+    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {"advanced_filter": advanced_filter}, last_run, False)
 
     assert next_run == {
         "detection_start_time": 1673518450001,
         "offset": 0,
         "version_recheck_time": mock_time,
-        'already_fetched': [997222]
+        "already_fetched": [997222],
     }
     assert actual_incidents[0]["name"] == incidents[0]["name"]
     assert actual_incidents[0]["occurred"] == incidents[0]["occurred"]
@@ -2549,17 +2351,13 @@ def test_fetch_detection_participants_is_empty(requests_mock):
     """
     incidents = load_mock_response("mock_incidents_no_participants.json")
 
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
 
     mock_response = load_mock_response("fetch_detections_empty_participants.json")
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=mock_response)
 
     mock_time = datetime.datetime.now()
-    mock_time = int(
-        (mock_time.timestamp() + 10) * 1000
-    )  # adding 10 seconds to time and then convert to milliseconds
+    mock_time = int((mock_time.timestamp() + 10) * 1000)  # adding 10 seconds to time and then convert to milliseconds
     client = init_mock_client(requests_mock, on_cloud=False)
     last_run = {
         "detection_start_time": 1676896891452,
@@ -2572,7 +2370,7 @@ def test_fetch_detection_participants_is_empty(requests_mock):
         "detection_start_time": 1673518450001,
         "offset": 0,
         "version_recheck_time": mock_time,
-        'already_fetched': [997222]
+        "already_fetched": [997222],
     }
     assert actual_incidents[0]["name"] == incidents[0]["name"]
     assert actual_incidents[0]["occurred"] == incidents[0]["occurred"]
@@ -2592,9 +2390,7 @@ def test_fetch_detections_success_when_detections_equal_to_max_fetch(requests_mo
     """
     incidents = load_mock_response("mock_incidents.json")
 
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
 
     mock_response = load_mock_response("fetch_detections_success.json")
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=mock_response)
@@ -2624,13 +2420,9 @@ def test_fetch_incident_empty_response(requests_mock):
     client = init_mock_client(requests_mock, on_cloud=False)
     last_run = {"update_or_mod_time": "update_time"}
     parameters = {"first_fetch": "1 Jan"}
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=[], status_code=200)
-    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(
-        client, parameters, last_run, False
-    )
+    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, parameters, last_run, False)
 
     assert actual_incidents == []
 
@@ -2647,15 +2439,10 @@ def test_test_module_failure_extrahop_version_is_outdated(requests_mock):
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     requests_mock.get(f"{BASE_URL}/api/v1/extrahop", json={})
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"})
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.test_module(client)
-    assert (
-        str(err.value)
-        == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
-    )
+    assert str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
 
 
 def test_test_module_failure(requests_mock):
@@ -2670,9 +2457,7 @@ def test_test_module_failure(requests_mock):
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     requests_mock.get(f"{BASE_URL}/api/v1/extrahop", json={})
-    requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
-    )
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
     with pytest.raises(ValueError) as err:
         ExtraHop_v2.test_module(client)
     assert str(err.value) == "Failed to establish connection with provided credentials."
