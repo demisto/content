@@ -112,6 +112,7 @@ class Client:
         )
         for filter in query.groups[0].filters:
             filter.term = EventSearchTerm.EVENT_INSERTED
+
         demisto.debug(f'First query: {query.dict()}')
 
         response = self.code42_client.file_events.v2.search(
@@ -130,11 +131,11 @@ class Client:
             f'Fetched {len(file_events)} events. First: ID={file_events[0].event.id!r}, Time={file_events[0].event.inserted}. '
             f'Last: ID={file_events[-1].event.id!r}, Time={file_events[-1].event.inserted}')
 
-        file_events = file_events[:limit]
-
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
         demisto.debug(f'[TEMP] Are the events in order?: {sorted_file_events == file_events}')
         demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
+
+        sorted_file_events = sorted_file_events[:limit]
 
         for event in sorted_file_events:
             event.eventType = EventType.FILE
@@ -156,21 +157,21 @@ def dedup_fetched_events(
         last_run_fetched_event_ids: a list of already fetched IDs from previous run
         keys_list_to_id (list): a list of keys to retrieve the ID from the event
     """
-    un_fetched_events = []
-    already_fetched_event_ids = []
+    new_events = []
+    duplicate_events = []
 
     for event in events:
         event_id = dict_safe_get(event, keys=keys_list_to_id)
         if event_id not in last_run_fetched_event_ids:
-            un_fetched_events.append(event)
+            new_events.append(event)
         else:
-            already_fetched_event_ids.append(event_id)
+            duplicate_events.append(event_id)
 
-    un_fetched_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in un_fetched_events}
-    demisto.debug(f'{un_fetched_event_ids=}')
-    demisto.debug(f'{already_fetched_event_ids=}')
+    new_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in new_events}
+    demisto.debug(f'{new_event_ids=}')
+    demisto.debug(f'{duplicate_events=}')
 
-    return un_fetched_events
+    return new_events
 
 
 def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[str]:
@@ -186,14 +187,17 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
         keys_to_id: a list of nested keys to get into the event ID
     """
     event_type = events[0]["eventType"]
-    latest_time_event = max([event["_time"] for event in events])
+    latest_time_event = max(event["_time"] for event in events)
 
+    latest_time_rounded = latest_time_event.strftime(DATE_FORMAT)[:-4]
     latest_event_ids: List = [
         dict_safe_get(event, keys=keys_to_id)
-        for event in events if event["_time"] == latest_time_event
+        for event in events
+        if event["_time"].strftime(DATE_FORMAT)[:-4] == latest_time_rounded
     ]
-    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {latest_time_event}')
-    return latest_event_ids, latest_time_event.strftime(DATE_FORMAT)
+
+    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {latest_time_rounded}')
+    return latest_event_ids, f'{latest_time_rounded}000Z'
 
 
 def datetime_to_date_string(events: List[Dict[str, Any]]):
