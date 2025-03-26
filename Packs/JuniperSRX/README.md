@@ -6,12 +6,14 @@ You need to configure your Juniper SRX device to forward Syslog messages.
 
 Perform the following in order to configure log forwarding:
 1. Log in to the Juniper SRX device CLI console.
-2. Run the below command:
-```bash
-set system syslog host <IP address of the remote Syslog server> any any
+2. Run the below commands:
 ```
-The instructions above set the logging with default configuration values.
-
+- set security log mode stream
+- set security log format sd-syslog
+- set security log source-address 10.204.225.164
+- set security log stream vmware-server severity debug
+- set security log stream vmware-server host 10.204.225.218
+```
 
 Note: In order to parse the timestamp correctly, make sure that the SRX devices are configured with the default time zone (UTC).
 The supported time formats are: 
