@@ -647,7 +647,7 @@ tasks:
       includeinformational:
         simple: "true"
       query:
-        simple: (name:"MFA Was disabled for an azure identity" or name:"Rare successful guest invitation in the organization״ or name:״Suspicious authentication method addition to Azure account״) and identity_name=״${Core.OriginalAlert.event.identity_name}״
+        simple: (name:"MFA Was disabled for an azure identity" or name:"Rare successful guest invitation in the organization" or name:"Suspicious authentication method addition to Azure account") and identity_name="${Core.OriginalAlert.event.identity_name}"
       todate:
         simple: now
     separatecontext: false
