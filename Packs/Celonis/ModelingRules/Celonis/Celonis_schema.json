@@ -23,6 +23,10 @@
       "userRole": {
         "type": "string",
         "is_array": false
+      },
+      "userId": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
