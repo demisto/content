@@ -10,14 +10,14 @@ comment: compares two JSON files and returns their differences, such as added, r
 enabled: true
 args:
 - name: old_json
-  description: The old value of the JSON
+  description: The old value of the JSON.
   required: true
 - name: new_json
-  description: The new value of the JSON
+  description: The new value of the JSON.
   required: true
 outputs:
 - contextPath: new_json
-  description: The JSON differences in a structured format
+  description: The JSON differences in a structured format.
 scripttarget: 0
 subtype: python3
 runonce: false
