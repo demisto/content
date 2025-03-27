@@ -385,7 +385,7 @@ def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str
 
 def increase_counter_chrome_instances_file(chrome_port: str = ""):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    The function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
