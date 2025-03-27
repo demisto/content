@@ -259,7 +259,7 @@ class PychromeEventHandler:
 
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
 
-            frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
+            frame_url: str = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
 
             if not frame_url.startswith(CHROME_ERROR_URL):
                 demisto.debug('Retry successful.')
