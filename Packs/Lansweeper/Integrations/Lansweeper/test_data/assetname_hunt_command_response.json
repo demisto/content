@@ -1,0 +1,71 @@
+{
+    "data": {
+        "site": {
+            "assetResources": {
+                "total": 2,
+                "pagination": {
+                    "limit": 2,
+                    "current": "60eed3768a037f93418709e4",
+                    "next": "60eed3968a037f9341883d33",
+                    "page": "NEXT"
+                },
+                "items": [
+                    {
+                        "_id": "60eed3768a037f93418709e4",
+                        "assetBasicInfo": {
+                            "domain": "Demo-domain",
+                            "name": "XLAN-15",
+                            "userDomain": "Demo-domain",
+                            "userName": "John Doe",
+                            "description": "Demo description",
+                            "firstSeen": "2013-03-18T11:25:46.000Z",
+                            "ipAddress": "159.101.1.186",
+                            "lastSeen": "2013-03-18T11:25:46.000Z",
+                            "mac": "CC:00:00:00:00:14",
+                            "type": "Windows"
+                        },
+                        "assetCustom": {
+                            "purchaseDate": "2009-04-24T19:00:00.000Z",
+                            "warrantyDate": "2012-04-24T18:59:59.000Z",
+                            "manufacturer": "Dell Inc.",
+                            "model": "OptiPlex 760",
+                            "serialNumber": "LAN15",
+                            "stateName": "Active"
+                        },
+                        "operatingSystem": {
+                            "caption": "Microsoft Windows 7 Enterprise",
+                            "productType": "Work Station"
+                        },
+                        "url": "https://app.lansweeper.com/api-demo-data-v2/asset/MTUtQXNzZXQtZjg3ZGY4OTEtZDZlZC00MmM4LWE4ZjEtY2QyZjEwZWJhNWRl/summary"
+                    },
+                    {
+                        "_id": "60eed3968a037f9341883d33",
+                        "assetBasicInfo": {
+                            "domain": "Demo-domain",
+                            "name": "XLAN-499",
+                            "userDomain": "Demo-domain",
+                            "userName": "John Doe",
+                            "description": "Demo description",
+                            "firstSeen": "2012-08-27T12:18:52.000Z",
+                            "ipAddress": "10.124.121.131",
+                            "lastSeen": "2012-08-27T12:18:52.000Z",
+                            "mac": "CE:00:00:00:00:98",
+                            "type": "Windows"
+                        },
+                        "assetCustom": {
+                            "manufacturer": "Xen",
+                            "model": "HVM domU",
+                            "serialNumber": "LAN499",
+                            "stateName": "Active"
+                        },
+                        "operatingSystem": {
+                            "caption": "Microsoft(R) Windows(R) Server 2003, Enterprise Edition",
+                            "productType": "Server"
+                        },
+                        "url": "https://app.lansweeper.com/api-demo-data-v2/asset/NDk5LUFzc2V0LWY4N2RmODkxLWQ2ZWQtNDJjOC1hOGYxLWNkMmYxMGViYTVkZQ==/summary"
+                    }
+                ]
+            }
+        }
+    }
+}
