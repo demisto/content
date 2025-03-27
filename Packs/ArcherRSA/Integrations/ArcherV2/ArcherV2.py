@@ -1128,7 +1128,7 @@ def extract_from_xml(xml, path):
 def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"Fields values string before escaping: {fields_values}")
-        # Escape backslashes if not followed by:
+        # Escape backslashes if not any of the following:
         # \" - escaped double quote        \b - backspace
         # \f - form feed                   \n - new line
         # \r - carriage return             \t - tab
