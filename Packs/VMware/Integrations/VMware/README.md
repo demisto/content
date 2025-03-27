@@ -659,26 +659,26 @@ Creates a clone of this virtual machine. If the virtual machine is used as a tem
 
 
 ### vmware-relocate-vm
-***
-Relocates a virtual machine to the location specified.
 
+***
+Relocates a virtual machine to a specified location.
 
 #### Base Command
 
 `vmware-relocate-vm`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| datastore | The datastore where the virtual machine should be located. If not specified, the current datastore is used.  | Optional | 
-| folder | The folder where the virtual machine should be located.  | Required | 
-| host | The target host for the virtual machine.  | Optional | 
-| pool | The resource pool to which this virtual machine should be attached.  | Optional | 
-| service | The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used.  | Optional | 
-| profile | Storage profile requirement for Virtual Machine's home directory.  | Optional | 
-| priority | The task priorityץ. Possible values are: defaultPriority, highPriority, lowPriority. | Required | 
-| uuid | The UUID of the VM to relocate.  | Required | 
-
+| datastore | The datastore where the virtual machine should be located. If not specified, the current datastore is used. | Optional | 
+| folder | The folder where the virtual machine should be located. | Required | 
+| host | The target host for the virtual machine. | Optional | 
+| pool | The resource pool to which this virtual machine should be attached. | Optional | 
+| service | The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used. | Optional | 
+| profile | Storage profile requirement for Virtual Machine's home directory. | Optional | 
+| priority | The task priority. Possible values are: defaultPriority, highPriority, lowPriority. | Required | 
+| uuid | The UUID of the VM to relocate. | Required | 
 
 #### Context Output
 
