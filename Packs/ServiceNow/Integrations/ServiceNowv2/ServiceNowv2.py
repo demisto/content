@@ -3318,6 +3318,7 @@ def main():
             'servicenow-oauth-login': login_command,
             'servicenow-update-ticket': update_ticket_command,
             'servicenow-create-ticket': create_ticket_command,
+            'servicenow-create-ticket-quick-action': create_ticket_command,
             'servicenow-delete-ticket': delete_ticket_command,
             'servicenow-query-tickets': query_tickets_command,
             'servicenow-add-link': add_link_command,
