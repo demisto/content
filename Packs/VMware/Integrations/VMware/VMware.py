@@ -226,7 +226,7 @@ def get_vms(si, args):
             child.snapshot.currentSnapshot.config.createDate) if child.snapshot else None
         snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else None
         if apply_get_vms_filters(args, summary):
-            mac_address = ''
+            mac_address: str | None = ''
             try:
                 for dev in child.config.hardware.device:
                     if isinstance(dev, vim.vm.device.VirtualEthernetCard):
@@ -633,13 +633,13 @@ def create_vm(si, args):
     wait_for_tasks(si, [task])
 
     if task.info.state == 'success':
-        mac_address = ''
+        mac_address: str | None = ''
         summary = task.info.result.summary
 
         try:
             for dev in task.info.result.config.hardware.device:
                 if isinstance(dev, vim.vm.device.VirtualEthernetCard):
-                    mac_address = dev.macAddress  # type: ignore[assignment]
+                    mac_address = dev.macAddress
                     break
         except Exception:  # noqa
             pass
@@ -696,12 +696,12 @@ def clone_vm(si, args):
     wait_for_tasks(si, [task])
 
     if task.info.state == 'success':
-        mac_address = ''
+        mac_address: str | None = ''
         summary = task.info.result.summary
         try:
             for dev in task.info.result.config.hardware.device:
                 if isinstance(dev, vim.vm.device.VirtualEthernetCard):
-                    mac_address = dev.macAddress  # type: ignore[assignment]
+                    mac_address = dev.macAddress
                     break
         except Exception:  # noqa
             pass
