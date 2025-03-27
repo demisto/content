@@ -67,6 +67,7 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-A user executed multiple LDAP enumeration queries Test
 outputs: []
 starttaskid: '0'
