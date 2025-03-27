@@ -642,8 +642,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             old_incident.update(parsed_args.delta)  # Simplifies key-value assignment
 
             parsed_args.data = old_incident
-        elif not parsed_args.remote_incident_id:
-            parsed_args.data['createInvestigation'] = True
 
         # Ensure queue_state is updated to 'archived' if necessary
         if parsed_args.data.get('queue_state') != 'archived':

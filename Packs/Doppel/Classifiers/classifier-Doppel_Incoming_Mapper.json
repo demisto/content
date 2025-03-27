@@ -57,59 +57,11 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
 				},
-				"platform": {
-					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
-				},
 				"severity": {
 					"simple": "severity"
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -178,20 +130,6 @@
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
 				},
-				"Entity": {
-					"complex": {
-						"filters": [],
-						"root": "entity_state",
-						"transformers": []
-					}
-				},
-				"Notes": {
-					"complex": {
-						"filters": [],
-						"root": "notes",
-						"transformers": []
-					}
-				},
 				"Selected Indicators": {
 					"simple": "entity"
 				},
@@ -205,53 +143,11 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
 				},
 				"platform": {
 					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
 				},
 				"severity": {
 					"simple": "severity"
@@ -262,9 +158,6 @@
 						"root": "source",
 						"transformers": []
 					}
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -331,59 +224,14 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
 				},
 				"platform": {
 					"simple": "platform"
 				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
-				},
 				"severity": {
 					"simple": "severity"
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -452,20 +300,6 @@
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
 				},
-				"Entity": {
-					"complex": {
-						"filters": [],
-						"root": "entity_state",
-						"transformers": []
-					}
-				},
-				"Notes": {
-					"complex": {
-						"filters": [],
-						"root": "notes",
-						"transformers": []
-					}
-				},
 				"Selected Indicators": {
 					"simple": "entity"
 				},
@@ -479,53 +313,8 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
-				},
-				"platform": {
-					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
 				},
 				"severity": {
 					"simple": "severity"
@@ -536,9 +325,6 @@
 						"root": "source",
 						"transformers": []
 					}
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -605,59 +391,11 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
 				},
-				"platform": {
-					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
-				},
 				"severity": {
 					"simple": "severity"
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -726,20 +464,6 @@
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
 				},
-				"Entity": {
-					"complex": {
-						"filters": [],
-						"root": "entity_state",
-						"transformers": []
-					}
-				},
-				"Notes": {
-					"complex": {
-						"filters": [],
-						"root": "notes",
-						"transformers": []
-					}
-				},
 				"Selected Indicators": {
 					"simple": "entity"
 				},
@@ -753,53 +477,8 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
-				},
-				"platform": {
-					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
 				},
 				"severity": {
 					"simple": "severity"
@@ -810,9 +489,6 @@
 						"root": "source",
 						"transformers": []
 					}
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -879,59 +555,11 @@
 				"Vulnerable Product": {
 					"simple": "brand"
 				},
-				"created_at": {
-					"simple": "created_at"
-				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.contact_email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"entity_content.root_domain.country_code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"entity_content.root_domain.domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"entity_content.root_domain.hosting_provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"entity_content.root_domain.ip_address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"entity_content.root_domain.mx_records": {
-					"simple": "mx_records"
-				},
-				"entity_content.root_domain.nameservers\t": {
-					"simple": "nameservers"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
 				},
-				"platform": {
-					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
-				},
 				"severity": {
 					"simple": "severity"
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -962,10 +590,7 @@
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
-				"Created At": {
-					"simple": "created_at"
-				},
-				"Doppel  Alert Brand": {
+				"Doppel Alert Brand": {
 					"simple": "brand"
 				},
 				"Doppel Brand": {
@@ -976,30 +601,6 @@
 				},
 				"Doppel Entity Content": {
 					"simple": "entity_content.root_domain"
-				},
-				"Doppel Entity Content Contact Email": {
-					"simple": "entity_content.root_domain.contact_email"
-				},
-				"Doppel Entity Content Country Code": {
-					"simple": "entity_content.root_domain.country_code"
-				},
-				"Doppel Entity Content Domain": {
-					"simple": "entity_content.root_domain.domain"
-				},
-				"Doppel Entity Content Hosting Provider": {
-					"simple": "entity_content.root_domain.hosting_provider"
-				},
-				"Doppel Entity Content IP Address": {
-					"simple": "entity_content.root_domain.ip_address"
-				},
-				"Doppel Entity Content MX Records": {
-					"simple": "entity_content.root_domain.mx_records.[]."
-				},
-				"Doppel Entity Content Name Servers": {
-					"simple": "entity_content.root_domain.nameservers.[]."
-				},
-				"Doppel Entity Content Registrar": {
-					"simple": "entity_content.root_domain.registrar"
 				},
 				"Doppel Entity State": {
 					"simple": "entity_state"
@@ -1022,17 +623,8 @@
 				"Doppel Uploaded By": {
 					"simple": "uploaded_by"
 				},
-				"Entity": {
-					"simple": "entity"
-				},
-				"Notes": {
-					"simple": "notes"
-				},
 				"State": {
 					"simple": "queue_state"
-				},
-				"created_at": {
-					"simple": "created_at"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"
@@ -1043,35 +635,11 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"entity": {
-					"simple": "entity"
-				},
-				"entity_content.root_domain.registrar\t": {
-					"simple": "entity_content.root_domain.registrar"
-				},
-				"entity_state": {
-					"simple": "entity_state"
-				},
-				"notes": {
-					"simple": "notes"
-				},
 				"occurred": {
 					"simple": "created_at"
 				},
-				"platform": {
-					"simple": "platform"
-				},
-				"product": {
-					"simple": "product"
-				},
-				"queue_state": {
-					"simple": "queue_state"
-				},
 				"severity": {
 					"simple": "severity"
-				},
-				"uploaded_by": {
-					"simple": "uploaded_by"
 				}
 			}
 		}

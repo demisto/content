@@ -357,7 +357,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "doppelseverity",
+								"fieldId": "severity",
 								"height": 26,
 								"id": "2feff9ff-9c80-4aed-8866-abf3892a2fa6",
 								"index": 2,
@@ -420,7 +420,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "doppelcreatedat",
+								"fieldId": "occurred",
 								"height": 26,
 								"id": "270e7ec6-6db4-43ce-9f88-6d16e08649f9",
 								"index": 9,
