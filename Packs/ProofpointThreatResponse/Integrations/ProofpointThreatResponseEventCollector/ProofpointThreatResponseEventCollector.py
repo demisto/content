@@ -85,7 +85,7 @@ def create_incidents_human_readable(human_readable_message, incidents_list):
 def list_incidents_command(client, args):
     """ Retrieves incidents from ProofPoint API """
     limit = arg_to_number(args.pop('limit'))
-    
+
     if not args.get('created_before'):
         args['created_before'] = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
     if not args.get('created_after'):
