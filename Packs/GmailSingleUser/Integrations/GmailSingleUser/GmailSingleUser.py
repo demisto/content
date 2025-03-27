@@ -682,6 +682,9 @@ class Client:
         }
         service = self.get_service("gmail", "v1")
         result = execute_gmail_action(service, "list", command_args)
+        demisto.info(
+            f"Retrieved the following email IDs from the list API call: {[mail.get('id') for mail in result.get('messages', [])]}"
+        )
 
         return [self.get_mail(user_id, mail["id"], "full") for mail in result.get("messages", [])], q
 
@@ -1249,12 +1252,12 @@ def fetch_incidents(client: Client):
             ignore_ids = []
         last_fetch = next_last_fetch
     new_last_run = {
-            "gmt_time": client.get_date_isoformat_server(last_fetch),
-            "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
-            "page_token": next_page_token,
-            "ignore_ids": ignore_ids,
-            "ignore_list_used": ignore_list_used,
-        }
+        "gmt_time": client.get_date_isoformat_server(last_fetch),
+        "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
+        "page_token": next_page_token,
+        "ignore_ids": ignore_ids,
+        "ignore_list_used": ignore_list_used,
+    }
     demisto.debug(f"Gmail: call to setLastRun function with {new_last_run}")
     demisto.setLastRun(new_last_run)
     return incidents
@@ -1292,7 +1295,7 @@ def get_unix_date(args: dict) -> tuple[str, str]:
         before = str(int(before.timestamp()))
     if isinstance(after, datetime):
         after = str(int(after.timestamp()))
-    return before or "", after or ""
+    return before, after  # type: ignore
 
 
 def get_incidents_command(client: Client):
@@ -1338,19 +1341,26 @@ def get_incidents_command(client: Client):
         )
     except Exception as e:
         return_error(f"Failed to fetch emails: {str(e)}")
+    demisto.info(f"search func raw_response: {emails, final_query}")
 
     if not emails:
         demisto.debug("No emails found for the given query.")
         return_results(CommandResults(readable_output="No incidents found."))
+    hr_emails = []
     for email in emails:
-        email["internalDatetime"] = timestamp_to_datestring(email.get("internalDate", 0), is_utc=True)
-        email["From"] = next(
-            (
-                h.get("value")
-                for h in email.get("payload", {}).get("headers", [])
-                if h.get("name", "").lower() == "from"
-            ),
-            None,
+        hr_emails.append(
+            {
+                "id": email.get("id"),
+                "snippet": email.get("snippet"),
+                "labelIds": email.get("labelIds"),
+                "from": next(
+                    (
+                        h.get("value")
+                        for h in email.get("payload", {}).get("headers", [])
+                        if h.get("name", "").lower() == "from"
+                    ), None),
+                "internalDatetime": timestamp_to_datestring(email.get("internalDate", 0), is_utc=True)
+            }
         )
 
     demisto.debug(f"Retrieved {len(emails)} incidents using query: {final_query}")
@@ -1359,9 +1369,9 @@ def get_incidents_command(client: Client):
         CommandResults(
             readable_output=tableToMarkdown(
                 "Retrieved Gmail Incidents",
-                emails,
+                hr_emails,
                 headers=[
-                    "From",
+                    "from",
                     "snippet",
                     "internalDatetime",
                     "labelIds",
