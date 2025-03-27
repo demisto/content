@@ -2,6 +2,7 @@ import demistomock as demisto
 import pytest
 from CommonServerPython import *  # noqa: F401
 from requests import Response
+from MicrosoftTeams import GraphPermissions as Perms
 
 entryTypes['warning'] = 11
 
@@ -2855,3 +2856,83 @@ def test_message_update(mocker, requests_mock):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == expected
+
+
+@pytest.mark.parametrize('permissions, expected_out', [
+    ([Perms.GROUP_READWRITE_ALL.value], {
+        Perms.GROUP_READWRITE_ALL, Perms.GROUP_READ_ALL, Perms.GROUPMEMBER_READ_ALL,
+        Perms.CHANNEL_CREATE, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL}),
+    ([Perms.CHAT_READWRITE.value, Perms.USER_READ_ALL.value, 'UnknownPerm.Read'], {
+        Perms.CHAT_READWRITE, Perms.CHAT_READ, Perms.CHAT_READBASIC, Perms.CHAT_CREATE,
+        Perms.CHATMESSAGE_SEND, Perms.USER_READ_ALL, Perms.USER_READ, 'UnknownPerm.Read'}),
+])
+def test_expand_permissions_list(permissions, expected_out):
+    """
+    Given:
+        - A list of Microsoft Graph permissions.
+    When:
+        - The `expand_permission_list` function is called.
+    Then:
+        - The permission list is expanded to include relevant related permissions.
+    """
+    from MicrosoftTeams import expand_permission_list
+
+    expanded_permissions = expand_permission_list(permissions)
+
+    assert expanded_permissions == expected_out
+
+
+@pytest.mark.parametrize('command, expected_missing', [
+    ('microsoft-teams-create-channel', {Perms.CHANNEL_CREATE, Perms.GROUPMEMBER_READ_ALL}),
+    ('microsoft-teams-message-send-to-chat', {Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL,
+                                              Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT})
+])
+def test_insufficient_permissions_handler(mocker, command, expected_missing):
+    """
+    Given:
+        - Microsoft Graph API returns a 403 Forbidden error due to insufficient permissions.
+    When:
+        - The `handle_insufficient_permissions` function is called.
+    Then:
+        - Verify that the function determines the missing permissions as expected.
+    """
+    from MicrosoftTeams import insufficient_permissions_error_handler, create_missing_permissions_section
+
+    mock_permissions = [Perms.USER_READ_ALL.value, Perms.CHATMESSAGE_SEND.value]
+
+    mocker.patch.object(demisto, 'command', return_value=command)
+    mocker.patch('MicrosoftTeams.get_token_permissions', return_value=mock_permissions)
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'graph_access_token': 'mock_token'})
+    missing_permissions_mock = mocker.patch('MicrosoftTeams.create_missing_permissions_section',
+                                            side_effect=create_missing_permissions_section)
+
+    error_msg = insufficient_permissions_error_handler()
+
+    assert error_msg
+    assert set(missing_permissions_mock.call_args[0][0]) == expected_missing
+
+
+def test_commands_required_includes_all_commands():
+    """
+    A list of required permissions should be added to COMMANDS_REQUIRED_PERMISSIONS
+    whenever a new command is added.
+
+    Given:
+        - COMMANDS_REQUIRED_PERMISSIONS dict.
+    When:
+        - An integration command is defined in the yml.
+    Then:
+        - A permissions required entry exists in the dict for the command.
+    """
+    from MicrosoftTeams import COMMANDS_REQUIRED_PERMISSIONS
+    import yaml
+
+    try:
+        with open('MicrosoftTeams.yml') as f:
+            yml = yaml.safe_load(f)
+
+    except FileNotFoundError:
+        pytest.skip('yml file is unavailable for testing in this environment')
+
+    for command in yml['script']['commands']:
+        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS

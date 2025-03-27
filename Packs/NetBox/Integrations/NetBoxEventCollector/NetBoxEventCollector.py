@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Dict, List, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,13 +23,11 @@ class Client(BaseClient):
     """
 
     def http_request(self, url_suffix=None, full_url=None, params=None):
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, full_url=full_url, params=params
-        )
+        return self._http_request(method="GET", url_suffix=url_suffix, full_url=full_url, params=params)
 
     def search_events(
         self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ""
-    ) -> Tuple[int, List[Dict[str, Any]]]:
+    ) -> tuple[int, list[dict[str, Any]]]:
         """
         Searches for NetBox alerts using the '/<url_suffix>' API endpoint.
         Args:
@@ -43,7 +40,7 @@ class Client(BaseClient):
             list: A list containing the events
         """
         next_id = prev_id
-        results: List[Dict] = []
+        results: list[dict] = []
 
         next_page = True
         params = {
@@ -54,9 +51,7 @@ class Client(BaseClient):
 
         while next_page and len(results) < limit:
             full_url = next_page if type(next_page) is str else ""
-            response = self.http_request(
-                url_suffix=url_suffix, full_url=full_url, params=params
-            )
+            response = self.http_request(url_suffix=url_suffix, full_url=full_url, params=params)
 
             results += response.get("results", [])
 
@@ -77,9 +72,7 @@ class Client(BaseClient):
         Returns:
             int: The first id to fetch.
         """
-        first_log = self.http_request(
-            url_suffix=url_suffix, params={"ordering": "id", "limit": 1} | params
-        )
+        first_log = self.http_request(url_suffix=url_suffix, params={"ordering": "id", "limit": 1} | params)
 
         if first_log.get("results"):
             next_run = first_log.get("results")[0].get("id")
@@ -89,7 +82,7 @@ class Client(BaseClient):
         return next_run
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Adds the _time key to the events.
     Args:
@@ -130,9 +123,7 @@ def test_module_command(client: Client) -> str:
     return "ok"
 
 
-def get_events_command(
-    client: Client, limit: int
-) -> Tuple[List[Dict[str, Any]], CommandResults]:
+def get_events_command(client: Client, limit: int) -> tuple[list[dict[str, Any]], CommandResults]:
     """
     Gets all the events from the NetBox API for each log type.
     Args:
@@ -142,7 +133,7 @@ def get_events_command(
         list: A list containing the events
         CommandResults: A CommandResults object that contains the events in a table format.
     """
-    events: List[Dict] = []
+    events: list[dict] = []
     hr = ""
     for log_type in LOG_TYPES:
         _, events_ = client.search_events(url_suffix=log_type, limit=limit)
@@ -156,8 +147,8 @@ def get_events_command(
 
 
 def fetch_events_command(
-    client: Client, max_fetch: int, last_run: Dict[str, int], first_fetch_time: str
-) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
+    client: Client, max_fetch: int, last_run: dict[str, int], first_fetch_time: str
+) -> tuple[dict[str, int], list[dict[str, Any]]]:
     """
     Args:
         client (Client): NetBox client to use.
@@ -175,9 +166,7 @@ def fetch_events_command(
     }
     for log_type in LOG_TYPES:
         if last_run.get(log_type) is None:
-            last_run[log_type] = client.get_first_fetch_id(
-                url_suffix=log_type, params=params[log_type]
-            )
+            last_run[log_type] = client.get_first_fetch_id(url_suffix=log_type, params=params[log_type])
 
     next_run = last_run.copy()
     events = []
@@ -193,14 +182,10 @@ def fetch_events_command(
         )
         events += events_
 
-    demisto.info(
-        f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.'
-    )
+    demisto.info(f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    demisto.info(
-        f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.'
-    )
+    demisto.info(f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.')
     return next_run, events
 
 
@@ -226,16 +211,12 @@ def main() -> None:  # pragma: no cover
         arg_name="First fetch time",
         required=True,
     )  # type: ignore   # datetime.datetime(2022, 1, 1, 00, 00, 00, 0)
-    first_fetch_time_strftime = first_fetch_time.strftime(
-        DATE_FORMAT
-    )  # 2022-01-01T00:00:00Z
+    first_fetch_time_strftime = first_fetch_time.strftime(DATE_FORMAT)  # 2022-01-01T00:00:00Z
 
     demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Token {api_key}"}
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -245,7 +226,8 @@ def main() -> None:  # pragma: no cover
         elif command == "netbox-get-events":
             should_push_events = argToBoolean(args.get("should_push_events"))
             events, results = get_events_command(
-                client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
+                client,
+                limit=arg_to_number(args.get("limit", DEFAULT_LIMIT)),  # type: ignore
             )
             return_results(results)
 
@@ -253,7 +235,7 @@ def main() -> None:  # pragma: no cover
                 events = add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events_command(
                 client=client,

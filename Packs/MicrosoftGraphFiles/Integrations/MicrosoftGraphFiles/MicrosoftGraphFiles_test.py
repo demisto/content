@@ -7,10 +7,24 @@ from pathlib import Path
 import json
 from CommonServerPython import CommandResults, DemistoException
 import demistomock as demisto
-from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_to_context, delete_file_command, \
-    download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
-    list_drives_in_site_command, MsGraphClient, upload_new_file_command, list_site_permissions_command, \
-    create_site_permissions_command, update_site_permissions_command, delete_site_permission_command, get_site_id_from_site_name
+from MicrosoftGraphFiles import (
+    remove_identity_key,
+    url_validation,
+    parse_key_to_context,
+    delete_file_command,
+    download_file_command,
+    list_sharepoint_sites_command,
+    list_drive_content_command,
+    create_new_folder_command,
+    list_drives_in_site_command,
+    MsGraphClient,
+    upload_new_file_command,
+    list_site_permissions_command,
+    create_site_permissions_command,
+    update_site_permissions_command,
+    delete_site_permission_command,
+    get_site_id_from_site_name,
+)
 
 
 def util_load_json(path: str) -> dict:
@@ -33,14 +47,32 @@ class File:
 
 
 CLIENT_MOCKER = MsGraphClient(
-    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', ok_codes=(200, 204, 201),
-    base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed',
-    redirect_uri='', auth_code='')
+    tenant_id="tenant_id",
+    auth_id="auth_id",
+    enc_key="enc_key",
+    app_name="app_name",
+    ok_codes=(200, 204, 201),
+    base_url="https://graph.microsoft.com/v1.0/",
+    verify="use_ssl",
+    proxy="proxy",
+    self_deployed="self_deployed",
+    redirect_uri="",
+    auth_code="",
+)
 
 CLIENT_MOCKER_AUTH_CODE = MsGraphClient(
-    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', ok_codes=(200, 204, 201),
-    base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed',
-    redirect_uri='redirect_uri', auth_code='auth_code')
+    tenant_id="tenant_id",
+    auth_id="auth_id",
+    enc_key="enc_key",
+    app_name="app_name",
+    ok_codes=(200, 204, 201),
+    base_url="https://graph.microsoft.com/v1.0/",
+    verify="use_ssl",
+    proxy="proxy",
+    self_deployed="self_deployed",
+    redirect_uri="redirect_uri",
+    auth_code="auth_code",
+)
 
 
 def authorization_mock(requests_mock: MockerCore) -> None:
@@ -48,12 +80,15 @@ def authorization_mock(requests_mock: MockerCore) -> None:
     Authorization API request mock.
 
     """
-    authorization_url = 'https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token'
-    requests_mock.post(authorization_url, json={
-        'access_token': 'my-access-token',
-        'expires_in': 3595,
-        'refresh_token': 'my-refresh-token',
-    })
+    authorization_url = "https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token"
+    requests_mock.post(
+        authorization_url,
+        json={
+            "access_token": "my-access-token",
+            "expires_in": 3595,
+            "refresh_token": "my-refresh-token",
+        },
+    )
 
 
 def test_remove_identity_key_with_valid_application_input() -> None:
@@ -65,9 +100,7 @@ def test_remove_identity_key_with_valid_application_input() -> None:
     Then
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
-    res = remove_identity_key(
-        ARGUMENTS["remove_identifier_data_application_type"]["CreatedBy"]
-    )
+    res = remove_identity_key(ARGUMENTS["remove_identifier_data_application_type"]["CreatedBy"])
     assert len(res.keys()) > 1
     assert res["Type"]
     assert res["ID"] == "test"
@@ -82,9 +115,7 @@ def test_remove_identity_key_with_valid_user_input() -> None:
     Then
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
-    res = remove_identity_key(
-        ARGUMENTS["remove_identifier_data_user_type"]["CreatedBy"]
-    )
+    res = remove_identity_key(ARGUMENTS["remove_identifier_data_user_type"]["CreatedBy"])
     assert len(res.keys()) > 1
     assert res["Type"]
     assert res.get("ID") is None
@@ -111,7 +142,7 @@ def test_remove_identity_key_with_invalid_object() -> None:
     Then
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
-    source = 'not a dict'
+    source = "not a dict"
     res = remove_identity_key(source)
     assert res == source
 
@@ -165,9 +196,7 @@ def test_parse_key_to_context_exclude_keys_from_list() -> None:
     Then
         - Exclude from output unwanted keys
     """
-    parsed_response = parse_key_to_context(
-        COMMANDS_RESPONSES["list_drive_children"]["value"][0]
-    )
+    parsed_response = parse_key_to_context(COMMANDS_RESPONSES["list_drive_children"]["value"][0])
     assert parsed_response.get("eTag", True) is True
     assert parsed_response.get("ETag", True) is True
 
@@ -348,52 +377,105 @@ def test_list_drives_in_site(mocker: MockerFixture, command: Callable, args: dic
 
 def expected_upload_headers() -> list:
     return [
-        {'Content-Length': '327680', 'Content-Range': 'bytes 0-327679/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 327680-655359/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 655360-983039/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 983040-1310719/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 1310720-1638399/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 1638400-1966079/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 1966080-2293759/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 2293760-2621439/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 2621440-2949119/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 2949120-3276799/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 3276800-3604479/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 3604480-3932159/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 3932160-4259839/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 4259840-4587519/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 4587520-4915199/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 4915200-5242879/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 5242880-5570559/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 5570560-5898239/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 5898240-6225919/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 6225920-6553599/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 6553600-6881279/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '327680', 'Content-Range': 'bytes 6881280-7208959/7450762',
-         'Content-Type': 'application/octet-stream'},
-        {'Content-Length': '241802', 'Content-Range': 'bytes 7208960-7450761/7450762',
-         'Content-Type': 'application/octet-stream'},
+        {"Content-Length": "327680", "Content-Range": "bytes 0-327679/7450762", "Content-Type": "application/octet-stream"},
+        {"Content-Length": "327680", "Content-Range": "bytes 327680-655359/7450762", "Content-Type": "application/octet-stream"},
+        {"Content-Length": "327680", "Content-Range": "bytes 655360-983039/7450762", "Content-Type": "application/octet-stream"},
+        {"Content-Length": "327680", "Content-Range": "bytes 983040-1310719/7450762", "Content-Type": "application/octet-stream"},
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 1310720-1638399/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 1638400-1966079/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 1966080-2293759/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 2293760-2621439/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 2621440-2949119/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 2949120-3276799/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 3276800-3604479/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 3604480-3932159/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 3932160-4259839/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 4259840-4587519/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 4587520-4915199/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 4915200-5242879/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 5242880-5570559/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 5570560-5898239/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 5898240-6225919/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 6225920-6553599/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 6553600-6881279/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "327680",
+            "Content-Range": "bytes 6881280-7208959/7450762",
+            "Content-Type": "application/octet-stream",
+        },
+        {
+            "Content-Length": "241802",
+            "Content-Range": "bytes 7208960-7450761/7450762",
+            "Content-Type": "application/octet-stream",
+        },
     ]
 
 
@@ -410,7 +492,7 @@ def validate_upload_attachments_flow(create_upload_mock: MagicMock, upload_query
     expected_headers = iter(expected_upload_headers())
     for i in range(upload_query_mock.call_count):
         current_headers = next(expected_headers)
-        mock_res = upload_query_mock.mock_calls[i].kwargs['headers']
+        mock_res = upload_query_mock.mock_calls[i].kwargs["headers"]
         if mock_res != current_headers:
             return False
     return True
@@ -420,36 +502,31 @@ def self_deployed_client() -> MsGraphClient:
     return CLIENT_MOCKER
 
 
-json_response = {'@odata.context': 'dummy_url',
-                 '@content.downloadUrl': 'dummy_url',
-                 'createdBy': {'application': {'id': 'some_id',
-                               'displayName': 'MS Graph Files'},
-                               'user': {'displayName': 'SharePoint App'}},
-                 'createdDateTime': 'some_date',
-                 'eTag': '"some_eTag"',
-                 'id': 'some_id',
-                 'lastModifiedBy': {'application': {'id': 'some_id',
-                                    'displayName': 'MS Graph Files'},
-                                    'user': {'displayName': 'SharePoint App'}},
-                 'lastModifiedDateTime': 'some_date',
-                 'name': 'yaya.jpg',
-                 'parentReference': {'driveType': 'documentLibrary',
-                                     'driveId': 'some_id',
-                                     'id': 'some_id',
-                                     'path': 'some_path'},
-                 'webUrl': 'https://some_url',
-                 'cTag': '"c:{000-000},0"',
-                 'file': {'hashes': {'quickXorHash': '00000'},
-                          'irmEffectivelyEnabled': False, 'irmEnabled': False,
-                          'mimeType': 'image/jpeg'},
-                 'fileSystemInfo': {'createdDateTime': 'some_date',
-                                    'lastModifiedDateTime': 'some_date'},
-                 'image': {}, 'shared': {'effectiveRoles': ['write'],
-                                         'scope': 'users'}, 'size': 5906704}
+json_response = {
+    "@odata.context": "dummy_url",
+    "@content.downloadUrl": "dummy_url",
+    "createdBy": {"application": {"id": "some_id", "displayName": "MS Graph Files"}, "user": {"displayName": "SharePoint App"}},
+    "createdDateTime": "some_date",
+    "eTag": '"some_eTag"',
+    "id": "some_id",
+    "lastModifiedBy": {
+        "application": {"id": "some_id", "displayName": "MS Graph Files"},
+        "user": {"displayName": "SharePoint App"},
+    },
+    "lastModifiedDateTime": "some_date",
+    "name": "yaya.jpg",
+    "parentReference": {"driveType": "documentLibrary", "driveId": "some_id", "id": "some_id", "path": "some_path"},
+    "webUrl": "https://some_url",
+    "cTag": '"c:{000-000},0"',
+    "file": {"hashes": {"quickXorHash": "00000"}, "irmEffectivelyEnabled": False, "irmEnabled": False, "mimeType": "image/jpeg"},
+    "fileSystemInfo": {"createdDateTime": "some_date", "lastModifiedDateTime": "some_date"},
+    "image": {},
+    "shared": {"effectiveRoles": ["write"], "scope": "users"},
+    "size": 5906704,
+}
 
 
 class MockedResponse:
-
     def __init__(self, status_code, json):
         self.status_code = status_code
         self.json_response = json
@@ -459,50 +536,52 @@ class MockedResponse:
 
 
 def upload_response_side_effect(**kwargs):
-    headers = kwargs.get('headers')
-    if headers and int(headers['Content-Length']) < MsGraphClient.MAX_ATTACHMENT_UPLOAD:
+    headers = kwargs.get("headers")
+    if headers and int(headers["Content-Length"]) < MsGraphClient.MAX_ATTACHMENT_UPLOAD:
         return MockedResponse(status_code=201, json=json_response)
-    return MockedResponse(status_code=202, json='')
+    return MockedResponse(status_code=202, json="")
 
 
 UPLOAD_LARGE_FILE_COMMAND_ARGS = [
     (
         self_deployed_client(),
         {
-            'object_type': 'drives',
-            'object_type_id': 'some_object_type_id',
-            'parent_id': 'some_parent_id',
-            'entry_id': '3',
-            'file_name': 'some_file_name',
+            "object_type": "drives",
+            "object_type_id": "some_object_type_id",
+            "parent_id": "some_parent_id",
+            "entry_id": "3",
+            "file_name": "some_file_name",
         },
-    )]
+    )
+]
 
-return_value_upload_without_upload_session = {'@odata.context': "https://graph.microsoft.com/v1.0/$metadata#sites"
-                                                                "(some_site)/drive/items/$entity",
-                                              '@microsoft.graph.downloadUrl': 'some_url',
-                                              'createdDateTime': '2022-12-15T12:56:27Z',
-                                              'eTag': '"{11111111-1111-1111-1111-111111111111},11"',
-                                              'id': 'some_id',
-                                              'lastModifiedDateTime': '2022-12-28T11:38:55Z',
-                                              'name': 'some_pdf.pdf',
-                                              'webUrl': 'https://some_url/some_pdf.pdf',
-                                              'cTag': '"c:{11111111-1111-1111-1111-111111111111},11"', 'size': 3028,
-                                              'createdBy': {'application': {'id': 'some_id',
-                                                                            'displayName': 'MS Graph Files'},
-                                                            'user': {'displayName': 'SharePoint App'}},
-                                              'lastModifiedBy': {'application': {'id': 'some_id',
-                                                                                 'displayName': 'MS Graph Files'},
-                                                                 'user': {'displayName': 'SharePoint App'}},
-                                              'parentReference': {'driveType': 'documentLibrary',
-                                                                  'driveId': 'some_drive_id',
-                                                                  'id': 'some_id',
-                                                                  'path': '/drive/root:/test-folder'},
-                                              'file': {'mimeType': 'image/jpeg',
-                                                       'hashes': {'quickXorHash': 'quickXorHash'}},
-                                              'fileSystemInfo': {'createdDateTime': '2022-12-15T12:56:27Z',
-                                                                 'lastModifiedDateTime': '2022-12-28T11:38:55Z'},
-                                              'image': {},
-                                              'shared': {'scope': 'users'}}
+return_value_upload_without_upload_session = {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites(some_site)/drive/items/$entity",
+    "@microsoft.graph.downloadUrl": "some_url",
+    "createdDateTime": "2022-12-15T12:56:27Z",
+    "eTag": '"{11111111-1111-1111-1111-111111111111},11"',
+    "id": "some_id",
+    "lastModifiedDateTime": "2022-12-28T11:38:55Z",
+    "name": "some_pdf.pdf",
+    "webUrl": "https://some_url/some_pdf.pdf",
+    "cTag": '"c:{11111111-1111-1111-1111-111111111111},11"',
+    "size": 3028,
+    "createdBy": {"application": {"id": "some_id", "displayName": "MS Graph Files"}, "user": {"displayName": "SharePoint App"}},
+    "lastModifiedBy": {
+        "application": {"id": "some_id", "displayName": "MS Graph Files"},
+        "user": {"displayName": "SharePoint App"},
+    },
+    "parentReference": {
+        "driveType": "documentLibrary",
+        "driveId": "some_drive_id",
+        "id": "some_id",
+        "path": "/drive/root:/test-folder",
+    },
+    "file": {"mimeType": "image/jpeg", "hashes": {"quickXorHash": "quickXorHash"}},
+    "fileSystemInfo": {"createdDateTime": "2022-12-15T12:56:27Z", "lastModifiedDateTime": "2022-12-28T11:38:55Z"},
+    "image": {},
+    "shared": {"scope": "users"},
+}
 
 return_context = {
     "MsGraphFiles.UploadedFiles(val.ID === obj.ID)": {
@@ -539,101 +618,101 @@ return_context = {
 }
 
 
-@pytest.mark.parametrize('client, args', UPLOAD_LARGE_FILE_COMMAND_ARGS)
+@pytest.mark.parametrize("client, args", UPLOAD_LARGE_FILE_COMMAND_ARGS)
 def test_upload_command_with_upload_session(mocker: MockerFixture, client: MsGraphClient, args: dict) -> None:
     """
-        Given:
-            - An image to upload with a size bigger than 3.
-        When:
-            - running upload new file command.
-        Then:
-            - return an result with upload session.
-     """
+    Given:
+        - An image to upload with a size bigger than 3.
+    When:
+        - running upload new file command.
+    Then:
+        - return an result with upload session.
+    """
     import requests
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/shark.jpg',
-                                                              'name': 'shark.jpg'})
-    create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',
-                                             return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"))
-    upload_query_mock = mocker.patch.object(requests, 'put', side_effect=upload_response_side_effect)
-    upload_file_without_upload_session_mock = mocker.patch.object(MsGraphClient, 'upload_new_file',
-                                                                  return_value="")
+
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/shark.jpg", "name": "shark.jpg"})
+    create_upload_mock = mocker.patch.object(
+        MsGraphClient, "create_an_upload_session", return_value=({"response": "", "uploadUrl": "test.com"}, "test.com")
+    )
+    upload_query_mock = mocker.patch.object(requests, "put", side_effect=upload_response_side_effect)
+    upload_file_without_upload_session_mock = mocker.patch.object(MsGraphClient, "upload_new_file", return_value="")
     upload_new_file_command(client, args)
     assert upload_file_without_upload_session_mock.call_count == 0
     assert validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
 
 
-@pytest.mark.parametrize('client, args', UPLOAD_LARGE_FILE_COMMAND_ARGS)
+@pytest.mark.parametrize("client, args", UPLOAD_LARGE_FILE_COMMAND_ARGS)
 def test_upload_command_without_upload_session(mocker: MockerFixture, client: MsGraphClient, args: dict) -> None:
     """
-        Given:
-            - An image to upload (file size lower than 3).
-        When:
-            - running upload new file command.
-        Then:
-            - return an result without upload session.
-     """
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/some_pdf.pdf',
-                                                              'name': 'some_pdf.pdf'})
+    Given:
+        - An image to upload (file size lower than 3).
+    When:
+        - running upload new file command.
+    Then:
+        - return an result without upload session.
+    """
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/some_pdf.pdf", "name": "some_pdf.pdf"})
     mocker_https = mocker.patch.object(client.ms_client, "http_request", return_value=return_value_upload_without_upload_session)
-    create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',
-                                             return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"))
-    upload_file_with_upload_session_mock = mocker.patch.object(MsGraphClient, 'upload_file_with_upload_session_flow',
-                                                               return_value=({"response": "",
-                                                                              "uploadUrl": "test.com"}, "test.com"))
+    create_upload_mock = mocker.patch.object(
+        MsGraphClient, "create_an_upload_session", return_value=({"response": "", "uploadUrl": "test.com"}, "test.com")
+    )
+    upload_file_with_upload_session_mock = mocker.patch.object(
+        MsGraphClient,
+        "upload_file_with_upload_session_flow",
+        return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"),
+    )
 
     human_readable, context, result = upload_new_file_command(client, args)
     assert mocker_https.call_count == 1
     assert create_upload_mock.call_count == 0
     assert upload_file_with_upload_session_mock.call_count == 0
-    assert human_readable == '### MsGraphFiles - File information:\n|CreatedDateTime|ID|Name|Size|WebUrl|\n|---|---|---|---|---|'\
-                             '\n| 2022-12-15T12:56:27Z | some_id | some_pdf.pdf | 3028 | https://some_url/some_pdf.pdf |\n'
+    assert (
+        human_readable == "### MsGraphFiles - File information:\n|CreatedDateTime|ID|Name|Size|WebUrl|\n|---|---|---|---|---|"
+        "\n| 2022-12-15T12:56:27Z | some_id | some_pdf.pdf | 3028 | https://some_url/some_pdf.pdf |\n"
+    )
     assert result == return_value_upload_without_upload_session
     assert context == return_context
 
 
-@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+@pytest.mark.parametrize(argnames="client_id", argvalues=["test_client_id", None])
 def test_test_module_command_with_managed_identities(mocker: MockerFixture, requests_mock: MockerCore, client_id: str | None):
     """
-        Given:
-            - Managed Identities client id for authentication.
-        When:
-            - Calling test_module.
-        Then:
-            - Ensure the output are as expected.
+    Given:
+        - Managed Identities client id for authentication.
+    When:
+        - Calling test_module.
+    Then:
+        - Ensure the output are as expected.
     """
     from MicrosoftGraphFiles import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import re
 
-    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
-    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={})
+    requests_mock.get(re.compile(f"^{Resources.graph}.*"), json={})
 
     params = {
-        'managed_identities_client_id': {'password': client_id},
-        'authentication_type': 'Azure Managed Identities',
-        'host': Resources.graph
+        "managed_identities_client_id": {"password": client_id},
+        "authentication_type": "Azure Managed Identities",
+        "host": Resources.graph,
     }
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'results', return_value=params)
-    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "results", return_value=params)
+    mocker.patch("MicrosoftApiModule.get_integration_context", return_value={})
 
     main()
 
-    assert 'ok' in demisto.results.call_args[0][0]
+    assert "ok" in demisto.results.call_args[0][0]
     qs = get_mock.last_request.qs
-    assert qs['resource'] == [Resources.graph]
-    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+    assert qs["resource"] == [Resources.graph]
+    assert client_id and qs["client_id"] == [client_id] or "client_id" not in qs
 
 
 @pytest.mark.parametrize(
     "func_to_test, args",
     [
-        pytest.param(
-            list_site_permissions_command,
-            {},
-            id="test list_site_permissions_command"
-        ),
+        pytest.param(list_site_permissions_command, {}, id="test list_site_permissions_command"),
         pytest.param(
             create_site_permissions_command,
             {"app_id": "test", "role": "test", "display_name": "test"},
@@ -667,9 +746,7 @@ def test_get_site_id_raise_error_site_name_or_site_id_required(
     Then:
         - Ensure DemistoException is raised with expected error message
     """
-    with pytest.raises(
-        DemistoException, match="Please provide 'site_id' or 'site_name' parameter."
-    ):
+    with pytest.raises(DemistoException, match="Please provide 'site_id' or 'site_name' parameter."):
         func_to_test(CLIENT_MOCKER, args)
 
 
@@ -727,9 +804,7 @@ def test_get_site_id_raise_error_invalid_site_name(
         - With error message that the site was not found and to provide valid site name/ID
     """
     authorization_mock(requests_mock)
-    requests_mock.get(
-        "https://graph.microsoft.com/v1.0/sites", json={"value": []}, status_code=200
-    )
+    requests_mock.get("https://graph.microsoft.com/v1.0/sites", json={"value": []}, status_code=200)
     with pytest.raises(
         DemistoException,
         match="Site 'test' not found. Please provide a valid site name.",
@@ -761,8 +836,8 @@ def test_get_site_id_from_site_name_404(requests_mock: MockerCore) -> None:
         get_site_id_from_site_name(CLIENT_MOCKER, site_name)
 
     assert str(e.value) == (
-        'Error getting site ID for test_site. Ensure integration instance has permission for this site and site name is valid.'
-        ' Error details: Error in API call [404] - None\nItem not found'
+        "Error getting site ID for test_site. Ensure integration instance has permission for this site and site name is valid."
+        " Error details: Error in API call [404] - None\nItem not found"
     )
 
 
@@ -876,10 +951,7 @@ def test_update_permissions_command(requests_mock: MockerCore) -> None:
     )
     result = update_site_permissions_command(CLIENT_MOCKER, args)
 
-    assert (
-        result.readable_output
-        == "Permission id of site site was updated successfully with new role ['read']."
-    )
+    assert result.readable_output == "Permission id of site site was updated successfully with new role ['read']."
 
 
 def test_delete_site_permission_command(requests_mock: MockerCore) -> None:
@@ -896,9 +968,7 @@ def test_delete_site_permission_command(requests_mock: MockerCore) -> None:
     """
     args = {"permission_id": "id", "site_id": "site"}
     authorization_mock(requests_mock)
-    requests_mock.delete(
-        "https://graph.microsoft.com/v1.0/sites/site/permissions/id", status_code=204
-    )
+    requests_mock.delete("https://graph.microsoft.com/v1.0/sites/site/permissions/id", status_code=204)
     result = delete_site_permission_command(CLIENT_MOCKER, args)
 
     assert result.readable_output == "Site permission was deleted."
@@ -916,38 +986,41 @@ def test_generate_login_url(mocker):
     import demistomock as demisto
     from MicrosoftGraphFiles import main, Scopes
 
-    redirect_uri = 'redirect_uri'
-    tenant_id = 'tenant_id'
-    client_id = 'client_id'
+    redirect_uri = "redirect_uri"
+    tenant_id = "tenant_id"
+    client_id = "client_id"
     mocked_params = {
-        'redirect_uri': redirect_uri,
-        'auth_type': 'Authorization Code',
-        'self_deployed': 'True',
-        'credentials_tenant_id': {'password': tenant_id},
-        'credentials_auth_id': {'password': client_id},
-        'credentials_enc_key': {'password': 'client_secret'}
+        "redirect_uri": redirect_uri,
+        "auth_type": "Authorization Code",
+        "self_deployed": "True",
+        "credentials_tenant_id": {"password": tenant_id},
+        "credentials_auth_id": {"password": client_id},
+        "credentials_enc_key": {"password": "client_secret"},
     }
-    mocker.patch.object(demisto, 'params', return_value=mocked_params)
-    mocker.patch.object(demisto, 'command', return_value='msgraph-files-generate-login-url')
-    return_results = mocker.patch('MicrosoftGraphFiles.return_results')
+    mocker.patch.object(demisto, "params", return_value=mocked_params)
+    mocker.patch.object(demisto, "command", return_value="msgraph-files-generate-login-url")
+    return_results = mocker.patch("MicrosoftGraphFiles.return_results")
 
     main()
-    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
-                   f'response_type=code&scope=offline_access%20{Scopes.graph}' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    expected_url = (
+        f"[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?"
+        f"response_type=code&scope=offline_access%20{Scopes.graph}"
+        f"&client_id={client_id}&redirect_uri={redirect_uri})"
+    )
     res = return_results.call_args[0][0].readable_output
     assert expected_url in res
 
 
-@pytest.mark.parametrize('grant_type, self_deployed, demisto_command, expected_result, should_raise, client',
-                         [
-                             ('', False, 'test-module', 'ok', False, CLIENT_MOCKER),
-                             ('authorization_code', True, 'test-module', 'ok', True, CLIENT_MOCKER_AUTH_CODE),
-                             ('client_credentials', True, 'test-module', 'ok', False, CLIENT_MOCKER),
-                             ('client_credentials', True, 'msgraph-files-auth-test', '```✅ Success!```', False, CLIENT_MOCKER),
-                             ('authorization_code', True, 'msgraph-files-auth-test',
-                              '```✅ Success!```', False, CLIENT_MOCKER_AUTH_CODE)
-                         ])
+@pytest.mark.parametrize(
+    "grant_type, self_deployed, demisto_command, expected_result, should_raise, client",
+    [
+        ("", False, "test-module", "ok", False, CLIENT_MOCKER),
+        ("authorization_code", True, "test-module", "ok", True, CLIENT_MOCKER_AUTH_CODE),
+        ("client_credentials", True, "test-module", "ok", False, CLIENT_MOCKER),
+        ("client_credentials", True, "msgraph-files-auth-test", "```✅ Success!```", False, CLIENT_MOCKER),
+        ("authorization_code", True, "msgraph-files-auth-test", "```✅ Success!```", False, CLIENT_MOCKER_AUTH_CODE),
+    ],
+)
 def test_test_function(mocker, grant_type, self_deployed, demisto_command, expected_result, should_raise, client):
     """
     Given:
@@ -964,16 +1037,19 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
     client.ms_client.self_deployed = self_deployed
 
     client.ms_client.grant_type = grant_type
-    demisto_params = {'self_deployed': self_deployed,
-                      'auth_code': client.ms_client.auth_code, 'redirect_uri': client.ms_client.redirect_uri}
-    mocker.patch('MicrosoftGraphFiles.demisto.params', return_value=demisto_params)
-    mocker.patch('MicrosoftGraphFiles.demisto.command', return_value=demisto_command)
-    mocker.patch.object(client.ms_client, 'http_request')
+    demisto_params = {
+        "self_deployed": self_deployed,
+        "auth_code": client.ms_client.auth_code,
+        "redirect_uri": client.ms_client.redirect_uri,
+    }
+    mocker.patch("MicrosoftGraphFiles.demisto.params", return_value=demisto_params)
+    mocker.patch("MicrosoftGraphFiles.demisto.command", return_value=demisto_command)
+    mocker.patch.object(client.ms_client, "http_request")
 
     if should_raise:
         with pytest.raises(DemistoException) as exc:
             test_function(client)
-            assert 'self-deployed - Authorization Code Flow' in str(exc)
+            assert "self-deployed - Authorization Code Flow" in str(exc)
     else:
         result = test_function(client)
         assert result == expected_result

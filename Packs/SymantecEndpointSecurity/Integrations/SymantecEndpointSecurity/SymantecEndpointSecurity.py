@@ -31,7 +31,8 @@ class EventCounter:
         self._raw_events = 0
         self._filtered_events = 0
         self._total_bytes: int | float = 0
-        self._uuid: list[str] = []
+        self._events_missing_schema_counter: int = 0
+        self._event_missing_schema: dict = {}
 
     @property
     def events(self) -> int:
@@ -58,12 +59,36 @@ class EventCounter:
         self._total_bytes += value
 
     @property
-    def uuid(self) -> list[str]:
-        return self._uuid
+    def events_missing_schema_counter(self):
+        return self._events_missing_schema_counter
 
-    @uuid.setter
-    def uuid(self, value: str):
-        self._uuid.append(value)
+    @events_missing_schema_counter.setter
+    def events_missing_schema_counter(self, value: int):
+        self._events_missing_schema_counter += value
+
+    @property
+    def event_missing_schema(self):
+        return self._event_missing_schema
+
+    @event_missing_schema.setter
+    def event_missing_schema(self, value: dict):
+        if self._event_missing_schema:
+            return
+        self._event_missing_schema = value
+
+    def print_summary(self):
+        demisto.debug(
+            f"Summary Log:\n"
+            f"- Total events received from Symantec (before filtering): {self.events} events\n"
+            f"- Total events sent to XSIAM (after filtering): {self.filtered_events} events\n"
+            f"- Total data received from Symantec: "
+            f"{self.total_bytes} bytes (~{self.total_bytes / (1024 * 1024):.4f} MB)\n"
+            f"- Number of events missing a schema: {self.events_missing_schema_counter}\n"
+        )
+        if self.event_missing_schema:
+            demisto.debug(
+                f"Example of an event missing a schema: {self.event_missing_schema}"
+            )
 
 
 """ Exceptions """
@@ -161,7 +186,7 @@ class Client(BaseClient):
             resp_type="response",
             headers=self.headers,
             stream=True,
-            ok_codes=[200, 201, 204]
+            ok_codes=[200, 201, 204],
         )
 
 
@@ -208,12 +233,9 @@ def calculate_next_fetch(
     """
 
     if filtered_events:
-        events_suspected_duplicates = extract_events_suspected_duplicates(
-            filtered_events
+        events_suspected_duplicates, latest_event_time = (
+            extract_events_suspected_duplicates(filtered_events)
         )
-
-        # Determine the latest event time: Extract the last time of the filtered event,
-        latest_event_time = max(filtered_events, key=parse_event_time_to_date_time)["log_time"]
     else:
         events_suspected_duplicates = []
         latest_event_time = last_integration_context.get("latest_event_time", "")
@@ -246,7 +268,12 @@ def push_events(events: list[dict]):
     Push events to XSIAM.
     """
     demisto.debug(f"Pushing {len(events)} to XSIAM")
-    send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    send_events_to_xsiam(
+        events=events,
+        vendor=VENDOR,
+        product=PRODUCT,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+    )
     demisto.debug(f"Pushed {len(events)} to XSIAM successfully")
 
 
@@ -254,20 +281,37 @@ def parse_event_time_to_date_time(event: dict = {}, event_time: str = "") -> dat
     """
     Parse the event time from the given event dict to datetime object.
     """
-    event_time = event["log_time"] if event else event_time
+    event_time = event.get("log_time", "") if event else event_time
+
+    if (
+        not event_time
+    ):  # In case the `log_time` key is missing, it is set to the earliest time.
+        return datetime.strptime(
+            datetime.min.strftime(DATE_FORMAT_WITH_MILLISECOND),
+            DATE_FORMAT_WITH_MILLISECOND,
+        )
+
+    if "." in event_time:
+        event_time = event_time.strip("Z")
+        seconds, micro_z = event_time.split(".")
+        event_time = seconds + "." + micro_z[:6] + "Z"
     try:
         event_date_time = datetime.strptime(event_time, DATE_FORMAT_WITH_MILLISECOND)
     except Exception as e:
-        demisto.debug(f"Failed to parse log_time {event_time} with milliseconds format. Error: {e}")
+        demisto.debug(
+            f"Failed to parse log_time {event_time} with milliseconds format. Error: {e}"
+        )
         try:
-            event_date_time = datetime.strptime(event_time, DATE_FORMAT_WITHOUT_MILLISECOND)
+            event_date_time = datetime.strptime(
+                event_time, DATE_FORMAT_WITHOUT_MILLISECOND
+            )
         except Exception:
             raise e
 
     return event_date_time
 
 
-def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
+def extract_events_suspected_duplicates(events: list[dict]) -> tuple[list[str], str]:
     """
     Extract event IDs of potentially duplicate events.
 
@@ -276,16 +320,21 @@ def extract_events_suspected_duplicates(events: list[dict]) -> list[str]:
     """
 
     # Find the maximum event time
-    latest_event_time = parse_event_time_to_date_time(max(events, key=parse_event_time_to_date_time))
+    latest_event_time: str = max(events, key=parse_event_time_to_date_time).get(
+        "log_time", ""
+    )
+    latest_event_time_obj = parse_event_time_to_date_time(event_time=latest_event_time)
 
     # Filter all JSONs with the maximum event time
     filtered_events = filter(
-        lambda event: parse_event_time_to_date_time(event) == latest_event_time,
+        lambda event: parse_event_time_to_date_time(event) == latest_event_time_obj,
         events,
     )
 
     # Extract the event_ids from the filtered events
-    return [event["uuid"] for event in filtered_events]
+    return [
+        event["uuid"] for event in filtered_events if event.get("uuid")
+    ], latest_event_time
 
 
 def is_duplicate(
@@ -320,7 +369,7 @@ def is_duplicate(
 
 
 def filter_duplicate_events(
-    events: list[dict[str, str]], integration_context: dict
+    events: list[dict[str, str]], integration_context: dict, counter: EventCounter
 ) -> list[dict[str, str]]:
     """
     Filter out duplicate events from the given list of events.
@@ -342,14 +391,24 @@ def filter_duplicate_events(
 
     filtered_events: list[dict[str, str]] = []
 
+    demisto.debug(
+        f"The number of events before filtering for the current iteration: {len(events)}"
+    )
+
     for event in events:
+        if not event.get("uuid") or not event.get("log_time"):
+            event["_time"] = event.get("time", "")
+            filtered_events.append(event)
+            counter.events_missing_schema_counter = 1
+            counter.event_missing_schema = event
+            continue
         if not is_duplicate(
             event["uuid"],
             parse_event_time_to_date_time(event),
             latest_event_time,
             events_suspected_duplicates,
         ):
-            event["_time"] = event["time"]
+            event["_time"] = event.get("time", "")
             filtered_events.append(event)
 
     return filtered_events
@@ -365,7 +424,9 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
         if res.status_code == 204:
             raise NoEventsReceived
 
-        demisto.debug(f"Completed API call with status_code {res.status_code}, proceeding with row iterations.")
+        demisto.debug(
+            f"Completed API call with status_code {res.status_code}, proceeding with row iterations."
+        )
         for line in res.iter_lines(
             chunk_size=MAX_CHUNK_SIZE_TO_READ, delimiter=DELIMITER
         ):
@@ -391,10 +452,12 @@ def get_events(client: Client, next_fetch: dict[str, str], counter: EventCounter
     yield [], next_hash
 
 
-def filtering_and_push_events(events: list[dict], next_hash: str, integration_context: dict, counter: EventCounter):
+def filtering_and_push_events(
+    events: list[dict], next_hash: str, integration_context: dict, counter: EventCounter
+):
 
     counter.events = len(events)
-    filtered_events = filter_duplicate_events(events, integration_context)
+    filtered_events = filter_duplicate_events(events, integration_context, counter)
     counter.filtered_events = len(filtered_events)
 
     filtered_events.extend(integration_context.get("last_fetch_events", []))
@@ -418,21 +481,19 @@ def filtering_and_push_events(events: list[dict], next_hash: str, integration_co
     )
 
 
-def get_events_command(client: Client, integration_context: dict[str, Any]) -> dict[str, Any]:
+def get_events_command(
+    client: Client, integration_context: dict[str, Any]
+) -> dict[str, Any]:
     next_fetch: dict[str, str] = integration_context.get("next_fetch", {})
     counter = EventCounter()
     try:
         for events, next_hash in get_events(client, next_fetch, counter):
             if not events:
-                demisto.debug(
-                    f"Summary Log:\n"
-                    f"- Total events received from Symantec (before filtering): {counter.events} events\n"
-                    f"- Total events sent to XSIAM (after filtering): {counter.filtered_events} events\n"
-                    f"- Total data received from Symantec: "
-                    f"{counter.total_bytes} bytes (~{counter.total_bytes / (1024 * 1024):.4f} MB)\n"
-                )
+                counter.print_summary()
                 return integration_context
-            integration_context = filtering_and_push_events(events, next_hash, integration_context, counter)
+            integration_context = filtering_and_push_events(
+                events, next_hash, integration_context, counter
+            )
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code == 401:
@@ -473,7 +534,9 @@ def perform_long_running_loop(client: Client):
         try:
             integration_context = get_integration_context()
             demisto.info(f"Starting new fetch with {integration_context=}")
-            integration_context = get_events_command(client, integration_context=integration_context)
+            integration_context = get_events_command(
+                client, integration_context=integration_context
+            )
 
             # When the fetch succeeds, the `fetch_failure_count` is reset.
             integration_context.pop("fetch_failure_count", None)
