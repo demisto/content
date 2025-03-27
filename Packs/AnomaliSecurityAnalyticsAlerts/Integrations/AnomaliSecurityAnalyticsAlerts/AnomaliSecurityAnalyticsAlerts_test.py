@@ -5,13 +5,6 @@ from CommonServerPython import *
 from CommonServerUserPython import * 
 from freezegun import freeze_time
 
-VENDOR_NAME = 'Anomali Security Analytics Alerts'
-
-
-@pytest.fixture(autouse=True)
-def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': VENDOR_NAME}})
-
 
 @freeze_time("2025-03-01")
 def test_command_create_search_job(mocker):
