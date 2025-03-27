@@ -1,0 +1,19 @@
+
+    [MODEL: dataset="lenels2_netbox_raw"]
+alter
+    xdm.event.type = type,
+    xdm.event.id = typecode,
+    xdm.session_context_id = logkey,
+    xdm.event.outcome_reason = if(reason != null and reasoncode != null, concat(reasoncode , " - " , reason),
+                                  reason != null and reasoncode = null, reason,
+                                  reason = null and reasoncode != null, reasoncode),
+    xdm.source.user.first_name = firstname,
+    xdm.source.user.last_name = lastname,
+    xdm.source.user.employee_id = personid,
+    xdm.source.user.badge_id = personkey,
+    xdm.observer.unique_identifier = portalkey,
+    xdm.observer.name = portalname,
+    xdm.target.resource.id = readerkey,
+    xdm.target.resource.name = readername,
+    xdm.target.resource.parent_id = partitionkey,
+    xdm.target.resource.type = readerpartitionname;
