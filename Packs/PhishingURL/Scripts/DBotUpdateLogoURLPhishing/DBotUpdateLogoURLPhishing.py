@@ -58,7 +58,7 @@ def delete_model():
     demisto.debug(f'Deleted model. server response: {res}')
 
 
-def load_old_model_data(encoded_model: str) -> ModelData:
+def load_old_model_data(encoded_model: str) -> ModelData:  # pragma: no cover
     '''Update the model to the new version'''
     import warnings
     warnings.filterwarnings("ignore", module='sklearn')
@@ -253,7 +253,7 @@ def verify_args(action, logo_image_id, logo_name):
         return_error(MSG_EMPTY_LOGO_NAME)
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         logo_image_id = args.get('logoImageId', '')

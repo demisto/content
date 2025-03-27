@@ -158,7 +158,7 @@ def save_model_data(model_data: ModelData):
         raise DemistoException(get_error(res))
 
 
-def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Optional[ModelData]:
+def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Optional[ModelData]:  # pragma: no cover
     '''Update the model to the new version. This will be eventually deleted.'''
     delete_model()
     if minor_version == 0:  # no changes were made to the model by the user
