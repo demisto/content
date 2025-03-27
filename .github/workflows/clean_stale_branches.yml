@@ -15,9 +15,9 @@ jobs:
     if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Stale
-        uses: actions/stale@v8
+        uses: actions/stale@1160a2240286f5da8ec72b1c0816ce2481aabf84 # v8
         with:
           repo-token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
           days-before-issue-stale: -1

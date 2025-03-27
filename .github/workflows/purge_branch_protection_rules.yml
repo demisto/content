@@ -12,15 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7  # disable-secrets-detection
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7  # disable-secrets-detection
 
       - name: Set up Python
-        uses: actions/setup-python@v5.1.1  # disable-secrets-detection
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1  # disable-secrets-detection
         with:
           python-version: '3.10'
 
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v9
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
 
       - name: Install python dependencies
         run: |
@@ -38,7 +38,7 @@ jobs:
           poetry run python .github/github_workflow_scripts/purge_branch_protection_rules.py
           
       - name: Upload Log to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: purge_branch_protection_rules_${{ github.run_id }}
           path: "${{ github.workspace }}/purge_branch_protection_rules.log"
