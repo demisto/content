@@ -1,0 +1,61 @@
+commonfields:
+  id: RDAP
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+name: RDAP
+display: RDAP
+category: Data Enrichment & Threat Intelligence
+description: Use the RDAP (Registration Data Access Protocol) integration to query and retrieve registration data for Internet resources such as IP addresses and domain names.
+configuration:
+  - display: Base URL
+    name: base_url
+    defaultvalue: https://rdap.org
+    type: 0
+    required: false
+    section: Connect
+    advanced: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address to query
+    description: Query RDAP for information about an IP address
+    outputs:
+    - contextPath: RDAP.IP.Value
+      description: The queried IP address
+    - contextPath: RDAP.IP.IndicatorType
+      description: The type of the indicator (IP)
+    - contextPath: RDAP.IP.RegistrarAbuseAddress
+      description: The address for abuse reports
+    - contextPath: RDAP.IP.RegistrarAbuseName
+      description: The name for abuse contact
+    - contextPath: RDAP.IP.RegistrarAbuseEmail
+      description: The email for abuse reports
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain name to query
+    description: Query RDAP for information about a domain name
+    outputs:
+    - contextPath: RDAP.Domain.Value
+      description: The queried domain name
+    - contextPath: RDAP.Domain.IndicatorType
+      description: The type of the indicator (Domain)
+    - contextPath: RDAP.Domain.RegistrationDate
+      description: The registration date of the domain
+    - contextPath: RDAP.Domain.ExpirationDate
+      description: The expiration date of the domain
+    - contextPath: RDAP.Domain.LastChangedDate
+      description: The last changed date of the domain
+    - contextPath: RDAP.Domain.SecureDNS
+      description: Whether the domain uses DNSSEC
+  dockerimage: demisto/python3:3.10.6.33415
+  runonce: false
+fromversion: 6.10.0
