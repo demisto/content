@@ -1144,4 +1144,4 @@ def test_get_items_from_folder(mocker):
     mocker.patch.object(EWSO365, 'parse_item_as_dict', return_value={'itemId': '11111+_-+'})
     result = EWSO365.get_items_from_folder(client, 'Inbox')
     assert result[0] == ('### Items in folder Inbox\n|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients'
-                      '|itemId|\n|---|---|---|---|---|---|---|---|\n|  |  |  |  |  |  |  | 11111\\+_-\\+ |\n')
+                         '|itemId|\n|---|---|---|---|---|---|---|---|\n|  |  |  |  |  |  |  | 11111\\+_-\\+ |\n')
