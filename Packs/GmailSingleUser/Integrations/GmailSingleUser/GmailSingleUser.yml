@@ -126,6 +126,50 @@ name: Gmail Single User
 script:
   commands:
   - arguments:
+    - name: max_results
+      description: "Maximum number of emails to retrieve."
+      defaultValue: "10"
+      required: false
+    - name: labels
+      description: "List of label IDs to filter emails."
+      isArray: true
+      required: false
+    - name: query
+      description: "Additional Gmail search query string."
+      required: false
+    - name: subject
+      description: "Filter emails by subject."
+      required: false
+    - name: from
+      description: "Filter emails sent from a specific sender."
+      required: false
+    - name: to
+      description: "Filter emails sent to a specific recipient."
+      required: false
+    - name: filename
+      description: "Filter emails by attached filename."
+      required: false
+    - name: in
+      description: "Specify the email folder to search (e.g., 'inbox', 'sent')."
+      required: false
+    - name: has_attachments
+      description: "Whether to filter emails that contain attachments."
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+    - name: before
+      description: "Filter emails before this date."
+      required: false
+    - name: after
+      description: "Filter emails after this date."
+      required: false
+    name: gmail-get-incidents
+    description: |
+      Retrieves a list of emails from Gmail within a specific date range and formats them as incidents.
+  - arguments:
     - description: A comma-separated list of email addresses of the recipients.
       isArray: true
       name: to
