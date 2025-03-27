@@ -1619,3 +1619,26 @@ Returns the CPE(s) for a vulnerability, by VulnDB ID
 | --- | --- | --- |
 | VulnDB.CPE.Value | string | The CPE\(s\) for the given vulnerability. | 
 
+### vulndb-generic-api-request
+
+***
+Run any API request in the VulnDB API 
+
+#### Base Command
+
+`vulndb-generic-api-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url_suffix | Path for the API request. I.E. '/vulnerabilities/123456'. | Required | 
+| method | HTTP method to use I.E. GET/POST/UPDATE . | Required | 
+| params | Additional parameters to pass to the API request in JSON format. I.E. {"show_cpe":"true"}. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VulnDB.API.Results | unknown | API response for the request | 
+

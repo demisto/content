@@ -142,6 +142,12 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (human readable).
       type: string
+    - contextPath: VulnDB.Timeline
+      description: Dates describing the vulnerability's lifecycle.
+      type: string
+    - contextPath: VulnDB.Vulnerability.TechnicalDescription
+      description: Text description of the vulnerability with additional details.
+      type: string
   - arguments:
     - description: specific vendor id.
       name: vendor_id
@@ -296,6 +302,12 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (human readable).
       type: string
+    - contextPath: VulnDB.Timeline
+      description: Dates describing the vulnerability's lifecycle.
+      type: string
+    - contextPath: VulnDB.Vulnerability.TechnicalDescription
+      description: Text description of the vulnerability with additional details.
+      type: string
   - arguments:
     - description: Vendor name.
       name: vendor_name
@@ -393,6 +405,12 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (human readable).
       type: string
+    - contextPath: VulnDB.Timeline
+      description: Dates describing the vulnerability's lifecycle.
+      type: string
+    - contextPath: VulnDB.Vulnerability.TechnicalDescription
+      description: Text description of the vulnerability with additional details.
+      type: string
   - arguments:
     - description: Vendor ID.
       name: vendor_id
@@ -489,6 +507,12 @@ script:
       type: string
     - contextPath: VulnDB.Classification.Description
       description: Classification description (human readable).
+      type: string
+    - contextPath: VulnDB.Timeline
+      description: Dates describing the vulnerability's lifecycle.
+      type: string
+    - contextPath: VulnDB.Vulnerability.TechnicalDescription
+      description: Text description of the vulnerability with additional details.
       type: string
   - arguments:
     - description: Vendor ID.
@@ -678,6 +702,12 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (human readable).
       type: string
+    - contextPath: VulnDB.Timeline
+      description: Dates describing the vulnerability's lifecycle.
+      type: string
+    - contextPath: VulnDB.Vulnerability.TechnicalDescription
+      description: Text description of the vulnerability with additional details.
+      type: string
   - arguments:
     - default: true
       description: CVE ID.
@@ -840,6 +870,21 @@ script:
     - contextPath: VulnDB.CPE.Value
       description: The CPE(s) for the given vulnerability.
       type: string
+  - arguments:
+    - description: Path for the API request. I.E. '/vulnerabilities/123456'.
+      name: url_suffix
+      required: true
+    - description: 'HTTP method to use I.E. GET/POST/UPDATE.'
+      name: method
+      required: true
+    - description: Additional parameters to pass to the API request in JSON format. I.E. {"show_cpe":"true"}.
+      name: params
+    description: 'Run any API request in the VulnDB API.'
+    name: vulndb-generic-api-request
+    outputs:
+    - contextPath: VulnDB.API.Results
+      description: API response for the request.
+      type: unknown
   dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''

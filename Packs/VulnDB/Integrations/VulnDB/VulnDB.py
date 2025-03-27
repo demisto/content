@@ -55,6 +55,15 @@ class Client(BaseClient):
                                  resp_type='bytes')
         return res
 
+    def generic_request(self, url_suffix, method="GET", params=None):
+        print(f'{type(params)}\n{params}')
+        res = self._http_request(
+            url_suffix=url_suffix,
+            method=method,
+            params=params
+        )
+        return res
+
 
 def vulndb_vulnerability_to_entry(vuln):
     vulnerability_details = {
@@ -69,6 +78,10 @@ def vulndb_vulnerability_to_entry(vuln):
         'ExploitPublishDate': vuln.get('exploit_publish_date', '').rstrip('Z'),
         'TechnicalDescription': vuln.get('t_description', '')
     }
+
+    # Remove technical description key if no value present
+    if not vulnerability_details.get('TechnicalDescription'):
+        del (vulnerability_details['TechnicalDescription'])
 
     cve_ext_reference_values = [ext_reference['value'] for ext_reference in
                                 vuln.get('ext_references', [])]
@@ -113,6 +126,12 @@ def vulndb_vulnerability_to_entry(vuln):
         'SolutionDate': vuln.get('solution_date', '').rstrip('Z'),
         'ThirdPartySolutionDate': vuln.get('third_party_solution_date', '').rstrip('Z'),
     }
+
+    # Remove empty timeline keys from timeline_details
+    empty_keys = [k for k, v in timeline_details.items() if not v]
+    for k in empty_keys:
+        del timeline_details[k]
+
     return {
         'Vulnerability': vulnerability_details,
         'CVE-ExtReference': {
@@ -431,20 +450,21 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
     return_results(command_results)
 
 
-'''
-Returns a PDF report summary of the vulnerability from VulnDB
-
-Inputs:
-    vuln_id: Unique ID for the vulnerability
-Returns:
-    file_entry: PDF report for the vulnerability
-'''
-
-
 def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
-    vulndb_id = args['vuln_id']
-    res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
+    '''
+    Returns a PDF report summary of the vulnerability from VulnDB
 
+    Inputs:
+        vuln_id: Unique ID for the vulnerability
+    Returns:
+        file_entry: PDF report for the vulnerability
+    '''
+    vulndb_id = args['vuln_id']
+    try:
+        res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
+    except Exception as ex:
+        return_error(
+            f'Could not retrieve a report for vulnerability with ID {vulndb_id}. Verify that a vulnerability with that ID exists.\n{ex}')
     # Byte data of the result file
     report_file = res.content
 
@@ -452,17 +472,15 @@ def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
     return_results(file_entry)
 
 
-'''
-Returns a list of CPE values for the given VulnDB vulnerability.
-
-Inputs:
-    vuln_id: Unique ID for the vulnerability
-Returns:
-    output: Sorted and deduplicated list of CPE values from VulnDB
-'''
-
-
 def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
+    '''
+    Returns a list of CPE values for the given VulnDB vulnerability.
+
+    Inputs:
+        vuln_id: Unique ID for the vulnerability
+    Returns:
+        output: Sorted and deduplicated list of CPE values from VulnDB
+    '''
     vulndb_id = args['vuln_id']
 
     res = client.http_request(f'/vulnerabilities/{vulndb_id}?show_cpe=true')
@@ -476,11 +494,39 @@ def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
     output = sorted(deduplicated_set)
 
     return_results(CommandResults(
-        outputs_prefix='VulnDB.CPE.Value',
-        outputs=output,
-        readable_output=str(output),
-        raw_response=res
+            outputs_prefix='VulnDB.CPE.Value',
+            outputs_key_field='Value',
+            outputs=output,
+            readable_output=tableToMarkdown(f'CPE for Vulnerability {vulndb_id}', output, 'CPE'),
+            raw_response=res
+    ))
 
+
+def vulndb_generic_api_command(args: dict, client: Client) -> CommandResults:
+    '''
+    Runs the specified API request as specified by the input parameters and returns the results to context data.
+
+    Inputs:
+        url_suffix: The specific API route to use
+        method: HTTP method to use
+        params: JSON format string for request parameters to include
+    Returns:
+        res: Raw API results for the request
+    '''
+    url_suffix = args.get('url_suffix')
+    method = args.get('method')
+    params = eval(args.get('params')) if args.get('params') else None
+
+    try:
+        res = client.generic_request(url_suffix, method, params)
+    except Exception as ex:
+        return_error(f'Failed to execute generic API request. Received the following error from the VulnDB API:\n{ex}')
+    return_results(CommandResults(
+        outputs_prefix='VulnDB.API.Results',
+        outputs_key_field='Results',
+        outputs=res,
+        readable_output=tableToMarkdown(f'Results for {method} at {url_suffix}', res),
+        raw_response=res
     ))
 
 
@@ -533,6 +579,8 @@ def main():
             vulndb_get_vuln_report_command(args, client)
         elif command == 'vulndb-get-cpe-by-vuln-id':
             vulndb_get_cpe_command(args, client)
+        elif command == 'vulndb-generic-api-request':
+            vulndb_generic_api_command(args, client)
         else:
             return_error(f'{command} is not a supported command.')
     except Exception as e:
@@ -542,3 +590,5 @@ def main():
 
 if __name__ in ('__main__', 'builtins'):
     main()
+
+register_module_line('VulnDB', 'end', __line__()
