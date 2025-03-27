@@ -45,6 +45,9 @@ PASSWORD = demisto.params().get('password') or demisto.params().get('credentials
 if isinstance(PASSWORD, dict):
     PASSWORD = PASSWORD.get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+MAX_FETCH = arg_to_number(demisto.params().get('max_fetch', 100)) or 100
+if MAX_FETCH > 200:
+    raise DemistoException("The maximum fetch limit cannot exceed 200. Please enter a lower value.")
 
 
 CLIENT_ID = demisto.params().get('client_id')
@@ -138,6 +141,43 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
+def fetch_held_messages_with_pagination(api_endpoint: str, data: list, limit: int = 100,
+                                        dedup_messages: list = [], current_next_page: str = ''):
+    """
+    Creates paging response for fetching held_messages.
+    """
+    demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
+    payload: dict[str, Any] = {'meta': {},
+                               'data': data}
+    len_of_results = 0
+    results = []
+    dropped = 0
+    next_page = current_next_page or ''
+    while True:
+        pagination = {'pageSize': limit}
+        if next_page:
+            demisto.debug(f"next_page exists with value {next_page}")
+            pagination = {'pageSize': limit, 'pageToken': next_page}  # type: ignore
+        payload['meta']['pagination'] = pagination
+        response = http_request('POST', api_endpoint, payload, headers={})
+        if failure_response := response.get('fail'):
+            raise Exception(json.dumps(failure_response[0].get('errors')))
+        response_data = response.get('data', [])
+        for entry in response_data:
+            entry_id = entry.get('id')
+            if not entry_id or entry_id not in dedup_messages:  # Dedup for fetch
+                len_of_results += 1
+                results.append(entry)
+            elif entry_id in dedup_messages:
+                dropped += 1
+                demisto.debug(f"Dropped {entry_id} as it already exists.")
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+        if not next_page or (limit and len_of_results >= limit):
+            break
+    demisto.debug(f"Dropped {dropped} incidents.")
+    return results, len_of_results, next_page
+
+
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
@@ -163,8 +203,8 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             'Authorization': auth_header
         }
 
-    LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
-        method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    demisto.debug(f'running {method} request with url={url}, params={json.dumps(params)}, data={json.dumps(payload)},'
+                  f'is user auth={is_user_auth}')
     try:
         res = requests.request(
             method,
@@ -1995,15 +2035,32 @@ def get_impersonation_logs():
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
+    last_fetch_held_messages = last_run.get('time_held_messages')
+    new_last_fetch_held_messages = None
+    held_message_next_page = None
+    next_dedup_held_messages = None
+    demisto.debug(f"Before fetch {last_run=}")
 
     # handle first time fetch
     if last_fetch is None:
         last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
+        last_fetch_held_messages = last_fetch
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        last_fetch_held_messages_date_time = last_fetch_date_time
     else:
         last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        if last_fetch_held_messages:
+            last_fetch_held_messages = datetime.strptime(last_fetch_held_messages, '%Y-%m-%dT%H:%M:%SZ')
+            last_fetch_held_messages_date_time = last_fetch_held_messages.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        else:
+            last_fetch_held_messages = last_fetch
+            last_fetch_held_messages_date_time = last_fetch_date_time
     current_fetch = last_fetch
+    current_fetch_held_message = last_fetch_held_messages
+    demisto.debug(f"last fetch dates {current_fetch=}, {last_fetch=}, "
+                  f"{last_fetch_date_time=}, {current_fetch_held_message=}, {last_fetch_held_messages=},"
+                  f" {last_fetch_held_messages_date_time=}")
 
     incidents = []  # type: List[Any]
     if FETCH_URL:
@@ -2013,17 +2070,23 @@ def fetch_incidents():
         }
         url_logs, _ = request_with_pagination(api_endpoint='/api/ttp/url/get-logs',
                                               data=[search_params],
-                                              response_param='clickLogs')
+                                              response_param='clickLogs',
+                                              limit=MAX_FETCH)
+        demisto.debug(f"Pulled {len(url_logs)} click logs.")
         for url_log in url_logs:
             incident = url_to_incident(url_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(f"Did not appended url_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
 
     if FETCH_ATTACHMENTS:
         search_params = {
@@ -2033,18 +2096,25 @@ def fetch_incidents():
         demisto.debug(search_params, 'search_params')
         attachment_logs, _ = request_with_pagination(api_endpoint='/api/ttp/attachment/get-logs',
                                                      data=[search_params],
-                                                     response_param='attachmentLogs')
+                                                     response_param='attachmentLogs',
+                                                     limit=MAX_FETCH)
+        demisto.debug(f"Pulled {len(attachment_logs)} attachment logs.")
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(
+                    f"Did not appended attachment_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
 
     if FETCH_IMPERSONATIONS:
         search_params = {
@@ -2053,39 +2123,112 @@ def fetch_incidents():
         }
         impersonation_logs, _ = request_with_pagination(api_endpoint='/api/ttp/impersonation/get-logs',
                                                         data=[search_params],
-                                                        response_param='impersonationLogs')
+                                                        response_param='impersonationLogs',
+                                                        limit=MAX_FETCH)
+        demisto.debug(f"number of impersonation_logs={len(impersonation_logs)}")
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
             temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
+                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
                 last_fetch = temp_date + timedelta(seconds=1)
+                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
                 incidents.append(incident)
+            else:
+                demisto.debug(
+                    f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
     if FETCH_HELD_MESSAGES:
-        search_params = {
-            'start': last_fetch_date_time,
-            'admin': True
-        }
-        held_messages, _ = request_with_pagination(api_endpoint='/api/gateway/get-hold-message-list',
-                                                   data=[search_params])
-        for held_message in held_messages:
-            incident = held_to_incident(held_message)
-            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+        # Re-write fetching held_messages due to a bug but no testing data in our instance
+        dedup_held_messages = last_run.get('dedup_held_messages', [])
+        current_next_page = last_run.get('held_message_next_page', '')
+        time_held_messages_for_next_page = last_run.get('time_held_messages_for_next_page')
+        time_held_messages_for_next_page_date_time = ''
+        if time_held_messages_for_next_page:
+            time_held_messages_for_next_page = datetime.strptime(time_held_messages_for_next_page, '%Y-%m-%dT%H:%M:%SZ')
+            time_held_messages_for_next_page_date_time = time_held_messages_for_next_page.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+            current_fetch_held_message = time_held_messages_for_next_page
+        demisto.debug(f"{current_next_page=}")
+        demisto.debug(f"{dedup_held_messages=}")
+        demisto.debug(f"{time_held_messages_for_next_page=}")
+        held_message_next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(
+            last_fetch_held_messages_date_time,
+            time_held_messages_for_next_page_date_time,
+            last_fetch_held_messages,
+            current_fetch_held_message,
+            dedup_held_messages,
+            current_next_page,
+            incidents
+        )
 
-            # update last run
-            if temp_date > last_fetch:
-                last_fetch = temp_date + timedelta(seconds=1)
-
-            # avoid duplication due to weak time query
-            if temp_date > current_fetch:
-                incidents.append(incident)
-
-    demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    time = last_fetch.isoformat().split('.')[0] + 'Z'
+    new_last_run = {'time': time}
+    if next_dedup_held_messages:
+        new_last_run = {'time': time,
+                        'dedup_held_messages': next_dedup_held_messages
+                        }
+    if new_last_fetch_held_messages:
+        time_held_messages = new_last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
+        new_last_run['time_held_messages'] = time_held_messages
+    if held_message_next_page:
+        new_last_run['held_message_next_page'] = held_message_next_page
+        new_last_run['time_held_messages_for_next_page'] = last_fetch_held_messages.isoformat().split('.')[0] + 'Z'
+    demisto.setLastRun(new_last_run)
+    demisto.debug(f"Changed last_run to {new_last_run=}")
+    demisto.debug(f"saving {len(incidents)}.")
     demisto.incidents(incidents)
+
+
+def fetch_held_messages(last_fetch_held_messages_date_time,
+                        time_held_messages_for_next_page,
+                        last_fetch_held_messages,
+                        current_fetch_held_message,
+                        dedup_held_messages,
+                        current_next_page,
+                        incidents):
+    search_params = {
+        'start': last_fetch_held_messages_date_time,
+        'admin': True
+    }
+    if current_next_page:
+        search_params['start'] = time_held_messages_for_next_page
+    held_messages, len_of_results, next_page = fetch_held_messages_with_pagination(
+        api_endpoint='/api/gateway/get-hold-message-list',
+        data=[search_params],
+        limit=MAX_FETCH,
+        dedup_messages=dedup_held_messages,
+        current_next_page=current_next_page
+    )
+    demisto.debug(f"Fetched {len_of_results} held messages")
+    for held_message in held_messages:
+        incident = held_to_incident(held_message)
+        held_message_id = held_message.get('id')
+        temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+        # update last run
+        if temp_date > last_fetch_held_messages:
+            demisto.debug(f"Increasing last_fetch since {temp_date=} > {last_fetch_held_messages=}")
+            last_fetch_held_messages = temp_date
+            dedup_held_messages = [held_message.get('id')]
+            demisto.debug(f"Increased last_fetch to {last_fetch_held_messages}")
+        elif temp_date == last_fetch_held_messages:
+            dedup_held_messages.append(held_message_id)
+            demisto.debug(f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
+                          f"={last_fetch_held_messages}")
+        else:
+            demisto.debug("dedup_held_messages and last_fetch_held_messages remain the same for"
+                          f"{held_message_id} as {temp_date=} < {last_fetch_held_messages=}")
+        # avoid duplication due to weak time query
+        if temp_date >= current_fetch_held_message:
+            incidents.append(incident)
+        else:
+            demisto.debug(f"Did not append held_message with id {held_message_id} since {temp_date=} < "
+                          f"{current_fetch_held_message=}.")
+    demisto.debug(f"Filtered the messages, saving {len(held_messages)} held messages.")
+    return next_page, dedup_held_messages, last_fetch_held_messages
 
 
 def url_to_incident(url_log):
@@ -2993,7 +3136,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
         md = 'Incident ' + incident_id + ' has been created'
     else:
         md = 'Incident ' + incident_id + ' has been found'
-    md_metadata = """
+    md_metadata = f"""
 #### Code: {incident_code}
 #### Type: {incident_type}
 #### Reason: {incident_reason}
@@ -3001,13 +3144,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
 #### The number successfully remediated messages: {incident_successful_messages_amount}
 #### The number of messages that failed to remediate: {incident_failed_messages_amount}
 #### The number of messages that were restored from the incident: {incident_restored_messages_amount}
-""".format(incident_code=incident_code,
-           incident_type=incident_type,
-           incident_reason=incident_reason,
-           incident_identified_messages_amount=incident_identified_messages_amount,
-           incident_successful_messages_amount=incident_successful_messages_amount,
-           incident_failed_messages_amount=incident_failed_messages_amount,
-           incident_restored_messages_amount=incident_restored_messages_amount)
+"""
 
     message = response_data['searchCriteria']
     message_entry = {
@@ -3473,7 +3610,8 @@ def list_policies_command(args: dict) -> CommandResults:
     }
     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit, page=page, page_size=page_size)  # type: ignore
+    policies_list, _ = request_with_pagination(api_endpoint, data=[], limit=limit,  # type: ignore
+                                               page=page, page_size=page_size)  # type: ignore
 
     contents = []
     for policy_list in policies_list:
