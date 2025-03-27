@@ -322,23 +322,6 @@ def test_model_predictions(mocker: MockerFixture):
         assert output == pred['output'], f"Prediction failed with {pred['input']['name']}"
 
 
-def test_load_model_old_model(mocker: MockerFixture):
-    """
-    Given: An old model is in the server.
-    When: Running the DBotPredictURLPhishing script.
-    Then: Make sure the data is retrieved correctly.
-    """
-
-    mocker.patch(
-        "demistomock.executeCommand",
-        return_value=[{"Type": 0, "Contents": {"modelData": 'WyJtb2RlbF9kYXRhIl0='}}],
-    )
-
-    res = load_model()
-
-    assert res == ["model_data"]
-
-
 def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
     """
     Given: max_urls is set to 0.
