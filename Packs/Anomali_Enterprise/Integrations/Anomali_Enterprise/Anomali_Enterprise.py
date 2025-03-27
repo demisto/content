@@ -13,7 +13,7 @@ VENDOR_NAME = 'Anomali Enterprise'
 
 class Client(BaseClient):
     """
-    Client to use in the Anomali Enterprise integration. Overrides BaseClient
+    Client to use in the Anomali Enterprise integration. Overrides BaseClient test
     """
 
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):

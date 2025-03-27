@@ -40,7 +40,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client:
     """
-    Client to use in the SQL databases integration. Overrides BaseClient
+    Client to use in the SQL databases integration. Overrides BaseClient test
     makes the connection to the DB server
     """
 

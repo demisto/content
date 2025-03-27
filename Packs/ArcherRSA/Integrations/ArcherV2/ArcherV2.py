@@ -70,7 +70,7 @@ def parser(
     region=None,
     settings=None,
 ) -> datetime:
-    """Wrapper of dateparser.parse to support return type value"""
+    """Wrapper of dateparser.parse to support return type value test"""
     date_obj = dateparser.parse(
         date_str,
         date_formats=date_formats,
