@@ -166,6 +166,69 @@ def test_incidents_filtered(requests_mock):
     ]
 
 
+def test_incidents_equal_to_time_returns_data(requests_mock):
+    import urllib.parse
+
+    st = "1392048082000"
+    risk = "4"
+    also_n2os_incidents = True
+
+    query = f"alerts | sort record_created_at asc | where record_created_at == {st} | where risk >= 4"
+    request_path = f"/api/open/query/do?query={urllib.parse.quote(query)}&page=1&count=100"
+
+    client = __get_client(
+        [
+            {
+                "json": {
+                    "result": [
+                        {"id": 1, "name": "Exact Time Incident 1", "record_created_at": int(st), "risk": 5.0},
+                        {"id": 2, "name": "Exact Time Incident 2", "record_created_at": int(st), "risk": 4.0},
+                    ],
+                    "total": 2,
+                },
+                "path": request_path,
+            }
+        ],
+        requests_mock,
+    )
+
+    incidents_result = incidents_equal_to_time(st, page=1, risk=risk, also_n2os_incidents=also_n2os_incidents, client=client)
+
+    assert requests_mock.called
+    assert len(incidents_result) == 2
+    assert incidents_result[0]["name"] == "Exact Time Incident 1"
+    assert incidents_result[1]["name"] == "Exact Time Incident 2"
+
+
+def test_incidents_calls_equal_to_time_when_max_page_reached():
+    st = "1392048082000"
+    last_run = {"last_fetch": st, "page": MAX_PAGE_NUMBER_REACHABLE}
+    risk = "4"
+    also_n2os_incidents = True
+
+    mock_ibtt = [
+        {"id": 1, "name": "From Better Than", "record_created_at": int(st), "risk": 5.0}
+    ]
+    mock_iett = [
+        {"id": 1, "name": "From Better Than", "record_created_at": int(st), "risk": 5.0},
+        {"id": 2, "name": "From Equal To", "record_created_at": int(st), "risk": 4.0},
+    ]
+
+    client = MagicMock()
+
+    with patch("NozomiNetworks.incidents_better_than_time", return_value=mock_ibtt) as mock_btt, \
+         patch("NozomiNetworks.incidents_equal_to_time", return_value=mock_iett) as mock_ett:
+
+        results, lft = incidents(st, last_run, risk, also_n2os_incidents, client)
+
+        assert mock_btt.called
+        assert mock_ett.called
+        assert len(results) == 2
+        names = [i["name"].split("_")[0] for i in results]  # remove incident ID suffix
+        assert "From Better Than" in names
+        assert "From Equal To" in names
+
+
 def test_nozomi_alerts_ids_from_demisto_incidents():
     assert nozomi_alerts_ids_from_demisto_incidents([]) == []
 
