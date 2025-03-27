@@ -471,7 +471,7 @@ script:
       description: Storage profile requirement for Virtual Machine's home directory.
     - auto: PREDEFINED
       name: priority
-      description: The task priorityץ.
+      description: The task priority.
       required: true
       predefined:
       - defaultPriority

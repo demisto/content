@@ -676,7 +676,7 @@ Relocates a virtual machine to the location specified.
 | pool | The resource pool to which this virtual machine should be attached.  | Optional | 
 | service | The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used.  | Optional | 
 | profile | Storage profile requirement for Virtual Machine's home directory.  | Optional | 
-| priority | The task priorityץ. Possible values are: defaultPriority, highPriority, lowPriority. | Required | 
+| priority | The task priority. Possible values are: defaultPriority, highPriority, lowPriority. | Required | 
 | uuid | The UUID of the VM to relocate.  | Required | 
 
 
