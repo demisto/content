@@ -3547,7 +3547,7 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     timeout=arg_to_number(demisto.args().get('polling_timeout_in_seconds', demisto.args().get('polling_timeout', 600))),
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
-def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
+def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple = ('PENDING', 'IN_PROGRESS')) -> PollResult:
     if action_id := args.get('action_id'):
         response = client.get_script_execution_status(action_id)
         general_status = response.get('reply', {}).get('general_status') or ''
@@ -3559,7 +3559,7 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
                          if argToBoolean(args.get('is_core', False))
                          else 'PaloAltoNetworksXDR'}
             ),
-            continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
+            continue_to_poll=general_status.upper() in statuses
         )
 
     else:
