@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: nmap
   version: -1
