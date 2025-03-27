@@ -1,8 +1,9 @@
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
-import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -19,9 +20,8 @@ class Client(BaseClient):
     Client to use in the Exabeam DataLake integration. Overrides BaseClient
     """
 
-    def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool):
-        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy, timeout=20)
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
+        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=20)
         self.username = username
         self.password = password
 
@@ -36,7 +36,7 @@ class Client(BaseClient):
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
-            headers={'Accept': 'application/json', 'Csrf-Token': 'nocheck'},
+            headers={"Accept": "application/json", "Csrf-Token": "nocheck"},
             data=data,
         )
 
@@ -45,23 +45,22 @@ class Client(BaseClient):
         The _logout method initiates a logout request, utilizing a GET HTTP request to the specified endpoint for
         user session termination.
         """
-        self._http_request('GET', full_url=f"{self._base_url}/api/auth/logout")
+        self._http_request("GET", full_url=f"{self._base_url}/api/auth/logout")
 
     def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
-        self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
+        self._http_request("GET", full_url=f"{self._base_url}/api/auth/check", resp_type="text")
 
-    def query_datalake_request(self, args: dict, from_param: int, size_param: int, cluster_name: str,
-                               dates_in_format: list) -> dict:
+    def query_datalake_request(
+        self, args: dict, from_param: int, size_param: int, cluster_name: str, dates_in_format: list
+    ) -> dict:
         """
         Queries the Exabeam Data Lake API with the provided search query and returns the response.
         """
         search_query = {
-            "sortBy": [
-                {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
-            ],
+            "sortBy": [{"field": "@timestamp", "order": "desc", "unmappedType": "date"}],
             "query": args.get("query", "*"),
             "from": from_param,
             "size": size_param,
@@ -70,13 +69,13 @@ class Client(BaseClient):
                     "clusterName": cluster_name,
                     "indices": dates_in_format,
                 }
-            ]
+            ],
         }
         return self._http_request(
             "POST",
             full_url=f"{self._base_url}/dl/api/es/search",
             data=json.dumps(search_query),
-            headers={'Content-Type': 'application/json', 'Csrf-Token': 'nocheck'},
+            headers={"Content-Type": "application/json", "Csrf-Token": "nocheck"},
         )
 
 
@@ -99,7 +98,7 @@ def _parse_entry(entry: dict) -> dict:
         "Vendor": source.get("Vendor"),
         "Created_at": source.get("@timestamp"),
         "Product": source.get("Product"),
-        "Message": source.get("message")
+        "Message": source.get("message"),
     }
 
 
@@ -186,15 +185,15 @@ def calculate_page_parameters(args: dict) -> tuple[int, int]:
         tuple: A tuple containing two integers representing the 'from' and 'size' parameters for pagination.
         'from' is the index of the first item to retrieve, and 'size' is the number of items to retrieve.
     """
-    page_arg = args.get('page')
-    page_size_arg = args.get('page_size')
-    limit_arg = args.get('limit')
+    page_arg = args.get("page")
+    page_size_arg = args.get("page_size")
+    limit_arg = args.get("limit")
 
     if (limit_arg and (page_arg or page_size_arg)) or ((not (page_arg and page_size_arg)) and (page_arg or page_size_arg)):
         raise DemistoException("You can only provide 'limit' alone or 'page' and 'page_size' together.")
 
     if page_arg and page_size_arg:
-        page = arg_to_number(args.get('page', '1'))
+        page = arg_to_number(args.get("page", "1"))
         page_size = get_limit(args, "page_size")
         if page == 0 or page_size == 0:
             raise DemistoException("Both 'page' and 'page_size' must be greater than 0.")
@@ -244,12 +243,13 @@ def query_data_lake_command(client: Client, args: dict, cluster_name: str) -> Co
     return CommandResults(
         outputs_prefix="ExabeamDataLake.Event",
         outputs=data_response,
-        readable_output=tableToMarkdown(name="Logs", t=human_readable, headers=[
-                                        "Id", "Vendor", "Product", "Created_at", "Message"])
+        readable_output=tableToMarkdown(
+            name="Logs", t=human_readable, headers=["Id", "Vendor", "Product", "Created_at", "Message"]
+        ),
     )
 
 
-def test_module(client: Client):    # pragma: no cover
+def test_module(client: Client):  # pragma: no cover
     """test function
 
     Args:
@@ -259,34 +259,28 @@ def test_module(client: Client):    # pragma: no cover
         ok if successful
     """
     client.test_module_request()
-    return 'ok'
+    return "ok"
 
 
 """ MAIN FUNCTION """
 
 
-def main() -> None:    # pragma: no cover
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
 
-    credentials: dict = params.get('credentials', {})
-    username = credentials.get('identifier', '')
-    password = credentials.get('password', '')
-    base_url: str = params.get('url', '')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    cluster_name = params.get('cluster_name', 'local')
+    credentials: dict = params.get("credentials", {})
+    username = credentials.get("identifier", "")
+    password = credentials.get("password", "")
+    base_url: str = params.get("url", "")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    cluster_name = params.get("cluster_name", "local")
     client = None
 
     try:
-        client = Client(
-            base_url.rstrip('/'),
-            username=username,
-            password=password,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+        client = Client(base_url.rstrip("/"), username=username, password=password, verify=verify_certificate, proxy=proxy)
 
         demisto.debug(f"Command being called is {command}")
 
@@ -299,7 +293,7 @@ def main() -> None:    # pragma: no cover
 
     except Exception as e:
         demisto.info(str(e))
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
     finally:
         if client:

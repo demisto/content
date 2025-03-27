@@ -562,8 +562,8 @@ def private_api_type_response_handler(*args, **kwargs):
 
 
 def test_fetch_incidents_last_fetch_none(mocker):
-    from Traceable import Client, fetch_incidents
     import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -584,14 +584,15 @@ def test_fetch_incidents_last_fetch_none(mocker):
     assert len(incidents) == 1
     assert incidents[0]["ipAddressType"] == "External"
     assert incidents[0]["eventUrl"] == (
-        'https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time=90d&env=Fintech_app'
+        "https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time=90d&env=Fintech_app"
     )
 
 
 def test_fetch_incidents_no_linked_api(mocker):
-    from Traceable import Client, fetch_incidents
-    import urllib3
     import json
+
+    import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -615,9 +616,10 @@ def test_fetch_incidents_no_linked_api(mocker):
 
 
 def test_fetch_incidents_public_api_type(mocker):
-    from Traceable import Client, fetch_incidents
-    import urllib3
     import json
+
+    import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -642,9 +644,10 @@ def test_fetch_incidents_public_api_type(mocker):
 
 
 def test_fetch_incidents_private_api_type(mocker):
-    from Traceable import Client, fetch_incidents
-    import urllib3
     import json
+
+    import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -668,12 +671,12 @@ def test_fetch_incidents_private_api_type(mocker):
     assert rawJSON["apiType"] == "Internal"
     assert rawJSON["apiIsAuthenticated"]
     assert rawJSON["apiRiskScore"] == 3
-    assert rawJSON["apiRiskScoreCategory"] == 'MEDIUM'
+    assert rawJSON["apiRiskScoreCategory"] == "MEDIUM"
 
 
 def test_fetch_incidents_last_fetch_not_none(mocker):
-    from Traceable import Client, fetch_incidents
     import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -691,15 +694,13 @@ def test_fetch_incidents_last_fetch_not_none(mocker):
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = response_handler
 
-    next_run, incidents = fetch_incidents(
-        client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
-    )
+    next_run, incidents = fetch_incidents(client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days")
     assert len(incidents) == 1
 
 
 def test_fetch_incidents_no_events(mocker):
-    from Traceable import Client, fetch_incidents
     import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -715,9 +716,7 @@ def test_fetch_incidents_no_events(mocker):
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = empty_response_handler
 
-    next_run, incidents = fetch_incidents(
-        client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
-    )
+    next_run, incidents = fetch_incidents(client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days")
     assert len(incidents) == 0
 
 
@@ -739,40 +738,28 @@ def test_construct_key_expression_in_str():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", "value")
-    assert (
-        key_exp
-        == '{keyExpression: {key: "key"}, operator: IN, value: ["value"], type: ATTRIBUTE}'
-    )
+    assert key_exp == '{keyExpression: {key: "key"}, operator: IN, value: ["value"], type: ATTRIBUTE}'
 
 
 def test_construct_key_expression_in_int():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", 1)
-    assert (
-        key_exp
-        == '{keyExpression: {key: "key"}, operator: IN, value: [1], type: ATTRIBUTE}'
-    )
+    assert key_exp == '{keyExpression: {key: "key"}, operator: IN, value: [1], type: ATTRIBUTE}'
 
 
 def test_construct_key_expression_in_int_list():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", [1, 2])
-    assert (
-        key_exp
-        == '{keyExpression: {key: "key"}, operator: IN, value: [1,2], type: ATTRIBUTE}'
-    )
+    assert key_exp == '{keyExpression: {key: "key"}, operator: IN, value: [1,2], type: ATTRIBUTE}'
 
 
 def test_construct_key_expression_in_str_list():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", ["value1", "value2"])
-    assert (
-        key_exp
-        == '{keyExpression: {key: "key"}, operator: IN, value: ["value1","value2"], type: ATTRIBUTE}'
-    )
+    assert key_exp == '{keyExpression: {key: "key"}, operator: IN, value: ["value1","value2"], type: ATTRIBUTE}'
 
 
 def test_construct_key_expression_in_none(caplog):
@@ -787,24 +774,17 @@ def test_construct_key_expression_equals_str():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", "value", operator="EQUALS")
-    assert (
-        key_exp
-        == '{keyExpression: {key: "key"}, operator: EQUALS, value: "value", type: ATTRIBUTE}'
-    )
+    assert key_exp == '{keyExpression: {key: "key"}, operator: EQUALS, value: "value", type: ATTRIBUTE}'
 
 
 def test_construct_key_expression_equals_int():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", 5, operator="EQUALS")
-    assert (
-        key_exp
-        == '{keyExpression: {key: "key"}, operator: EQUALS, value: 5, type: ATTRIBUTE}'
-    )
+    assert key_exp == '{keyExpression: {key: "key"}, operator: EQUALS, value: 5, type: ATTRIBUTE}'
 
 
 def test_construct_key_expression_unknown_op():
-
     from Traceable import Helper
 
     encountered_exception = False
@@ -834,8 +814,9 @@ def test_is_error_none_obj():
 
 
 def test_graphql_query(mocker):
-    from Traceable import Client
     import json
+
+    from Traceable import Client
 
     headers = {}
     headers["Content-Type"] = "application/json"
@@ -855,8 +836,9 @@ def test_graphql_query(mocker):
 
 
 def test_errors_in_response(caplog, mocker):
-    from Traceable import Client
     import json
+
+    from Traceable import Client
 
     headers = {}
     headers["Content-Type"] = "application/json"
@@ -876,8 +858,9 @@ def test_errors_in_response(caplog, mocker):
 
 
 def test_get_span_for_trace_id(caplog, mocker):
-    from Traceable import Client
     from datetime import datetime
+
+    from Traceable import Client
 
     headers = {}
     headers["Content-Type"] = "application/json"
@@ -896,9 +879,10 @@ def test_get_span_for_trace_id(caplog, mocker):
 
 
 def test_get_threat_events(caplog, mocker):
-    from Traceable import Client
     from datetime import datetime
+
     import urllib3
+    from Traceable import Client
 
     now_time = datetime.now()
     urllib3.disable_warnings()
@@ -922,9 +906,10 @@ def test_get_threat_events(caplog, mocker):
 
 
 def test_get_threat_events_query(capfd):
-    from Traceable import Client, DATE_FORMAT
     from datetime import datetime
+
     import urllib3
+    from Traceable import DATE_FORMAT, Client
 
     output_query = (
         '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:'
@@ -968,9 +953,7 @@ def test_get_threat_events_query(capfd):
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     # client.set_threat_category_list(threatCategoryList)
-    client.set_ip_reputation_level_list(
-        ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"]
-    )
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"])
     client.set_ip_categories_list(
         [
@@ -982,10 +965,29 @@ def test_get_threat_events_query(capfd):
             "BOT",
         ]
     )
-    client.set_domain_event_field_list([
-        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
-        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
-        "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
+    client.set_domain_event_field_list(
+        [
+            "actorDevice",
+            "actorEntityId",
+            "actorId",
+            "actorScoreCategory",
+            "actorSession",
+            "anomalousAttribute",
+            "apiName",
+            "apiUri",
+            "category",
+            "ipAbuseVelocity",
+            "ipReputationLevel",
+            "securityEventType",
+            "securityScore",
+            "serviceId",
+            "serviceName",
+            "actorScore",
+            "threatCategory",
+            "type",
+            "nonexistent",
+        ]
+    )
     client.set_limit(100)
     # client.__commit_integration_context__()
 
@@ -995,9 +997,10 @@ def test_get_threat_events_query(capfd):
 
 
 def test_get_threat_events_query_no_optional_fields(capfd):
-    from Traceable import Client, DATE_FORMAT
     from datetime import datetime
+
     import urllib3
+    from Traceable import DATE_FORMAT, Client
 
     output_query = (
         '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:'
@@ -1019,7 +1022,6 @@ def test_get_threat_events_query_no_optional_fields(capfd):
         + 'ction(expression: {key: "timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }'
         + '\nserviceName: selection(expression: {key: "serviceName"}) { value }\nanomalousAttribute: selection(express'
         + 'ion: {key: "anomalousAttribute"}) { value }\n\n    }\n  }\n}\n'
-
     )
 
     starttime = datetime.strptime("2023-06-20T15:34:56Z", DATE_FORMAT)
@@ -1032,9 +1034,7 @@ def test_get_threat_events_query_no_optional_fields(capfd):
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     # client.set_threat_category_list(threatCategoryList)
-    client.set_ip_reputation_level_list(
-        ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"]
-    )
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"])
     client.set_ip_categories_list(
         [
@@ -1063,8 +1063,9 @@ def test_env_param_parsing():
 
 
 def test_datetime_to_string():
-    from Traceable import Helper, DATE_FORMAT
     from datetime import datetime
+
+    from Traceable import DATE_FORMAT, Helper
 
     test_date_str = "2023-06-26T15:34:53Z"
     dt_object = datetime.strptime(test_date_str, DATE_FORMAT)
@@ -1103,6 +1104,7 @@ def test_graphql_query_non_200(mocker, caplog, capfd):
 
 def test_get_api_endpoint_details_query():
     from Traceable import Client, Helper
+
     client = Client("https://mock.url")
     client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
@@ -1115,7 +1117,7 @@ def test_get_api_endpoint_details_query():
             "be344182-c100-3287-874a-cb47eac709f2",
         ],
         ts,
-        ts
+        ts,
     )
     expected_query = (
         'query entities\n{\n  entities(\n    scope: "API"\n    between: {\n      startTime: "2023-'
@@ -1127,7 +1129,6 @@ def test_get_api_endpoint_details_query():
         + 'enticated" })\nriskScore: attribute(expression: { key: "riskScore" })\nriskScoreCategory'
         + ': attribute(expression: { key: "riskScoreCategory" })\nisLearnt: attribute(expression: {'
         + ' key: "isLearnt" })\n\n    }\n  }\n}'
-
     )
 
     assert query == expected_query
@@ -1157,6 +1158,7 @@ def test_get_api_endpoint_details(mocker):
 
 def test_url_encode(capfd):
     from urllib import parse
+
     s = "Fintech App"
     r = parse.quote(s)
     assert r == "Fintech%20App"
@@ -1164,6 +1166,7 @@ def test_url_encode(capfd):
 
 def test_check_private_ip():
     from ipaddress import ip_address
+
     is_private = ip_address("192.168.11.20").is_private
     assert is_private
 
@@ -1172,8 +1175,8 @@ def test_check_private_ip():
 
 
 def test_fetch_incident_with_private_ipaddress(mocker):
-    from Traceable import Client, fetch_incidents
     import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
@@ -1191,12 +1194,14 @@ def test_fetch_incident_with_private_ipaddress(mocker):
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert len(incidents) == 1
     assert incidents[0]["ipAddressType"] == "Internal"
-    assert incidents[0]["eventUrl"] == ('https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time='
-                                        + '90d&env=Fintech_app')
+    assert incidents[0]["eventUrl"] == (
+        "https://app.mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time=" + "90d&env=Fintech_app"
+    )
 
 
 def test_ignore_ranges_parsing():
     from Traceable import Client
+
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_ignore_status_codes("    400    -    499   ")
@@ -1271,6 +1276,7 @@ def test_ignore_ranges_parsing():
 
 def test_is_ignored_range():
     from Traceable import Client
+
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_ignore_status_codes("1,300,400-499")
@@ -1284,17 +1290,54 @@ def test_is_ignored_range():
 
 def test_process_domain_field_list():
     from Traceable import Client
+
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
-    client.set_domain_event_field_list([
-        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
-        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
-        "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
+    client.set_domain_event_field_list(
+        [
+            "actorDevice",
+            "actorEntityId",
+            "actorId",
+            "actorScoreCategory",
+            "actorSession",
+            "anomalousAttribute",
+            "apiName",
+            "apiUri",
+            "category",
+            "ipAbuseVelocity",
+            "ipReputationLevel",
+            "securityEventType",
+            "securityScore",
+            "serviceId",
+            "serviceName",
+            "actorScore",
+            "threatCategory",
+            "type",
+            "nonexistent",
+        ]
+    )
     assert len(client.domain_event_field_list) == 31
-    client.set_domain_event_field_list([
-        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
-        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
-        "serviceName", "actorScore", "threatCategory"])
+    client.set_domain_event_field_list(
+        [
+            "actorDevice",
+            "actorEntityId",
+            "actorId",
+            "actorScoreCategory",
+            "actorSession",
+            "anomalousAttribute",
+            "apiName",
+            "apiUri",
+            "category",
+            "ipAbuseVelocity",
+            "ipReputationLevel",
+            "securityEventType",
+            "securityScore",
+            "serviceId",
+            "serviceName",
+            "actorScore",
+            "threatCategory",
+        ]
+    )
     assert len(client.domain_event_field_list) == 30
     client.set_domain_event_field_list([])
     assert len(client.domain_event_field_list) == 15
@@ -1304,12 +1347,32 @@ def test_process_domain_field_list():
 
 def test_construct_field_selection_expression():
     from Traceable import Client
+
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
-    client.set_domain_event_field_list([
-        "actorDevice", "actorEntityId", "actorId", "actorScoreCategory", "actorSession", "anomalousAttribute", "apiName",
-        "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
-        "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
+    client.set_domain_event_field_list(
+        [
+            "actorDevice",
+            "actorEntityId",
+            "actorId",
+            "actorScoreCategory",
+            "actorSession",
+            "anomalousAttribute",
+            "apiName",
+            "apiUri",
+            "category",
+            "ipAbuseVelocity",
+            "ipReputationLevel",
+            "securityEventType",
+            "securityScore",
+            "serviceId",
+            "serviceName",
+            "actorScore",
+            "threatCategory",
+            "type",
+            "nonexistent",
+        ]
+    )
     expression_string = client.get_domain_event_query_fields()
     expected_output = (
         'actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expression: {'
@@ -1338,6 +1401,7 @@ def test_construct_field_selection_expression():
 
 def test_construct_api_attribute_selection():
     from Traceable import Client, Helper
+
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_optional_api_attributes(["isExternal", "isExternal", "isAuthenticated", "nonexistent"])
@@ -1349,7 +1413,6 @@ def test_construct_api_attribute_selection():
         + 'be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n'
         + '      id\n      isExternal: attribute(expression: { key: "isExternal" })\nisAuth'
         + 'enticated: attribute(expression: { key: "isAuthenticated" })\n\n    }\n  }\n}'
-
     )
 
     ts = Helper.string_to_datetime("2023-08-21T12:41:27Z")
@@ -1360,15 +1423,16 @@ def test_construct_api_attribute_selection():
             "be344182-c100-3287-874a-cb47eac709f2",
         ],
         ts,
-        ts
+        ts,
     )
     assert query == expected_output
 
 
 def test_fetch_incidents_no_api_attributes_selection(mocker):
-    from Traceable import Client, fetch_incidents
-    import urllib3
     import json
+
+    import urllib3
+    from Traceable import Client, fetch_incidents
 
     urllib3.disable_warnings()
     headers = {}
@@ -1396,7 +1460,9 @@ def test_fetch_incidents_no_api_attributes_selection(mocker):
 
 def test_fixing_timestamp():
     from datetime import datetime
+
     from Traceable import Helper
+
     now_time = datetime.now()
     now_time_str1 = Helper.datetime_to_string(now_time)
     now_time_str2 = Helper.start_datetime_to_string(now_time)
@@ -1408,6 +1474,7 @@ def test_fixing_timestamp():
 
 def test_set_app_url(mocker):
     from Traceable import Client, fetch_incidents
+
     headers = {}
     headers["Content-Type"] = "application/json"
     headers["Accept"] = "application/json"
@@ -1433,8 +1500,9 @@ def test_set_app_url(mocker):
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert len(incidents) == 1
     assert "eventUrl" in incidents[0]
-    assert incidents[0]["eventUrl"] == ('https://mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time'
-                                        + '=90d&env=Fintech_app')
+    assert incidents[0]["eventUrl"] == (
+        "https://mock.url/security-event/9dd9261a-23db-472e-9d2a-a4c3227d6502?time" + "=90d&env=Fintech_app"
+    )
 
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_app_url(None)
@@ -1445,6 +1513,7 @@ def test_set_app_url(mocker):
 
 def test_instance_cache(mocker):
     from Traceable import Client, fetch_incidents
+
     headers = {}
     headers["Content-Type"] = "application/json"
     headers["Accept"] = "application/json"
@@ -1479,13 +1548,17 @@ def test_instance_cache(mocker):
 
 def test_boolean_construct_key_expression(capfd):
     from Traceable import Helper
+
     result = Helper.construct_key_expression("key", True, operator="EQUALS")
     expected = '{keyExpression: {key: "key"}, operator: EQUALS, value: true, type: ATTRIBUTE}'
     assert result == expected
 
     passed = False
     try:
-        result = Helper.construct_key_expression("key", True, )
+        result = Helper.construct_key_expression(
+            "key",
+            True,
+        )
     except Exception as e:
         assert str(e) == "Value of type bool doesn't allow operator IN"
         passed = True
@@ -1494,9 +1567,10 @@ def test_boolean_construct_key_expression(capfd):
 
 
 def test_list_instance_cache_command():
-    from Traceable import list_incident_cache_command, Client, Helper
-    import urllib3
     import json
+
+    import urllib3
+    from Traceable import Client, Helper, list_incident_cache_command
 
     urllib3.disable_warnings()
     headers = {}
@@ -1511,15 +1585,16 @@ def test_list_instance_cache_command():
     client.__commit_integration_context__()
     _str = Helper.now_time_to_string()
     client.set_integration_context_key_value("key", _str)
-    es = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\"}}]"
+    es = f'[{{"id": "key", "expiry": "{_str}"}}]'
     result = list_incident_cache_command(client)
     assert json.dumps(result) == es
 
 
 def test_purge_incident_cache_command():
-    from Traceable import list_incident_cache_command, purge_incident_cache_command, Client, Helper
-    import urllib3
     import json
+
+    import urllib3
+    from Traceable import Client, Helper, list_incident_cache_command, purge_incident_cache_command
 
     urllib3.disable_warnings()
     headers = {}
@@ -1534,10 +1609,10 @@ def test_purge_incident_cache_command():
     client.__commit_integration_context__()
     _str = Helper.now_time_to_string()
     client.set_integration_context_key_value("key", _str)
-    es = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\"}}]"
+    es = f'[{{"id": "key", "expiry": "{_str}"}}]'
     result = list_incident_cache_command(client)
     assert json.dumps(result) == es
-    expected = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\", \"deletion_status\": \"deleted\"}}]"
+    expected = f'[{{"id": "key", "expiry": "{_str}", "deletion_status": "deleted"}}]'
     result = purge_incident_cache_command(client)
     assert len(result) > 0
     assert json.dumps(result) == expected
@@ -1545,7 +1620,7 @@ def test_purge_incident_cache_command():
 
 
 def test_test_module(mocker):
-    from Traceable import test_module, Client
+    from Traceable import Client, test_module
 
     headers = {}
     headers["Content-Type"] = "application/json"
@@ -1562,4 +1637,4 @@ def test_test_module(mocker):
     mocked_post.side_effect = response_handler
 
     res = test_module(client)
-    assert res == 'ok'
+    assert res == "ok"

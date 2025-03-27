@@ -2,7 +2,7 @@
     "name": "RiskIQ Digital Footprint",
     "description": "RiskIQ Digital Footprint integration enables your security team to manage assets outside your firewall and provides you with the ability to add or update assets and analyze your digital footprint from the view of the global adversary.",
     "support": "community",
-    "currentVersion": "1.1.23",
+    "currentVersion": "1.1.24",
     "author": "RiskIQ",
     "url": "https://www.riskiq.com/resources/support/",
     "email": "paloaltonetworks@riskiq.net",

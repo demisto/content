@@ -2,7 +2,7 @@
     "name": "Spamhaus Feed",
     "description": "The Spamhaus DROP (Don't Route Or Peer) lists are advisory \"drop all traffic\" lists, consisting of netblocks that are \"hijacked\" or leased by professional spam or cyber-crime operations (used for dissemination of malware, trojan downloaders, botnet controllers). The DROP lists are a tiny subset of the SBL, designed for use by firewalls and routing equipment to filter out the malicious traffic from these netblocks.",
     "support": "xsoar",
-    "currentVersion": "1.1.28",
+    "currentVersion": "1.1.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

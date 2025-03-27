@@ -2,7 +2,7 @@
     "name": "FireMon Security Manager",
     "description": "Creates a Policy Planner Ticket in Policy Planner Application and Validates Pre Changes assessments for new requirement.",
     "support": "community",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "FireMon",
     "url": "",
     "email": "",
