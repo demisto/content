@@ -356,7 +356,7 @@ def return_entry_summary(
             "Tags": ['DBOT_URL_PHISHING_MALICIOUS']
         }
     return_results(return_entry)
-    # Get rasterize image or logo detection if logo was found
+
     if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
@@ -659,10 +659,8 @@ def get_urls_to_run(
         urls_only = urls_argument.split()
     urls = list(set(urls_email_body + urls_only + urls_email_html))
 
-    # create a list with all the paths that start with "mailto:"
     mailto_urls = [url for url in urls if url.startswith("mailto:")]
 
-    # remove the mailto urls from urls list
     urls = [item for item in urls if item not in mailto_urls]
 
     if mailto_urls:
@@ -702,11 +700,9 @@ def main():
 
         model = load_model()
 
-        # Get all the URLs on which we will run the model
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
 
         if urls:
-            # Run the model and get predictions
             results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout, protocol)
             if results:
                 general_summary = return_general_summary(results)

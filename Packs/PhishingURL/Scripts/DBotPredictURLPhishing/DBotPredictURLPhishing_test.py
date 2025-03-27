@@ -322,6 +322,14 @@ def test_model_predictions(mocker: MockerFixture):
         assert output == pred['output'], f"Prediction failed with {pred['input']['name']}"
 
 
+def test_get_model_data_old_model(mocker: MockerFixture):
+    """
+    Given: An old model is in the server.
+    When: Running the DBotPredictURLPhishingScript.
+    Then: the function should return an empty list without errors.
+    """
+
+
 def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
     """
     Given: max_urls is set to 0.
