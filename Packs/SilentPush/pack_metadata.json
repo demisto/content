@@ -1,0 +1,20 @@
+{
+    "name": "Silent Push",
+    "description": "SilentPush integration for domain and IP intelligence\u001b[C",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Silent Push",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
