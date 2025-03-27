@@ -229,7 +229,7 @@ def get_vms(si, args):
             mac_address = ''
             try:
                 for dev in child.config.hardware.device:
-                    if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
+                    if isinstance(dev, vim.vm.device.VirtualEthernetCard):
                         mac_address = dev.macAddress
                         break
             except Exception:  # noqa
@@ -638,8 +638,8 @@ def create_vm(si, args):
 
         try:
             for dev in task.info.result.config.hardware.device:
-                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
-                    mac_address = dev.macAddress
+                if isinstance(dev, vim.vm.device.VirtualEthernetCard):
+                    mac_address = dev.macAddress  # type: ignore[assignment]
                     break
         except Exception:  # noqa
             pass
@@ -700,8 +700,8 @@ def clone_vm(si, args):
         summary = task.info.result.summary
         try:
             for dev in task.info.result.config.hardware.device:
-                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
-                    mac_address = dev.macAddress
+                if isinstance(dev, vim.vm.device.VirtualEthernetCard):
+                    mac_address = dev.macAddress  # type: ignore[assignment]
                     break
         except Exception:  # noqa
             pass
