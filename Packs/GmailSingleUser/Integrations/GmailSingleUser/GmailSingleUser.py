@@ -1248,15 +1248,15 @@ def fetch_incidents(client: Client):
             demisto.info(f"resetting ignore list of len: {len(ignore_ids)}")
             ignore_ids = []
         last_fetch = next_last_fetch
-    demisto.setLastRun(
-        {
+    new_last_run = {
             "gmt_time": client.get_date_isoformat_server(last_fetch),
             "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
             "page_token": next_page_token,
             "ignore_ids": ignore_ids,
             "ignore_list_used": ignore_list_used,
         }
-    )
+    demisto.debug(f"Gmail: call to setLastRun function with {new_last_run}")
+    demisto.setLastRun(new_last_run)
     return incidents
 
 
@@ -1285,6 +1285,94 @@ def auth_test_command(client):
     return "Authentication test completed successfully."
 
 
+def get_unix_date(args: dict) -> tuple[str, str]:
+    before = arg_to_datetime(args.get("before", "now"))
+    after = arg_to_datetime(args.get("after", "1 day ago"))
+    if isinstance(before, datetime):
+        before = str(int(before.timestamp()))
+    if isinstance(after, datetime):
+        after = str(int(after.timestamp()))
+    return before or "", after or ""
+
+
+def get_incidents_command(client: Client):
+    """
+    Retrieves a list of emails from Gmail within a specific date range and formats them as incidents.
+
+    Args:
+        client (GmailClient): The Gmail API client.
+        args (dict): Command arguments, e.g., max_results, labels, before, after.
+
+    Returns:
+        CommandResults: The list of incidents formatted for Cortex XSOAR.
+    """
+    args = demisto.args()
+
+    max_results = int(args.get("max_results", 10))
+    label_ids = argToList(args.get("labels"))
+    query = args.get("query", "")
+    subject = args.get("subject", "")
+    _from = args.get("from", "")
+    to = args.get("to", "")
+    filename = args.get("filename", "")
+    _in = args.get("in", "")
+    has_attachments = argToBoolean(args.get("has_attachments", "false"))
+    before, after = get_unix_date(args)
+    demisto.debug(
+        f"Fetching emails with filters - subject: {subject}, from: {_from}, to: {to}, before: {before}, after: {after}"
+    )
+    try:
+        emails, final_query = client.search(
+            user_id="me",
+            subject=subject,
+            _from=_from,
+            to=to,
+            before=before,
+            after=after,
+            filename=filename,
+            _in=_in,
+            query=query,
+            label_ids=label_ids,
+            max_results=max_results,
+            has_attachments=has_attachments,
+        )
+    except Exception as e:
+        return_error(f"Failed to fetch emails: {str(e)}")
+
+    if not emails:
+        demisto.debug("No emails found for the given query.")
+        return_results(CommandResults(readable_output="No incidents found."))
+    for email in emails:
+        email["internalDatetime"] = timestamp_to_datestring(email.get("internalDate", 0), is_utc=True)
+        email["From"] = next(
+            (
+                h.get("value")
+                for h in email.get("payload", {}).get("headers", [])
+                if h.get("name", "").lower() == "from"
+            ),
+            None,
+        )
+
+    demisto.debug(f"Retrieved {len(emails)} incidents using query: {final_query}")
+
+    return_results(
+        CommandResults(
+            readable_output=tableToMarkdown(
+                "Retrieved Gmail Incidents",
+                emails,
+                headers=[
+                    "From",
+                    "snippet",
+                    "internalDatetime",
+                    "labelIds",
+                    "id",
+                ],
+            ),
+            raw_response=emails,
+        )
+    )
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
@@ -1304,6 +1392,7 @@ def main():  # pragma: no cover
         "gmail-auth-link": auth_link_command,
         "gmail-auth-test": auth_test_command,
         "gmail-get-attachments": get_attachments_command,
+        "gmail-get-incidents": get_incidents_command,
     }
 
     try:
