@@ -182,6 +182,39 @@ def test_lansweeper_ip_hunt_command_when_valid_response_is_returned(mocker_get_c
     assert command_response.outputs == context
     assert command_response.readable_output == readable_output
 
+@patch('demistomock.getIntegrationContext')
+def test_lansweeper_assetname_hunt_command_when_valid_response_is_returned(mocker_get_context, mocker):
+    """
+    Test case scenario for successful execution of ls-assetname-hunt command.
+    Given:
+        - command arguments for assetname hunt command
+    When:
+        - Calling `ls-assetname-hunt` command
+    Then:
+        -  Returns the response data
+    """
+    from Lansweeper import lansweeper_assetname_hunt_command
+    mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
+    response = util_load_json(
+        os.path.join("test_data", "assetname_hunt_command_response.json"))
+    context = util_load_json(
+        os.path.join("test_data", "assetname_hunt_command_context.json"))
+    with open(os.path.join("test_data", "assetname_hunt_command_hr.md"), 'r') as f:
+        readable_output = f.read()
+
+    mocked_client = mocker.Mock()
+    mocked_client.asset_list.return_value = response
+    args = {
+        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
+        'ip': "127.0.0.1"
+
+    }
+    command_response = lansweeper_assetname_hunt_command(mocked_client, args)
+
+    assert command_response.outputs_prefix == "Lansweeper.AssetName"
+    assert command_response.outputs_key_field == "assetId"
+    assert command_response.outputs == context
+    assert command_response.readable_output == readable_output
 
 @patch('demistomock.getIntegrationContext')
 def test_lansweeper_ip_hunt_command_when_empty_response_is_returned(mocker_get_context, mocker):
