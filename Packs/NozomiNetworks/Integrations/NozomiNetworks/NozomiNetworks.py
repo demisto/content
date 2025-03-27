@@ -87,6 +87,7 @@ QUERY_ASSETS_PATH = "/api/open/query/do?query=assets | sort id"
 JOB_STATUS_MAX_RETRY = 5
 DEFAULT_HEAD_ASSETS = 50
 DEFAULT_COUNT_ALERTS = 100
+MAX_PAGE_NUMBER_REACHABLE = 100
 DEFAULT_HEAD_QUERY = 500
 MAX_ASSETS_FINDABLE_BY_A_COMMAND = 100
 DEFAULT_ASSETS_FINDABLE_BY_A_COMMAND = 50
@@ -138,6 +139,13 @@ def better_than_time_filter(st):
     return t
 
 
+def equal_time_filter(st):
+    t = ""
+    if st:
+        t = f" | where record_created_at == {st}"
+    return t
+
+
 def better_than_id_filter(id):
     res = ""
     if id:
@@ -159,14 +167,24 @@ def has_last_run(lr):
     return lr is not None and "last_fetch" in lr
 
 
-def incidents_better_than_time(st, page, risk, also_n2os_incidents, client):
+def _fetch_incidents(time_filter, st, page, risk, also_n2os_incidents, client):
     query = (
-        f"{QUERY_ALERTS_PATH} | sort record_created_at asc{better_than_time_filter(st)}"
-        f"{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}"
+        f"{QUERY_ALERTS_PATH} | sort record_created_at asc"
+        f"{time_filter(st)}"
+        f"{risk_filter(risk)}"
+        f"{also_n2os_incidents_filter(also_n2os_incidents)}"
     )
 
     full_path = f"{query}&page={page}&count={min(int(incident_per_run()), 1000)}"
     return client.http_get_request(full_path)["result"]
+
+
+def incidents_better_than_time(st, page, risk, also_n2os_incidents, client):
+    return _fetch_incidents(better_than_time_filter, st, page, risk, also_n2os_incidents, client)
+
+
+def incidents_equal_to_time(st, page, risk, also_n2os_incidents, client):
+    return _fetch_incidents(equal_time_filter, st, page, risk, also_n2os_incidents, client)
 
 
 def also_n2os_incidents_filter(also_n2os_incidents):
@@ -184,7 +202,14 @@ def incidents(st, last_run, risk, also_n2os_incidents, client):
     def get_incident_name(i):
         return i["name"]
 
-    ibtt = incidents_better_than_time(st, last_run.get("page", 1), risk, also_n2os_incidents, client)
+    current_page = last_run.get("page", 1)
+    ibtt = incidents_better_than_time(st, current_page, risk, also_n2os_incidents, client)
+
+    if current_page == MAX_PAGE_NUMBER_REACHABLE:
+        iett = incidents_equal_to_time(last_fetched_time(ibtt, last_run), current_page, risk, also_n2os_incidents, client)
+        combined = ibtt + iett if ibtt else iett
+        ibtt = list({incident["id"]: incident for incident in combined}.values())
+
     lft = last_fetched_time(ibtt, last_run)
 
     if ibtt is None:
@@ -297,7 +322,7 @@ def last_fetch_to_set(last_fetch, next_page, st):
 
 
 def build_next_page(current_page, incidents_count):
-    if current_page >= 100 or incidents_count < incident_per_run():
+    if current_page >= MAX_PAGE_NUMBER_REACHABLE or incidents_count < incident_per_run():
         if incidents_count == 0:
             # if demisto_incidents for this page is empty will be queried until returns at least one item
             next_page = current_page
