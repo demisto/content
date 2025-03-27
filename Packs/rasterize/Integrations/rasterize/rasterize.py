@@ -644,7 +644,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
         demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true" f"{chrome_options in chrome_options_dict}"
+            "chrome_manager: condition chrome_options in chrome_options_dict is true"
         )
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
