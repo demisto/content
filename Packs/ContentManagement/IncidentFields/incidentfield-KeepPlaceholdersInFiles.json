@@ -12,7 +12,7 @@
     ],
 	"placeholder": "",
 	"template": "",
-	"description": "",
+	"description": "Set this to 'Yes' to prevent placeholders (${ }) in the pull request from being replaced with the current data in the context.",
 	"cliName": "cicdkeepplaceholdersinfiles",
 	"type": "boolean",
 	"closeForm": false,
