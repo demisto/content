@@ -1,0 +1,177 @@
+{
+    "key_incidents": [
+        {
+            "analysis": "Weekly report from security provider covering global supply chain impacts across multiple sectors including manufacturing, shipping, and consumer-facing issues.",
+            "created_at": "2022-05-19T18:50:43.155000+00:00",
+            "updated_at": "2022-05-19T18:52:25.491000+00:00",
+            "headline": "Weekly Supply Chains Report",
+            "incident_id": "KI-1",
+            "risk_level": "Unknown",
+            "solution": "Physical Security",
+            "tags": [
+                "Analyzed",
+                "Physical Security",
+                "Unknown",
+                "Imported",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": "N/A",
+            "url": null,
+            "attachments": [
+                {
+                    "url": "https://api.zerofox.com/cti/key-incident-attachment/cGVybWF/",
+                    "name": "XSS_Enbridge_Inc_Access_Explicitly_Sought_ostad.jpg",
+                    "createdOn": 1689082194489
+                }
+            ]
+        },
+        {
+            "analysis": "Upcoming elections in a country with close polling between incumbent and opposition. Key campaign issues include climate, energy, health, and economic concerns.",
+            "created_at": "2022-05-20T10:02:44.791000+00:00",
+            "updated_at": "2022-05-20T18:49:18.212000+00:00",
+            "headline": "Country A: Elections on July 21, 2022",
+            "incident_id": "KI-2",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Corporate Security",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Planned protest in a country's capital related to foreign involvement in domestic politics. Civil unrest follows previous government crackdown on demonstrations. Potential for continued protests and boycotts.",
+            "created_at": "2022-05-20T10:04:19.007000+00:00",
+            "updated_at": "2022-05-20T18:49:19.177000+00:00",
+            "headline": "Country B: Continued anti-government protests and calls for boycott on May 28, 2022",
+            "incident_id": "KI-3",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Threat Term",
+                "Corporate Security",
+                "Disruption",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Nationwide strike planned by unions and worker groups over wage disputes. May affect transportation, law enforcement, and healthcare services.",
+            "created_at": "2022-05-20T10:05:08.177000+00:00",
+            "updated_at": "2022-05-20T18:49:20.053000+00:00",
+            "headline": "Country C: Nationwide strike on May 31, 2022",
+            "incident_id": "KI-4",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Corporate Security",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Security incident involving explosives in a region under state of emergency due to criminal activity. Part of broader regional security concerns affecting multiple countries in the area.",
+            "created_at": "2022-05-20T10:05:57.550000+00:00",
+            "updated_at": "2022-05-20T18:49:20.917000+00:00",
+            "headline": "Country D: Two car bombs detonate during state of emergency over region wide drug crime on May 19, 2022",
+            "incident_id": "KI-5",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Physical_Security_Spanish",
+                "Denial of Service",
+                "Unknown",
+                "Physical_Security_Portuguese",
+                "Threat Term",
+                "Corporate Security",
+                "Physical_Security_Italian",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "On May 24, 2012, a government-funded Tourism Agency's small-group demonstration tours have begun with foreign tourists arriving in the country for the first time in about two years. The first group was seven travelers from a foreign nation. The seven participants, together with tour guides from a local travel agency, will spend approximately one-week touring popular tourist destinations in certain regions to confirm effective ways to ensure that people from overseas perform basic health measures such as temperature checks, disinfection, and the use of masks. This program will fully begin on June 10 and will be limited to escorted tours for foreign visitors. Conditions for participation include three doses of the vaccine, wearing masks in most public areas, and following the guidelines of the travel agency's tour plan. The Tourism Agency will continue to interview participants to determine areas for improvement and provide information to accommodation facilities and travel agencies.",
+            "created_at": "2012-03-27T20:27:17.586000+00:00",
+            "updated_at": "2012-03-31T20:41:29.121000+00:00",
+            "headline": "Region A: First Phases Begin of Reopening Borders to Foreign Tourists, May 24, 2012",
+            "incident_id": "KI-30",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Imported",
+                "Corporate Security",
+                "Other",
+                "Key Incident"
+            ],
+            "threat_types": [
+                "Other"
+            ],
+            "title": "N/A",
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Starting June 1, 2012, a nation will lift its state of emergency which has been in place since a military coup on October 25, 2011. The coup was led by a military general who is the de-facto leader of the country. The leader is lifting the order to help international negotiations with the opposition who have been protesting non-stop since the coup. Most of the opposition has been boycotting the talks and the prospect of a political breakthrough is unlikely. Before the coup, the country was reopening to the international community and many international firms were re-opening offices after decades. However, the coup has suspended most of those relationships.",
+            "created_at": "2012-03-31T08:14:14.469000+00:00",
+            "updated_at": "2012-03-31T20:41:29.987000+00:00",
+            "headline": "Region B: Six month State of Emergency lifted on June 1, 2012",
+            "incident_id": "KI-31",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Emergency Response Activity",
+                "Threat Term",
+                "Corporate Security",
+                "Physical Threat - Facility",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Negotiators from a regional organization have been meeting with the leaders of two neighboring countries over cross border tensions. Military personnel from one country have reportedly been captured by rebels in the other country, while one nation has suspended flights from the other over alleged support for rebel groups. In recent days, rebels have advanced to within 20 miles of a major city, displacing 100,000 people, before retreating. One country has been accused of supporting rebels operating in the neighboring territory for years. Recently, rebels were declared a terrorist group and have been precluded from peace talks being held in a neutral location between the government and other rebel groups. There are numerous rebel groups operating in the mineral rich regions, with many allegedly supported by neighboring countries.",
+            "created_at": "2012-03-31T08:22:25.589000+00:00",
+            "updated_at": "2012-03-31T20:41:31.089000+00:00",
+            "headline": "Region C: Country suspends ties with neighboring nation over rebel violence on May 31, 2012",
+            "incident_id": "KI-32",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Corporate Security",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        }
+    ]
+}

@@ -22,25 +22,17 @@ display: ZeroFox_Key_Incidents
 name: ZeroFox_Key_Incidents
 script:
   commands:
-  - name: zerofox-get-key-incidents
-    description: Fetches a Key Inicident by ID.
+  - name: zerofox-get-key-incident-attachment
+    description: Fetches a Key Incident Attachment by ID.
     arguments:
-      - Start time.
-        name: start_time
+      - name: attachment_id
         required: true
-      - End time.
-        name: end_time
-        required: true
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+        description: The ID of the Key Incident Attachment.
   script: '-'
   type: python
   subtype: python3
   longRunning: false
   longRunningPort: false
-  isfetch: false
   runonce: false
   isfetch: true
   ismappable: false
