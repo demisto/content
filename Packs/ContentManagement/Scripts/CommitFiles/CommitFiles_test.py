@@ -1,3 +1,4 @@
+from CommitFiles import commit_git
 import os
 from pathlib import Path
 
@@ -5,6 +6,7 @@ import demistomock as demisto
 from CommitFiles import ContentFile
 import pytest
 from CommonServerPython import *
+from unittest.mock import patch, MagicMock
 
 content_file = ContentFile()
 content_file.file_name = 'hello.py'
@@ -271,3 +273,67 @@ def test_update_content_item_gitlab(mocker):
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch('CommitFiles.execute_command', return_value=(True, expected_str))
     commit_content_item_gitlab(branch_name, content_file, [], [])
+
+
+@pytest.mark.parametrize(
+    "given, expected",
+    [
+        # Basic placeholder escaping
+        ("Hello ${name}", "Hello $\\{name}"),
+        ("${key.value}", "$\\{key.value}"),
+
+        # Multiple placeholders
+        ("${user.name} and ${user.id}", "$\\{user.name} and $\\{user.id}"),
+
+        # Placeholders inside a sentence
+        ("User: ${user.name}, ID: ${user.id}", "User: $\\{user.name}, ID: $\\{user.id}"),
+
+        # Placeholder at the start of the string
+        ("${start} of string", "$\\{start} of string"),
+
+        # Placeholder at the end of the string
+        ("End of string ${end}", "End of string $\\{end}"),
+
+        # Placeholder with special characters inside
+        ("Value: ${some.key_with-dash}", "Value: $\\{some.key_with-dash}"),
+
+        # No placeholders - should remain unchanged
+        ("No placeholders here", "No placeholders here"),
+
+        # Empty string case
+        ("", "")
+    ]
+)
+def test_escape_placeholders(given, expected):
+    from CommitFiles import escape_placeholders
+    assert escape_placeholders(given) == expected
+
+
+def test_commit_git_gitlab():
+    with patch("CommitFiles.commit_content_item_gitlab") as mock_commit:
+        commit_git("Gitlab", "main", MagicMock(), [], [], False)
+        mock_commit.assert_called_once()
+
+
+def test_commit_git_github():
+    with patch("CommitFiles.commit_content_item") as mock_commit:
+        commit_git("GitHub", "main", MagicMock(), [], [], False)
+        mock_commit.assert_called_once()
+
+
+def test_commit_git_bitbucket():
+    with patch("CommitFiles.commit_content_item_bitbucket") as mock_commit:
+        commit_git("Bitbucket", "main", MagicMock(), [], [], False)
+        mock_commit.assert_called_once()
+
+
+def test_commit_git_azure_devops():
+    with patch("CommitFiles.commit_content_item_azure_devops") as mock_commit:
+        commit_git("AzureDevOps", "main", MagicMock(), [], [], False)
+        mock_commit.assert_called_once()
+
+
+def test_commit_git_invalid_integration():
+    with pytest.raises(DemistoException,
+                       match="Unexpected git_integration=.* Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps."):
+        commit_git("Unknown", "main", MagicMock(), [], [], False)
