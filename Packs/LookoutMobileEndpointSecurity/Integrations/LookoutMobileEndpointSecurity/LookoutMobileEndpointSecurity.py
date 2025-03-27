@@ -114,6 +114,10 @@ def stream_events(sse_client: SSEClient, fetch_interval: int):
 
 def handle_fetched_events(events: list, event_ids: set, latest_server_event_id: str):
     """Handles the fetched events in the interval
+    Args:
+        events (list): The list of events
+        event_ids (set): The set of events ids
+        latest_server_event_id (str): The id of the latest event
     """
     demisto.debug(f"Fetched a total of {len(events)} events")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
@@ -155,6 +159,10 @@ def get_last_event_id() -> str:
 
 def get_url_for_stream(base_url: str, event_type_query: str, last_event_id: str) -> str:
     """Builds the url for streaming with the url parameters
+    Args:
+        base_url (str): The base url
+        event_type_query (str): The event type query
+        last_event_id (str): The id of the last event
     """
     url_for_stream = base_url + 'mra/stream/v2/events'
     url_for_stream += f'?type={event_type_query}&id={last_event_id}'
@@ -163,6 +171,8 @@ def get_url_for_stream(base_url: str, event_type_query: str, last_event_id: str)
 
 def create_response_object(client: Client) -> Response:
     """Creates the response object with the requests module
+    Args:
+        client (Client): The client
     """
     last_event_id = get_last_event_id()
     stream_url = get_url_for_stream(client.base_url, client.event_type_query, last_event_id)
@@ -181,7 +191,7 @@ def perform_long_running_loop(client: Client, fetch_interval: int):
     Long running loop iteration function. Fetches events from the connection and sends them to XSIAM.
 
     Args:
-        connection (EventConnection): A connection object to fetch events from.
+        client (Client): The client.
         fetch_interval (int): Fetch time for this fetching events cycle.
     """
     response = create_response_object(client)
@@ -195,6 +205,9 @@ def long_running_execution_command(client: Client, fetch_interval: int):
     """
     Performs the long running execution loop.
     Opens a connection to MES and fetches events in a loop.
+    Args:
+        client (Client): The client.
+        fetch_interval (int): Fetch time for this fetching events cycle.
     """
     while True:
         try:
@@ -207,6 +220,8 @@ def long_running_execution_command(client: Client, fetch_interval: int):
 
 def test_module(client) -> str:  # pragma: no cover
     """Tests the connection to the server
+    Args:
+        client (Client): The client.
     """
     try:
         client.refresh_token()

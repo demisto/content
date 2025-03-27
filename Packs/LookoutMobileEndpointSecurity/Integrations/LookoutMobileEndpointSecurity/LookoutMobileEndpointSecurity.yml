@@ -58,7 +58,7 @@ display: Lookout Mobile Endpoint Security
 name: LookoutMobileEndpointSecurity
 script:
   commands: []
-  dockerimage: devdemisto/sse-client:1.0.0.2913487
+  dockerimage: demisto/sse-client:1.0.0.2993422
   script: '-'
   subtype: python3
   type: python
