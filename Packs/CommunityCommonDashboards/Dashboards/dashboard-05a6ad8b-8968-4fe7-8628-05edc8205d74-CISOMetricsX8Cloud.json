@@ -73,7 +73,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -110,11 +109,9 @@
                 "prevName": "Active Incidents - Pie chart",
                 "propagationLabels": [],
                 "query": "-category:job and -status:archived and -status:closed",
-                "shouldCommit": false,
                 "size": 20,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -133,7 +130,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "metrics",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -212,11 +208,9 @@
                 "prevName": "Average runtime by Incident Type per Playbook (top 5)",
                 "propagationLabels": [],
                 "query": "type:playbook",
-                "shouldCommit": false,
                 "size": 20,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "bar"
@@ -235,7 +229,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -274,10 +267,8 @@
                 "prevName": "MTTC by Severity",
                 "propagationLabels": [],
                 "query": "-category:job and containmentsla.runStatus:ended",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -296,7 +287,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -339,10 +329,8 @@
                 "prevName": "MTTD by Severity",
                 "propagationLabels": [],
                 "query": "-category:job and detectionsla.runStatus:ended",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -361,7 +349,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -403,10 +390,8 @@
                 "prevName": "MTTR by Severity",
                 "propagationLabels": [],
                 "query": "-category:job and remediationsla.runStatus:ended",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -425,7 +410,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -468,10 +452,8 @@
                 "prevName": "MTTT by Severity",
                 "propagationLabels": [],
                 "query": "-category:job and triagesla.runStatus:ended",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -490,7 +472,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "utilities",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -523,10 +504,8 @@
                 "prevName": "Text Widget",
                 "propagationLabels": [],
                 "query": "",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "text"
@@ -545,7 +524,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "utilities",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -578,9 +556,7 @@
                 "prevName": "Text Widget",
                 "propagationLabels": [],
                 "query": "",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
-                "toServerVersion": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
@@ -600,7 +576,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "indicators",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -638,10 +613,8 @@
                 "prevName": "Indicators Activity by Type",
                 "propagationLabels": [],
                 "query": "(expirationStatus:active or expirationStatus:\"\")",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -660,7 +633,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "indicators",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -698,11 +670,9 @@
                 "prevName": "Active Indicators by Verdict",
                 "propagationLabels": [],
                 "query": "(expirationStatus:active or expirationStatus:\"\")",
-                "shouldCommit": false,
                 "size": 20,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -721,7 +691,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -759,10 +728,8 @@
                 "prevName": "Active Incidents - Line chart",
                 "propagationLabels": [],
                 "query": "-category:job and -status:archived and -status:closed",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -781,7 +748,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "utilities",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -814,10 +780,8 @@
                 "prevName": "Text Widget",
                 "propagationLabels": [],
                 "query": "",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "text"
@@ -836,7 +800,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "indicators",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -874,10 +837,8 @@
                 "prevName": "Indicators Activity by Type",
                 "propagationLabels": [],
                 "query": "(-expirationStatus:active and -expirationStatus:\"\")",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -896,7 +857,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -939,10 +899,8 @@
                 "prevName": "MTTT by Severity",
                 "propagationLabels": [],
                 "query": "-category:job and timetoassignment.runStatus:ended",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
