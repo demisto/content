@@ -263,6 +263,7 @@ def fetch_events_command(client: OktaASAClient, last_run: dict[str, str],
 ''' MAIN FUNCTION '''
 
 
+
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions

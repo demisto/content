@@ -5,7 +5,6 @@ name: ArcSight XML
 display: ArcSight XML (Deprecated)
 category: Analytics & SIEM
 description: Deprecated. Use the ArcSight ESM v2 integration instead.
-deprecated: true
 configuration:
 - display: Fetch incidents
   name: isFetch
