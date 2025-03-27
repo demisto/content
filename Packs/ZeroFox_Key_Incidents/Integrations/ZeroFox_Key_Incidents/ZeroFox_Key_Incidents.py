@@ -1,11 +1,13 @@
+import json
+from dataclasses import asdict, dataclass
 from typing import Any
 from collections.abc import Callable
+from urllib.parse import parse_qs, urlparse
 
-import urllib3
-import json
-from requests import Response
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from requests import Response
 
 """ GLOBALS / PARAMS  """
 FETCH_TIME_DEFAULT = "3 days"
@@ -16,10 +18,59 @@ MAX_ALERT_IDS_STORED = 300
 urllib3.disable_warnings()
 
 
-class ZFClient(BaseClient):
-    def __init__(self, username, token, *args, **kwargs):
+@dataclass
+class KeyIncident:
+    analysis: str
+    created_at: datetime
+    updated_at: datetime
+    headline: str
+    incident_id: str
+    risk_level: str
+    solution: str
+    tags: list[str]
+    threat_types: list[str]
+    title: str
+    url: str
+    attachments: list[str]
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "KeyIncident":
+        return KeyIncident(
+            analysis=data.get("analysis", ""),
+            created_at=datetime.fromisoformat(
+                data.get("created_at", "").replace("Z", "+00:00")),
+            updated_at=datetime.fromisoformat(
+                data.get("updated_at", "").replace("Z", "+00:00")),
+            headline=data.get("headline", ""),
+            incident_id=data.get("incident_id", ""),
+            risk_level=data.get("risk_level", ""),
+            solution=data.get("solution", ""),
+            tags=data.get("tags", []),
+            threat_types=data.get("threat_types", []),
+            title=data.get("title", ""),
+            url=data.get("url", ""),
+            attachments=[
+                _extract_ki_attachment_id(attch.get("url")) for attch in data.get("attachments", [])
+            ],
+        )
+
+    def to_dict(self):
+        new_dict = asdict(self)
+        new_dict['created_at'] = self.created_at.isoformat()
+        new_dict['updated_at'] = self.updated_at.isoformat()
+        return new_dict
+
+
+class ZeroFox(BaseClient):
+    def __init__(
+        self, username, token, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
-        self.credentials = {"username": username, "password": token}
+        self.credentials = {
+            "username": username,
+            "password": token
+        }
+        self.access_token = None
 
     def _make_rest_call(
         self,
@@ -56,7 +107,6 @@ class ZFClient(BaseClient):
             params=params,
             json_data=data,
             ok_codes=ok_codes,
-            empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
             error_handler=self.handle_zerofox_error,
             **kwargs,
@@ -101,9 +151,10 @@ class ZFClient(BaseClient):
         """
         :return: returns the authorization token for the CTI feed
         """
+        if self.access_token:
+            return self.access_token
         token = self._get_new_access_token()
-        if not token:
-            raise Exception("Unable to retrieve token.")
+        self.access_token = token
         return token
 
     def _get_new_access_token(self) -> str:
@@ -116,24 +167,58 @@ class ZFClient(BaseClient):
         )
         return response_content.get("access", "")
 
-    def get_key_incidents(self, start_time, end_time) -> dict[str, Any]:
+    def _parse_cursor(self, url) -> dict:
+        query = parse_qs(urlparse(url).query)
+        return query.get("cursor", [None])[0]
+
+    def get_key_incidents(self, start_time, end_time) -> list[KeyIncident]:
         """
         :param start_time: The earliest point in time for which data should be fetched
         :param end_time: The latest point in time for which data should be fetched
         :return: HTTP request content.
         """
         url_suffix = "/cti/key-incidents/"
-        params = remove_none_dict({"updated_after": start_time, "updated_before": end_time})
-        response_content = self._http_request(
+        headers = self.get_cti_request_header()
+        params = remove_none_dict(
+            {
+                "updated_after": start_time,
+                "updated_before": end_time,
+                "ordering": "updated",
+                "Tags": "Key Incident"
+            }
+        )
+        key_incidents = []
+        response = self._http_request(
             "GET",
             url_suffix,
             params=params,
-            headers_builder_type="cti",
+            headers=headers,
         )
-        return response_content
+        key_incidents += [KeyIncident.from_dict(ki)
+                          for ki in response.get("results", [])]
+
+        if next_page := response.get("next"):
+            cursor = self._parse_cursor(next_page)
+            params.update(cursor=cursor)
+            response = self._http_request(
+                "GET",
+                url_suffix,
+                params=params,
+                headers=headers,
+            )
+            key_incidents += [
+                KeyIncident.from_dict(ki)
+                for ki in response.get("results", [])
+            ]
+        return key_incidents
+
 
 
 """ HELPERS """
+
+
+def _extract_ki_attachment_id(url) -> str:
+    return url.split("/")[-1]
 
 
 class ZeroFoxInternalException(Exception):
@@ -170,7 +255,10 @@ def remove_none_dict(input_dict: dict[Any, Any]) -> dict[Any, Any]:
 """ COMMAND FUNCTIONS """
 
 
-def get_key_incidents_command(client: ZFClient, args: dict[str, Any]) -> CommandResults:
+def get_key_incidents_command(
+    client: ZeroFox,
+    args: dict[str, Any]
+) -> CommandResults:
     start_time: str = args.get("start_time", "")
     end_time: str = args.get("end_time", "")
     key_incidents = client.get_key_incidents(start_time, end_time)
@@ -188,7 +276,7 @@ def get_key_incidents_command(client: ZFClient, args: dict[str, Any]) -> Command
     )
 
 
-def test_conectivity(client: ZFClient) -> str:
+def test_conectivity(client: ZeroFox) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -215,14 +303,14 @@ def main():
     USE_SSL: bool = not params.get("insecure", False)
     PROXY: bool = params.get("proxy", False)
 
-    commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
+    commands: dict[str, Callable[[ZeroFox, dict[str, Any]], Any]] = {
         "zerofox-get-key-incidents": get_key_incidents_command,
     }
     try:
         handle_proxy()
         command = demisto.command()
 
-        client = ZFClient(
+        client = ZeroFox(
             username=USERNAME,
             token=API_KEY,
             base_url=BASE_URL,
@@ -237,8 +325,7 @@ def main():
             command_handler = commands[command]
             results = command_handler(client, demisto.args())
             return_results(results)
-        else:
-            raise NotImplementedError(f"Command {command} is not implemented")
+        raise NotImplementedError(f"Command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as e:
