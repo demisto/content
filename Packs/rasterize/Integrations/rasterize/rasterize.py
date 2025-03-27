@@ -36,7 +36,7 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 # Needed for cases that rasterize is running with non-root user (docker hardening)
 os.environ['HOME'] = tempfile.gettempdir()
 
-CHROME_ERROR_URL = "chrome-error://chromewebdata/"
+CHROME_ERROR_URL = "chrome-error://chromewebdata"
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
              " Safari/537.36"
@@ -233,9 +233,10 @@ class PychromeEventHandler:
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
         if self.start_frame == frameId:
-            demisto.debug('PychromeEventHandler.page_frame_stopped_loading, checking URL')
-            frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
-            if frame_url == CHROME_ERROR_URL:
+            frame_url: str = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
+            demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}')
+
+            if frame_url.startswith(CHROME_ERROR_URL):
                 demisto.debug(f'Encountered chrome-error {frame_url=}, retrying...')
                 self.retry_loading()
             else:
@@ -260,7 +261,7 @@ class PychromeEventHandler:
 
             frame_url = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
 
-            if frame_url != CHROME_ERROR_URL:
+            if not frame_url.startswith(CHROME_ERROR_URL):
                 demisto.debug('Retry successful.')
                 self.tab_ready_event.set()
                 break
