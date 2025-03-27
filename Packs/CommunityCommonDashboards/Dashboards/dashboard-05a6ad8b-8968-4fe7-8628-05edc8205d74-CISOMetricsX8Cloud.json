@@ -557,7 +557,6 @@
                 "propagationLabels": [],
                 "query": "",
                 "sizeInBytes": 0,
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "text"
