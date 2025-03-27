@@ -18,11 +18,7 @@
     "keywords": [],
     "dependencies": {},
     "certification": "certified",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
-    ],
+    "marketplaces": ["xsoar"],
     "supportedModules": [
         "X1",
         "X3",

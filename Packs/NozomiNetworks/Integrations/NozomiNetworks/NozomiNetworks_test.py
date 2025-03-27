@@ -217,7 +217,7 @@ def test_incidents_calls_equal_to_time_when_max_page_reached():
     client = MagicMock()
 
     with patch("NozomiNetworks.incidents_better_than_time", return_value=mock_ibtt) as mock_btt, \
-        patch("NozomiNetworks.incidents_equal_to_time", return_value=mock_iett) as mock_ett:
+            patch("NozomiNetworks.incidents_equal_to_time", return_value=mock_iett) as mock_ett:
 
         results, lft = incidents(st, last_run, risk, also_n2os_incidents, client)
 
