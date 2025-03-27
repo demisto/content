@@ -535,7 +535,7 @@ The following fields are mirrored:
 
 #### Mirroring Out (XSOAR → Doppel)
 
-When incidents are mirrored out from Cortex XSOAR to Doppel:
+When incidents are mirrored out from Cortex XSOAR to Doppel. Currently, the Mirror-out feature updates the Doppel Alert queue to an archived state upon XSOAR incident closure. We intend to extend this capability in future releases to provide more comprehensive mirroring.
 
 **Supported Fields**
 
