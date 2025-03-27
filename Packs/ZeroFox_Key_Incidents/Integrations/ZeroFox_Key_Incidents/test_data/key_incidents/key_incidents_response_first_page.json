@@ -1,0 +1,114 @@
+{
+    "next": "https://api.zerofox.com/cti/key-incidents/?cursor=nextPageCursor&ordering=updated&tags=Key+Incident",
+    "results": [
+        {
+            "analysis": "Weekly report from security provider covering global supply chain impacts across multiple sectors including manufacturing, shipping, and consumer-facing issues.",
+            "created_at": "2022-05-19T18:50:43.155000Z",
+            "updated_at": "2022-05-19T18:52:25.491000Z",
+            "headline": "Weekly Supply Chains Report",
+            "incident_id": "KI-1",
+            "risk_level": "Unknown",
+            "solution": "Physical Security",
+            "tags": [
+                "Analyzed",
+                "Physical Security",
+                "Unknown",
+                "Imported",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": "N/A",
+            "url": null,
+            "attachments": [
+                {
+                    "url": "https://api.zerofox.com/cti/key-incident-attachment/cGVybWF/",
+                    "name": "XSS_Enbridge_Inc_Access_Explicitly_Sought_ostad.jpg",
+                    "createdOn": 1689082194489
+                }
+            ]
+        },
+        {
+            "analysis": "Upcoming elections in a country with close polling between incumbent and opposition. Key campaign issues include climate, energy, health, and economic concerns.",
+            "created_at": "2022-05-20T10:02:44.791000Z",
+            "updated_at": "2022-05-20T18:49:18.212000Z",
+            "headline": "Country A: Elections on July 21, 2022",
+            "incident_id": "KI-2",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Corporate Security",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Planned protest in a country's capital related to foreign involvement in domestic politics. Civil unrest follows previous government crackdown on demonstrations. Potential for continued protests and boycotts.",
+            "created_at": "2022-05-20T10:04:19.007000Z",
+            "updated_at": "2022-05-20T18:49:19.177000Z",
+            "headline": "Country B: Continued anti-government protests and calls for boycott on May 28, 2022",
+            "incident_id": "KI-3",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Threat Term",
+                "Corporate Security",
+                "Disruption",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Nationwide strike planned by unions and worker groups over wage disputes. May affect transportation, law enforcement, and healthcare services.",
+            "created_at": "2022-05-20T10:05:08.177000Z",
+            "updated_at": "2022-05-20T18:49:20.053000Z",
+            "headline": "Country C: Nationwide strike on May 31, 2022",
+            "incident_id": "KI-4",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Unknown",
+                "Corporate Security",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        },
+        {
+            "analysis": "Security incident involving explosives in a region under state of emergency due to criminal activity. Part of broader regional security concerns affecting multiple countries in the area.",
+            "created_at": "2022-05-20T10:05:57.550000Z",
+            "updated_at": "2022-05-20T18:49:20.917000Z",
+            "headline": "Country D: Two car bombs detonate during state of emergency over region wide drug crime on May 19, 2022",
+            "incident_id": "KI-5",
+            "risk_level": "Unknown",
+            "solution": "Corporate Security",
+            "tags": [
+                "Analyzed",
+                "Physical_Security_Spanish",
+                "Denial of Service",
+                "Unknown",
+                "Physical_Security_Portuguese",
+                "Threat Term",
+                "Corporate Security",
+                "Physical_Security_Italian",
+                "Key Incident"
+            ],
+            "threat_types": [],
+            "title": null,
+            "url": null,
+            "attachments": []
+        }
+    ]
+}
