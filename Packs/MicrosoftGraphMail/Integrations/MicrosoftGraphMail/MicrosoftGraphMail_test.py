@@ -1502,7 +1502,7 @@ def test_get_message_command(mocker, client):
         // is added before the + for a correct hr.
     """
     from MicrosoftGraphMailApiModule import get_message_command
-    mocker.patch('MicrosoftGraphMail.GraphMailUtils.prepare_args', return_value={'message_id':'1234565+2345678_+-'})
+    mocker.patch('MicrosoftGraphMail.GraphMailUtils.prepare_args', return_value={'message_id': '1234565+2345678_+-'})
     mocker.patch('MicrosoftGraphMail.GraphMailUtils.build_mail_object', return_value={
         "ID": 123,
         "Subject": 123,
