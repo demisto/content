@@ -14,7 +14,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "dataType": "incidents",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -54,10 +53,8 @@
                 "prevName": "Active Incidents - Pie chart",
                 "propagationLabels": [],
                 "query": "status:closed",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
