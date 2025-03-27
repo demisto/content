@@ -1,7 +1,4 @@
 category: Email
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Gmail
   version: -1
@@ -75,6 +72,12 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+  required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
@@ -259,7 +262,7 @@ script:
       - minimal
       - raw
     - auto: PREDEFINED
-      defaultValue: False
+      defaultValue: 'false'
       description: Whether to include the attachment entries in the result or not.
       name: include-attachments
       predefined:
@@ -533,7 +536,7 @@ script:
       - 'False'
       - 'True'
     - auto: PREDEFINED
-      defaultValue: true
+      defaultValue: 'true'
       description: Whether to return only mailboxes which contain the email. Default is "True".
       name: show-only-mailboxes
       predefined:
@@ -1735,10 +1738,10 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.116623
+  dockerimage: demisto/google-api-py3:1.0.0.2786860
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
