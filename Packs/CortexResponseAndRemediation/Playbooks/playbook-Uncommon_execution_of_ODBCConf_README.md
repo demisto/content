@@ -15,6 +15,7 @@ During the alert investigation, the playbook will perform the following:
 
 Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
 - Evasion Technique - 3048798454
+- Evasion Technique - 474958459
 - An uncommon LOLBIN added to startup-related Registry keys
 - Behavioral Threat
 - An uncommon file was created in the startup folder
