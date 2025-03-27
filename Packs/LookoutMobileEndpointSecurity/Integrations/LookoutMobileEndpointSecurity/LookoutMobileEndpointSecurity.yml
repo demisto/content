@@ -1,5 +1,5 @@
 commonfields:
-  id: LookoutMobileEndpointSecurityEventCollector
+  id: LookoutMobileEndpointSecurity
   version: -1
 category: Analytics & SIEM
 sectionOrder:
@@ -54,8 +54,8 @@ configuration:
   advanced: true
   section: Collect
 description: Lookout Mobile Endpoint Security (MES) provides visibility and protection against mobile threats with AI-driven mobile security dataset.
-display: Lookout Mobile Endpoint Security Event Collector
-name: LookoutMobileEndpointSecurityEventCollector
+display: Lookout Mobile Endpoint Security
+name: LookoutMobileEndpointSecurity
 script:
   commands: []
   dockerimage: devdemisto/sse-client:1.0.0.2913487

@@ -1,5 +1,5 @@
 Lookout Mobile Endpoint Security (MES) provides visibility and protection against mobile threats with AI-driven mobile security dataset.
-This integration was integrated and tested with version v2 of LookoutMobileEndpointSecurityEventCollector.
+This integration was integrated and tested with version v2 of LookoutMobileEndpointSecurity.
 
 ## Configure Lookout Mobile Endpoint Security Event Collector in Cortex
 

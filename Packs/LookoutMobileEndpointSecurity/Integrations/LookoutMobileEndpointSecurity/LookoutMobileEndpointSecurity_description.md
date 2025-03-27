@@ -1,9 +1,5 @@
 Use this integration to collect events automatically from Lookout Mobile Endpoint Security (MES).
 
-## Authenticating With the Mobile Risk v2 API
-
-Applications authenticate with the Mobile Risk V2 API through the Lookout platform’s OAuth 2.0 support.
-
 ### Creating an Application Key
 
 You must create an application key specific to your Lookout tenant to properly authenticate your application. You can do this from the [Lookout Mobile Endpoint Protection Console](https://app.lookout.com/):
