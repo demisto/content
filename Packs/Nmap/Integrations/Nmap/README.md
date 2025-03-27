@@ -34,7 +34,7 @@ Scan targets with the given parameters
 | NMAP.Scan.Ended | unknown | End time epoch. | 
 | NMAP.Scan.CommandLine | unknown | The command line being used. | 
 | NMAP.Scan.ScanType | unknown | The type of discovery scan. | 
-| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned hostץ | 
+| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host.| 
 | NMAP.Scan.Hosts.Address | unknown | Scanned host address. | 
 | NMAP.Scan.Hosts.Status | unknown | Is the host up or down? | 
 | NMAP.Scan.Hosts.Services.Port | unknown | The port of the service. | 
