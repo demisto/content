@@ -7,7 +7,7 @@ commonfields:
 name: Salesforce
 display: Salesforce
 category: Case Management
-description: CRM Services
+description: CRM Services.
 configuration:
 - display: Instance URL
   name: InstanceURL
