@@ -1,4 +1,7 @@
 category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: VMware
   version: -1
