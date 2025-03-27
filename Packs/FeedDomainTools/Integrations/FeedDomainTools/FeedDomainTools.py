@@ -21,6 +21,8 @@ class DomainToolsClient(BaseClient):
 
     NOD_FEED = "nod"
     NAD_FEED = "nad"
+    DOMAINRDAP = "domainrdap"
+    DOMAINDISCOVERY = "domaindiscovery"
 
     FEED_URL = "/v1/feed"
     DOMAINTOOLS_API_BASE_URL = "https://api.domaintools.com"
@@ -155,6 +157,9 @@ class DomainToolsClient(BaseClient):
                 indicator = json_feed.get("domain")
                 indicator_type = auto_detect_indicator_type(indicator)
 
+                # for `domainrdap` feed, we have more data to display including the parsed data.
+                parsed_record = json_feed.get("parsed_record", {})
+
                 if indicator and indicator_type:
                     yield {
                         "value": indicator,
@@ -162,6 +167,7 @@ class DomainToolsClient(BaseClient):
                         "timestamp": timestamp,
                         "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
                         "tlp_color": self.tlp_color,
+                        "parsed_record": parsed_record
                     }
 
                     limit_counter += 1
@@ -207,6 +213,7 @@ def fetch_indicators(
             timestamp_ = item.get("timestamp")
             tags_ = item.get("tags", [])
             tlp_color_ = item.get("tlp_color")
+            parsed_record_ = item.get("parsed_record")
 
             indicator_tags = ",".join(tags_).rstrip(",")
 
@@ -215,6 +222,9 @@ def fetch_indicators(
                 "type": type_,
                 "timestamp": timestamp_,
             }
+
+            if parsed_record_:
+                raw_data["parsed_record"] = parsed_record_
 
             # Create indicator object for each value.
             indicator_obj = {
@@ -302,22 +312,25 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
 
     feed_type_ = params.get("feed_type", "ALL")
 
-    FEEDS_TO_PROCESS = {
-        client.NOD_FEED: {"top": top, "after": after, "session_id": session_id},
-        client.NAD_FEED: {"top": top, "after": after, "session_id": session_id},
-    }
+    FEEDS_TO_PROCESS = [
+        client.NOD_FEED,
+        client.NAD_FEED,
+        client.DOMAINRDAP,
+        client.DOMAINDISCOVERY
+    ]
+
+    dt_feed_kwargs = {"top": top, "after": after, "session_id": session_id}
 
     fetched_indicators = []
 
-    for feed_type, dt_feed_kwargs in FEEDS_TO_PROCESS.items():
+    for feed_type in FEEDS_TO_PROCESS:
         indicators = []
         if feed_type_ == "ALL":
             indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
-        if feed_type_ == feed_type.upper():
+        if feed_type_.upper() == feed_type.upper():
             indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feed_kwargs)
 
         fetched_indicators.extend(indicators)
-
     return fetched_indicators
 
 
