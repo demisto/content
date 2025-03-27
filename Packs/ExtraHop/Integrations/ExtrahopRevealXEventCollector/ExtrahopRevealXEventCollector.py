@@ -15,8 +15,16 @@ VENDOR = 'Extrahop'
 PRODUCT = 'RevealX'
 PAGE_SIZE = 200
 PAGE_NUMBER = 0
+FIRST_FETCH = "3 days"
 DEFAULT_FETCH_LIMIT = 5000 # TODO Niv: make sure with dar this is the correct value
-
+BASE_TIME_CHECK_VERSION_PARAM = 1581852287000
+EXTRAHOP_MARKDOWN_REGEX = r"(\[[^\]]+\]\(\#\/[^\)]+\))+"
+TICKET_SEVERITY = {
+    "0-39": 1,  # low
+    "40-69": 2,  # medium
+    "70-89": 3,  # high
+    "90-100": 4  # critical
+}
 
 """ CLIENT CLASS """
 
@@ -145,6 +153,84 @@ def iso8601_to_unix_milliseconds(iso8601_str):
 
     return unix_timestamp_ms
 
+def trim_spaces_from_args(args: Dict) -> Dict:
+    """Trim spaces from values of the args dict.
+
+    Args:
+        args: Dict to trim spaces from.
+
+    Returns:
+        Arguments after trim spaces.
+    """
+    for key, val in args.items():
+        if isinstance(val, str):
+            args[key] = val.strip()
+
+    return args
+
+def prepare_list_detections_output(detections) -> str:
+    """Prepare human-readable output for list-detections command.
+
+    Args:
+        detections: List of detection response from the API.
+
+    Returns:
+        markdown string to be displayed in the war room.
+    """
+    hr_outputs = []
+    headers = ["Detection ID", "Risk Score", "Description", "Categories", "Status", "Resolution", "Start Time"]
+    for detection in detections:
+        hr_output = {
+            "Detection ID": detection.get("id"),
+            "Risk Score": detection.get("risk_score"),
+            "Description": detection.get("description"),
+            "Categories": detection.get("categories"),
+            "Status": detection.get("status"),
+            "Resolution": detection.get("resolution"),
+            "Start Time": detection.get("start_time")
+        }
+        hr_outputs.append(hr_output)
+
+    return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
+
+def remove_api_from_base_url(url: str) -> str:
+    """Prepare URL from base URL required for human-readable.
+
+    Args:
+        url: Base URL of the cloud instance.
+
+    Returns:
+        ExtraHop cloud instance URL.
+    """
+    url = url.split(".")
+    url.pop(1)
+    return ".".join(url)
+
+
+def modify_description(base_url, description):
+    """Modify descriptions of the detections list.
+
+    Args:
+        base_url: Base URL of the instance.
+        description: Detection description.
+
+    Returns:
+        Updated description.
+    """
+    new_link = f"{base_url}/extrahop/#"
+
+    markdown_data = re.findall(EXTRAHOP_MARKDOWN_REGEX, description)
+
+    for markdown in markdown_data:
+        # Replacing the '#' to the extrahop platform url
+        if "/extrahop/#" in markdown:
+            new_markdown = markdown.replace("#/extrahop", base_url)
+        else:
+            new_markdown = markdown.replace("#", new_link)
+        description = description.replace(markdown, new_markdown)
+    return description
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -179,15 +265,34 @@ def get_extrahop_server_version(client: Client):
     return version
 
 
-def detections_list_command(client: BaseClient, args: Dict[str, Any], on_cloud=False,
-                            advanced_filter=None) -> CommandResults:
+def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
+    '''
+    Add Requested Time Fields to detections list.
+    Args:
+        detections: Detections that came from Reveal(X).
+    '''
+    for detection in detections:
+        mod_time = detection.get("mod_time")
+        start_time = detection.get("start_time")
+        update_time = detection.get("update_time")
+
+        if mod_time:
+            detection["_time"] = mod_time
+
+            if start_time:
+                if mod_time == start_time:
+                    detection["_entery_status"] = "new"
+                elif mod_time > start_time or (update_time and update_time > start_time):
+                    detection["_entery_status"] = "updated"
+
+
+def get_detections_list(client: Client,
+                            advanced_filter=None) -> List[Dict[str, Any]]:
     """Retrieve the detections from Reveal(X).
 
     Args:
         client: ExtraHop client to be used.
-        args: Arguments obtained from demisto.args().
         advanced_filter: The advanced filter provided by user to fetch detections.
-        on_cloud: Check if ExtraHop instance is on cloud.
 
     Returns:
         CommandResults object.
@@ -197,70 +302,22 @@ def detections_list_command(client: BaseClient, args: Dict[str, Any], on_cloud=F
         raise DemistoException(
             "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
-    body = {}
-    if advanced_filter:
-        body = advanced_filter
+    body = advanced_filter
 
-    else:
-        filter_query = args.get("filter")
-        from_time = arg_to_number(args.get("from"))
-        limit = arg_to_number(args.get("limit"), "200")
-        offset = arg_to_number(args.get("offset"))
-        sort = args.get("sort")
-        until_time = arg_to_number(args.get("until"))
-        mod_time = arg_to_number(args.get("mod_time"))
-        if filter_query and filter_query.strip():
-            try:
-                filter_query = json.loads(filter_query)
-                add_default_category_for_filter_of_detection_list(filter_query)
-                body["filter"] = filter_query
-            except json.JSONDecodeError:
-                raise ValueError("Invalid json string provided for filter.")
-        else:
-            body["filter"] = {"categories": ["sec.attack"]}
+    trim_spaces_from_args(body)
 
-        if isinstance(from_time, int):
-            body["from"] = from_time
+    detections = list(client.detections_list(body))
 
-        if isinstance(limit, int):
-            body["limit"] = limit
+    # Add Time Params
+    update_time_values_detections(detections)
 
-        if isinstance(offset, int):
-            body["offset"] = offset
+    return detections
 
-        if sort:
-            sort_list = []
-            sort_on_field = sort.split(",")
 
-            for sort in sort_on_field:
-                try:
-                    field, direction = sort.split(" ")
-                except ValueError:
-                    raise DemistoException("Incorrect input provided for argument \"sort\". Please follow the format "
-                                           "mentioned in description.")
-
-                if direction not in SORT_DIRECTION:
-                    raise DemistoException("Incorrect input provided for argument \"sort\". Allowed values for "
-                                           "direction are: " + ", ".join(SORT_DIRECTION))
-
-                prepared_sort_dict = {"direction": direction, "field": field}
-                sort_list.append(prepared_sort_dict)
-
-            body["sort"] = sort_list
-
-        if isinstance(until_time, int):
-            body["until"] = until_time
-
-        if isinstance(mod_time, int):
-            body["mod_time"] = mod_time
-
-    validate_detections_list_arguments(body)
-
-    detections = client.detections_list(body)
+def prepare_detections_to_output(client: Client, detections: List[Dict[str, Any]]) -> CommandResults:
 
     base_url = client._base_url
-    if on_cloud:
-        base_url = remove_api_from_base_url(base_url)
+    base_url = remove_api_from_base_url(base_url)
     for detection in detections:
         if detection.get("description"):
             detection["description"] = modify_description(base_url, detection.get("description"))
@@ -275,113 +332,153 @@ def detections_list_command(client: BaseClient, args: Dict[str, Any], on_cloud=F
     )
 
 
-def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, last_run: Dict, on_cloud: bool) -> \
-        Tuple[List, Dict]:
+def append_participant_device_data(client: Client, detections: CommandResults) -> CommandResults:
+    """Append the device data of the participants present in the detection.
+
+    Args:
+        client: ExtraHop client to be used.
+        detections: The command result object of detection data fetched from ExtraHop.
+
+    Returns:
+        CommandResult object with device data of the participants.
+    """
+    for detection in detections.outputs:  # type: ignore
+        detection["device_data"] = []
+        for participant in detection.get("participants", []):
+            if participant.get("object_type") == "device":
+                if not participant.get("object_id"):
+                    continue
+                object_id = participant.get("object_id")
+                device_data = client.get_device_by_id(object_id, (404, 200, 204, 201))
+
+            else:
+                if not participant.get("object_value"):
+                    continue
+                ip = participant.get("object_value")
+                device_data = client.device_search(name=None, ip=ip, mac=None, role=None, software=None, vendor=None,
+                                                   tag=None, discover_time=None, vlan=None, activity=None, operator="=",
+                                                   match_type="and", active_from=None, active_until=None, limit=None,
+                                                   l3_only=True)
+            if device_data:
+                detection["device_data"].append(device_data)
+    return detections
+
+
+def get_mirroring() -> Dict:
+    """Add mirroring related keys in an incident.
+
+    Returns:
+        A dictionary containing required key-value pairs for mirroring.
+    """
+    return {
+        'mirror_direction': "In",
+        'mirror_instance': demisto.integrationInstance(),
+    }
+
+def fetch_extrahop_detections(client: Client, advanced_filter: Dict, last_run: Dict) -> \
+        tuple[List, Dict]:
     """Fetch detections from ExtraHop according to the given filter.
 
     Args:
         client:ExtraHop client to be used.
         advanced_filter: The advanced_filter given by the user to filter out the required detections.
         last_run: Last run returned by function demisto.getLastRun
-        on_cloud: Indicator for the instance hosted on cloud.
 
     Returns:
         List of incidents to be pushed into XSOAR.
     """
     try:
         already_fetched: List[str] = last_run.get('already_fetched', [])
-        incidents: List[Dict] = []
         detection_start_time = advanced_filter["mod_time"]
 
-        detections = detections_list_command(client, {}, on_cloud=on_cloud, advanced_filter=advanced_filter)
+        events = get_detections_list(client, advanced_filter=advanced_filter)
 
-        if detections.outputs:
-            detections = append_participant_device_data(client, detections)
+        for detection in events:  # type: ignore
+            detection_id = detection.get("id")
+            if detection_id not in already_fetched:
+                detection.update(get_mirroring())
+                # TODO Niv : is that the most efficient way to do it?
+                already_fetched.append(detection_id)
+            else:
+                demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
 
-            for detection in detections.outputs:  # type: ignore
-                detection_id = detection.get("id")
-                if detection_id not in already_fetched:
-                    detection.update(get_mirroring())
-                    incident = {
-                        'name': str(detection.get("type", "")),
-                        'occurred': datetime.utcfromtimestamp(detection['start_time'] / 1000).strftime(
-                            DATE_FORMAT),
-                        'severity': next((severity for range_str, severity in TICKET_SEVERITY.items() if
-                                          detection.get("risk_score") in range(*map(int, range_str.split("-")))), None),
-                        'rawJSON': json.dumps(detection)
-                    }
-                    incidents.append(incident)
-                    already_fetched.append(detection_id)
-
-                else:
-                    demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
-
-        if len(incidents) < advanced_filter["limit"]:
+        if len(events) < advanced_filter["limit"]:
             offset = 0
             detection_start_time = \
-                detections.outputs[-1]["mod_time"] + 1 if incidents else detection_start_time  # type: ignore
+                events[-1]["mod_time"] + 1 if events else detection_start_time  # type: ignore
         else:
-            offset = advanced_filter["offset"] + len(incidents)
+            offset = advanced_filter["offset"] + len(events)
 
     except Exception as error:
         raise DemistoException(f"extrahop: exception occurred {str(error)}")
 
-    demisto.info(f"Extrahop fetched {len(incidents)} incidents where the advanced filter is {advanced_filter}")
+    demisto.info(f"Extrahop fetched {len(events)} events where the advanced filter is {advanced_filter}")
 
     last_run["detection_start_time"] = int(detection_start_time)
     last_run["offset"] = offset
     last_run["already_fetched"] = already_fetched
-    return incidents, last_run
+    return events, last_run
 
 
-def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None) -> tuple[list, dict]:
-    last_run = demisto.getLastRun() or {}
-    start_time = (get_events_args or last_run).get('start_date', '') or get_current_time().strftime(DATE_FORMAT)
-    end_time = (get_events_args or {}).get('end_date', get_current_time().strftime(DATE_FORMAT))
+def validate_fetch_events_params(params: dict, last_run: dict) -> Dict:
+    """
+    Validate the parameter list for fetch incidents.
 
-    if not get_events_args:  # Only set token for fetch_events case
-        client.set_token(last_run.get('audit_token', ''))
+    Args:
+        params: Dictionary containing demisto configuration parameters
+        last_run: last run returned by function demisto.getLastRun
 
-    demisto.debug(f'Fetching audit logs events from date={start_time} to date={end_time}.')
+    Returns:
+        Dictionary containing validated configuration parameters in proper format.
+    """
+    # Todo Niv : Not sure this is the correct value
+    first_fetch = arg_to_datetime(params.get('first_fetch', FIRST_FETCH))
+    detection_start_time = int(first_fetch.timestamp() * 1000)  # type: ignore
 
-    output: list = []
-    while True:
-        try:
-            response = client.get_audit_logs(start_time, end_time)
-        except DemistoException as e:
-            if e.res.status_code == 429:
-                retry_after = int(e.res.headers.get('x-ratelimit-reset', 2))
-                demisto.debug(f"Rate limit reached. Waiting {retry_after} seconds before retrying.")
-                time.sleep(retry_after)  # pylint: disable=E9003
-                continue
-            if e.res.status_code == 401:
-                demisto.debug("Regenerates token for fetching audit logs.")
-                client.create_access_token_for_audit()
-                continue
-            else:
-                raise e
+    if last_run and 'detection_start_time' in last_run:
+        detection_start_time = last_run.get('detection_start_time')  # type: ignore
 
-        content: list = response.json().get('content', [])
+    offset = 0
+    if last_run and 'offset' in last_run:
+        offset = last_run.get("offset")  # type: ignore
 
-        if not content:
-            break
+    return {
+        'detection_start_time': detection_start_time,
+        'offset': offset
+    }
 
-        events = sort_events_by_timestamp(content)
-        for event in events:
-            event_date = event.get('timestamp')
-            event['_time'] = event_date
-            output.append(event)
 
-            if len(output) >= fetch_limit:
-                start_time = add_millisecond(event_date)
-                # Safe to add a millisecond and fetch since no two events share the same timestamp.
-                new_last_run = {'start_date': start_time, 'audit_token': client.token}
-                return output, new_last_run
+def fetch_events(client: Client, params: Dict, last_run: Dict):
+    """Fetch the specified ExtraHop entity and push into XSOAR.
 
-        start_time = add_millisecond(event_date)
+     Args:
+        client: ExtraHop client to be used.
+        params: Integration configuration parameters.
+        last_run: The last_run dictionary having the state of previous cycle.
+    """
+    demisto.info(f"Extrahop fetch_events invoked with advanced_filter: {params.get('advanced_filter', '')}, "
+                 f"first_fetch: {params.get('first_fetch', '')} and last_run: {last_run}")
+    fetch_params = validate_fetch_events_params(params, last_run)
 
-    new_last_run = {'start_date': start_time, 'audit_token': client.token}
-    return output, new_last_run
+    # TODO Niv : Not sure why we need this part - verify it with ExtraHop code
+    now = datetime.now()
+    next_day = now + timedelta(days=1)
+    if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
+        version = get_extrahop_server_version(client)
+        last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
+        if version < "9.3.0":
+            raise DemistoException(
+                "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
+
+    _filter = {"categories": ["sec.attack"]}
+
+    advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"], "until": 0,
+                       "limit": DEFAULT_FETCH_LIMIT, "offset": fetch_params["offset"],
+                       "sort": [{"direction": "asc", "field": "mod_time"}]}
+
+    events, next_run = fetch_extrahop_detections(client, advanced_filter, last_run)
+    demisto.info(f"Extrahop next_run is {next_run}")
+    return events, next_run
 
 
 def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
@@ -407,47 +504,6 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
         outputs_prefix='Celonis.Audit',
     )
     return output, command_results
-
-def fetch_incidents(client: ExtraHopClient, params: Dict, last_run: Dict, on_cloud: bool):
-    """Fetch the specified ExtraHop entity and push into XSOAR.
-
-     Args:
-        client: ExtraHop client to be used.
-        params: Integration configuration parameters.
-        last_run: The last_run dictionary having the state of previous cycle.
-        on_cloud: Indicator for the instance hosted on cloud.
-    """
-    demisto.info(f"Extrahop fetch_incidents invoked with advanced_filter: {params.get('advanced_filter', '')}, "
-                 f"first_fetch: {params.get('first_fetch', '')} and last_run: {last_run}")
-    fetch_params = validate_fetch_incidents_params(params, last_run)
-
-    now = datetime.now()
-    next_day = now + timedelta(days=1)
-    if last_run.get("version_recheck_time", 1581852287000) < int(now.timestamp() * 1000):
-        version = get_extrahop_server_version(client)
-        last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
-        if version < "9.3.0":
-            raise DemistoException(
-                "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
-
-    advanced_filter = params.get("advanced_filter")
-    if advanced_filter and advanced_filter.strip():
-        try:
-            _filter = json.loads(advanced_filter)
-            add_default_category_for_filter_of_detection_list(_filter)
-        except json.JSONDecodeError as error:
-            raise ValueError("Invalid JSON string provided for advanced filter.") from error
-    else:
-        _filter = {"categories": ["sec.attack"]}
-
-    advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"], "until": 0,
-                       "limit": MAX_FETCH, "offset": fetch_params["offset"],
-                       "sort": [{"direction": "asc", "field": "mod_time"}]}
-
-    incidents, next_run = fetch_extrahop_detections(client, advanced_filter, last_run, on_cloud)
-    demisto.info(f"Extrahop next_run is {next_run}")
-    return incidents, next_run
-
 
 def main():
     """main function, parses params and runs command functions"""
@@ -479,14 +535,11 @@ def main():
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            incidents, next_run = fetch_incidents(client, params, last_run)
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-            events, new_last_run_dict = fetch_events(client, fetch_limit)
+            events, next_run = fetch_events(client, params, last_run)
             if events:
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(new_last_run_dict)
+            demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
             events, command_results = get_events(client, args)
