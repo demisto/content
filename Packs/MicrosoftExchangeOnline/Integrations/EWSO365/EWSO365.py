@@ -854,6 +854,7 @@ def get_items_from_folder(
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
     )
+    readable_output = re.sub(r'\+', r'\\+', readable_output)
     output = {CONTEXT_UPDATE_EWS_ITEM: items_result}
     return readable_output, output, items_result
 

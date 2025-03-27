@@ -1819,8 +1819,9 @@ def get_message_command(client: MsGraphMailBaseClient, args) -> CommandResults:
 
     raw_response = client.get_message(**prepared_args)
     message = GraphMailUtils.build_mail_object(raw_response, user_id=user_id, get_body=get_body)
+    id_for_header = re.sub(r'_', r'\_', prepared_args["message_id"])
     human_readable = tableToMarkdown(
-        f'Results for message ID {prepared_args["message_id"]}',
+        f'Results for message ID {id_for_header}',
         message,
         headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'Recipients', 'HasAttachments', 'Body']
     )
