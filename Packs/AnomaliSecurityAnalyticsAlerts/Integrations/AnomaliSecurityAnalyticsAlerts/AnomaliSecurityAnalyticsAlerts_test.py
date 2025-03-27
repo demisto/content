@@ -1,5 +1,5 @@
 import pytest
-from content.Packs.AnomaliSecurityAnalytics.Integrations.AnomaliSecurityAnalytics.AnomaliSecurityAnalytics import *
+from AnomaliSecurityAnalyticsAlerts import *
 import demistomock as demisto
 from CommonServerPython import * 
 from CommonServerUserPython import * 
@@ -108,12 +108,17 @@ def test_command_get_search_job_status_invalid(mocker):
     return_data = {'error': 'Invalid Job ID'}
     mocker.patch.object(client, 'get_search_job_status', return_value=return_data)
 
-    args = {
-        'job_id': 'invalid_job'
-    }
+    args = {'job_id': 'invalid_job'}
+    results = command_get_search_job_status(client, args)
 
-    with pytest.raises(Exception, match="Unable to retrieve search job status"):
-        command_get_search_job_status(client, args)
+    assert isinstance(results, list)
+    assert len(results) == 1
+
+    outputs = results[0].outputs
+    assert outputs == {}
+
+    readable_output = results[0].readable_output
+    assert "No results found for Job ID: invalid_job" in readable_output
 
 
 def test_command_get_search_job_results(mocker):

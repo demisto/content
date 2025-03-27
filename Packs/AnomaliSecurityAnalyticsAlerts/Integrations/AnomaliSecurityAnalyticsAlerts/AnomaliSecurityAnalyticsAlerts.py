@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR_NAME = 'Anomali Security Analytics Alerts'
+UTC = timezone.utc
 
 """ CLIENT CLASS """
 
@@ -119,7 +120,7 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
                                     is_utc=True, 
                                     required=False)
     else:
-        to_datetime = datetime.now(tz=timezone.utc)
+        to_datetime = datetime.now(tz=UTC)
 
     time_from_ms = int(from_datetime.timestamp() * 1000)
     time_to_ms = int(to_datetime.timestamp() * 1000)
@@ -155,16 +156,24 @@ def command_get_search_job_status(client: Client, args: dict) -> list[CommandRes
     Returns:
         list[CommandResults]: A list of command results containing the job status.
     """
-    job_ids = argTolist(str(args.get('job_id')))
+    job_ids = ArgToList(str(args.get('job_id')))
     command_results: list[CommandResults] = []
     for job_id in job_ids:
         response = client.get_search_job_status(job_id)
         if 'error' in response:
-            raise Exception(
-                f"Unable to retrieve search job status: {response.get('error')}. "
-                f"This may happen if the Job ID has expired or is incorrect. "
+            human_readable = (
+                f"No results found for Job ID: {job_id}. "
+                f"Error message: {response.get('error')}. "
                 f"Please verify the Job ID and try again."
             )
+            command_result = CommandResults(
+                outputs_prefix='ThreatstreamAlerts.SearchJobStatus',
+                outputs={},
+                readable_output=human_readable,
+                raw_response=response
+            )
+            command_results.append(command_result)
+            continue
 
         status_value = response.get('status')
         outputs = {"job_id": job_id, "status": status_value}
@@ -191,7 +200,7 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
     Returns:
         list[CommandResults]: A list of command results for each job id.
     """
-    job_ids = argTolist(str(args.get('job_id')))
+    job_ids = ArgToList(str(args.get('job_id')))
     command_results: list[CommandResults] = []
     for job_id in job_ids:
         response = client.get_search_job_results(job_id)
@@ -282,7 +291,7 @@ def command_update_alert_comment(client: Client, args: dict) -> CommandResults:
     )
 
 
-def test_module(client: Client) -> str:
+def module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -298,11 +307,16 @@ def test_module(client: Client) -> str:
     """
 
     try:
+        now_dt = datetime.now(tz=UTC)
+        now_ts = int(now_dt.timestamp() * 1000)
+        one_day_ago_ts = now_ts - 24 * 3600 * 1000
+
         client.create_search_job(
             query="alert",
+            source="third_party_mynewapp",
             time_range={
-                "from": 1738681620000,
-                "to": 1738706820000
+                "from": one_day_ago_ts,
+                "to": now_ts
             }
         )
         return "ok"
@@ -335,14 +349,14 @@ def main():
         )
         args = demisto.args()
         commands = {
-            'anomali-security-analytics-alerts-search-job-create': command_create_search_job,
-            'anomali-security-analytics-alerts-search-job-status': command_get_search_job_status,
-            'anomali-security-analytics-alerts-search-job-results': command_get_search_job_results,
-            'anomali-security-analytics-alerts-update-alert-status': command_update_alert_status,
-            'anomali-security-analytics-alerts-update-alert-comment': command_update_alert_comment,
+            'anomali-security-analytics-search-job-create': command_create_search_job,
+            'anomali-security-analytics-search-job-status': command_get_search_job_status,
+            'anomali-security-analytics-search-job-results': command_get_search_job_results,
+            'anomali-security-analytics-update-alert-status': command_update_alert_status,
+            'anomali-security-analytics-update-alert-comment': command_update_alert_comment,
         }
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(module(client))
         elif command in commands:
             return_results(commands[command](client, args))
         else:

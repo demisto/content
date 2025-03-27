@@ -31,40 +31,43 @@ configuration:
   section: Connect
   advanced: true
 description: "The Anomali Security Analytics pack enables users to interact with Anomali ThreatStream's XDR API to manage security alerts. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR."
-display: AnomaliSecurityAnalysisAlerts
-name: AnomaliSecurityAnalysisAlerts
+display: Anomali Security Analytics Alerts
+name: AnomaliSecurityAnalyticsAlerts
 script:
   commands:
-  - name: anomali-security-analytics-alerts-search-job-create
+  - name: anomali-security-analytics-search-job-create
     description: "Create a new search job"
     arguments:
     - name: query
-      description: Search expression or keyword you're looking for in logs.
+      description: Search expression or keyword you're looking for in logs, e.g. alerts.
       required: false
     - name: source
-      description: Filters results by the log source or origin system.
+      description: Filters results by the log source or origin system, e.g. third_party_mynewapp.
       required: false
     - name: from
-      description: Timerange - start time. Default value is 1 day
+      defaultValue: 1 day
+      description: Timerange - start time, e.g., 1 hour, 30 minutes. Default value is 1 day
       required: false
     - name: to
-      description: Timerange - end time. Default value is present.
+      defaultValue: 0 minutes
+      description: Timerange - end time, e.g., 1 hour, 30 minutes. Default value is present.
       required: false
     - name: timezone
+      defaultValue: "UTC"
       description: The desired timezone for the log source from the dropdown list. The default is Universal Link System Time Zone, which is the timezone where Universal Link is installed. Default value is UTC.
       required: false
     execution: false
     outputs: []
-  - name: anomali-security-analytics-alerts-search-job-status
+  - name: anomali-security-analytics-search-job-status
     description: "Query a search job status"
     arguments:
     - name: job_id
-      description: Unique identifier assigned to a background process or job.
+      description: Unique identifier assigned to a background process or job. You will get a job id when creating a new search job.
       required: true
       isArray: true
     execution: false
     outputs: []
-  - name: anomali-security-analytics-alerts-search-job-results
+  - name: anomali-security-analytics-search-job-results
     description: "Get search job results"
     arguments:
     - name: job_id
@@ -73,25 +76,25 @@ script:
       isArray: true
     execution: false
     outputs: []
-  - name: anomali-security-analytics-alerts-update-alert-status
+  - name: anomali-security-analytics-update-alert-status
     description: "Update alert status"
     arguments:
     - name: status
       description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos.
       required: true
     - name: uuid
-      description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in serach job results command.
+      description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
     execution: false
     outputs: []
-  - name: anomali-security-analytics-alerts-update-alert-comment
+  - name: anomali-security-analytics-update-alert-comment
     description: "Update alert comment"
     arguments:
     - name: comment
-      description: Optional field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions.
+      description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions.
       required: true
     - name: uuid
-      description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in serach job results command.
+      description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
     execution: false
     outputs: []
