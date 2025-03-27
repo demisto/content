@@ -36,6 +36,7 @@ os.environ["no_proxy"] = "localhost,127.0.0.1"
 # Needed for cases that rasterize is running with non-root user (docker hardening)
 os.environ["HOME"] = tempfile.gettempdir()
 
+CHROME_ERROR_URL = "chrome-error://chromewebdata"
 CHROME_EXE = os.getenv("CHROME_EXE", "/opt/google/chrome/google-chrome")
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
@@ -203,12 +204,14 @@ class PychromeEventHandler:
     request_id = None
     screen_lock = threading.Lock()
 
-    def __init__(self, browser, tab, tab_ready_event):
+    def __init__(self, browser, tab, tab_ready_event, path: str, navigation_timeout: int):
         self.browser = browser
         self.tab = tab
         self.tab_ready_event = tab_ready_event
         self.start_frame = None
         self.is_mailto = False
+        self.path = path
+        self.navigation_timeout = navigation_timeout
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
@@ -233,12 +236,45 @@ class PychromeEventHandler:
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}")
         if self.start_frame == frameId:
-            demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
-            self.tab_ready_event.set()
+            frame_url: str = self.tab.Page.getFrameTree()["frameTree"]["frame"]["url"]
+            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
 
-    def network_request_will_be_sent(self, documentURL, **kwargs):
+            if frame_url.startswith(CHROME_ERROR_URL):
+                demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
+                self.retry_loading()
+            else:
+                demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+                self.tab_ready_event.set()
+
+    def retry_loading(self):
+        """
+        Attempts to reload the page multiple times if a chrome-error is encountered.
+        """
+        for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
+            demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}")
+            try:
+                if self.navigation_timeout > 0:
+                    self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
+                else:
+                    self.tab.Page.navigate(url=self.path)
+            except Exception as e:
+                demisto.debug(f"Error during navigation attempt {retry_count}: {e}")
+
+            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
+
+            frame_url: str = self.tab.Page.getFrameTree()["frameTree"]["frame"]["url"]
+
+            if not frame_url.startswith(CHROME_ERROR_URL):
+                demisto.debug("Retry successful.")
+                self.tab_ready_event.set()
+                break
+        else:
+            demisto.debug("Max retries reached, could not load the page.")
+
+    def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
         demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}")
+
         self.is_mailto = documentURL.lower().startswith("mailto:")
 
         request_url = kwargs.get("request", {}).get("url", "")
@@ -365,7 +401,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ""):
 
 def terminate_port_chrome_instances_file(chrome_port: str = ""):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    he function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
@@ -608,7 +644,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
         demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true {chrome_options in chrome_options_dict}"
+            "chrome_manager: condition chrome_options in chrome_options_dict is true" f"{chrome_options in chrome_options_dict}"
         )
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
@@ -647,9 +683,11 @@ def generate_chrome_port() -> str | None:
     return None
 
 
-def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
+def setup_tab_event(
+    browser: pychrome.Browser, tab: pychrome.Tab, path: str, navigation_timeout: int
+) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
     tab_ready_event = Event()
-    tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
+    tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event, path, navigation_timeout)
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
@@ -665,7 +703,7 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
 
 
 def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
-    tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
+    tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
         demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
