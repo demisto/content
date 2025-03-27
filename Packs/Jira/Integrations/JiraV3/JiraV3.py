@@ -3579,12 +3579,15 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 last_fetch_id = issue_id
                 demisto.debug(f'Incidents we got so far: {new_issue_ids}')
 
+                # To avoid breaking backwards compatibility, if no timezone in last run, we do not do any timezone conversion
+                fetch_timezone = DEFAULT_FETCH_TIMEZONE if not last_run else None
+
                 demisto.debug(f'Starting to parse created and updated fields of issue with ID: {issue_id}')
                 new_fetch_created_time, new_fetch_updated_time = parse_issue_times(
                     issue_id=issue_id,
                     issue_created_time=demisto.get(issue, 'fields.created') or '',
                     issue_updated_time=demisto.get(issue, 'fields.updated') or '',
-                    fetch_timezone=last_run.get('timezone'),  # if no timezone in last run, we do not do any timezone conversion
+                    fetch_timezone=fetch_timezone,
                 )
                 demisto.debug(f'Finished parsing created and updated fields of issue with ID: {issue_id}.')
 
@@ -3636,7 +3639,6 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         'id': last_fetch_id,
         'created_date': new_fetch_created_time or last_fetch_created_time,
         'updated_date': new_fetch_updated_time or last_fetch_updated_time,
-        'timezone': DEFAULT_FETCH_TIMEZONE,  # perform timezone conversion without breaking backwards compatibility
     }
     demisto.debug(f'Setting next run: {next_run}')
     demisto.setLastRun(next_run)
