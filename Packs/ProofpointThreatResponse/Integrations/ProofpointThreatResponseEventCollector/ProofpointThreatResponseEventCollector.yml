@@ -112,10 +112,8 @@ script:
       - ''
     - description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: created_before
-      required: true
     - description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_after
-      required: true
     - description: 'Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
       name: closed_before
     - auto: PREDEFINED
