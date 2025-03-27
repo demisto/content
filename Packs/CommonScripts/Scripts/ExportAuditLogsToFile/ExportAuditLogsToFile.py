@@ -22,7 +22,8 @@ def get_audit_logs_count(res: Dict):
         return res.get('total') or 0
 
     def get_xsoar8_audit_logs_count():
-        return res.get('total_count') or 0
+        reply = res.get("reply", {})
+        return reply.get('total_count') or 0
 
     return arg_to_number(get_xsoar6_audit_logs_count() or get_xsoar8_audit_logs_count())
 
@@ -85,7 +86,8 @@ def main():   # pragma: no cover
         if demisto_version.startswith("6"):  # pagination for xsoar-6
             body["page"] = page_num
         else:  # pagination for xsoar-8
-            body["request_data"]["search_from"] = page_num  # type: ignore[index]
+            body["request_data"]["search_from"] = len(audits)  # type: ignore[index]
+            body["request_data"]["search_to"] = len(audits) + size  # type: ignore[index]
         args = {"uri": uri, "body": body}
         res = demisto.executeCommand("core-api-post", args)
         demisto.debug(f'core-api-post with {args} returned {res}')
@@ -93,9 +95,12 @@ def main():   # pragma: no cover
             raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
         response = res[0]["Contents"]["response"]
         audits.extend(get_audit_logs(response))
+        if len(get_audit_logs(response)) == 0:
+            break
         page_num += 1
         # break if this goes crazy, if there are more than 100 pages of audit log entries.
         if page_num == 100:
+            demisto.debug("Reached page limit: 100. Stopping pagination.")
             break
 
     file_date = fetch_back_date.strftime("%Y-%m-%d")
