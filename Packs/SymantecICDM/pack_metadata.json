@@ -1,0 +1,19 @@
+{
+    "name": "SymantecICDM",
+    "description": "Query the Symantec Endpoint Security Cloud using the official REST API.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
