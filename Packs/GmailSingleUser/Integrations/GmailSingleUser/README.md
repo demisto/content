@@ -171,31 +171,22 @@ Sends an email using Gmail.
 > | Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT |  16f662789d3a2972 |
 
 ### gmail-auth-link
-***
-Starts the OAuth2 process. Gets a link to use to authenticate to Gmail.
 
+***
+Starts the OAuth2 process. Get a link to use to authenticate to Gmail.
 
 #### Base Command
+
 `gmail-auth-link`
 
 #### Input
-There is no input for this command.
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
+
 There is no context output for this command.
-
-#### Command Example
-```!gmail-auth-link```
-
-#### Human Readable Output
-## Gmail Auth Link
-Please follow the following **link**.
-After Completing the authentication process, copy the received code
-to the **Auth Code** configuration parameter of the integration instance.
-Save the integration instance and then run *!gmail-auth-test* to test that
-the authentication is properly set.
-    
-
 ### gmail-auth-test
 ***
 Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
@@ -205,26 +196,23 @@ Tests that Gmail auth is configured properly. Use this command after completing 
 `gmail-auth-test`
 
 #### Input
-There is no input for this command.
+### gmail-auth-test
 
-#### Context Output
-There is no context output for this command.
-
-#### Command Example
-```!gmail-auth-test```
-
-#### Human Readable Output
-Authentication test completed successfully.
-
-### reply-mail
 ***
-Replies to a mail using Gmail.
-
-#### Limitations:
-
-The *subject* argument should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
+Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
 
 #### Base Command
+
+`gmail-auth-test`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
 
 `reply-mail`
 #### Input
@@ -318,5 +306,3 @@ Retrieves attachments from a sent Gmail message.
 
 #### Command Example
 ```!gmail-get-attachments message-id=16d4316a25a332e4 user-id=admin@demistodev.com```
-
-
