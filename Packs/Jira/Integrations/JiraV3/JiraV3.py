@@ -32,6 +32,7 @@ DEFAULT_FIRST_FETCH_INTERVAL = '3 days'
 DEFAULT_FETCH_INTERVAL = 1  # Unit is in minutes
 DEFAULT_PAGE = 0
 DEFAULT_PAGE_SIZE = 50
+DEFAULT_FETCH_TIMEZONE = 'UTC'  # for normalizing Jira created and updated issue times
 # Errors
 ID_OR_KEY_MISSING_ERROR = 'Please provide either an issue ID or issue key.'
 ID_AND_KEY_GIVEN = 'Please provide only one, either an issue Id or issue key.'
@@ -3471,6 +3472,41 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
     return res, None
 
 
+def parse_issue_times(
+    issue_id: int,
+    issue_created_time: str,
+    issue_updated_time: str,
+    fetch_timezone: str | None,
+) -> tuple[str, str]:
+    """Parses both the Jira issue created and updated timestamps and normalizes them to the default date format and an
+    optional timezone.
+
+    Args:
+        issue_id (int): ID of the Jira issue.
+        issue_created_time (str): Time of creation of the Jira issue.
+        issue_updated_time (str): Time of last update of the Jira issue.
+        fetch_timezone (str | None): Optional timezone for normalizing the Jira issue created and updated timestamps.
+
+    Returns:
+        tuple[str, str]: Created and updated timestamps normalized to the default date format and the timezone, if given.
+    """
+    dateparser_settings = assign_params(TIMEZONE=fetch_timezone)
+
+    normalized_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
+    demisto.debug(
+        f'Converted created time of issue with ID: {issue_id} from: {issue_created_time} '
+        f'to: {normalized_created_time}. Converted to timezone: {fetch_timezone}'
+    )
+
+    normalized_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
+    demisto.debug(
+        f'Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} '
+        f'to: {normalized_updated_time}. Converted to timezone: {fetch_timezone}'
+    )
+
+    return normalized_created_time, normalized_updated_time
+
+
 # Fetch Incidents
 def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: int,
                     fetch_attachments: bool, fetch_comments: bool, mirror_direction: str, max_fetch_incidents: int,
@@ -3499,7 +3535,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         List[Dict[str, Any]]: A list of incidents.
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
+    demisto.debug(f'Got last run: {last_run}' if last_run else 'Got empty last run')
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
     # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
@@ -3515,8 +3551,17 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         last_fetch_id = smallest_id_offset
         demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
                       'No smallest ID found since the fetch query returns 0 results')
+
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
     new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
+    # To keep backwards compatibility, if last run is not empty and has no timezone, do not do any timezone conversion
+    if last_run and not last_run.get('timezone'):
+        new_fetch_timezone = None
+        demisto.debug('Created and updated fields will not be converted to another timezone for setting next run')
+    else:
+        new_fetch_timezone = last_run.get('timezone', DEFAULT_FETCH_TIMEZONE)
+        demisto.debug(f'Created and updated fields will be converted to {new_fetch_timezone} timezone for setting next run')
+
     incidents: List[Dict[str, Any]] = []
     demisto.debug('Creating the fetch query')
     fetch_incidents_query = create_fetch_incidents_query(
@@ -3541,17 +3586,20 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
                 new_issue_ids.append(issue_id)
                 last_fetch_id = issue_id
-                demisto.debug(f'Incident we got so far: {new_issue_ids}')
-                new_fetch_created_time = convert_string_date_to_specific_format(
-                    string_date=demisto.get(issue, 'fields.created') or '')
-                demisto.debug(f'Converted created time to {new_fetch_created_time}')
-                new_fetch_updated_time = convert_string_date_to_specific_format(
-                    string_date=demisto.get(issue, 'fields.updated') or '')
-                demisto.debug(f'Converted updated time to {new_fetch_updated_time}')
-                demisto.debug('Starting to parse custom fields.')
+                demisto.debug(f'Incidents we got so far: {new_issue_ids}')
 
+                demisto.debug(f'Starting to parse created and updated fields of issue with ID: {issue_id}')
+                new_fetch_created_time, new_fetch_updated_time = parse_issue_times(
+                    issue_id=issue_id,
+                    issue_created_time=demisto.get(issue, 'fields.created') or '',
+                    issue_updated_time=demisto.get(issue, 'fields.updated') or '',
+                    fetch_timezone=new_fetch_timezone,
+                )
+                demisto.debug(f'Finished parsing created and updated fields of issue with ID: {issue_id}')
+
+                demisto.debug(f'Starting to parse custom fields of issue with ID: {issue_id}')
                 parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
-                demisto.debug('Finished parsing custom fields. Starting build an incident')
+                demisto.debug(f'Finished parsing custom fields of issue with ID: {issue_id}. Starting to build an incident')
 
                 incidents.append(create_incident_from_issue(
                     client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
@@ -3560,10 +3608,10 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                     comment_tag_to_jira=comment_tag_to_jira,
                     attachment_tag_from_jira=attachment_tag_from_jira,
                     attachment_tag_to_jira=attachment_tag_to_jira))
-                demisto.debug('Finished building incident.')
+                demisto.debug(f'Finished building incident for issue with ID: {issue_id}')
 
     except Exception as e:
-        demisto.debug('Failure detected: {e}.')
+        demisto.debug(f'Failure detected: {e}.')
 
         if 'Issue does not exist' in str(e) and issue_field_to_fetch_from == 'id' and str(id_offset) == str(last_fetch_id):
             # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
@@ -3591,14 +3639,17 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             and new_fetch_updated_time == last_fetch_updated_time)
     ):
         new_issue_ids.extend(last_fetch_issue_ids)
-    demisto.debug('Setting last run.')
 
-    demisto.setLastRun({
+    next_run = {
         'issue_ids': new_issue_ids or last_fetch_issue_ids,
         'id': last_fetch_id,
         'created_date': new_fetch_created_time or last_fetch_created_time,
         'updated_date': new_fetch_updated_time or last_fetch_updated_time,
-    })
+        'timezone': new_fetch_timezone,  # either 'UTC' or None to keep backwards compatibility
+    }
+    demisto.debug(f'Setting next run: {next_run}')
+    demisto.setLastRun(next_run)
+
     return incidents
 
 
@@ -3818,7 +3869,6 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
             issue['forms'] = forms
         except DemistoException:
             demisto.debug(f'Failed to get reports for {issue_id}, Not retrieving. Error: {traceback.format_exc()}')
-            pass
 
     demisto.debug(f'Incident for issue {issue_id} is being created.')
 
@@ -4525,7 +4575,6 @@ def main():  # pragma: no cover
         'jira-get-comments': get_comments_command,
         'jira-get-issue': get_issue_command,
         'jira-create-issue': create_issue_command,
-        'jira-create-issue-quick-action': create_issue_command,
         'jira-issue-assign': update_issue_assignee_command,
         'jira-edit-issue': edit_issue_command,
         'jira-delete-issue': delete_issue_command,
