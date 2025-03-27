@@ -517,19 +517,28 @@ class TestArcherV2:
             client.create_session()
         assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
-    def test_generate_field_contents(self):
+    @pytest.mark.parametrize(
+        'json_fields_values, expected_value',
+        [
+            pytest.param('{"Device Name":"Macbook\\Name\\\"Test"}', 'Macbook\\Name\"Test', id="Escaped double quote"),
+            pytest.param('{"Device Name":"Phone\\r\\n(Certified)"}', 'Phone\r\n(Certified)', id="New line & return carriage"),
+            pytest.param('{"Device Name":"Employee\\A\\PC"}', 'Employee\\A\\PC', id="Escaped Backslash"),
+            pytest.param('{"Device Name":"Laptop\\t#406"}', 'Laptop\t#406', id="Tab"),
+            pytest.param('{"Device Name":"I \\u2764 Tech"}', 'I \u2764 Tech', id="Unicode"),
+        ]
+    )
+    def test_generate_field_contents(self, json_fields_values: str, expected_value: str):
         """
         Given:
-            a string of fields values with a \\ character
+            - A string of fields values with special characters.
         When:
-            - loading a json object from the string object
+            - Loading a JSON string into a Python object.
         Then:
-            - return a valid json object
+            - Return a valid object with the expected field value.
         """
         client = Client(BASE_URL, '', '', '', '', 400)
-        field = generate_field_contents(client, '{"Device Name":"Macbook\\Name\\\"Test"}', GET_LEVELS_BY_APP['mapping'],
-                                        {"depth": 1})
-        assert field == {'2': {'Type': 1, 'Value': 'Macbook\\Name\"Test', 'FieldId': '2'}}
+        field = generate_field_contents(client, json_fields_values, GET_LEVELS_BY_APP['mapping'], {"depth": 1})
+        assert field == {'2': {'Type': 1, 'Value': expected_value, 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):
         errors = get_errors_from_res(RES_WITH_ERRORS)
