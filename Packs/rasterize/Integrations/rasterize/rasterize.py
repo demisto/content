@@ -244,6 +244,32 @@ class PychromeEventHandler:
                 self.tab_ready_event.set()
 
 
+    def retry_loading(self):
+        """
+        Attempts to reload the page multiple times if a chrome-error is encountered.
+        """
+        for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
+            demisto.debug(f'Retrying loading URL {self.path}. Attempt {retry_count}')
+            try:
+                if self.navigation_timeout > 0:
+                    self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
+                else:
+                    self.tab.Page.navigate(url=self.path)
+            except Exception as e:
+                demisto.debug(f'Error during navigation attempt {retry_count}: {e}')
+
+            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
+
+            frame_url: str = self.tab.Page.getFrameTree()['frameTree']['frame']['url']
+
+            if not frame_url.startswith(CHROME_ERROR_URL):
+                demisto.debug('Retry successful.')
+                self.tab_ready_event.set()
+                break
+        else:
+            demisto.debug('Max retries reached, could not load the page.')
+
+
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         '''Triggered when a request is sent by the browser, catches mailto URLs.'''
         demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
