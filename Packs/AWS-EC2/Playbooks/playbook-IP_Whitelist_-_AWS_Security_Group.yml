@@ -359,9 +359,7 @@ tasks:
       id: 8a1ec2e1-2f6c-4ab1-86dc-7f587b6fd52a
       version: -1
       name: Revoke IPs from AWS Security Group
-      description: Removes egress rule from a security group. To remove a rule, the
-        values that you specify (for example, ports) must match the existing rule's
-        values exactly.
+      description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
       script: '|||aws-ec2-revoke-security-group-ingress-rule'
       type: regular
       iscommand: true
@@ -875,5 +873,6 @@ fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform
