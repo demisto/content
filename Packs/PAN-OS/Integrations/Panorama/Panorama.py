@@ -15545,6 +15545,7 @@ def main():  # pragma: no cover
                     empty_result_message="Empty route summary result."
                 )
             )
+
         elif command == 'pan-os-platform-get-system-info':
             topology = get_topology()
             return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
