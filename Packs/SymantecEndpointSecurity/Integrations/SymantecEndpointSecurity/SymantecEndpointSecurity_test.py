@@ -2,7 +2,7 @@ import pytest
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
-    normalize_date_format,
+    EventCounter,
     extract_events_suspected_duplicates,
     calculate_next_fetch,
     filter_duplicate_events,
@@ -28,25 +28,6 @@ def mock_client() -> Client:
 
 
 @pytest.mark.parametrize(
-    "date_str, expected_result",
-    [
-        ("2024-10-09T12:34:56.789Z", "2024-10-09T12:34:56Z"),
-        ("2024-10-09T12:34:56.789324959595959959595Z", "2024-10-09T12:34:56Z"),
-    ],
-)
-def test_normalize_date_format(date_str: str, expected_result: str):
-    """
-    Given:
-        - A date string with microseconds
-    When:
-        - The `normalize_date_format` function is called
-    Then:
-        - Ensure that return a date string without microseconds
-    """
-    assert normalize_date_format(date_str) == expected_result
-
-
-@pytest.mark.parametrize(
     "events, expected_results",
     [
         (
@@ -55,12 +36,20 @@ def test_normalize_date_format(date_str: str, expected_result: str):
                 {"uuid": "456", "log_time": "2024-10-09T12:34:56.789Z"},
                 {"uuid": "789", "log_time": "2024-10-09T12:34:55.789Z"},
             ],
-            ["123", "456"],
-        )
+            (["456"], "2024-10-09T12:34:56.789Z"),
+        ),
+        (
+            [
+                {"uuid": "123", "log_time": "2024-10-09T12:34:56Z"},
+                {"uuid": "456", "log_time": "2024-10-09T12:34:56.78957832Z"},
+                {"uuid": "789", "log_time": "2024-10-09T12:34:56.789578Z"},
+            ],
+            (["456", "789"], "2024-10-09T12:34:56.78957832Z"),
+        ),
     ],
 )
 def test_extract_events_suspected_duplicates(
-    events: list[dict], expected_results: list[str]
+    events: list[dict], expected_results: tuple[list[str]]
 ):
     """
     Given
@@ -98,7 +87,14 @@ def test_extract_events_suspected_duplicates(
                     "time": "2024-10-09T12:34:55.789Z",
                 },
             ],
-            [],
+            [
+                {
+                    "uuid": "456",
+                    "log_time": "2024-10-09T12:34:56.789Z",
+                    "time": "2024-10-09T12:34:56.789Z",
+                    "_time": "2024-10-09T12:34:56.789Z",
+                }
+            ],
             id="Event time is equal to or less than last_event_time",
         ),
         pytest.param(
@@ -165,7 +161,9 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    filtered_events = filter_duplicate_events(events, integration_context)
+    filtered_events = filter_duplicate_events(
+        events, integration_context, EventCounter()
+    )
     assert filtered_events == expected_filtered_events
 
 
@@ -211,14 +209,12 @@ def test_calculate_next_fetch_last_latest_event_time_are_equal(
     Then:
         - Ensure that updated the 'integration_context' with new events in addition to the old ones, and the next hash
     """
-    mock_set_integration_context = mocker.patch(
-        "SymantecEndpointSecurity.set_integration_context"
-    )
-    calculate_next_fetch(
+
+    integration_context = calculate_next_fetch(
         filtered_events, next_hash, include_last_fetch_events, last_integration_context
     )
 
-    assert mock_set_integration_context.call_args[0][0] == expected_integration_context
+    assert integration_context == expected_integration_context
 
 
 def test_perform_long_running_loop_unauthorized_token(mocker: MockerFixture):
@@ -263,7 +259,7 @@ def test_perform_long_running_loop_next_pointing_not_available(mocker: MockerFix
     mocker.patch("SymantecEndpointSecurity.sleep_if_necessary")
     with pytest.raises(DemistoException, match="Failed to fetch logs from API"):
         perform_long_running_loop(mock_client())
-    assert mock_integration_context == {}
+    assert mock_integration_context == {"fetch_failure_count": 1}
 
 
 def test_test_module(mocker: MockerFixture):
@@ -320,9 +316,11 @@ def test_get_events_command_with_raises(
     [
         pytest.param(10, 20, 1, id="The sleep function should be called once"),
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
-    ]
+    ],
 )
-def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
+def test_sleep_if_necessary(
+    mocker: MockerFixture, start_run: int, end_run: int, call_count: int
+):
     """
     Given:
         - Mocked time passed duration
@@ -334,3 +332,39 @@ def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int,
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
     sleep_if_necessary(end_run - start_run)
     assert mock_sleep.call_count == call_count
+
+
+def test_event_counter_without_missing_schema(mocker: MockerFixture):
+    counter = EventCounter()
+    counter.filtered_events = 2
+    counter.events = 3
+    counter.total_bytes = 60
+
+    demisto_debug_mock = mocker.patch.object(demisto, "debug")
+
+    counter.print_summary()
+    demisto_debug_mock.assert_called_with(
+        "Summary Log:\n"
+        "- Total events received from Symantec (before filtering): 3 events\n"
+        "- Total events sent to XSIAM (after filtering): 2 events\n"
+        "- Total data received from Symantec: "
+        "60 bytes (~0.0001 MB)\n"
+        "- Number of events missing a schema: 0\n"
+    )
+
+
+def test_event_counter_with_missing_schema(mocker: MockerFixture):
+    counter = EventCounter()
+    counter.filtered_events = 2
+    counter.events = 3
+    counter.total_bytes = 60
+    counter.event_missing_schema = {"test": "test"}
+    counter.events_missing_schema_counter = 1
+
+    demisto_debug_mock = mocker.patch.object(demisto, "debug")
+
+    counter.print_summary()
+
+    demisto_debug_mock.assert_called_with(
+        "Example of an event missing a schema: {'test': 'test'}"
+    )

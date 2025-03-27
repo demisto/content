@@ -46,11 +46,12 @@ configuration:
   advanced: true
   required: false
   defaultvalue: Low
-- display: Types of Notifications to Send (Deprecated)
+- display: Types of Notifications to Send.
   name: permitted_notifications
   type: 16
   section: Collect
-  hidden: true
+  hidden:
+  - marketplacev2
   required: false
   options:
   - incidentAssigned
@@ -65,8 +66,9 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
+  - deprecatedContentInUse
   advanced: true
-  additionalinfo: Deprecated. Use User (User Name) -> User Preferences -> Notifications instead. 
+  additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
@@ -380,7 +382,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (username or email).
+      description: The Slack user (username, email or user ID).
       name: user
       required: true
     description: Get details about a specified user.
@@ -501,6 +503,25 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
+  - arguments:
+    - default: true
+      description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}”.'
+      name: message
+      prettyname: Message
+      required: true
+    - description: The name of the Slack channel to which to send the message.
+      name: channel
+      prettyname: Channel
+      required: true
+    description: Sends a message to a user, group, or channel.
+    name: slack-send-notification-quick-action
+    prettyname: Send Slack Message
+    hidden: true
+    quickaction: true
+    outputs:
+      - contextPath: Slack.Thread.ID
+        description: The Slack thread ID.
+        type: String
   dockerimage: demisto/slackv3:1.0.0.117556
   longRunning: true
   runonce: false
@@ -508,6 +529,7 @@ script:
   subtype: python3
   type: python
   isFetchSamples: true
+supportsquickactions: true
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB

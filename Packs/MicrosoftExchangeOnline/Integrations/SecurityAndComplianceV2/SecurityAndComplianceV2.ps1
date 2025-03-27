@@ -1895,7 +1895,9 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-
+    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
+    $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
+    $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
     if ($integration_params.insecure -eq $true) {
         # Bypass SSL verification if insecure is true
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
@@ -1906,7 +1908,7 @@ function Main {
 
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
-            $integration_params.app_id, $integration_params.app_secret, $integration_params.tenant_id)
+            $app_id, $app_secret, $tenant_id)
 
         # Executing oauth2 commands
         switch ($command) {
@@ -1927,7 +1929,7 @@ function Main {
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
-            $integration_params.tenant_id,
+            $tenant_id,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )

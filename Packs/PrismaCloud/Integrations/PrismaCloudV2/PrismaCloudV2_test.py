@@ -663,6 +663,180 @@ def test_access_key_delete(mocker, prisma_cloud_v2_client):
     assert command_results.readable_output == 'Access key test_key was successfully deleted successfully'
 
 
+def test_get_asset(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'asset',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_generic(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-generic-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_generic_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_generic_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_findings(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-findings-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_findings_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_findings_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'findings',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_vulnerabilities(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-vulnerabilities-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_vulnerabilities_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_vulnerabilities_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'vulnerabilities',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_alerts(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-alerts-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_alerts_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_alerts_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'alerts',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_relationships(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-relationships-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_relationships_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_relationships_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'relationships',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
+def test_get_asset_network(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-asset-network-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import get_asset_network_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'asset_id': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
+    get_asset_network_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix="/uai/v1/asset",
+        json_data={
+            'assetId': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25',
+            'type': 'network',
+            'limit': 50,
+            'prismaCloudFindingsOnly': False
+        }
+    )
+
+
 ''' HELPER FUNCTIONS TESTS '''
 
 
@@ -1187,6 +1361,35 @@ def test_filter_alerts(prisma_cloud_v2_client, limit, expected_incidents, expect
     fetched_ids = {'N-111111': 1000000000000,
                    'P-222222': 999996400000}
     response_items = [{'id': 'N-111111', 'alertTime': 1000000000000, 'policy': {'name': 'Policy One', 'severity': 'high'}},
+                      input_data.truncated_alert6,
+                      input_data.truncated_alert7]
+
+    assert filter_alerts(prisma_cloud_v2_client, fetched_ids, response_items, limit) == expected_incidents
+    assert fetched_ids == expected_updated_fetched_ids
+
+
+@pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
+                         (input_data.low_limit_for_filter__updated_alert_time,
+                          input_data.exactly_limit_for_filter__updated_alert_time,
+                          input_data.high_limit_for_filter__updated_alert_time,
+                          ))
+def test_filter_alerts_with_updated_alert_time(prisma_cloud_v2_client, limit, expected_incidents, expected_updated_fetched_ids):
+    """
+    Given:
+        - A set of fetched IDs with an alert ID and its timestamp.
+        - A list of alerts from Prisma Cloud, including an alert with the same ID but a different timestamp.
+        - A limit on the number of incidents to return.
+    When:
+        - Filtering the alerts from Prisma Cloud, considering the fetched IDs and the limit.
+    Then:
+        - Returns the expected incidents up to the limit, excluding those already fetched.
+        - Updates the fetched IDs dictionary with the new timestamp for the alert with the updated timestamp.
+    """
+    from PrismaCloudV2 import filter_alerts
+
+    fetched_ids = {'N-111111': 1000000000000,
+                   'P-222222': 999996400000}
+    response_items = [{'id': 'N-111111', 'alertTime': 1000000000001, 'policy': {'name': 'Policy One', 'severity': 'high'}},
                       input_data.truncated_alert6,
                       input_data.truncated_alert7]
 

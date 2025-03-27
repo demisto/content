@@ -1,5 +1,5 @@
-name: FortiGate
-id: FortiGate
+name: FortiGate Parsing Rule
+id: FortiGate_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

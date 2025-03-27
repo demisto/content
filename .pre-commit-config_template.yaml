@@ -154,7 +154,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     - --files
     args:docker_autoupdate:
@@ -163,7 +163,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     - --files
     copy_files:
@@ -193,7 +193,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
@@ -306,6 +306,15 @@ repos:
     pass_filenames: false
     require_serial: true
     skip:docker_autoupdate: true
+
+  - id: validate-validation-config-file
+    name: Validation for validate_config file
+    description: Validate the validation config file
+    entry: validate-validation-config-file
+    language: python
+    pass_filenames: false
+    args:
+    - --config-path=validation_config.toml
 
   - id: secrets
     name: secrets

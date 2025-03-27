@@ -1,5 +1,5 @@
-name: Azure Events Hub Modeling Rule
-id: azure_events_hub_modeling_rule
+name: Microsoft Azure Events Hub Parsing Rule
+id: Microsoft_Azure_Events_Hub_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

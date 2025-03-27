@@ -9,8 +9,7 @@ from CommonServerUserPython import *
 
 import json
 
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, UTC
 
 MOCK_URL = 'https://test.com/api'
 RECORD_SUMMARY_FIELDS_DEFAULT = (
@@ -521,7 +520,7 @@ def test_fetch_incidents(requests_mock):
     assert incidents[1].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=UTC).timestamp())
 
 
 def test_fetch_incidents_with_signals(requests_mock):
@@ -587,7 +586,7 @@ def test_fetch_incidents_with_signals(requests_mock):
     assert incidents[13].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
     assert incidents[13].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[13].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=UTC).timestamp())
 
 
 DEMISTO_ARGS = {'api_endpoint': MOCK_URL,

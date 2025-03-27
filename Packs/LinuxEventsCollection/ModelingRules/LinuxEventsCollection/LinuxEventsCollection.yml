@@ -1,6 +1,6 @@
 fromversion: 6.8.0
-id: linux_events_collection
-name: Linux Events Collection
+id: Linux_Events_Collection_ModelingRule
+name: Linux Events Collection Modeling Rule
 rules: ''
 schema: ''
 tags: Linux Logs Collection Redhat Ubuntu

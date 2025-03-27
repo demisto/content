@@ -458,7 +458,7 @@ def fetch_indicators_command(client,
                     if (create_relationships
                             and client.feed_url_to_config.get(url, {}).get('relationship_name')
                             and attributes.get('relationship_entity_b')
-                            ):
+                        ):
                         relationships_lst = EntityRelationship(
                             name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
                             entity_a=value,
@@ -537,7 +537,8 @@ def feed_main(feed_name, params=None, prefix=''):
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
-    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
+    enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
+                           or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':

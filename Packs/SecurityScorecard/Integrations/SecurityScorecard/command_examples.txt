@@ -2,12 +2,15 @@
 !securityscorecard-portfolio-list-companies portfolio_id=60c78cc2d63162001a68c2b8 grade=A industry=information_services
 !securityscorecard-company-factor-score-get domain=google.com severity_in=high
 !securityscorecard-company-history-score-get domain=google.com from=2021-06-01 to=2021-06-28 timing=weekly
-!securityscorecard-alert-grade-change-create change_direction=drops score_types=network_security,endpoint_security target=60c8c5f9139e40001908c6a4,my_scorecard
-!securityscorecard-alert-score-threshold-create change_direction=drops_below threshold=100 score_types=network_security,dns_health target=60c8c5f9139e40001908c6a4,my_scorecard
+!securityscorecard-alert-grade-change-create change_direction=drops score_types=network_security,endpoint_security target=my_scorecard
+!securityscorecard-alert-score-threshold-create change_direction=drops_below threshold=100 score_types=overall target=my_scorecard
 !securityscorecard-alerts-list
+!securityscorecard-alert-delete alert_id="99ecaef8-fec4-4eb9-abf7-635f4c95a369" 
 !securityscorecard-company-services-get domain=google.com
 !securityscorecard-company-score-get domain=google.com
 !securityscorecard-company-history-factor-score-get domain=google.com from=2021-06-01 to=2021-06-30 timing=weekly
 !securityscorecard-company-events-get domain=groupe.schmidt date_from="2024-07-31 00:00:00Z" date_to="2024-08-08 00:00:00Z"
 !securityscorecard-company-findings-get date=2024-08-13 domain=groupe.schmidt issue_type=tlscert_expired
 !securityscorecard-issue-metadata issue_type=spf_record_missing
+!securityscorecard-alert-rules-list
+!securityscorecard-issue-details-get domain=example.com issue_type=spf_record_missing

@@ -1,25 +1,28 @@
 Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
-This integration was integrated and tested with version v1 of cyberint
 
-## Configure cyberint in Cortex
+## Configure Cyberint on Cortex XSOAR
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Cyberint.
+3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Incident type |  | False |
-| Cyberint Access Token | Cyberint API access token. | True |
-| Cyberint API Environment | Cyberint environment on which the services run \(i.e http://\{environment\}.cyberint.io/...\) | True |
-| Fetch incidents |  | False |
-| Create an incident per CSV record | An incident will be created with the originated Alert details per CSV file record | False |
-| Fetch Severity | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
-| Fetch Status | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
-| Fetch Environment | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
-| Fetch Types | Types to fetch. If none is chosen, all types will be returned. | False |
-| Fetch Limit | Max number of alerts per fetch. Defaults to  the minimum 10, max is 100. | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+    | **Parameter**                                                                    | **Description** | **Required** |
+    |----------------------------------------------------------------------------------| --- | --- |
+    | Incident type                                                                    |  | False |
+    | Cyberint Access Token                                                            | Cyberint API access token. | True |
+    | Cyberint API URL                                                                 | Cyberint environment on which the services run \(Example: https://yourcompany.cyberint.io) | True |
+    | Fetch incidents                                                                  |  | False |
+    | Create an incident per CSV record                                                | An incident will be created with the originated Alert details per CSV file record | False |
+    | Fetch Severity                                                                   | Severities to fetch. If none is chosen, all severity levels will be returned. | False |
+    | Fetch Status                                                                     | Statuses to fetch. If none is chosen, all statuses will be returned. | False |
+    | Fetch Environment                                                                | Environments to fetch \(comma separated\). If empty, all available environments will be returned. | False |
+    | Fetch Types                                                                      | Types to fetch. If none is chosen, all types will be returned. | False |
+    | Fetch Limit                                                                      | Max number of alerts per fetch. Defaults to  the minimum 10, max is 100. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Trust any certificate (not secure)                                               |  | False |
+    | Use system proxy settings                                                        |  | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
@@ -59,65 +62,66 @@ List alerts according to parameters
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cyberint.Alert.ref_id | String | Reference ID of the alert. |
-| Cyberint.Alert.confidence | Number | Confidence score of the alert. |
-| Cyberint.Alert.status | String | Status of the alert. |
-| Cyberint.Alert.severity | String | Severity of the alert |
-| Cyberint.Alert.created_by.email | String | User which has created the alert. |
-| Cyberint.Alert.created_date | Date | Date in which the alert was created. |
-| Cyberint.Alert.category | String | Category of the alert. |
-| Cyberint.Alert.type | String | Type of the alert. |
-| Cyberint.Alert.source_category | String | Source category of the alert. |
-| Cyberint.Alert.source | String | Source of the alert. |
-| Cyberint.Alert.targeted_vectors | String | Vectors targeted by the threat. |
-| Cyberint.Alert.targeted_brands | String | Brands targeted by the threat. |
-| Cyberint.Alert.related_entities | String | Entities related to the alert. |
-| Cyberint.Alert.impacts | String | Impacts made by the threat. |
-| Cyberint.Alert.acknowledged_date | Date | Date in which the alert was acknowledged. |
-| Cyberint.Alert.acknowledged_by.email | String | User which has acknowledged the alert. |
-| Cyberint.Alert.publish_date | Date | Date in which the alert was published. |
-| Cyberint.Alert.title | String | Title of the alert. |
-| Cyberint.Alert.alert_data.url | String | URL impacted by the event. |
-| Cyberint.Alert.alert_data.detection_reasons | String | Reasons why a phishing event has been detected. |
-| Cyberint.Alert.alert_data.tool_name | String | Name of a tool used for an exploit if available. |
-| Cyberint.Alert.alert_data.application | String | Application affected by an event. |
-| Cyberint.Alert.alert_data.source | String | Source of an event if available. |
-| Cyberint.Alert.alert_data.domain | String | Domain related to an event if available. |
-| Cyberint.Alert.alert_data.subdomian | String | Subdomain related to an event if available. |
+| **Path** | **Type** | **Description**                                      |
+| --- | --- |------------------------------------------------------|
+| Cyberint.Alert.id | String | Unique ID of the alert.                              |
+| Cyberint.Alert.ref_id | String | Reference ID of the alert.                           |
+| Cyberint.Alert.confidence | Number | Confidence score of the alert.                       |
+| Cyberint.Alert.status | String | Status of the alert.                                 |
+| Cyberint.Alert.severity | String | Severity of the alert                                |
+| Cyberint.Alert.created_by.email | String | User which has created the alert.                    |
+| Cyberint.Alert.created_date | Date | Date in which the alert was created.                 |
+| Cyberint.Alert.category | String | Category of the alert.                               |
+| Cyberint.Alert.type | String | Type of the alert.                                   |
+| Cyberint.Alert.source_category | String | Source category of the alert.                        |
+| Cyberint.Alert.source | String | Source of the alert.                                 |
+| Cyberint.Alert.targeted_vectors | String | Vectors targeted by the threat.                      |
+| Cyberint.Alert.targeted_brands | String | Brands targeted by the threat.                       |
+| Cyberint.Alert.related_entities | String | Entities related to the alert.                       |
+| Cyberint.Alert.impacts | String | Impacts made by the threat.                          |
+| Cyberint.Alert.acknowledged_date | Date | Date in which the alert was acknowledged.            |
+| Cyberint.Alert.acknowledged_by.email | String | User which has acknowledged the alert.               |
+| Cyberint.Alert.publish_date | Date | Date in which the alert was published.               |
+| Cyberint.Alert.title | String | Title of the alert.                                  |
+| Cyberint.Alert.alert_data.url | String | URL impacted by the event.                           |
+| Cyberint.Alert.alert_data.detection_reasons | String | Reasons why a phishing event has been detected.      |
+| Cyberint.Alert.alert_data.tool_name | String | Name of a tool used for an exploit if available.     |
+| Cyberint.Alert.alert_data.application | String | Application affected by an event.                    |
+| Cyberint.Alert.alert_data.source | String | Source of an event if available.                     |
+| Cyberint.Alert.alert_data.domain | String | Domain related to an event if available.             |
+| Cyberint.Alert.alert_data.subdomian | String | Subdomain related to an event if available.          |
 | Cyberint.Alert.alert_data.misconfiguration_type | String | Type of misconfiguration for a misconfigured domain. |
-| Cyberint.Alert.alert_data.ip | String | IP related to an event. |
-| Cyberint.Alert.alert_data.port | String | Port related to an event. |
-| Cyberint.Alert.alert_data.service | String | Service related to an event. |
-| Cyberint.Alert.alert_data.access_token | String | Access token exposed in an event. |
-| Cyberint.Alert.alert_data.access_token_type | String | Access token exposed in an event. |
-| Cyberint.Alert.alert_data.username | String | Username of an account related to an event. |
-| Cyberint.Alert.alert_data.csv.username | String | Username of an account found in a report CSV. |
-| Cyberint.Alert.alert_data.csv.password | String | Password of an account found in a report CSV. |
-| Cyberint.Alert.alert_data.email | String | Email of an account related to an event. |
-| Cyberint.Alert.alert_data.author_email_address | String | Email of an author related to an event. |
-| Cyberint.Alert.alert_data.repository_name | String | Repository name related to an event. |
-| Cyberint.Alert.alert_data.mail_server | String | Mail server related to an event. |
-| Cyberint.Alert.alert_data.blacklist_repository | String | Blacklist repository name related to an event. |
-| Cyberint.Alert.alert_data.screenshot | String | Screenshot related to an event. |
-| Cyberint.Alert.alert_data.spf_records | String | SPF records if applicable to the event. |
-| Cyberint.Alert.alert_data.dmarc_record | String | DMARC records if applicable to the event. |
-| Cyberint.Alert.alert_data.storage_link | String | Storage link if applicable to the event. |
-| Cyberint.Alert.alert_data.interface_type | String | Interface type if applicable to the event. |
-| Cyberint.Alert.alert_data.vulnerable_cname_record | String | Vulnerable CName record if applicable to the event. |
-| Cyberint.Alert.ioc.type | String | Type of IOC related to the alert. |
-| Cyberint.Alert.ioc.value | String | Value of the IOC related to the alert. |
-| Cyberint.Alert.ticket_id | String | Ticket ID of the alert. |
-| Cyberint.Alert.threat_actor | String | Actor to the threat related to the alert. |
-| Cyberint.Alert.modification_date | Date | Date the alert was last modified. |
-| Cyberint.Alert.closure_date | String | Date the alert was closed. |
-| Cyberint.Alert.closed_by.email | String | User which has closed the alert. |
-| Cyberint.Alert.closure_reason | String | Reason for closing the alert. |
-| Cyberint.Alert.description | String | Description of the alert. |
-| Cyberint.Alert.recommendation | String | Recommendation for the alert |
-| Cyberint.Alert.tags | String | Tags related to the alert |
-| Cyberint.Alert.attachments | String | Attachments related to the alert |
+| Cyberint.Alert.alert_data.ip | String | IP related to an event.                              |
+| Cyberint.Alert.alert_data.port | String | Port related to an event.                            |
+| Cyberint.Alert.alert_data.service | String | Service related to an event.                         |
+| Cyberint.Alert.alert_data.access_token | String | Access token exposed in an event.                    |
+| Cyberint.Alert.alert_data.access_token_type | String | Access token exposed in an event.                    |
+| Cyberint.Alert.alert_data.username | String | Username of an account related to an event.          |
+| Cyberint.Alert.alert_data.csv.username | String | Username of an account found in a report CSV.        |
+| Cyberint.Alert.alert_data.csv.password | String | Password of an account found in a report CSV.        |
+| Cyberint.Alert.alert_data.email | String | Email of an account related to an event.             |
+| Cyberint.Alert.alert_data.author_email_address | String | Email of an author related to an event.              |
+| Cyberint.Alert.alert_data.repository_name | String | Repository name related to an event.                 |
+| Cyberint.Alert.alert_data.mail_server | String | Mail server related to an event.                     |
+| Cyberint.Alert.alert_data.blacklist_repository | String | Blacklist repository name related to an event.       |
+| Cyberint.Alert.alert_data.screenshot | String | Screenshot related to an event.                      |
+| Cyberint.Alert.alert_data.spf_records | String | SPF records if applicable to the event.              |
+| Cyberint.Alert.alert_data.dmarc_record | String | DMARC records if applicable to the event.            |
+| Cyberint.Alert.alert_data.storage_link | String | Storage link if applicable to the event.             |
+| Cyberint.Alert.alert_data.interface_type | String | Interface type if applicable to the event.           |
+| Cyberint.Alert.alert_data.vulnerable_cname_record | String | Vulnerable CName record if applicable to the event.  |
+| Cyberint.Alert.ioc.type | String | Type of IOC related to the alert.                    |
+| Cyberint.Alert.ioc.value | String | Value of the IOC related to the alert.               |
+| Cyberint.Alert.ticket_id | String | Ticket ID of the alert.                              |
+| Cyberint.Alert.threat_actor | String | Actor to the threat related to the alert.            |
+| Cyberint.Alert.modification_date | Date | Date the alert was last modified.                    |
+| Cyberint.Alert.closure_date | String | Date the alert was closed.                           |
+| Cyberint.Alert.closed_by.email | String | User which has closed the alert.                     |
+| Cyberint.Alert.closure_reason | String | Reason for closing the alert.                        |
+| Cyberint.Alert.description | String | Description of the alert.                            |
+| Cyberint.Alert.recommendation | String | Recommendation for the alert                         |
+| Cyberint.Alert.tags | String | Tags related to the alert                            |
+| Cyberint.Alert.attachments | String | Attachments related to the alert                     |
 
 
 #### Command Example
@@ -164,7 +168,7 @@ List alerts according to parameters
                     "csv_id": 1981,
                     "name": "Company Customer Credentials Exposed.csv"
                 },
-                "description": "CyberInt detected breached credentials of several Chase customers, which were uploaded to an anti-virus repository. The credentials seem to have been obtained through malware, sending user inputs to the operator, and the various credentials were logged in the uploaded .txt files. As such, the file contains users\u2019 credentials not only for chase.com but for other websites as well. \nBreached customers credentials may be used by Threat Actors to carry out fraudulent transactions on their behalf, exposing Chase to both financial impact and legal claims.\n\n\n\n",
+                "description": "Cyberint detected breached credentials of several Chase customers, which were uploaded to an anti-virus repository. The credentials seem to have been obtained through malware, sending user inputs to the operator, and the various credentials were logged in the uploaded .txt files. As such, the file contains users\u2019 credentials not only for chase.com but for other websites as well. \nBreached customers credentials may be used by Threat Actors to carry out fraudulent transactions on their behalf, exposing Chase to both financial impact and legal claims.\n\n\n\n",
                 "environment": "Argos Demo",
                 "impacts": [
                     "data_compromise",
@@ -178,7 +182,7 @@ List alerts according to parameters
                 "iocs": [],
                 "modification_date": "2021-04-12T00:01:12",
                 "publish_date": "2020-11-23T17:44:42",
-                "recommendation": "1. CyberInt recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Chase to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC\u2019s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Chase implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
+                "recommendation": "1. Cyberint recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Chase to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC\u2019s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Chase implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
                 "ref_id": "ARG-3",
                 "related_entities": [],
                 "severity": "high",
@@ -246,7 +250,7 @@ List alerts according to parameters
                     "email": "avital@cyberint.com"
                 },
                 "created_date": "2021-04-12T00:01:12",
-                "description": "CyberInt detected an active phishing website impersonating Barclays login page while abusing the brand\u2019s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
+                "description": "Cyberint detected an active phishing website impersonating Barclays login page while abusing the brand\u2019s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
                 "environment": "Argos Demo",
                 "impacts": [
                     "brand_degradation",

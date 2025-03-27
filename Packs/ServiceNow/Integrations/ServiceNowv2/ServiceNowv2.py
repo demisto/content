@@ -287,8 +287,8 @@ def create_ticket_context(data: dict, additional_fields: list | None = None) -> 
     priority = data.get('priority')
     if priority:
         if isinstance(priority, dict):
-            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))),
-                                                      str(int(priority.get('value', '')))),
+            value = priority.get('value', '')
+            context['Priority'] = TICKET_PRIORITY.get(str(int(value)), str(int(value))) if value else ''
         else:
             context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
@@ -3131,7 +3131,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'Business Impact': BUSINESS_IMPACT.get(str(ticket.get('business_criticality', {}).get('value', '')), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
-        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
+        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))) if priority else '',
         'State': states.get(str(int(state)), str(int(state))),
         'Approval': ticket.get('approval_history', {}).get('value', ''),
         'Created On': ticket.get('sys_created_on', {}).get('value', ''),
@@ -3318,6 +3318,7 @@ def main():
             'servicenow-oauth-login': login_command,
             'servicenow-update-ticket': update_ticket_command,
             'servicenow-create-ticket': create_ticket_command,
+            'servicenow-create-ticket-quick-action': create_ticket_command,
             'servicenow-delete-ticket': delete_ticket_command,
             'servicenow-query-tickets': query_tickets_command,
             'servicenow-add-link': add_link_command,

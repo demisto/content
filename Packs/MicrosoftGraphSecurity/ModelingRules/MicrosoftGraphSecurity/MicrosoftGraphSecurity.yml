@@ -1,5 +1,5 @@
 fromversion: 8.2.0
-id: Microsoft_Graph_Security_Modeling_Rules
+id: Microsoft_Graph_Security_ModelingRule
 name: Microsoft Graph Security Modeling Rules
 rules: ''
 schema: ''

@@ -1,0 +1,36 @@
+{
+  "execution_id": "xxxxxxxxx",
+  "number_of_results": 4,
+  "query_name": "",
+  "results": [
+    {
+      "_time": 1734202800000,
+      "app": "app1",
+      "count": 42,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734202800000,
+      "app": "app2",
+      "count": 42,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "app1",
+      "count": 62,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "app": "app2",
+      "count": 62,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    }
+  ],
+  "status": "SUCCESS"
+}

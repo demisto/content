@@ -4083,7 +4083,43 @@ tasks:
       - "187"
     scriptarguments:
       query:
-        simple: network from vpc.flow_record where source.ip=${inputs.IPAddresses}
+        complex:
+          root: inputs.IPAddresses
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: network from vpc.flow_record where source.ip in (
+              suffix:
+                value:
+                  simple: )
     separatecontext: false
     continueonerrortype: ""
     view: |-

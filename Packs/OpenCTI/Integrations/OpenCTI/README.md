@@ -44,7 +44,8 @@ Get indicators in OpenCTI.
 | label_id | The label ID for the indicator (use opencti-label-list to find or create). | Optional | 
 | limit | The maximum number of indicators to return. Maximum value is 500. Default is 50. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Indicators.LastRunID context path. | Optional | 
-| all_results | When the argument is set to true, the limit argument is ignored. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| additional_filters | List of filters to apply. Format: [{key: str, operator: str, values: list[str], mode: str}, ...]. | Optional | 
+| all_results | When the argument is set to true, the limit argument is ignored. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -729,10 +730,11 @@ Gets observables from OpenCTI.
 | score_start | Score minimum value to filter by. Values range is 0-100. . | Optional | 
 | score_end | Score maximum value to filter by. Values range is 0-100. . | Optional | 
 | score | A specific score. Values range is 0-100 or Unknown. | Optional | 
-| observable_types | The observable types to fetch. Out-of-the-box observable types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
+| observable_types | The observable types to fetch. Out-of-the-box observable types supported in Cortex XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.ObservablesList.LastRunID context path. | Optional | 
-| search | The observable's value to filter by, can be partial value. | Optional | 
-| all_results | When the argument is set to true, the limit argument is ignored. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| search | The observable's value to filter by. Can be a partial value. | Optional | 
+| additional_filters | List of filters to apply. Format: [{key: str, operator: str, values: list[str], mode: str}, ...]. | Optional | 
+| all_results | When the argument is set to true, the limit argument is ignored. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -871,7 +873,6 @@ Get a list of all incident types.
 | OpenCTI.IncidentTypes.IncidentTypesList.id | unknown | Incident type ID. | 
 | OpenCTI.IncidentTypes.IncidentTypesList.name | unknown | Incident type name. | 
 | OpenCTI.IncidentTypes.IncidentTypesList.description | unknown | Incident type description. | 
-
 ### opencti-get-incidents
 
 ***
@@ -885,16 +886,17 @@ Get incidents in OpenCTI.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | The incident's value to filter by, can be partial value. | Optional | 
+| search | The incident's value to filter by. Can be a partial value. | Optional | 
 | created_by | The ID of the entity that created the incident (use opencti-organization-list to find or create). | Optional | 
 | creator | The ID of the incident creator. | Optional | 
 | created_after | Created after date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | created_before | Created before date filter. Format: YYYY-MM-DDThh:mm:ss.sssZ. | Optional | 
 | incident_types | The types of the incident. Use opencti-incident-types-list to find all incident types in OpenCTI. | Optional | 
 | label_id | The label ID for the incident (use opencti-label-list to find or create). | Optional | 
-| limit | The maximum number of incidents to return. Default value is 50. Maximum value is 500. Default is 50. | Optional | 
+| limit | The maximum number of incidents to return. Maximum value is 500. Default is 50. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Incidents.LastRunID context path. | Optional | 
-| all_results | When the argument is set to true, the limit argument is ignored. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| additional_filters | List of filters to apply. Format: [{key: str, operator: str, values: list[str], mode: str}, ...]. | Optional | 
+| all_results | When the argument is set to true, the limit argument is ignored. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -914,4 +916,3 @@ Get incidents in OpenCTI.
 | OpenCTI.Incidents.IncidentList.created | string | Creation date of the incident. | 
 | OpenCTI.Incidents.IncidentList.updatedAt | string | Last update date of the incident. | 
 | OpenCTI.Incidents.LastRunID | string | The last ID of the previous fetch for pagination. | 
-

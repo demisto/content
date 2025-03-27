@@ -1,0 +1,142 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+description: 'USTA Account Takeover Prevention is designed to collect compromised credentials sourced from stealer malware attacks, helping organizations identify potential account takeovers and enhance their security posture. Provided by PRODAFT.'
+display: USTA Account Takeover Prevention
+name: USTA Account Takeover Prevention
+defaultclassifier: USTA Incident Classifier
+defaultmapperin: USTA Incident Mapper
+defaultmapperout: 'null'
+commonfields:
+  id: USTA Account Takeover Prevention
+  version: -1
+configuration:
+- defaultvalue: https://usta.prodaft.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: api_key
+  required: true
+  type: 4
+  section: Connect
+- display: Fetch incidents by status
+  defaultvalue: All
+  name: status
+  options:
+  - All
+  - Open
+  - Closed
+  type: 15
+  required: false
+  section: Collect
+- defaultvalue: '100'
+  display: Maximum number of alerts per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+- display: First Fetch Time
+  additionalinfo: 'The time range to consider for the initial data fetch. Warning: Fetching a large time range may cause performance issues!'
+  defaultvalue: 3 days
+  name: first_fetch
+  type: 0
+  required: true
+  section: Connect
+script:
+  commands:
+  - arguments:
+    - description: 'Username to search.'
+      name: username
+      required: true
+    - description: Number of result that should appear on each page.
+      name: page_size
+    - description: 1-indexed page number to get a particular page of results.
+      name: page
+    description: 'Search for compromised credentials by username.'
+    name: usta-atp-search-username
+    outputs:
+    - contextPath: USTA.AccountTakeoverPrevention.id
+      description: The ID of the alert.
+      type: Number
+    - contextPath: USTA.AccountTakeoverPrevention.username
+      description: The username of the compromised credential.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.password
+      description: The password of the compromised credential.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.url
+      description: The URL of the compromised credential.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.is_corporate
+      description: Whether the compromised credential is corporate.
+      type: Boolean
+    - contextPath: USTA.AccountTakeoverPrevention.created
+      description: The creation date of the compromised credential.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.ip
+      description: The IP address of the victim.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.country
+      description: The country of the victim.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.phone_number
+      description: The phone number of the victim.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.computer_name
+      description: The computer name of the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.victim_os
+      description: The OS of the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.language
+      description: The language of the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.memory
+      description: The memory of the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.cpu
+      description: The CPU of the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.gpu
+      description: The GPU of the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.malware
+      description: The family of the malware that infected the victim computer.
+      type: String
+    - contextPath: USTA.AccountTakeoverPrevention.victim_detail.infection_date
+      description: The infection date of the victim computer.
+      type: String
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

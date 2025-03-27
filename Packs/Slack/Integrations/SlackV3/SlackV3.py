@@ -1953,7 +1953,8 @@ def slack_send():
         if tags and not any(elem in entry_tags for elem in tags):
             return
 
-        if entry:
+        is_file = bool(entry_object.get('fileID', None))
+        if is_file:
             send_mirrored_file_to_slack(
                 entry,
                 message=message,
@@ -2614,7 +2615,7 @@ def get_user():
     # Check if the input might be an email or a user ID
     if re.match(emailRegex, user_input):
         slack_user = get_user_by_email(user_input)
-    elif re.match("^[UW](?=.*\d)[A-Z0-9]{8}$", user_input):
+    elif re.match("^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
         slack_user = get_user_by_id(user_input)
     else:
         slack_user = get_user_by_name(user_input)
@@ -3146,6 +3147,7 @@ def main() -> None:
         'long-running-execution': long_running_main,
         'mirror-investigation': mirror_investigation,
         'send-notification': slack_send,
+        'slack-send-notification-quick-action': slack_send,
         'slack-send-file': slack_send_file,
         'slack-set-channel-topic': set_channel_topic,
         'close-channel': close_channel,

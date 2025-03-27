@@ -378,7 +378,7 @@
 						"minH": 1,
 						"moved": false,
 						"name": "Rasterize",
-						"query": "82f70396-4be3-4e57-838b-22f614e83415",
+						"query": "RasterizeImageSuspicious",
 						"queryType": "script",
 						"static": false,
 						"type": "dynamic",
@@ -609,7 +609,7 @@
 						"minH": 1,
 						"moved": false,
 						"name": "Original domain",
-						"query": "29f95465-a935-4c54-8ff1-2671fa66fea1",
+						"query": "RasterizeImageOriginal",
 						"queryType": "script",
 						"static": false,
 						"type": "dynamic",
@@ -625,7 +625,7 @@
 						"minH": 1,
 						"moved": false,
 						"name": "Suspicious domain",
-						"query": "82f70396-4be3-4e57-838b-22f614e83415",
+						"query": "RasterizeImageSuspicious",
 						"queryType": "script",
 						"static": false,
 						"type": "dynamic",
@@ -1629,5 +1629,8 @@
 	"system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

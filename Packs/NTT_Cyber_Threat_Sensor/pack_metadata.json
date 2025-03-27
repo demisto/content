@@ -2,7 +2,7 @@
     "name": "NTT Cyber Threat Sensor",
     "description": "NTT Cyber Threat Sensor integration",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "NTT Ltd.",
     "url": "https://www.global.ntt",
     "email": "servicedesk@global.ntt",
@@ -39,6 +39,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

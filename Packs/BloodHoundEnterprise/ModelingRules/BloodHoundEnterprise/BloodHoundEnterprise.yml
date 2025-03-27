@@ -1,0 +1,6 @@
+fromversion: 8.4.0  # Will be updated with XSIAM version updates
+id: BloodHound_Enterprise_ModelingRule
+name: BloodHound Enterprise Modeling Rule
+rules: ''
+schema: ''
+tags: ''

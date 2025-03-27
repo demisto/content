@@ -26,6 +26,7 @@ configuration:
   defaultvalue: 'true'
   hidden: true
   name: feedIncremental
+  section: Connect
   type: 8
   required: false
 - display: Trust any certificate (not secure)
@@ -205,6 +206,7 @@ description: This is the Feed GitHub integration for getting started with your f
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
 sectionOrder:
