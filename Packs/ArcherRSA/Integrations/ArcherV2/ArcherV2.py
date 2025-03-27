@@ -535,13 +535,9 @@ class Client(BaseClient):
             attempts: (int) number of attempts to try with the given session extraction/method.
 
         Returns:
-            requets.Response: the response object
+            requests.Response: the response object
         """
-        if method.casefold() == "post":
-            demisto.debug(f"Sending POST request to endpoint: {url_suffix} with data: {data}")
-
-        if method.casefold() == "get":
-            demisto.debug(f"Sending GET request to endpoint: {url_suffix} with params: {params}")
+        demisto.debug(f"Sending {method.upper()} request to REST endpoint: {url_suffix} with params: {params} and body: {data}")
 
         for _ in range(attempts):
             headers = self.get_headers(create_new_session=create_new_session)
@@ -1144,9 +1140,9 @@ def generate_field_contents(client, fields_values, level_fields, depth):
             demisto.debug(f"Loading JSON fields values string: {fields_values}")
             fields_values = json.loads(fields_values)
         except Exception as e:
-            raise Exception(f"Failed to load JSON fields values string: {fields_values}. Error: {str(e)}")
+            raise Exception(f"Failed to load JSON fields values string. Error: {str(e)}")
         else:
-            demisto.debug(f"Successfully loaded JSON fields values string: {fields_values}")
+            demisto.debug("Successfully loaded JSON fields values string")
 
     field_content = {}
     for field_name in fields_values:
