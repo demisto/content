@@ -1036,7 +1036,6 @@
     "type": "pdf",
     "tags": [],
     "createdBy": "DBot",
-    "fromVersion": "5.5.0",
-    "recipients": [],
-    "toVersion": "8.9.0"
+    "fromVersion": "9.0.0",
+    "recipients": []
 }
