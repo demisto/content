@@ -33,7 +33,7 @@ configuration:
   required: false
 - defaultvalue: '6 hours'
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
-  display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
+  display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes. If you encounter timeout errors increase the delta value.
   name: fetch_delta
   type: 0
   section: Collect
@@ -133,7 +133,7 @@ script:
   subtype: python3
   type: python
   isfetchevents: true
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
 marketplaces:
 - marketplacev2
 - platform
