@@ -1,12 +1,23 @@
-
-import json
-import pytest
-from ZeroNetworksSegmentEventCollector import (Client, process_events, initialize_start_timestamp,
-                                               get_max_results_and_limit, handle_log_types, update_last_run, fetch_events,
-                                               get_events, create_id, fetch_all_events, AUDIT, NETWORK_ACTIVITIES)
-from CommonServerPython import *
 import hashlib
+import json
+
 import demistomock as demisto  # noqa: F401
+import pytest
+from CommonServerPython import *
+from ZeroNetworksSegmentEventCollector import (
+    AUDIT,
+    NETWORK_ACTIVITIES,
+    Client,
+    create_id,
+    fetch_all_events,
+    fetch_events,
+    get_events,
+    get_max_results_and_limit,
+    handle_log_types,
+    initialize_start_timestamp,
+    process_events,
+    update_last_run,
+)
 
 
 class MockClient(Client):
@@ -15,36 +26,27 @@ class MockClient(Client):
 
     def search_events(self, limit, cursor, log_type, filters=None):
         if cursor <= 123456:
-            return {
-                'items': [{'id': 1, 'timestamp': 123456}, {'id': 2, 'timestamp': 123457}],
-                'scrollCursor': 123457
-            }
+            return {"items": [{"id": 1, "timestamp": 123456}, {"id": 2, "timestamp": 123457}], "scrollCursor": 123457}
         elif cursor == 123457:
-            return {
-                'items': [{'id': 2, 'timestamp': 123457}, {'id': 3, 'timestamp': 12345678}],
-                'scrollCursor': 12345678
-            }
+            return {"items": [{"id": 2, "timestamp": 123457}, {"id": 3, "timestamp": 12345678}], "scrollCursor": 12345678}
         elif cursor == 12345678:
-            return {
-                'items': [{'id': 3, 'timestamp': 12345678}, {'id': 4, 'timestamp': 12345678}],
-                'scrollCursor': 12345678
-            }
+            return {"items": [{"id": 3, "timestamp": 12345678}, {"id": 4, "timestamp": 12345678}], "scrollCursor": 12345678}
         else:
-            return {
-                'items': [],
-                'scrollCursor': ''
-            }
+            return {"items": [], "scrollCursor": ""}
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-@pytest.mark.parametrize('inputs, expected_outputs', [
-    (test_case['inputs'], test_case['expected_outputs'])
-    for test_case in util_load_json('test_data/test_process_events_params.json')['test_cases']
-])
+@pytest.mark.parametrize(
+    "inputs, expected_outputs",
+    [
+        (test_case["inputs"], test_case["expected_outputs"])
+        for test_case in util_load_json("test_data/test_process_events_params.json")["test_cases"]
+    ],
+)
 def test_process_events(mocker, inputs, expected_outputs):
     """
     Given:
@@ -59,10 +61,11 @@ def test_process_events(mocker, inputs, expected_outputs):
         - Ensure that `updated_ids` matches the `expected_ids`.
         - Confirm that `updated_last_event_time` matches the `expected_last_event_time`.
     """
-    def mock_create_id_function(event, log_type):
-        return event.get('id')
 
-    mocker.patch('ZeroNetworksSegmentEventCollector.create_id', side_effect=mock_create_id_function)
+    def mock_create_id_function(event, log_type):
+        return event.get("id")
+
+    mocker.patch("ZeroNetworksSegmentEventCollector.create_id", side_effect=mock_create_id_function)
     input_events, input_previous_ids, input_last_event_time, max_results, num_results = inputs
     expected_events, expected_ids, expected_last_event_time, expected_num_results = expected_outputs
 
@@ -85,15 +88,18 @@ def test_initialize_start_timestamp_with_existing_timestamp():
             The function should return the value associated with the specified key
             The result is verified to match the expected value
     """
-    last_run = {'audit': {'last_fetch': 1234567890}}
-    result = initialize_start_timestamp(last_run, 'audit')
+    last_run = {"audit": {"last_fetch": 1234567890}}
+    result = initialize_start_timestamp(last_run, "audit")
     assert result == 1234567890
 
 
-@pytest.mark.parametrize("params, log_type, expected", [
-    (test_case["params"], test_case["log_type"], test_case['expected'])
-    for test_case in util_load_json('test_data/test_get_max_results_params.json')['test_cases']
-])
+@pytest.mark.parametrize(
+    "params, log_type, expected",
+    [
+        (test_case["params"], test_case["log_type"], test_case["expected"])
+        for test_case in util_load_json("test_data/test_get_max_results_params.json")["test_cases"]
+    ],
+)
 def test_get_max_results_and_limit_with_param(params, log_type, expected):
     """
     Given:
@@ -112,20 +118,10 @@ def test_get_max_results_and_limit_with_param(params, log_type, expected):
     assert result == tuple(expected)
 
 
-@pytest.mark.parametrize("event_types_to_fetch, expected", [
-    (
-        ['Audit', 'Network Activities'],
-        [AUDIT, NETWORK_ACTIVITIES]
-    ),
-    (
-        ['Audit'],
-        [AUDIT]
-    ),
-    (
-        [],
-        []
-    )
-])
+@pytest.mark.parametrize(
+    "event_types_to_fetch, expected",
+    [(["Audit", "Network Activities"], [AUDIT, NETWORK_ACTIVITIES]), (["Audit"], [AUDIT]), ([], [])],
+)
 def test_handle_log_types(event_types_to_fetch, expected):
     """
     Given:
@@ -155,7 +151,7 @@ def test_handle_not_valid_log_types():
         - Verify that `handle_log_types` raises a `DemistoException`.
         - Ensure that the exception message includes "Event type title 'fake_type' is not valid."
     """
-    event_types = ['fake_type']
+    event_types = ["fake_type"]
     with pytest.raises(DemistoException) as e:
         handle_log_types(event_types)
     assert "'fake_type' is not valid event type, please select from the following list:" in str(e)
@@ -163,8 +159,10 @@ def test_handle_not_valid_log_types():
 
 @pytest.mark.parametrize(
     "last_run, log_type, last_event_time, previous_ids, expected",
-    [(case['last_run'], case['log_type'], case['last_event_time'],
-      case['previous_ids'], case['expected']) for case in util_load_json('test_data/test_update_last_run_params.json')]
+    [
+        (case["last_run"], case["log_type"], case["last_event_time"], case["previous_ids"], case["expected"])
+        for case in util_load_json("test_data/test_update_last_run_params.json")
+    ],
 )
 def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expected):
     """
@@ -184,12 +182,19 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
 
 @pytest.mark.parametrize(
     "max_results, limit, last_run, expected_last_run, expected_collected_events, start_timestamp",
-    [(case['max_results'], case['limit'], case['last_run'], case['expected_last_run'],
-      case['expected_collected_events'], case['start_timestamp'])
-     for case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']]
+    [
+        (
+            case["max_results"],
+            case["limit"],
+            case["last_run"],
+            case["expected_last_run"],
+            case["expected_collected_events"],
+            case["start_timestamp"],
+        )
+        for case in util_load_json("test_data/test_fetch_events_params.json")["test_cases"]
+    ],
 )
-def test_fetch_events(mocker, max_results, limit, last_run, expected_last_run,
-                      expected_collected_events, start_timestamp):
+def test_fetch_events(mocker, max_results, limit, last_run, expected_last_run, expected_collected_events, start_timestamp):
     """
     Given:
         - A mock setup for dependencies (`mocker`, `mock_create_id_function`, `MockClient`).
@@ -203,16 +208,18 @@ def test_fetch_events(mocker, max_results, limit, last_run, expected_last_run,
         Verify that the function returns the expected `last_run` and `collected_events`, ensuring it processes the inputs
         correctly and integrates with the mocks as intended.
     """
+
     def mock_create_id_function(event, log_type):
-        return event.get('id')
+        return event.get("id")
 
-    mocker.patch('ZeroNetworksSegmentEventCollector.create_id', side_effect=mock_create_id_function)
-    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=start_timestamp)
+    mocker.patch("ZeroNetworksSegmentEventCollector.create_id", side_effect=mock_create_id_function)
+    mocker.patch("ZeroNetworksSegmentEventCollector.initialize_start_timestamp", return_value=start_timestamp)
 
-    mock_client = MockClient('', False, False, {})
+    mock_client = MockClient("", False, False, {})
 
-    result_last_run, result_collected_events = fetch_events(mock_client, last_run, start_timestamp, 'audit', [],
-                                                            max_results, limit)
+    result_last_run, result_collected_events = fetch_events(
+        mock_client, last_run, start_timestamp, "audit", [], max_results, limit
+    )
 
     assert result_last_run == expected_last_run
     assert result_collected_events == expected_collected_events
@@ -225,26 +232,25 @@ def test_fetch_events(mocker, max_results, limit, last_run, expected_last_run,
         (
             {},
             {},
-            [{'id': 1, 'timestamp': 123456, 'source_log_type': 'audit'}, {'id': 2, 'timestamp': 123457,
-                                                                          'source_log_type': 'audit'}],
-            'mocked HR output'
+            [
+                {"id": 1, "timestamp": 123456, "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "source_log_type": "audit"},
+            ],
+            "mocked HR output",
         ),
         # Case with from_date
         (
-            {'from_date': '2024-08-25T12:34:56.000Z'},
+            {"from_date": "2024-08-25T12:34:56.000Z"},
             {},
-            [{'id': 1, 'timestamp': 123456, 'source_log_type': 'audit'}, {'id': 2, 'timestamp': 123457,
-                                                                          'source_log_type': 'audit'}],
-            'mocked HR output'
+            [
+                {"id": 1, "timestamp": 123456, "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "source_log_type": "audit"},
+            ],
+            "mocked HR output",
         ),
         # Case with no events returned
-        (
-            {},
-            {},
-            [],
-            'mocked HR output'
-        )
-    ]
+        ({}, {}, [], "mocked HR output"),
+    ],
 )
 def test_get_events(mocker, args, last_run, expected_events, expected_hr):
     """
@@ -261,19 +267,19 @@ def test_get_events(mocker, args, last_run, expected_events, expected_hr):
         - Ensure the returned events match `expected_events`.
         - Confirm that `tableToMarkdown` was called once with the correct parameters if events are present.
     """
-    mock_fetch_events = mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events')
+    mock_fetch_events = mocker.patch("ZeroNetworksSegmentEventCollector.fetch_events")
     mock_fetch_events.return_value = (last_run, expected_events)
 
-    mock_table_to_markdown = mocker.patch('ZeroNetworksSegmentEventCollector.tableToMarkdown')
+    mock_table_to_markdown = mocker.patch("ZeroNetworksSegmentEventCollector.tableToMarkdown")
     mock_table_to_markdown.return_value = expected_hr
 
     mock_client = MockClient("", False, False, {})
 
-    result_events, _ = get_events(mock_client, args, last_run, params={}, log_types=['audit'])
+    result_events, _ = get_events(mock_client, args, last_run, params={}, log_types=["audit"])
 
     assert result_events == expected_events
     if result_events:
-        mock_table_to_markdown.assert_called_once_with(name='Audit Events', t=expected_events)
+        mock_table_to_markdown.assert_called_once_with(name="Audit Events", t=expected_events)
 
 
 def compute_hash(combined_string):
@@ -286,69 +292,34 @@ def compute_hash(combined_string):
     [
         # Test case for AUDIT with all fields present
         (
-            {
-                "timestamp": "1234567890",
-                "reportedObjectId": "123",
-                "performedBy": {"id": "user"}
-            },
+            {"timestamp": "1234567890", "reportedObjectId": "123", "performedBy": {"id": "user"}},
             AUDIT,
-            compute_hash("1234567890-123-user")
+            compute_hash("1234567890-123-user"),
         ),
         # Test case for AUDIT with missing performedBy name
-        (
-            {
-                "timestamp": "1234567890",
-                "reportedObjectId": "123",
-                "performedBy": {}
-            },
-            AUDIT,
-            compute_hash("1234567890-123-")
-        ),
+        ({"timestamp": "1234567890", "reportedObjectId": "123", "performedBy": {}}, AUDIT, compute_hash("1234567890-123-")),
         # Test case for NETWORK_ACTIVITIES with all fields present
         (
-            {
-                "timestamp": "0987654321",
-                "src": {"assetId": "src-asset"},
-                "dst": {"assetId": "dst-asset"}
-            },
+            {"timestamp": "0987654321", "src": {"assetId": "src-asset"}, "dst": {"assetId": "dst-asset"}},
             NETWORK_ACTIVITIES,
-            compute_hash("0987654321-src-asset-dst-asset")
+            compute_hash("0987654321-src-asset-dst-asset"),
         ),
         # Test case for NETWORK_ACTIVITIES with missing src or dst assetId
         (
-            {
-                "timestamp": "0987654321",
-                "src": {},
-                "dst": {"assetId": "dst-asset"}
-            },
+            {"timestamp": "0987654321", "src": {}, "dst": {"assetId": "dst-asset"}},
             NETWORK_ACTIVITIES,
-            compute_hash("0987654321--dst-asset")
+            compute_hash("0987654321--dst-asset"),
         ),
         (
-            {
-                "timestamp": "0987654321",
-                "src": {"assetId": "src-asset"},
-                "dst": {}
-            },
+            {"timestamp": "0987654321", "src": {"assetId": "src-asset"}, "dst": {}},
             NETWORK_ACTIVITIES,
-            compute_hash("0987654321-src-asset-")
+            compute_hash("0987654321-src-asset-"),
         ),
         # Test case with missing timestamp
-        (
-            {
-                "reportedObjectId": "123",
-                "performedBy": {"id": "user"}
-            },
-            AUDIT,
-            compute_hash("None-123-user")
-        ),
+        ({"reportedObjectId": "123", "performedBy": {"id": "user"}}, AUDIT, compute_hash("None-123-user")),
         # Test case with empty event
-        (
-            {},
-            AUDIT,
-            compute_hash("None--")
-        )
-    ]
+        ({}, AUDIT, compute_hash("None--")),
+    ],
 )
 def test_create_id(event, log_type, expected_id):
     """
@@ -379,17 +350,19 @@ def test_fetch_events_limit_logic(mocker):
         - Verify that the limit values in the calls to `mock_search_events` increase as expected.
         - Ensure that the number of calls to `mock_search_events` matches the expected count.
     """
-    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
-    mocker.patch('ZeroNetworksSegmentEventCollector.handle_log_types', return_value=['audit'])
-    mock_search_events = mocker.patch('ZeroNetworksSegmentEventCollector.Client.search_events',
-                                      return_value={'items': [{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
-    mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
+    mocker.patch("ZeroNetworksSegmentEventCollector.initialize_start_timestamp", return_value=1000)
+    mocker.patch("ZeroNetworksSegmentEventCollector.handle_log_types", return_value=["audit"])
+    mock_search_events = mocker.patch(
+        "ZeroNetworksSegmentEventCollector.Client.search_events",
+        return_value={"items": [{"id": 1, "timestamp": 1}], "scrollCursor": "1"},
+    )
+    mocker.patch("ZeroNetworksSegmentEventCollector.process_events", return_value=([], {}, 0))
 
     max_results, limit = (1, 1)
     last_run = {}
     client = Client("", False, False, {})
 
-    fetch_events(client, last_run, 1000, 'audit', [], max_results, limit)
+    fetch_events(client, last_run, 1000, "audit", [], max_results, limit)
 
     calls = list(mock_search_events.call_args_list)
     first_call_limit = calls[0][0][0]  # Limit in the first call
@@ -403,12 +376,27 @@ def test_fetch_events_limit_logic(mocker):
 
 @pytest.mark.parametrize(
     "last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect, expected_last_run, expected_all_events",
-    [(case["last_run"], case["log_types"], case["mock_initialize_start_timestamp"],
-      case["mock_fetch_events_side_effect"], case["expected_last_run"],
-      case["expected_all_events"]) for case in util_load_json('test_data/test_fetch_all_events_params.json')['test_cases']]
+    [
+        (
+            case["last_run"],
+            case["log_types"],
+            case["mock_initialize_start_timestamp"],
+            case["mock_fetch_events_side_effect"],
+            case["expected_last_run"],
+            case["expected_all_events"],
+        )
+        for case in util_load_json("test_data/test_fetch_all_events_params.json")["test_cases"]
+    ],
 )
-def test_fetch_all_events(mocker, last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect,
-                          expected_last_run, expected_all_events):
+def test_fetch_all_events(
+    mocker,
+    last_run,
+    log_types,
+    mock_initialize_start_timestamp,
+    mock_fetch_events_side_effect,
+    expected_last_run,
+    expected_all_events,
+):
     """
     Given:
         - A mock setup for dependencies (`mocker`, `mock_initialize_start_timestamp`, `mock_fetch_events_side_effect`).
@@ -422,8 +410,8 @@ def test_fetch_all_events(mocker, last_run, log_types, mock_initialize_start_tim
         Verify that the function returns the expected `last_run` and `all_events`, ensuring it correctly integrates with the mocks
         and processes the inputs as intended.
     """
-    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=mock_initialize_start_timestamp)
-    mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events', side_effect=mock_fetch_events_side_effect)
+    mocker.patch("ZeroNetworksSegmentEventCollector.initialize_start_timestamp", return_value=mock_initialize_start_timestamp)
+    mocker.patch("ZeroNetworksSegmentEventCollector.fetch_events", side_effect=mock_fetch_events_side_effect)
 
     client = MockClient("", False, False, {})
 
