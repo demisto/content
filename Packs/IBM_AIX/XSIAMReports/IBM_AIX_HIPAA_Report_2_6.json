@@ -1,0 +1,1379 @@
+{
+    "fromVersion": "9.0.0",
+    "templates_data": [
+        {
+            "report_name": "HIPAA Compliance Report",
+            "report_description": "Monitor HIPAA controls and produce evidence for audits.",
+            "layout": [
+                {
+                    "id": "Row 1",
+                    "data": [
+                        {
+                            "key": "header",
+                            "data": {
+                                "name": "HIPAA Compliance Report",
+                                "type": "",
+                                "width": 100,
+                                "height": 140,
+                                "tenantId": "1004205575214",
+                                "description": "Monitor HIPAA controls and produce evidence for audits.",
+                                "customerName": "Palo Alto Networks - TMECortexXDR"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-283",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.312 (a) (1): Access control",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5401",
+                    "data": [
+                        {
+                            "key": "xql_1692974494975",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "host",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5590",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.312 (d): Person or entity authentication / HIPAA 164.312 (a) (2): Unique user identification",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-332",
+                    "data": [
+                        {
+                            "key": "xql_1692974620140",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "preset = authentication_story\n| alter target_or_domain = coalesce(auth_target , auth_domain)\n| comp count_distinct(auth_client) as unique_clients by associated_products, target_or_domain\n| sort desc unique_clients\n| limit 100\n| alter target_or_domain_with_product = concat(target_or_domain, \" (\", associated_products, \")\")\n|\n view graph type = pie xaxis = target_or_domain_with_product yaxis = unique_clients ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "target_or_domain_with_product"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "unique_clients"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9569",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.308 (a) (1) (i) (C): Apply sanction policy when members fail to comply",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3580",
+                    "data": [
+                        {
+                            "key": "xql_1692974738919",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "policy",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "dataset = endpoints \n| fields endpoint_name, assigned_prevention_policy, assigned_extensions_policy\n| filter assigned_prevention_policy in($policy)\n| dedup endpoint_name \n| comp count(endpoint_name) as PreventionPolicyCount by assigned_prevention_policy\n|\n view graph type = bubble subtype = packed header = \"Prevention policy grouped by endpoint count\" xaxis = assigned_prevention_policy yaxis = PreventionPolicyCount ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "bubble",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "packed"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Prevention policy grouped by endpoint count\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "assigned_prevention_policy"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "PreventionPolicyCount"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2623",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.306 (a) (2): Threat Protection / HIPAA 164.308 (a) (6) (i): Identify/respond to known security incidents",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7899",
+                    "data": [
+                        {
+                            "key": "xql_1692974916216",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Incident count by severity\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "the_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Severity\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"# of incidents\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2290",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.308 (a) (1) (i) (B): Reduce risks and Vulnerabilities",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-576",
+                    "data": [
+                        {
+                            "key": "xql_1692975108186",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "preset = host_inventory_applications \n| fields install_date, vendor , application_name, raw_version , platform \n| limit 1000",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6252",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.308 (a) (7) (i) (A): Data backup plan / HIPAA 164.308 (a) (7) (i) (B): Data recovery plan",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7655",
+                    "data": [
+                        {
+                            "key": "xql_1692975142008",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "preset = host_inventory_kbs \n| filter description = \"Security Update\"\n| fields endpoint_name, endpoint_type, name \n| comp count() as kb by name\n| sort desc name\n| view graph type = column subtype = stacked xaxis = name yaxis = kb legend = `false` xaxistitle = \"Security update\" yaxistitle = \"# of endpoints\" ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "stacked"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "kb"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Security update\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"# of endpoints\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5311",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.308 (a) (1) (i) (D): Regularly review audit logs / HIPAA 164.312 (b): Audit controls",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8845",
+                    "data": [
+                        {
+                            "key": "xql_1692975177230",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "domain",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = ad_users \n| filter member_of contains \"Domain Admins\"\n| filter netbios_domain in($domain)\n| comp count() as admins\n| alter x=\"x\"\n| join conflict_strategy = both( preset = ad_users \n| comp count() as total\n| alter y=\"x\") as a a.y =x \n| fields - x,y\n|\n view graph type = column subtype = grouped layout = horizontal header = \"Domain Admins vs Total AD Users\" xaxis = total yaxis = admins,total xaxistitle = \"Number of users\" yaxistitle = \"User Type\" seriestitle(\"admins\",\"Admin User\") seriestitle(\"total\",\"AD User\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Domain Admins vs Total AD Users\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "admins,total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Number of users\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"User Type\""
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "admins",
+                                                    "Admin User"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "total",
+                                                    "AD User"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1408",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.308 (a) (1) (i) (A): Identify risks and Vulnerabilities",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8065",
+                    "data": [
+                        {
+                            "key": "xql_1692975232468",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "preset = host_inventory_applications \n| filter application_name ~= \"Google Chrome|Microsoft Edge|Firefox|Internet Explore\"\n| comp count() as version_counter by version, application_name",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2565",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.312 (c) (1): Implement policies or procedures to protect PHI / HIPAA 164.306 (a) (1) : Validate confidentiality and integrity of PHI",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1630",
+                    "data": [
+                        {
+                            "key": "xql_1692975277002",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "dataset = panw_ngfw_traffic_raw \n| filter ((app not contains \"\"\"palo\"\"\" and app not contains \"\"\"xdr\"\"\" and app not contains \"\"\"traps\"\"\"))\n| alter in_range = if(incidr(dest_ip,\"10.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"172.16.0.0/12\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"192.168.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"169.254.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"127.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"100.64.0.0/10\") = true, \"Inbound\",\n  if(dest_ip contains \"fd00::\") = true, \"Inbound\",\n  if(dest_ip contains \"fe80::\") = true, \"Inbound\", \"Outbound\"))))))\n| filter in_range = \"Outbound\"\n| filter action = \"allow\"\n| comp values(source_ip) as source_ips, values(dest_ip) as dest_ips, values(dest_location) as dest_locations, count(_id) as event_count, sum(to_integer(bytes_total)) as TotalBytes by _time, app, app_category\n| sort desc TotalBytes ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7730",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.308 (a) (4) (i) (A): Isolate health care clearinghouse functions",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7193",
+                    "data": [
+                        {
+                            "key": "xql_1692975297636",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "params": [
+                                    {
+                                        "name": "host",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "preset = device_control \n| filter event_sub_type = ENUM.DEVICE_PLUG \n| filter agent_hostname in($host)\n| comp count() as HOST by agent_hostname\n|\n view graph type = wordcloud header = \"Hosts with USB Plug-in events\" xaxis = agent_hostname yaxis = HOST ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "wordcloud",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Hosts with USB Plug-in events\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "agent_hostname"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "HOST"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3702",
+                    "data": [
+                        {
+                            "key": "title",
+                            "data": {
+                                "text": "HIPAA 164.312 (e) (1): Transmission security",
+                                "type": "Text",
+                                "style": {
+                                    "bgColor": "#ffffff",
+                                    "textColor": "#333",
+                                    "bgColorDark": "#1a1a1a",
+                                    "textColorDark": "#a9a9aa"
+                                },
+                                "width": 100,
+                                "height": 50
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8203",
+                    "data": [
+                        {
+                            "key": "xql_1692975320300",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "preset = network_story \n| filter associated_rules != null and associated_rules != \"\"\n| comp count() by associated_rules\n|\n view graph type = column subtype = grouped header = \"Top triggered network rules in the past 24 hours\" xaxis = associated_rules yaxis = count_1 legend = `false` xaxistitle = \"Triggered Rule Name\" yaxistitle = \"# of events\" ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top triggered network rules in the past 24 hours\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "associated_rules"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count_1"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Triggered Rule Name\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"# of events\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_template_id": 1,
+            "time_frame": {
+                "relativeTime": 86400000
+            },
+            "global_id": "3ebcc7992d8c4fb0835191646f721b82",
+            "time_offset": -18000,
+            "metadata": "{\"params\": []}"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1692974494975",
+            "title": "Compliance: Access Control",
+            "creation_time": 1696525542609,
+            "description": "Implement policies and procedures to monitor access to systems. Use this widget to query XDR login events.",
+            "data": {
+                "params": [
+                    {
+                        "name": "host",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = xdr_login_events \n| filter array_length(assigned_privileges ) > 0 or elevated_token != null\n| filter agent_hostname in($host)\n| comp count() as login_count by agent_hostname, agent_ip_addresses, agent_os_type  \n| sort desc login_count\n| fields agent_hostname, agent_ip_addresses, agent_os_type, login_count\n| limit 100",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692974620140",
+            "title": "Compliance: Identify",
+            "creation_time": 1696525543399,
+            "description": "Implement policies and procedures to monitor the identity of users, devices, and processes. Use this widget to query uniquely targeted clients.",
+            "data": {
+                "phrase": "preset = authentication_story\n| alter target_or_domain = coalesce(auth_target , auth_domain)\n| comp count_distinct(auth_client) as unique_clients by associated_products, target_or_domain\n| sort desc unique_clients\n| limit 100\n| alter target_or_domain_with_product = concat(target_or_domain, \" (\", associated_products, \")\")\n|\n view graph type = pie xaxis = target_or_domain_with_product yaxis = unique_clients ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "target_or_domain_with_product"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "unique_clients"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692974738919",
+            "title": "Compliance: Policy/Configuration Management",
+            "creation_time": 1696525543917,
+            "description": "Implement policies and procedures to monitor and maintain secure configurations. Use this widget to query prevention policy information.",
+            "data": {
+                "params": [
+                    {
+                        "name": "policy",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "dataset = endpoints \n| fields endpoint_name, assigned_prevention_policy, assigned_extensions_policy\n| filter assigned_prevention_policy in($policy)\n| dedup endpoint_name \n| comp count(endpoint_name) as PreventionPolicyCount by assigned_prevention_policy\n|\n view graph type = bubble subtype = packed header = \"Prevention policy grouped by endpoint count\" xaxis = assigned_prevention_policy yaxis = PreventionPolicyCount ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "bubble",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "packed"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Prevention policy grouped by endpoint count\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "assigned_prevention_policy"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "PreventionPolicyCount"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692974916216",
+            "title": "Compliance: Threat Protection/Incident Response",
+            "creation_time": 1696525544635,
+            "description": "Implement policies and procedures to detect, respond to, and recover from security incidents. Use this widget to query incidents by severity.",
+            "data": {
+                "phrase": "dataset = incidents \n| comp count() as the_count by severity \n| sort desc the_count\n| view graph type = column subtype = grouped header = \"Incident count by severity\" xaxis = severity yaxis = the_count legend = `false` xaxistitle = \"Severity\" yaxistitle = \"# of incidents\" ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Incident count by severity\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "the_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Severity\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"# of incidents\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975108186",
+            "title": "Compliance: Vulnerability Management",
+            "creation_time": 1696525546747,
+            "description": "Implement policies and procedures to monitor systems and services. Use this widget to query host inventory.",
+            "data": {
+                "phrase": "preset = host_inventory_applications \n| fields install_date, vendor , application_name, raw_version , platform \n| limit 1000",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "host_inventory"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975142008",
+            "title": "Compliance: Planning",
+            "creation_time": 1696525547491,
+            "description": "Implement policies and procedures to manage cybersecurity products. Use this widget to query product data.",
+            "data": {
+                "phrase": "preset = host_inventory_kbs \n| filter description = \"Security Update\"\n| fields endpoint_name, endpoint_type, name \n| comp count() as kb by name\n| sort desc name\n| view graph type = column subtype = stacked xaxis = name yaxis = kb legend = `false` xaxistitle = \"Security update\" yaxistitle = \"# of endpoints\" ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "stacked"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "kb"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Security update\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"# of endpoints\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "host_inventory"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975177230",
+            "title": "Compliance: Audit Controls",
+            "creation_time": 1696525547913,
+            "description": "Implement policies and procedures to monitor, record, and review system activities. Use this widget to query Active Directory domain administrators.",
+            "data": {
+                "params": [
+                    {
+                        "name": "domain",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = ad_users \n| filter member_of contains \"Domain Admins\"\n| filter netbios_domain in($domain)\n| comp count() as admins\n| alter x=\"x\"\n| join conflict_strategy = both( preset = ad_users \n| comp count() as total\n| alter y=\"x\") as a a.y =x \n| fields - x,y\n|\n view graph type = column subtype = grouped layout = horizontal header = \"Domain Admins vs Total AD Users\" xaxis = total yaxis = admins,total xaxistitle = \"Number of users\" yaxistitle = \"User Type\" seriestitle(\"admins\",\"Admin User\") seriestitle(\"total\",\"AD User\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Domain Admins vs Total AD Users\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "admins,total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Number of users\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"User Type\""
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "admins",
+                                    "Admin User"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "total",
+                                    "AD User"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "pan_dss_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975232468",
+            "title": "Compliance: Risk Assesment",
+            "creation_time": 1696525548448,
+            "description": "Implement policies and procedures to identify, assess, and mitigate risks to data. Use this widget to query host inventory applications.",
+            "data": {
+                "phrase": "preset = host_inventory_applications \n| filter application_name ~= \"Google Chrome|Microsoft Edge|Firefox|Internet Explore\"\n| comp count() as version_counter by version, application_name",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "host_inventory"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975277002",
+            "title": "Compliance: PII/PHI/Data Access",
+            "creation_time": 1696525550559,
+            "description": "Implement policies and procedures to limit access to PII. Use this widget to query allowed outbound connections.",
+            "data": {
+                "phrase": "dataset = panw_ngfw_traffic_raw \n| filter ((app not contains \"\"\"palo\"\"\" and app not contains \"\"\"xdr\"\"\" and app not contains \"\"\"traps\"\"\"))\n| alter in_range = if(incidr(dest_ip,\"10.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"172.16.0.0/12\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"192.168.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"169.254.0.0/16\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"127.0.0.0/8\") = true, \"Inbound\",\n  if(incidr(dest_ip,\"100.64.0.0/10\") = true, \"Inbound\",\n  if(dest_ip contains \"fd00::\") = true, \"Inbound\",\n  if(dest_ip contains \"fe80::\") = true, \"Inbound\", \"Outbound\"))))))\n| filter in_range = \"Outbound\"\n| filter action = \"allow\"\n| comp values(source_ip) as source_ips, values(dest_ip) as dest_ips, values(dest_location) as dest_locations, count(_id) as event_count, sum(to_integer(bytes_total)) as TotalBytes by _time, app, app_category\n| sort desc TotalBytes ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "panw_ngfw_traffic_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975297636",
+            "title": "Compliance: Physical Protections",
+            "creation_time": 1696525551021,
+            "description": "Implement policies and procedures to protect physical assets and facilities. Use this widget to query USB plug-in events.",
+            "data": {
+                "params": [
+                    {
+                        "name": "host",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "preset = device_control \n| filter event_sub_type = ENUM.DEVICE_PLUG \n| filter agent_hostname in($host)\n| comp count() as HOST by agent_hostname\n|\n view graph type = wordcloud header = \"Hosts with USB Plug-in events\" xaxis = agent_hostname yaxis = HOST ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Hosts with USB Plug-in events\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "agent_hostname"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "HOST"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1692975320300",
+            "title": "Compliance: Transmission/Network Security",
+            "creation_time": 1696525551990,
+            "description": "Implement policies and procedures to protect and monitor communications channels. Use this widget to query triggered network rules.",
+            "data": {
+                "phrase": "preset = network_story \n| filter associated_rules != null and associated_rules != \"\"\n| comp count() by associated_rules\n|\n view graph type = column subtype = grouped header = \"Top triggered network rules in the past 24 hours\" xaxis = associated_rules yaxis = count_1 legend = `false` xaxistitle = \"Triggered Rule Name\" yaxistitle = \"# of events\" ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top triggered network rules in the past 24 hours\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "associated_rules"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count_1"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Triggered Rule Name\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"# of events\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ]
+}
