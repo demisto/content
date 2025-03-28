@@ -48,6 +48,12 @@ function intersect(a, b) {
 }
 
 function finish(playbookId, tag, err, entryGUID) {
+    logInfo(`Finishing polling task. 
+        Playbook ID: ${playbookId || 'N/A'}, 
+        Tag: ${tag}, 
+        Error: ${err ? err.toString() : 'None'}, 
+        Entry GUID: ${entryGUID || 'N/A'}`);
+
     var params = { 'id': tag };
     if (err === undefined) {
         params.input = 'YES';
@@ -147,11 +153,14 @@ function genericPollingScheduled(){
             var currentTime = new Date();
 
             if (currentTime >= endTime) {
+                logInfo('Polling stopped prematurely: End time reached.');
+                logInfo('Current Time: ' + currentTime + ', End Time: ' + endTime);
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
         else {
             if (args.timeout <= 0) {
+                logInfo('Polling stopped prematurely: Timeout reached.');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
@@ -174,13 +183,17 @@ function genericPollingScheduled(){
         var pendings = dq(invContext, pendingPath);
 
         if (pendings === null) {
+            logInfo("Polling stopped because no pending IDs were found.");
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
         var idsStrArr = listOfStrings(ids);
         var pendingsStrArr = listOfStrings(pendings);
+        logInfo('IDs to poll: ' + JSON.stringify(idsStrArr));
+        logInfo('Pending IDs: ' + JSON.stringify(pendingsStrArr));
         idsToPoll = intersect(idsStrArr, pendingsStrArr);
         if (idsToPoll.length === 0) {
+            logInfo("Polling stopped because there were no IDs left to poll.");
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
@@ -218,6 +231,7 @@ function genericPollingScheduled(){
         return res;
     }
     catch (err) {
+        logError('An error occurred during polling: ' + err.message);
         finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
         throw err;
     }
