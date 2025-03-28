@@ -9,6 +9,7 @@ OK_CODES = (200,)
 TOKEN = "token"
 
 KEY_INCIDENTS_ENDPOINT = "/cti/key-incidents/"
+KEY_INCIDENT_ATTACHMENTS_ENDPOINT = "/cti/key-incident-attachments"
 CTI_TOKEN_ENDPOINT = "/auth/token/"
 
 
@@ -80,3 +81,15 @@ def test_get_key_incidents(requests_mock, zerofox, mocker):
         sorted(ki, key=lambda x: x.incident_id)
         == sorted(expected, key=lambda x: x.incident_id)
     )
+
+def test_get_key_incident_attachment(requests_mock, zerofox, mocker):
+    ATTACHMENT_ID = 123
+    expected = load_json("test_data/key_incident_attachments/parsed_ki_attachment.json")
+    requests_mock.post("/auth/token/", json={"access": "token"})
+    requests_mock.get(
+        f"{KEY_INCIDENT_ATTACHMENTS_ENDPOINT}/{ATTACHMENT_ID}/",
+        json=load_json("test_data/key_incident_attachments/ki_attachment.json"),
+    )
+    attachment = zerofox.get_key_incident_attachment(ATTACHMENT_ID)
+
+    assert expected == attachment.to_dict()
