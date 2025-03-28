@@ -1,0 +1,96 @@
+{
+    "templates_data": [
+      {
+        "report_name": "All Veeam failed multi-factor authentication events for the last 24h",
+        "report_description": "Provides an overview of failed Veeam Backup & Replication multi-factor authentication events created for the last 24 hours.",
+        "layout": [
+          {
+            "id": "Row 1",
+            "data": [
+              {
+                "key": "header",
+                "data": {
+                  "name": "All failed multi-factor authentication events for the last 24h",
+                  "type": "",
+                  "width": 100,
+                  "height": 140,
+                  "tenantId": "2209138820274",
+                  "description": "Provides an overview of failed Veeam Backup & Replication multi-factor authentication events created for the last 24 hours.",
+                  "customerName": "Veeam Software Corporation (Tech Partner Only)"
+                }
+              }
+            ]
+          },
+          {
+            "id": "row-8151",
+            "data": [
+              {
+                "key": "xql",
+                "data": {
+                  "type": "Custom XQL",
+                  "title": "Failed Multi-Factor Authentication Events by User",
+                  "width": 100,
+                  "height": 250,
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"40205\")\r\n| alter _user=arrayindex(regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), 0)\r\n| comp count(_instanceId ) as _count by _user\r\n| fields _count, _user\r\n\r\n| view graph type = pie subtype = full xaxis = _user yaxis = _count ",
+                  "time_frame": { "relativeTime": 86400000 },
+                  "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "subtype",
+                          "value": "full"
+                        }
+                      },
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "xaxis",
+                          "value": "_user"
+                        }
+                      },
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "yaxis",
+                          "value": "_count"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "row-8361",
+            "data": [
+              {
+                "key": "xql",
+                "data": {
+                  "type": "Custom XQL",
+                  "title": "Latest Failed Multi-Factor Authentication Events",
+                  "width": 100,
+                  "height": 845,
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"40205\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=\"High\",\r\n    _user=arrayindex(regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), 0)\r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`",
+                  "time_frame": { "relativeTime": 86400000 },
+                  "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "default_template_id": 1,
+        "time_frame": { "relativeTime": 86400000 },
+        "global_id": "c5e709240d634a42ad404f34a972f6bb",
+        "time_offset": 10800,
+        "metadata": "{\"params\": []}"
+      }
+    ],
+    "fromVersion": "8.4.0",
+    "widgets_data": []
+  }
