@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Notify Stock Above Price](../doc_imgs/Notify-Stock-Above-Price-image.png)
+![Notify Stock Above Price](../doc_files/Notify-Stock-Above-Price-image.png)
