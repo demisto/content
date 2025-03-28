@@ -73,8 +73,8 @@ def batch_iocs(generator, batch_size=200):
 class Client:
     # All values here are the defaults, which may be changed via params, on main()
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
-    override_severity: bool = True
-    severity: str = ''  # used when override_severity is True
+    override_severity: bool = True  # For backwards compatibility
+    severity: str = ''  # until version 6.3.0 used when override_severity is True, since 6.3.0 used when is not empty
     xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
     xsoar_comments_field: str = 'comments'
     add_link_as_a_comment: bool = False
@@ -402,8 +402,10 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
 
         if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
-
-        if (not Client.override_severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field)):
+        # Client.override_severity for Backwards compatibility
+        do_not_override_severity = (not Client.override_severity) or (not Client.severity)
+        if do_not_override_severity and (
+                custom_severity := custom_fields.get(Client.xsoar_severity_field)):
             # Override is True: use Client.severity
             # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
             xdr_ioc['severity'] = custom_severity  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
@@ -659,8 +661,8 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
-    severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
-
+    override_severity = Client.override_severity and Client.severity  # Client.override_severity for Backwards compatibility
+    severity = Client.severity if override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
     comments = _parse_xdr_comments(raw_comment=ioc.get('RULE_COMMENT', ''),
                                    comments_as_tags=Client.comments_as_tags)
 
@@ -883,7 +885,7 @@ def main():  # pragma: no cover
                      "minutes could lead to internal error from xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
-    Client.override_severity = argToBoolean(params.get('override_severity', True))
+    Client.override_severity = argToBoolean(params.get('override_severity', True))  # For Backwards Compatibility
     Client.tlp_color = params.get('tlp_color')
     Client.comments_as_tags = argToBoolean(params.get('comments_as_tags', False))
 
