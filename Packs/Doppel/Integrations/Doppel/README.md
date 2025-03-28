@@ -466,7 +466,7 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Pushes local changes to the remote system.
+Pushes local changes to the remote system. If an XSOAR Incident is closed, created via Doppel Integration, then on Doppel Portal the Alert status will be updated to `archived` status.
 
 #### Base Command
 
