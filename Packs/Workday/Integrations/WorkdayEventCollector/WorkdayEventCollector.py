@@ -91,13 +91,15 @@ class Client(BaseClient):
             activity loggings returned from Workday API.
         """
         instance_returned = math.ceil(self.max_fetch / 10000)
-        params = {"from": from_date,
-                  "to": to_date,
-                  "limit": limit,
-                  "instancesReturned": instance_returned,
-                  "offset": offset,
-                  "returnUserActivityEntryCount": user_activity_entry_count,
-                  "type": "userActivity"}
+        params = {
+            "from": from_date,
+            "to": to_date,
+            "limit": limit,
+            "instancesReturned": instance_returned,
+            "offset": offset,
+            "returnUserActivityEntryCount": user_activity_entry_count,
+            "type": "userActivity"
+        }
         demisto.debug(f'params sent to Workday API are {str(params)}')
         res = self.http_request(method='GET', url_suffix='/activityLogging', params=params, retries=3)
         return res.get('data', [])
@@ -171,8 +173,8 @@ def remove_milliseconds_from_time_of_logging(activity_logging: dict):
     """
     demisto.debug("Changing timestamp of loggings to match date format.")
     date_format_with_milliseconds = '%Y-%m-%dT%H:%M:%S.%fZ'
-    request_time_date_obj = datetime.strptime(activity_logging.get('requestTime'), date_format_with_milliseconds)   # type: ignore
-    request_time_date_obj.replace(microsecond=0)
+    request_time_date_obj = datetime.strptime(activity_logging.get('requestTime'), date_format_with_milliseconds)
+    request_time_date_obj = request_time_date_obj.replace(microsecond=0)
     return datetime.strftime(request_time_date_obj, DATE_FORMAT)
 
 
@@ -218,12 +220,8 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
     """
     from_date = last_run.get('last_fetch_time', first_fetch.strftime(DATE_FORMAT))
     to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    demisto.debug(f'Getting activity loggings {from_date=}, {to_date=}.')
-    activity_loggings = get_max_fetch_activity_logging(client=client,
-                                                       logging_to_fetch=max_fetch,
-                                                       from_date=from_date,
-                                                       to_date=to_date)
-
+    demisto.debug(f'Getting activity loggings from_date={from_date}, to_date={to_date}.')
+    activity_loggings = get_max_fetch_activity_logging(client=client, logging_to_fetch=max_fetch, from_date=from_date, to_date=to_date)
     activity_loggings = remove_duplications(activity_loggings=activity_loggings, last_run=last_run)
     if activity_loggings:
         last_log = activity_loggings[-1]
