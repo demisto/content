@@ -397,7 +397,7 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
     return result
 
 
-def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '') -> dict:
+def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '', delta_keys: list = []) -> dict:
     """Inverse the keys and values of those dictionaries
     to map the arguments to their corresponding values in ServiceNow.
 
@@ -427,8 +427,11 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
     # This is for updating null fields for update_remote_system function for example: assigned_to.
     for arg in args:
-        if not args[arg]:
+        current_command = demisto.command()
+        if not args[arg] and (current_command != 'update-remote-system' or arg in delta_keys):
             fields_to_clear.append(arg)
+        elif arg not in delta_keys: # For debugging
+            demisto.debug(f"Did not mirrored out {arg} as it was not in the delta.")
     demisto.debug(f'Fields to clear {fields_to_clear}')
 
     ticket_fields = {}
@@ -2354,6 +2357,8 @@ def fetch_incidents(client: Client) -> list:
     )
 
     for ticket in tickets_response:
+        demisto.debug(f"Resolve info {ticket.get('close_code')}, {ticket.get('close_notes')},"
+                      f"{ticket.get('closed_at')}, {ticket.get('resolved_at')}, {ticket.get('state', '')}")
         ticket.update(get_mirroring())
 
         if client.timestamp_field not in ticket:
@@ -2681,11 +2686,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
+    demisto.debug(f"{close_incident=}")
     if close_incident != 'None':
         server_close_custom_state = params.get('server_close_custom_state', '')
         server_custom_close_code = params.get('server_custom_close_code', '')
         ticket_state = ticket.get('state', '')
         ticket_close_code = ticket.get('close_code', '')
+        demisto.debug(f"Mirror-in {server_close_custom_state=}, {server_custom_close_code=}, {ticket_state=}, "
+                      f"{ticket_close_code=}, close_notes={ticket.get('close_notes')}, closed_at={ticket.get('closed_at')},"
+                      f" resolved_at={ticket.get('resolved_at')}")
         # The first condition is for closing the incident if the ticket's state is in the
         # `Mirrored XSOAR Ticket custom close state code` parameter, which is configured by the user in the
         # integration configuration.
@@ -2796,6 +2805,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta {parsed_args.delta}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
@@ -2820,7 +2830,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
 
-        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
+        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type, delta_keys=list(parsed_args.delta.keys()))
         demisto.debug(f"all fields= {fields}")
         if closure_case:
             # Convert the closing state to the right one if the ticket type is not incident in order to close the
