@@ -5,8 +5,8 @@ from CommonServerPython import *  # noqa: F401
 
 import re
 import traceback
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 from urllib.parse import parse_qsl
 
 import ibm_db
@@ -115,15 +115,8 @@ class Client:
             string containing all of the required parameters
         """
 
-        conn_string = ("DRIVER={};DATABASE={};HOSTNAME={};PORT={};PROTOCOL={};UID={};PWD={};").format(
-            DRIVER_NAME,
-            self.dbname,
-            self.host,
-            self.port,
-            PROTOCOL,
-            self.username,
-            self.password,
-        )
+        conn_string = (f"DRIVER={DRIVER_NAME};DATABASE={self.dbname};HOSTNAME={self.host};PORT"
+                       f"={self.port};PROTOCOL={PROTOCOL};UID={self.username};PWD={self.password};")
 
         if self.ssl_connect:
             conn_string += "SECURITY=SSL;"
@@ -397,7 +390,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"{command} is not an existing DB2 command")
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"failed to execute {command} command.\nerror:\n{str(e)}")
+        return_error(f"failed to execute {command} command.\nerror:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
