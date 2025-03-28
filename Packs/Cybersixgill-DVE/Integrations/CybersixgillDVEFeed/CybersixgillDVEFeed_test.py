@@ -1,8 +1,8 @@
-import requests
-import pytest
 import json
 
 import demistomock as demisto
+import pytest
+import requests
 
 bundle_index = 0
 submitted_indicators = 0
@@ -920,8 +920,8 @@ def test_fetch_indicators_command(mocker):
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
     from CybersixgillDVEFeed import fetch_indicators_command
-    from sixgill.sixgill_feed_client import SixgillFeedClient
     from sixgill.sixgill_constants import FeedStream
+    from sixgill.sixgill_feed_client import SixgillFeedClient
 
     client = SixgillFeedClient(
         demisto.params()["client_id"],
@@ -947,8 +947,8 @@ def test_get_indicators_command(mocker):
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
     from CybersixgillDVEFeed import get_indicators_command
-    from sixgill.sixgill_feed_client import SixgillFeedClient
     from sixgill.sixgill_constants import FeedStream
+    from sixgill.sixgill_feed_client import SixgillFeedClient
 
     client = SixgillFeedClient(
         demisto.params()["client_id"],
@@ -983,8 +983,8 @@ def test_feed_tags_and_tlp_color(mocker, tlp_color):
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
     from CybersixgillDVEFeed import fetch_indicators_command
-    from sixgill.sixgill_feed_client import SixgillFeedClient
     from sixgill.sixgill_constants import FeedStream
+    from sixgill.sixgill_feed_client import SixgillFeedClient
 
     client = SixgillFeedClient(
         demisto.params()["client_id"],

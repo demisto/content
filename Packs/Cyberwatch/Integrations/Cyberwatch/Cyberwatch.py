@@ -1,17 +1,18 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import urllib3
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from typing import Any
-from collections.abc import Callable
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-
     def get_cves(self, params):
         """
         Send the request for list_cves_command.
@@ -78,63 +79,64 @@ class Client(BaseClient):
             ]
         """
 
-        path = '/api/v3/vulnerabilities/cve_announcements'
+        path = "/api/v3/vulnerabilities/cve_announcements"
 
-        if 'per_page' not in params:
-            demisto.info('Fetching 500 CVEs per request by default. '
-                         'You can override this by specifying the "per_page" parameter')
-            params['per_page'] = 500
+        if "per_page" not in params:
+            demisto.info('Fetching 500 CVEs per request by default. You can override this by specifying the "per_page" parameter')
+            params["per_page"] = 500
 
-        if 'hard_limit' not in params:
-            demisto.info('Fetching up to 2000 CVEs by default, in order to limit '
-                         'performance issues. You can override this by specifying the '
-                         '"hard_limit" parameter')
-            params['hard_limit'] = 2000
+        if "hard_limit" not in params:
+            demisto.info(
+                "Fetching up to 2000 CVEs by default, in order to limit "
+                "performance issues. You can override this by specifying the "
+                '"hard_limit" parameter'
+            )
+            params["hard_limit"] = 2000
 
         # if a page is given in params, we will fetch only the provided page
-        if 'page' in params:
-            response = self._http_request(
-                method='GET',
-                url_suffix=path,
-                params=params
-            )
+        if "page" in params:
+            response = self._http_request(method="GET", url_suffix=path, params=params)
         # if no page is given, we will fetch all the cves
         else:
-            demisto.info('Fetching all CVEs by default. '
-                         'You can override this by specifying the "page" parameter')
+            demisto.info('Fetching all CVEs by default. You can override this by specifying the "page" parameter')
             response = []
             # we start at page 1
             curr_page = 1
-            params['page'] = curr_page
+            params["page"] = curr_page
             raw_response = self._http_request(
-                method='GET',
+                method="GET",
                 url_suffix=path,
-                resp_type='response',  # used to get the headers of the response
-                params=params
+                resp_type="response",  # used to get the headers of the response
+                params=params,
             )
             response += raw_response.json()
-            paginate_objperpage = int(raw_response.headers['x-per-page'])
-            paginate_total_results = int(raw_response.headers['x-total'])
-            demisto.debug(f'Fetched page {curr_page} of '
-                          f'{paginate_total_results//paginate_objperpage} '
-                          f'(total results: {paginate_total_results}) '
-                          f'- hard limit for results: {params["hard_limit"]}')
+            paginate_objperpage = int(raw_response.headers["x-per-page"])
+            paginate_total_results = int(raw_response.headers["x-total"])
+            demisto.debug(
+                f'Fetched page {curr_page} of '
+                f'{paginate_total_results//paginate_objperpage} '
+                f'(total results: {paginate_total_results}) '
+                f'- hard limit for results: {params["hard_limit"]}'
+            )
             # we now iterate through all pages
-            while (curr_page * paginate_objperpage < paginate_total_results) and \
-                    (curr_page * paginate_objperpage < int(params['hard_limit'])):
+            while (curr_page * paginate_objperpage < paginate_total_results) and (
+                curr_page * paginate_objperpage < int(params["hard_limit"])
+            ):
                 curr_page += 1
-                params['page'] = curr_page
+                params["page"] = curr_page
                 raw_response = self._http_request(
-                    method='GET',
+                    method="GET",
                     url_suffix=path,
-                    resp_type='response',  # used to get the headers of the response
-                    params=params
+                    resp_type="response",  # used to get the headers of the response
+                    params=params,
                 )
                 response += raw_response.json()
-                demisto.debug(f'Fetched page {curr_page} of '
-                              f'{paginate_total_results//paginate_objperpage} '
-                              f'(total results: {paginate_total_results}) '
-                              f'- hard limit for results: {params["hard_limit"]}')
+                demisto.debug(
+                    f'Fetched page {curr_page} of '
+                    f'{paginate_total_results//paginate_objperpage} '
+                    f'(total results: {paginate_total_results}) '
+                    f'- hard limit for results: {params["hard_limit"]}'
+                )
 
         return response
 
@@ -247,16 +249,12 @@ class Client(BaseClient):
                 }
         """
 
-        if 'cve_code' not in params:
-            raise DemistoException('Please provide a CVE cve_code')
+        if "cve_code" not in params:
+            raise DemistoException("Please provide a CVE cve_code")
 
-        path = '/api/v3/vulnerabilities/cve_announcements/' + str(params['cve_code'])
+        path = "/api/v3/vulnerabilities/cve_announcements/" + str(params["cve_code"])
 
-        response = self._http_request(
-            method='GET',
-            url_suffix=path,
-            params=params
-        )
+        response = self._http_request(method="GET", url_suffix=path, params=params)
 
         return response
 
@@ -306,47 +304,42 @@ class Client(BaseClient):
             ]
         """
 
-        path = '/api/v3/vulnerabilities/servers'
+        path = "/api/v3/vulnerabilities/servers"
 
         # if a page is given in params, we will fetch only the provided page
-        if 'page' in params:
-            response = self._http_request(
-                method='GET',
-                url_suffix=path,
-                params=params
-            )
+        if "page" in params:
+            response = self._http_request(method="GET", url_suffix=path, params=params)
         # if no page is given, we will fetch all the assets
         else:
-            demisto.info('Fetching all CVEs by default. '
-                         'You can override this by specifying the "page" parameter')
+            demisto.info('Fetching all CVEs by default. You can override this by specifying the "page" parameter')
             response = []
             # we start at page 1
             curr_page = 1
-            params['page'] = curr_page
+            params["page"] = curr_page
             raw_response = self._http_request(
-                method='GET',
+                method="GET",
                 url_suffix=path,
-                resp_type='response',  # used to get the headers of the response
-                params=params
+                resp_type="response",  # used to get the headers of the response
+                params=params,
             )
             response += raw_response.json()
-            paginate_objperpage = int(raw_response.headers['x-per-page'])
-            paginate_total_results = int(raw_response.headers['x-total'])
+            paginate_objperpage = int(raw_response.headers["x-per-page"])
+            paginate_total_results = int(raw_response.headers["x-total"])
             # we now iterate through all pages
             while curr_page * paginate_objperpage < paginate_total_results:
                 curr_page += 1
-                params['page'] = curr_page
+                params["page"] = curr_page
                 raw_response = self._http_request(
-                    method='GET',
+                    method="GET",
                     url_suffix=path,
-                    resp_type='response',  # used to get the headers of the response
-                    params=params
+                    resp_type="response",  # used to get the headers of the response
+                    params=params,
                 )
                 response += raw_response.json()
 
         return response
 
-    def get_one_asset(self, params, namespace='vulnerabilities'):
+    def get_one_asset(self, params, namespace="vulnerabilities"):
         """
         Send the request for fetch_asset_command.
         Args:
@@ -457,16 +450,12 @@ class Client(BaseClient):
                 }
         """
 
-        if 'id' not in params:
-            raise DemistoException('Please provide an asset ID')
+        if "id" not in params:
+            raise DemistoException("Please provide an asset ID")
 
-        path = '/api/v3/' + str(namespace) + '/servers/' + str(params['id'])
+        path = "/api/v3/" + str(namespace) + "/servers/" + str(params["id"])
 
-        response = self._http_request(
-            method='GET',
-            url_suffix=path,
-            params=params
-        )
+        response = self._http_request(method="GET", url_suffix=path, params=params)
 
         return response
 
@@ -490,54 +479,53 @@ class Client(BaseClient):
             ]
         """
 
-        path = '/api/v3/security_issues'
+        path = "/api/v3/security_issues"
 
-        if 'per_page' not in params:
-            demisto.info('Fetching 500 Security Issues per request by default. '
-                         'You can override this by specifying the "per_page" parameter')
-            params['per_page'] = 500
+        if "per_page" not in params:
+            demisto.info(
+                "Fetching 500 Security Issues per request by default. "
+                'You can override this by specifying the "per_page" parameter'
+            )
+            params["per_page"] = 500
 
         # if a page is given in params, we will fetch only the provided page
-        if 'page' in params:
-            response = self._http_request(
-                method='GET',
-                url_suffix=path,
-                params=params
-            )
+        if "page" in params:
+            response = self._http_request(method="GET", url_suffix=path, params=params)
         # if no page is given, we will fetch all the Security Issues
         else:
-            demisto.info('Fetching all Security Issues by default. '
-                         'You can override this by specifying the "page" parameter')
+            demisto.info('Fetching all Security Issues by default. You can override this by specifying the "page" parameter')
             response = []
             # we start at page 1
             curr_page = 1
-            params['page'] = curr_page
+            params["page"] = curr_page
             raw_response = self._http_request(
-                method='GET',
+                method="GET",
                 url_suffix=path,
-                resp_type='response',  # used to get the headers of the response
-                params=params
+                resp_type="response",  # used to get the headers of the response
+                params=params,
             )
             response += raw_response.json()
-            paginate_objperpage = int(raw_response.headers['x-per-page'])
-            paginate_total_results = int(raw_response.headers['x-total'])
-            demisto.debug(f'Fetched page {curr_page} of \
+            paginate_objperpage = int(raw_response.headers["x-per-page"])
+            paginate_total_results = int(raw_response.headers["x-total"])
+            demisto.debug(f"Fetched page {curr_page} of \
                 {paginate_total_results//paginate_objperpage} \
-                (total results: {paginate_total_results})')
+                (total results: {paginate_total_results})")
             # we now iterate through all pages
             while curr_page * paginate_objperpage < paginate_total_results:
                 curr_page += 1
-                params['page'] = curr_page
+                params["page"] = curr_page
                 raw_response = self._http_request(
-                    method='GET',
+                    method="GET",
                     url_suffix=path,
-                    resp_type='response',  # used to get the headers of the response
-                    params=params
+                    resp_type="response",  # used to get the headers of the response
+                    params=params,
                 )
                 response += raw_response.json()
-                demisto.debug(f'Fetched page {curr_page} of '
-                              f'{paginate_total_results//paginate_objperpage} '
-                              f'(total results: {paginate_total_results})')
+                demisto.debug(
+                    f"Fetched page {curr_page} of "
+                    f"{paginate_total_results//paginate_objperpage} "
+                    f"(total results: {paginate_total_results})"
+                )
 
         return response
 
@@ -551,16 +539,12 @@ class Client(BaseClient):
 
         """
 
-        if 'id' not in params:
-            raise DemistoException('Please provide a Security Issues ID')
+        if "id" not in params:
+            raise DemistoException("Please provide a Security Issues ID")
 
-        path = '/api/v3/security_issues/' + str(params['id'])
+        path = "/api/v3/security_issues/" + str(params["id"])
 
-        response = self._http_request(
-            method='GET',
-            url_suffix=path,
-            params=params
-        )
+        response = self._http_request(method="GET", url_suffix=path, params=params)
 
         return response
 
@@ -573,11 +557,8 @@ class Client(BaseClient):
             Dict: The response.
         """
 
-        path = '/api/v3/ping'
-        response = self._http_request(
-            method='GET',
-            url_suffix=path
-        )
+        path = "/api/v3/ping"
+        response = self._http_request(method="GET", url_suffix=path)
 
         return response
 
@@ -600,10 +581,10 @@ def test_module(client: Client) -> str:
         raise Exception("Authorization Error: please check your API Key and Secret Key")
 
 
-''' HELPERS '''
+""" HELPERS """
 
 
-def iso8601_to_human(iso8601_str, default_value=''):
+def iso8601_to_human(iso8601_str, default_value=""):
     """
     Convert ISO8601 string to human readable date time.
     Args:
@@ -615,9 +596,8 @@ def iso8601_to_human(iso8601_str, default_value=''):
     if iso8601_str:
         # Sometimes, Cyberwatch API sends the datetime in a Zulu format
         # We need to convert it to a datetime object
-        if iso8601_str[-1] == 'Z':
-            return datetime.strptime(iso8601_str, '%Y-%m-%dT%H:%M:%S.%fZ').strftime(
-                "%Y-%m-%dT%H:%M:%S")
+        if iso8601_str[-1] == "Z":
+            return datetime.strptime(iso8601_str, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%S")
         else:
             # The string is indeed in ISO8601 format
             dt = datetime.fromisoformat(iso8601_str)
@@ -629,7 +609,7 @@ def iso8601_to_human(iso8601_str, default_value=''):
     return default_value
 
 
-''' FUNCTIONS '''
+""" FUNCTIONS """
 
 
 def list_cves_command(client: Client, args: Dict[str, Any]):
@@ -645,30 +625,37 @@ def list_cves_command(client: Client, args: Dict[str, Any]):
     cves = client.get_cves(args)
 
     if len(cves) == 0:
-        raise DemistoException('No CVEs found')
+        raise DemistoException("No CVEs found")
 
-    readable_headers = ['cve_code', 'content', 'published', 'last_modified', 'level',
-                        'score', 'epss', 'cvss_v3']
+    readable_headers = ["cve_code", "content", "published", "last_modified", "level", "score", "epss", "cvss_v3"]
 
-    readable_cves = [{
-        'cve_code': cve['cve_code'],
-        'content': cve['content'],
-        'published': iso8601_to_human(cve['published']),
-        'last_modified': iso8601_to_human(cve['last_modified']),
-        'level': cve['level'],
-        'score': str(cve['score']),
-        'epss': str(cve['epss']),
-        'cvss_v3': cve['cvss_v3']
-    } for cve in cves]
+    readable_cves = [
+        {
+            "cve_code": cve["cve_code"],
+            "content": cve["content"],
+            "published": iso8601_to_human(cve["published"]),
+            "last_modified": iso8601_to_human(cve["last_modified"]),
+            "level": cve["level"],
+            "score": str(cve["score"]),
+            "epss": str(cve["epss"]),
+            "cvss_v3": cve["cvss_v3"],
+        }
+        for cve in cves
+    ]
 
     return CommandResults(
         outputs=createContext(cves, removeNull=True),
-        outputs_prefix='Cyberwatch.CVE',
+        outputs_prefix="Cyberwatch.CVE",
         raw_response=cves,
-        outputs_key_field='cve_code',
-        readable_output=tableToMarkdown('Cyberwatch CVEs', readable_cves, readable_headers,
-                                        removeNull=False, is_auto_json_transform=True,
-                                        date_fields=['published', 'last_modified'])
+        outputs_key_field="cve_code",
+        readable_output=tableToMarkdown(
+            "Cyberwatch CVEs",
+            readable_cves,
+            readable_headers,
+            removeNull=False,
+            is_auto_json_transform=True,
+            date_fields=["published", "last_modified"],
+        ),
     )
 
 
@@ -685,32 +672,47 @@ def fetch_cve_command(client: Client, args: Dict[str, Any]):
     cve = client.get_one_cve(args)
 
     if len(cve) == 0:
-        raise DemistoException('CVE not found')
+        raise DemistoException("CVE not found")
 
-    readable_headers = ['cve_code', 'content', 'published', 'last_modified', 'level', 'score',
-                        'epss', 'cvss_v3', 'servers_count', 'security_announcements_count']
+    readable_headers = [
+        "cve_code",
+        "content",
+        "published",
+        "last_modified",
+        "level",
+        "score",
+        "epss",
+        "cvss_v3",
+        "servers_count",
+        "security_announcements_count",
+    ]
 
     readable_cve = {
-        'cve_code': cve['cve_code'],
-        'content': cve['content'],
-        'published': iso8601_to_human(cve['published']),
-        'last_modified': iso8601_to_human(cve['last_modified']),
-        'level': cve['level'],
-        'score': str(cve['score']),
-        'epss': str(cve['epss']),
-        'cvss_v3': cve['cvss_v3'],
-        'servers_count': str(len(cve['servers'])),
-        'security_announcements_count': str(len(cve['security_announcements']))
+        "cve_code": cve["cve_code"],
+        "content": cve["content"],
+        "published": iso8601_to_human(cve["published"]),
+        "last_modified": iso8601_to_human(cve["last_modified"]),
+        "level": cve["level"],
+        "score": str(cve["score"]),
+        "epss": str(cve["epss"]),
+        "cvss_v3": cve["cvss_v3"],
+        "servers_count": str(len(cve["servers"])),
+        "security_announcements_count": str(len(cve["security_announcements"])),
     }
 
     return CommandResults(
         outputs=createContext(cve, removeNull=True),
-        outputs_prefix='Cyberwatch.CVE',
+        outputs_prefix="Cyberwatch.CVE",
         raw_response=cve,
-        outputs_key_field='cve_code',
-        readable_output=tableToMarkdown('Cyberwatch CVE', readable_cve, readable_headers,
-                                        removeNull=False, is_auto_json_transform=True,
-                                        date_fields=['published', 'last_modified'])
+        outputs_key_field="cve_code",
+        readable_output=tableToMarkdown(
+            "Cyberwatch CVE",
+            readable_cve,
+            readable_headers,
+            removeNull=False,
+            is_auto_json_transform=True,
+            date_fields=["published", "last_modified"],
+        ),
     )
 
 
@@ -727,36 +729,54 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
     assets = client.get_assets(args)
 
     if len(assets) == 0:
-        raise DemistoException('No assets found')
+        raise DemistoException("No assets found")
 
-    readable_headers = ['id', 'hostname', 'reboot_required', 'category',
-                        'last_communication', 'os', 'environment', 'groups',
-                        'cve_announcements_count', 'prioritized_cve_announcements_count',
-                        'updates_count', 'compliance_repositories']
+    readable_headers = [
+        "id",
+        "hostname",
+        "reboot_required",
+        "category",
+        "last_communication",
+        "os",
+        "environment",
+        "groups",
+        "cve_announcements_count",
+        "prioritized_cve_announcements_count",
+        "updates_count",
+        "compliance_repositories",
+    ]
 
-    readable_assets = [{
-        'id': str(asset['id']),
-        'hostname': asset['hostname'],
-        'reboot_required': str(asset['reboot_required']),
-        'category': asset['category'],
-        'last_communication': iso8601_to_human(asset['last_communication']),
-        'os': asset['os'].get('name') if asset['os'] else None,
-        'environment': asset['environment'].get('name') if asset['environment'] else None,
-        'groups': [g.get('name') for g in asset['groups']],
-        'cve_announcements_count': str(asset['cve_announcements_count']),
-        'prioritized_cve_announcements_count': str(asset['prioritized_cve_announcements_count']),
-        'updates_count': str(asset['updates_count']),
-        'compliance_repositories': [c.get('name') for c in asset['compliance_repositories']]
-    } for asset in assets]
+    readable_assets = [
+        {
+            "id": str(asset["id"]),
+            "hostname": asset["hostname"],
+            "reboot_required": str(asset["reboot_required"]),
+            "category": asset["category"],
+            "last_communication": iso8601_to_human(asset["last_communication"]),
+            "os": asset["os"].get("name") if asset["os"] else None,
+            "environment": asset["environment"].get("name") if asset["environment"] else None,
+            "groups": [g.get("name") for g in asset["groups"]],
+            "cve_announcements_count": str(asset["cve_announcements_count"]),
+            "prioritized_cve_announcements_count": str(asset["prioritized_cve_announcements_count"]),
+            "updates_count": str(asset["updates_count"]),
+            "compliance_repositories": [c.get("name") for c in asset["compliance_repositories"]],
+        }
+        for asset in assets
+    ]
 
     return CommandResults(
         outputs=createContext(assets, removeNull=True),
-        outputs_prefix='Cyberwatch.Asset',
+        outputs_prefix="Cyberwatch.Asset",
         raw_response=assets,
-        outputs_key_field='id',
-        readable_output=tableToMarkdown('Cyberwatch Assets', readable_assets, readable_headers,
-                                        removeNull=False, is_auto_json_transform=True,
-                                        date_fields=['last_communication'])
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            "Cyberwatch Assets",
+            readable_assets,
+            readable_headers,
+            removeNull=False,
+            is_auto_json_transform=True,
+            date_fields=["last_communication"],
+        ),
     )
 
 
@@ -773,37 +793,53 @@ def fetch_asset_command(client: Client, args: Dict[str, Any]):
     asset = client.get_one_asset(args)
 
     if len(asset) == 0:
-        raise DemistoException('Asset not found')
+        raise DemistoException("Asset not found")
 
-    readable_headers = ['id', 'hostname', 'description', 'reboot_required', 'category',
-                        'last_communication', 'os', 'environment', 'groups',
-                        'cve_announcements_count', 'prioritized_cve_announcements_count',
-                        'updates_count', 'compliance_repositories']
+    readable_headers = [
+        "id",
+        "hostname",
+        "description",
+        "reboot_required",
+        "category",
+        "last_communication",
+        "os",
+        "environment",
+        "groups",
+        "cve_announcements_count",
+        "prioritized_cve_announcements_count",
+        "updates_count",
+        "compliance_repositories",
+    ]
 
     readable_asset = {
-        'id': str(asset['id']),
-        'hostname': asset['hostname'],
-        'description': str(asset['description']),
-        'reboot_required': str(asset['reboot_required']),
-        'category': str(asset['category']),
-        'last_communication': iso8601_to_human(asset['last_communication']),
-        'os': asset['os'].get('name') if asset['os'] else None,
-        'environment': asset['environment'].get('name'),
-        'groups': [g.get('name') for g in asset['groups']],
-        'cve_announcements_count': str(asset['cve_announcements_count']),
-        'prioritized_cve_announcements_count': str(asset['prioritized_cve_announcements_count']),
-        'updates_count': str(asset['updates_count']),
-        'compliance_repositories': [c.get('name') for c in asset['compliance_repositories']]
+        "id": str(asset["id"]),
+        "hostname": asset["hostname"],
+        "description": str(asset["description"]),
+        "reboot_required": str(asset["reboot_required"]),
+        "category": str(asset["category"]),
+        "last_communication": iso8601_to_human(asset["last_communication"]),
+        "os": asset["os"].get("name") if asset["os"] else None,
+        "environment": asset["environment"].get("name"),
+        "groups": [g.get("name") for g in asset["groups"]],
+        "cve_announcements_count": str(asset["cve_announcements_count"]),
+        "prioritized_cve_announcements_count": str(asset["prioritized_cve_announcements_count"]),
+        "updates_count": str(asset["updates_count"]),
+        "compliance_repositories": [c.get("name") for c in asset["compliance_repositories"]],
     }
 
     return CommandResults(
         outputs=createContext(asset, removeNull=False),
-        outputs_prefix='Cyberwatch.Asset',
+        outputs_prefix="Cyberwatch.Asset",
         raw_response=asset,
-        outputs_key_field='id',
-        readable_output=tableToMarkdown('Cyberwatch Asset', readable_asset, readable_headers,
-                                        removeNull=False, is_auto_json_transform=True,
-                                        date_fields=['last_communication'])
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            "Cyberwatch Asset",
+            readable_asset,
+            readable_headers,
+            removeNull=False,
+            is_auto_json_transform=True,
+            date_fields=["last_communication"],
+        ),
     )
 
 
@@ -819,49 +855,69 @@ def fetch_asset_full_command(client: Client, args: Dict[str, Any]):
 
     # Fetch data from namespaces vulns and assets
     asset_vulns = client.get_one_asset(args)
-    asset_additional_details = client.get_one_asset(args, namespace='assets')
+    asset_additional_details = client.get_one_asset(args, namespace="assets")
 
     # Merge data
     asset = {**asset_vulns, **asset_additional_details}
 
     if len(asset) == 0:
-        raise DemistoException('Asset not found')
+        raise DemistoException("Asset not found")
 
-    readable_headers = ['id', 'hostname', 'description', 'reboot_required', 'category',
-                        'last_communication', 'os', 'environment', 'groups',
-                        'cve_announcements_count', 'prioritized_cve_announcements_count',
-                        'updates_count', 'compliance_repositories', 'packages_count',
-                        'metadata_count', 'services_count', 'ports_count', 'connector_type']
+    readable_headers = [
+        "id",
+        "hostname",
+        "description",
+        "reboot_required",
+        "category",
+        "last_communication",
+        "os",
+        "environment",
+        "groups",
+        "cve_announcements_count",
+        "prioritized_cve_announcements_count",
+        "updates_count",
+        "compliance_repositories",
+        "packages_count",
+        "metadata_count",
+        "services_count",
+        "ports_count",
+        "connector_type",
+    ]
 
     readable_asset = {
-        'id': str(asset['id']),
-        'hostname': asset['hostname'],
-        'description': str(asset['description']),
-        'reboot_required': str(asset['reboot_required']),
-        'category': str(asset['category']),
-        'last_communication': iso8601_to_human(asset['last_communication']),
-        'os': asset['os'].get('name') if asset['os'] else None,
-        'environment': asset['environment'].get('name'),
-        'groups': [g.get('name') for g in asset['groups']],
-        'cve_announcements_count': str(asset['cve_announcements_count']),
-        'prioritized_cve_announcements_count': str(asset['prioritized_cve_announcements_count']),
-        'updates_count': str(asset['updates_count']),
-        'compliance_repositories': [c.get('name') for c in asset['compliance_repositories']],
-        'packages_count': str(len(asset['packages'])),
-        'metadata_count': str(len(asset['metadata'])),
-        'services_count': str(len(asset['services'])),
-        'ports_count': str(len(asset['ports'])),
-        'connector_type': asset['connector'].get('type') if asset['connector'] else None
+        "id": str(asset["id"]),
+        "hostname": asset["hostname"],
+        "description": str(asset["description"]),
+        "reboot_required": str(asset["reboot_required"]),
+        "category": str(asset["category"]),
+        "last_communication": iso8601_to_human(asset["last_communication"]),
+        "os": asset["os"].get("name") if asset["os"] else None,
+        "environment": asset["environment"].get("name"),
+        "groups": [g.get("name") for g in asset["groups"]],
+        "cve_announcements_count": str(asset["cve_announcements_count"]),
+        "prioritized_cve_announcements_count": str(asset["prioritized_cve_announcements_count"]),
+        "updates_count": str(asset["updates_count"]),
+        "compliance_repositories": [c.get("name") for c in asset["compliance_repositories"]],
+        "packages_count": str(len(asset["packages"])),
+        "metadata_count": str(len(asset["metadata"])),
+        "services_count": str(len(asset["services"])),
+        "ports_count": str(len(asset["ports"])),
+        "connector_type": asset["connector"].get("type") if asset["connector"] else None,
     }
 
     return CommandResults(
         outputs=createContext(asset, removeNull=False),
-        outputs_prefix='Cyberwatch.Asset',
+        outputs_prefix="Cyberwatch.Asset",
         raw_response=asset,
-        outputs_key_field='id',
-        readable_output=tableToMarkdown('Cyberwatch Asset', readable_asset, readable_headers,
-                                        removeNull=False, is_auto_json_transform=True,
-                                        date_fields=['last_communication'])
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            "Cyberwatch Asset",
+            readable_asset,
+            readable_headers,
+            removeNull=False,
+            is_auto_json_transform=True,
+            date_fields=["last_communication"],
+        ),
     )
 
 
@@ -878,26 +934,29 @@ def list_security_issues_command(client: Client, args: Dict[str, Any]):
     secissues = client.get_security_issues(args)
 
     if len(secissues) == 0:
-        raise DemistoException('No security issues found')
+        raise DemistoException("No security issues found")
 
-    readable_headers = ['id', 'sid', 'level', 'title', 'description']
+    readable_headers = ["id", "sid", "level", "title", "description"]
 
-    readable_secissues = [{
-        'id': str(secissue['id']),
-        'sid': str(secissue['sid']),
-        'level': str(secissue['level']),
-        'title': str(secissue['title']),
-        'description': str(secissue['description'])
-    } for secissue in secissues]
+    readable_secissues = [
+        {
+            "id": str(secissue["id"]),
+            "sid": str(secissue["sid"]),
+            "level": str(secissue["level"]),
+            "title": str(secissue["title"]),
+            "description": str(secissue["description"]),
+        }
+        for secissue in secissues
+    ]
 
     return CommandResults(
         outputs=createContext(secissues, removeNull=True),
-        outputs_prefix='Cyberwatch.SecurityIssue',
+        outputs_prefix="Cyberwatch.SecurityIssue",
         raw_response=secissues,
-        outputs_key_field='id',
-        readable_output=tableToMarkdown('Cyberwatch Security Issues', readable_secissues,
-                                        readable_headers, removeNull=False,
-                                        is_auto_json_transform=True)
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            "Cyberwatch Security Issues", readable_secissues, readable_headers, removeNull=False, is_auto_json_transform=True
+        ),
     )
 
 
@@ -914,28 +973,27 @@ def fetch_security_issue_command(client: Client, args: Dict[str, Any]):
     secissue = client.get_one_security_issue(args)
 
     if len(secissue) == 0:
-        raise DemistoException('Security Issue not found')
+        raise DemistoException("Security Issue not found")
 
-    readable_headers = ['id', 'sid', 'title', 'description',
-                        'servers_count', 'cve_announcements_count']
+    readable_headers = ["id", "sid", "title", "description", "servers_count", "cve_announcements_count"]
 
     readable_secissue = {
-        'id': str(secissue['id']),
-        'sid': str(secissue['sid']),
-        'title': str(secissue['title']),
-        'description': str(secissue['description']),
-        'servers_count': str(len(secissue['servers'])),
-        'cve_announcements_count': str(len(secissue['cve_announcements']))
+        "id": str(secissue["id"]),
+        "sid": str(secissue["sid"]),
+        "title": str(secissue["title"]),
+        "description": str(secissue["description"]),
+        "servers_count": str(len(secissue["servers"])),
+        "cve_announcements_count": str(len(secissue["cve_announcements"])),
     }
 
     return CommandResults(
         outputs=createContext(secissue, removeNull=False),
-        outputs_prefix='Cyberwatch.SecurityIssue',
+        outputs_prefix="Cyberwatch.SecurityIssue",
         raw_response=secissue,
-        outputs_key_field='id',
-        readable_output=tableToMarkdown('Cyberwatch Security Issue', readable_secissue,
-                                        readable_headers, removeNull=False,
-                                        is_auto_json_transform=True)
+        outputs_key_field="id",
+        readable_output=tableToMarkdown(
+            "Cyberwatch Security Issue", readable_secissue, readable_headers, removeNull=False, is_auto_json_transform=True
+        ),
     )
 
 
@@ -943,48 +1001,42 @@ def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    verify_ssl = not params.get('unsecure', False)
-    proxy = params.get('proxy', False)
-    access_key = params.get('api_access_key')
-    secret_key = params.get('api_secret_key')
-    base_url = params.get('master_scanner_url')
+    verify_ssl = not params.get("unsecure", False)
+    proxy = params.get("proxy", False)
+    access_key = params.get("api_access_key")
+    secret_key = params.get("api_secret_key")
+    base_url = params.get("master_scanner_url")
 
-    demisto.info(f'Executing command {command}')
+    demisto.info(f"Executing command {command}")
 
     # convert params provided as list to actual lists
     for key in args:
-        if '[]' in key:
+        if "[]" in key:
             args[key] = argToList(args[key])
 
     command_dict: Dict[str, Callable] = {
-        'test-module': test_module,
-        'cyberwatch-list-assets': list_assets_command,
-        'cyberwatch-fetch-asset': fetch_asset_command,
-        'cyberwatch-fetch-asset-fulldetails': fetch_asset_full_command,
-        'cyberwatch-list-cves': list_cves_command,
-        'cyberwatch-fetch-cve': fetch_cve_command,
-        'cyberwatch-list-securityissues': list_security_issues_command,
-        'cyberwatch-fetch-securityissue': fetch_security_issue_command
+        "test-module": test_module,
+        "cyberwatch-list-assets": list_assets_command,
+        "cyberwatch-fetch-asset": fetch_asset_command,
+        "cyberwatch-fetch-asset-fulldetails": fetch_asset_full_command,
+        "cyberwatch-list-cves": list_cves_command,
+        "cyberwatch-fetch-cve": fetch_cve_command,
+        "cyberwatch-list-securityissues": list_security_issues_command,
+        "cyberwatch-fetch-securityissue": fetch_security_issue_command,
     }
 
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_ssl,
-            auth=(access_key, secret_key),
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_ssl, auth=(access_key, secret_key), proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
         else:
             return_results(command_dict[command](client, args))
     except Exception as e:
-        return_error(
-            f'Failed to execute {command} command. Error: {str(e)}'
-        )
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

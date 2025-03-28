@@ -3,19 +3,22 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from CofenseTriagev2 import TriageInboxReports
-from CofenseTriagev2 import TriageReport
-from CofenseTriagev2 import TriageReporter
-from CofenseTriagev2 import TriageRequestFailedError
-from CofenseTriagev2 import TriageNoReportersFoundError
+from CofenseTriagev2 import (
+    TriageInboxReports,
+    TriageNoReportersFoundError,
+    TriageReport,
+    TriageReporter,
+    TriageRequestFailedError,
+)
 from freezegun import freeze_time
 
 
 @pytest.fixture
 def fixture_from_file():
     def _fixture_from_file(fname):
-        with (Path(__file__).parent / 'test_data' / 'fixtures' / fname).open() as file:
+        with (Path(__file__).parent / "test_data" / "fixtures" / fname).open() as file:
             return file.read()
+
     return _fixture_from_file
 
 
@@ -34,9 +37,7 @@ def set_demisto_args(args):
 def get_demisto_arg(name):
     if name in DEMISTO_ARGS:
         return DEMISTO_ARGS[name]
-    raise Exception(
-        f'Test setup did not specify a Demisto argument named {name}. Use `set_demisto_arg("{name}", "value")`.'
-    )
+    raise Exception(f'Test setup did not specify a Demisto argument named {name}. Use `set_demisto_arg("{name}", "value")`.')
 
 
 set_demisto_arg("host", "https://some-triage-host/")
@@ -123,18 +124,12 @@ class TestCofenseTriage:
         assert demisto_incidents[0]["severity"] == 1
         assert len(demisto_incidents[0]["rawJSON"]) == 1931
 
-        assert demisto_incidents[1]["attachment"] == [
-            {"name": "13392-report.html", "path": "/path/to/temp/file"}
-        ]
+        assert demisto_incidents[1]["attachment"] == [{"name": "13392-report.html", "path": "/path/to/temp/file"}]
 
-        CofenseTriagev2.demisto.setLastRun.assert_called_once_with(
-            {"reports_fetched": "[13392, 13363]"}
-        )
+        CofenseTriagev2.demisto.setLastRun.assert_called_once_with({"reports_fetched": "[13392, 13363]"})
 
     @freeze_time("2000-10-31")
-    def test_fetch_reports_already_fetched(
-            self, mocker, requests_mock, triage_instance, fixture_from_file
-    ):
+    def test_fetch_reports_already_fetched(self, mocker, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?category_id=&"
             "match_priority=&tags=&start_date=2000-10-30T00%3A00%3A00",
@@ -153,9 +148,7 @@ class TestCofenseTriage:
         assert len(demisto_incidents) == 1
         assert demisto_incidents[0]["name"] == "cofense triage report 13392: Crimeware"
 
-        CofenseTriagev2.demisto.setLastRun.assert_called_once_with(
-            {"reports_fetched": "[13392, 13363]"}
-        )
+        CofenseTriagev2.demisto.setLastRun.assert_called_once_with({"reports_fetched": "[13392, 13363]"})
 
     @freeze_time("2000-10-31")
     def test_search_reports_command(self, requests_mock, triage_instance, fixture_from_file):
@@ -175,11 +168,14 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
-        assert demisto_results[0]["HumanReadable"] == (
-            "### Reports:\n"
-            "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|---|\n"  # noqa: E501
-            "| 5 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: E501
+        assert (
+            demisto_results[0]["HumanReadable"]
+            == (
+                "### Reports:\n"
+                "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|---|\n"  # noqa: E501
+                "| 5 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: E501
+            )
         )
 
     def test_build_reporters_clause_found(self, requests_mock, triage_instance, fixture_from_file):
@@ -252,23 +248,24 @@ class TestCofenseTriage:
             ({"url": "example.com"}, []),
             ({"url": "nah"}, []),
             ({"created_at": parse_triage_date("2055-03-19T16:43:09.715Z")}, []),
-            ({"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")}, [13363, 13392],),
+            (
+                {"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")},
+                [13363, 13392],
+            ),
             ({"file_hash": "123"}, [13363]),
             ({"file_hash": "1234"}, [13363]),
             ({"file_hash": "5"}, []),
         ],
     )
     def test_search_reports_filtering(
-            self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids, fixture_from_file
+        self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids, fixture_from_file
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31+00%3A00%3A00",  # noqa: E501
             text=fixture_from_file("processed_reports.json"),
         )
 
-        found_reports = CofenseTriagev2.search_reports(
-            triage_instance, **filter_attrs, reported_at=datetime.datetime.now()
-        )
+        found_reports = CofenseTriagev2.search_reports(triage_instance, **filter_attrs, reported_at=datetime.datetime.now())
         assert [report["id"] for report in found_reports] == expected_found_report_ids
 
     @freeze_time("2000-10-31")
@@ -291,12 +288,15 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
-        assert demisto_results[0]["HumanReadable"] == (
-            "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
-            "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n"  # noqa: E501
+        assert (
+            demisto_results[0]["HumanReadable"]
+            == (
+                "### Reports:\n"
+                "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+                "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
+                "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n"  # noqa: E501
+            )
         )
 
     @freeze_time("2000-10-31")
@@ -323,12 +323,15 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
-        assert demisto_results[0]["HumanReadable"] == (
-            "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
-            "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n"  # noqa: E501
+        assert (
+            demisto_results[0]["HumanReadable"]
+            == (
+                "### Reports:\n"
+                "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+                "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
+                "| 3884 | 2020-08-24T16:43:04.412Z |  | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13458 | Inbox | 1 | 555 | Report body 3 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 3<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 3 aaa | 2020-08-24T16:15:52.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 667, 'name': 'Triage_rule_1', 'reports_count': 41, 'active': True, 'created_at': '2019-04-11T16:46:11.078Z', 'updated_at': '2019-04-11T16:46:11.078Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-24T16:21:07.000Z | 2020-08-24T16:43:05.946Z |\n"  # noqa: E501
+            )
         )
 
     @freeze_time("2000-10-31")
@@ -351,11 +354,14 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
-        assert demisto_results[0]["HumanReadable"] == (
-            "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
+        assert (
+            demisto_results[0]["HumanReadable"]
+            == (
+                "### Reports:\n"
+                "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+                "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
+            )
         )
 
     @freeze_time("2000-10-31")
@@ -382,11 +388,14 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
-        assert demisto_results[0]["HumanReadable"] == (
-            "### Reports:\n"
-            "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
+        assert (
+            demisto_results[0]["HumanReadable"]
+            == (
+                "### Reports:\n"
+                "|Cluster Id|Created At|Email Attachments|Email Urls|Id|Location|Match Priority|Md5|Report Body|Report Headers|Report Subject|Reported At|Reporter Created At|Reporter Credibility Score|Reporter Email|Reporter Id|Reporter Last Reported At|Reporter Phishme Reports Count|Reporter Reports Count|Reporter Updated At|Reporter Vip|Rules|Sha256|Suspect Received At|Updated At|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+                "| 3887 | 2020-08-26T15:13:30.920Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | {'url': 'https://example.com/url1.png'},<br>{'url': 'https://example.com/url2.png'},<br>{'url': 'https://example.com/url3.png'} | 13461 | Inbox | 1 | 555 | Report body 1 | Date: Wed, 26 Aug 2020 15:13:30 +0000<br>Subject: Report subject 1<br>Mime-Version: 1.0<br>Content-Type: multipart/mixed;<br>charset=UTF-8<br>Content-Transfer-Encoding: 7bit | Report subject 1 aaa | 2020-08-26T14:36:43.000Z | 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 0 | 3 | 2019-04-12T02:59:22.287Z | false | {'id': 6417, 'name': 'Triage_rule_1', 'reports_count': 67, 'active': True, 'created_at': '2019-04-11T17:15:53.940Z', 'updated_at': '2019-04-11T17:15:53.940Z', 'priority': 1, 'author_name': 'Cofense'} | 555555 | 2020-08-26T14:36:51.000Z | 2020-08-26T15:13:35.200Z |\n"  # noqa: E501
+            )
         )
 
     def test_get_attachment_command(self, mocker, requests_mock, triage_instance, fixture_from_file):
@@ -449,16 +458,17 @@ class TestCofenseTriage:
         CofenseTriagev2.get_report_by_id_command(triage_instance)
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
-        assert demisto_results[0]["HumanReadable"] == (
-            "### Report Summary:\n"
-            "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: E501
+        assert (
+            demisto_results[0]["HumanReadable"]
+            == (
+                "### Report Summary:\n"
+                "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+                "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: E501
+            )
         )
 
-    def test_get_report_by_id_command_with_attachment(
-            self, requests_mock, triage_instance, fixture_from_file
-    ):
+    def test_get_report_by_id_command_with_attachment(self, requests_mock, triage_instance, fixture_from_file):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
         requests_mock.get(
@@ -474,14 +484,16 @@ class TestCofenseTriage:
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list
         assert demisto_results[0][0][0]["HumanReadable"] == (
-            "### Cofense HTML Report:\n"
-            "HTML report download request has been completed"
+            "### Cofense HTML Report:\nHTML report download request has been completed"
         )
-        assert demisto_results[1][0][0]["HumanReadable"] == (
-            "### Report Summary:\n"
-            "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: E501
-            "|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: E501
+        assert (
+            demisto_results[1][0][0]["HumanReadable"]
+            == (
+                "### Report Summary:\n"
+                "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: E501
+                "|---|---|---|---|---|---|---|---|---|---|---|\n"
+                "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: E501
+            )
         )
 
     def test_get_all_reporters(self, requests_mock, triage_instance, fixture_from_file):
@@ -520,9 +532,7 @@ class TestCofenseTriage:
             "| 2020-03-16T17:39:14.579Z | 37 | 2 | 13353 | Domain | Malicious | malicious.example.com |\n"
         )
 
-    def test_get_threat_indicators_command_not_found(
-            self, requests_mock, triage_instance
-    ):
+    def test_get_threat_indicators_command_not_found(self, requests_mock, triage_instance):
         set_demisto_arg("type", "what")
         set_demisto_arg("level", "what")
         set_demisto_arg("start_date", "what")
@@ -576,15 +586,11 @@ class TestTriageInstance:
         assert response.__class__.__name__ == "Response"
 
     def test_request_empty(self, requests_mock, triage_instance):
-        requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports", text="[]"
-        )
+        requests_mock.get("https://some-triage-host/api/public/v1/processed_reports", text="[]")
 
         assert triage_instance.request("processed_reports") == {}
 
-    def test_request_malformed_json(
-            self, mocker, requests_mock, triage_instance, fixture_from_file
-    ):
+    def test_request_malformed_json(self, mocker, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports",
             text=fixture_from_file("malformed_json.not_json"),
@@ -598,7 +604,10 @@ class TestTriageInstance:
     def test_api_url(self, triage_instance):
         assert triage_instance.api_url("endpoint") == "https://some-triage-host/api/public/v1/endpoint"
         assert triage_instance.api_url("/endpoint") == "https://some-triage-host/api/public/v1/endpoint"
-        assert triage_instance.api_url("///endpoint/edit?query_string&") == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"  # noqa 501
+        assert (
+            triage_instance.api_url("///endpoint/edit?query_string&")
+            == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"
+        )  # noqa 501
 
 
 class TestTriageInboxReports:
@@ -614,17 +623,13 @@ class TestTriageInboxReports:
         assert reports[0].id == 13461
         assert reports[2].date == "2020-08-24T16:43:04.412Z"
 
-    def test_inbox_reports_with_filter(
-        self, requests_mock, triage_instance, fixture_from_file
-    ):
+    def test_inbox_reports_with_filter(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/inbox_reports?page=0",
             text=fixture_from_file("inbox_reports.json"),
         )
 
-        reports = TriageInboxReports(
-            triage_instance, filter_params={"subject": "aaa"}
-        ).inbox_reports()
+        reports = TriageInboxReports(triage_instance, filter_params={"subject": "aaa"}).inbox_reports()
 
         assert [report.report_subject for report in reports] == [
             "Report subject 1 aaa",
@@ -650,11 +655,9 @@ class TestTriageReport:
             "https://some-triage-host/api/public/v1/reports/6",
             text=fixture_from_file("single_report.json"),
         )
-        stubbed_triagereporter_init = mocker.patch(
-            "CofenseTriagev2.TriageReporter"
-        )
+        stubbed_triagereporter_init = mocker.patch("CofenseTriagev2.TriageReporter")
 
-        TriageReport.fetch(triage_instance, "6").reporter
+        TriageReport.fetch(triage_instance, "6").reporter  # noqa: B018
 
         stubbed_triagereporter_init.assert_called_once_with(triage_instance, 5331)
 
@@ -668,9 +671,7 @@ class TestTriageReport:
 
         assert report.attachment is None
 
-    def test_attachment_present(
-            self, mocker, requests_mock, triage_instance, fixture_from_file
-    ):
+    def test_attachment_present(self, mocker, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reports/6",
             text=fixture_from_file("single_report_with_attachment.json"),
@@ -698,9 +699,7 @@ class TestTriageReporter:
             "https://some-triage-host/api/public/v1/reporters/5",
             text=fixture_from_file("reporters.json"),
         )
-        requests_mock.get(
-            "https://some-triage-host/api/public/v1/reporters/6", text="[]"
-        )
+        requests_mock.get("https://some-triage-host/api/public/v1/reporters/6", text="[]")
 
         assert TriageReporter(triage_instance, 5).exists() is True
         assert TriageReporter(triage_instance, 6).exists() is False
