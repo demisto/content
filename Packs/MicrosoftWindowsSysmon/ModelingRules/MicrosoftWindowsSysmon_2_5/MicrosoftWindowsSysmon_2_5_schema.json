@@ -1,0 +1,68 @@
+{
+    "microsoft_sysmon_raw": {
+      "event_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "record_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "process_pid": {
+        "type": "int",
+        "is_array": false
+      },
+      "process_thread_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "task": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "opcode": {
+        "type": "string",
+        "is_array": false
+      },
+      "channel": {
+        "type": "string",
+        "is_array": false
+      },
+      "message": {
+        "type": "string",
+        "is_array": false
+      },
+      "host_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "log_level": {
+        "type": "string",
+        "is_array": false
+      },    
+      "event_data": {
+        "type": "string",
+        "is_array": false
+      },
+      "event_action": {
+        "type": "string",
+        "is_array": false
+      },
+      "computer_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "provider_guid": {
+        "type": "string",
+        "is_array": false
+      },
+      "provider_name": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
