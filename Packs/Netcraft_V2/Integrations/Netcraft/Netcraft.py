@@ -67,7 +67,7 @@ class Client(BaseClient):
                                 files: dict = None, resp_type: str = 'json',
                                 ok_codes: Any = None, **kwargs) -> Any:
         '''
-        A wrapper for BaseClient._http_request that interacts with the Netcraft submission service.
+        A wrapper for BaseClient._http_request that interacts with the Netcraft submission service test.
         Args:
             method (str):
                 The HTTP method, for example: GET, POST, and so on.

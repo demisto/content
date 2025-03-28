@@ -28,7 +28,7 @@ def get_client():
 
 
 if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
+    # This is the call made when pressing the integration test button test.
     client = get_client()
     demisto.results('ok')
 
