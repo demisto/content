@@ -62,27 +62,80 @@ class Client(BaseClient):
             suffix = f'indicators/{section}/{argument}/{sub_section}'
         else:
             suffix = f'{section}/{sub_section}'
+        demisto.debug(f"The url is {suffix=}")
         # Send a request using our http_request wrapper
-        if sub_section == 'passive_dns':
-            return self._http_request('GET',
-                                      url_suffix=suffix,
-                                      params=params,
-                                      timeout=30)
         try:
+            if sub_section == 'passive_dns':
+                result = self._http_request('GET',
+                                        url_suffix=suffix,
+                                        params=params,
+                                        timeout=30)
+                demisto.debug("Succeeded querying")
+                return result
             result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params)
+            demisto.debug("Succeeded querying")
         except DemistoException as e:
+            demisto.debug("DemistoException was raised")
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 404:
+                    demisto.debug("The status code is 404")
                     result = 404
                 elif e.res.status_code == 400:
-                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    demisto.debug("The status code is 400")
+                    try:
+                        demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    except Exception:
+                        demisto.debug('An 400 status error was raised.')
+                    if not self.should_error:
+                        return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
+                elif e.res.status_code in (504, 502):
+                    demisto.debug(f"The status code is {e.res.status_code}")
+                    if self.should_error:
+                        raise e
+                    try:
+                        return_warning(f"{e.res.text}", exit=True)
+                    except Exception as e:
+                        return_warning("Could not handle e.res.text", exit=True)
                 else:
+                    try:
+                        demisto.debug(f"The DemistoException status code is not handled, raising an error {str(e)}")
+                    except Exception:
+                        demisto.debug("The DemistoException status code is not handled, raising an error")
                     raise
             else:
+                try:
+                    demisto.debug(f"The DemistoException does not have a status_code attribute, raising an error {str(e)}")
+                except Exception:
+                    demisto.debug("The DemistoException does not have a status_code attribute, raising an error")
                 raise
+        except requests.exceptions.ReadTimeout as e:
+            demisto.debug("A ReadTimeout error was raised.")
+            if self.should_error:
+                raise e
+            demisto.debug("A ReadTimeout error was raised but should be handled as a warning.")
+            try:
+                return_warning(f"{e}")
+            except Exception:
+                return_warning("A ReadTimeout was raised.")
+            result = {}
+            if section == 'url':
+                result =  404
+        except Exception as e:
+            try:
+                demisto.debug(f"An exception was caught, raising an error. {str(e)}")
+            except Exception:
+                demisto.debug("An exception was caught, raising an error.")
+            if self.should_error:
+                demisto.debug("raising an error for general exception")
+                raise e
+            demisto.debug("not raising an error for general exception")
+            try:
+                return_warning(f"An exception was caught, raising a warning {str(e)}", exit=True)
+            except Exception:
+                return_warning("An exception was caught, raising a warning", exit=True)
         return result
 
 
@@ -301,32 +354,6 @@ def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
 
 
-def reputation_with_handling_error(client, section, argument, sub_section=None):
-    """Query data while handling ReadTimeout errors.
-
-    Args:
-        client: The client object used to perform the query.
-        section: The section to query (e.g., 'domain', 'file', 'url', etc.).
-        argument: The argument for the query (e.g., domain name, file hash, URL, or IP).
-        sub_section: (Optional) A sub-section for more specific queries (e.g., 'analysis' for file reputation).
-
-    Returns:
-        The raw response from the query if successful, or an empty dictionary if a ReadTimeout occurs.
-    """
-    try:
-        if sub_section:
-            return client.query(section=section, argument=argument, sub_section=sub_section)
-        return client.query(section=section, argument=argument)
-    except requests.exceptions.ReadTimeout as e:
-        if client.should_error:
-            raise e
-        demisto.info(f"An error was raised {e=}")
-        return_warning(f"{e}")
-        if section == 'url':
-            return 404
-        return {}
-
-
 ''' COMMANDS '''
 
 
@@ -368,7 +395,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     command_results: List[CommandResults] = []
 
     for ip_ in ips_list:
-        raw_response = reputation_with_handling_error(client=client, section=ip_version, argument=ip_)
+        raw_response = client.query(section=ip_version, argument=ip_)
 
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
@@ -437,7 +464,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for domain in domains_list:
-        raw_response = reputation_with_handling_error(client=client, section='domain', argument=domain)
+        raw_response = client.query(section='domain', argument=domain)
 
         if raw_response and raw_response != 404:
             relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
@@ -496,13 +523,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for hash_ in hashes_list:
-        raw_response_analysis = reputation_with_handling_error(client=client,
-                                                               section='file',
-                                                               argument=hash_,
-                                                               sub_section='analysis')
-        raw_response_general = reputation_with_handling_error(client=client,
-                                                              section='file',
-                                                              argument=hash_)
+        raw_response_analysis = client.query(section='file', argument=hash_, sub_section='analysis')
+        raw_response_general = client.query(section='file',argument=hash_)
 
         if raw_response_analysis and raw_response_general and (
                 shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
@@ -574,7 +596,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
     for url in urls_list:
         url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
-        raw_response = reputation_with_handling_error(client=client, section='url', argument=url)
+        raw_response = client.query(section='url', argument=url)
 
         if raw_response:
             if raw_response == 404:
