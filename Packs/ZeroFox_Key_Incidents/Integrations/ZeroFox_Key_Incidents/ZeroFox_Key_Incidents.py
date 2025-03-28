@@ -19,6 +19,17 @@ urllib3.disable_warnings()
 
 
 @dataclass
+class KeyIncidentAttachment:
+    content: str
+    mime_type: str
+    name: str
+    created_at: str
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
 class KeyIncident:
     analysis: str
     created_at: datetime
@@ -212,6 +223,28 @@ class ZeroFox(BaseClient):
             ]
         return key_incidents
 
+    def get_key_incident_attachment(self, attachment_id: str) -> KeyIncidentAttachment:
+        """
+        :param attachment_id: The ID of the attachment to fetch
+        :return: The attachment data
+        """
+        url_suffix = f"/cti/key-incident-attachments/{attachment_id}/"
+        headers = self.get_cti_request_header()
+        response = self._http_request(
+            "GET",
+            url_suffix,
+            headers=headers,
+        )
+        mime_type, content = _parse_file_content(
+            response.get("content"))
+
+        return KeyIncidentAttachment(
+            content=content,
+            mime_type=mime_type,
+            name=response["name"],
+            created_at=response["created_at"]
+        )
+
 
 
 """ HELPERS """
@@ -219,6 +252,15 @@ class ZeroFox(BaseClient):
 
 def _extract_ki_attachment_id(url) -> str:
     return url.split("/")[-1]
+
+
+def _parse_file_content(data_uri):
+    header_data_match = re.match(r'data:(.*?);base64,(.+)', data_uri)
+    if not header_data_match:
+        raise ValueError("Invalid data URL format")
+    mime_type, data = header_data_match.groups()
+
+    return mime_type, data
 
 
 class ZeroFoxInternalException(Exception):
