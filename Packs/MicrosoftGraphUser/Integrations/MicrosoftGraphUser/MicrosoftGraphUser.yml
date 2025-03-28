@@ -425,6 +425,18 @@ script:
       description: The account entity type.
       type: String
   - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Retrieves the Authentication Methods of a user. For more information, visit: https://learn.microsoft.com/en-us/graph/api/resources/authenticationmethod?view=graph-rest-1.0).
+      Permissions: - UserAuthenticationMethod.Read. (Delegated) - 	UserAuthenticationMethod.Read.All (Application).
+    name: msgraph-user-get-authentication-methods
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+  - arguments:
     - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
       name: properties
     - description: The URL for the next page in the list.
