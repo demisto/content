@@ -1,6 +1,5 @@
-from DomainExtractAndEnrich import main
-
 from CommonServerPython import *
+from DomainExtractAndEnrich import main
 
 
 def test_domain_extract_and_enrich_output(mocker):
@@ -181,24 +180,20 @@ def test_domain_extract_and_enrich_output(mocker):
         "ServerType": "",
     }
 
-    mocker.patch.object(
-        demisto, "args", return_value={
-            "url": b"demisto.com"
-        }
-    )
+    mocker.patch.object(demisto, "args", return_value={"url": b"demisto.com"})
 
-    mocker.patch.object(demisto, "executeCommand", return_value=[
-        {
-            "Contents": "demisto.com"
-        }
-    ])
-    mocker.patch.object(demisto, "results", return_value=[
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": {"domain": "", "domaintools": domaintools_data}
-        }
-    ])
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": "demisto.com"}])
+    mocker.patch.object(
+        demisto,
+        "results",
+        return_value=[
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": {"domain": "", "domaintools": domaintools_data},
+            }
+        ],
+    )
     main()
     assert demisto.results.call_count == 1
 
