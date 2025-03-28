@@ -2,7 +2,7 @@
     "name": "F5 Silverline",
     "description": "An integration with F5 Silverline to retrieve alerts and read/update IP lists.",
     "support": "xsoar",
-    "currentVersion": "1.0.27",
+    "currentVersion": "1.0.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
