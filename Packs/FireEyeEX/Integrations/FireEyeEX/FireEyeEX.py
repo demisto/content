@@ -543,6 +543,7 @@ def fetch_incidents(
 
 
 def main() -> None:
+    raise Exception("TESTING AAABBB")
     params = demisto.params()
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
