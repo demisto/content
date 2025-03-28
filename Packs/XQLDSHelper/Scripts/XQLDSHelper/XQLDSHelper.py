@@ -672,26 +672,42 @@ class EntryBuilder:
     @staticmethod
     def __enum_fields_by_group(
         recordset: Iterable[dict[Hashable, Any]],
-        sort_by: str,
         group_by: str,
+        sort_by: str,
         asc: bool,
     ) -> Iterable[tuple[Hashable, Iterable[dict[Hashable, Any]]]]:
         """Enumerate fields with a group value by group
 
         :param recordset: The list of fields.
-        :param sort_by: The field name to sort the recordset before grouping.
         :param group_by: The name of the field to make groups.
+        :param sort_by: The field name to sort groups.
         :param asc: Set to True to sort the recordset in ascent order, Set to False for descent order.
         :return: Each group value with fields.
         """
-        return itertools.groupby(
+        groups = itertools.groupby(
             sorted(
                 recordset,
-                key=lambda v: SortableValue(v.get(sort_by)),
+                key=lambda v: SortableValue(v.get(group_by)),
                 reverse=not asc,
             ),
             key=lambda v: v.get(group_by),
         )
+        if sort_by == group_by:
+            return groups
+        else:
+            return sorted(
+                (
+                    (
+                        k, sorted(
+                            records,
+                            key=lambda v: SortableValue(v.get(sort_by)),
+                            reverse=not asc,
+                        )
+                    ) for k, records in groups
+                ),
+                key=lambda v: SortableValue(next(iter(v[1]), {}).get(sort_by)),  # type: ignore
+                reverse=not asc,
+            )
 
     @staticmethod
     def __sum_by(
@@ -964,6 +980,12 @@ class EntryBuilder:
                     assert isinstance(by, str), f"x.by must be of type str - {type(by)}"
                     self.__by = by
 
+                    sort_by = x.get('sort-by')
+                    assert isinstance(sort_by, str) or sort_by is None, (
+                        f'x.sort-by must be of type str or null - {type(sort_by)}'
+                    )
+                    self.__sort_by = sort_by or by
+
                     self.__asc = EntryBuilder.to_sort_order(x.get("order") or "asc")
                     self.__field = x.get("field")
                     assert (
@@ -975,6 +997,12 @@ class EntryBuilder:
                     self,
                 ) -> str:
                     return self.__by
+
+                @property
+                def sort_by(
+                    self,
+                ) -> str:
+                    return self.__sort_by
 
                 @property
                 def asc(
@@ -1135,7 +1163,10 @@ class EntryBuilder:
             # Build stats
             stats = []
             for x_val, x_records in EntryBuilder.__enum_fields_by_group(
-                recordset=recordset, sort_by=template.x.by, group_by=template.x.by, asc=template.x.asc
+                recordset=recordset,
+                group_by=template.x.by,
+                sort_by=template.x.sort_by,
+                asc=template.x.asc
             ):
                 groups = {k: None for k in ynames}
                 xlabel = ""
@@ -1181,8 +1212,8 @@ class EntryBuilder:
                 }
                 for x_val, x_records in EntryBuilder.__enum_fields_by_group(
                     recordset=recordset,
-                    sort_by=template.x.by,
                     group_by=template.x.by,
+                    sort_by=template.x.sort_by,
                     asc=template.x.asc,
                 )
                 for y_fields in x_records
@@ -1629,6 +1660,171 @@ class EntryBuilder:
 
 class Main:
     @staticmethod
+    def __create_context(
+        args: dict[Hashable, Any],
+        template: dict[Hashable, Any],
+    ) -> ContextData:
+        """Create the context data.
+
+        :param args: The argument parameters.
+        :param template: The template.
+        :return: The context data.
+        """
+        def __child_paths(
+            parent: str,
+            paths: list[str],
+        ) -> list[str]:
+            """Get a list of child node paths.
+
+            :param parent: The name of the parent node.
+            :param paths: A list of node paths.
+            :return: A list of relative paths under the given parent node.
+            """
+            cpaths = []
+            for path in paths:
+                pit = iter(path)
+                nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
+                if parent == ''.join(iter(lambda: next(nit), '')):  # noqa: B023
+                    cpaths.append(''.join(list(pit)))
+            return cpaths
+
+        def __filter_context(
+            context: Any,
+            filters: list[str],
+        ) -> Any:
+            """Keep specific values in the context based on the given filters.
+
+            :param context: The context node.
+            :param filters: A list of node paths to be removed from the context.
+            :return: The filtered context node.
+            """
+            if any(v == '' for v in filters):
+                return context
+            elif isinstance(context, dict):
+                return {
+                    k: v for k, cpaths
+                    in ((k, __child_paths(k, filters)) for k in context)
+                    if (v := __filter_context(context[k], cpaths)) or any(c == '' for c in cpaths)
+                } or None
+            elif isinstance(context, list):
+                return [v for v in (__filter_context(v, filters) for v in context) if v] or None
+            else:
+                return None
+
+        def __remove_null(
+            context: Any,
+            paths: list[str] | None,
+            entries_only: bool,
+        ) -> Any:
+            """Remove key-value pairs from the context where the value is None.
+
+            :param context: The context node.
+            :param paths: A list of node paths to be removed from the context where the value is None.
+            :param entries_only: Set to True to keep `None` values when they are not associated with keys,
+                                 otherwise set to False to remove them.
+            :return: The updated context node with key-value pairs removed.
+            """
+            if isinstance(context, dict):
+                if paths is None:
+                    return {k: v for k, v in context.items() if v is not None}
+                else:
+                    return {
+                        k: __remove_null(v, cpaths, entries_only)
+                        for k, v in context.items()
+                        if (
+                            not (cpaths := __child_paths(k, paths))
+                            or v is not None
+                            or all(path != '' for path in cpaths)
+                        )
+                    }
+            elif isinstance(context, list):
+                return [
+                    __remove_null(v, paths, entries_only) for v in context
+                    if entries_only or v is not None
+                ]
+            else:
+                return context
+
+        def __apply_default(
+            context: Any,
+            default: dict[str, Any],
+        ) -> Any:
+            """Create a context node with default parameters.
+
+            :param context: The context node.
+            :param default: The default parameters to apply.
+            :return: The context node with the applied default parameters.
+            """
+            if isinstance(context, dict):
+                context = dict(context)
+                for k, dv in default.items():
+                    if k in context:
+                        if isinstance(dv, dict):
+                            context[k] = __apply_default(context.get(k), dv)
+                    else:
+                        context[k] = dv
+                return context
+            elif isinstance(context, list):
+                return [__apply_default(x, default) for x in context]
+            else:
+                return context
+
+        fields = demisto.incident()
+        fields = dict(fields, **(fields.get("CustomFields") or {}))
+        fields.pop("CustomFields", None)
+
+        context = args.get("context_data")
+        if isinstance(context, str):
+            context = json.loads(context)
+
+        assert context is None or isinstance(context, dict), (
+            f"Context data must be of type str, dict, or null - {type(context)}"
+        )
+        entries = {
+            "context": dict(demisto.context(), **(context or {})),
+            "alert": fields if is_xsiam() else None,
+            "incident": None if is_xsiam() else fields,
+        }
+        for name, context in dict(entries).items():
+            filters = demisto.get(template, f"config.{name}.filters")
+            if filters is not None:
+                assert isinstance(filters, list), (
+                    f'config.{name}.filters must be of type null or list - {type(filters)}'
+                )
+                filters = [f for f in filters if isinstance(f, str)]
+                context = __filter_context(context, filters) or {}
+
+            remove_null = demisto.get(template, f"config.{name}.remove-null")
+            if remove_null is not None:
+                assert isinstance(remove_null, dict), (
+                    f'config.{name}.remove-null must be of type null or dict - {type(remove_null)}'
+                )
+                entries_only = argToBoolean(remove_null.get('entries-only', 'true'))
+                paths = remove_null.get('paths')
+                if paths is not None:
+                    assert isinstance(paths, list), (
+                        f'config.{name}.remove-null.paths must be of type null or list - {type(paths)}'
+                    )
+                    paths = [x for x in paths if isinstance(x, str)]
+
+                context = __remove_null(context, paths, entries_only) or {}
+
+            default = demisto.get(template, f"config.{name}.default")
+            if default is not None:
+                assert isinstance(default, dict), (
+                    f'config.{name}.default must be of type dict - {type(default)}'
+                )
+                context = __apply_default(context, default) or {}
+
+            entries[name] = context
+
+        return ContextData(
+            context=entries.get("context"),
+            alert=entries.get("alert"),
+            incident=entries.get("incident"),
+        )
+
+    @staticmethod
     def __get_template(
         args: dict[Hashable, Any],
     ) -> tuple[str, dict[Hashable, Any]]:
@@ -1934,25 +2130,9 @@ class Main:
         args: dict[Hashable, Any],
     ) -> None:
         self.__args = args
-
-        fields = demisto.incident()
-        fields = dict(fields, **(fields.get("CustomFields") or {}))
-        fields.pop("CustomFields", None)
-
-        context = args.get("context_data")
-        if isinstance(context, str):
-            context = json.loads(context)
-
-        assert context is None or isinstance(context, dict), f"Context data must be of type str, dict, or null - {type(context)}"
-        context = dict(demisto.context(), **(context or {}))
-
-        self.__context: ContextData = ContextData(
-            context=context,
-            alert=fields if is_xsiam() else None,
-            incident=None if is_xsiam() else fields,
-        )
         self.__template_name, self.__template = self.__get_template(args)
         self.__variable_substitution = self.__get_variable_substitution(args, self.__template)
+        self.__context: ContextData = self.__create_context(args, self.__template)
         self.__cache_type: str = args.get("cache_type") or CacheType.RECORDSET
         if self.__cache_type not in [str(x) for x in list(CacheType)]:
             raise DemistoException(f"Invalid cache_type - {self.__cache_type}")

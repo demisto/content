@@ -1474,6 +1474,942 @@
       }
     }
   },
+  "######### config.context.default - new keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${node1} ${node2}"
+            }
+          },
+          "config": {
+            "context": {
+              "default": {
+                "node2": "context.node2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "node1": "context.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "context.node1 context.node2",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.alert.default - new keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${alert.node1} ${alert.node2}"
+            }
+          },
+          "config": {
+            "alert": {
+              "default": {
+                "node2": "alert.node2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": true
+    },
+    "alert": {
+      "node1": "alert.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "alert.node1 alert.node2",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.incident.default - new keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${incident.node1} ${incident.node2}"
+            }
+          },
+          "config": {
+            "incident": {
+              "default": {
+                "node2": "incident.node2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": false
+    },
+    "incident": {
+      "node1": "incident.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "incident.node1 incident.node2",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.default - existing keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${node1}"
+            }
+          },
+          "config": {
+            "context": {
+              "default": {
+                "node1": "xxx"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "node1": "context.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "context.node1",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.alert.default - existing keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${alert.node1}"
+            }
+          },
+          "config": {
+            "alert": {
+              "default": {
+                "node1": "xxx"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": true
+    },
+    "alert": {
+      "node1": "alert.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "alert.node1",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.incident.default - existing keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${incident.node1}"
+            }
+          },
+          "config": {
+            "incident": {
+              "default": {
+                "node1": "xxx"
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": false
+    },
+    "incident": {
+      "node1": "incident.node1"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "incident.node1",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.default - merge sub keys",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${node1.node2=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "context": {
+              "default": {
+                "node1": {
+                  "node2": "test2"
+                }
+              }
+            }
+          }
+        }
+      },
+      "context_data": {
+        "node1": [
+          {
+            "node2": "test1"
+          },
+          {
+          }
+        ]
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "dummy"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "[\"test1\", \"test2\"]",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.filters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${.=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "context": {
+              "filters": [
+                "node1",
+                "node2.sub2",
+                "node\\.3.sub2"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "node1": "context.node1",
+      "node2": [
+        {
+          "sub1": "context.node2.sub1"
+        },
+        {
+          "sub2": "context.node2.sub2"
+        }
+      ],
+      "node.3": [
+        {
+          "sub1": "context.node.3.sub1"
+        },
+        {
+          "sub2": "context.node.3.sub2"
+        }
+      ]
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node.3\": [{\"sub2\": \"context.node.3.sub2\"}], \"node1\": \"context.node1\", \"node2\": [{\"sub2\": \"context.node2.sub2\"}]}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.filters - empty filters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${text1}"
+            }
+          },
+          "config": {
+            "context": {
+              "filters": []
+            }
+          }
+        }
+      },
+      "context_data": {
+        "text1": "text1 messsage"
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "dummy"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "${text1}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.filters - overwritten by config.context.default",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${text1}"
+            }
+          },
+          "config": {
+            "context": {
+              "filters": [],
+              "default": {
+                "text1": "text1 message"
+              }
+            }
+          }
+        }
+      },
+      "context_data": {
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "text": "dummy"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "text1 message",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.alert.filters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${alert.node1} ${alert.node2.sub1.[0]} ${alert.node2.sub2.[0]}"
+            }
+          },
+          "config": {
+            "alert": {
+              "filters": [
+                "node1",
+                "node2.sub2"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": true
+    },
+    "alert": {
+      "node1": "alert.node1",
+      "node2": [
+        {
+          "sub1": "alert.node2.sub1"
+        },
+        {
+          "sub2": "alert.node2.sub2"
+        }
+      ]
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "alert.node1 ${alert.node2.sub1.[0]} alert.node2.sub2",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.incident.filters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${incident.node1} ${incident.node2.sub1.[0]} ${incident.node2.sub2.[0]}"
+            }
+          },
+          "config": {
+            "incident": {
+              "filters": [
+                "node1",
+                "node2.sub2"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": false
+    },
+    "incident": {
+      "node1": "incident.node1",
+      "node2": [
+        {
+          "sub1": "incident.node2.sub1"
+        },
+        {
+          "sub2": "incident.node2.sub2"
+        }
+      ]
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "incident.node1 ${incident.node2.sub1.[0]} incident.node2.sub2",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.remove-null - entries-only (true - default)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${.=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "context": {
+              "remove-null": {
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, null, 2]}}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.context.remove-null - entries-only (false)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${.=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "context": {
+              "remove-null": {
+                "entries-only": false,
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "context": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, 2]}}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.alert.remove-null - entries-only (true - default)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${alert=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "alert": {
+              "filters": [
+                "node1"
+              ],
+              "remove-null": {
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": true
+    },
+    "alert": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, null, 2]}}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.alert.remove-null - entries-only (false)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${alert=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "alert": {
+              "filters": [
+                "node1"
+              ],
+              "remove-null": {
+                "entries-only": false,
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": true
+    },
+    "alert": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, 2]}}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.incident.remove-null - entries-only (true - default)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${incident=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "incident": {
+              "filters": [
+                "node1"
+              ],
+              "remove-null": {
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": false
+    },
+    "incident": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, null, 2]}}",
+        "Contents": null
+      }
+    }
+  },
+  "######### config.incident.remove-null - entries-only (false)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "${incident=>JSON.stringify(val)}"
+            }
+          },
+          "config": {
+            "incident": {
+              "filters": [
+                "node1"
+              ],
+              "remove-null": {
+                "entries-only": false,
+                "paths": [
+                  "node1.sub1",
+                  "node1.sub2",
+                  "node1.sub3",
+                  "node1.sub4"
+                ]
+              },
+              "default": {
+                "node1": {
+                  "sub1": "default node1.sub1",
+                  "sub2": "default node1.sub2",
+                  "sub3": "default node1.sub3"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "config": {
+      "is_xsiam": false
+    },
+    "incident": {
+      "node1": {
+        "sub1": null,
+        "sub2": {},
+        "sub3": "sub3",
+        "sub4": [1, null, 2]
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "{\"node1\": {\"sub1\": \"default node1.sub1\", \"sub2\": {}, \"sub3\": \"sub3\", \"sub4\": [1, 2]}}",
+        "Contents": null
+      }
+    }
+  },
   "######### xql.conditions: vars=false (str)",
   {
     "args": {
