@@ -2,7 +2,7 @@
     "name": "Remedy AR",
     "description": "BMC Remedy AR System is a professional development environment that leverages the recommendations of the IT Infrastructure Library (ITIL) and provides a foundation for Business Service Management (BSM) solutions. For incident management (i.e. create, fetch, update), please refer to Remedy On-Demand integration.",
     "support": "xsoar",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
