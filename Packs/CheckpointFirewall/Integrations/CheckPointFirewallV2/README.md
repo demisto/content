@@ -1571,6 +1571,200 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 >| est_access_rule | e5bc5918-7155-493e-89ce-5562586d3acc | access-rule |
 
 
+### checkpoint-access-rule-show
+***
+Shows the complete Access Rule on a given layer. An Access Rule may be within a section, or independent of a section.
+
+
+#### Base Command
+
+`checkpoint-access-rule-show`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| identifier        | object name or uid | Required | 
+| layer             | Layer that the rule belongs to identified by the name or UID. | Required | 
+| limit             | The maximal number of returned results. | Optional | 
+| offset            | Number of the results to initially skip. | Optional | 
+| session_id        | Execute command with a specific session ID | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.AccessRule.name | String | Object name. | 
+| CheckPoint.AccessRule.uid | String | Object UID. | 
+| CheckPoint.AccessRule.type | String | Object type. | 
+| CheckPoint.AccessRule.ipv4-address | String | IPv4 address of the specified object. | 
+| CheckPoint.AccessRule.ipv6-address | String | IPv6 address of the specified object. | 
+| CheckPoint.AccessRule.domain-name | String | Domain name. | 
+| CheckPoint.AccessRule.domain-uid | String | Domain UID. | 
+| CheckPoint.AccessRule.creator | String | The creator of the object. | 
+| CheckPoint.AccessRule.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.AccessRule.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.AccessRule.groups | Unknown | Collection of group identifiers. | 
+
+#### Command Example
+```!checkpoint-access-rule-show identifier=7867e584-0e68-42b4-ba18-2dd16cdbd436 layer=Network limit=1```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "AccessRule": [
+            {
+                "uid": "48604d56-b4ae-45e4-8757-29510f693a33",
+                "name": "Rule 1",
+                "type": "access-rule",
+                "domain": {
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+                    "name": "SMC User",
+                    "domain-type": "domain"
+                },
+                "enabled": "True",
+                "comments": "",
+                "meta-info": {
+                    "lock": "unlocked",
+                    "validation-state": "ok",
+                    "last-modify-time": {
+                        "posix": 1527405615018,
+                        "iso-8601": "2018-05-27T10:20+0300"
+                    },
+                    "last-modifier": "aa",
+                    "creation-time": {
+                        "posix": 1527405614880,
+                        "iso-8601": "2018-05-27T10:20+0300"
+                    },
+                    "creator": "aa"
+                },
+                "install-on": [{
+                    "uid": "6c488338-8eec-4103-ad21-cd461ac2c476",
+                    "name": "Policy Targets",
+                    "type": "Global",
+                    "domain": {
+                        "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+                        "name": "Check Point Data",
+                        "domain-type": "data domain"
+                    }
+                }],
+                "source-negate": "False",
+                "source-ranges": {
+                    "ipv4": [{
+                        "start": "192.168.1.11",
+                        "end": "192.168.1.11"
+                    }, {
+                        "start": "192.168.1.213",
+                        "end": "192.168.1.213"
+                    }],
+                    "ipv6": [],
+                    "others": [],
+                    "excluded-others": []
+                },
+                "destination-negate": "False",
+                "destination-ranges": {
+                    "ipv4": [{
+                        "start": "192.168.200.131",
+                        "end": "192.168.200.131"
+                    }],
+                    "ipv6": [],
+                    "others": [],
+                    "excluded-others": []
+                },
+                "service-negate": "False",
+                "service-ranges": {
+                    "tcp": [{
+                        "start": "443",
+                        "end": "443"
+                    }],
+                    "udp": [],
+                    "others": [],
+                    "excluded-others": []
+                },
+                "vpn": [{
+                    "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30",
+                    "name": "Any",
+                    "type": "CpmiAnyObject",
+                    "domain": {
+                        "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+                        "name": "Check Point Data",
+                        "domain-type": "data domain"
+                    }
+                }],
+                "action": {
+                    "uid": "6c488338-8eec-4103-ad21-cd461ac2c472",
+                    "name": "Accept",
+                    "type": "RulebaseAction",
+                    "domain": {
+                        "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+                        "name": "Check Point Data",
+                        "domain-type": "data domain"
+                    }
+                },
+                "action-settings": {
+                    "enable-identity-captive-portal": "False"
+                },
+                "content": [{
+                    "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30",
+                    "name": "Any",
+                    "type": "CpmiAnyObject",
+                    "domain": {
+                        "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+                        "name": "Check Point Data",
+                        "domain-type": "data domain"
+                    }
+                }],
+                "content-negate": "False",
+                "content-direction": "any",
+                "time": [{
+                    "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30",
+                    "name": "Any",
+                    "type": "CpmiAnyObject",
+                    "domain": {
+                        "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+                        "name": "Check Point Data",
+                        "domain-type": "data domain"
+                    }
+                }],
+                "custom-fields": {
+                    "field-1": "",
+                    "field-2": "",
+                    "field-3": ""
+                },
+                "track": {
+                    "type": {
+                        "uid": "598ead32-aa42-4615-90ed-f51a5928d41d",
+                        "name": "Log",
+                        "type": "Track",
+                        "domain": {
+                            "uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef",
+                            "name": "Check Point Data",
+                            "domain-type": "data domain"
+                        }
+                    },
+                    "per-session": "False",
+                    "per-connection": "True",
+                    "accounting": "False",
+                    "alert": "none"
+                },
+                "layer": "7f7308f0-7540-4631-832c-503de7b27c3d"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for access rule 48604d56-b4ae-45e4-8757-29510f693a33 in layer 7f7308f0-7540-4631-832c-503de7b27c3d:
+| action                                                                                                                                                                                                 | action-settings                       | content                                                                                                                                                                                                      | content-direction | content-negate | custom-fields                      | destination-negate | destination-ranges                                                                                     | domain                                                                             | enabled | install-on                                                                                                                                                                                                       | layer                                | meta-info                                                                                                                                                                                                                                     | name   | service-negate | service-ranges                                                               | source-negate | source-ranges                                                                                                                                           | time                                                                                                                                                                                                         | track                                                                                                                                                                                                                                                                                        | type        | uid                                  | vpn                                                                                                                                                                                                          |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|----------------|------------------------------------|--------------------|--------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------------|------------------------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| uid: 6c488338-8eec-4103-ad21-cd461ac2c472<br>name: Accept<br>type: RulebaseAction<br>domain: {"uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef", "name": "Check Point Data", "domain-type": "data domain"} | enable-identity-captive-portal: false | {'uid': '97aeb369-9aea-11d5-bd16-0090272ccb30', 'name': 'Any', 'type': 'CpmiAnyObject', 'domain': {'uid': 'a0bbbc99-adef-4ef8-bb6d-defdefdefdef', 'name': 'Check Point Data', 'domain-type': 'data domain'}} | any               | false          | field-1: <br>field-2: <br>field-3: | false              | ipv4: {'start': '192.168.200.131', 'end': '192.168.200.131'}<br>ipv6: <br>others: <br>excluded-others: | uid: 41e821a0-3720-11e3-aa6e-0800200c9fde<br>name: SMC User<br>domain-type: domain | true    | {'uid': '6c488338-8eec-4103-ad21-cd461ac2c476', 'name': 'Policy Targets', 'type': 'Global', 'domain': {'uid': 'a0bbbc99-adef-4ef8-bb6d-defdefdefdef', 'name': 'Check Point Data', 'domain-type': 'data domain'}} | 7f7308f0-7540-4631-832c-503de7b27c3d | lock: unlocked<br>validation-state: ok<br>last-modify-time: {"posix": 1527405615018, "iso-8601": "2018-05-27T10:20+0300"}<br>last-modifier: aa<br>creation-time: {"posix": 1527405614880, "iso-8601": "2018-05-27T10:20+0300"}<br>creator: aa | Rule 1 | false          | tcp: {'start': '443', 'end': '443'}<br>udp: <br>others: <br>excluded-others: | false         | ipv4: {'start': '192.168.1.11', 'end': '192.168.1.11'},<br>{'start': '192.168.1.213', 'end': '192.168.1.213'}<br>ipv6: <br>others: <br>excluded-others: | {'uid': '97aeb369-9aea-11d5-bd16-0090272ccb30', 'name': 'Any', 'type': 'CpmiAnyObject', 'domain': {'uid': 'a0bbbc99-adef-4ef8-bb6d-defdefdefdef', 'name': 'Check Point Data', 'domain-type': 'data domain'}} | type: {"uid": "598ead32-aa42-4615-90ed-f51a5928d41d", "name": "Log", "type": "Track", "domain": {"uid": "a0bbbc99-adef-4ef8-bb6d-defdefdefdef", "name": "Check Point Data", "domain-type": "data domain"}}<br>per-session: false<br>per-connection: true<br>accounting: false<br>alert: none | access-rule | 48604d56-b4ae-45e4-8757-29510f693a33 | {'uid': '97aeb369-9aea-11d5-bd16-0090272ccb30', 'name': 'Any', 'type': 'CpmiAnyObject', 'domain': {'uid': 'a0bbbc99-adef-4ef8-bb6d-defdefdefdef', 'name': 'Check Point Data', 'domain-type': 'data domain'}} |
+
+
+
+
 ### checkpoint-access-rule-add
 ***
 Create new access rule
