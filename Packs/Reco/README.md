@@ -38,4 +38,4 @@ The Reco and Palo Alto Networks Cortex XSOAR integration automates SaaS threat d
 
 _For more information: [www.reco.ai](https://www.reco.ai)_ 
 
-[![Reco Overview](doc_files/Reco_image.png)](https://reco.ai)
+![Reco Overview](doc_files/Reco_image.png)
