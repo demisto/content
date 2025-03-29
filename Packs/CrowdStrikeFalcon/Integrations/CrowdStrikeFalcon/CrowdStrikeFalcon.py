@@ -31,6 +31,7 @@ OFP_DETECTION = "OFP detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
+MEMBER_CID = demisto.args().get('member_cid') or ''
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS['url'].removesuffix('/')
 # Should we use SSL
@@ -1450,22 +1451,22 @@ def get_token(new_token=False):
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
-        passed_mins = get_passed_mins(now, ctx.get('time'))
+        passed_mins = get_passed_mins(now, ctx.get(f'time_{MEMBER_CID}'))
         demisto.debug(f'{passed_mins=}')
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
             demisto.debug('token expired')
             auth_token = get_token_request()
-            demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+            demisto.setIntegrationContext({'auth_token_{MEMBER_CID}': auth_token, f'time_{MEMBER_CID}': date_to_timestamp(now) / 1000})
         else:
             # token hasn't expired
             demisto.debug("token hasn't expired")
-            auth_token = ctx.get('auth_token')
+            auth_token = ctx.get(f'auth_token_{MEMBER_CID}')
     else:
         # there is no token
         demisto.debug('there is no token')
         auth_token = get_token_request()
-        demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+        demisto.setIntegrationContext({f'auth_token_{MEMBER_CID}': auth_token, f'time_{MEMBER_CID}': date_to_timestamp(now) / 1000})
     return auth_token
 
 
@@ -1480,6 +1481,8 @@ def get_token_request():
         'client_id': CLIENT_ID,
         'client_secret': SECRET
     }
+    if MEMBER_CID:
+        body['member_cid'] = MEMBER_CID
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }

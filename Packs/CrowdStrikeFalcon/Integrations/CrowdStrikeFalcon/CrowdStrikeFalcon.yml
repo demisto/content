@@ -300,6 +300,8 @@ script:
       name: site_name
     - description: The property to sort by (e.g., status.desc or hostname.asc).
       name: sort
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Searches for a device that matches the query.
     name: cs-falcon-search-device
     outputs:
@@ -364,6 +366,8 @@ script:
     - description: The ID of the behavior. The ID of the behavior can be retrieved by running the cs-falcon-search-detection or cs-falcon-get-detections-for-incident command.
       name: behavior_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Searches for and fetches the behavior that matches the query. Deprecated - No replacement available.
     name: cs-falcon-get-behavior
     outputs:
@@ -419,6 +423,8 @@ script:
       predefined:
       - Yes
       - No
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
     name: cs-falcon-search-detection
     outputs:
@@ -502,6 +508,8 @@ script:
       name: username
     - description: The tag to add to the detection, supported only for API V3.
       name: tag
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note that IDP detections are not supported.
     name: cs-falcon-resolve-detection
   - arguments:
@@ -509,6 +517,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
   - arguments:
@@ -516,6 +526,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
   - arguments:
@@ -552,6 +564,8 @@ script:
       - single
     - description: A batch ID to execute the command on.
       name: batch_id
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Sends commands to hosts.
     name: cs-falcon-run-command
     outputs:
@@ -600,24 +614,32 @@ script:
     - description: The content of the PowerShell script.
       name: content
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Uploads a script to Falcon CrowdStrike.
     name: cs-falcon-upload-script
   - arguments:
     - description: The file entry ID to upload.
       name: entry_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command).
     name: cs-falcon-upload-file
   - arguments:
     - description: The ID of the file to delete. The ID of the file can be retrieved by running the 'cs-falcon-list-files' command.
       name: file_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deletes a file based on the provided ID. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
     - description: A comma-separated list of file IDs to get. The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.
       name: file_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns files based on the provided IDs. These files are used for the RTR 'put' command.
     name: cs-falcon-get-file
     outputs:
@@ -663,7 +685,9 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-  - arguments: []
+  - arguments:
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns a list of put-file IDs that are available for the user in the 'put' command. Due to an API limitation, the maximum number of files returned is 100.
     name: cs-falcon-list-files
     outputs:
@@ -713,6 +737,8 @@ script:
     - description: A comma-separated list of script IDs to return. The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.
       name: script_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns custom scripts based on the provided ID. Used for the RTR 'runscript' command.
     name: cs-falcon-get-script
     outputs:
@@ -759,9 +785,13 @@ script:
     - description: The script ID to delete. The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.
       name: script_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deletes a custom-script based on the provided ID. Can delete only one script at a time.
     name: cs-falcon-delete-script
-  - arguments: []
+  - arguments:
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns a list of custom script IDs that are available for the user in the 'runscript' command.
     name: cs-falcon-list-scripts
     outputs:
@@ -818,6 +848,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -854,6 +886,8 @@ script:
       name: timeout
     - description: 'The amount of time to wait for the request before it times out. In duration syntax. For example, 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes.'
       name: timeout_duration
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Batch executes 'get' command across hosts to retrieve files.
     name: cs-falcon-run-get-command
     outputs:
@@ -890,6 +924,8 @@ script:
       name: timeout
     - description: 'The amount of time to wait for the request before it times out. In duration syntax. For example, 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes.'
       name: timeout_duration
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieves the status of the specified batch 'get' command.
     name: cs-falcon-status-get-command
     outputs:
@@ -940,6 +976,8 @@ script:
       - read
       - write
       - admin
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the status of a command executed on a host.
     name: cs-falcon-status-command
     outputs:
@@ -973,6 +1011,8 @@ script:
       required: true
     - description: The filename to use for the archive name and the file within the archive.
       name: filename
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the RTR extracted file contents for the specified session and SHA256 hash.
     name: cs-falcon-get-extracted-file
   - arguments:
@@ -981,6 +1021,8 @@ script:
       required: true
     - description: The ID of the existing session with the agent.
       name: session_id
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets a list of files for the specified RTR session on a host.
     name: cs-falcon-list-host-files
     outputs:
@@ -1027,6 +1069,8 @@ script:
     - description: The ID of the host to extend the session for.
       name: host_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Refresh a session timeout on a single host.
     name: cs-falcon-refresh-session
   - arguments:
@@ -1068,6 +1112,8 @@ script:
     - description: The offset to begin the list from. For example, start from the 10th record and return the list.
       name: offset
     deprecated: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deprecated. Use the cs-falcon-search-custom-iocs command instead.
     name: cs-falcon-search-iocs
     outputs:
@@ -1123,6 +1169,8 @@ script:
       name: value
       required: true
     deprecated: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deprecated. Use the cs-falcon-get-custom-ioc command instead.
     name: cs-falcon-get-ioc
     outputs:
@@ -1195,6 +1243,8 @@ script:
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
     deprecated: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deprecated. Use the cs-falcon-upload-custom-ioc command instead.
     name: cs-falcon-upload-ioc
     outputs:
@@ -1268,6 +1318,8 @@ script:
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
     deprecated: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deprecated. Use the cs-falcon-update-custom-ioc command instead.
     name: cs-falcon-update-ioc
     outputs:
@@ -1323,6 +1375,8 @@ script:
       name: value
       required: true
     deprecated: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deprecated. Use the cs-falcon-delete-custom-ioc command instead.
     name: cs-falcon-delete-ioc
   - arguments:
@@ -1366,6 +1420,8 @@ script:
       name: offset
     - description: A pagination token used with the limit parameter to manage pagination of results. Matching the 'after' parameter in the API. Use instead of offset.
       name: next_page_token
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns a list of your uploaded IOCs that match the search criteria.
     name: cs-falcon-search-custom-iocs
     outputs:
@@ -1422,6 +1478,8 @@ script:
       name: value
     - description: The ID of the IOC to get. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command. Either ioc_id or ioc_type and value must be provided.
       name: ioc_id
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the full definition of one or more indicators that you are watching.
     name: cs-falcon-get-custom-ioc
     outputs:
@@ -1526,6 +1584,8 @@ script:
       name: tags
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1611,6 +1671,8 @@ script:
       name: description
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1658,6 +1720,8 @@ script:
     - description: The ID of the IOC to delete. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deletes a monitored indicator.
     name: cs-falcon-delete-custom-ioc
   - arguments:
@@ -1675,6 +1739,8 @@ script:
     - description: The string representation of the indicator.
       name: value
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: The number of hosts that observed the provided IOC.
     name: cs-falcon-device-count-ioc
     outputs:
@@ -1708,6 +1774,8 @@ script:
     - description: The device ID to check against.
       name: device_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Get processes associated with a given IOC.
     name: cs-falcon-processes-ran-on
     outputs:
@@ -1732,6 +1800,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieves the details of a process, according to the process ID that is running or that previously ran.
     name: cs-falcon-process-details
     outputs:
@@ -1778,6 +1848,8 @@ script:
       name: value
       required: true
     deprecated: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns a list of device IDs an indicator ran on.
     name: cs-device-ran-on
     outputs:
@@ -1808,6 +1880,8 @@ script:
     - description: The string representation of the indicator.
       name: value
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns a list of device IDs an indicator ran on.
     name: cs-falcon-device-ran-on
     outputs:
@@ -1820,6 +1894,8 @@ script:
     - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
       isArray: true
       name: ids
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Lists detection summaries.
     name: cs-falcon-list-detection-summaries
     outputs:
@@ -2078,6 +2154,8 @@ script:
     - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
       isArray: true
       name: ids
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Lists incident summaries.
     name: cs-falcon-list-incident-summaries
     outputs:
@@ -2198,11 +2276,13 @@ script:
   - arguments:
     - description: The endpoint ID.
       name: id
-    - default: true
-      description: The endpoint IP address.
+    - description: The endpoint IP address.
       name: ip
-    - description: The endpoint hostname.
+    - default: true
+      description: The endpoint hostname.
       name: hostname
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns information about an endpoint. Does not support regex.
     name: endpoint
     outputs:
@@ -2248,6 +2328,8 @@ script:
       name: description
     - description: The assignment rule.
       name: assignment_rule
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Create a host group.
     name: cs-falcon-create-host-group
     outputs:
@@ -2285,6 +2367,8 @@ script:
       description: Maximum number of results on a page.
       name: limit
       type: string
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: List the available host groups.
     name: cs-falcon-list-host-groups
     outputs:
@@ -2317,6 +2401,8 @@ script:
       isArray: true
       name: host_group_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deletes the requested host groups.
     name: cs-falcon-delete-host-groups
   - arguments:
@@ -2329,6 +2415,8 @@ script:
       name: description
     - description: The assignment rule.
       name: assignment_rule
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Updates a host group.
     name: cs-falcon-update-host-group
     outputs:
@@ -2369,6 +2457,8 @@ script:
       name: limit
     - description: The property to sort by (e.g., status.desc or hostname.asc).
       name: sort
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the list of host group members.
     name: cs-falcon-list-host-group-members
     outputs:
@@ -2407,6 +2497,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Add host group members.
     name: cs-falcon-add-host-group-members
     outputs:
@@ -2442,6 +2534,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Remove host group members.
     name: cs-falcon-remove-host-group-members
     outputs:
@@ -2492,6 +2586,8 @@ script:
       name: remove_tag
     - description: Add a comment to the incident. Comment is limited to 1024 characters.
       name: add_comment
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Resolve and update incidents using the specified settings.
     name: cs-falcon-resolve-incident
   - arguments:
@@ -2503,6 +2599,8 @@ script:
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
       defaultValue: "180"
       type: unknown
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2561,6 +2659,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2594,6 +2694,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2612,6 +2714,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2627,6 +2731,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2647,6 +2753,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2659,6 +2767,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2686,6 +2796,8 @@ script:
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     - name: polling_timeout
       description: Timeout for polling. Default is 600 seconds.
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2734,6 +2846,8 @@ script:
       description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
       name: incident_id
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the detections for a specific incident.
     name: cs-falcon-get-detections-for-incident
     outputs:
@@ -2746,7 +2860,9 @@ script:
     - contextPath: CrowdStrike.IncidentDetection.detection_ids
       description: A list of detection IDs connected to the incident.
       type: String
-  - arguments: []
+  - arguments:
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported in Cortex XSOAR only.
     name: get-mapping-fields
   - arguments:
@@ -2756,14 +2872,20 @@ script:
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident or detection is only updated if it was modified after the last update time.
       name: lastUpdate
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
     name: get-remote-data
   - arguments:
     - description: Date string representing the local time in UTC timestamp in seconds. The incident or detection is only returned if it was modified after the last update time.
       name: lastUpdate
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
     name: get-modified-remote-data
-  - arguments: []
+  - arguments:
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
     name: update-remote-system
   - arguments:
@@ -2826,6 +2948,8 @@ script:
       defaultValue: '50'
       type: String
       name: limit
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -2979,6 +3103,8 @@ script:
       name: cve
       isArray: true
       default: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -3002,6 +3128,8 @@ script:
       name: cve_ids
       isArray: true
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve vulnerability details for a specific ID and host. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-list-host-by-vulnerability
     outputs:
@@ -3093,6 +3221,8 @@ script:
     - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
       name: groups
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Create an ML exclusion.
     name: cs-falcon-create-ml-exclusion
     outputs:
@@ -3164,6 +3294,8 @@ script:
     - description: A comma-separated list of group ID(s) impacted by the exclusion.
       name: groups
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Updates an ML exclusion. At least one argument is required in addition to the id argument.
     name: cs-falcon-update-ml-exclusion
     outputs:
@@ -3229,6 +3361,8 @@ script:
       name: ids
       required: true
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
@@ -3259,6 +3393,8 @@ script:
       - modified_by.desc
       - value.asc
       - value.desc
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
     name: cs-falcon-search-ml-exclusion
     outputs:
@@ -3344,6 +3480,8 @@ script:
       name: groups
       required: true
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Create an IOA exclusion.
     name: cs-falcon-create-ioa-exclusion
     outputs:
@@ -3436,6 +3574,8 @@ script:
     - description: A comma-separated list of group ID(s) impacted by the exclusion.
       name: groups
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Updates an IOA exclusion. At least one argument is required in addition to the id argument.
     name: cs-falcon-update-ioa-exclusion
     outputs:
@@ -3510,6 +3650,8 @@ script:
       name: ids
       required: true
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
@@ -3524,6 +3666,8 @@ script:
       name: limit
     - description: The offset of how many exclusions to skip. Default is 0. Applies only if the ids argument is not supplied.
       name: offset
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Get a list of IOA exclusions by specifying their IDs or a filter.
     name: cs-falcon-search-ioa-exclusion
     outputs:
@@ -3617,6 +3761,8 @@ script:
       name: limit
     - description: Starting index of the overall result set from which to return IDs. Default 0.
       name: offset
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Get quarantine file metadata by specified IDs or filter.
     name: cs-falcon-list-quarantined-file
     outputs:
@@ -3690,6 +3836,8 @@ script:
     - description: A comma-separated list of quarantined file usernames to update.
       name: username
       isArray: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Apply action to quarantined files by file IDs or filter.
     name: cs-falcon-apply-quarantine-file-action
   - arguments:
@@ -3700,6 +3848,8 @@ script:
     - description: A comment added to the CrowdStrike incident.
       name: comment
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Deprecated. Use the 'cs-falcon-resolve-incident' command using the 'add_comment' argument instead.
     name: cs-falcon-update-incident-comment
     deprecated: true
@@ -3746,6 +3896,8 @@ script:
       hidden: true
       description: Whether to hide the polling message and only print the final status at the end (automatically filled by polling. Can be used for testing purposes).
       defaultValue: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
     polling: true
@@ -3885,6 +4037,8 @@ script:
       name: offset
     - description: Maximum number of resources to return.
       name: limit
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve ODS scheduled scan details.
     name: cs-falcon-ods-query-scheduled-scan
     outputs:
@@ -3989,6 +4143,8 @@ script:
       name: offset
     - description: Maximum number of resources to return.
       name: limit
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve ODS scan host details.
     name: cs-falcon-ods-query-scan-host
     outputs:
@@ -4062,6 +4218,8 @@ script:
       name: offset
     - description: Maximum number of resources to return.
       name: limit
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Retrieve ODS malicious file details.
     name: cs-falcon-ods-query-malicious-files
     outputs:
@@ -4153,6 +4311,8 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
       defaultValue: '600'
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
@@ -4326,6 +4486,8 @@ script:
       - Every other week
       - Every four weeks
       - Monthly
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
@@ -4416,6 +4578,8 @@ script:
       name: ids
     - description: Valid CS-Falcon-FQL filter to delete scans by.
       name: filter
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
@@ -4483,6 +4647,8 @@ script:
       name: page
     - description: The maximum number of identity entities to list.
       name: limit
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
@@ -4521,6 +4687,8 @@ script:
       name: policy_ids
       isArray: true
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Given a CSV list of policy IDs, returns detailed policy information.
     name: cs-falcon-cspm-list-policy-details
     outputs:
@@ -4639,6 +4807,8 @@ script:
     - description: The maximum number of entities to list.
       name: limit
       defaultValue: 50
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Returns information about current policy settings.
     name: cs-falcon-cspm-list-service-policy-settings
     outputs:
@@ -4771,6 +4941,8 @@ script:
       - 'false'
       - 'true'
       auto: PREDEFINED
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Updates a policy setting. Can be used to override policy severity or to disable a policy entirely.
     name: cs-falcon-cspm-update-policy_settings
   - arguments:
@@ -4808,6 +4980,8 @@ script:
       - 'false'
       - 'true'
       auto: PREDEFINED
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Perform actions on identity detection alerts.
     name: cs-falcon-resolve-identity-detection
   - arguments:
@@ -4845,6 +5019,8 @@ script:
       - 'false'
       - 'true'
       auto: PREDEFINED
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Perform actions on mobile detection alerts.
     name: cs-falcon-resolve-mobile-detection
   - arguments:
@@ -4859,6 +5035,8 @@ script:
     - description: The maximum number of records to return.
       name: limit
       defaultValue: 50
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: List users.
     name: cs-falcon-list-users
     outputs:
@@ -4888,6 +5066,8 @@ script:
       name: behavior_ids
       isArray: true
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Get incident behavior information.
     name: cs-falcon-get-incident-behavior
     outputs:
@@ -5025,6 +5205,8 @@ script:
       name: rule_ids
       isArray: true
       required: true
+    - name: member_cid
+      description: Child Client ID, for MSSP with master and child tenants.
     description: Get IOA Rules.
     name: cs-falcon-get-ioarules
     outputs:
