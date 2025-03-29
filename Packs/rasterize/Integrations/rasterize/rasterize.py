@@ -239,7 +239,7 @@ class PychromeEventHandler:
             frame_url: str = self.tab.Page.getFrameTree()["frameTree"]["frame"]["url"]
             demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
 
-            if frame_url.startswith(CHROME_ERROR_URL):
+            if frame_url.lower().startswith(CHROME_ERROR_URL):
                 demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
                 self.retry_loading()
             else:
@@ -248,28 +248,28 @@ class PychromeEventHandler:
 
     def retry_loading(self):
         """
-        Attempts to reload the page multiple times if a chrome-error is encountered.
+        Attempts to reload the page multiple times.
         """
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
-            demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}")
+            demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
             try:
                 if self.navigation_timeout > 0:
                     self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
                 else:
                     self.tab.Page.navigate(url=self.path)
             except Exception as e:
-                demisto.debug(f"Error during navigation attempt {retry_count}: {e}")
+                demisto.debug(f"Error during navigation attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
 
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
 
             frame_url: str = self.tab.Page.getFrameTree()["frameTree"]["frame"]["url"]
 
-            if not frame_url.startswith(CHROME_ERROR_URL):
+            if not frame_url.lower().startswith(CHROME_ERROR_URL):
                 demisto.debug("Retry successful.")
                 self.tab_ready_event.set()
                 break
         else:
-            demisto.debug("Max retries reached, could not load the page.")
+            demisto.debug(f"Max retries (DEFAULT_RETRIES_COUNT}) reached, could not load the page.")
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
@@ -401,7 +401,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ""):
 
 def terminate_port_chrome_instances_file(chrome_port: str = ""):
     """
-    he function will increase the counter of the port "chrome_port"
+    The function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
