@@ -236,7 +236,7 @@ class PychromeEventHandler:
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}")
         if self.start_frame == frameId:
-            frame_url: str = self.tab.Page.getFrameTree()["frameTree"]["frame"]["url"]
+            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
             demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
 
             if frame_url.lower().startswith(CHROME_ERROR_URL):
@@ -260,16 +260,16 @@ class PychromeEventHandler:
             except Exception as e:
                 demisto.debug(f"Error during navigation attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
 
-            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # Wait for the page to load
+            safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
-            frame_url: str = self.tab.Page.getFrameTree()["frameTree"]["frame"]["url"]
+            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
 
             if not frame_url.lower().startswith(CHROME_ERROR_URL):
-                demisto.debug("Retry successful.")
+                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
                 self.tab_ready_event.set()
                 break
         else:
-            demisto.debug(f"Max retries (DEFAULT_RETRIES_COUNT}) reached, could not load the page.")
+            demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
