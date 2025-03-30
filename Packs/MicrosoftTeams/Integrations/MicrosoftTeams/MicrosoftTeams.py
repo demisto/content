@@ -71,8 +71,7 @@ MISS_CONFIGURATION_ERROR_MESSAGE = (
 
 CLIENT_CREDENTIALS_FLOW = "Client Credentials"
 AUTHORIZATION_CODE_FLOW = "Authorization Code"
-AUTH_TYPE = (PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW) if demisto.command() != 'microsoft-teams-ring-user'
-             else CLIENT_CREDENTIALS_FLOW)
+AUTH_TYPE = PARAMS.get("auth_type", CLIENT_CREDENTIALS_FLOW)
 
 AUTH_CODE: str = PARAMS.get("auth_code_creds", {}).get("password")
 REDIRECT_URI: str = PARAMS.get("redirect_uri", "")
@@ -801,29 +800,30 @@ def get_refresh_token_from_auth_code_param() -> str:
     return ""
 
 
-def get_graph_access_token() -> str:
+def get_graph_access_token(auth_type: str = AUTH_TYPE) -> str:
     """
     Retrieves Microsoft Graph API access token, either from cache or from Microsoft
+    :param auth_type (str): Authentication type to use (Client credentials / Authorization code)
     :return: The Microsoft Graph API access token
     """
     integration_context: dict = get_integration_context()
     if 'graph_access_token' in integration_context:
         # Migrate cached tokens to new format to avoid requiring reauthentication of existing instances
-        # This should happen at most once
+        # This should happen at most once, using the global AUTH_TYPE instead of the local argument
         token_params = {
             'graph_access_token': integration_context.pop('graph_access_token', ''),
             'current_refresh_token': integration_context.pop('current_refresh_token', ''),
             'graph_valid_until': integration_context.pop('graph_valid_until', ''),
         }
-        if PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW) == CLIENT_CREDENTIALS_FLOW:
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
             integration_context['credentials_token_params'] = json.dumps(token_params)
         else:
             integration_context['authcode_token_params'] = json.dumps(token_params)
 
         set_integration_context(integration_context)
 
-    token_params = json.loads(integration_context.get('credentials_token_params', '') if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW
-                              else integration_context.get('authcode_token_params', ''))
+    token_params = json.loads(integration_context.get('credentials_token_params', '{}') if auth_type == CLIENT_CREDENTIALS_FLOW
+                              else integration_context.get('authcode_token_params', '{}'))
 
     refresh_token = token_params.get('current_refresh_token', '')
     access_token: str = token_params.get('graph_access_token', '')
@@ -842,7 +842,7 @@ def get_graph_access_token() -> str:
         "scope": "https://graph.microsoft.com/.default",
         "client_secret": BOT_PASSWORD,
     }
-    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+    if auth_type == AUTHORIZATION_CODE_FLOW:
         if not AUTH_CODE:
             raise ValueError(
                 "No authorization code configured. Please use the !microsoft-teams-generate-login-url command"
@@ -883,7 +883,7 @@ def get_graph_access_token() -> str:
             'graph_access_token': access_token,
             'graph_valid_until': time_now + expires_in,
         }
-        if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        if auth_type == AUTHORIZATION_CODE_FLOW:
             integration_context['authcode_token_params'] = json.dumps(token_params)
         else:
             integration_context['credentials_token_params'] = json.dumps(token_params)
@@ -894,7 +894,8 @@ def get_graph_access_token() -> str:
         raise ValueError("Failed to get Graph access token")
 
 
-def http_request(method: str, url: str = "", json_: dict = None, api: str = "graph", params: dict | None = None) -> dict | list:
+def http_request(method: str, url: str = "", json_: dict = None, api: str = "graph", params: dict | None = None,
+                 auth_type: str = AUTH_TYPE) -> dict | list:
     """A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
 
@@ -904,11 +905,12 @@ def http_request(method: str, url: str = "", json_: dict = None, api: str = "gra
         json_ (dict): HTTP JSON body
         api (str): API to query (graph/bot)
         params (dict): Object of key-value URL query parameters
+        auth_type (str): Authentication type to use (Client credentials / Authorization code)
 
     Returns:
         Union[dict, list]: The response in list or dict format.
     """
-    access_token = get_graph_access_token() if api == "graph" else get_bot_access_token()  # Bot Framework API
+    access_token = get_graph_access_token(auth_type) if api == "graph" else get_bot_access_token()  # Bot Framework API
 
     headers: dict = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json", "Accept": "application/json"}
     try:
@@ -924,7 +926,7 @@ def http_request(method: str, url: str = "", json_: dict = None, api: str = "gra
 
         if not response.ok:
             error: str = error_parser(response, api)
-            if response.status_code == 403 and (detailed_error_message := insufficient_permissions_error_handler()):
+            if response.status_code == 403 and (detailed_error_message := insufficient_permissions_error_handler(auth_type)):
                 error = f"{detailed_error_message}\n\n(Error Message): {error}"
 
             raise ValueError(f"Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}")
@@ -1182,7 +1184,7 @@ def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, s
     return chat_id, chat_type
 
 
-def get_user(user: str) -> list:
+def get_user(user: str, auth_type: str = AUTH_TYPE) -> list:
     """Retrieves the AAD ID of requested user and the userType
 
     Args:
@@ -1197,7 +1199,7 @@ def get_user(user: str) -> list:
         "$filter": f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
         "$select": "id, userType",
     }
-    users = cast(dict[Any, Any], http_request("GET", url, params=params))
+    users = cast(dict[Any, Any], http_request("GET", url, params=params, auth_type=auth_type))
     return users.get("value", [])
 
 
@@ -2803,7 +2805,8 @@ def messages() -> Response:
 
 
 def ring_user_request(call_request_data):
-    return http_request(method="POST", url=f"{GRAPH_BASE_URL}/v1.0/communications/calls", json_=call_request_data)
+    return http_request(method="POST", url=f"{GRAPH_BASE_URL}/v1.0/communications/calls", json_=call_request_data,
+                        auth_type=CLIENT_CREDENTIALS_FLOW)
 
 
 def ring_user():
@@ -2823,7 +2826,7 @@ def ring_user():
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     # get user to call name and id
     username_to_call = demisto.args().get("username")
-    user: list = get_user(username_to_call)
+    user: list = get_user(username_to_call, auth_type=CLIENT_CREDENTIALS_FLOW)
     if not (user and user[0].get("id")):
         raise ValueError(f"User {username_to_call} was not found")
 
@@ -3162,7 +3165,6 @@ def auth_type_switch_handling():
     Handling cases where the user switches the auth type in the integration instance (from the client credentials flow to the
     auth code flow and vice versa), by auto-resetting the Graph API authorization in the integration context.
     """
-    auth_type = PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW)
     integration_context = get_integration_context()
     current_auth_type = integration_context.get("current_auth_type", "")
     if current_auth_type:
@@ -3171,22 +3173,22 @@ def auth_type_switch_handling():
         # current_auth_type is not set - First run of the integration instance
         demisto.debug(
             f"This is the first run of the integration instance.\n"
-            f"Setting the current_auth_type in the integration context to {auth_type}."
+            f"Setting the current_auth_type in the integration context to {AUTH_TYPE}."
         )
-        integration_context["current_auth_type"] = auth_type
+        integration_context["current_auth_type"] = AUTH_TYPE
         set_integration_context(integration_context)
-        current_auth_type = auth_type
+        current_auth_type = AUTH_TYPE
 
-    if current_auth_type != auth_type:
+    if current_auth_type != AUTH_TYPE:
         # First run after the user switched the authentication type
         demisto.debug(
-            f"The user switched the instance authentication type from {current_auth_type} to {auth_type}.\n"
+            f"The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n"
             f"Resetting the integration context."
         )
         reset_graph_auth()
         integration_context = get_integration_context()
-        demisto.debug(f"Setting the current_auth_type in the integration context to {auth_type}.")
-        integration_context["current_auth_type"] = auth_type
+        demisto.debug(f"Setting the current_auth_type in the integration context to {AUTH_TYPE}.")
+        integration_context["current_auth_type"] = AUTH_TYPE
         set_integration_context(integration_context)
 
 
@@ -3208,12 +3210,13 @@ def expand_permission_list(permissions: list[str]) -> set[str]:
     return expanded_permissions
 
 
-def create_missing_permissions_section(missing_permissions: list[str], permission_type: str) -> str:
+def create_missing_permissions_section(missing_permissions: list[str], permission_type: str, auth_type: str = AUTH_TYPE) -> str:
     """
     Generates a detailed error message for the missing permissions.
 
     :param missing_permissions: List of missing permissions
     :param permission_type: The type of permissions ('Application' or 'Delegated')
+    :param auth_type (str): Authentication type used in the request (Client credentials / Authorization code)
     :return: Error message string
     """
     error_message = f"""\
@@ -3227,7 +3230,7 @@ and grant admin consent.
 Once done, reset your token using the "!microsoft-teams-auth-reset" command.
 """
 
-    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+    if auth_type == AUTHORIZATION_CODE_FLOW:
         error_message += 'Then, generate a new auth code using "!microsoft-teams-generate-login-url".\n'
 
     error_message += (
@@ -3238,19 +3241,20 @@ Once done, reset your token using the "!microsoft-teams-auth-reset" command.
     return error_message
 
 
-def insufficient_permissions_error_handler() -> str:
+def insufficient_permissions_error_handler(auth_type: str = AUTH_TYPE) -> str:
     """
     Retrieve the known permission requirements for the failed command and give a detailed error message
     indicating the missing permissions and how to resolve the issue.
 
+    :param auth_type (str): Authentication type used in the request (Client credentials / Authorization code)
     :return: Error message string with instructions regarding the missing permissions
     """
     command: str = demisto.command()
     error_message = []
-    demisto.debug(f"Authentication type is: {AUTH_TYPE}")
+    demisto.debug(f"Authentication type is: {auth_type}")
     missing_permissions = []
     required_permissions_for_command: list = COMMANDS_REQUIRED_PERMISSIONS.get(command, [])
-    permission_type = "Application" if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW else "Delegated"
+    permission_type = 'Application' if auth_type == CLIENT_CREDENTIALS_FLOW else 'Delegated'
     if not required_permissions_for_command:
         demisto.error(
             "Got an insufficient permissions error from Microsoft Graph. "
@@ -3260,8 +3264,8 @@ def insufficient_permissions_error_handler() -> str:
 
     # Get current token permissions
     integration_context: dict = get_integration_context()
-    token_params = (integration_context.get('credentials_token_params', {}) if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW
-                    else integration_context.get('authcode_token_params', {}))
+    token_params = json.loads(integration_context.get('credentials_token_params', '{}') if auth_type == CLIENT_CREDENTIALS_FLOW
+                              else integration_context.get('authcode_token_params', '{}'))
     graph_access_token: str = token_params.get('graph_access_token', '')
     if not graph_access_token:
         demisto.error(
@@ -3277,7 +3281,7 @@ def insufficient_permissions_error_handler() -> str:
     ]
 
     # Start building the error message
-    error_message.append(f"The {command} command using the {AUTH_TYPE} Flow, requires the following API permissions:")
+    error_message.append(f"The {command} command using the {auth_type} Flow, requires the following API permissions:")
 
     error_message.append(f'{permission_type} - {", ".join(required_permissions_for_command)}\n')
 

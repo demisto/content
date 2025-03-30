@@ -271,21 +271,16 @@ def test_mirror_investigation(mocker, requests_mock):
         }
     )
     expected_integration_context: dict = {
-        "bot_name": "DemistoBot",
-        "current_refresh_token": "",
-        "tenant_id": tenant_id,
-        "service_url": service_url,
-        "teams": json.dumps(
-            [
-                {
-                    "mirrored_channels": updated_mirrored_channels,
-                    "team_id": team_id,
-                    "team_aad_id": team_aad_id,
-                    "team_members": team_members,
-                    "team_name": "The-A-Team",
-                }
-            ]
-        ),
+        'bot_name': 'DemistoBot',
+        'tenant_id': tenant_id,
+        'service_url': service_url,
+        'teams': json.dumps([{
+            'mirrored_channels': updated_mirrored_channels,
+            'team_id': team_id,
+            'team_aad_id': team_aad_id,
+            'team_members': team_members,
+            'team_name': 'The-A-Team'
+        }])
     }
     assert requests_mock.request_history[1].json() == {
         "displayName": "incident-2",
@@ -302,10 +297,9 @@ def test_mirror_investigation(mocker, requests_mock):
     assert demisto.setIntegrationContext.call_count == 3
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
-    set_integration_context[0].pop("graph_access_token")
-    set_integration_context[0].pop("graph_valid_until")
-    set_integration_context[0].pop("bot_access_token")
-    set_integration_context[0].pop("bot_valid_until")
+    set_integration_context[0].pop('authcode_token_params')
+    set_integration_context[0].pop('bot_access_token')
+    set_integration_context[0].pop('bot_valid_until')
     assert set_integration_context[0] == expected_integration_context
     results = demisto.results.call_args[0]
     assert len(results) == 1
@@ -2577,30 +2571,23 @@ def test_switch_auth_type_to_client_credentials(mocker):
         - Verify that the debug logs are as expected.
     """
     from MicrosoftTeams import auth_type_switch_handling
-
-    mocker.patch(
-        "MicrosoftTeams.get_integration_context",
-        return_value={
-            "current_auth_type": "Authorization Code",
-            "current_refresh_token": "test_refresh_token",
-            "graph_access_token": "test_graph_token",
-            "graph_valid_until": "test_valid_until",
-        },
-    )
-    set_integration_context_mocker = mocker.patch("MicrosoftTeams.set_integration_context", return_value={})
-    debug_log_mocker = mocker.patch.object(demisto, "debug")
-    mocker.patch("MicrosoftTeams.AUTH_TYPE", new="Client Credentials")
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'current_auth_type': 'Authorization Code',
+                                                                         'authcode_token_params': json.dumps({
+                                                                             'current_refresh_token': 'test_refresh_token',
+                                                                             'graph_access_token': 'test_graph_token',
+                                                                             'graph_valid_until': 'test_valid_until'})
+                                                                         })
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Client Credentials')
 
     auth_type_switch_handling()
 
     assert set_integration_context_mocker.call_count == 2
     assert set_integration_context_mocker.call_args[0][0] == {
-        "current_auth_type": "Client Credentials",
-        "current_refresh_token": "",
-        "graph_access_token": "",
-        "graph_valid_until": "",
-    }
-    assert "Setting the current_auth_type in the integration context to Client Credentials" in debug_log_mocker.call_args[0][0]
+        'current_auth_type': 'Client Credentials', 'authcode_token_params': '{}',
+        'credentials_token_params': '{}'}
+    assert 'Setting the current_auth_type in the integration context to Client Credentials' in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 4
 
 
@@ -2622,30 +2609,23 @@ def test_switch_auth_type_to_authorization_code_flow(mocker):
         - Verify that the debug logs are as expected.
     """
     from MicrosoftTeams import auth_type_switch_handling
-
-    mocker.patch(
-        "MicrosoftTeams.get_integration_context",
-        return_value={
-            "current_auth_type": "Client Credentials",
-            "current_refresh_token": "test_refresh_token",
-            "graph_access_token": "test_graph_token",
-            "graph_valid_until": "test_valid_until",
-        },
-    )
-    set_integration_context_mocker = mocker.patch("MicrosoftTeams.set_integration_context", return_value={})
-    debug_log_mocker = mocker.patch.object(demisto, "debug")
-    mocker.patch("MicrosoftTeams.AUTH_TYPE", new="Authorization Code")
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={'current_auth_type': 'Client Credentials',
+                                                                         'authcode_token_params': json.dumps({
+                                                                             'current_refresh_token': 'test_refresh_token',
+                                                                             'graph_access_token': 'test_graph_token',
+                                                                             'graph_valid_until': 'test_valid_until'})
+                                                                         })
+    set_integration_context_mocker = mocker.patch('MicrosoftTeams.set_integration_context', return_value={})
+    debug_log_mocker = mocker.patch.object(demisto, 'debug')
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new='Authorization Code')
 
     auth_type_switch_handling()
 
     assert set_integration_context_mocker.call_count == 2
     assert set_integration_context_mocker.call_args[0][0] == {
-        "current_auth_type": "Authorization Code",
-        "current_refresh_token": "",
-        "graph_access_token": "",
-        "graph_valid_until": "",
-    }
-    assert "Setting the current_auth_type in the integration context to Authorization Code" in debug_log_mocker.call_args[0][0]
+        'current_auth_type': 'Authorization Code', 'authcode_token_params': '{}',
+        'credentials_token_params': '{}'}
+    assert 'Setting the current_auth_type in the integration context to Authorization Code' in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 4
 
 
@@ -2788,12 +2768,15 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
 
     mock_permissions = [Perms.USER_READ_ALL.value, Perms.CHATMESSAGE_SEND.value]
 
-    mocker.patch.object(demisto, "command", return_value=command)
-    mocker.patch("MicrosoftTeams.get_token_permissions", return_value=mock_permissions)
-    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"graph_access_token": "mock_token"})
-    missing_permissions_mock = mocker.patch(
-        "MicrosoftTeams.create_missing_permissions_section", side_effect=create_missing_permissions_section
-    )
+    mocker.patch.object(demisto, 'command', return_value=command)
+    mocker.patch('MicrosoftTeams.get_token_permissions', return_value=mock_permissions)
+    mocker.patch('MicrosoftTeams.get_integration_context', return_value={
+        'authcode_token_params': json.dumps({
+            'graph_access_token': 'mock_token'
+        })
+    })
+    missing_permissions_mock = mocker.patch('MicrosoftTeams.create_missing_permissions_section',
+                                            side_effect=create_missing_permissions_section)
 
     error_msg = insufficient_permissions_error_handler()
 
@@ -2923,3 +2906,39 @@ def test_get_chat_id_and_type_not_found_no_chat_creation_permission(mocker, requ
         get_chat_id_and_type(chat_name, create_dm_chat=False)
 
     assert str(e.value) == f'Could not find chat: {chat_name}'
+
+
+def test_ring_user_in_auth_code(mocker, requests_mock):
+    """
+    Given:
+      - Authentication type is set to authorization code.
+    When:
+      - Calling the ring-user command.
+    Then:
+      - Ring user is called with a token obtained from client credentials instead of auth code.
+    """
+    from MicrosoftTeams import ring_user
+
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new=AUTHORIZATION_CODE_FLOW)
+    mocker.patch.object(demisto, 'args', return_value={'username': 'test_user'})
+    mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'test_user_id', 'userType': 'Member'}])
+
+    mock_credentials_token = 'credentials_token'
+
+    requests_mock.post(
+        f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+        json={
+            'access_token': mock_credentials_token
+        },
+        status_code=200,
+        additional_matcher=lambda request: 'grant_type=client_credentials' in request.text,
+    )
+
+    requests_mock.post(
+        f'{GRAPH_BASE_URL}/v1.0/communications/calls',
+        json={},
+    )
+
+    ring_user()
+
+    assert requests_mock.request_history[1].headers['Authorization'] == f'Bearer {mock_credentials_token}'
