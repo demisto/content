@@ -63,6 +63,7 @@ TAB_CLOSE_WAIT_TIME = 1
 DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
+MAX_ALLOWED_PARALLEL_CHROMES_RUNNING = 5
 
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
@@ -284,6 +285,11 @@ def count_running_chromes(port):
 
 
 def get_headless_chrome(port: str) -> pychrome.Browser | None:
+    chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+    if len(chrome_instances_contents) >= MAX_ALLOWED_PARALLEL_CHROMES_RUNNING:
+        port_should_be_shut_down = next(iter(chrome_instances_contents))
+        terminate_chrome(chrome_port=port_should_be_shut_down)
+
     # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
         running_chromes_count = count_running_chromes(port)
@@ -437,7 +443,7 @@ def get_chrome_options(default_options, user_options):
     return options
 
 
-def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE):
+def start_chrome_headless(chrome_port, chrome_options, chrome_binary=CHROME_EXE):
     try:
         logfile = open(CHROME_LOG_FILE_PATH, 'ab')
 
@@ -457,7 +463,6 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             if browser:
                 new_chrome_instance = {
                     chrome_port: {
-                        INSTANCE_ID: instance_id,
                         CHROME_INSTANCE_OPTIONS: chrome_options,
                         RASTERIZATION_COUNT: 0
                     }
@@ -545,20 +550,16 @@ def chrome_manager() -> tuple[Any | None, str | None]:
             - The Browser or None if an error occurred.
             - The chrome port or None if an error occurred.
     """
-    # If instance_id or chrome_options are not set, assign 'None' to these variables.
-    # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
-    # it can compare between the fetched 'None' string and the 'None' that assigned.
 
-    instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
     demisto.debug(f'chrome_manager: {chrome_instances_contents=}')
-    demisto.debug(f'chrome_manager: {chrome_options=} {instance_id=}')
+    demisto.debug(f'chrome_manager: {chrome_options=}')
     chrome_options_to_port = {info['chrome_options']: port for port, info in chrome_instances_contents.items()}
 
     if not chrome_instances_contents:
         demisto.debug('chrome_manager: condition chrome_instances_contents is empty')
-        return generate_new_chrome_instance(instance_id, chrome_options)
+        return generate_new_chrome_instance(chrome_options)
     if chrome_options in chrome_options_to_port:
         demisto.debug('chrome_manager: condition chrome_options in chrome_options_dict is true'
                       f'{chrome_options in chrome_options_to_port}')
@@ -573,12 +574,12 @@ def chrome_manager() -> tuple[Any | None, str | None]:
             continue
         demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
         terminate_chrome(chrome_port=chrome_port_)
-    return generate_new_chrome_instance(instance_id, chrome_options)
+    return generate_new_chrome_instance(chrome_options)
 
 
-def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
+def generate_new_chrome_instance(chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
-    return start_chrome_headless(chrome_port, instance_id, chrome_options)
+    return start_chrome_headless(chrome_port, chrome_options)
 
 
 def generate_chrome_port() -> str | None:
