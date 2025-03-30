@@ -1353,7 +1353,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         )
     # API is limited to 100 alerts per request, doing the request in batches of 100.
     for index in range(0, len(alerts_list), 100):
-        alerts_sublist = alerts_list[index: index + 100]
+        alerts_sublist = alerts_list[index : index + 100]
         demisto.debug(f"{alerts_sublist=}, {severity=}, {status=}, {comment=}")
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids

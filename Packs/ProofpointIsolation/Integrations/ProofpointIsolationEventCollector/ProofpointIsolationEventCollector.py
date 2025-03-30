@@ -43,8 +43,8 @@ class Client(BaseClient):
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/v2/reporting/usage-data?key={self.api_key}&pageSize={ITEMS_PER_PAGE}"
-                       f"&from={start_date}&to={end_date}",
-            retries=3
+            f"&from={start_date}&to={end_date}",
+            retries=3,
         )
         return results
 

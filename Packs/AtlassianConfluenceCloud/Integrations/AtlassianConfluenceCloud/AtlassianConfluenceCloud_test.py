@@ -270,9 +270,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
-    expected_context_output = util_load_json(
-        os.path.join("test_data", "content_create/content_create_object_not_present.json")
-    )
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
@@ -769,9 +767,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
     requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response[0])
-    expected_context_output = util_load_json(
-        os.path.join("test_data", "content_create/content_create_object_not_present.json")
-    )
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
@@ -799,9 +795,7 @@ def test_confluence_cloud_comment_create_command_when_object_not_present(request
 
     expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
-    expected_context_output = util_load_json(
-        os.path.join("test_data", "comment_create/comment_create_object_not_present.json")
-    )
+    expected_context_output = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
 
     with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md")) as f:
         expected_readable_output = f.read()

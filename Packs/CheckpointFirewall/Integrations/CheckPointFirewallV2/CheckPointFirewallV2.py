@@ -1207,9 +1207,7 @@ def checkpoint_delete_threat_indicator_command(client: Client, identifier) -> Co
         current_result = client.delete_threat_indicator(item[1])
         result.update(current_result)
         printable_result = {"message": current_result.get("message")}
-        current_readable_output = tableToMarkdown(
-            f"CheckPoint status for deleting {item[1]}threat indicator:", printable_result
-        )
+        current_readable_output = tableToMarkdown(f"CheckPoint status for deleting {item[1]}threat indicator:", printable_result)
         readable_output = readable_output + current_readable_output
 
     command_results = CommandResults(
@@ -1393,9 +1391,7 @@ def checkpoint_delete_access_rule_command(client: Client, identifier, layer: str
         current_result = client.delete_rule(item[1], layer)
         result.update(current_result)
         printable_result = {"message": current_result.get("message")}
-        current_readable_output = tableToMarkdown(
-            f"CheckPoint data for deleting access rule range: {item[1]}", printable_result
-        )
+        current_readable_output = tableToMarkdown(f"CheckPoint data for deleting access rule range: {item[1]}", printable_result)
         readable_output = readable_output + current_readable_output
 
     command_results = CommandResults(
@@ -1592,9 +1588,7 @@ def checkpoint_delete_application_site_command(client: Client, identifier) -> Co
         current_result = client.delete_application_site(item[1])
         result.update(current_result)
         printable_result = {"message": current_result.get("message")}
-        current_readable_output = tableToMarkdown(
-            f"CheckPoint data for deleting application site : {item[1]}", printable_result
-        )
+        current_readable_output = tableToMarkdown(f"CheckPoint data for deleting application site : {item[1]}", printable_result)
         readable_output = readable_output + current_readable_output
 
     command_results = CommandResults(
@@ -2311,7 +2305,7 @@ def main():  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
 
     if server.startswith("https://"):
-        server = server[len("https://"):]
+        server = server[len("https://") :]
 
     if server.endswith("/"):
         server = server[:-1]

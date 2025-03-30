@@ -695,7 +695,10 @@ def fetch_incidents_command(client: Client) -> None:
     first_fetch_time = client.first_fetch_time
     fetch_limit = arg_to_number(client.max_fetch)
     next_run, incidents = fetch_incidents(
-        client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, max_fetch=fetch_limit  # type: ignore
+        client=client,
+        last_run=demisto.getLastRun(),
+        first_fetch_time=first_fetch_time,
+        max_fetch=fetch_limit,  # type: ignore
     )
     demisto.setLastRun({"last_fetch": next_run})
     demisto.incidents(incidents)

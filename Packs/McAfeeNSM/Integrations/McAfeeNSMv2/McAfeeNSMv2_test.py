@@ -1563,7 +1563,7 @@ def test_check_required_arg__with_value_0():
             {"sigsetConfigPercentageComplete": "0", "sigsetConfigStatusMessage": "mock"},
             (
                 [0],
-                "\nThe current percentage of deployment for 'push_configuration_signature_set' is: 0%\n                \nAnd the current message is: mock\n",   # noqa: E501
+                "\nThe current percentage of deployment for 'push_configuration_signature_set' is: 0%\n                \nAnd the current message is: mock\n",  # noqa: E501
             ),
         ),  # noqa: E501
         ({"sigsetConfigPercentageComplete": 100, "sigsetConfigStatusMessage": "DOWNLOAD COMPLETE"}, ([1], "")),

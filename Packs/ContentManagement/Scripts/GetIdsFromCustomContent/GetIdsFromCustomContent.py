@@ -20,7 +20,7 @@ def update_file_prefix(file_name: str) -> str:
     Removing the "playbook-" prefix from files name.
     """
     if file_name.startswith("playbook-"):
-        return file_name[len("playbook-"):]
+        return file_name[len("playbook-") :]
     if file_name.startswith("automation-"):
         return file_name.replace("automation-", "script-")
     return file_name

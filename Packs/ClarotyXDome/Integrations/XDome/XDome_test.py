@@ -278,7 +278,7 @@ def test_force_get_all_wrapper(xdome_client_mock):
         sort_by=None,
         count=False,
     ):
-        return {"items": big_response_items[offset: min(offset + limit, response_len)]}
+        return {"items": big_response_items[offset : min(offset + limit, response_len)]}
 
     client = xdome_client_mock()
     res = client._force_get_all_wrapper(

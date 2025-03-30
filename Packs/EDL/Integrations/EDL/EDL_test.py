@@ -938,9 +938,7 @@ def test_get_indicators_to_format_csv():
     indicators_data.seek(0)
     indicators = indicators_data.read()
 
-    assert (
-        indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n"demisto.com","URL"'
-    )
+    assert indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n"demisto.com","URL"'
 
 
 def test_get_indicators_to_format_json():

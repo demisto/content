@@ -944,7 +944,7 @@ def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping
         indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
 
     if url_truncate and len(indicator) >= PAN_OS_MAX_URL_LEN:
-        indicator = indicator[0: PAN_OS_MAX_URL_LEN - 1]
+        indicator = indicator[0 : PAN_OS_MAX_URL_LEN - 1]
 
     return indicator
 
@@ -1171,9 +1171,7 @@ def route_edl() -> Response:
         ("ETag", etag),
     ]  # type: ignore[assignment]
 
-    demisto.debug(
-        f'edl: Returning response with the following headers:\n{[f"{header[0]}: {header[1]}" for header in headers]}'
-    )
+    demisto.debug(f'edl: Returning response with the following headers:\n{[f"{header[0]}: {header[1]}" for header in headers]}')
 
     resp = Response(edl_data, status=200, mimetype=mimetype, headers=headers)
     resp.cache_control.max_age = max_age

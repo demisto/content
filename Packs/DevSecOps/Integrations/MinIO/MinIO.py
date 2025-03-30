@@ -3,7 +3,7 @@ import io
 import urllib3
 from CommonServerPython import *
 from minio import Minio
-from minio.commonconfig import REPLACE, CopySource, Tags      # pylint: disable=E0401, E0611
+from minio.commonconfig import REPLACE, CopySource, Tags  # pylint: disable=E0401, E0611
 
 
 class Client(Minio):

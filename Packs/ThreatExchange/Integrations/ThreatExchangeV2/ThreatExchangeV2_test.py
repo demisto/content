@@ -102,9 +102,7 @@ class TestsThreatExchangeV2:
         {STATUS: ThreatExchangeV2Status.UNKNOWN},
         {STATUS: ThreatExchangeV2Status.NON_MALICIOUS},
     ]
-    four_engines_no_positive_test_err_msg = (
-        "Number of engines should be 4, number of positive (Malicious) detections should be 0"
-    )
+    four_engines_no_positive_test_err_msg = "Number of engines should be 4, number of positive (Malicious) detections should be 0"
 
     # Inputs for test_flatten_outputs_paging:
     # --------------------------------------

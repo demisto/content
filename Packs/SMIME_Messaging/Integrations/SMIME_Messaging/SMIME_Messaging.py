@@ -39,7 +39,7 @@ def create_pem_string(base64_cert: str) -> str:
     pem_footer = "-----END CERTIFICATE-----\n"
 
     # Split the base64 certificate into lines of 64 characters each
-    pem_body = "\n".join(base64_cert[i: i + 64] for i in range(0, len(base64_cert), 64))
+    pem_body = "\n".join(base64_cert[i : i + 64] for i in range(0, len(base64_cert), 64))
 
     return f"{pem_header}{pem_body}\n{pem_footer}"
 
