@@ -5607,7 +5607,9 @@ def panorama_query_logs_command(args: dict):
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
                       or time_generated or time_generated_after or action or port_dst or rule or url or filedigest):
-            raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
+            raise Exception(
+                "To build your query, use the query argument or use a combination of the following arguments (but not both): time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest."
+            )
 
         result: PanosResponse = PanosResponse(
             panorama_query_logs(
