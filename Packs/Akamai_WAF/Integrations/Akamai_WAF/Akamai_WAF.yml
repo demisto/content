@@ -1,4 +1,6 @@
 category: Network Security
+sectionOrder:
+- Connect
 commonfields:
   id: Akamai WAF
   version: -1
@@ -8,110 +10,56 @@ configuration:
   name: host
   required: true
   type: 0
+  section: Connect
 - display: Client token
   name: clientToken
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Access token
   name: accessToken
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Client secret
   name: clientSecret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Client token
   name: credentials_client_token
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - displaypassword: Access token
   name: credentials_access_token
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - displaypassword: Client secret
   name: credentials_client_secret
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this verdict
-  display: Indicator Verdict
-  name: feedReputation
-  options:
-  - Unknown
-  - None
-  - Benign
-  - Good
-  - Suspicious
-  - Malicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- defaultvalue: indicatorType
-  display: ''
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: '20160'
-  display: ''
-  name: feedExpirationInterval
-  required: false
-  type: 1
-- defaultvalue: '240'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- name: feedTags
-  display: Tags
-  type: 0
-  additionalinfo: Supports CSV values.
-- name: tlp_color
-  display: Traffic Light Protocol Color
-  type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed  
+  section: Connect
 description: |-
   Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
@@ -1856,8 +1804,6 @@ script:
   subtype: python3
   type: python
   runonce: false
-  feed: false
-  isFetchSamples: false
 tests:
 - Akamai_WAF-Test
 fromversion: 5.0.0
