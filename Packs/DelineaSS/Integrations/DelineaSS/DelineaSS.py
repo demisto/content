@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import requests
+import json
 import urllib3
 from CommonServerUserPython import *
 
@@ -10,18 +12,203 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
+class AuthenticationModel:
+    def __init__(self, username="", password="", server_url="", error=None, platform_login=False, token=None,
+                 token_expiration=None, vault_url=None, vault_type=None):
+        self.user_name = username
+        self.password = password
+        self.server_url = server_url
+        self.error = error
+        self.platform_login = platform_login
+        self.token = token
+        self.token_expiration = token_expiration
+        self.vault_url = vault_url
+        self.vault_type = vault_type
+
+    def set_platform_login(self, platform_login: bool):
+        self.platform_login = platform_login
+
+    def set_error(self, error: str):
+        self.error = error
+
+    def set_token(self, token: str):
+        self.token = token
+
+    def set_token_expiration(self, token_expiration):
+        self.token_expiration = token_expiration
+
+    def set_vault_url(self, vault_url: str):
+        self.vault_url = vault_url
+
+    def set_vault_type(self, vault_type: str):
+        self.vault_type = vault_type
+
+
+class AuthenticationService:
+    def __init__(self):
+        pass
+
+    def authenticate_async(self, auth_model: AuthenticationModel):
+        try:
+            platform_health_check_url = auth_model.server_url.rstrip("/") + "/health"
+            ss_health_check_url = auth_model.server_url.rstrip("/") + "/api/v1/healthcheck"
+            is_ss_healthy = self.check_json_response_async(ss_health_check_url)
+            if is_ss_healthy:
+                auth_model.set_platform_login(False)
+            else:
+                is_platform_healthy = self.check_json_response_async(platform_health_check_url)
+                if is_platform_healthy:
+                    auth_model.set_platform_login(True)
+                    platform_login = PlatformLogin()
+                    return platform_login.platform_authentication(auth_model)
+                else:
+                    auth_model.set_error(f"Invalid Server URL {auth_model.server_url}")
+
+            return auth_model
+        except Exception as e:
+            raise RuntimeError(str(e))
+
+    def check_json_response_async(self, url):
+        try:
+            response = requests.get(url)
+            if response.status_code != 200:
+                return False
+            response_body = response.text
+            if response_body:
+                try:
+                    json_response = response.json()
+                    return json_response.get("healthy", False)
+                except json.JSONDecodeError:
+                    return "Healthy" in response_body
+            return False
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(str(e))
+
+
+class PlatformLogin:
+    def __init__(self):
+        pass
+
+    def platform_authentication(self, auth_model: AuthenticationModel):
+        try:
+            response = self.get_access_token(auth_model)
+            if response.status_code != 200:
+                return self.handle_error_response(response.text)
+
+            auth_response = response.json()
+            if not auth_response:
+                return self.handle_error_response(
+                    f"Unable to authenticate for user {auth_model.user_name} on server {auth_model.server_url}")
+
+            auth_model.set_token(auth_response['access_token'])
+            auth_model.set_token_expiration(auth_response['expires_in'])
+            response.close()
+
+            response = self.get_vaults(auth_model, auth_response['access_token'])
+            if response.status_code != 200:
+                return self.handle_error_response(response.text)
+
+            vaults_response = response.json()
+            if not vaults_response:
+                return self.handle_error_response(f"Unable to fetch vaults from server {auth_model.server_url}")
+
+            vault = next((v for v in vaults_response.get('vaults', []) if v['isDefault'] and v['isActive']), None)
+            if vault:
+                auth_model.set_vault_url(vault['connection']['url'])
+                auth_model.set_vault_type(vault['type'])
+            else:
+                return self.handle_error_response(f"Unable to fetch vaults from server {auth_model.server_url}")
+
+            return auth_model
+        except Exception as e:
+            raise Exception(f"Error occurred in PlatformAuthentication:\n{str(e)}")
+
+    def handle_error_response(self, error_message):
+        return AuthenticationModel(error_message=error_message, platform_login=True)
+
+    def get_access_token(self, auth_model: AuthenticationModel):
+        api_url = auth_model.server_url.rstrip("/") + "/identity/api/oauth2/token/xpmplatform"
+        scope = "xpmheadless"
+
+        if not auth_model.server_url:
+            raise ValueError("Missing required environment variables")
+
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        request_body = f"grant_type=client_credentials&client_id={auth_model.user_name}&client_secret={auth_model.password}&scope={scope}"
+        response = requests.post(api_url, headers=headers, data=request_body, verify=True)
+        return response
+
+    def get_vaults(self, auth_model: AuthenticationModel, token):
+        api_url = auth_model.server_url.rstrip("/") + "/vaultbroker/api/vaults"
+        headers = {
+            "Authorization": f"bearer {token}"
+        }
+        response = requests.get(api_url, headers=headers, verify=True)
+        return response
+
+
+def get_access_token(url, username, password):
+    access_token = None
+    try:
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+
+        data = f"grant_type=password&username={username}&password={password}"
+        response = requests.post(url + "/oauth2/token", data=data, headers=headers, verify=True)
+        if response.status_code == 200:
+            content = response.json()
+            if 'access_token' in content:
+                access_token = content['access_token']
+            else:
+                print(f"Failed to get access token. Response: {content}")
+        else:
+            print(f"Failed to get access token. Status Code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"HTTP error occurred: {str(e)}")
+    return access_token
+
+
+def is_platform_or_ss(url, username, password):
+    authentication_model = AuthenticationModel(username, password, url)
+    token = None
+    try:
+        auth_service = AuthenticationService()
+        authentication_model = auth_service.authenticate_async(authentication_model)
+        is_platform_login = authentication_model.platform_login
+        if is_platform_login:
+            token = authentication_model.token
+        elif not is_platform_login:
+            token = get_access_token(url, username, password)
+        else:
+            print(authentication_model.error)
+    except Exception as e:
+        print(f"Error: {e}")
+    return authentication_model
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
-    def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool):
+    def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool, isplatform: bool):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
-        self._token = self._generate_token()
-        self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
+        self._isplatform = isplatform
+        if self._isplatform:
+            authentication_model = is_platform_or_ss(server_url, self._username, self._password)
+            self._token = authentication_model.token
+            server_url = authentication_model.vault_url
+            self._base_url = server_url
+            self._headers = {'Authorization': f'Bearer {self._token}', 'Content-Type': 'application/json'}
+        else:
+            self._token = self._generate_token()
+            self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -55,7 +242,8 @@ class Client(BaseClient):
             "autocomment": autocommit
         }
         url_suffix = "/api/v1/secrets/" + str(secret_id)
-        return self._http_request("GET", url_suffix, params=params)
+        retries = 3
+        return self._http_request("GET", url_suffix, params=params, retries=retries)
 
     def searchSecretIdByName(self, search_name: str) -> list:
         url_suffix = "/api/v1/secrets/lookup?filter.searchText=" + search_name
@@ -216,6 +404,7 @@ class Client(BaseClient):
         return (self._http_request("GET", url_suffix="/api/v1/users", params=params)).get('records')
 
     def userUpdate(self, id: str, **kwargs) -> str:
+        # 2 method
         response = self._http_request("GET", url_suffix="/api/v1/users/" + str(id))
 
         for key, value in kwargs.items():
@@ -225,6 +414,31 @@ class Client(BaseClient):
 
     def userDelete(self, id: str) -> str:
         return self._http_request("DELETE", url_suffix="/api/v1/users/" + str(id))
+
+    def getuser(self) -> str:
+        url_suffix = "/api/v1/users"
+        return self._http_request("GET", url_suffix)
+
+    def platformusercreate(self, **kwargs) -> str:
+        bodyJSON = {}
+
+        for key, value in kwargs.items():
+            bodyJSON[key] = value
+
+        return self._http_request("POST", url_suffix="/identity/api/CDirectoryService/CreateUser", json_data=bodyJSON)
+
+    def platformuserupdate(self, id: str, **kwargs) -> str:
+        # 2 method
+        response = self._http_request("GET", url_suffix="/identity/api/CDirectoryService/ChangeUser" + str(id))
+
+        for key, value in kwargs.items():
+            response[key] = value
+
+        return self._http_request("PUT", url_suffix="/identity/api/CDirectoryService/ChangeUser" + str(id),
+                                  json_data=response)
+
+    def platformuserdelete(self, id: str) -> str:
+        return self._http_request("DELETE", url_suffix="/identity/api/entity/users/" + str(id))
 
 
 def test_module(client) -> str:
@@ -274,6 +488,20 @@ def secret_get_command(client, secret_id: str = '', autoComment: str = ''):
         outputs_key_field="secret",
         raw_response=secret,
         outputs=secret
+    )
+
+
+def user_get_command(client):
+    user = client.getuser()
+    markdown = tableToMarkdown('All user list', user)
+    markdown += tableToMarkdown('Records for user', user['records'])
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Delinea.User',
+        outputs_key_field="user",
+        raw_response=user,
+        outputs=user
     )
 
 
@@ -461,6 +689,64 @@ def user_update_command(client, id: str = '', **kwargs):
     )
 
 
+def platform_user_create_command(client, **kwargs):
+    user = client.platformusercreate(**kwargs)
+    markdown = tableToMarkdown('Created new platform user', user)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix="Delinea.Platform.User.Create",
+        outputs_key_field="user",
+        raw_response=user,
+        outputs=user
+    )
+
+
+def platform_user_get_command(client, user_id: str = ''):
+    user = client.getUser(user_id)
+    markdown = tableToMarkdown('Full user object', user)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Delinea-Platform-User-Get',
+        outputs_key_field="user",
+        raw_response=user,
+        outputs=user
+    )
+
+
+def getUser(self, user_id: str) -> str:
+    url_suffix = "/identity/api/entity/users/" + str(user_id)
+    retries = 3
+    return self._http_request("GET", url_suffix, retries=retries)
+
+
+def platform_user_delete_command(client, id: str = ''):
+    user = client.platformuserdelete(id)
+    markdown = tableToMarkdown('Deleted user', user)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix="Delinea.Platform.User.Delete",
+        outputs_key_field="user",
+        raw_response=user,
+        outputs=user
+    )
+
+
+def platform_user_update_command(client, id: str = '', **kwargs):
+    user = client.platformuserupdate(id, **kwargs)
+    markdown = tableToMarkdown('Updated Platform user', user)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix="Delinea.Platform.User.Update",
+        outputs_key_field="user",
+        raw_response=user,
+        outputs=user
+    )
+
+
 def user_delete_command(client, id: str = ''):
     user = client.userDelete(id)
     markdown = tableToMarkdown('Deleted user', user)
@@ -559,6 +845,7 @@ def main():
     url = params.get('url')
     proxy = params.get('proxy', False)
     verify = not params.get('insecure', False)
+    isplatform = not params.get('isplatform', False)
     secretids = params.get('secrets')
 
     demisto.info(f'Command being called is {demisto.command()}')
@@ -582,7 +869,12 @@ def main():
         'delinea-user-create': user_create_command,
         'delinea-user-search': user_search_command,
         'delinea-user-update': user_update_command,
-        'delinea-user-delete': user_delete_command
+        'delinea-user-delete': user_delete_command,
+        'delinea-user-get': user_get_command,
+        'delinea-platform-user-create': platform_user_create_command,
+        'delinea-platform-user-update': platform_user_update_command,
+        'delinea-platform-user-delete': platform_user_delete_command,
+        'delinea-platform-user-get': platform_user_get_command,
     }
     command = demisto.command()
     try:
@@ -590,7 +882,8 @@ def main():
                         username=username,
                         password=password,
                         proxy=proxy,
-                        verify=verify)
+                        verify=verify,
+                        isplatform=isplatform)
         if command in delinea_commands:
             return_results(
                 delinea_commands[command](client, **demisto.args())  # type: ignore[operator]
