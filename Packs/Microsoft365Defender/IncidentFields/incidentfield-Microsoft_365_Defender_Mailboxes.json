@@ -1,0 +1,67 @@
+{
+    "id": "incident_microsoft365defendermailboxes",
+    "version": -1,
+    "modified": "2024-12-03T13:43:07.356908196Z",
+    "name": "Microsoft 365 Defender Mailboxes",
+    "ownerOnly": false,
+    "cliName": "microsoft365defendermailboxes",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Microsoft 365 Defender Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "mailbox",
+            "displayName": "Mailbox",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "displayname",
+            "displayName": "Display Name",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "marketplaces": [
+        "xsoar"
+    ],
+    "fromVersion": "6.10.0"
+}

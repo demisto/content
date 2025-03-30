@@ -2,7 +2,7 @@
     "name": "Shift Management - Assign to Next Shift",
     "description": "Automation & Playbook to assign active Incidents to the next group of users on call.  ",
     "support": "community",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.9",
     "author": "beauchompers",
     "url": "",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

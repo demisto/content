@@ -146,8 +146,8 @@ class Client(BaseClient):
         )
         log(DEBUG, 'at client\'s test function')
         if response.get('statusCode') != 200:
-            raise DemistoException(f'Error received: {response.get("errors")}')
-        return response
+            raise DemistoException(f'Error received: {response.get("errors", "request was not successful")}')
+        return response.get('hits', [])
 
     def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """Send request to fetch list of incidents

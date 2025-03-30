@@ -2,15 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "gitlab"
 PRODUCT = "gitlab"
 DEFAULT_LIMIT = 500
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def arg_to_strtime(value: Any) -> Optional[str]:
@@ -31,35 +31,34 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> str:
 
 def reformat_details(audit_events: list, groups_and_projects_events: list) -> tuple[list, list]:
     for event in groups_and_projects_events:
-        if 'details' in event:
-            for action in ['add', 'change', 'remove']:
-                if action in event['details']:
-                    event['details']['action'] = f'{action}_{event["details"][action]}'
-                    event['details']['action_type'] = action
-                    event["details"]['action_category'] = event['details'][action]
+        if "details" in event:
+            for action in ["add", "change", "remove"]:
+                if action in event["details"]:
+                    event["details"]["action"] = f'{action}_{event["details"][action]}'
+                    event["details"]["action_type"] = action
+                    event["details"]["action_category"] = event["details"][action]
                     break
 
     for event in audit_events + groups_and_projects_events:
-        event['_time'] = event['created_at']
+        event["_time"] = event["created_at"]
 
     return audit_events, groups_and_projects_events
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-
-    def get_events_request(self, query_params_url: str | None, url_suffix: str = '/audit_events') -> tuple:
+    def get_events_request(self, query_params_url: str | None, url_suffix: str = "/audit_events") -> tuple:
         """
         Sends request to get events from GitLab.
         """
-        response = self._http_request(method='GET', url_suffix=f'{url_suffix}?{query_params_url}', resp_type='response')
+        response = self._http_request(method="GET", url_suffix=f"{url_suffix}?{query_params_url}", resp_type="response")
 
         events = response.json()
         next_url = (response.links or {}).get("next", {}).get("url")
 
-        demisto.debug(f'Successfully got {len(events)} events.')
+        demisto.debug(f"Successfully got {len(events)} events.")
         return events, next_url
 
     def handle_pagination_first_batch(self, query_params_url: str | None, last_run: dict, url_suffix: str) -> tuple:
@@ -70,19 +69,19 @@ class Client(BaseClient):
         """
         events, next_url = self.get_events_request(query_params_url, url_suffix)
 
-        if last_run.get('first_id'):
-
+        if last_run.get("first_id"):
             for idx, event in enumerate(events):
-                if event.get('id') == last_run['first_id']:
+                if event.get("id") == last_run["first_id"]:
                     events = events[idx:]
                     break
 
-            last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
+            last_run.pop("first_id", None)  # removing to make sure it won't be used in future runs
 
         return events, next_url
 
-    def fetch_events(self, query_params_url: str, last_run: dict, user_defined_params: dict,
-                     url_suffix: str = '/audit_events') -> List[dict]:
+    def fetch_events(
+        self, query_params_url: str, last_run: dict, user_defined_params: dict, url_suffix: str = "/audit_events"
+    ) -> List[dict]:
         """
         Aggregates events using cursor-based pagination, until one of the following occurs:
         1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
@@ -99,24 +98,23 @@ class Client(BaseClient):
         """
         aggregated_events: List[dict] = []
 
-        user_defined_limit = arg_to_number(user_defined_params.get('limit')) or DEFAULT_LIMIT
+        user_defined_limit = arg_to_number(user_defined_params.get("limit")) or DEFAULT_LIMIT
         current_query_params_url: str | None = query_params_url
 
         try:
             events, next_url = self.handle_pagination_first_batch(current_query_params_url, last_run, url_suffix)
             while events:
                 for event in events:
-
-                    if event.get('id') == last_run.get('last_id'):
-                        demisto.debug('Encountered an event that was already fetched - stopping.')
+                    if event.get("id") == last_run.get("last_id"):
+                        demisto.debug("Encountered an event that was already fetched - stopping.")
                         current_query_params_url = None
                         if aggregated_events:
-                            last_run.update({'last_id': aggregated_events[0].get("id")})
+                            last_run.update({"last_id": aggregated_events[0].get("id")})
                         break
 
                     if len(aggregated_events) == user_defined_limit:
-                        demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
-                        last_run['first_id'] = event.get('id')
+                        demisto.debug(f"Reached the user-defined limit ({user_defined_limit}) - stopping.")
+                        last_run["first_id"] = event.get("id")
                         break
 
                     aggregated_events.append(event)
@@ -124,29 +122,29 @@ class Client(BaseClient):
                 else:
                     # Finished iterating through all events in this batch
                     if next_url:
-                        demisto.debug('Using the given next_url from the last API call to execute the next call.')
-                        current_query_params_url = next_url.split('?', 1)[1]
+                        demisto.debug("Using the given next_url from the last API call to execute the next call.")
+                        current_query_params_url = next_url.split("?", 1)[1]
                         events, next_url = self.get_events_request(current_query_params_url, url_suffix)
                         continue
                     else:
                         current_query_params_url = None
 
-                demisto.debug('Finished iterating through all events in this fetch run for the current event type.')
+                demisto.debug("Finished iterating through all events in this fetch run for the current event type.")
                 break
 
         except DemistoException as e:
             if not e.res or e.res.status_code != 429:
                 raise e
-            demisto.debug('Reached API rate limit, storing last used cursor.')
+            demisto.debug("Reached API rate limit, storing last used cursor.")
 
-        if not last_run.get('last_id') and aggregated_events:
-            last_run['last_id'] = aggregated_events[0].get("id")
+        if not last_run.get("last_id") and aggregated_events:
+            last_run["last_id"] = aggregated_events[0].get("id")
 
-        last_run['next_url'] = current_query_params_url
+        last_run["next_url"] = current_query_params_url
         return aggregated_events
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module_command(client: Client, params: dict, events_types_ids: dict) -> str:
@@ -163,7 +161,7 @@ def test_module_command(client: Client, params: dict, events_types_ids: dict) ->
         (str) 'ok' if success.
     """
     fetch_events_command(client, params, {}, events_types_ids)
-    return 'ok'
+    return "ok"
 
 
 def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
@@ -181,12 +179,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     events, _ = client.get_events_request(query_params_url)
     results = CommandResults(
         raw_response=events,
-        readable_output=tableToMarkdown(
-            'GitLab Events',
-            events,
-            date_fields=['created_at'],
-            removeNull=True
-        ),
+        readable_output=tableToMarkdown("GitLab Events", events, date_fields=["created_at"], removeNull=True),
     )
     return events, results
 
@@ -212,81 +205,67 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, events_ty
     demisto.debug(f"Aggregated audits events: {len(audit_events)}")
 
     group_and_project_events = []
-    for event_type in ['groups', 'projects']:
-        for obj_id in events_types_ids.get(f'{event_type}_ids', []):
+    for event_type in ["groups", "projects"]:
+        for obj_id in events_types_ids.get(f"{event_type}_ids", []):
             query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
-            events = client.fetch_events(query_params_url, last_run.get(event_type, {}), params,
-                                         url_suffix=f'/{event_type}/{obj_id}/audit_events')
+            events = client.fetch_events(
+                query_params_url, last_run.get(event_type, {}), params, url_suffix=f"/{event_type}/{obj_id}/audit_events"
+            )
             group_and_project_events.extend(events)
 
     demisto.debug(f"Aggregated group and project events: {len(group_and_project_events)}")
     return audit_events, group_and_project_events, last_run
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
-
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-
         client = Client(
             base_url=f"{params['url']}/api/v4",
-            verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
-            headers={'PRIVATE-TOKEN': params.get('api_key', {}).get('password')},
+            verify=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
+            headers={"PRIVATE-TOKEN": params.get("api_key", {}).get("password")},
         )
 
         events_collection_management = {
-            'groups_ids': argToList(params.get('group_ids', '')),
-            'projects_ids': argToList(params.get('project_ids', '')),
+            "groups_ids": argToList(params.get("group_ids", "")),
+            "projects_ids": argToList(params.get("project_ids", "")),
         }
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module_command(client, params, events_collection_management))
 
-        elif command == 'gitlab-get-events':
+        elif command == "gitlab-get-events":
             events, results = get_events_command(client, params)
             return_results(results)
-            if argToBoolean(args.get('should_push_events', 'false')):
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+            if argToBoolean(args.get("should_push_events", "false")):
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
             if not last_run:
-                last_run = {
-                    "groups": {},
-                    "projects": {},
-                    "audit_events": {}
-                }
+                last_run = {"groups": {}, "projects": {}, "audit_events": {}}
             audit_events, group_and_project_events, last_run = fetch_events_command(
-                client, params, last_run,
-                events_collection_management
+                client, params, last_run, events_collection_management
             )
             audit_events, group_and_project_events = reformat_details(audit_events, group_and_project_events)
 
-            send_events_to_xsiam(
-                audit_events + group_and_project_events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            send_events_to_xsiam(audit_events + group_and_project_events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(last_run)
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{e}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

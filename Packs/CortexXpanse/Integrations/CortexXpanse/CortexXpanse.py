@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 from datetime import datetime, timedelta
 from dateutil import parser
-import ipaddress
 
 import urllib3
 
@@ -1320,309 +1319,29 @@ def add_note_to_asset_command(client: Client, args: dict[str, Any]) -> CommandRe
     return command_results
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    ip command returns enrichment for an IP address.
-
-    Args:
-        client (Client): CortexXpanse client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['ip']`` IP to enrich
-
-    Returns:
-        List of CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
-    """
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('ip(s) not specified')
-
-    if len(ips) > DEFAULT_SEARCH_LIMIT:
-        ips = ips[:DEFAULT_SEARCH_LIMIT]
-
-    xpanse_ip_list_command_output: list[dict[str, Any]] = []
-    xsoar_xpanse_indicator_list_command_output: list[dict[str, Any]] = []
-    xsoar_indicator_list_command_output: list[dict[str, Any]] = []
-    command_results = []
-    ips_not_found = []
-
-    for ip in ips:
-        is_xsoar_timestamp_within_three_days = None
-        xsoar_ips_of_indicators = []
-        xsoar_indicators = []
-
-        ip_version_type = ipaddress.ip_address(ip).version
-
-        if ip_version_type == 4:
-            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IP")
-            search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
-        elif ip_version_type == 6:
-            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IPv6")
-            search_params = [{"field": "ipv6_address", "operator": "eq", "value": ip}]
-        else:
-            ips_not_found.append(ip)
-            continue
-
-        if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
-            xsoar_indicators = search_xsoar_indicator_results.get('iocs')
-            if not isinstance(xsoar_indicators, list):
-                xsoar_indicators = [xsoar_indicators]
-            xsoar_ips_of_indicators = [entry['value'] for entry in xsoar_indicators if 'value' in entry]
-
-        if ip in xsoar_ips_of_indicators:
-            xsoar_indicators = [entry for entry in xsoar_indicators if entry.get('value') == ip]
-            if len(xsoar_indicators) == 1 and "insightCache" in xsoar_indicators[0]:
-                indicator_timestamp = xsoar_indicators[0].get('insightCache').get('modified')
-                is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
-
-        if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
-            insight_cache = xsoar_indicators[0].get('insightCache')
-            score_data = insight_cache.get('scores')
-            if score_data:
-                cortex_xpanse_score = score_data.get('Cortex Xpanse')
-                if cortex_xpanse_score:
-                    xpanse_indicator_data_subset = {
-                        'name': xsoar_indicators[0].get('value'),
-                        'indicator_type': xsoar_indicators[0].get('indicator_type'),
-                        'score': xsoar_indicators[0].get('score'),
-                        'reliability': cortex_xpanse_score.get('reliability'),
-                        'id': xsoar_indicators[0].get('id')
-                    }
-                    xsoar_xpanse_indicator_list_command_output.append(xpanse_indicator_data_subset)
-                elif insight_cache and not cortex_xpanse_score:
-                    indicator_sources: list = xsoar_indicators[0].get('sourceBrands')
-                    non_xpanse_indicator_data_subset = {
-                        'name': xsoar_indicators[0].get('value'),
-                        'integrations': indicator_sources
-                    }
-                    xsoar_indicator_list_command_output.append(non_xpanse_indicator_data_subset)
-        elif not is_xsoar_timestamp_within_three_days:
-            ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
-            formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
-            if len(formatted_response) > 0:
-                formatted_response = formatted_response[0]
-            else:
-                ips_not_found.append(ip)
-                continue
-            formatted_response['ip'] = ip
-
-            xpanse_ip_list_command_output.append({
-                k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
-            })
-        else:
-            ips_not_found.append(ip)
-
-        xpanse_api_response_ip_list = [entry['ip'] for entry in xpanse_ip_list_command_output if 'ip' in entry]
-
-        if ip in xpanse_api_response_ip_list:
-            ip_standard_context = Common.IP(
-                ip=ip,
-                dbot_score=Common.DBotScore(
-                    indicator=ip,
-                    indicator_type=DBotScoreType.IP,
-                    integration_name="CortexXpanse",
-                    score=Common.DBotScore.NONE,
-                    reliability=demisto.params().get('integration_reliability')
-                )
-            )
-            command_results.append(CommandResults(
-                readable_output=tableToMarkdown("IP indicator was found from Xpanse API", {"IP": ip}),
-                indicator=ip_standard_context
-            ))
-
-    if len(xpanse_ip_list_command_output) > 0:
-        readable_output = tableToMarkdown('Xpanse Discovered IP List', xpanse_ip_list_command_output)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='ASM.IP',
-            outputs_key_field=['name', 'asset_type'],
-            outputs=xpanse_ip_list_command_output,
-            raw_response=xpanse_ip_list_command_output
-        ))
-
-    if len(xsoar_indicator_list_command_output) > 0:
-        markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
-                         "These IPs have not been found to be attributed to Xpanse`.")
-        readable_output = tableToMarkdown("XSOAR Indicator Discovered IP List (Not Related to Xpanse)\n" + markdown_body,
-                                          xsoar_indicator_list_command_output)
-        command_results.append(CommandResults(
-            readable_output=readable_output
-        ))
-
-    if len(xsoar_xpanse_indicator_list_command_output) > 0:
-        markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
-                         "If you would additional Xpanse specific information about these please use "
-                         "`asm-list-asset-internet-exposure`.")
-        readable_output = tableToMarkdown(name="Xpanse Discovered IP List (Existing Indicators)\n" + markdown_body,
-                                          t=xsoar_xpanse_indicator_list_command_output)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='ASM.TIM.IP',
-            outputs_key_field='name',
-            outputs=xsoar_xpanse_indicator_list_command_output,
-            raw_response=xsoar_xpanse_indicator_list_command_output
-        ))
-
-    if ips_not_found:
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(name="IPs Not Found", t={"ip": ips_not_found})
-        ))
-
+def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    command_results = CommandResults(
+        outputs_prefix='',
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=None,
+        readable_output="The `!ip` command for the Cortex Xpanse integration has been deprecated, "
+                        "please use the `asm-get-asset-internet-exposure` command or the "
+                        "[Xpanse Feed Integration](https://xsoar.pan.dev/docs/reference/integrations/xpanse-feed)."
+    )
     return command_results
 
 
-def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
-    """
-    domain command returns enrichment for a domain.
-
-    Args:
-        client (Client): CortexXpanse client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['domain']`` Domain to enrich
-
-    Returns:
-        List of CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
-    """
-    domains = argToList(args.get('domain'))
-    if len(domains) == 0:
-        raise ValueError('domains(s) not specified')
-
-    if len(domains) > DEFAULT_SEARCH_LIMIT:
-        domains = domains[:DEFAULT_SEARCH_LIMIT]
-
-    xpanse_domain_list_command_output: list[dict[str, Any]] = []
-    xsoar_xpanse_indicator_list_command_output: list[dict[str, Any]] = []
-    xsoar_indicator_list_command_output: list[dict[str, Any]] = []
-    command_results = []
-    is_xsoar_timestamp_within_three_days = None
-    domains_not_found = []
-
-    for domain in domains:
-        xsoar_indicators = []
-        xsoar_domains_of_indicators = []
-        is_xsoar_timestamp_within_three_days = False
-
-        if domain.startswith('*.'):
-            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:DomainGlob")
-        else:
-            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:Domain")
-
-        if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
-            xsoar_indicators = search_xsoar_indicator_results.get('iocs')
-            if not isinstance(xsoar_indicators, list):
-                xsoar_indicators = [xsoar_indicators]
-            xsoar_domains_of_indicators = [entry['value'] for entry in xsoar_indicators if 'value' in entry]
-
-        if domain in xsoar_domains_of_indicators:
-            xsoar_indicators = [entry for entry in xsoar_indicators if entry.get('value') == domain]
-            if len(xsoar_indicators) == 1 and "insightCache" in xsoar_indicators[0]:
-                indicator_timestamp = xsoar_indicators[0].get('insightCache').get('modified')
-                is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
-
-        if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
-            insight_cache = xsoar_indicators[0].get('insightCache')
-            score_data = insight_cache.get('scores')
-            if score_data:
-                cortex_xpanse_score = score_data.get('Cortex Xpanse')
-                if cortex_xpanse_score:
-                    indicator_data_subset = {
-                        'name': xsoar_indicators[0].get('value'),
-                        'indicator_type': xsoar_indicators[0].get('indicator_type'),
-                        'score': xsoar_indicators[0].get('score'),
-                        'reliability': cortex_xpanse_score.get('reliability'),
-                        'id': xsoar_indicators[0].get('id')
-                    }
-                    xpanse_indicator_data = indicator_data_subset
-                    xsoar_xpanse_indicator_list_command_output.append(xpanse_indicator_data)
-                elif insight_cache and not cortex_xpanse_score:
-                    indicator_sources: list = xsoar_indicators[0].get('sourceBrands')
-                    indicator_data_subset = {
-                        'name': xsoar_indicators[0].get('value'),
-                        'integrations': indicator_sources
-                    }
-                    non_xpanse_indicator_data = indicator_data_subset
-                    xsoar_indicator_list_command_output.append(non_xpanse_indicator_data)
-        elif not is_xsoar_timestamp_within_three_days:
-            search_params = [
-                {"field": "name", "operator": "eq", "value": domain},
-                {"field": "type", "operator": "in", "value": ['domain']}
-            ]
-            domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
-            formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
-            if len(formatted_response) > 0:
-                formatted_response = formatted_response[0]
-            else:
-                domains_not_found.append(domain)
-                continue
-            formatted_response['domain'] = domain
-
-            xpanse_domain_list_command_output.append({
-                k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
-            })
-        else:
-            domains_not_found.append(domain)
-
-        xpanse_api_response_domain_list = [entry['domain'] for entry in xpanse_domain_list_command_output if 'domain' in entry]
-
-        if domain in xpanse_api_response_domain_list:
-            if domain.startswith('*.'):
-                indicator_type = DBotScoreType.DOMAINGLOB
-            else:
-                indicator_type = DBotScoreType.DOMAIN
-
-            domain_standard_context = Common.Domain(
-                domain=domain,
-                dbot_score=Common.DBotScore(
-                    indicator=domain,
-                    indicator_type=indicator_type,
-                    integration_name="CortexXpanse",
-                    score=Common.DBotScore.NONE,
-                    reliability=demisto.params().get('integration_reliability')
-                )
-            )
-
-            command_results.append(CommandResults(
-                readable_output=tableToMarkdown("Domain indicator was found from Xpanse API", {"domain": domain}),
-                indicator=domain_standard_context
-            ))
-
-    if len(xpanse_domain_list_command_output) > 0:
-        readable_output = tableToMarkdown('Xpanse Discovered Domain List', xpanse_domain_list_command_output)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='ASM.Domain',
-            outputs_key_field=['name', 'asset_type'],
-            outputs=xpanse_domain_list_command_output,
-            raw_response=xpanse_domain_list_command_output
-        ))
-
-    if len(xsoar_indicator_list_command_output) > 0:
-        markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
-                         "These domains have not been found to be attributed to Xpanse`.")
-        readable_output = tableToMarkdown("XSOAR Indicator Discovered Domain List (Not Related to Xpanse)\n" + markdown_body,
-                                          xsoar_indicator_list_command_output)
-        command_results.append(CommandResults(
-            readable_output=readable_output
-        ))
-
-    if len(xsoar_xpanse_indicator_list_command_output) > 0:
-        markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
-                         "If you would additional Xpanse specific information about these please use"
-                         "  `asm-list-asset-internet-exposure`.")
-        readable_output = tableToMarkdown(name="Xpanse Discovered Domain List (Existing Indicators)\n" + markdown_body,
-                                          t=xsoar_xpanse_indicator_list_command_output)
-        command_results.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='ASM.TIM.Domain',
-            outputs_key_field='name',
-            outputs=xsoar_xpanse_indicator_list_command_output,
-            raw_response=xsoar_xpanse_indicator_list_command_output
-        ))
-
-    if domains_not_found:
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(name="Domains Not Found", t={"domain": domains_not_found})
-        ))
-
+def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    command_results = CommandResults(
+        outputs_prefix='',
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=None,
+        readable_output="The `!domain` command for the Cortex Xpanse integration has been deprecated, "
+                        "please use the `asm-get-asset-internet-exposure` command or the "
+                        "[Xpanse Feed Integration](https://xsoar.pan.dev/docs/reference/integrations/xpanse-feed)."
+    )
     return command_results
 
 
