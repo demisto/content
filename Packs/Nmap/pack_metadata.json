@@ -2,7 +2,7 @@
     "name": "Nmap",
     "description": "Run nmap scans with the given parameters",
     "support": "xsoar",
-    "currentVersion": "1.2.6",
+    "currentVersion": "1.2.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
