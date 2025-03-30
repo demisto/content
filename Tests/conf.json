@@ -483,7 +483,7 @@
             "playbookID": "Mail-Listener Test Playbook",
             "fromversion": "5.0.0",
             "instance_names": [
-                "Mail_Sender_New__Mail_Sender_New_STARTTLS"
+                "Mail_Sender_(New)_STARTTLS"
             ]
         },
         {
