@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from CommonServerPython import *
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -28,7 +28,7 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = ""
-        self.headers: Dict[str, str] = {}
+        self.headers: dict[str, str] = {}
         self.login()
 
     def generate_new_access_token(self):
@@ -71,7 +71,7 @@ class Client(BaseClient):
         authorization_header_value = f"Bearer {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
-    def get_expiration_in_seconds(self, auth_response: Dict[str, str]):
+    def get_expiration_in_seconds(self, auth_response: dict[str, str]):
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         is_expiration_valid = access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int)
         error_msg = f"HPEArubaClearPass error: Got an invalid access token expiration time from the API: " \
@@ -139,7 +139,7 @@ def parse_items_response(response: dict, active_sessions_parsing=None):  # type:
     return human_readable, items_list
 
 
-def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_endpoints_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets a list of endpoints. If mac_address was not given, all the endpoints will be returned.
     Note: In Aruba ClearPass all endpoints appear in Configuration > Identity > Endpoints.
@@ -170,7 +170,7 @@ def endpoints_filter_to_json_object(status, mac_address):
     return json.dumps(endpoints_filter)  # the API requires the value of 'filter' to be a json object.
 
 
-def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_endpoint_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updates an endpoint by its endpoint_id. Only endpoint_id is a mandatory field.
     """
@@ -198,7 +198,7 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def delete_redundant_data(res: Dict[str, Any]):
+def delete_redundant_data(res: dict[str, Any]):
     """
     Removes the '_links' entity from the response. This entity includes a url to Aruba server for the given object which
     equals the requested url suffix.
@@ -217,7 +217,7 @@ def get_endpoint_request_body(status, mac_address, description, device_insight_t
     return request_body
 
 
-def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_attributes_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets a list of attributes. If attribute_id was not given, all the attributes will be returned.
     Note: In Aruba ClearPass all attributes appear in Administration > Dictionaries > Dictionary Attributes.
@@ -256,7 +256,7 @@ def attributes_filter_to_json_object(attribute_id, name, entity_name):
     return json.dumps(attribute_filter)  # the API requires the value of 'filter' to be a json object.
 
 
-def check_api_limitation_on_specific_data_types(args: Dict[str, Any]):
+def check_api_limitation_on_specific_data_types(args: dict[str, Any]):
     """ Checks if the attribute data_type match the api limitations like:
     1. allow_multiple is available only when data_type is String.
     2. allowed_value is available only when data_type is List.
@@ -272,7 +272,7 @@ def check_api_limitation_on_specific_data_types(args: Dict[str, Any]):
         return_error(f"Note: allowed_value argument should be set only for data type List and not for {data_type}.")
 
 
-def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_attribute_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates an attribute by the given name, entity_name, data_type which are all mandatory fields.
     """
@@ -290,7 +290,7 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def create_new_attribute_body(args: Dict[str, Any]):
+def create_new_attribute_body(args: dict[str, Any]):
     """
     Creates a new attribute body for creating and updating an attribute.
     """
@@ -321,7 +321,7 @@ def get_attribute_request_body(name, entity_name, data_type, mandatory, attribut
     return new_attribute_body
 
 
-def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_attribute_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updates an attribute fields by the attribute_id which is a mandatory field.
     """
@@ -340,7 +340,7 @@ def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_attribute_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes an attribute by the attribute_id which is a mandatory field.
     """
@@ -351,7 +351,7 @@ def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return CommandResults(readable_output=human_readable)
 
 
-def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_active_sessions_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets a list of active sessions. If session_id was not given, all the active sessions will be returned.
     Note: In Aruba ClearPass all active sessions appear in: Home > Guest > Active Sessions.
@@ -398,12 +398,13 @@ def parse_active_sessions_response(response: dict) -> dict:
     }
 
 
-def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def disconnect_active_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Disconnects an active session by the session_id which is a mandatory field.
     """
     session_id = args['session_id']
-    url_suffix = f"/session/{session_id}/disconnect"
+    encoded_session_id = urllib.parse.quote(session_id, safe='')
+    url_suffix = f"/session/{encoded_session_id}/disconnect"
     body = {"id": session_id, "confirm_disconnect": True}
 
     res = client.prepare_request(method='POST', params={}, url_suffix=url_suffix, body=body)

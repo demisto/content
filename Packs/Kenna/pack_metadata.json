@@ -2,7 +2,7 @@
     "name": "Kenna",
     "description": "Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.",
     "support": "xsoar",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
