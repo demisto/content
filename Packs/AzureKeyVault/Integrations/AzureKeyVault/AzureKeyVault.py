@@ -154,7 +154,7 @@ class KeyVaultClient:
         Delete Key Vault by name.
 
         Args:
-            subscription_id (str): Subscription ID.
+            subscription_id (str): Subscription     ID.
             resource_group_name (str): Resource group name.
             vault_name (str): Key Vault name.
 
