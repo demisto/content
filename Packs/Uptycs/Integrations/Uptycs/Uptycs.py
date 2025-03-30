@@ -2281,6 +2281,7 @@ def uptycs_fetch_incidents():
                 "Severity": severity_to_int(context.get("severity")),
                 "Details": json.dumps(context, indent=4),
                 "rawJSON": json.dumps(context),
+                "haIntegrationEventID": context.get('alertId')
             }
             incidents.insert(0, incident)
 
