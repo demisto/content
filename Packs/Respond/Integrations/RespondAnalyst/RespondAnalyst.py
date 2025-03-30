@@ -876,7 +876,7 @@ def get_remote_data_command(rest_client, args):
     full_id = args.get("id")
     last_index = full_id.rfind(":")
     args["respond_tenant_id"] = full_id[0:last_index]
-    args["incident_id"] = full_id[last_index + 1:]
+    args["incident_id"] = full_id[last_index + 1 :]
     entries = []
     try:
         updated_incident = get_formatted_incident(rest_client, args)

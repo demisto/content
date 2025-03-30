@@ -138,7 +138,7 @@ def request_with_pagination(
         response = http_request("POST", api_endpoint, payload, headers=headers)
         next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
     if page and page_size:
-        return results[(-1 * page_size):], page_size
+        return results[(-1 * page_size) :], page_size
 
     return results, len_of_results
 
@@ -3253,7 +3253,12 @@ def get_search_logs_command(args: dict) -> CommandResults:
 
     api_endpoint = "/api/archive/get-archive-search-logs"
     result_list, _ = request_with_pagination(
-        api_endpoint, [data], response_param="logs", limit=limit, page=page, page_size=page_size  # type: ignore
+        api_endpoint,
+        [data],
+        response_param="logs",
+        limit=limit,  # type: ignore
+        page=page,
+        page_size=page_size,  # type: ignore
     )
 
     return CommandResults(outputs_prefix="Mimecast.SearchLog", outputs=result_list[0])

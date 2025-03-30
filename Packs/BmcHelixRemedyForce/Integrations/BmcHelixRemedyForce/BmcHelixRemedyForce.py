@@ -426,7 +426,7 @@ class Client(BaseClient):
             else:
                 return resp.json()
         else:
-            handle_error_response(resp)     # noqa: RET503
+            handle_error_response(resp)  # noqa: RET503
 
     def get_session_id(self):
         """
@@ -1406,8 +1406,7 @@ def get_update_incident_payload(args: dict[str, str]) -> tuple[dict[str, Any], l
     additional_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")[0]
 
     additional_fields_body = {
-        (MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(key, key)): value
-        for (key, value) in additional_fields.items()
+        (MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS.get(key, key)): value for (key, value) in additional_fields.items()
     }
 
     # Throw error if additional fields contain default argument fields

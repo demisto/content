@@ -911,9 +911,7 @@ def get_fetch_topic_partitions(
 
         for topic_partition in all_topic_partitions:
             if topic_partition.partition == int(partition):
-                demisto.debug(
-                    f"Updating topic {topic} and partition {partition} to fetch from previous offset {specific_offset}"
-                )
+                demisto.debug(f"Updating topic {topic} and partition {partition} to fetch from previous offset {specific_offset}")
                 all_topic_partitions.remove(topic_partition)
 
     return topic_partitions_in_system + all_topic_partitions

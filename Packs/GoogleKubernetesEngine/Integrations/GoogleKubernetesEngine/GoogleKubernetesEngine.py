@@ -871,8 +871,8 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-muster-auth": gcloud_clusters_set_master_auth,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-addons": gcloud_clusters_set_addons_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-legacy-auth": gcloud_clusters_set_legacy_auth_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-master-authorized-network":
-            gcloud_clusters_set_master_authorized_network_command,
+        f"{INTEGRATION_COMMAND_NAME}-clusters-set-master-authorized-network":  # noqa: E501
+        gcloud_clusters_set_master_authorized_network_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-k8s-stackdriver": gcloud_clusters_set_k8s_stackdriver_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-binary-auth": gcloud_clusters_set_binary_auth,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-intra-node-visibility": gcloud_clusters_set_intra_node_visibility,

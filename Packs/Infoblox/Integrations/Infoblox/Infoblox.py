@@ -962,8 +962,8 @@ def search_related_objects_by_ip_command(client: InfoBloxNIOSClient, args: dict)
 
     title = f"{INTEGRATION_NAME} - IP: {ip} search results."
     context = {
-        f"{INTEGRATION_CONTEXT_NAME}.IPRelatedObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)":
-            fixed_keys_obj_list
+        f"{INTEGRATION_CONTEXT_NAME}.IPRelatedObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)":  # noqa: E501
+        fixed_keys_obj_list
     }
     human_readable = tableToMarkdown(title, fixed_keys_obj_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response

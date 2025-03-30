@@ -113,7 +113,7 @@ def get_service_request_definition_id(
     :return: service_request_definition_id
     :rtype: ``str``
     """
-    if service_request_definition_id:   # noqa: RET503
+    if service_request_definition_id:  # noqa: RET503
         return service_request_definition_id
     elif service_request_definition:
         if using_argument:
@@ -185,7 +185,7 @@ def process_field_id(command, command_args):
         if final_field:  # noqa: RET503
             return final_field
     else:
-        show_service_request_result(message_type, field_data)   # noqa: RET503
+        show_service_request_result(message_type, field_data)  # noqa: RET503
 
 
 def get_field_id(field_id, field, command, command_args, using_argument):
@@ -211,7 +211,7 @@ def get_field_id(field_id, field, command, command_args, using_argument):
     :return: field_id
     :rtype: ``str``
     """
-    if field_id:    # noqa: RET503
+    if field_id:  # noqa: RET503
         return field_id
     elif field:
         if using_argument:

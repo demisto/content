@@ -164,7 +164,7 @@ def get_field_id(field_id, field, command, command_args, using_argument):
     :return: field_id
     :rtype: ``str``
     """
-    if field_id:    # noqa: RET503
+    if field_id:  # noqa: RET503
         return field_id
     elif field:
         if using_argument:

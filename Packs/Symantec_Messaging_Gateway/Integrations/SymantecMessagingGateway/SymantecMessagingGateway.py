@@ -244,7 +244,7 @@ def unblock_email(email):
                 if checked_email == email:
                     href = a["href"]  # Get <a href=...>
                     comma_index = href.find(",")  # Get comma sign index in string
-                    selected_group_member = a["href"][comma_index + 1: -2]  # Get email member number
+                    selected_group_member = a["href"][comma_index + 1 : -2]  # Get email member number
                     break
         # Get next page
         next_page = get_next_page(selected_sender_groups)
@@ -304,7 +304,7 @@ def unblock_domain(domain):
                 if checked_domain == domain:
                     href = a["href"]  # Get <a href=...>
                     comma_index = href.find(",")  # Get comma sign index in string
-                    selected_group_member = a["href"][comma_index + 1: -2]  # Get domain member number
+                    selected_group_member = a["href"][comma_index + 1 : -2]  # Get domain member number
                     break
         # Get next page
         next_page = get_next_page(selected_sender_groups)
@@ -364,7 +364,7 @@ def unblock_ip(ip):
                 if checked_ip == ip:
                     href = a["href"]  # Get <a href=...>
                     comma_index = href.find(",")  # Get comma sign index in string
-                    selected_group_member = a["href"][comma_index + 1: -2]  # Get IP member number
+                    selected_group_member = a["href"][comma_index + 1 : -2]  # Get IP member number
                     break
         next_page = get_next_page(selected_sender_groups)
         soup = BeautifulSoup(next_page.text, "lxml")

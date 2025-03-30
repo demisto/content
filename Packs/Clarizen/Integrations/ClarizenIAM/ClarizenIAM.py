@@ -9,9 +9,7 @@ from IAMApiModule import *
 urllib3.disable_warnings()
 
 """ CONSTANTS """
-USER_FIELDS = (
-    "Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,TimeZone,username,profile,firstname,lastname,state"
-)
+USER_FIELDS = "Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,TimeZone,username,profile,firstname,lastname,state"
 ERROR_CODES_TO_SKIP = [404]
 EMAIL_ATTRIBUTE = "Email"
 

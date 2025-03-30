@@ -107,7 +107,7 @@ def mock_incident_success_response(method, *args, **kwargs):
     with open(INCIDENT_TEST_DATA_FILE) as f:
         api_response = json.load(f)
 
-    if method == "POST":    # noqa: RET503
+    if method == "POST":  # noqa: RET503
         return api_response["create_success"]
     elif method == "PATCH":
         patch_response = Response()
@@ -119,7 +119,7 @@ def mock_incident_warning_response(method, *args, **kwargs):
     with open(INCIDENT_TEST_DATA_FILE) as f:
         api_response = json.load(f)
 
-    if method == "POST":    # noqa: RET503
+    if method == "POST":  # noqa: RET503
         return api_response["create_success"]
     elif method == "PATCH":
         raise DemistoException("SOME_ISSUE_WITH_UPDATE")

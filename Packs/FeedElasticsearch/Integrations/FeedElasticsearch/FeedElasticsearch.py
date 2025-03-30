@@ -163,7 +163,7 @@ def extract_api_from_username_password(username, password):
     Creates (API ID, API Key) tuple from the username/password
     :return: (API ID, API Key)
     """
-    return (username[len(API_KEY_PREFIX):], password) if username and username.startswith(API_KEY_PREFIX) else (None, None)
+    return (username[len(API_KEY_PREFIX) :], password) if username and username.startswith(API_KEY_PREFIX) else (None, None)
 
 
 """ ###################### COMMANDS ###################### """

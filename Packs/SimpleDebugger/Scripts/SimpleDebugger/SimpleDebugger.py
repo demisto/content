@@ -250,7 +250,7 @@ class SimpleDebugger:
         else:
             self.code[frame.f_lineno] = c
         if self.prevlineno != 0:
-            self.code[self.prevlineno] = self.code[self.prevlineno].lstrip("**").rstrip("**")   # noqa: B005
+            self.code[self.prevlineno] = self.code[self.prevlineno].lstrip("**").rstrip("**")  # noqa: B005
         self.prevlineno = frame.f_lineno
         return newcode
 

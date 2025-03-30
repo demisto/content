@@ -61,12 +61,12 @@ def main():
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
             file_path = demisto.args()["file_path"]
-            sftp.get(file_path, "/tmp/" + file_path[file_path.rindex("/") + 1:])  # type: ignore
+            sftp.get(file_path, "/tmp/" + file_path[file_path.rindex("/") + 1 :])  # type: ignore
             sftp.close()  # type: ignore
-            with open("/tmp/" + file_path[file_path.rindex("/") + 1:]) as f:
+            with open("/tmp/" + file_path[file_path.rindex("/") + 1 :]) as f:
                 data = f.read()
                 if demisto.args()["return_file"] == "True":
-                    demisto.results(fileResult(filename=file_path[file_path.rindex("/") + 1:], data=data))
+                    demisto.results(fileResult(filename=file_path[file_path.rindex("/") + 1 :], data=data))
                 else:
                     entry = {
                         "Type": entryTypes["note"],
