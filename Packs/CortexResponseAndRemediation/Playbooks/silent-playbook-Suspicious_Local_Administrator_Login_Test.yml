@@ -12,6 +12,7 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-Suspicious Local Administrator Login Test
 outputs: []
 starttaskid: '0'
