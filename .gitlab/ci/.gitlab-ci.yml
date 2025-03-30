@@ -1,7 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  # CURRENT_BRANCH_NAME: 
+  CURRENT_BRANCH_NAME: fix-platform-upload
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    # ref: $INFRA_BRANCH
+    ref: fix-platform-upload
     project: "${CI_PROJECT_NAMESPACE}/infra"
