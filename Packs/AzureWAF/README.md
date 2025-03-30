@@ -23,8 +23,6 @@
 2. MMM dd yyyy HH:mm:ss
 
 For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. </br>
-> [!NOTE] 
-> Time offsets from UTC is supported
 
 - timeStamp
 - timeStamp_t
@@ -37,7 +35,9 @@ Examples:
 - 2024-11-19T10:50:39+05:00
 - Nov 19 2024 12:50:39
 
-See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.</br>
+> [!NOTE] 
+> Time offsets from UTC is supported. </br>
+> See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.</br>
 ***
 
 ## Data Collection
