@@ -381,11 +381,10 @@ repos:
     - git diff HEAD
     skip: true
 
-- repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.44.0
+- repo: https://github.com/DavidAnson/markdownlint-cli2
+  rev: v0.17.2
   hooks:
-    - id: markdownlint
+    - id: markdownlint-cli2
       files: "^(.*/)?README\\.md$"
-      args: ["--config", ".markdownlint.json","--fix"]
-
-
+      args: [ "--config", ".markdownlint-cli2.jsonc" ]
+      exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
