@@ -2530,17 +2530,15 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
     Returns:
         (List[Dict]): Incidents list.
     """
-    print_debug_msg(f"Creating {len(offenses)} incidents")
-    return [
-        {
-            # NOTE: incident name will be updated in mirroring also with incoming mapper.
-            "name": f"""{offense.get('id')} {offense.get('description', '')}""",
-            "rawJSON": json.dumps(offense),
-            "occurred": get_time_parameter(offense.get("start_time"), iso_format=True),
-            "type": incident_type,
-        }
-        for offense in offenses
-    ]
+    print_debug_msg(f'Creating {len(offenses)} incidents')
+    return [{
+        # NOTE: incident name will be updated in mirroring also with incoming mapper.
+        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
+        'rawJSON': json.dumps(offense),
+        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
+        'type': incident_type,
+        "haIntegrationEventID": str(offense.get("id"))
+    } for offense in offenses]
 
 
 def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
