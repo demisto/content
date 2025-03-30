@@ -766,7 +766,7 @@ def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int = 
     """
 
     if offset >= 0 and limit >= 0:
-        return response_data[offset: (offset + limit)]
+        return response_data[offset : (offset + limit)]
     return response_data[:limit]
 
 

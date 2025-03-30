@@ -519,7 +519,7 @@ class OwnerFeaturizationPipeline:
             src_path_length = 1
             while src.startswith("Chain: "):
                 src_path_length += 1
-                src = src[len("Chain: "):]
+                src = src[len("Chain: ") :]
             if min_path_length is None or src_path_length < min_path_length:
                 min_path_length = src_path_length
         return min_path_length
