@@ -39,8 +39,10 @@ def close_incident_sta(args: Dict[str, Any]):
                         "using": sta_fields.get("safenettrustedaccessinstancename"),
                     },
                 )
-        elif (sta_fields.get("safenettrustedaccessremoveuserfromunusualactivitygroup") == "No"
-              and check_user_exist_group_sta(sta_fields) is False):
+        elif (
+            sta_fields.get("safenettrustedaccessremoveuserfromunusualactivitygroup") == "No"
+            and check_user_exist_group_sta(sta_fields) is False
+        ):
             raise Exception(
                 f'User - {sta_fields.get("safenettrustedaccessusername")} is not a member of the '
                 f'group - {sta_fields.get("safenettrustedaccessunusualactivitygroup")}.'

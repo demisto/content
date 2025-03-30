@@ -3,7 +3,7 @@
 from typing import Any
 
 from CommonServerPython import CommandResults, DemistoException
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 
 
 def test_module_command_success(requests_mock: Any) -> None:

@@ -61,7 +61,7 @@ def test_time_progress_fetch(mocker):
     assert f"pageLimit={limit}" in fetch_filter
     assert "pageStart" not in fetch_filter
     expected_last_run = datetime.strptime(VERSIONS_RAW_RESPONSE[limit - 1]["timeDetected"], "%Y-%m-%dT%H:%M:%S.000Z")
-    datetime.strptime(last_run["lastRun"], "%Y-%m-%dT%H:%M:%SZ") == expected_last_run   # noqa: B015
+    datetime.strptime(last_run["lastRun"], "%Y-%m-%dT%H:%M:%SZ") == expected_last_run  # noqa: B015
     assert last_run["page_start"] == 0
     assert last_run["fetched_ids"] == [version["id"] for version in VERSIONS_RAW_RESPONSE[:limit]]
 
@@ -90,7 +90,7 @@ def test_pagination_fetch(mocker):
     assert f"pageLimit={limit}" in fetch_filter
     assert f"pageStart={page_start}" in fetch_filter
     expected_last_run = datetime.strptime(VERSIONS_RAW_RESPONSE[limit - 1]["timeDetected"], "%Y-%m-%dT%H:%M:%S.000Z")
-    datetime.strptime(last_run["lastRun"], "%Y-%m-%dT%H:%M:%SZ") == expected_last_run   # noqa: B015
+    datetime.strptime(last_run["lastRun"], "%Y-%m-%dT%H:%M:%SZ") == expected_last_run  # noqa: B015
     assert last_run["page_start"] == page_start + len(incidents)
     assert last_run["fetched_ids"] == [version["id"] for version in VERSIONS_RAW_RESPONSE[:limit]]
 

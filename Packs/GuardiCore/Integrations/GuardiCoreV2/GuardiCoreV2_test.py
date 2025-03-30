@@ -4,7 +4,7 @@ import pytest
 from CommonServerPython import *
 from dateparser import parse
 from freezegun import freeze_time
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 from pytz import utc
 
 # Only a test key, no worries.

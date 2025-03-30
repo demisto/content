@@ -1281,7 +1281,7 @@ def uptycs_get_parent_event_information():
 
     query = ""
     if child_ancestor_list is not None:
-        child_ancestor_list = child_ancestor_list[2: len(child_ancestor_list) - 2].split("}, {")
+        child_ancestor_list = child_ancestor_list[2 : len(child_ancestor_list) - 2].split("}, {")
         ancestors = []
         for ancestor in child_ancestor_list:
             ancestors.append(json.loads("{" + ancestor + "}"))
@@ -2281,7 +2281,7 @@ def uptycs_fetch_incidents():
                 "Severity": severity_to_int(context.get("severity")),
                 "Details": json.dumps(context, indent=4),
                 "rawJSON": json.dumps(context),
-                "haIntegrationEventID": context.get('alertId')
+                "haIntegrationEventID": context.get("alertId"),
             }
             incidents.insert(0, incident)
 

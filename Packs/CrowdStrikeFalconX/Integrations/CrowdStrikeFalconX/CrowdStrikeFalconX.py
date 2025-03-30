@@ -232,7 +232,7 @@ class Client:
         except requests.exceptions.ConnectionError as exception:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
-            err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
+            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
             err_msg = (
                 f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"
                 "Verify that the server URL parameter"
@@ -1575,9 +1575,7 @@ def validate_command_args(command: str, args: dict) -> None:
         if "file_name" not in args:
             raise Exception("file_name argument is a mandatory for cs-fx-upload-file command")
         if "polling" in args and args.get("submit_file") != "yes":
-            raise Exception(
-                "The command cs-fx-upload-file support the polling option just when the submit_file argument is yes."
-            )
+            raise Exception("The command cs-fx-upload-file support the polling option just when the submit_file argument is yes.")
 
     elif command == "cs-fx-submit-uploaded-file":
         if "environment_id" not in args:

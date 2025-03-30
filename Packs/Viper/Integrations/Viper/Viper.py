@@ -94,7 +94,7 @@ def viper_search(client, args):
             return_results(viper_search_results)
             return filename
         else:
-            return_error("No valid sample found")   # noqa: RET503
+            return_error("No valid sample found")  # noqa: RET503
     else:
         raise DemistoException("Hash length is invalid.")
 

@@ -686,9 +686,7 @@ def get_sample_by_hash_command():
     hash_type = hash_type_lookup.get(len(hash))
     if hash_type is None:
         error_string = " or ".join(f"{len_} ({type_})" for len_, type_ in hash_type_lookup.items())
-        raise ValueError(
-            f"Invalid hash provided, must be of length {error_string}. Provided hash had a length of {len(hash)}."
-        )
+        raise ValueError(f"Invalid hash provided, must be of length {error_string}. Provided hash had a length of {len(hash)}.")
 
     # query API
     raw_response = get_sample_by_hash(hash_type, hash)

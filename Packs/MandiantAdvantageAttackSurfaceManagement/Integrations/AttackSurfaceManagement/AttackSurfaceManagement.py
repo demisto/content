@@ -115,9 +115,7 @@ class Client(BaseClient):
         response = self._http_request("GET", endpoint, headers=self.get_headers())
 
         if not isinstance(response, dict) or not response.get("success"):
-            raise DemistoException(
-                f"The ASM API was unable to return details forissue {issue_id} in project {self.project_id}"
-            )
+            raise DemistoException(f"The ASM API was unable to return details forissue {issue_id} in project {self.project_id}")
 
         return response.get("result") or {}
 
