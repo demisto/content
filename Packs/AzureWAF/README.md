@@ -10,16 +10,19 @@
 
 | Category | Category Display Name |
 |:----------------------------|:--------------------------------------|
-| ApplicationGatewayAccessLog [Access logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#access-log-category) | Application Gateway Access Log |
-| ApplicationGatewayFirewallLog [Firewall logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#firewall-log-category) | Application Gateway Firewall Log |
-| FrontDoorAccessLog [Access logs](https://learn.microsoft.com/en-us/azure/frontdoor/monitor-front-door?pivots=front-door-standard-premium#access-log) | Frontdoor Access Log |
-| FrontDoorWebApplicationFirewallLog [Web Application Firewall logs](https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-monitor?pivots=front-door-standard-premium) | Frontdoor Web Application Firewall Log |
+| ApplicationGatewayAccessLog | [Application Gateway Access Log](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#access-log-category) |
+| ApplicationGatewayFirewallLog | [Application Gateway Firewall Log](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#firewall-log-category) |
+| FrontDoorAccessLog | [Frontdoor Access Log](https://learn.microsoft.com/en-us/azure/frontdoor/monitor-front-door?pivots=front-door-standard-premium#access-log) |
+| FrontDoorWebApplicationFirewallLog | [Frontdoor Web Application Firewall Log](https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-monitor?pivots=front-door-standard-premium) |
 
 
 
 ### Supported Timestamp Formats:
 
-For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone.
+yyyy-MM-ddThh:mm:ssZ
+MMM dd yyyy HH:mm:ss
+
+For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. </br>
 [!NOTE] Time offsets from UTC is supported
 
 - timeStamp
@@ -27,10 +30,13 @@ For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below i
 - time
 - TimeGenerated
 
+Examples:
 
-yyyy-MM-ddThh:mm:ssZ - for example: 2025-03-26T05:39:46Z, 2024-11-19T10:50:39+05:00. See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.
-MMM dd yyyy HH:mm:ss - for example: Nov 19 2024 12:50:39
+- 2025-03-26T05:39:46Z
+- 2024-11-19T10:50:39+05:00
+- Nov 19 2024 12:50:39
 
+See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.</br>
 ***
 
 ## Data Collection
