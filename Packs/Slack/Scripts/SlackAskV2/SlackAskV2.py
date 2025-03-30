@@ -119,9 +119,7 @@ def main():
         demisto.results(demisto.executeCommand("send-notification", args))
     except ValueError as e:
         if "Unsupported Command" in str(e):
-            return_error(
-                "The command is unsupported by this script. If you have SlackV2 enabled, please use SlackAsk instead."
-            )
+            return_error("The command is unsupported by this script. If you have SlackV2 enabled, please use SlackAsk instead.")
         else:
             return_error("An error has occurred while executing the send-notification command", error=e)
 

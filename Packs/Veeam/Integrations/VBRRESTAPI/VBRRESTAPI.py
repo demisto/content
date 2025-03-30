@@ -1098,9 +1098,14 @@ def get_configuration_backup_incident(
 
     incident: dict = {}
     last_backup_datetime = parser.isoparse(last_time_backup)
-    if difference is None or difference >= backup_older_then_days and (not last_successful_backup_date or (
-        last_successful_backup_datetime is not None and last_backup_datetime > last_successful_backup_datetime
-    )):
+    if (
+        difference is None
+        or difference >= backup_older_then_days
+        and (
+            not last_successful_backup_date
+            or (last_successful_backup_datetime is not None and last_backup_datetime > last_successful_backup_datetime)
+        )
+    ):
         time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
         details = f"Last successful backup: {time_}"
         integration_instance = demisto.callingContext.get("context", {}).get("IntegrationInstance", "")

@@ -425,7 +425,7 @@ def parse_device_field_list_response(response: dict, device_id: str, limit: Opti
     """Parse the device field list response"""
     parsed_data = {"DeviceUID": device_id, "CDFValues": []}  # type: ignore
     for cdf_item in response:
-        parsed_data["CDFValues"].append(    # type: ignore[attr-defined]
+        parsed_data["CDFValues"].append(  # type: ignore[attr-defined]
             {  # type: ignore
                 "CDFUID": cdf_item.get("cdfUid"),
                 "FieldKey": cdf_item.get("cdfFieldKey"),

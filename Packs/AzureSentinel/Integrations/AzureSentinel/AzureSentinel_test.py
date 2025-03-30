@@ -1298,13 +1298,12 @@ class TestHappyPath:
             case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
         """
         # prepare
-        raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
-        last_incident_number = args.get('last_incident_number')
-        latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
+        raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get("value")[0]]
+        last_incident_number = args.get("last_incident_number")
+        latest_created_time = dateparser.parse("2020-02-02T14:05:01.5348545Z")
 
         # run
-        next_run, _ = process_incidents(raw_incidents, latest_created_time,
-                                        last_incident_number)
+        next_run, _ = process_incidents(raw_incidents, latest_created_time, last_incident_number)
 
         # validate
         assert next_run.get("last_fetch_ids") == expected_result.get("last_fetch_ids")
@@ -1329,10 +1328,9 @@ class TestHappyPath:
         """
         # prepare
         client = mock_client()
-        last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
-                    'last_fetch_ids': []}
-        first_fetch_time = '3 days'
-        minimum_severity = 'Informational'
+        last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+        first_fetch_time = "3 days"
+        minimum_severity = "Informational"
 
         mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
         mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -1362,10 +1360,9 @@ class TestHappyPath:
         """
         # prepare
         client = mock_client()
-        last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
-                    'last_fetch_ids': ['inc_name']}
-        first_fetch_time = '3 days'
-        minimum_severity = 'Informational'
+        last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": ["inc_name"]}
+        first_fetch_time = "3 days"
+        minimum_severity = "Informational"
 
         process_mock = mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
         mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -1376,7 +1373,7 @@ class TestHappyPath:
         # validate
         assert not process_mock.call_args[0][0]
 
-    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 2)])
+    @pytest.mark.parametrize("min_severity, expected_incident_num", [(1, 2), (3, 2)])
     def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
         """
         Given:
@@ -1394,9 +1391,9 @@ class TestHappyPath:
         latest_created_time = dateparser.parse("2020-02-02T14:05:01.5348545Z")
 
         # run
-        next_run, incidents = process_incidents(raw_incidents=raw_incidents,
-                                                latest_created_time=latest_created_time,
-                                                last_incident_number=1)
+        next_run, incidents = process_incidents(
+            raw_incidents=raw_incidents, latest_created_time=latest_created_time, last_incident_number=1
+        )
 
         # validate
         assert next_run.get("last_fetch_ids") == ["inc_ID", "inc_ID_3"]

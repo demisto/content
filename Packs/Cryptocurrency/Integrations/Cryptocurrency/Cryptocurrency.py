@@ -58,7 +58,7 @@ def crypto_reputation_command(args: dict[str, str], reliability: str, reputation
     # For cases the command was executed by a playbook/user and the addresses received are verified
     # Stripping the `bitcoin` prefix from the given addresses (if exists) then add it to match the convention.
     if args.get("address_type") == BITCOIN:
-        bitcoin_addresses = [f'bitcoin:{address.lstrip("bitcoin:")}' for address in crypto_addresses]   # noqa: B005
+        bitcoin_addresses = [f'bitcoin:{address.lstrip("bitcoin:")}' for address in crypto_addresses]  # noqa: B005
 
     else:
         bitcoin_addresses = [address for address in crypto_addresses if BITCOIN in address]

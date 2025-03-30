@@ -567,8 +567,7 @@ def events_search_results_command(client: FortiSIEMClient, args: dict[str, Any])
     start_index = (page - 1) * limit  # type: ignore[operator]
     response = client.events_search_results_request(search_id, start_index, limit)  # type: ignore[arg-type]
     outputs, total_pages = format_search_events_results(response, limit)  # type: ignore[arg-type]
-    header = format_readable_output_header(
-        f"Search Query: {search_id} Results", limit, page, total_pages)  # type: ignore[arg-type]
+    header = format_readable_output_header(f"Search Query: {search_id} Results", limit, page, total_pages)  # type: ignore[arg-type]
     readable_outputs = tableToMarkdown(
         header,
         get_list_events_readable_output(outputs),
@@ -1704,8 +1703,7 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
         List[dict]: Formatted incidents.
     """
     for incident in relevant_incidents:
-        incident["normalizedEventSeverity"] = INCIDENT_EVENT_CATEGORY_MAPPING.get(
-            incident.get("eventSeverityCat"), 0.5)  # type: ignore[arg-type]
+        incident["normalizedEventSeverity"] = INCIDENT_EVENT_CATEGORY_MAPPING.get(incident.get("eventSeverityCat"), 0.5)  # type: ignore[arg-type]
         format_integer_field_to_verbal(incident)  # formatting integer attributes.
 
         for attribute_name in REFORMAT_INCIDENT_FIELDS:  # formatting nested attributes.

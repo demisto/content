@@ -121,7 +121,7 @@ def translate_verdict(param: str) -> int:
 
 def split_query_to_term_args(query: str) -> dict[str, Any]:
     def get_value(term: str) -> str:
-        return term[term.index(":") + 1:].strip()
+        return term[term.index(":") + 1 :].strip()
 
     def get_key(term: str) -> str:
         return term[: term.index(":")].strip()

@@ -2422,17 +2422,13 @@ def test_send_request_caching_disabled(mocker, capfd):
         SlackV3.slack_send_request(to=None, channel="should-fail", group=None, message="Hi", channel_id=None)
     err_msg_1 = return_error_mock.call_args[0][0]
 
-    assert (
-        err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by channel_id"
-    )
+    assert err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by channel_id"
 
     with capfd.disabled(), pytest.raises(InterruptedError):
         SlackV3.slack_send_request(to=None, channel="should-fail", group=None, channel_id=None, file_dict={"foo": "file"})
     err_msg_2 = return_error_mock.call_args[0][0]
 
-    assert (
-        err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by channel_id"
-    )
+    assert err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by channel_id"
 
     channel_id_text_args = SlackV3.send_message.call_args[0]
     channel_id_file_args = SlackV3.send_file.call_args[0]
@@ -4437,9 +4433,7 @@ def test_edit_message_not_valid_thread_id(mocker):
     )
     api_call = SlackApiError("The request to the Slack API failed.", err_response)
 
-    expected_body = (
-        "The request to the Slack API failed.\nThe server responded with: {'ok': False, 'error': 'message_not_found'}"
-    )
+    expected_body = "The request to the Slack API failed.\nThe server responded with: {'ok': False, 'error': 'message_not_found'}"
     link = "https://www.eizelulz.com:8443/#/WarRoom/727"
     mocker.patch.object(demisto, "investigation", return_value={"type": 1})
     mocker.patch.object(demisto, "demistoUrls", return_value={"warRoom": link})
@@ -4518,9 +4512,7 @@ def test_pin_message_invalid_thread_id(mocker):
     )
     api_call = SlackApiError("The request to the Slack API failed.", err_response)
 
-    expected_body = (
-        "The request to the Slack API failed.\nThe server responded with: {'ok': False, 'error': 'message_not_found'}"
-    )
+    expected_body = "The request to the Slack API failed.\nThe server responded with: {'ok': False, 'error': 'message_not_found'}"
 
     mocker.patch.object(demisto, "investigation", return_value={"type": 1})
     mocker.patch.object(demisto, "args", return_value={"channel": "random", "threadID": "1629281551.001000"})

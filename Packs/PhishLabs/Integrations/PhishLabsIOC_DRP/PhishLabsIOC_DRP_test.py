@@ -89,12 +89,12 @@ class TestCommandsFunctions:
         expected_incidents = load_params_from_json("./test_data/commands/fetch_incidents/output_2.json", type="incidents")
         expected_last_run = "2019-12-01T01:40:36Z"
         tested_incidents_response, tested_last_run_response = fetch_incidents_command(client, fetch_time="1 days", max_records=20)
-        assert expected_incidents == tested_incidents_response, (
-            "Failed - Test no last run - should return 2 incidents and new last run, incidents criteria"
-        )
-        assert expected_last_run == tested_last_run_response, (
-            "Failed -  Test no last run - should return 2 incidents and new last run, last run criteria"
-        )
+        assert (
+            expected_incidents == tested_incidents_response
+        ), "Failed - Test no last run - should return 2 incidents and new last run, incidents criteria"
+        assert (
+            expected_last_run == tested_last_run_response
+        ), "Failed -  Test no last run - should return 2 incidents and new last run, last run criteria"
 
 
 @pytest.mark.client
@@ -110,9 +110,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/limit_filter/output_1.json")
         tested_response = client.get_cases(max_records=3)
-        assert tested_response == expected_response, (
-            "Failed - Test less than exsits - get cases should query once and return 3 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - Test less than exsits - get cases should query once and return 3 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
@@ -128,9 +128,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/limit_filter/output_2.json")
         tested_response = client.get_cases(max_records=7)
-        assert tested_response == expected_response, (
-            "Failed - Test exact results - get cases should query twice and return 7 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - Test exact results - get cases should query twice and return 7 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
@@ -150,9 +150,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/limit_filter/output_2.json")
         tested_response = client.get_cases(max_records=10)
-        assert tested_response == expected_response, (
-            "Failed - Test Overflow - get cases should query three times and return 7 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - Test Overflow - get cases should query three times and return 7 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
@@ -164,9 +164,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/begin_date_filter/output_1.json")
         tested_response = client.get_cases(begin_date="2019-12-01T01:34:48Z")
-        assert tested_response == expected_response, (
-            "Failed - begin date in first request - get cases should query one time and return 1 case"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - begin date in first request - get cases should query one time and return 1 case"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_begin_date
@@ -182,9 +182,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/begin_date_filter/output_2.json")
         tested_response = client.get_cases(begin_date="2019-11-10T02:09:17Z")
-        assert tested_response == expected_response, (
-            "Failed - begin date in second request - get cases should query twice and return 6 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - begin date in second request - get cases should query twice and return 6 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_begin_date
@@ -204,9 +204,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/begin_date_filter/output_3.json")
         tested_response = client.get_cases(begin_date="2018-11-10T02:30:37Z")
-        assert tested_response == expected_response, (
-            "Failed - begin date is more then exsits - get cases should query three-times and return 7 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - begin date is more then exsits - get cases should query three-times and return 7 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_end_date
@@ -226,9 +226,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/end_date_filter/output_1.json")
         tested_response = client.get_cases(end_date="2018-11-10T02:30:37Z")
-        assert tested_response == expected_response, (
-            "Failed - end date is more than exsits - get cases should query three times and return 0 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - end date is more than exsits - get cases should query three times and return 0 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_end_date
@@ -248,9 +248,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/end_date_filter/output_2.json")
         tested_response = client.get_cases(end_date="2019-11-10T02:30:37Z")
-        assert tested_response == expected_response, (
-            "Failed - end date in second request - get cases should query three times and return 2 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - end date in second request - get cases should query three times and return 2 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_end_date
@@ -270,9 +270,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/end_date_filter/output_3.json")
         tested_response = client.get_cases(end_date="2019-12-01T01:40:36Z")
-        assert tested_response == expected_response, (
-            "Failed - end date in first request - get cases should query three-times and return 7 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - end date in first request - get cases should query three-times and return 7 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_combined
@@ -288,9 +288,9 @@ class TestClientMethods:
         )
         expected_response = load_params_from_json("./test_data/client_methods/get_cases/combined_filters/output_1.json")
         tested_response = client.get_cases(end_date="2019-12-01T01:40:36Z", begin_date="2019-11-29T02:34:00Z")
-        assert tested_response == expected_response, (
-            "Failed - end date and begin date in first request - get cases should query twice and return 5 cases"
-        )
+        assert (
+            tested_response == expected_response
+        ), "Failed - end date and begin date in first request - get cases should query twice and return 5 cases"
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_combined

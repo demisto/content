@@ -39,7 +39,7 @@ class ApiMock:
         Offset = args.get("Offset")
         Limit = args.get("Limit")
         data = self.response["items"]
-        response = data[Offset: Offset + Limit]
+        response = data[Offset : Offset + Limit]
         self.call_count += 1
         return {"items": response}
 

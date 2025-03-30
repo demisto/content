@@ -780,9 +780,7 @@ def update_incident_request(
     fetched_incident_data = get_incident_by_id_command(client, {"incident_id": incident_id}).raw_response
     required_fields = ("severity", "status", "title")
     if any(field not in data for field in required_fields):
-        raise DemistoException(
-            f"Update incident request is missing one of the required fields for the API: {required_fields}"
-        )
+        raise DemistoException(f"Update incident request is missing one of the required fields for the API: {required_fields}")
 
     severity = data.get("severity", "")
     status = data.get("status", "Active")
@@ -862,9 +860,7 @@ def update_remote_system_command(client: AzureSentinelClient, args: Dict[str, An
                 demisto.debug(f"Incident updated successfully. Result: {result}")
 
         except Exception as e:
-            demisto.error(
-                f"Error in Microsoft Sentinel outgoing mirror for incident {remote_incident_id}. Error message: {e!s}"
-            )
+            demisto.error(f"Error in Microsoft Sentinel outgoing mirror for incident {remote_incident_id}. Error message: {e!s}")
     else:
         demisto.debug(f"Skipping updating remote incident {remote_incident_id} as it didn't change.")
 
@@ -1392,9 +1388,9 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
-            'filter': f'properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}',
-            'orderby': 'properties/createdTimeUtc asc',
-            'limit': limit
+            "filter": f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}",
+            "orderby": "properties/createdTimeUtc asc",
+            "limit": limit,
         }
         demisto.debug(f"Filter query used:{command_args['filter']}")
 
@@ -1404,9 +1400,9 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
         command_args = {
-            'filter': f'properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}',
-            'orderby': 'properties/incidentNumber asc',
-            'limit': limit
+            "filter": f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}",
+            "orderby": "properties/incidentNumber asc",
+            "limit": limit,
         }
         demisto.debug(f"Filter query used:{command_args['filter']}")
 
@@ -1419,14 +1415,13 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     fetch_incidents_additional_info(client, raw_incidents)
 
-    return process_incidents(raw_incidents,
-                             latest_created_time, last_incident_number)  # type: ignore[attr-defined]
+    return process_incidents(raw_incidents, latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
 def fetch_incidents_command(client, params):
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
-    min_severity = params.get('min_severity', 'Informational')
+    first_fetch_time = params.get("fetch_time", "3 days").strip()
+    min_severity = params.get("min_severity", "Informational")
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
@@ -1438,8 +1433,7 @@ def fetch_incidents_command(client, params):
     demisto.incidents(incidents)
 
 
-def process_incidents(raw_incidents: list, latest_created_time: datetime,
-                      last_incident_number):
+def process_incidents(raw_incidents: list, latest_created_time: datetime, last_incident_number):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
@@ -1459,14 +1453,14 @@ def process_incidents(raw_incidents: list, latest_created_time: datetime,
         incident_severity = severity_to_level(incident.get("Severity"))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-        current_fetch_ids.append(incident.get('ID'))
+        incident_created_time = dateparser.parse(incident.get("CreatedTimeUTC"))
+        current_fetch_ids.append(incident.get("ID"))
         add_mirroring_fields(incident)
         xsoar_incident = {
-            'name': '[Azure Sentinel] ' + incident.get('Title'),
-            'occurred': incident.get('CreatedTimeUTC'),
-            'severity': incident_severity,
-            'rawJSON': json.dumps(incident)
+            "name": "[Azure Sentinel] " + incident.get("Title"),
+            "occurred": incident.get("CreatedTimeUTC"),
+            "severity": incident_severity,
+            "rawJSON": json.dumps(incident),
         }
 
         # Update last run to the latest fetch time

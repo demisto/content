@@ -53,8 +53,7 @@ class Client(Zoom_Client):
         next_last_time = last_time
 
         demisto.debug(f"Last run before the fetch run: {last_time} for {log_type}")
-        start_date = first_fetch_time if not last_time else dateparser.parse(
-            last_time).replace(tzinfo=UTC)  # type: ignore[union-attr]
+        start_date = first_fetch_time if not last_time else dateparser.parse(last_time).replace(tzinfo=UTC)  # type: ignore[union-attr]
         end_date = datetime.now(UTC)
 
         demisto.debug(f"Starting to get logs from: {start_date} to: {end_date} for {log_type}")
@@ -244,8 +243,7 @@ def main() -> None:
     try:
         # How much time before the first fetch to retrieve events
         first_fetch_time = params.get("first_fetch", "3 days")
-        first_fetch_datetime: datetime = arg_to_datetime(
-            arg=first_fetch_time, arg_name="First fetch time", required=True)  # type: ignore[assignment]
+        first_fetch_datetime: datetime = arg_to_datetime(arg=first_fetch_time, arg_name="First fetch time", required=True)  # type: ignore[assignment]
         if first_fetch_time == "6 months":
             first_fetch_datetime += timedelta(days=1)
         if first_fetch_datetime <= dateparser.parse("6 months", settings={"TIMEZONE": "UTC"}):  # type: ignore[operator]

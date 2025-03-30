@@ -94,10 +94,14 @@ class WebSocketClient:  # pragma: no cover
 
         while True:
             try:
-                async with aiohttp.ClientSession() as session, session.ws_connect(uri,
-                                                                                  ssl=SSL_CONTEXT,  # type: ignore[arg-type]
-                                                                                  proxy=PROXY_URL,
-                                                                                  ) as websocket:
+                async with (
+                    aiohttp.ClientSession() as session,
+                    session.ws_connect(
+                        uri,
+                        ssl=SSL_CONTEXT,  # type: ignore[arg-type]
+                        proxy=PROXY_URL,
+                    ) as websocket,
+                ):
                     demisto.debug("MM: starting to authenticate")
                     await self.authenticate(websocket, event_handler)
                     while self.alive:

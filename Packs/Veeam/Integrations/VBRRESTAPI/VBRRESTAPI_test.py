@@ -58,7 +58,7 @@ class ApiMock:
         skip = args.get("skip")
         limit = args.get("limit")
         data = self.response["data"]
-        response = data[skip: skip + limit]
+        response = data[skip : skip + limit]
         self.call_count += 1
         return {"data": response}
 
@@ -440,7 +440,7 @@ def test_start_instant_recovery_command(client, mocker, response, expected_comma
     command_results = start_instant_recovery_command(client, args)
 
     func_args = mock_start_instant_recovery_request.call_args[0]
-    func_args[1] == expected_mode   # noqa: B015
+    func_args[1] == expected_mode  # noqa: B015
     assert command_results.outputs_prefix == expected_command_results["outputs_prefix"]
     assert command_results.outputs_key_field == expected_command_results["outputs_key_field"]
     assert command_results.outputs == expected_command_results["outputs"]
@@ -474,7 +474,7 @@ def test_start_instant_recovery_customized_command(client, mocker, response, exp
     command_results = start_instant_recovery_customized_command(client, args)
 
     func_args = mock_start_instant_recovery_customized_request.call_args[0]
-    func_args[1] == expected_mode   # noqa: B015
+    func_args[1] == expected_mode  # noqa: B015
     assert command_results.outputs_prefix == expected_command_results["outputs_prefix"]
     assert command_results.outputs_key_field == expected_command_results["outputs_key_field"]
     assert command_results.outputs == expected_command_results["outputs"]

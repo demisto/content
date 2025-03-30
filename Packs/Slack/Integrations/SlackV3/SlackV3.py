@@ -1379,8 +1379,7 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get(
-            "profile", {}).get("email"), content, task_id)  # type: ignore
+        demisto.handleEntitlementForUser(incident_id, guid, user.get("profile", {}).get("email"), content, task_id)  # type: ignore
 
         return "Thank you for your response."
     else:
@@ -3073,27 +3072,27 @@ def main() -> None:
     global CLIENT, USER_CLIENT, EXTENSIVE_LOGGING
 
     commands = {
-        'test-module': test_module,
-        'fetch-incidents': fetch_samples,
-        'long-running-execution': long_running_main,
-        'mirror-investigation': mirror_investigation,
-        'send-notification': slack_send,
-        'slack-send-notification-quick-action': slack_send,
-        'slack-send-file': slack_send_file,
-        'slack-set-channel-topic': set_channel_topic,
-        'close-channel': close_channel,
-        'slack-create-channel': create_channel,
-        'slack-invite-to-channel': invite_to_channel,
-        'slack-kick-from-channel': kick_from_channel,
-        'slack-rename-channel': rename_channel,
-        'slack-get-user-details': get_user,
-        'slack-get-integration-context': slack_get_integration_context,
-        'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message,
-        'slack-user-session-reset': user_session_reset,
-        'slack-get-conversation-history': conversation_history,
-        'slack-list-channels': list_channels,
-        'slack-get-conversation-replies': conversation_replies,
+        "test-module": test_module,
+        "fetch-incidents": fetch_samples,
+        "long-running-execution": long_running_main,
+        "mirror-investigation": mirror_investigation,
+        "send-notification": slack_send,
+        "slack-send-notification-quick-action": slack_send,
+        "slack-send-file": slack_send_file,
+        "slack-set-channel-topic": set_channel_topic,
+        "close-channel": close_channel,
+        "slack-create-channel": create_channel,
+        "slack-invite-to-channel": invite_to_channel,
+        "slack-kick-from-channel": kick_from_channel,
+        "slack-rename-channel": rename_channel,
+        "slack-get-user-details": get_user,
+        "slack-get-integration-context": slack_get_integration_context,
+        "slack-edit-message": slack_edit_message,
+        "slack-pin-message": pin_message,
+        "slack-user-session-reset": user_session_reset,
+        "slack-get-conversation-history": conversation_history,
+        "slack-list-channels": list_channels,
+        "slack-get-conversation-replies": conversation_replies,
     }
 
     command_name: str = demisto.command()

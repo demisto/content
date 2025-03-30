@@ -440,7 +440,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
         table = result_to_list_of_dicts(result)
-        table = table[skip: skip + limit]
+        table = table[skip : skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers, removeNull=True)
         context = {
