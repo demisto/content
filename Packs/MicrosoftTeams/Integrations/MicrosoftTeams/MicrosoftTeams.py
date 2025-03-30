@@ -142,6 +142,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
     # Note: at the moment, the required permission names between credentials and auth code are the same.
     # Credentials require Application permissions while auth code requires delegated permissions
     'send-notification': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    'teams-send-notification-quick-action': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
     'mirror-investigation': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_CREATE,
                              Perms.CHANNEL_DELETE_ALL],
     'close-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL],
@@ -3368,6 +3369,7 @@ def main():   # pragma: no cover
         'test-module': test_module,
         'long-running-execution': long_running_loop,
         'send-notification': send_message,
+        'teams-send-notification-quick-action': send_message,
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
         'microsoft-teams-integration-health': integration_health,
