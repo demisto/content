@@ -1146,7 +1146,7 @@ def delete_domain_map_command(client: Client, args: dict[str, Any]) -> Union[Lis
 
     response = client.domain_map_delete(domain_name=domain_name)
     if response.get("res_code") == HTTPStatus.OK:
-        readable_output = f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" ' "deleted successfully."    # noqa: ISC001
+        readable_output = f'Domain{"s" if len(domain_name) > 1 else ""} "{", ".join(domain_name)}" ' "deleted successfully."  # noqa: ISC001
         return CommandResults(readable_output=readable_output, raw_response=response)
     elif response.get("res_code") == HTTPStatus.PARTIAL_CONTENT:
         command_results_list = []
@@ -1371,9 +1371,7 @@ def multi_status_delete_handler(response: Response, obj_key: str, readable_obj_n
         readable_output = f'{readable_obj_name} "{profile.get(obj_key)}" was successfully deleted.'
         command_results_list.append(CommandResults(readable_output=readable_output))
     for profile in output_data.get("failure_list"):
-        readable_output = (
-            f'{readable_obj_name} "{profile.get(obj_key)}" deletion failed, message: "{profile.get("message")}".'
-        )
+        readable_output = f'{readable_obj_name} "{profile.get(obj_key)}" deletion failed, message: "{profile.get("message")}".'
         command_results_list.append(CommandResults(readable_output=readable_output))
 
     return command_results_list
@@ -1455,7 +1453,7 @@ def pagination(response: List[dict[str, Any]], args: dict[str, Any]) -> List[dic
         raise ValueError("Please insert page and page_size.")
     if page and page_size:
         offset = (page - 1) * page_size
-        return response[offset: offset + page_size]
+        return response[offset : offset + page_size]
     else:
         return response[:limit]
 

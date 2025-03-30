@@ -115,9 +115,7 @@ def impartner_get_account_id_command(client: Client, args: dict[str, Any]) -> Co
             "company_Main_Market_Segment__cf": parsed_result.get("company_Main_Market_Segment__cf"),
             "panW_Integration_Product__cf": parsed_result.get("panW_Integration_Product__cf"),
             "account_Integration_Status__cf": parsed_result.get("account_Integration_Status__cf"),
-            "accountTimeline": parsed_result.get(
-                "if_there_is_a_timeline_to_complete_the_integration_please_enter_the_date__cf"
-            ),
+            "accountTimeline": parsed_result.get("if_there_is_a_timeline_to_complete_the_integration_please_enter_the_date__cf"),
         }
     else:
         context_result = {

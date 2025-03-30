@@ -373,7 +373,7 @@ def get_severity_name_by_id(severity: Optional[int]):
     :param severity: The severity ID.
 
     """
-    for severity_name, severity_num in INCIDENT_SEVERITY_MAPPING.items():   # noqa: RET503
+    for severity_name, severity_num in INCIDENT_SEVERITY_MAPPING.items():  # noqa: RET503
         if severity_num == severity:
             return severity_name
 

@@ -243,24 +243,21 @@ def test_ip_command(mocker: MockerFixture):
     assert len(result) == 3
     assert result[0].outputs_prefix == "Whois.IP"
     assert result[0].outputs.get("query") == "4.4.4.4"  # type: ignore
-    assert (
-        result[0].indicator.to_context()
-        == {  # type: ignore
-            "IP(val.Address && val.Address == obj.Address)": {
-                "Organization": {"Name": "LVLT-STATIC-4-4-16"},
-                "FeedRelatedIndicators": [{"type": "CIDR", "description": None, "value": "4.4.0.0/16"}],
-                "ASN": "3356",
-                "Address": "4.4.4.4",
-            },
-            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
-                "Reliability": "B - Usually reliable",
-                "Vendor": "Whois",
-                "Indicator": "4.4.4.4",
-                "Score": 0,
-                "Type": "ip",
-            },
-        }
-    )
+    assert result[0].indicator.to_context() == {  # type: ignore
+        "IP(val.Address && val.Address == obj.Address)": {
+            "Organization": {"Name": "LVLT-STATIC-4-4-16"},
+            "FeedRelatedIndicators": [{"type": "CIDR", "description": None, "value": "4.4.0.0/16"}],
+            "ASN": "3356",
+            "Address": "4.4.4.4",
+        },
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+            "Reliability": "B - Usually reliable",
+            "Vendor": "Whois",
+            "Indicator": "4.4.4.4",
+            "Score": 0,
+            "Type": "ip",
+        },
+    }
 
 
 def test_get_whois_ip_proxy_param(mocker: MockerFixture):

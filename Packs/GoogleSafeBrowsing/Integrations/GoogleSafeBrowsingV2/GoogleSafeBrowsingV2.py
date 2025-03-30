@@ -32,9 +32,7 @@ class Client(BaseClient):
         if DBotScoreReliability.is_valid_type(reliability):
             self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            raise Exception(
-                "Google Safe Browsing v2 error: Please provide a valid value for the Source Reliability parameter."
-            )
+            raise Exception("Google Safe Browsing v2 error: Please provide a valid value for the Source Reliability parameter.")
 
     def build_request_body(self, client_body: dict, list_url: List) -> dict:
         """build the request body according to the client body and the urls.

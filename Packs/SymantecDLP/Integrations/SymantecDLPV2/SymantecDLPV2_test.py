@@ -3,7 +3,7 @@ import copy
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 
 
 def util_load_json(path):

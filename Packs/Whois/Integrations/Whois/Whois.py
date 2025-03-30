@@ -9,7 +9,7 @@ import ipwhois
 from typing import Dict, List, Optional, Type
 import urllib
 import whois
-from whois.parser import PywhoisError     # pylint: disable=E0401,E0611
+from whois.parser import PywhoisError  # pylint: disable=E0401,E0611
 import dateparser.search
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
@@ -3037,7 +3037,7 @@ def get_domain_from_query(query: str):
         domain = query
         # checks if query includes subdomain
         if suffixless_query.count(".") > 0:
-            domain = query[suffixless_query.rindex(".") + 1:]
+            domain = query[suffixless_query.rindex(".") + 1 :]
 
         demisto.debug(f"Found domain '{domain}' from query")
         return domain
@@ -3683,7 +3683,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
     for domain in domains:
         demisto.debug(f"Getting whois for a single {domain=}")
         try:
-            domain_data = whois.whois(domain)   # pylint: disable=E1102
+            domain_data = whois.whois(domain)  # pylint: disable=E1102
             demisto.debug(f"'python-whois' lib return raw_data for {domain=} is: {domain_data=}")
             execution_metrics.success += 1
             whois_res = {}
