@@ -1,7 +1,7 @@
 id: Eradication Plan - Delete File
 version: -1
 name: Eradication Plan - Delete File
-description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook executes actions of file deletion, which is a crucial step in the eradication process."
+description: "This playbook is one of the sub-playbooks in the eradication plan. \nThis playbook executes actions of file deletion, which is a crucial step in the eradication process. TEST CHANGE."
 starttaskid: "0"
 tasks:
   "0":

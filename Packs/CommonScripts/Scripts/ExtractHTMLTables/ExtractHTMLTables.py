@@ -4,6 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 def extract_html_table(html, indexes):
+    y = "TEST CHANGE."
+    demisto.debug(y)
     soup = BeautifulSoup(html, 'html.parser')
     tables = []
     for index, tab in enumerate(soup.find_all('table')):

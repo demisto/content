@@ -14,7 +14,7 @@ enabled: true
 args:
 - name: value
   default: true
-  description: Value to check
+  description: Value to check, TEST CHANGE.
 scripttarget: 0
 fromversion: 5.0.0
 tests:

@@ -1,7 +1,7 @@
 id: 'Get host forensics - Generic'
 version: -1
 name: 'Get host forensics - Generic'
-description: "This playbook retrieves forensics from hosts for the following integrations:\n - Illusive Networks \n - Microsoft Defender For Endpoint."
+description: "This playbook retrieves forensics from hosts for the following integrations:\n - Illusive Networks \n - Microsoft Defender For Endpoint. TEST CHANGE."
 starttaskid: "0"
 tasks:
   "0":
