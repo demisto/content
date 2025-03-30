@@ -619,7 +619,7 @@ class KeyVaultClient:
             next_page_url = response.get("nextLink")
         if offset > len(entities):
             return []
-        return entities[offset: limit + offset]
+        return entities[offset : limit + offset]
 
     def get_secret_credentials(self, key_vault_name: str, secret_name: str):
         try:

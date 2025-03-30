@@ -71,7 +71,7 @@ class Client(BaseClient):
             if param in self.command_params:
                 self.command_params[param] = self.command_params[param].replace("T", " ")
         result = self.http_request("/analysis/get_completed")
-        if "data" in result:    # noqa: RET503
+        if "data" in result:  # noqa: RET503
             context_entry: list = []
             if self.credentials:
                 context_entry = self.get_status_and_time_from_get_history_response(argToList(result["data"]))

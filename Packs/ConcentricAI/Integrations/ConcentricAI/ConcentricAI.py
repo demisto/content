@@ -236,7 +236,7 @@ class QueryClient(BaseClient):
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception("Failed to pull file-names", e)
-        if res["data"]["allContents"]["allContents"]["rows"][0] is not None:    # noqa: RET503
+        if res["data"]["allContents"]["allContents"]["rows"][0] is not None:  # noqa: RET503
             return res["data"]["allContents"]["allContents"]["rows"][0]
 
 
@@ -357,7 +357,7 @@ def get_file_360_link(cid: str):
     if p1 < 0 or p2 < 0:
         return None
     else:
-        link = url[0:p1] + url[p2 + 1: length]
+        link = url[0:p1] + url[p2 + 1 : length]
         link = link + "file360?cid=" + cid
         return link
 

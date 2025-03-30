@@ -581,7 +581,8 @@ def return_general_summary(results: list[dict], tag: str = "Summary") -> list[di
     df_summary = pd.DataFrame()
     df_summary["URL"] = [x.get("url_redirect") for x in results]
     df_summary[KEY_FINAL_VERDICT] = [
-        MAPPING_VERDICT_COLOR.get(x.get("verdict"), VERDICT_ERROR_COLOR).format(x.get("verdict")) for x in results  # type: ignore
+        MAPPING_VERDICT_COLOR.get(x.get("verdict"), VERDICT_ERROR_COLOR).format(x.get("verdict"))  # type: ignore
+        for x in results  # type: ignore
     ]
     summary_context = [
         {

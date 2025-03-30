@@ -16,9 +16,7 @@ USER_PARAMS = demisto.params()
 SECURED = not USER_PARAMS.get("insecure", False)
 PP_TOKEN = USER_PARAMS.get("pp_token", None)
 if PP_TOKEN is None:
-    return_error(
-        "Perception Point token is mandatory. Please enter your token or contact PerceptionPoint support for assistance"
-    )
+    return_error("Perception Point token is mandatory. Please enter your token or contact PerceptionPoint support for assistance")
 try:
     API_MAX_LOOPS = int(USER_PARAMS.get("api_loops", 1))
 except Exception:

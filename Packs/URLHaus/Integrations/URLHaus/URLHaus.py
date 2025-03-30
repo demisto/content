@@ -696,7 +696,7 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
     elif file_information["query_status"] in ["invalid_md5", "invalid_sha256"]:
         human_readable = (
             f'## URLhaus reputation for {hash_type.upper()} : {hash}\n'
-            f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'   # noqa: B005
+            f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'  # noqa: B005
         )
         return CommandResults(readable_output=human_readable, raw_response=file_information)
     else:

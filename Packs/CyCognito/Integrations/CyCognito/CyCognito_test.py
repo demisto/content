@@ -678,9 +678,7 @@ def test_list_issues_command_with_empty_response(requests_mock, mock_client):
         ({"last_seen": "20-20-2022", "asset_type": "ip"}, 'Invalid date: "last_seen"="20-20-2022"'),
         (
             {"security_grade": "dummy", "asset_type": "ip"},
-            ERRORS["INVALID_MULTI_SELECT_PARAM"].format(
-                "security_grade", [x.upper() for x in AVAILABLE_SECURITY_GRADE]
-            ),
+            ERRORS["INVALID_MULTI_SELECT_PARAM"].format("security_grade", [x.upper() for x in AVAILABLE_SECURITY_GRADE]),
         ),
         ({"status": "dummy", "asset_type": "ip"}, ERRORS["INVALID_MULTI_SELECT_PARAM"].format("status", AVAILABLE_STATUS_TYPES)),
         ({"count": "incorrect_count", "asset_type": "ip"}, 'Invalid number: "count"="incorrect_count"'),

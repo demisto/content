@@ -473,8 +473,10 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: dict[str, Any]) -> N
     demisto.debug(f"Appending entry to case {case_id}: {entry!s}")
     if entry.get("type") == 1:  # type note / chat
         comment = "<h3>Note mirrored from XSOAR</h3>"
-        comment += (f"<i>Added by {entry.get('user')} at"   # type: ignore[arg-type]
-                    f" {pretty_print_date(entry.get('created'))}</i><br><br>")  # type: ignore[arg-type]
+        comment += (
+            f"<i>Added by {entry.get('user')} at"  # type: ignore[arg-type]
+            f" {pretty_print_date(entry.get('created'))}</i><br><br>"  # type: ignore[arg-type]
+        )  # type: ignore[arg-type]
         comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file

@@ -44,7 +44,7 @@ if demisto.command() == "dnstwist-domain-variations":
     )
 
     domain_context = new_result[0]  # The requested domain for variations
-    domains_context_list = new_result[1: LIMIT + 1]  # The variations domains
+    domains_context_list = new_result[1 : LIMIT + 1]  # The variations domains
 
     domains = []
     for item in domains_context_list:

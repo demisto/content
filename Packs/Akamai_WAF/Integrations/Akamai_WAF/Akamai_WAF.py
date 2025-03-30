@@ -5157,9 +5157,7 @@ def list_papi_property_by_group_command(
     title = f"{INTEGRATION_NAME} - list papi property by group command"
     entry_context = raw_response.get("properties", {}).get("items", [])
     human_readable_ec = entry_context
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.{context_path}(val.GroupId && val.GroupId == obj.GroupId)": entry_context
-    }
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.{context_path}(val.GroupId && val.GroupId == obj.GroupId)": entry_context}
     human_readable = tableToMarkdown(
         name=title,
         t=human_readable_ec,
@@ -5908,8 +5906,8 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version": clone_appsec_config_version_command,
         f"{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods": patch_papi_property_rule_httpmethods_command,
         f"{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command": get_papi_property_activation_status_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command":
-            get_papi_edgehostname_creation_status_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command":  # noqa: E501
+        get_papi_edgehostname_creation_status_command,  # noqa: E501
         f"{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command": acknowledge_warning_command,
         f"{INTEGRATION_COMMAND_NAME}-get-production-deployment": get_production_deployment_command,
         f"{INTEGRATION_COMMAND_NAME}-get-change-history": get_change_history_command,
@@ -5925,8 +5923,8 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-get-papi-property-by-id": get_papi_property_by_id_command,
         f"{INTEGRATION_COMMAND_NAME}-new-papi-property-version": new_papi_property_version_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-property-activations": list_papi_property_activations_command,
-        f"{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history":
-            list_appsec_configuration_activation_history_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history":  # noqa: E501
+        list_appsec_configuration_activation_history_command,  # noqa: E501
         f"{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname": list_papi_property_by_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-siteshield-map": list_siteshield_maps_command,
         f"{INTEGRATION_COMMAND_NAME}-get-cps-enrollment-deployment": get_cps_enrollment_deployment_command,

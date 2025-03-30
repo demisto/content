@@ -805,8 +805,10 @@ def search_group_members(default_base_dn, page_size):
     if member_type == "group":
         query = f"(&(objectCategory={member_type})(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
     else:
-        query = (f"( & (objectCategory={member_type})(objectClass=user)"
-                 f"(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))")
+        query = (
+            f"( & (objectCategory={member_type})(objectClass=user)"
+            f"(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
+        )
 
     size_limit = int(args.get("limit", "0"))
     page_cookie = args.get("page-cookie")
@@ -1685,9 +1687,7 @@ def set_password_not_expire(default_base_dn):
         else:
             # Clears the bit 16 to 0
             user_account_control &= ~(1 << 16)
-            content_output = (
-                f'AD account {sam_account_name} has cleared "password never expire" attribute. Value is set to False'
-            )
+            content_output = f'AD account {sam_account_name} has cleared "password never expire" attribute. Value is set to False'
 
         attribute_name = "userAccountControl"
         attribute_value = user_account_control

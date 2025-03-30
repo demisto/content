@@ -57,7 +57,7 @@ AUTHORITY_DETAILS = {
         "Site": "http://www.tietosuoja.fi/en/",
     },
     "France": {
-        "Name": "Commission Nationale de l’Informatique et des Libertés – CNIL",    # noqa: RUF001
+        "Name": "Commission Nationale de l’Informatique et des Libertés – CNIL",  # noqa: RUF001
         "Email": "",
         "Tel": "+33 1 53 73 22 22",
         "Site": "http://www.cnil.fr/",
