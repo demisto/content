@@ -100,6 +100,8 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
             res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
             if not res or isError(res[0]):
                 raise ValueError(f'Invalid response: {res}')
+
+            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} successful: "core-api-get"')
             break
 
         except Exception as e:
