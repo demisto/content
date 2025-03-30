@@ -25,9 +25,9 @@ def main():
         text = ""
 
         for val in values:
-            indlist = execute_command("getIndicator", {'value': val}, extract_contents=True)
+            indlist = execute_command("getIndicator", {"value": val}, extract_contents=True)
             for indicator in indlist:
-                if indicator['value'] == val:
+                if indicator["value"] == val:
                     break
 
             if text != "":
@@ -38,8 +38,8 @@ def main():
                 value = demisto.get(indicator, fld, "")
                 ff = fld.split(".", 1)
                 if "CustomFields" in indicator:
-                    if ff[0] in indicator['CustomFields']:
-                        value = demisto.get(indicator['CustomFields'], ff[0], "")
+                    if ff[0] in indicator["CustomFields"]:
+                        value = demisto.get(indicator["CustomFields"], ff[0], "")
                     else:
                         value = demisto.get(indicator, ff[0], "")
                 else:
@@ -53,11 +53,11 @@ def main():
                         value = ",".join(value)
                     text += f"{fld}:{value} "
 
-        execute_command("setIncident", {'customFields': {'anythingllmsearchresults': text}})
+        execute_command("setIncident", {"customFields": {"anythingllmsearchresults": text}})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f'AnyLlmSearchXsoarIndicators: error is - {ex}')
+        return_error(f"AnyLlmSearchXsoarIndicators: error is - {ex}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
