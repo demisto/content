@@ -73,11 +73,7 @@ def create_indicator(
         "cve": int(demisto_params.get("cve_threshold", 65)),
     }
     dbot_score = translate_score(score, thresholds[entity_type])
-    dbot_description = (
-        f"Score above {thresholds[entity_type]}"
-        if dbot_score == Common.DBotScore.BAD
-        else ""
-    )
+    dbot_description = f"Score above {thresholds[entity_type]}" if dbot_score == Common.DBotScore.BAD else ""
     dbot_vendor = "Recorded Future v2"
     if entity_type == "ip":
         return Common.IP(
@@ -140,9 +136,7 @@ def create_indicator(
             ),
         )
     else:
-        raise Exception(
-            f"Could not create indicator for this type of entity: {entity_type}"
-        )
+        raise Exception(f"Could not create indicator for this type of entity: {entity_type}")
 
 
 # === === === === === === === === === === === === === === ===
@@ -152,7 +146,6 @@ def create_indicator(
 
 class Client(BaseClient):
     def whoami(self) -> Dict[str, Any]:
-
         return self._http_request(
             method="get",
             url_suffix="info/whoami",
@@ -172,29 +165,20 @@ class Client(BaseClient):
             context = self._key_extraction(context, context_keys_to_keep)
 
             if incidents := context.get("Incidents", {}):
-                incidents = [
-                    self._key_extraction(incident, incidents_keys_to_keep)
-                    for incident in incidents
-                ]
+                incidents = [self._key_extraction(incident, incidents_keys_to_keep) for incident in incidents]
                 context["Incidents"] = incidents
 
             if parent_entry := context.get("ParentEntry", {}):
-                parent_entry = self._key_extraction(
-                    parent_entry, parent_entry_keys_to_keep
-                )
+                parent_entry = self._key_extraction(parent_entry, parent_entry_keys_to_keep)
                 context["ParentEntry"] = parent_entry
             calling_context["context"] = context
 
-        calling_context = self._key_extraction(
-            calling_context, calling_context_keys_to_keep
-        )
+        calling_context = self._key_extraction(calling_context, calling_context_keys_to_keep)
         return calling_context
 
     def _get_writeback_data(self):
-
         if (
-            demisto.params().get("collective_insights") == "On"
-            and demisto.args().get("collective_insights") != "off"
+            demisto.params().get("collective_insights") == "On" and demisto.args().get("collective_insights") != "off"
         ) or demisto.args().get("collective_insights") == "on":
             do_track = True
         else:
@@ -209,7 +193,6 @@ class Client(BaseClient):
         return None
 
     def _call(self, url_suffix, **kwargs):
-
         json_data = {
             "demisto_command": demisto.command(),
             "demisto_args": demisto.args(),
@@ -343,10 +326,7 @@ class Actions:
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    def _process_result_actions(
-        self, response: Union[dict, CommandResults]
-    ) -> List[CommandResults]:
-
+    def _process_result_actions(self, response: Union[dict, CommandResults]) -> List[CommandResults]:
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
             return [response]
@@ -359,7 +339,7 @@ class Actions:
         if not result_actions:
             return None  # type: ignore
 
-        command_results: List[CommandResults] = list()
+        command_results: List[CommandResults] = []
         for action in result_actions:
             if "create_indicator" in action:
                 indicator = create_indicator(**action["create_indicator"])
@@ -372,9 +352,7 @@ class Actions:
                     # Default CommandResults after indicator creation.
                     command_results.append(
                         CommandResults(
-                            readable_output=tableToMarkdown(
-                                "New indicator was created.", indicator.to_context()
-                            ),
+                            readable_output=tableToMarkdown("New indicator was created.", indicator.to_context()),
                             indicator=indicator,
                         )
                     )
@@ -384,17 +362,13 @@ class Actions:
         return command_results
 
     def fetch_incidents(self) -> None:
-
         response = self.client.fetch_incidents()
 
         if isinstance(response, CommandResults):
             # 404 case.
             return
 
-        if (
-                response.get("incidents") is not None
-                and response.get("demisto_last_run")
-        ):
+        if response.get("incidents") is not None and response.get("demisto_last_run"):
             incidents = response["incidents"]
             demisto_last_run = response["demisto_last_run"]
 
@@ -486,9 +460,7 @@ def main() -> None:  # pragma: no cover
         base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("insecure", False)
         proxy = demisto_params.get("proxy", False)
-        api_token = demisto_params.get("token_credential", {}).get(
-            "password"
-        ) or demisto_params.get("token")
+        api_token = demisto_params.get("token_credential", {}).get("password") or demisto_params.get("token")
         if not api_token:
             return_error("Please provide a valid API token")
         headers = {
@@ -499,9 +471,7 @@ def main() -> None:  # pragma: no cover
                 f'RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()["version"]})'
             ),
         }
-        client = Client(
-            base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy)
         command = demisto.command()
         actions = Actions(client)
 
@@ -523,8 +493,7 @@ def main() -> None:  # pragma: no cover
                         message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API"
-                        f" URL and Token are correctly configured. RAW Error: {err}"
+                        f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 
