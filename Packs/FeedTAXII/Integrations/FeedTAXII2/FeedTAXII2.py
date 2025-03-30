@@ -134,18 +134,23 @@ def fetch_indicators_command(
             raise DemistoException(ERR_NO_COLL)
         indicators: list = []
         for collection in client.collections:
-            client.collection_to_fetch = collection
-            added_after = get_added_after(fetch_full_feed, initial_interval, last_run_ctx.get(collection.id))
-            fetched_iocs = client.build_iterator(limit, added_after=added_after)
-            demisto.debug(f"fetched {len(fetched_iocs)} iocs from {collection} collection")
-            indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = (
-                client.last_fetched_indicator__modified if client.last_fetched_indicator__modified else added_after
-            )
-            if limit >= 0:
-                limit -= len(fetched_iocs)
-                if limit <= 0:
-                    break
+            try:
+                client.collection_to_fetch = collection
+                added_after = get_added_after(fetch_full_feed, initial_interval, last_run_ctx.get(collection.id))
+                fetched_iocs = client.build_iterator(limit, added_after=added_after)
+                demisto.debug(f"fetched {len(fetched_iocs)} iocs from {collection} collection")
+                indicators.extend(fetched_iocs)
+                last_run_ctx[collection.id] = (
+                    client.last_fetched_indicator__modified if client.last_fetched_indicator__modified else added_after
+                )
+                if limit >= 0:
+                    limit -= len(fetched_iocs)
+                    if limit <= 0:
+                        break
+            except Exception as e:
+                demisto.updateModuleHealth({"message": f"Error fetching collection {collection.id}: {str(e)}"}, is_error=True)
+                demisto.error(f"Failed to fetch IOCs from collection {collection.id}: {str(e)}")
+                continue
     else:
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
