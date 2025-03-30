@@ -595,7 +595,6 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-      - "23"
     scriptarguments:
       caseNumber:
         simple: ${SalesForce.Case.CaseNumber}
@@ -755,39 +754,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 18b3027e-c06b-4135-8b65-62d246cc7852
-    type: regular
-    task:
-      id: 18b3027e-c06b-4135-8b65-62d246cc7852
-      version: -1
-      name: Update user data as object
-      script: Salesforce|||salesforce-update-object
-      type: regular
-      iscommand: true
-      brand: Salesforce
-    scriptarguments:
-      json:
-        simple: '{"AccountId":"0014K00000jpSKgQAM"}'
-      path:
-        simple: Case/${SalesForce.Case.ID}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 80d09f23-0602-46fe-84bc-46a3a94d0394
@@ -838,7 +804,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2690,
-        "width": 1670,
+        "width": 1455,
         "x": 50,
         "y": 50
       }
