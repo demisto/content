@@ -718,38 +718,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 888be9f9-ea1e-4a02-8631-7d274ed5abe7
-    type: regular
-    task:
-      id: 888be9f9-ea1e-4a02-8631-7d274ed5abe7
-      version: -1
-      name: Get Org
-      description: 'Returns organization details from the case number. '
-      script: Salesforce|||salesforce-get-org
-      type: regular
-      iscommand: true
-      brand: Salesforce
-    scriptarguments:
-      caseNumber:
-        simple: ${SalesForce.Case.CaseNumber}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 3b88e8e5-8e6b-4173-891a-18b5c7f23bce
@@ -799,9 +767,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
-    nexttasks:
-      '#none#':
-      - "20"
     scriptarguments:
       json:
         simple: '{"AccountId":"0014K00000jpSKgQAM"}'
