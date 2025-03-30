@@ -966,8 +966,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         address_object["tag"] = args.get("tag")
 
     demisto.debug(f"sending address_object to the API. address_object: {address_object}")
-    raw_response = client.create_address_object(
-        address=address_object, query_params=query_params, tsg_id=args.get("tsg_id"))  # type: ignore
+    raw_response = client.create_address_object(address=address_object, query_params=query_params, tsg_id=args.get("tsg_id"))  # type: ignore
 
     outputs = raw_response.copy()
     address_to_xsoar_format(outputs)
@@ -1376,8 +1375,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
             if dynamic_filter := args.get("dynamic_filter"):
                 address_group["dynamic"] = {"filter": dynamic_filter}
     demisto.debug(f"Sending address_group to the API. address_group: {address_group}")
-    raw_response = client.create_address_group(
-        query_params=query_params, address_group=address_group, tsg_id=tsg_id)  # type: ignore
+    raw_response = client.create_address_group(query_params=query_params, address_group=address_group, tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
     address_group_to_xsoar_format(outputs)
@@ -1439,8 +1437,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         original_address_group.pop("static") if "static" in original_address_group else None
 
     demisto.debug(f"Sending address_group to the API. address_group: {original_address_group}")
-    raw_response = client.update_address_group(address_group=original_address_group,
-                                               group_id=group_id, tsg_id=tsg_id)  # type: ignore
+    raw_response = client.update_address_group(address_group=original_address_group, group_id=group_id, tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
     address_group_to_xsoar_format(outputs)

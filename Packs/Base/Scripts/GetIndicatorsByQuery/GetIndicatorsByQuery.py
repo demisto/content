@@ -136,7 +136,7 @@ def main():
     limit = int(args.get("limit", PAGE_SIZE))
     query = args.get("query", "")
     offset = int(args.get("offset", 0))
-    indicators = find_indicators_with_limit_loop(query, limit + offset)[offset: offset + limit]
+    indicators = find_indicators_with_limit_loop(query, limit + offset)[offset : offset + limit]
 
     entry = fileResult("indicators.json", json.dumps(indicators).encode("utf8"))
     entry["Contents"] = indicators

@@ -2,8 +2,9 @@ from unittest.mock import patch
 
 import pytest
 from pytest_mock import MockerFixture
-from MicrosoftTeamsWebhook import (Client, send_teams_message_command, create_teams_message)
+from MicrosoftTeamsWebhook import Client, send_teams_message_command, create_teams_message
 from requests_mock import Mocker
+
 WEBHOOK = "https://readywebookone"
 MESSAGE = "Hello from XSOAR"
 TITLE = "Cortex XSOAR URL"
@@ -32,19 +33,19 @@ def test_create_teams_message():
 def test_send_teams_message_command(requests_mock: Mocker):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"])
-    assert res.readable_output == 'Message sent successfully'
+    assert res.readable_output == "Message sent successfully"
 
 
 def test_send_teams_message_command_with_adaptivecards(requests_mock: Mocker):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"], True)
-    assert res.readable_output == 'Message sent successfully'
+    assert res.readable_output == "Message sent successfully"
 
 
 def test_send_teams_message_command_with_adaptivecards_overwrite(requests_mock: Mocker):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"], True, {"Hello": "World"})
-    assert res.readable_output == 'Message sent successfully'
+    assert res.readable_output == "Message sent successfully"
 
 
 def test_test_module(requests_mock: Mocker):
@@ -114,7 +115,7 @@ def test_send_teams_message_command_is_workflow(requests_mock: Mocker):
     """
     requests_mock.post(WEBHOOK, status_code=202, json={})
     res = send_teams_message_command(workflow_client, MESSAGE, TITLE, SERVERURLS["investigation"])
-    assert res.readable_output == 'Message sent successfully'
+    assert res.readable_output == "Message sent successfully"
 
 
 def test_send_teams_message_command_with_full_adaptivecards_is_workflow(requests_mock: Mocker):
@@ -128,7 +129,7 @@ def test_send_teams_message_command_with_full_adaptivecards_is_workflow(requests
     """
     requests_mock.post(WEBHOOK, status_code=202, json={})
     res = send_teams_message_command(workflow_client, MESSAGE, TITLE, SERVERURLS["investigation"], True)
-    assert res.readable_output == 'Message sent successfully'
+    assert res.readable_output == "Message sent successfully"
 
 
 @pytest.mark.parametrize(
@@ -139,14 +140,14 @@ def test_send_teams_message_command_with_full_adaptivecards_is_workflow(requests
         (workflow_client, {"type": "AdaptiveCard", "text": "Hello Workflow Card"}, False, "https://example.com/webhook"),
     ],
 )
-@patch('MicrosoftTeamsWebhook.demisto.info')
+@patch("MicrosoftTeamsWebhook.demisto.info")
 def test_send_teams_message(
     mock_demisto_info,
     client: Client,
     messagecard: dict,
     adaptive_cards_format: bool,
     expected_full_url: str | None,
-    mocker: MockerFixture
+    mocker: MockerFixture,
 ):
     sender = client
     http_request = mocker.patch.object(client, "_http_request")

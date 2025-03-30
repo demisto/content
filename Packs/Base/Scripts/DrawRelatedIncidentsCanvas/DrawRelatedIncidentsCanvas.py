@@ -35,7 +35,7 @@ def generate_layout(current_incident_id, incident_ids, indicator_ids, connection
         layer = (
             line - int(n_indicators_lines / 2) if line < int(n_indicators_lines / 2) else line - int(n_indicators_lines / 2) + 1
         )
-        G.add_nodes_from(graph_indicators[indicators_per_line * line: indicators_per_line * (line + 1)], layer=layer)
+        G.add_nodes_from(graph_indicators[indicators_per_line * line : indicators_per_line * (line + 1)], layer=layer)
 
     for connection in connections:
         src = f"{connection['srcEntityType']}-{connection['srcEntityId']}"

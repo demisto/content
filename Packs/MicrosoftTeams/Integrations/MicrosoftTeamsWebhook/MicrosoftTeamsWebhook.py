@@ -64,8 +64,8 @@ def create_teams_message(
         f"title={title}, serverurls={serverurls}, adaptive_cards_format={adaptive_cards_format}, is_workflow={is_workflow}"
     )
     # replacing special character so it will be shown correctly in the UI.
-    message = message.replace('\\n', '\n')
-    message = message.replace('\\r', '\r')
+    message = message.replace("\\n", "\n")
+    message = message.replace("\\r", "\r")
 
     messagecard: dict = {}
     if adaptive_cards_format:
@@ -80,18 +80,14 @@ def create_teams_message(
                         "content": {
                             "type": "AdaptiveCard",
                             "body": [
-                                    {
-                                        "type": "TextBlock",
-                                        "text": "Cortex XSOAR Notification",
-                                        "weight": "bolder",
-                                        "size": "medium",
-                                        "color": "accent"
-                                    },
                                 {
-                                        "type": "TextBlock",
-                                        "text": message,
-                                        "wrap": True
-                                }
+                                    "type": "TextBlock",
+                                    "text": "Cortex XSOAR Notification",
+                                    "weight": "bolder",
+                                    "size": "medium",
+                                    "color": "accent",
+                                },
+                                {"type": "TextBlock", "text": message, "wrap": True},
                             ],
                             "actions": [{"type": "Action.OpenUrl", "title": title, "url": serverurls}],
                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -188,7 +184,7 @@ def send_teams_message_command(
         overwrite_adaptive_card_json=overwrite_adaptive_card_json,
     )
     client.send_teams_message(messagecard, adaptive_cards_format)
-    return CommandResults(readable_output='Message sent successfully')
+    return CommandResults(readable_output="Message sent successfully")
 
 
 def main() -> None:  # pragma: no cover
@@ -211,12 +207,12 @@ def main() -> None:  # pragma: no cover
         json.loads(overwrite_adaptive_card_json_param) if overwrite_adaptive_card_json_param else None
     )
 
-    if args.get('alternative_url'):
-        serverurls = args.get('alternative_url', '')
+    if args.get("alternative_url"):
+        serverurls = args.get("alternative_url", "")
     else:
         serverurls = serverurls.get("investigation", serverurls["server"])
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
         client = Client(base_url=webhook, verify=verify_certificate, proxy=proxy, is_workflow="workflow" in webhook)
 
@@ -233,11 +229,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"command {command} is not implemented.")
 
     except Exception as e:
-        return_error(
-            f'Failed to execute {command} command.\n'
-            f'{str(e)}',
-            error=traceback.format_exc()
-        )
+        return_error(f"Failed to execute {command} command.\n" f"{str(e)}", error=traceback.format_exc())
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):

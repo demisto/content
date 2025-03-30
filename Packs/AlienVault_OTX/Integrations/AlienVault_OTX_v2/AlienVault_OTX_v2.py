@@ -240,7 +240,7 @@ def relationships_manager(
             passive_dns_raw_response.get("passive_dns", []), field_for_passive_dns_rs
         )
         passive_dns_raw_response = validate_string_is_not_url(passive_dns_raw_response, field_for_passive_dns_rs)
-        passive_dns_raw_response = passive_dns_raw_response[0: client.max_indicator_relationships]
+        passive_dns_raw_response = passive_dns_raw_response[0 : client.max_indicator_relationships]
         relationships += create_relationships(
             client,
             passive_dns_raw_response,

@@ -217,7 +217,7 @@ def get_vms(si, args):
         snapshot_create_date = datetime_to_string(child.snapshot.currentSnapshot.config.createDate) if child.snapshot else None
         snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else None
         if apply_get_vms_filters(args, summary):
-            mac_address: str | None = ''
+            mac_address: str | None = ""
             try:
                 for dev in child.config.hardware.device:
                     if isinstance(dev, vim.vm.device.VirtualEthernetCard):
@@ -247,7 +247,7 @@ def get_vms(si, args):
 
     # Return the correct amount of data
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * page_size:]
+        data = data[-1 * page_size :]
 
     ec = {"VMWare(val.UUID && val.UUID === obj.UUID)": data}
     return create_entry(data, ec)
@@ -494,7 +494,7 @@ def get_events(si, args):
         )
     # Return the correct amount of data
     if is_manual and page_size and len(hr) > page_size:
-        hr = hr[-1 * page_size:]
+        hr = hr[-1 * page_size :]
     ec = {"VMWareEvenet(val.UUID && val.UUID === obj.UUID)": hr}
     return {
         "ContentsFormat": formats["json"],
@@ -604,8 +604,8 @@ def create_vm(si, args):
     task = folder.CreateVM_Task(config=spec, pool=pool, host=host)
     wait_for_tasks(si, [task])
 
-    if task.info.state == 'success':
-        mac_address: str | None = ''
+    if task.info.state == "success":
+        mac_address: str | None = ""
         summary = task.info.result.summary
 
         try:
@@ -680,8 +680,8 @@ def clone_vm(si, args):
     task = vm.CloneVM_Task(folder=folder, name=args.get("name"), spec=spec)
     wait_for_tasks(si, [task])
 
-    if task.info.state == 'success':
-        mac_address: str | None = ''
+    if task.info.state == "success":
+        mac_address: str | None = ""
         summary = task.info.result.summary
         try:
             for dev in task.info.result.config.hardware.device:

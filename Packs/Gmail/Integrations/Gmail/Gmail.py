@@ -424,13 +424,11 @@ def get_email_context(email_data, mailbox):
             email_data.get("payload", {}).get("parts", [])
         )
         demisto.debug(f"In multipart {context_gmail['Body']=}")
-        context_gmail["Attachment Names"] = ", ".join([attachment["Name"]
-                                                      for attachment in context_gmail["Attachments"]])  # type: ignore
+        context_gmail["Attachment Names"] = ", ".join([attachment["Name"] for attachment in context_gmail["Attachments"]])  # type: ignore
         context_email["Body/Text"], context_email["Body/HTML"], context_email["Attachments"] = parse_mail_parts(
             email_data.get("payload", {}).get("parts", [])
         )
-        context_email["Attachment Names"] = ", ".join([attachment["Name"]
-                                                      for attachment in context_email["Attachments"]])  # type: ignore
+        context_email["Attachment Names"] = ", ".join([attachment["Name"] for attachment in context_email["Attachments"]])  # type: ignore
 
     return context_gmail, headers, context_email, occurred, occurred_is_valid
 
@@ -1969,7 +1967,7 @@ def handle_html(htmlBody):
             "ID": cid,
         }
         attachments.append(attachment)
-        cleanBody += htmlBody[lastIndex: m.start(1)] + "cid:" + attachment["cid"]
+        cleanBody += htmlBody[lastIndex : m.start(1)] + "cid:" + attachment["cid"]
         lastIndex = m.end() - 1
 
     cleanBody += htmlBody[lastIndex:]

@@ -146,38 +146,62 @@ Perms = GraphPermissions  # alias for brevity
 COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
     # Note: at the moment, the required permission names between credentials and auth code are the same.
     # Credentials require Application permissions while auth code requires delegated permissions
-    'send-notification': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
-    'teams-send-notification-quick-action': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
-    'mirror-investigation': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_CREATE,
-                             Perms.CHANNEL_DELETE_ALL],
-    'close-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL],
-    'microsoft-teams-ring-user': [Perms.USER_READ_ALL, Perms.CALLS_INITIATE_ALL],
-    'microsoft-teams-add-user-to-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_READBASIC_ALL,
-                                            Perms.CHANNELMEMBER_READWRITE_ALL],
-    'add-user-to-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_READBASIC_ALL,
-                            Perms.CHANNELMEMBER_READWRITE_ALL],
-    'microsoft-teams-create-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_CREATE],
-    'create-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_CREATE],
-    'microsoft-teams-create-meeting': [Perms.USER_READ_ALL, Perms.ONLINEMEETINGS_READWRITE],
-    'microsoft-teams-user-remove-from-channel': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL,
-                                                 Perms.CHANNELMEMBER_READWRITE_ALL],
-    'microsoft-teams-channel-user-list': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNELMEMBER_READ_ALL],
-    'microsoft-teams-chat-create': [Perms.USER_READ_ALL, Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL,
-                                    Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
-    'microsoft-teams-message-send-to-chat': [Perms.USER_READ_ALL, Perms.CHAT_CREATE, Perms.CHATMESSAGE_SEND,
-                                             Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT],
-    'microsoft-teams-chat-add-user': [Perms.CHAT_READBASIC, Perms.CHATMEMBER_READWRITE],
-    'microsoft-teams-chat-member-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
-    'microsoft-teams-chat-list': [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
-    'microsoft-teams-chat-message-list': [Perms.USER_READ_ALL, Perms.CHAT_READ, Perms.CHAT_CREATE],
-    'microsoft-teams-chat-update': [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
-    'microsoft-teams-message-update': [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
-    'microsoft-teams-integration-health': [],
-    'microsoft-teams-create-messaging-endpoint': [],
-    'microsoft-teams-generate-login-url': [],
-    'microsoft-teams-auth-test': [],
-    'microsoft-teams-auth-reset': [],
-    'microsoft-teams-token-permissions-list': [],
+    "send-notification": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    "teams-send-notification-quick-action": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    "mirror-investigation": [
+        Perms.GROUPMEMBER_READ_ALL,
+        Perms.CHANNEL_READBASIC_ALL,
+        Perms.CHANNEL_CREATE,
+        Perms.CHANNEL_DELETE_ALL,
+    ],
+    "close-channel": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNEL_DELETE_ALL],
+    "microsoft-teams-ring-user": [Perms.USER_READ_ALL, Perms.CALLS_INITIATE_ALL],
+    "microsoft-teams-add-user-to-channel": [
+        Perms.GROUPMEMBER_READ_ALL,
+        Perms.USER_READ_ALL,
+        Perms.CHANNEL_READBASIC_ALL,
+        Perms.CHANNELMEMBER_READWRITE_ALL,
+    ],
+    "add-user-to-channel": [
+        Perms.GROUPMEMBER_READ_ALL,
+        Perms.USER_READ_ALL,
+        Perms.CHANNEL_READBASIC_ALL,
+        Perms.CHANNELMEMBER_READWRITE_ALL,
+    ],
+    "microsoft-teams-create-channel": [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_CREATE],
+    "create-channel": [Perms.GROUPMEMBER_READ_ALL, Perms.USER_READ_ALL, Perms.CHANNEL_CREATE],
+    "microsoft-teams-create-meeting": [Perms.USER_READ_ALL, Perms.ONLINEMEETINGS_READWRITE],
+    "microsoft-teams-user-remove-from-channel": [
+        Perms.GROUPMEMBER_READ_ALL,
+        Perms.CHANNEL_READBASIC_ALL,
+        Perms.CHANNELMEMBER_READWRITE_ALL,
+    ],
+    "microsoft-teams-channel-user-list": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL, Perms.CHANNELMEMBER_READ_ALL],
+    "microsoft-teams-chat-create": [
+        Perms.USER_READ_ALL,
+        Perms.CHAT_CREATE,
+        Perms.APPCATALOG_READ_ALL,
+        Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT,
+    ],
+    "microsoft-teams-message-send-to-chat": [
+        Perms.USER_READ_ALL,
+        Perms.CHAT_CREATE,
+        Perms.CHATMESSAGE_SEND,
+        Perms.APPCATALOG_READ_ALL,
+        Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT,
+    ],
+    "microsoft-teams-chat-add-user": [Perms.CHAT_READBASIC, Perms.CHATMEMBER_READWRITE],
+    "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
+    "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
+    "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ, Perms.CHAT_CREATE],
+    "microsoft-teams-chat-update": [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
+    "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
+    "microsoft-teams-integration-health": [],
+    "microsoft-teams-create-messaging-endpoint": [],
+    "microsoft-teams-generate-login-url": [],
+    "microsoft-teams-auth-test": [],
+    "microsoft-teams-auth-reset": [],
+    "microsoft-teams-token-permissions-list": [],
 }
 HIGHER_PERMISSIONS: dict[GraphPermissions, list[GraphPermissions]] = {
     # dict with some elevated permissions and some of the permissions they can replace
@@ -771,7 +795,7 @@ def get_refresh_token_from_auth_code_param() -> str:
     refresh_prefix = "refresh_token:"
     if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
         demisto.debug("Using refresh token set as auth_code")
-        return AUTH_CODE[len(refresh_prefix):]
+        return AUTH_CODE[len(refresh_prefix) :]
     return ""
 
 
@@ -3302,16 +3326,16 @@ def main():  # pragma: no cover
     """COMMANDS MANAGER / SWITCH PANEL"""
     demisto.debug("Main started...")
     commands: dict = {
-        'test-module': test_module,
-        'long-running-execution': long_running_loop,
-        'send-notification': send_message,
-        'teams-send-notification-quick-action': send_message,
-        'mirror-investigation': mirror_investigation,
-        'close-channel': close_channel,
-        'microsoft-teams-integration-health': integration_health,
-        'create-channel': create_channel_command,
-        'add-user-to-channel': add_user_to_channel_command,
-        'fetch-incidents': fetch_samples,
+        "test-module": test_module,
+        "long-running-execution": long_running_loop,
+        "send-notification": send_message,
+        "teams-send-notification-quick-action": send_message,
+        "mirror-investigation": mirror_investigation,
+        "close-channel": close_channel,
+        "microsoft-teams-integration-health": integration_health,
+        "create-channel": create_channel_command,
+        "add-user-to-channel": add_user_to_channel_command,
+        "fetch-incidents": fetch_samples,
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
         "microsoft-teams-ring-user": ring_user,

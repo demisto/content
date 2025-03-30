@@ -149,7 +149,7 @@ def preprocess_incidents_field(incidents_field: str, prefix_to_remove: list[str]
     incidents_field = incidents_field.strip()
     for prefix in prefix_to_remove:
         if incidents_field.startswith(prefix):
-            incidents_field = incidents_field[len(prefix):]
+            incidents_field = incidents_field[len(prefix) :]
     return incidents_field
 
 
