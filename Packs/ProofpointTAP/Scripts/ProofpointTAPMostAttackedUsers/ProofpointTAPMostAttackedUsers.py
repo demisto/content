@@ -4,8 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        most_attacked_user_list: dict = demisto.executeCommand(
-            "proofpoint-list-most-attacked-users", {"window": 14})[0]  # type: ignore
+        most_attacked_user_list: dict = demisto.executeCommand("proofpoint-list-most-attacked-users", {"window": 14})[0]  # type: ignore
         contents = most_attacked_user_list.get("Contents")
 
         users = []

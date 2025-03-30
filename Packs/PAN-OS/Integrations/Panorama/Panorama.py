@@ -562,7 +562,7 @@ def do_pagination(
     if isinstance(entries, list) and page is not None:
         if page <= 0:
             raise DemistoException(f"page {page} must be a positive number")
-        entries = entries[(page - 1) * page_size: page_size * page]  # do pagination
+        entries = entries[(page - 1) * page_size : page_size * page]  # do pagination
     elif isinstance(entries, list):
         entries = entries[:limit]
 
@@ -12567,8 +12567,7 @@ def pan_os_edit_nat_rule_command(args):
         "audit-comment": ("audit-comment", "", False),
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
-        element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_nat_rule(
         rule_name=rule_name,
@@ -12908,8 +12907,7 @@ def pan_os_edit_redistribution_profile_command(args):
         "filter_bgp_extended_community": ("filter/bgp/community", "extended-community", True),
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
-        element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_redistribution_profile(
         virtual_router_name=virtual_router_name,
@@ -13243,8 +13241,7 @@ def pan_os_edit_pbf_rule_command(args):
     if element_to_change == "action_forward_discard":
         element_value = "discard"
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
-        element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_pbf_rule(
         rule_name=rule_name,
@@ -14972,8 +14969,7 @@ def fetch_incidents(
     demisto.debug(f"last id dictionary from previous fetch is: {last_id_dict=}.")
     demisto.debug(f"last offset dictionary from previous fetch is: {offset_dict=}.")
 
-    fetch_start_datetime_dict = get_fetch_start_datetime_dict(
-        last_fetch_dict, first_fetch, queries_dict)  # type: ignore[arg-type]
+    fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)  # type: ignore[arg-type]
     demisto.debug(f"updated last fetch per log type: {fetch_start_datetime_dict=}.")
 
     incident_entries_dict = fetch_incidents_request(
@@ -14985,11 +14981,9 @@ def fetch_incidents(
     update_offset_dict(incident_entries_dict, last_fetch_dict, offset_dict)
 
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = filter_fetched_entries(
-        entries_dict=incident_entries_dict, id_dict=last_id_dict)  # type: ignore[arg-type]
+    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)  # type: ignore[arg-type]
 
-    parsed_incident_entries_list = get_parsed_incident_entries(
-        unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
+    parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
     new_last_run = LastRun(
         last_fetch_dict=last_fetch_dict,
@@ -15054,8 +15048,7 @@ def main():  # pragma: no cover
             fetch_max_attempts = arg_to_number(params["fetch_job_polling_max_num_attempts"])
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
 
-            new_last_run, incident_entries = fetch_incidents(
-                last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
+            new_last_run, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
 
             demisto.setLastRun(new_last_run)
             demisto.incidents(incident_entries)

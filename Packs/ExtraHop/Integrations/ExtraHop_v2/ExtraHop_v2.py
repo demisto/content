@@ -2030,7 +2030,7 @@ def packets_search_command(client: ExtraHopClient, args: Dict[str, Any]) -> Unio
     filename_header = response.headers.get("content-disposition")
     f_attr = "filename="
     if filename_header and f_attr in filename_header:
-        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
+        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr) :]
         filename = quoted_filename.replace('"', "")
     else:
         raise DemistoException("Error filename could not be found in response header.")

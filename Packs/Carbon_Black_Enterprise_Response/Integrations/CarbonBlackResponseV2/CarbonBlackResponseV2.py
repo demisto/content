@@ -430,8 +430,7 @@ def sensors_list_command(
     limit: int = None,
 ) -> CommandResults:
     try:
-        total_num_of_sensors, res = client.get_sensors(
-            id, hostname, ip, group_id, inactive_filter_days, limit)  # type: ignore[arg-type]
+        total_num_of_sensors, res = client.get_sensors(id, hostname, ip, group_id, inactive_filter_days, limit)  # type: ignore[arg-type]
 
         human_readable_data = []
         for sensor_data in res:
@@ -611,8 +610,7 @@ def alert_search_command(
     limit: str = None,
     start: str = "0",
 ) -> CommandResults:
-    res = client.get_alerts(status, username, feedname, hostname, report, sort,
-                            query, facet, limit, start)  # type: ignore[arg-type]
+    res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, limit, start)  # type: ignore[arg-type]
     if not res:
         raise Exception(f"{INTEGRATION_NAME} - Request cannot be processed.")
 
@@ -1005,8 +1003,7 @@ def fetch_incidents(
             demisto.debug(f"{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}")
             query_params["status"] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
-            res = client.get_alerts(query=_create_query_string(query_params),
-                                    limit=max_results, sort=time_sort)  # type: ignore[arg-type]
+            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort=time_sort)  # type: ignore[arg-type]
             alerts += res.get("results", [])
             demisto.debug(f"{INTEGRATION_NAME} - fetched {len(alerts)} so far.")
     else:

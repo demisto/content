@@ -46,7 +46,7 @@ class HttpRequestMock:
             triage_item_ids = params["id"]
             triage_item_alerts = triage_item_ids[: self.num_of_alerts - self.num_of_fetched_alerts]
             alerts_response = create_triage_items_from_events(triage_item_alerts, item_type="alert-id")
-            triage_item_incidents = triage_item_ids[self.num_of_alerts - self.num_of_fetched_alerts:]
+            triage_item_incidents = triage_item_ids[self.num_of_alerts - self.num_of_fetched_alerts :]
             incidents_response = create_triage_items_from_events(triage_item_incidents, item_type="incident-id")
 
             self.num_of_fetched_alerts += len(alerts_response)

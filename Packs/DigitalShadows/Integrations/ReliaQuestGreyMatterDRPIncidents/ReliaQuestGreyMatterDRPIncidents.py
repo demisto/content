@@ -102,7 +102,7 @@ def chunks(lst, n):
         # not subscriptable so push into a list
         to_chunk = list(lst)
     for i in range(0, len(to_chunk), n):
-        yield to_chunk[i: i + n]
+        yield to_chunk[i : i + n]
 
 
 def removing_unwanted_data(data_item):

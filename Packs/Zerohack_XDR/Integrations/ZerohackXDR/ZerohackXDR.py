@@ -210,7 +210,7 @@ def fetch_incidents(
     # A dictionary to store last fetch values for each severity.
     next_run = {}
     # Sorting the severity levels and creating a list.
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
     severity_levels.sort()
     # Initializating the incidents dictionary and setting the severity levels.
     incidents: List[Dict[str, Any]] = []

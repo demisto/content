@@ -173,7 +173,7 @@ class ReilaQuestClient(BaseClient):
         chunk = 0
         response = []
         while chunk < len(_ids):
-            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk: chunk + page_size]}))
+            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk : chunk + page_size]}))
             chunk += page_size
         return response
 

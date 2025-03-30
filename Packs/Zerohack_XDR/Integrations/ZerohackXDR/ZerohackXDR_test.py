@@ -63,7 +63,7 @@ def test_fetch_incidents(requests_mock):
         proxy=False,
     )
     min_severity = "4"
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
     max_results_per_severity = 10
     mock_responses = util_load_json("test_data/fetch_incidents.json")
 

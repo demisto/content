@@ -1022,7 +1022,7 @@ def fetch_incidents(
         batch_size = 10
         signal_incidents = []
         while i < len(signal_ids):
-            signal_list_str = ",".join([f'"{x}"' for x in signal_ids[i: i + batch_size]])
+            signal_list_str = ",".join([f'"{x}"' for x in signal_ids[i : i + batch_size]])
             query["q"] = f"id:in({signal_list_str})"
             resp_json = client.req("GET", "sec/v1/signals", query)
             for a in resp_json.get("objects"):

@@ -738,7 +738,7 @@ class Client(BaseClient):
 
         except requests.exceptions.ConnectionError as exception:
             error_class = str(exception.__class__)
-            err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
+            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
             err_msg = (
                 f"Error Type: {err_type}\n"
                 f"Error Number: [{exception.errno}]\n"
