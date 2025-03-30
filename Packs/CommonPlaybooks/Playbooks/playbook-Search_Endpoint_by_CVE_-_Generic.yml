@@ -716,3 +716,4 @@ fromversion: 5.5.0
 marketplaces:
   - xsoar
   - marketplacev2
+  - platform
