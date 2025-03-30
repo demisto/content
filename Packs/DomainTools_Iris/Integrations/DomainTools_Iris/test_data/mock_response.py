@@ -49,7 +49,12 @@ domaintools_response = {
         "country": {"value": "us", "count": 274018662},
         "phone": {"value": "", "count": 0},
         "fax": {"value": "", "count": 0},
-        "email": [{"value": "https://tieredaccess.com/contact/784fb607-c3ec-4640-b40f-30fc9f61b9ce", "count": 1}],
+        "email": [
+            {
+                "value": "https://tieredaccess.com/contact/784fb607-c3ec-4640-b40f-30fc9f61b9ce",
+                "count": 1,
+            }
+        ],
     },
     "technical_contact": {
         "name": {"value": "REDACTED FOR PRIVACY", "count": 131643982},
@@ -65,7 +70,10 @@ domaintools_response = {
     },
     "create_date": {"value": "1998-08-02", "count": 881},
     "expiration_date": {"value": "2027-08-01", "count": 8614},
-    "email_domain": [{"value": "enom.com", "count": 21797646}, {"value": "nsone.net", "count": 6273096}],
+    "email_domain": [
+        {"value": "enom.com", "count": 21797646},
+        {"value": "nsone.net", "count": 6273096},
+    ],
     "soa_email": [{"value": "hostmaster@nsone.net", "count": 6623371}],
     "ssl_email": [],
     "additional_whois_email": [{"value": "abuse@enom.com", "count": 12520125}],
@@ -143,7 +151,10 @@ domaintools_response = {
             "ip": [{"value": "198.51.45.4", "count": 400326}],
         },
     ],
-    "domain_risk": {"risk_score": 0, "components": [{"name": "zerolist", "risk_score": 0}]},
+    "domain_risk": {
+        "risk_score": 0,
+        "components": [{"name": "zerolist", "risk_score": 0}],
+    },
     "redirect": {"value": "", "count": 0},
     "redirect_domain": {"value": "", "count": 0},
     "registrant_name": {"value": "REDACTED FOR PRIVACY", "count": 132267110},
@@ -163,7 +174,10 @@ domaintools_response = {
                 {"value": "www.domaintools.com", "count": 0},
             ],
             "common_name": {"value": "domaintools.com", "count": 1},
-            "issuer_common_name": {"value": "Sectigo RSA Domain Validation Secure Server CA", "count": 14181540},
+            "issuer_common_name": {
+                "value": "Sectigo RSA Domain Validation Secure Server CA",
+                "count": 14181540,
+            },
             "not_after": {"value": 20240726, "count": 310808},
             "not_before": {"value": 20230626, "count": 256705},
             "duration": {"value": 397, "count": 2562623},
@@ -172,7 +186,10 @@ domaintools_response = {
     "tld": "com",
     "website_response": 200,
     "data_updated_timestamp": "2023-10-17T21:24:40.481000",
-    "website_title": {"value": "DomainTools - The first place to go when you need to know.", "count": 2},
+    "website_title": {
+        "value": "DomainTools - The first place to go when you need to know.",
+        "count": 2,
+    },
     "server_type": {"value": "Golfe2", "count": 1903001},
     "first_seen": {"value": "2001-10-26T00:00:00Z", "count": 0},
     "tags": [],
@@ -250,7 +267,10 @@ pivot_response = [
         },
         "create_date": {"value": "2022-05-29", "count": 128916},
         "expiration_date": {"value": "2024-05-29", "count": 707297},
-        "email_domain": [{"value": "1und1.com", "count": 5275752}, {"value": "ionos.com", "count": 7800425}],
+        "email_domain": [
+            {"value": "1und1.com", "count": 5275752},
+            {"value": "ionos.com", "count": 7800425},
+        ],
         "soa_email": [{"value": "hostmaster@1und1.com", "count": 5449366}],
         "ssl_email": [],
         "additional_whois_email": [{"value": "abuse@ionos.com", "count": 7397622}],
@@ -302,7 +322,11 @@ pivot_response = [
             "risk_score": 69,
             "components": [
                 {"name": "proximity", "risk_score": 5},
-                {"name": "threat_profile", "risk_score": 69, "evidence": ["domain name", "name server", "registrant"]},
+                {
+                    "name": "threat_profile",
+                    "risk_score": 69,
+                    "evidence": ["domain name", "name server", "registrant"],
+                },
                 {"name": "threat_profile_malware", "risk_score": 51},
                 {"name": "threat_profile_phishing", "risk_score": 69},
                 {"name": "threat_profile_spam", "risk_score": 45},
@@ -313,7 +337,11 @@ pivot_response = [
         "registrant_name": {"value": "", "count": 0},
         "registrant_org": {"value": "1&1 Internet Inc", "count": 2319926},
         "registrar": {"value": "IONOS SE", "count": 6845771},
-        "registrar_status": ["autorenewperiod", "clienthold", "clienttransferprohibited"],
+        "registrar_status": [
+            "autorenewperiod",
+            "clienthold",
+            "clienttransferprohibited",
+        ],
         "spf_info": "",
         "ssl_info": [],
         "tld": "tech",
@@ -429,7 +457,10 @@ pivot_response = [
                 "ip": [{"value": "187.45.248.254", "count": 635683}],
             },
         ],
-        "domain_risk": {"risk_score": 12, "components": [{"name": "proximity", "risk_score": 12}]},
+        "domain_risk": {
+            "risk_score": 12,
+            "components": [{"name": "proximity", "risk_score": 12}],
+        },
         "redirect": {"value": "", "count": 0},
         "redirect_domain": {"value": "", "count": 0},
         "registrant_name": {"value": "", "count": 0},
@@ -461,7 +492,12 @@ whois_history_response = [
                 "registrar": "eNom, LLC",
                 "statuses": ["clientTransferProhibited"],
             },
-            "name_servers": ["DNS1.P04.NSONE.NET", "DNS2.P04.NSONE.NET", "DNS3.P04.NSONE.NET", "DNS4.P04.NSONE.NET"],
+            "name_servers": [
+                "DNS1.P04.NSONE.NET",
+                "DNS2.P04.NSONE.NET",
+                "DNS3.P04.NSONE.NET",
+                "DNS4.P04.NSONE.NET",
+            ],
             "server": "whois.enom.com",
             "record": "Domain Name: domaintools.com\nRegistry Domain ID: 1697312_DOMAIN_COM-VRSN\nRegistrar WHOIS Server: WHOIS.ENOM.COM\nRegistrar URL: WWW.ENOMDOMAINS.COM\nUpdated Date: 2020-01-09T23:06:29.00Z\nCreation Date: 1998-08-02T04:00:00.00Z\nRegistrar Registration Expiration Date: 2027-08-01T04:00:00.00Z\nRegistrar: ENOM, INC.\nRegistrar IANA ID: 48\nDomain Status: clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited\nRegistrant Name: REDACTED FOR PRIVACY\nRegistrant Organization: REDACTED FOR PRIVACY\nRegistrant Street: REDACTED FOR PRIVACY\nRegistrant Street: \nRegistrant City: REDACTED FOR PRIVACY\nRegistrant State/Province: WA\nRegistrant Postal Code: REDACTED FOR PRIVACY\nRegistrant Country: US\nRegistrant Phone: REDACTED FOR PRIVACY\nRegistrant Phone Ext: \nRegistrant Fax: REDACTED FOR PRIVACY\nRegistrant Email: https://tieredaccess.com/contact/6b5b6cf5-397f-452f-b187-e93fc0a95d38\nAdmin Name: REDACTED FOR PRIVACY\nAdmin Organization: REDACTED FOR PRIVACY\nAdmin Street: REDACTED FOR PRIVACY\nAdmin Street: \nAdmin City: REDACTED FOR PRIVACY\nAdmin State/Province: REDACTED FOR PRIVACY\nAdmin Postal Code: REDACTED FOR PRIVACY\nAdmin Country: REDACTED FOR PRIVACY\nAdmin Phone: REDACTED FOR PRIVACY\nAdmin Phone Ext: \nAdmin Fax: REDACTED FOR PRIVACY\nAdmin Email: REDACTED FOR PRIVACY\nTech Name: REDACTED FOR PRIVACY\nTech Organization: REDACTED FOR PRIVACY\nTech Street: REDACTED FOR PRIVACY\nTech Street: \nTech City: REDACTED FOR PRIVACY\nTech State/Province: REDACTED FOR PRIVACY\nTech Postal Code: REDACTED FOR PRIVACY\nTech Country: REDACTED FOR PRIVACY\nTech Phone: REDACTED FOR PRIVACY\nTech Phone Ext: \nTech Fax: REDACTED FOR PRIVACY\nTech Email: REDACTED FOR PRIVACY\nName Server: DNS1.P04.NSONE.NET.\nName Server: DNS2.P04.NSONE.NET.\nName Server: DNS3.P04.NSONE.NET.\nName Server: DNS4.P04.NSONE.NET.\nDNSSEC: unsigned\nRegistrar Abuse Contact Email: ABUSE@ENOM.COM\nRegistrar Abuse Contact Phone: +1.4259744689\nURL of the ICANN WHOIS Data Problem Reporting System: HTTPS://ICANN.ORG/WICF\n",
         },
@@ -478,7 +514,12 @@ whois_history_response = [
                 "registrar": "eNom, LLC",
                 "statuses": ["clientTransferProhibited"],
             },
-            "name_servers": ["DNS1.P04.NSONE.NET", "DNS2.P04.NSONE.NET", "DNS3.P04.NSONE.NET", "DNS4.P04.NSONE.NET"],
+            "name_servers": [
+                "DNS1.P04.NSONE.NET",
+                "DNS2.P04.NSONE.NET",
+                "DNS3.P04.NSONE.NET",
+                "DNS4.P04.NSONE.NET",
+            ],
             "server": "whois.enom.com",
             "record": "Domain Name: domaintools.com\nRegistry Domain ID: 1697312_DOMAIN_COM-VRSN\nRegistrar WHOIS Server: WHOIS.ENOM.COM\nRegistrar URL: WWW.ENOMDOMAINS.COM\nUpdated Date: 2020-01-09T23:06:29.00Z\nCreation Date: 1998-08-02T04:00:00.00Z\nRegistrar Registration Expiration Date: 2027-08-01T04:00:00.00Z\nRegistrar: ENOM, INC.\nRegistrar IANA ID: 48\nDomain Status: clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited\nRegistrant Name: REDACTED FOR PRIVACY\nRegistrant Organization: REDACTED FOR PRIVACY\nRegistrant Street: REDACTED FOR PRIVACY\nRegistrant Street: \nRegistrant City: REDACTED FOR PRIVACY\nRegistrant State/Province: WA\nRegistrant Postal Code: REDACTED FOR PRIVACY\nRegistrant Country: US\nRegistrant Phone: REDACTED FOR PRIVACY\nRegistrant Phone Ext: \nRegistrant Fax: REDACTED FOR PRIVACY\nRegistrant Email: https://tieredaccess.com/contact/b3502409-a5f5-44d4-a1e0-b8c578ea53d1\nAdmin Name: REDACTED FOR PRIVACY\nAdmin Organization: REDACTED FOR PRIVACY\nAdmin Street: REDACTED FOR PRIVACY\nAdmin Street: \nAdmin City: REDACTED FOR PRIVACY\nAdmin State/Province: REDACTED FOR PRIVACY\nAdmin Postal Code: REDACTED FOR PRIVACY\nAdmin Country: REDACTED FOR PRIVACY\nAdmin Phone: REDACTED FOR PRIVACY\nAdmin Phone Ext: \nAdmin Fax: REDACTED FOR PRIVACY\nAdmin Email: REDACTED FOR PRIVACY\nTech Name: REDACTED FOR PRIVACY\nTech Organization: REDACTED FOR PRIVACY\nTech Street: REDACTED FOR PRIVACY\nTech Street: \nTech City: REDACTED FOR PRIVACY\nTech State/Province: REDACTED FOR PRIVACY\nTech Postal Code: REDACTED FOR PRIVACY\nTech Country: REDACTED FOR PRIVACY\nTech Phone: REDACTED FOR PRIVACY\nTech Phone Ext: \nTech Fax: REDACTED FOR PRIVACY\nTech Email: REDACTED FOR PRIVACY\nName Server: DNS1.P04.NSONE.NET.\nName Server: DNS2.P04.NSONE.NET.\nName Server: DNS3.P04.NSONE.NET.\nName Server: DNS4.P04.NSONE.NET.\nDNSSEC: unsigned\nRegistrar Abuse Contact Email: ABUSE@ENOM.COM\nRegistrar Abuse Contact Phone: +1.4259744689\nURL of the ICANN WHOIS Data Problem Reporting System: HTTPS://ICANN.ORG/WICF\n",
         },
@@ -564,7 +605,12 @@ parsed_whois_response = {
         "registrar": "eNom, LLC",
         "statuses": ["clientTransferProhibited"],
     },
-    "name_servers": ["DNS1.P04.NSONE.NET", "DNS2.P04.NSONE.NET", "DNS3.P04.NSONE.NET", "DNS4.P04.NSONE.NET"],
+    "name_servers": [
+        "DNS1.P04.NSONE.NET",
+        "DNS2.P04.NSONE.NET",
+        "DNS3.P04.NSONE.NET",
+        "DNS4.P04.NSONE.NET",
+    ],
     "whois": {
         "date": "2023-11-19",
         "record": "Domain Name: domaintools.com\nRegistry Domain ID: 1697312_DOMAIN_COM-VRSN\nRegistrar WHOIS Server: WHOIS.ENOM.COM\nRegistrar URL: WWW.ENOMDOMAINS.COM\nUpdated Date: 2020-01-09T23:06:29.00Z\nCreation Date: 1998-08-02T04:00:00.00Z\nRegistrar Registration Expiration Date: 2027-08-01T04:00:00.00Z\nRegistrar: ENOM, INC.\nRegistrar IANA ID: 48\nDomain Status: clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited\nRegistrant Name: REDACTED FOR PRIVACY\nRegistrant Organization: REDACTED FOR PRIVACY\nRegistrant Street: REDACTED FOR PRIVACY\nRegistrant Street: \nRegistrant City: REDACTED FOR PRIVACY\nRegistrant State/Province: WA\nRegistrant Postal Code: REDACTED FOR PRIVACY\nRegistrant Country: US\nRegistrant Phone: REDACTED FOR PRIVACY\nRegistrant Phone Ext: \nRegistrant Fax: REDACTED FOR PRIVACY\nRegistrant Email: https://tieredaccess.com/contact/6b5b6cf5-397f-452f-b187-e93fc0a95d38\nAdmin Name: REDACTED FOR PRIVACY\nAdmin Organization: REDACTED FOR PRIVACY\nAdmin Street: REDACTED FOR PRIVACY\nAdmin Street: \nAdmin City: REDACTED FOR PRIVACY\nAdmin State/Province: REDACTED FOR PRIVACY\nAdmin Postal Code: REDACTED FOR PRIVACY\nAdmin Country: REDACTED FOR PRIVACY\nAdmin Phone: REDACTED FOR PRIVACY\nAdmin Phone Ext: \nAdmin Fax: REDACTED FOR PRIVACY\nAdmin Email: REDACTED FOR PRIVACY\nTech Name: REDACTED FOR PRIVACY\nTech Organization: REDACTED FOR PRIVACY\nTech Street: REDACTED FOR PRIVACY\nTech Street: \nTech City: REDACTED FOR PRIVACY\nTech State/Province: REDACTED FOR PRIVACY\nTech Postal Code: REDACTED FOR PRIVACY\nTech Country: REDACTED FOR PRIVACY\nTech Phone: REDACTED FOR PRIVACY\nTech Phone Ext: \nTech Fax: REDACTED FOR PRIVACY\nTech Email: REDACTED FOR PRIVACY\nName Server: DNS1.P04.NSONE.NET.\nName Server: DNS2.P04.NSONE.NET.\nName Server: DNS3.P04.NSONE.NET.\nName Server: DNS4.P04.NSONE.NET.\nDNSSEC: unsigned\nRegistrar Abuse Contact Email: ABUSE@ENOM.COM\nRegistrar Abuse Contact Phone: +1.4259744689\nURL of the ICANN WHOIS Data Problem Reporting System: HTTPS://ICANN.ORG/WICF\n",
@@ -643,7 +689,188 @@ parsed_whois_response = {
                 "email": "",
             },
         },
-        "other_properties": {"dnssec": "unsigned", "registry_domain_id": "1697312_DOMAIN_COM-VRSN"},
+        "other_properties": {
+            "dnssec": "unsigned",
+            "registry_domain_id": "1697312_DOMAIN_COM-VRSN",
+        },
     },
     "record_source": "domaintools.com",
+}
+
+
+raw_parsed_domain_rdap_response = {
+    "domain_rdap": [
+        {
+            "source": "registry",
+            "timestamp": "2024-12-18T00:00:14Z",
+            "link": "https://rdap.verisign.com/com/v1/domain/domaintools.com",
+            "record": '{"objectClassName":"domain","handle":"1697312_DOMAIN_COM-VRSN","ldhName":"DOMAINTOOLS.COM","links":[{"value":"https:\\/\\/rdap.verisign.com\\/com\\/v1\\/domain\\/DOMAINTOOLS.COM","rel":"self","href":"https:\\/\\/rdap.verisign.com\\/com\\/v1\\/domain\\/DOMAINTOOLS.COM","type":"application\\/rdap+json"},{"value":"https:\\/\\/enom.rdap.tucows.com\\/domain\\/DOMAINTOOLS.COM","rel":"related","href":"https:\\/\\/enom.rdap.tucows.com\\/domain\\/DOMAINTOOLS.COM","type":"application\\/rdap+json"}],"status":["client transfer prohibited"],"entities":[{"objectClassName":"entity","handle":"48","roles":["registrar"],"publicIds":[{"type":"IANA Registrar ID","identifier":"48"}],"vcardArray":["vcard",[["version",{},"text","4.0"],["fn",{},"text","eNom, LLC"]]],"entities":[{"objectClassName":"entity","roles":["abuse"],"vcardArray":["vcard",[["version",{},"text","4.0"],["fn",{},"text",""],["tel",{"type":"voice"},"uri",""],["email",{},"text",""]]]}]}],"events":[{"eventAction":"registration","eventDate":"1998-08-02T04:00:00Z"},{"eventAction":"expiration","eventDate":"2027-08-01T04:00:00Z"},{"eventAction":"last changed","eventDate":"2020-01-09T23:06:29Z"},{"eventAction":"last update of RDAP database","eventDate":"2024-12-18T00:00:04Z"}],"secureDNS":{"delegationSigned":false},"nameservers":[{"objectClassName":"nameserver","ldhName":"DNS1.P04.NSONE.NET"},{"objectClassName":"nameserver","ldhName":"DNS2.P04.NSONE.NET"},{"objectClassName":"nameserver","ldhName":"DNS3.P04.NSONE.NET"},{"objectClassName":"nameserver","ldhName":"DNS4.P04.NSONE.NET"}],"rdapConformance":["rdap_level_0","icann_rdap_technical_implementation_guide_0","icann_rdap_response_profile_0"],"notices":[{"title":"Terms of Use","description":["Service subject to Terms of Use."],"links":[{"href":"https:\\/\\/www.verisign.com\\/domain-names\\/registration-data-access-protocol\\/terms-service\\/index.xhtml","type":"text\\/html"}]},{"title":"Status Codes","description":["For more information on domain status codes, please visit https:\\/\\/icann.org\\/epp"],"links":[{"href":"https:\\/\\/icann.org\\/epp","type":"text\\/html"}]},{"title":"RDDS Inaccuracy Complaint Form","description":["URL of the ICANN RDDS Inaccuracy Complaint Form: https:\\/\\/icann.org\\/wicf"],"links":[{"href":"https:\\/\\/icann.org\\/wicf","type":"text\\/html"}]}]}',
+        },
+        {
+            "source": "registrar",
+            "timestamp": "2024-12-18T00:00:15Z",
+            "link": "https://enom.rdap.tucows.com/domain/DOMAINTOOLS.COM",
+            "record": '{"rdapConformance": ["rdap_level_0", "icann_rdap_response_profile_0", "icann_rdap_technical_implementation_guide_0"], "objectClassName": "domain", "handle": "1697312_DOMAIN_COM-VRSN", "ldhName": "DOMAINTOOLS.COM", "unicodeName": "DOMAINTOOLS.COM", "nameservers": [{"objectClassName": "nameserver", "ldhName": "DNS1.P04.NSONE.NET.", "unicodeName": "DNS1.P04.NSONE.NET.", "lang": "EN"}, {"objectClassName": "nameserver", "ldhName": "DNS2.P04.NSONE.NET.", "unicodeName": "DNS2.P04.NSONE.NET.", "lang": "EN"}, {"objectClassName": "nameserver", "ldhName": "DNS3.P04.NSONE.NET.", "unicodeName": "DNS3.P04.NSONE.NET.", "lang": "EN"}, {"objectClassName": "nameserver", "ldhName": "DNS4.P04.NSONE.NET.", "unicodeName": "DNS4.P04.NSONE.NET.", "lang": "EN"}], "entities": [{"objectClassName": "entity", "roles": ["registrant"], "vcardArray": ["vcard", [["version", {}, "text", "4.0"], ["kind", {}, "text", "individual"], ["lang", {}, "language-tag", "en"], ["adr", {}, "text", ["", "", "", "", "WA", "", "US"]], ["contact-uri", {}, "uri", "https://tieredaccess.com/contact/01bd2f58-d3bf-46c5-99e6-b8165b46a6f9"]]], "remarks": [{"title": "REDACTED FOR PRIVACY", "description": "Some of the data in this object has been removed", "type": "object redacted due to authorization"}]}, {"objectClassName": "entity", "roles": ["admin"], "remarks": [{"title": "REDACTED FOR PRIVACY", "description": "Some of the data in this object has been removed", "type": "object redacted due to authorization"}]}, {"objectClassName": "entity", "roles": ["technical"], "remarks": [{"title": "REDACTED FOR PRIVACY", "description": "Some of the data in this object has been removed", "type": "object redacted due to authorization"}]}, {"objectClassName": "entity", "roles": ["registrar"], "vcardArray": ["vcard", [["version", {}, "text", "4.0"], ["fn", {}, "text", "ENOM, INC."], ["kind", {}, "text", "individual"], ["lang", {}, "language-tag", "en"]]], "publicIds": [{"type": "IANA Registrar ID", "identifier": "48"}], "entities": [{"objectClassName": "entity", "roles": ["abuse"], "vcardArray": ["vcard", [["version", {}, "text", "4.0"], ["fn", {}, "text", "ENOM, INC."], ["kind", {}, "text", "individual"], ["lang", {}, "language-tag", "en"], ["tel", {"type": ["voice"]}, "uri", "tel:+1.4259744689"], ["email", {}, "text", "ABUSE@ENOM.COM"]]]}]}, {"objectClassName": "entity", "roles": ["reseller"]}], "status": ["client transfer prohibited"], "events": [{"eventAction": "registration", "eventDate": "1998-08-02T04:00:00.00Z"}, {"eventAction": "expiration", "eventDate": "2027-08-01T04:00:00.00Z"}, {"eventAction": "last update of RDAP database", "eventDate": "2024-12-18T00:00:17.00Z"}, {"eventAction": "last changed", "eventDate": "2020-01-09T23:06:29.00Z"}], "secureDNS": {"zoneSigned": false}, "publicIds": [{"type": "IANA Registrar ID", "identifier": "48"}], "port43": "WHOIS.ENOM.COM", "notices": [{"title": "Status Codes", "description": ["For more information on domain status codes, please visit https://icann.org/epp"], "links": [{"value": "https://icann.org/epp", "href": "https://icann.org/epp", "type": "text/html"}]}, {"title": "RDDS Inaccuracy Complaint Form", "description": ["URL of the ICANN RDDS Inaccuracy Complaint Form:https://icann.org/wicf"], "links": [{"value": "https://icann.org/wicf\\u200b", "href": "https://icann.org/wicf\\u200b", "type": "text/html"}]}, {"title": "Terms of Service", "description": ["The data provided by the Registration Data Access Protocol (\\u201cRDAP\\u201d or \\u201cWhois\\u201d) is provided to you by Tucows for information purposes only and may be used to assist you in obtaining information about or related to a domain name\'s registration record. These terms govern your use of this service and access to this database. We reserve the right to modify these terms at any time.", "This information is provided \\"as is\\" and does not guarantee its accuracy.", "By submitting a query, you certify that you have a legitimate purpose for requesting the data, that you will use this data only for lawful purposes and delete the data immediately when the data are no longer necessary for your lawful or legitimate purpose, and that, under no circumstances, will you use this data to: a) allow, enable, or otherwise support the transmission of mass, unsolicited, commercial advertising, or solicitations to entities other than the data recipient\\u2019s own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of any registry operator or ICANN-accredited registrar, except as reasonably necessary to register domain names or modify existing registrations.", "The compilation, repackaging, dissemination, or other use of these data is expressly prohibited.", "Your access to the database may be terminated at any time in our sole discretion including, without limitation, for excessive querying of the database or for failure to otherwise abide by this policy.", "Your IP address, the queried domain, the response, and a timestamp is stored for the purposes of maintaining the service and to ensure adherence with these terms.", "By submitting this query, you agree to these terms.", "NOTE: THIS DATABASE IS A CONTACT DATABASE ONLY.  LACK OF A DOMAIN RECORD DOES NOT SIGNIFY DOMAIN AVAILABILITY."], "links": [{"value": "http://www.tucowsdomains.com/rdap/tos", "href": "http://www.tucowsdomains.com/rdap/tos", "type": "text/html"}]}]}',
+        },
+    ],
+    "parsed_domain_rdap": {
+        "domain": "DOMAINTOOLS.COM",
+        "handle": "1697312_DOMAIN_COM-VRSN",
+        "domain_statuses": ["client transfer prohibited"],
+        "creation_date": "1998-08-02T04:00:00+00:00",
+        "last_changed_date": "2020-01-09T23:06:29+00:00",
+        "expiration_date": "2027-08-01T04:00:00+00:00",
+        "registrar": {
+            "name": "ENOM, INC.",
+            "iana_id": "48",
+            "contacts": [
+                {
+                    "name": "ENOM, INC.",
+                    "email": "ABUSE@ENOM.COM",
+                    "phone": "tel:+1.4259744689",
+                    "roles": ["abuse"],
+                }
+            ],
+        },
+        "contacts": [
+            {
+                "name": "REDACTED FOR PRIVACY",
+                "email": "REDACTED FOR PRIVACY",
+                "street": "",
+                "city": "",
+                "postal": "",
+                "region": "WA",
+                "country": "US",
+                "roles": ["registrant"],
+            },
+            {
+                "name": "REDACTED FOR PRIVACY",
+                "email": "REDACTED FOR PRIVACY",
+                "roles": ["administrative"],
+            },
+            {
+                "name": "REDACTED FOR PRIVACY",
+                "email": "REDACTED FOR PRIVACY",
+                "roles": ["technical"],
+            },
+            {"roles": ["reseller"]},
+        ],
+        "dnssec": {"signed": False},
+        "nameservers": [
+            "DNS1.P04.NSONE.NET.",
+            "DNS2.P04.NSONE.NET.",
+            "DNS3.P04.NSONE.NET.",
+            "DNS4.P04.NSONE.NET.",
+        ],
+        "conformance": [
+            "rdap_level_0",
+            "icann_rdap_response_profile_0",
+            "icann_rdap_technical_implementation_guide_0",
+        ],
+        "emails": ["abuse@enom.com", "redacted for privacy"],
+        "email_domains": ["enom.com"],
+        "unclassified_emails": [],
+    },
+    "record_source": "domaintools.com",
+}
+
+
+flattened_parsed_domain_rdap_response = {
+    "domain": "DOMAINTOOLS.COM",
+    "handle": "1697312_DOMAIN_COM-VRSN",
+    "domain_statuses": "client transfer prohibited",
+    "creation_date": "1998-08-02T04:00:00+00:00",
+    "last_changed_date": "2020-01-09T23:06:29+00:00",
+    "expiration_date": "2027-08-01T04:00:00+00:00",
+    "dnssec": {"signed": False},
+    "nameservers": "DNS1.P04.NSONE.NET. | DNS2.P04.NSONE.NET. | DNS3.P04.NSONE.NET. | DNS4.P04.NSONE.NET.",
+    "conformance": "rdap_level_0 | icann_rdap_response_profile_0 | icann_rdap_technical_implementation_guide_0",
+    "emails": "abuse@enom.com | redacted for privacy",
+    "email_domains": "enom.com",
+    "unclassified_emails": "",
+    "registrar_name": "ENOM, INC.",
+    "registrar_iana_id": "48",
+    "registrar_contacts_name": "ENOM, INC.",
+    "registrar_contacts_email": "ABUSE@ENOM.COM",
+    "registrar_contacts_phone": "tel:+1.4259744689",
+    "registrar_contacts_roles": "abuse",
+    "contact_name_1": "REDACTED FOR PRIVACY",
+    "contact_email_1": "REDACTED FOR PRIVACY",
+    "contact_street_1": "",
+    "contact_city_1": "",
+    "contact_postal_1": "",
+    "contact_region_1": "WA",
+    "contact_country_1": "US",
+    "contact_roles_1": "registrant",
+    "contact_name_2": "REDACTED FOR PRIVACY",
+    "contact_email_2": "REDACTED FOR PRIVACY",
+    "contact_roles_2": "administrative",
+    "contact_name_3": "REDACTED FOR PRIVACY",
+    "contact_email_3": "REDACTED FOR PRIVACY",
+    "contact_roles_3": "technical",
+    "contact_roles_4": "reseller",
+}
+
+reverseIP_responses = {
+    "ip": {
+        "ip_addresses": {
+            "ip_address": "8.8.8.8",
+            "domain_count": 14910,
+            "domain_names": [
+                "1gkncxfiow5j.com",
+                "3tuga.xyz",
+                "4031leyu.com",
+                "4vrijqda75p3.com",
+                "98587.top",
+                "acxp.net",
+                "aeneascapital.com",
+                "anhuirb.cn",
+                "appx.com.tr",
+                "badmashistatus.com",
+            ],
+        }
+    },
+    "domain": {
+        "ip_addresses": [
+            {
+                "ip_address": "142.250.217.68",
+                "domain_count": 105,
+                "domain_names": [
+                    "bazinv.com",
+                    "energypathco.com",
+                    "tradera.club",
+                    "gsinet.co.uk",
+                    "vendomesucks.com",
+                    "tinglyfish.net",
+                    "dmarc.net",
+                    "jameygijzen.nl",
+                    "signled.cn",
+                    "hechosetri.xyz",
+                ],
+            },
+            {
+                "ip_address": "142.250.217.78",
+                "domain_count": 811,
+                "domain_names": [],
+            },
+        ]
+    },
+}
+
+
+reverseNameserver_response = {
+    "name_server": {
+        "hostname": "domaincontrol.com",
+        "primary": 58848068,
+        "secondary": 41001,
+        "total": 58889069,
+    },
+    "primary_domains": [
+        "0--0----------------------------------------------------------0.com",
+        "0--0.ac",
+        "0--0.dev",
+        "0--0.mobi",
+        "0--0.xyz",
+    ],
+    "secondary_domains": [],
 }
