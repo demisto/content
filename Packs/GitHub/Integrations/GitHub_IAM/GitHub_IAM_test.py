@@ -167,9 +167,7 @@ def test_get_user_command__bad_response(mocker):
 
     bad_response = Response()
     bad_response.status_code = 500
-    bad_response._content = (
-        b'{"errorCode": "mock_error_code", "errorSummary": "mock_error_summary", "message": "Not Found"}'
-    )
+    bad_response._content = b'{"errorCode": "mock_error_code", "errorSummary": "mock_error_summary", "message": "Not Found"}'
 
     mocker.patch.object(Session, "request", return_value=bad_response)
 

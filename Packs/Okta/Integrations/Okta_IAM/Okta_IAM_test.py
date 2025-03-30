@@ -328,9 +328,7 @@ def test_update_user_command__rate_limit_error(mocker):
 
     bad_response = Response()
     bad_response.status_code = 429
-    bad_response._content = (
-        b'{"errorCode": "E0000047", "errorSummary": "API call exceeded rate limit due to too many requests."}'
-    )
+    bad_response._content = b'{"errorCode": "E0000047", "errorSummary": "API call exceeded rate limit due to too many requests."}'
 
     mocker.patch.object(demisto, "error")
     mocker.patch.object(Session, "request", return_value=bad_response)

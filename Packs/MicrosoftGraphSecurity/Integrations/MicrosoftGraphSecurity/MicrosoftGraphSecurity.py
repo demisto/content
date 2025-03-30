@@ -1743,9 +1743,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
                 client.search_alerts(params)["value"]
             except Exception as e:
                 if "Invalid ODATA query filter" in e.args[0]:
-                    raise DemistoException(
-                        "Wrong filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0]
-                    )
+                    raise DemistoException("Wrong filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0])
                 raise e
 
         return "ok", None, None

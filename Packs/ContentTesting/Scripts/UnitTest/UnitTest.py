@@ -69,9 +69,11 @@ def RunUTResults(args):
         task_id = "0"
         if attempts < 5:
             for _key, val in tasks.items():
-                if ("scriptId" in val["task"]
+                if (
+                    "scriptId" in val["task"]
                     and val["task"]["scriptId"] == scriptid
-                        and val["task"]["name"] == "DisplayUnitTestResults"):
+                    and val["task"]["name"] == "DisplayUnitTestResults"
+                ):
                     new_id = val["id"]
                     if int(new_id) > int(task_id):
                         task_id = new_id

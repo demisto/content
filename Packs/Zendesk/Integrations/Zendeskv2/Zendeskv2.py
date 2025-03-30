@@ -573,7 +573,7 @@ class ZendeskClient(BaseClient):
 
     @staticmethod
     def __ticket_context(ticket: dict[str, Any]):
-        return CACHE.replace_ids_change(      # type: ignore
+        return CACHE.replace_ids_change(  # type: ignore
             ticket,
             organization_fields=["organization_id"],  # type: ignore
             user_fields=["assignee_id", "collaborator_ids", "email_cc_ids", "follower_ids", "requester_id", "submitter_id"],

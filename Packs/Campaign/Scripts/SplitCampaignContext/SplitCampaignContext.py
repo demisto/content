@@ -7,7 +7,7 @@ ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH = "incidents"
 
 def save_to_context(
     items: list, context_path: str, delete_existing: bool = False, is_sub_playbook: str = "auto", table_header="Incidents Result"
-):   # pragma: no cover
+):  # pragma: no cover
     if delete_existing:
         res = demisto.executeCommand("DeleteContext", {"key": context_path, "subplaybook": is_sub_playbook})
         if is_error(res):

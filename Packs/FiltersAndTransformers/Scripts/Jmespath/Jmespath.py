@@ -5,7 +5,7 @@ from CommonServerPython import *
 
 def jmespath_search(expression: str, value: dict | list) -> dict:
     try:
-        expression_compiled = jmespath.compile(expression)    # pylint: disable=E1101
+        expression_compiled = jmespath.compile(expression)  # pylint: disable=E1101
     except Exception as err:
         raise Exception(f"Invalid expression - {err}")
     result = expression_compiled.search(value)

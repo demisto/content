@@ -32,9 +32,7 @@ def main():
             sys.exit(0)
 
     if taskID == "-1":
-        demisto.results(
-            {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "File type not supported"}
-        )
+        demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "File type not supported"})
         sys.exit(0)
 
     # Poll stage ############

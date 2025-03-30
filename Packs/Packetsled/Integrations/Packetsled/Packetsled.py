@@ -261,8 +261,7 @@ def main():
     elif demisto.command() == "packetsled-sensors":
         response = requests.get(
             urljoin(apiserver, "/admin/probes"),
-            params={"filterscount": 1, "filtercondition0": "NOT_EQUAL",
-                    "filterdatafield0": "deleted", "filtervalue0": 1},  # type: ignore[arg-type]
+            params={"filterscount": 1, "filtercondition0": "NOT_EQUAL", "filterdatafield0": "deleted", "filtervalue0": 1},  # type: ignore[arg-type]
             headers={"cache-control": "no-cache", "x-api-access-token": auth_token},
             verify=VERIFY,
         )
@@ -311,7 +310,7 @@ def main():
                         }
                     },
                 },
-                "search_text": "log = [intel notice psfile_analytics ] cluster src_ip on [log]",    # noqa: RUF001
+                "search_text": "log = [intel notice psfile_analytics ] cluster src_ip on [log]",  # noqa: RUF001
             }
 
             response = requests.post(
@@ -341,7 +340,7 @@ def main():
                         }
                     },
                 },
-                "search_text": "log = [intel notice psfile_analytics ] cluster dest_ip on [log]",   # noqa: RUF001
+                "search_text": "log = [intel notice psfile_analytics ] cluster dest_ip on [log]",  # noqa: RUF001
             }
 
             response = requests.post(
@@ -357,32 +356,38 @@ def main():
             entitys = list(set(entitys))
 
         if demisto.command() == "fetch-incidents":
-            incidents += [{
-                "id": x + "-" + str(tmin) + "-" + str(tnow),
-                "name": "SOURCE: Packetsled SENSOR: " + sensor["label"] + " ENTITY: " + x,
-                        "labels": [{"Provider": "packetsled"}, {"Sensor": sensor["label"]}, {"Entity": x}],
-                        "rawJSON": json.dumps(
-                            {
-                                "id": x + "-" + str(tmin) + "-" + str(tnow),
-                                "log": ["intel", "notice", "psfile_analytics"],
-                                "entity": x,
-                                "start_time": tmin,
-                                "stop_time": tnow,
-                                "envid": sensor["envid"],
-                                "probe": sensor["probe"],
-                            }
-                ), } for x in entitys]
+            incidents += [
+                {
+                    "id": x + "-" + str(tmin) + "-" + str(tnow),
+                    "name": "SOURCE: Packetsled SENSOR: " + sensor["label"] + " ENTITY: " + x,
+                    "labels": [{"Provider": "packetsled"}, {"Sensor": sensor["label"]}, {"Entity": x}],
+                    "rawJSON": json.dumps(
+                        {
+                            "id": x + "-" + str(tmin) + "-" + str(tnow),
+                            "log": ["intel", "notice", "psfile_analytics"],
+                            "entity": x,
+                            "start_time": tmin,
+                            "stop_time": tnow,
+                            "envid": sensor["envid"],
+                            "probe": sensor["probe"],
+                        }
+                    ),
+                }
+                for x in entitys
+            ]
             demisto.incidents(incidents)
         else:
-            incidents += [{
-                "id": x + "-" + str(tmin) + "-" + str(tnow),
-                "log": ["intel", "notice", "psfile_analytics"],
-                "entity": x,
-                "start_time": tmin,
-                "stop_time": tnow,
-                "envid": sensor["envid"],
-                "probe": sensor["probe"],
-            } for x in entitys
+            incidents += [
+                {
+                    "id": x + "-" + str(tmin) + "-" + str(tnow),
+                    "log": ["intel", "notice", "psfile_analytics"],
+                    "entity": x,
+                    "start_time": tmin,
+                    "stop_time": tnow,
+                    "envid": sensor["envid"],
+                    "probe": sensor["probe"],
+                }
+                for x in entitys
             ]
             demisto.results(
                 {

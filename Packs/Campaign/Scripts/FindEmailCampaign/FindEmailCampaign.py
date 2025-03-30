@@ -465,9 +465,7 @@ def is_number_of_unique_recipients_is_too_low(incidents):
     if (len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients == 0) or (
         0 < len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients > 0
     ):
-        msg = (
-            "Similar emails were found, but the number of their unique recipients is too low to consider them as campaign.\n "
-        )
+        msg = "Similar emails were found, but the number of their unique recipients is too low to consider them as campaign.\n "
         msg += (
             "If you wish to consider similar emails as campaign even with low number of unique recipients, "
             "please change *minUniqueRecipients* argument's value.\n"

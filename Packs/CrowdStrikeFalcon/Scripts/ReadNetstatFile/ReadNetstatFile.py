@@ -4,9 +4,9 @@ COMMAND_NAME = "netstat"
 
 
 def get_netstat_file_name(command_files):
-    if command_files and isinstance(command_files, dict):   # noqa: RET503
+    if command_files and isinstance(command_files, dict):  # noqa: RET503
         netstat_files = command_files.get(COMMAND_NAME, [])
-        if netstat_files:   # noqa: RET503
+        if netstat_files:  # noqa: RET503
             if isinstance(netstat_files, list):  # noqa: RET503
                 # we want to get the last file name
                 return netstat_files[len(netstat_files) - 1].get("Filename")
@@ -43,7 +43,7 @@ def get_file_entry_id(file_name):
 
 
 def get_file_content(file_entry_id):
-    if file_entry_id:   # noqa: RET503
+    if file_entry_id:  # noqa: RET503
         res = execute_command("getFilePath", {"id": file_entry_id})
         file_path = res.get("path")
         with open(file_path) as f:

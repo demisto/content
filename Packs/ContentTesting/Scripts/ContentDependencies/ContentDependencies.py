@@ -26,8 +26,9 @@ def GetAutomation(scriptid: str):
 
 def GetAutomationName(scriptid: str) -> str:
     octets = scriptid.split("-")
-    if len(octets) == 5 and (len(octets[0]) == 8
-                             and len(octets[1]) == 4 and len(octets[2]) == 4 and len(octets[3]) == 4 and len(octets[4]) == 12):
+    if len(octets) == 5 and (
+        len(octets[0]) == 8 and len(octets[1]) == 4 and len(octets[2]) == 4 and len(octets[3]) == 4 and len(octets[4]) == 12
+    ):
         results = demisto.executeCommand("core-api-post", {"uri": f"/automation/load/{scriptid}"})
         if is_error(results):
             return f"MISSING_SCRIPT_FOR_ID_{scriptid}"

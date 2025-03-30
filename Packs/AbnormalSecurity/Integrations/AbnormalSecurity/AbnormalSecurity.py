@@ -892,11 +892,11 @@ def main():  # pragma: nocover
             # Employee commands
             "abnormal-security-get-employee-identity-analysis": get_employee_identity_analysis_genome_data_command,
             "abnormal-security-get-employee-information": get_employee_information_command,
-            "abnormal-security-get-employee-last-30-days-login-csv":
-                get_employee_login_information_for_last_30_days_in_csv_format_command,
+            "abnormal-security-get-employee-last-30-days-login-csv":  # noqa: E501
+            get_employee_login_information_for_last_30_days_in_csv_format_command,
             # Detection 360 commands
-            "abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement":
-                submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
+            "abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement":  # noqa: E501
+            submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
             "abnormal-security-submit-false-negative-report": submit_false_negative_report_command,
             "abnormal-security-submit-false-positive-report": submit_false_positive_report_command,
             # Vendor commands

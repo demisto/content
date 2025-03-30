@@ -34,7 +34,7 @@ def side_effect_demisto_dt(obj, dt):
 
         if dt.startswith("month="):
             obj = obj.get("month")
-            dt = "." + dt[len("month"):]
+            dt = "." + dt[len("month") :]
 
         if dt == ".=val.day == 29 && (val.year % 4) == 0 && !((val.year % 100) == 0 && (val.year % 400) != 0)":
             day = int(obj.get("day"))
@@ -42,19 +42,19 @@ def side_effect_demisto_dt(obj, dt):
             return day == 29 and (year % 4) == 0 and not ((year % 100) == 0 and (year % 400) != 0)
 
         elif dt.startswith(".=val <="):
-            return int(obj) <= int(dt[len(".=val <="):])
+            return int(obj) <= int(dt[len(".=val <=") :])
         elif dt.startswith(".=val <"):
             if int(obj) == 6:
                 raise RuntimeError(dt)
-            return int(obj) < int(dt[len(".=val <"):])
+            return int(obj) < int(dt[len(".=val <") :])
         elif dt.startswith(".=val >="):
-            return int(obj) >= int(dt[len(".=val >="):])
+            return int(obj) >= int(dt[len(".=val >=") :])
         elif dt.startswith(".=val >"):
-            return int(obj) > int(dt[len(".=val >"):])
+            return int(obj) > int(dt[len(".=val >") :])
         elif dt.startswith(".=val =="):
-            return int(obj) == int(dt[len(".=val =="):])
+            return int(obj) == int(dt[len(".=val ==") :])
         elif dt.startswith(".=val !="):
-            return int(obj) != int(dt[len(".=val !="):])
+            return int(obj) != int(dt[len(".=val !=") :])
         elif dt == ".='key1' in val":
             return "key1" in obj
         elif dt == ".=!('key2' in val)":

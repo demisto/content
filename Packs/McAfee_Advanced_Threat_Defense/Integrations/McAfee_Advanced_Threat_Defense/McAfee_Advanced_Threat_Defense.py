@@ -93,7 +93,7 @@ def http_request(uri, method, headers=None, body=None, params=None, files=None):
         try:
             result = json.loads(result, parse_int=str)
         except ValueError:
-            LOG("result is: %r" % result)   # noqa: UP031
+            LOG("result is: %r" % result)  # noqa: UP031
             return_error("Response Parsing failed")
         if "success" in result and result["success"] == "false":  # type: ignore
             return_error("ATD Api call to " + uri + " failed. Reason is: " + str(res.reason))

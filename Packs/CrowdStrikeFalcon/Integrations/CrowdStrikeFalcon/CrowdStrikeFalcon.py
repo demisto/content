@@ -537,9 +537,7 @@ def http_request(
         )
         demisto.debug(f"In http_request after the first call to generic_http_request {res=} {res.status_code=}")
     except requests.exceptions.RequestException as e:
-        return_error(
-            f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}."
-        )
+        return_error(f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}.")
     try:
         if get_token_flag:
             # removing 401,403,429 status codes, now we want to generate a new token and try again
@@ -3668,9 +3666,7 @@ def iom_ids_pagination(
     fetched_iom_events: list[str] = []
     continue_pagination = True
     while continue_pagination:
-        demisto.debug(
-            f"Doing IOM pagination with the arguments: {filter=}, {api_limit=}, {iom_new_next_token=},{fetch_limit=}"
-        )
+        demisto.debug(f"Doing IOM pagination with the arguments: {filter=}, {api_limit=}, {iom_new_next_token=},{fetch_limit=}")
         iom_resource_ids, iom_new_next_token = get_iom_ids_for_fetch(
             filter=filter, iom_next_token=iom_new_next_token, limit=min(api_limit, fetch_limit - total_incidents_count)
         )
@@ -4214,7 +4210,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i: i + batch_size]
+        batch = device_ids[i : i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -5497,8 +5493,7 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command,
-                                    host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")

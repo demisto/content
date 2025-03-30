@@ -46,7 +46,7 @@ def test_collect_campaign_recipients(mocker, selected_ids, num_of_selected_ids):
     # validate
     command_args = demisto.executeCommand.call_args[0][1]
     recipients = demisto.get(command_args, "customFields.campaignemailto")
-    len(recipients.split(",")) == 2 * num_of_selected_ids   # noqa: B015  # 2 recipients for each incident
+    len(recipients.split(",")) == 2 * num_of_selected_ids  # noqa: B015  # 2 recipients for each incident
     assert all(f"recip_{i}@test_1.com" in recipients for i in range(num_of_selected_ids))
     assert all(f"recip_{i}@test_2.com" in recipients for i in range(num_of_selected_ids))
 

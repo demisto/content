@@ -2784,7 +2784,7 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     max_results = pagination_args.get("max_results", DEFAULT_PAGE_SIZE)
     # Since the API does not support pagination, and the issue fields returned can carry hundreds of entries,
     # we decided to do the pagination manually.
-    fields_entry = res[start_at: start_at + max_results]
+    fields_entry = res[start_at : start_at + max_results]
     markdown_dict: List[Dict[str, Any]] = [
         {
             "Id": field.get("id", ""),
@@ -4520,24 +4520,24 @@ def main():  # pragma: no cover
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     commands: Dict[str, Callable] = {
-        'jira-oauth-start': ouath_start_command,
-        'jira-oauth-complete': oauth_complete_command,
-        'jira-oauth-test': test_authorization,
-        'jira-get-comments': get_comments_command,
-        'jira-get-issue': get_issue_command,
-        'jira-create-issue': create_issue_command,
-        'jira-create-issue-quick-action': create_issue_command,
-        'jira-issue-assign': update_issue_assignee_command,
-        'jira-edit-issue': edit_issue_command,
-        'jira-delete-issue': delete_issue_command,
-        'jira-list-transitions': get_transitions_command,
-        'jira-issue-upload-file': upload_file_command,
-        'jira-issue-add-comment': add_comment_command,
-        'jira-get-id-offset': get_id_offset_command,
-        'jira-get-id-by-attribute': get_id_by_attribute_command,
-        'jira-get-specific-field': get_specific_fields_command,
-        'jira-issue-query': issue_query_command,
-        'jira-issue-add-link': add_link_command,
+        "jira-oauth-start": ouath_start_command,
+        "jira-oauth-complete": oauth_complete_command,
+        "jira-oauth-test": test_authorization,
+        "jira-get-comments": get_comments_command,
+        "jira-get-issue": get_issue_command,
+        "jira-create-issue": create_issue_command,
+        "jira-create-issue-quick-action": create_issue_command,
+        "jira-issue-assign": update_issue_assignee_command,
+        "jira-edit-issue": edit_issue_command,
+        "jira-delete-issue": delete_issue_command,
+        "jira-list-transitions": get_transitions_command,
+        "jira-issue-upload-file": upload_file_command,
+        "jira-issue-add-comment": add_comment_command,
+        "jira-get-id-offset": get_id_offset_command,
+        "jira-get-id-by-attribute": get_id_by_attribute_command,
+        "jira-get-specific-field": get_specific_fields_command,
+        "jira-issue-query": issue_query_command,
+        "jira-issue-add-link": add_link_command,
         # New Commands
         "jira-issue-get-attachment": issue_get_attachment_command,
         "jira-issue-delete-comment": delete_comment_command,

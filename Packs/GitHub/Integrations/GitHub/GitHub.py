@@ -1220,9 +1220,7 @@ def add_issue_to_project_board_command():
     response = requests.post(url=post_url, headers=header, verify=USE_SSL, data=json.dumps(post_data))
 
     if response.status_code >= 400:
-        message = response.json().get(
-            "message", f"Failed to add the issue with ID {content_id} to column with ID {column_id}"
-        )
+        message = response.json().get("message", f"Failed to add the issue with ID {content_id} to column with ID {column_id}")
         return_error(f"Post result {response}\nMessage: {message}")
 
     return_results(f"The issue was successfully added to column ID {column_id}.")

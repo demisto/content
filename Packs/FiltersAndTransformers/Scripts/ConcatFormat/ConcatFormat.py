@@ -26,7 +26,7 @@ class ContextData:
 
         dx = self.__context
         for prefix in self.__specials:
-            if prefix == key or (key.startswith(prefix) and key[len(prefix): len(prefix) + 1] in (".", "(", "=")):
+            if prefix == key or (key.startswith(prefix) and key[len(prefix) : len(prefix) + 1] in (".", "(", "=")):
                 dx = self.__specials
                 break
         return demisto.dt(dx, key)
@@ -44,7 +44,7 @@ class Formatter:
     @staticmethod
     def __is_end_mark(source: str, ci: int, end_marker: str) -> bool:
         if end_marker:
-            return source[ci: ci + len(end_marker)] == end_marker
+            return source[ci : ci + len(end_marker)] == end_marker
         else:
             c = source[ci]
             if c.isspace():
@@ -84,7 +84,7 @@ class Formatter:
                 else:
                     xval = key
                 return xval, ci + len(markers[1])
-            elif extractor and source[ci: ci + len(self.__start_marker)] == self.__start_marker:
+            elif extractor and source[ci : ci + len(self.__start_marker)] == self.__start_marker:
                 xval, ei = self.__extract(
                     source, extractor, dx, ci + len(self.__start_marker), (self.__start_marker, self.__end_marker)
                 )

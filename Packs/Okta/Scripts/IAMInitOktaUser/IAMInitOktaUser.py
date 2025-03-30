@@ -341,9 +341,7 @@ def main():
         context_outputs["sendMailError"] = str(e)
 
     if context_outputs["success"] and context_outputs["sentMail"]:
-        readable_output = (
-            f"Successfully activated user {username}. An email with the user details was sent to {email_recipient}."
-        )
+        readable_output = f"Successfully activated user {username}. An email with the user details was sent to {email_recipient}."
     else:
         readable_output = ""
 

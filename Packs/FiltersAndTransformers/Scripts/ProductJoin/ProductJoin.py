@@ -10,7 +10,7 @@ def parse_list(lst):
     else:
         lst = str(lst).split(",")
 
-    return map(lambda _: str(_).strip(), lst)   # noqa: C417  # clean and convert to str for join
+    return map(lambda _: str(_).strip(), lst)  # noqa: C417  # clean and convert to str for join
 
 
 def product_join(args):

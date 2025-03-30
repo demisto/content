@@ -9,10 +9,12 @@ try:
     incident_id = demisto.incidents()[0].get("id", {})
     context = demisto.executeCommand("getContext", {"id": incident_id})
     campaign_incidents = demisto.get(context[0], "Contents.context.EmailCampaign.incidents")
-    unique_recipients = {recipient
-                         for incident in campaign_incidents
-                         for recipient in incident.get("recipients", [])
-                         if isinstance(incident.get("recipients"), list)}
+    unique_recipients = {
+        recipient
+        for incident in campaign_incidents
+        for recipient in incident.get("recipients", [])
+        if isinstance(incident.get("recipients"), list)
+    }
 
     html = (
         f"<div style='font-size:17px; text-align:center; padding-top: 20px;'> Unique Recipients "

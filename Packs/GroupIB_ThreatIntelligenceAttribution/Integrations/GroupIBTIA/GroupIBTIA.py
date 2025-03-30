@@ -514,7 +514,7 @@ class Client(BaseClient):
                             upload_time_parsed = dateparser.parse(data[i].get("uploadTime"))
                             assert upload_time_parsed is not None, f'could not parse {data[i].get("uploadTime")}'
                             date_to = (upload_time_parsed - timedelta(seconds=1)).strftime(DATE_FORMAT)
-                            data = data[: i + 1:]
+                            data = data[: i + 1 :]
                             break
 
             last_fetch = {
@@ -623,7 +623,10 @@ class Client(BaseClient):
         #     return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
         else:
             return self._create_update_generator(
-                collection_name=collection_name, max_requests=max_requests, date_from=date_from, seq_update=last_fetch  # type: ignore
+                collection_name=collection_name,
+                max_requests=max_requests,
+                date_from=date_from,  # type: ignore
+                seq_update=last_fetch,  # type: ignore
             )
 
     def create_manual_generator(
@@ -1232,18 +1235,14 @@ def local_search_command(client: Client, args: dict):
     if date_from is not None:
         date_from_parsed = dateparser.parse(date_from)
         if date_from_parsed is None:
-            raise DemistoException(
-                "Inappropriate date_from format, please use something like this: 2020-01-01 or January 1 2020"
-            )
+            raise DemistoException("Inappropriate date_from format, please use something like this: 2020-01-01 or January 1 2020")
         date_from_parsed = date_from_parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
         date_from_parsed = date_from  # type: ignore
     if date_to is not None:
         date_to_parsed = dateparser.parse(date_to)
         if date_to_parsed is None:
-            raise DemistoException(
-                "Inappropriate date_to format, please use something like this: 2020-01-01 or January 1 2020"
-            )
+            raise DemistoException("Inappropriate date_to format, please use something like this: 2020-01-01 or January 1 2020")
         date_to_parsed = date_to_parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
         date_to_parsed = date_to  # type: ignore

@@ -4,13 +4,15 @@ from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
     EventCounter,
     extract_events_suspected_duplicates,
+    calculate_next_fetch,
     filter_duplicate_events,
-    get_events_command,
     perform_long_running_loop,
-    sleep_if_necessary,
-)
-from SymantecEndpointSecurity import (
+    UnauthorizedToken,
+    NextPointingNotAvailable,
+    Client,
     test_module as _test_module,
+    get_events_command,
+    sleep_if_necessary,
 )
 
 
@@ -157,9 +159,7 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    filtered_events = filter_duplicate_events(
-        events, integration_context, EventCounter()
-    )
+    filtered_events = filter_duplicate_events(events, integration_context, EventCounter())
     assert filtered_events == expected_filtered_events
 
 
@@ -310,9 +310,7 @@ def test_get_events_command_with_raises(
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
     ],
 )
-def test_sleep_if_necessary(
-    mocker: MockerFixture, start_run: int, end_run: int, call_count: int
-):
+def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
     """
     Given:
         - Mocked time passed duration
@@ -357,6 +355,4 @@ def test_event_counter_with_missing_schema(mocker: MockerFixture):
 
     counter.print_summary()
 
-    demisto_debug_mock.assert_called_with(
-        "Example of an event missing a schema: {'test': 'test'}"
-    )
+    demisto_debug_mock.assert_called_with("Example of an event missing a schema: {'test': 'test'}")
