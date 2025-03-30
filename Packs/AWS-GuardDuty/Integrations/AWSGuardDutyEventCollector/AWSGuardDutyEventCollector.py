@@ -24,7 +24,7 @@ VENDOR = "aws"
 class DatetimeEncoder(json.JSONEncoder):
     """Json encoder class for encoding datetime objects. Use with json.dumps method."""
 
-    def default(self, obj):    # pylint: disable=W9014
+    def default(self, obj):  # pylint: disable=W9014
         if isinstance(obj, datetime | date):
             return obj.strftime("%Y-%m-%dT%H:%M:%S.%f")
         return json.JSONEncoder.default(self, obj)
@@ -132,7 +132,7 @@ def get_events(
                     f"AWSGuardDutyEventCollector - Cutting {finding_ids=} "
                     f"for {detector_id=} and last_id={last_ids.get(detector_id)}."
                 )
-                finding_ids = finding_ids[finding_ids.index(last_ids.get(detector_id)) + 1:]
+                finding_ids = finding_ids[finding_ids.index(last_ids.get(detector_id)) + 1 :]
                 demisto.debug(
                     f"AWSGuardDutyEventCollector - New {finding_ids=} after cut "
                     f"for {detector_id=} and last_id={last_ids.get(detector_id)}."
@@ -143,16 +143,14 @@ def get_events(
         demisto.debug(f"Detector id {detector_id} unique finding ids found: {finding_ids_unique}")
         # Get all relevant findings
         chunked_finding_ids = [
-            finding_ids_unique[i: i + max_ids_per_req] for i in range(0, len(finding_ids_unique), max_ids_per_req)
+            finding_ids_unique[i : i + max_ids_per_req] for i in range(0, len(finding_ids_unique), max_ids_per_req)
         ]
         for chunk_of_finding_ids in chunked_finding_ids:
             demisto.debug(f"Getting {chunk_of_finding_ids=}")
             findings_response = aws_client.get_findings(DetectorId=detector_id, FindingIds=chunk_of_finding_ids)
             detector_events += findings_response.get("Findings", [])
 
-        demisto.debug(
-            f"AWSGuardDutyEventCollector - {detector_id=} findings found ({len(detector_events)}): {detector_events}"
-        )
+        demisto.debug(f"AWSGuardDutyEventCollector - {detector_id=} findings found ({len(detector_events)}): {detector_events}")
         events += detector_events
         demisto.debug(f"AWSGuardDutyEventCollector - Number of events is {len(events)}")
 

@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from jarm.scanner.scanner import Scanner    # pylint: disable=E0401,E0611
+from jarm.scanner.scanner import Scanner  # pylint: disable=E0401,E0611
 
 from CommonServerUserPython import *  # noqa
 

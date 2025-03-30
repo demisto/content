@@ -418,8 +418,7 @@ def parse_report_entity(reportJson):
                         name=subjectName, dbot_score=dbot_score, sha256=sha256Value, tags=tagList, description=verdictValue
                     )
                 elif submissionType == SNXResponse.SNX_URL_KEY:
-                    indicator = Common.URL(url=subjectName, dbot_score=dbot_score, tags=tagList,
-                                           description=verdictValue)  # type: ignore
+                    indicator = Common.URL(url=subjectName, dbot_score=dbot_score, tags=tagList, description=verdictValue)  # type: ignore
 
     except Exception as e:
         raise DemistoException(e)
@@ -674,7 +673,7 @@ def get_report_cmd(client: Client, args: dict[str, str]):
             else:
                 reportFileName = taskUuid + reportExtn
                 fileContent = fileResult(reportFileName, response)
-                demisto.results(fileContent)    # noqa: RET503
+                demisto.results(fileContent)  # noqa: RET503
         else:
             msg = error_response(err_msg)
             result = {SNXResponse.SNX_ERROR_MSG_KEY: msg, "Status": SNXResponse.SNX_FAILED_KEY}

@@ -346,9 +346,7 @@ class TestCloseBenign:
         """
         from MicrosoftCloudAppSecurity import close_benign_command
 
-        with pytest.raises(
-            DemistoException, match="Expecting at least one of the following arguments: alert_id, custom_filter."
-        ):
+        with pytest.raises(DemistoException, match="Expecting at least one of the following arguments: alert_id, custom_filter."):
             close_benign_command(client_mocker, {})
 
 

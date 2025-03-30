@@ -552,9 +552,7 @@ class Client(BaseClient):
         :return: dict containing the results data'.
         :rtype: ``dict``
         """
-        suffix_url = (
-            f"api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs/{job_id}/results?rows={rows}"
-        )
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs/{job_id}/results?rows={rows}"
         return self._http_request(method="GET", url_suffix=suffix_url, headers=self.headers)
 
     def get_events_details(self, event_ids: List[str] = None):

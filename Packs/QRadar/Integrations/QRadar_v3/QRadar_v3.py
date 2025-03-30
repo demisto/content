@@ -780,8 +780,7 @@ class Client(BaseClient):
         return self.http_request(
             method="PATCH",
             url_suffix="/reference_data_collections/set_entries",
-            json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
-                       for indicator in indicators],  # type: ignore[arg-type]
+            json_data=[{"collection_id": set_id, "value": str(indicator), "source": source} for indicator in indicators],  # type: ignore[arg-type]
             additional_headers=headers,
             timeout=timeout,
         )
@@ -1267,9 +1266,7 @@ def safely_update_context_data(
             break
         except Exception as e:
             # if someone else is updating the context, we will get a conflict error
-            print_debug_msg(
-                f"Could not set integration context in retry {retry + 1}. Error: {e}. Trying to resolve conflicts"
-            )
+            print_debug_msg(f"Could not set integration context in retry {retry + 1}. Error: {e}. Trying to resolve conflicts")
     else:
         raise DemistoException(f"Could not update integration context with version {new_version}.")
 
@@ -1600,7 +1597,7 @@ def enrich_offenses_result(
 
     def create_enriched_offense(offense: dict) -> dict:
         link_to_offense_suffix = (
-            f'''/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}'''
+            f"""/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"""
         )
         offense_type = offense.get("offense_type")
         closing_reason_id = offense.get("closing_reason_id")
@@ -2530,15 +2527,18 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
     Returns:
         (List[Dict]): Incidents list.
     """
-    print_debug_msg(f'Creating {len(offenses)} incidents')
-    return [{
-        # NOTE: incident name will be updated in mirroring also with incoming mapper.
-        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
-        'rawJSON': json.dumps(offense),
-        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
-        'type': incident_type,
-        "haIntegrationEventID": str(offense.get("id"))
-    } for offense in offenses]
+    print_debug_msg(f"Creating {len(offenses)} incidents")
+    return [
+        {
+            # NOTE: incident name will be updated in mirroring also with incoming mapper.
+            "name": f"""{offense.get('id')} {offense.get('description', '')}""",
+            "rawJSON": json.dumps(offense),
+            "occurred": get_time_parameter(offense.get("start_time"), iso_format=True),
+            "type": incident_type,
+            "haIntegrationEventID": str(offense.get("id")),
+        }
+        for offense in offenses
+    ]
 
 
 def print_context_data_stats(context_data: dict, stage: str) -> set[str]:

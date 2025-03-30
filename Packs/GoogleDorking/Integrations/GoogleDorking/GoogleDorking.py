@@ -167,7 +167,7 @@ def google_search_command(
 def fetch_incidents(client: Client, last_run: dict | None) -> list:
     now = datetime.now()
     last_run_date = last_run.get(LAST_RUN_TIME_KEY) if last_run else None
-    if last_run_date and (now - dateparser.parse(last_run_date)).days > 0:   # type: ignore
+    if last_run_date and (now - dateparser.parse(last_run_date)).days > 0:  # type: ignore
         client.after = last_run_date
     incidents = get_search_results(client, item_to_incident)
     if not isinstance(incidents, list):

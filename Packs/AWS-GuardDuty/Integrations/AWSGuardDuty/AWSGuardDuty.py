@@ -548,8 +548,7 @@ def fetch_incidents(
 
     # Handle first time fetch
     if latest_created_time is None:
-        latest_created_time = dateparser.parse(dateparser.parse(
-            first_fetch_time).strftime(DATE_FORMAT))  # type: ignore[union-attr]
+        latest_created_time = dateparser.parse(dateparser.parse(first_fetch_time).strftime(DATE_FORMAT))  # type: ignore[union-attr]
     else:
         latest_created_time = dateparser.parse(latest_created_time)
 

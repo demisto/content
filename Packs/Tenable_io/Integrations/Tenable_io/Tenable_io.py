@@ -1,4 +1,4 @@
-import re   # pylint: disable=W9011
+import re  # pylint: disable=W9011
 import sys
 import time
 import traceback
@@ -98,8 +98,8 @@ severity_to_text = ["None", "Low", "Medium", "High", "Critical"]
 FETCH_COMMAND = {"events": 0, "assets": 1}
 
 
-PARAMS = demisto.params()      # pylint: disable=W9016
-BASE_URL = PARAMS["url"]   # pylint: disable=W9019
+PARAMS = demisto.params()  # pylint: disable=W9016
+BASE_URL = PARAMS["url"]  # pylint: disable=W9019
 ACCESS_KEY = PARAMS.get("credentials_access_key", {}).get("password") or PARAMS.get("access-key")
 SECRET_KEY = PARAMS.get("credentials_secret_key", {}).get("password") or PARAMS.get("secret-key")
 USER_AGENT_HEADERS_VALUE = "Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)"
@@ -136,7 +136,7 @@ class Client(BaseClient):
     def list_scan_filters(self):
         return self._http_request("GET", "filters/scans/reports")
 
-    def get_scan_history(self, scan_id, params) -> dict:   # pylint: disable=W9014
+    def get_scan_history(self, scan_id, params) -> dict:  # pylint: disable=W9014
         remove_nulls_from_dictionary(params)
         return self._http_request("GET", f"scans/{scan_id}/history", params=params)
 
@@ -156,7 +156,7 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def add_query(query, param_to_add):   # pylint: disable=W9014
+    def add_query(query, param_to_add):  # pylint: disable=W9014
         if query:
             return f"{query}&{param_to_add}"
         return f"?{param_to_add}"
@@ -244,7 +244,7 @@ class Client(BaseClient):
             return NOT_FOUND_ERROR
         return result
 
-    def get_asset_export_uuid(self, fetch_from):   # pylint: disable=W9014
+    def get_asset_export_uuid(self, fetch_from):  # pylint: disable=W9014
         """
 
         Args:
@@ -258,7 +258,7 @@ class Client(BaseClient):
         res = self._http_request(method="POST", url_suffix="assets/export", json_data=payload, headers=self._headers)
         return res.get("export_uuid")
 
-    def get_assets_export_status(self, export_uuid):   # pylint: disable=W9014
+    def get_assets_export_status(self, export_uuid):  # pylint: disable=W9014
         """
         Args:
                 export_uuid: The UUID of the assets export job.
@@ -293,7 +293,7 @@ class Client(BaseClient):
         return result
 
 
-def flatten(d):   # pylint: disable=W9014
+def flatten(d):  # pylint: disable=W9014
     r = {}  # type: ignore
     for v in d.values():
         if isinstance(v, dict):
@@ -302,13 +302,13 @@ def flatten(d):   # pylint: disable=W9014
     return d
 
 
-def filter_dict_null(d):   # pylint: disable=W9014
+def filter_dict_null(d):  # pylint: disable=W9014
     if isinstance(d, dict):
         return {k: v for k, v in d.items() if v is not None}
     return d
 
 
-def filter_dict_keys(d, keys):   # pylint: disable=W9014
+def filter_dict_keys(d, keys):  # pylint: disable=W9014
     if isinstance(d, list):
         return [filter_dict_keys(x, keys) for x in d]
     if isinstance(d, dict):
@@ -316,7 +316,7 @@ def filter_dict_keys(d, keys):   # pylint: disable=W9014
     return d
 
 
-def convert_severity_values(d):   # pylint: disable=W9014
+def convert_severity_values(d):  # pylint: disable=W9014
     if isinstance(d, list):
         return list(map(convert_severity_values, d))
     if isinstance(d, dict):
@@ -324,8 +324,8 @@ def convert_severity_values(d):   # pylint: disable=W9014
     return d
 
 
-def convert_dict_context_dates(d):   # pylint: disable=W9014
-    def convert_epoch_to_date(k, v):   # pylint: disable=W9014
+def convert_dict_context_dates(d):  # pylint: disable=W9014
+    def convert_epoch_to_date(k, v):  # pylint: disable=W9014
         if any(s in k.lower() for s in ("date", "time")):
             try:
                 return datetime.utcfromtimestamp(int(v)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -340,8 +340,8 @@ def convert_dict_context_dates(d):   # pylint: disable=W9014
     return d
 
 
-def convert_dict_readable_dates(d):   # pylint: disable=W9014
-    def convert_epoch_to_date(k, v):   # pylint: disable=W9014
+def convert_dict_readable_dates(d):  # pylint: disable=W9014
+    def convert_epoch_to_date(k, v):  # pylint: disable=W9014
         return formatEpochDate(v) if isinstance(v, int) and any(s in k.lower() for s in ("date", "time")) else v
 
     if isinstance(d, list):
@@ -351,8 +351,8 @@ def convert_dict_readable_dates(d):   # pylint: disable=W9014
     return d
 
 
-def get_entry_for_object(title, context_key, obj, headers=None, remove_null=False):   # pylint: disable=W9014
-    def intersection(lst1, lst2):   # pylint: disable=W9014
+def get_entry_for_object(title, context_key, obj, headers=None, remove_null=False):  # pylint: disable=W9014
+    def intersection(lst1, lst2):  # pylint: disable=W9014
         return [value for value in lst1 if value in lst2]
 
     if len(obj) == 0:
@@ -376,12 +376,12 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
     }
 
 
-def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):   # pylint: disable=W9014
-    def snake_to_camel(snake_str):   # pylint: disable=W9014
+def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):  # pylint: disable=W9014
+    def snake_to_camel(snake_str):  # pylint: disable=W9014
         components = snake_str.split("_")
         return "".join([x.title() for x in components])
 
-    def replace(key, trans_map):   # pylint: disable=W9014
+    def replace(key, trans_map):  # pylint: disable=W9014
         if key in trans_map:
             return trans_map[key]
         return key
@@ -395,7 +395,7 @@ def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):   # pylint: dis
     return src
 
 
-def date_range_to_param(date_range):   # pylint: disable=W9014
+def date_range_to_param(date_range):  # pylint: disable=W9014
     params = {}
     if date_range:
         try:
@@ -406,7 +406,7 @@ def date_range_to_param(date_range):   # pylint: disable=W9014
     return params
 
 
-def get_scan_error_message(response, scan_id):   # pylint: disable=W9014
+def get_scan_error_message(response, scan_id):  # pylint: disable=W9014
     code = response.status_code
     message = "Error processing request"
     if scan_id:
@@ -425,7 +425,7 @@ def get_scan_error_message(response, scan_id):   # pylint: disable=W9014
 
 # Request/Response methods
 # kwargs: request parameters
-def send_scan_request(scan_id="", endpoint="", method="GET", ignore_license_error=False, body=None, **kwargs):   # pylint: disable=W9014
+def send_scan_request(scan_id="", endpoint="", method="GET", ignore_license_error=False, body=None, **kwargs):  # pylint: disable=W9014
     if endpoint:
         endpoint = "/" + endpoint
     full_url = f"{BASE_URL}scans/{scan_id!s}{endpoint}"
@@ -441,14 +441,14 @@ def send_scan_request(scan_id="", endpoint="", method="GET", ignore_license_erro
         if demisto.command() != "test-module":
             raise DemistoException(err_msg)
         else:
-            demisto.results(err_msg)   # pylint: disable=W9008
+            demisto.results(err_msg)  # pylint: disable=W9008
         demisto.error(traceback.format_exc())
         sys.exit(0)
     except ValueError:
         return "No JSON to decode."
 
 
-def get_scan_info(scans_result_elem):   # pylint: disable=W9014
+def get_scan_info(scans_result_elem):  # pylint: disable=W9014
     response = send_scan_request(scans_result_elem["id"], ignore_license_error=True)
     if response:
         response["info"].update(scans_result_elem)
@@ -456,13 +456,13 @@ def get_scan_info(scans_result_elem):   # pylint: disable=W9014
     return None
 
 
-def send_vuln_details_request(plugin_id, date_range=None):   # pylint: disable=W9014
+def send_vuln_details_request(plugin_id, date_range=None):  # pylint: disable=W9014
     full_url = f"{BASE_URL}workbenches/vulnerabilities/{plugin_id}/info"
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     return res.json()
 
 
-def get_vuln_info(vulns):   # pylint: disable=W9014
+def get_vuln_info(vulns):  # pylint: disable=W9014
     vulns_info = {v["plugin_id"]: v for v in vulns}
     infos = []
     errors = []
@@ -476,13 +476,13 @@ def get_vuln_info(vulns):   # pylint: disable=W9014
     return infos, errors
 
 
-def send_assets_request(params):   # pylint: disable=W9014
+def send_assets_request(params):  # pylint: disable=W9014
     full_url = f"{BASE_URL}workbenches/assets"
     res = requests.request("GET", full_url, headers=AUTH_HEADERS, params=params, verify=USE_SSL)
     return res.json()
 
 
-def get_asset_id(params):   # pylint: disable=W9014
+def get_asset_id(params):  # pylint: disable=W9014
     assets = send_assets_request(params)
     if "error" in assets:
         raise DemistoException(assets["error"])
@@ -491,7 +491,7 @@ def get_asset_id(params):   # pylint: disable=W9014
     return None
 
 
-def send_asset_vuln_request(asset_id, date_range):   # pylint: disable=W9014
+def send_asset_vuln_request(asset_id, date_range):  # pylint: disable=W9014
     full_url = f"{BASE_URL}workbenches/assets/{asset_id}/vulnerabilities/"
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     res.raise_for_status()
@@ -536,11 +536,11 @@ def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
     return res.json()
 
 
-def get_timestamp(timestamp):   # pylint: disable=W9014
+def get_timestamp(timestamp):  # pylint: disable=W9014
     return time.mktime(timestamp.timetuple())
 
 
-def generate_export_uuid(client: Client, last_run):   # pylint: disable=W9014
+def generate_export_uuid(client: Client, last_run):  # pylint: disable=W9014
     """
     Generate a job export uuid in order to fetch vulnerabilities.
 
@@ -558,7 +558,7 @@ def generate_export_uuid(client: Client, last_run):   # pylint: disable=W9014
     last_run.update({"vuln_export_uuid": export_uuid})
 
 
-def generate_assets_export_uuid(client: Client, assets_last_run):   # pylint: disable=W9014
+def generate_assets_export_uuid(client: Client, assets_last_run):  # pylint: disable=W9014
     """
     Generate a job export uuid in order to fetch assets.
 
@@ -578,7 +578,7 @@ def generate_assets_export_uuid(client: Client, assets_last_run):   # pylint: di
     assets_last_run.update({"assets_export_uuid": export_uuid})
 
 
-def handle_assets_chunks(client: Client, assets_last_run):   # pylint: disable=W9014
+def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9014
     """
     Handle assets chunks stored in the last run object.
 
@@ -656,7 +656,7 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
     return vulnerabilities, assets_last_run
 
 
-def get_asset_export_job_status(client: Client, assets_last_run):   # pylint: disable=W9014
+def get_asset_export_job_status(client: Client, assets_last_run):  # pylint: disable=W9014
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
@@ -674,7 +674,7 @@ def get_asset_export_job_status(client: Client, assets_last_run):   # pylint: di
     return status
 
 
-def get_vulnerabilities_export_status(client: Client, assets_last_run):   # pylint: disable=W9014
+def get_vulnerabilities_export_status(client: Client, assets_last_run):  # pylint: disable=W9014
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
@@ -693,7 +693,7 @@ def get_vulnerabilities_export_status(client: Client, assets_last_run):   # pyli
     return status
 
 
-def test_module(client: Client, params):   # pylint: disable=W9014
+def test_module(client: Client, params):  # pylint: disable=W9014
     if int(params.get("assetsFetchInterval")) < 60:
         raise DemistoException("Assets and vulnerabilities fetch Interval is supposed to be 1 hour minimum.")
     client.list_scan_filters()
@@ -723,7 +723,7 @@ def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[int]:
 
 
 def get_scans_command():
-    folder_id = (demisto.args().get("folderId"),)   # pylint: disable=W9017
+    folder_id = (demisto.args().get("folderId"),)  # pylint: disable=W9017
     last_modification_date = relational_date_to_epoch_date_format(demisto.getArg("lastModificationDate"))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
     scan_entries = list(map(get_scan_info, response["scans"]))
@@ -828,7 +828,7 @@ def get_vulnerability_details_command():
     )
 
 
-def args_to_request_params(hostname, ip, date_range):   # pylint: disable=W9014
+def args_to_request_params(hostname, ip, date_range):  # pylint: disable=W9014
     if not hostname and not ip:
         raise DemistoException("Please provide one of the following arguments: hostname, ip")
 
@@ -1263,8 +1263,8 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 720)),   # pylint: disable=W9017
-    interval=arg_to_number(demisto.args().get("intervalInSeconds", 15)),   # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeout", 720)),  # pylint: disable=W9017
+    interval=arg_to_number(demisto.args().get("intervalInSeconds", 15)),  # pylint: disable=W9017
     requires_polling_arg=False,
 )
 def export_assets_command(args: Dict[str, Any]) -> PollResult:
@@ -1280,7 +1280,7 @@ def export_assets_command(args: Dict[str, Any]) -> PollResult:
         PollResult: A result to return to the user which will be set as a CommandResults.
             The result itself will depend on the stage of polling.
     """
-    export_uuid = demisto.args().get("exportUuid")   # pylint: disable=W9017
+    export_uuid = demisto.args().get("exportUuid")  # pylint: disable=W9017
     if export_uuid:
         demisto.debug(f"export_uuid: {export_uuid}")
         export_uuid_status_response = export_request_with_export_uuid(export_uuid, "assets")
@@ -1409,8 +1409,8 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 600)),   # pylint: disable=W9017
-    interval=arg_to_number(demisto.args().get("intervalInSeconds", 10)),   # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeout", 600)),  # pylint: disable=W9017
+    interval=arg_to_number(demisto.args().get("intervalInSeconds", 10)),  # pylint: disable=W9017
     requires_polling_arg=False,
 )
 def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
@@ -1426,7 +1426,7 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         PollResult: A result to return to the user which will be set as a CommandResults.
             The result itself will depend on the stage of polling.
     """
-    export_uuid = demisto.args().get("exportUuid")   # pylint: disable=W9017
+    export_uuid = demisto.args().get("exportUuid")  # pylint: disable=W9017
     if export_uuid:
         demisto.debug(f"export_uuid: {export_uuid}")
         export_uuid_status_response = export_request_with_export_uuid(export_uuid, "vulns")
@@ -1562,7 +1562,7 @@ def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandRes
     )
 
 
-def build_filters(filters) -> dict:   # pylint: disable=W9014
+def build_filters(filters) -> dict:  # pylint: disable=W9014
     """
     Build a dictionary of filter information from a filters string.
 
@@ -1640,7 +1640,7 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     the file and returns a dict with it's contents (using fileResult).
     """
 
-    scan_id = args["scanId"]   # pylint: disable=W9019
+    scan_id = args["scanId"]  # pylint: disable=W9019
     file_id = args.get("fileId") or initiate_export_scan(args, client)
     demisto.debug(f"{file_id=}")
 
@@ -1752,7 +1752,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     demisto.debug(f"got {len(audit_logs_from_api)} events from api")
 
     if last_index_fetched < len(audit_logs_from_api):
-        audit_logs.extend(audit_logs_from_api[last_index_fetched: last_index_fetched + limit])
+        audit_logs.extend(audit_logs_from_api[last_index_fetched : last_index_fetched + limit])
 
     for audit_log in audit_logs:
         audit_log["_time"] = audit_log.get("received") or audit_log.get("indexed")
@@ -1850,7 +1850,7 @@ def fetch_vulnerabilities(client: Client, assets_last_run: dict):  # pragma: no 
     return vulnerabilities
 
 
-def run_vulnerabilities_fetch(client, last_run):   # pylint: disable=W9014
+def run_vulnerabilities_fetch(client, last_run):  # pylint: disable=W9014
     demisto.info("fetch vulnerabilies from the API")
     if not last_run.get("vuln_export_uuid"):
         generate_export_uuid(client, last_run)
@@ -1872,7 +1872,7 @@ def skip_fetch_assets(last_run):  # pragma: no cover   # pylint: disable=W9014
     return to_skip
 
 
-def parse_vulnerabilities(vulns):   # pylint: disable=W9014
+def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
         demisto.debug(f"result is of type: {type(vulns)}")
@@ -1915,23 +1915,23 @@ def main():  # pragma: no cover   # pylint: disable=W9018
         client = Client(base_url=url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
-            demisto.results(test_module(client, params))   # pylint: disable=W9008
+            demisto.results(test_module(client, params))  # pylint: disable=W9008
         elif command == "tenable-io-list-scans":
-            demisto.results(get_scans_command())   # pylint: disable=W9008
+            demisto.results(get_scans_command())  # pylint: disable=W9008
         elif command == "tenable-io-launch-scan":
-            demisto.results(launch_scan_command())   # pylint: disable=W9008
+            demisto.results(launch_scan_command())  # pylint: disable=W9008
         elif command == "tenable-io-get-scan-report":
-            demisto.results(get_report_command())   # pylint: disable=W9008
+            demisto.results(get_report_command())  # pylint: disable=W9008
         elif command == "tenable-io-get-vulnerability-details":
-            demisto.results(get_vulnerability_details_command())   # pylint: disable=W9008
+            demisto.results(get_vulnerability_details_command())  # pylint: disable=W9008
         elif command == "tenable-io-get-vulnerabilities-by-asset":
-            demisto.results(get_vulnerabilities_by_asset_command())   # pylint: disable=W9008
+            demisto.results(get_vulnerabilities_by_asset_command())  # pylint: disable=W9008
         elif command == "tenable-io-get-scan-status":
-            demisto.results(get_scan_status_command())   # pylint: disable=W9008
+            demisto.results(get_scan_status_command())  # pylint: disable=W9008
         elif command == "tenable-io-pause-scan":
-            demisto.results(pause_scan_command())   # pylint: disable=W9008
+            demisto.results(pause_scan_command())  # pylint: disable=W9008
         elif command == "tenable-io-resume-scan":
-            demisto.results(resume_scan_command())   # pylint: disable=W9008
+            demisto.results(resume_scan_command())  # pylint: disable=W9008
         elif command == "tenable-io-get-asset-details":
             return_results(get_asset_details_command())
         elif command == "tenable-io-export-assets":
@@ -1939,7 +1939,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
         elif command == "tenable-io-export-vulnerabilities":
             vulnerabilities: list = []
             results = export_vulnerabilities_command(args)
-            if isinstance(results, CommandResults) and results.raw_response:      # pylint: disable=E1101
+            if isinstance(results, CommandResults) and results.raw_response:  # pylint: disable=E1101
                 vulnerabilities = results.raw_response  # type: ignore    # pylint: disable=E1101
             return_results(results)
             if argToBoolean(args.get("should_push_events", "false")) and is_xsiam():

@@ -261,8 +261,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
     params: dict = {"sortDirection": "asc"}
     method: Method = Method.GET
 
-    _normalize_url = validator("url", pre=True, allow_reuse=True)(
-        lambda base_url: f"{base_url}/api/v1/")  # type: ignore[type-var]
+    _normalize_url = validator("url", pre=True, allow_reuse=True)(lambda base_url: f"{base_url}/api/v1/")  # type: ignore[type-var]
 
 
 class DefenderClient(IntegrationEventsClient):
@@ -424,8 +423,7 @@ def main(command: str, demisto_params: dict):
         authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
         # Based on the flow of the code, after is always an int so ignore it
-        client = DefenderClient(request=request, options=options, authenticator=authenticator,
-                                after=after)  # type:ignore[arg-type]
+        client = DefenderClient(request=request, options=options, authenticator=authenticator, after=after)  # type:ignore[arg-type]
         get_events = DefenderGetEvents(client=client, base_url=request.url, options=options, event_filters=event_filters)
 
         if command == "test-module":

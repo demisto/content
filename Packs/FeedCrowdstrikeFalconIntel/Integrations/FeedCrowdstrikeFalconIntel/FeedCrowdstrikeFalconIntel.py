@@ -321,8 +321,7 @@ def main():
 
             demisto.setLastRun(last_run_data)
         else:
-            readable_output, outputs, raw_response = commands[command](
-                client, demisto.args(), feed_tags, tlp_color)  # type: ignore
+            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f"Error in CrowdStrike falcon intel Integration [{e}]")

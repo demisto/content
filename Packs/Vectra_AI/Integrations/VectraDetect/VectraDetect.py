@@ -801,8 +801,9 @@ class Client(BaseClient):
         notes = self.http_request(
             method="POST",
             json_data=data,
-            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(    # type: ignore[union-attr]
-                entity_id),  # type: ignore
+            url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
+                entity_id
+            ),  # type: ignore
         )
         return notes
 
@@ -830,7 +831,8 @@ class Client(BaseClient):
             method="PATCH",
             json_data=data,
             url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
-                entity_id, note_id),
+                entity_id, note_id
+            ),
         )
 
         return notes
@@ -856,7 +858,8 @@ class Client(BaseClient):
             method="DELETE",
             resp_type="response",
             url_suffix=ENDPOINTS[f"UPDATE_AND_REMOVE_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
-                entity_id, note_id),
+                entity_id, note_id
+            ),
         )
         return res
 
@@ -874,7 +877,8 @@ class Client(BaseClient):
         notes = self.http_request(
             method="GET",
             url_suffix=ENDPOINTS[f"ADD_AND_LIST_{entity_type.upper()}_NOTE_ENDPOINT"].format(  # type: ignore[union-attr]
-                entity_id)
+                entity_id
+            ),
         )
         return notes
 
@@ -2343,9 +2347,7 @@ def add_notes_to_new_entries(notes: list, command_last_run_dt: datetime | None) 
             continue
         note_date_modified = arg_to_datetime(note.get("date_modified"))
         if note_date_modified and note_date_modified <= command_last_run_dt:  # type: ignore
-            demisto.debug(
-                f"Skipping the note {note.get('id')} as it was modified earlier than the command last run timestamp."
-            )
+            demisto.debug(f"Skipping the note {note.get('id')} as it was modified earlier than the command last run timestamp.")
             continue
         else:
             note_date_created = arg_to_datetime(note.get("date_created"), arg_name="date_created", required=True)
@@ -2473,9 +2475,7 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
         # Forced to use "get" as this field wasn't present in the first version of this integration
         last_created_events = previous_last_run[entity_type].get("last_created_events", [])  # Retro-compat
 
-        demisto.debug(
-            f"{entity_type} - Last fetched incidentlast_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}"
-        )
+        demisto.debug(f"{entity_type} - Last fetched incidentlast_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}")
 
         start_time = iso_date_to_vectra_start_time(last_fetched_timestamp, look_back)
 
@@ -2589,8 +2589,7 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
     """
     args = demisto.args()
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={
-                                             "TIMEZONE": "UTC"}).strftime("%Y-%m-%dT%H%M")  # type: ignore
+    command_last_run_date = dateparser.parse(command_args.last_update, settings={"TIMEZONE": "UTC"}).strftime("%Y-%m-%dT%H%M")  # type: ignore
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
@@ -2606,8 +2605,7 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
                 # Extract the query parameters
                 query_params = parse_qs(parsed_url.query)
                 page = arg_to_number(query_params.get("page", [""])[0], arg_name="page")  # type: ignore
-                page_size = arg_to_number(query_params.get("page_size", [""])[
-                                          0], arg_name="page_size")  # type: ignore[assignment]
+                page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore[assignment]
                 query_string = query_params.get("query_string", [""])[0]  # type: ignore
             else:
                 query_string = "_doc_modified_ts:>=" + command_last_run_date
@@ -2684,8 +2682,7 @@ def get_remote_data_command(client: Client, integration_params: dict = {}) -> Ge
     # Retrieve the latest entity data from the Vectra platform.
     if vectra_entity_type == "account":
         remote_incident_data = client.get_account_by_account_id(account_id=vectra_entity_id)
-        groups_response = client.list_group_request(group_type="account", account_names=[
-                                                    remote_incident_data.get("name")])  # type: ignore
+        groups_response = client.list_group_request(group_type="account", account_names=[remote_incident_data.get("name")])  # type: ignore
         remote_incident_data.update({"groups": groups_response.get("results", [])})
     else:
         remote_incident_data = client.get_host_by_host_id(host_id=vectra_entity_id)

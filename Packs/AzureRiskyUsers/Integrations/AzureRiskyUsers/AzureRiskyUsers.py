@@ -491,8 +491,13 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
             return skip_token
 
     raw_response = client.risk_detections_list_request(
-        risk_state, risk_level, detected_date_time_before,
-        detected_date_time_after, limit, order_by, skip_token   # type: ignore[arg-type]
+        risk_state,
+        risk_level,
+        detected_date_time_before,
+        detected_date_time_after,
+        limit,
+        order_by,
+        skip_token,  # type: ignore[arg-type]
     )
 
     table_headers = [

@@ -775,9 +775,7 @@ def _generate_xsoar_incident(
             additional_data["incident_type"] = f"{INTEGRATION_NAME} threat"
             additional_data["incident_link"] = f"{integration_base_url}/threat/{incident_id}/summary"
         case _:
-            raise ValueError(
-                f"Invalid value for 'incident_type' argument: expected 'alert' or 'threat', get '{incident_type}'"
-            )
+            raise ValueError(f"Invalid value for 'incident_type' argument: expected 'alert' or 'threat', get '{incident_type}'")
 
     additional_data["mirror_instance"] = mirror_instance
     additional_data["mirror_direction"] = mirror_direction
@@ -3206,7 +3204,7 @@ def get_security_events(
 
     args = {
         "ordering": ordering,
-        "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity):]).lower(),
+        "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
         "limit": limit,
         "offset": 0,
     }  # type: Dict[str,Any]
@@ -3326,7 +3324,7 @@ def get_threats(
         threat_ids = []
         args = {
             "ordering": ordering,
-            "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity):]).lower(),
+            "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
             "limit": limit,
             "offset": 0,
         }  # type: Dict[str,Any]

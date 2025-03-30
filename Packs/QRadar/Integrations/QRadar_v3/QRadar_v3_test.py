@@ -732,14 +732,17 @@ def test_create_incidents_from_offenses():
     Then:
      - Ensure expected incidents are created.
     """
-    offenses = command_test_data['offenses_list']['enrich_offenses_result']
-    assert create_incidents_from_offenses(offenses, 'QRadar Incident') == [{
-        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
-        'rawJSON': json.dumps(offense),
-        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
-        'type': 'QRadar Incident',
-        'haIntegrationEventID': str(offense.get('id'))
-    } for offense in offenses]
+    offenses = command_test_data["offenses_list"]["enrich_offenses_result"]
+    assert create_incidents_from_offenses(offenses, "QRadar Incident") == [
+        {
+            "name": f"""{offense.get('id')} {offense.get('description', '')}""",
+            "rawJSON": json.dumps(offense),
+            "occurred": get_time_parameter(offense.get("start_time"), iso_format=True),
+            "type": "QRadar Incident",
+            "haIntegrationEventID": str(offense.get("id")),
+        }
+        for offense in offenses
+    ]
 
 
 @pytest.mark.parametrize(

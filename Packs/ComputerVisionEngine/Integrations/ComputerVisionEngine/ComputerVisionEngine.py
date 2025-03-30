@@ -138,7 +138,7 @@ if demisto.command() == "yolo-coco-process-image":
                 output_keys[LABELS[classIDs[i]]] = tmp_list  # type: ignore
             else:
                 output_keys[LABELS[classIDs[i]]] = confidences[i]  # type: ignore
-            cv2.putText(      # pylint: disable=E1101
+            cv2.putText(  # pylint: disable=E1101
                 image,
                 text,
                 (x, y - 5),

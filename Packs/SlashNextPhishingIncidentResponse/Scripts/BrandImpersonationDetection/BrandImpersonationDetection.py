@@ -15,7 +15,7 @@ try:
         with open(files_info["path"]) as file_handle:
             file_content = file_handle.read()
 
-            result = re.findall("hm rеvеnuе & custоms", file_content, re.IGNORECASE)    # noqa: RUF001
+            result = re.findall("hm rеvеnuе & custоms", file_content, re.IGNORECASE)  # noqa: RUF001
             if len(result):
                 res = True
 
