@@ -19,11 +19,12 @@
 
 ### Supported Timestamp Formats:
 
-yyyy-MM-ddThh:mm:ssZ
-MMM dd yyyy HH:mm:ss
+1. yyyy-MM-ddThh:mm:ssZ 
+2. MMM dd yyyy HH:mm:ss
 
 For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. </br>
-[!NOTE] Time offsets from UTC is supported
+> [!NOTE] 
+> Time offsets from UTC is supported
 
 - timeStamp
 - timeStamp_t
