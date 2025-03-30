@@ -10,8 +10,8 @@ logging.getLogger('transformers').setLevel(logging.ERROR)
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-TORCH_TYPE = demisto_ml.ModelType.Torch.value
-FASTTEXT_TYPE = demisto_ml.ModelType.FastText.value
+TORCH_TYPE = 'torch_phishing'
+FASTTEXT_TYPE = 'fasttext_phishing'
 
 
 def OrderedSet(iterable):
