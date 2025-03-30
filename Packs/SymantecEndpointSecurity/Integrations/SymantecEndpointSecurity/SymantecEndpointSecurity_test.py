@@ -2,10 +2,7 @@ import pytest
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from pytest_mock import MockerFixture
 from SymantecEndpointSecurity import (
-    Client,
-    NextPointingNotAvailable,
-    UnauthorizedToken,
-    calculate_next_fetch,
+    EventCounter,
     extract_events_suspected_duplicates,
     filter_duplicate_events,
     get_events_command,
@@ -160,7 +157,9 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    filtered_events = filter_duplicate_events(events, integration_context)
+    filtered_events = filter_duplicate_events(
+        events, integration_context, EventCounter()
+    )
     assert filtered_events == expected_filtered_events
 
 
@@ -311,7 +310,9 @@ def test_get_events_command_with_raises(
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
     ],
 )
-def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
+def test_sleep_if_necessary(
+    mocker: MockerFixture, start_run: int, end_run: int, call_count: int
+):
     """
     Given:
         - Mocked time passed duration
@@ -323,3 +324,39 @@ def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int,
     mock_sleep = mocker.patch("SymantecEndpointSecurity.time.sleep")
     sleep_if_necessary(end_run - start_run)
     assert mock_sleep.call_count == call_count
+
+
+def test_event_counter_without_missing_schema(mocker: MockerFixture):
+    counter = EventCounter()
+    counter.filtered_events = 2
+    counter.events = 3
+    counter.total_bytes = 60
+
+    demisto_debug_mock = mocker.patch.object(demisto, "debug")
+
+    counter.print_summary()
+    demisto_debug_mock.assert_called_with(
+        "Summary Log:\n"
+        "- Total events received from Symantec (before filtering): 3 events\n"
+        "- Total events sent to XSIAM (after filtering): 2 events\n"
+        "- Total data received from Symantec: "
+        "60 bytes (~0.0001 MB)\n"
+        "- Number of events missing a schema: 0\n"
+    )
+
+
+def test_event_counter_with_missing_schema(mocker: MockerFixture):
+    counter = EventCounter()
+    counter.filtered_events = 2
+    counter.events = 3
+    counter.total_bytes = 60
+    counter.event_missing_schema = {"test": "test"}
+    counter.events_missing_schema_counter = 1
+
+    demisto_debug_mock = mocker.patch.object(demisto, "debug")
+
+    counter.print_summary()
+
+    demisto_debug_mock.assert_called_with(
+        "Example of an event missing a schema: {'test': 'test'}"
+    )
