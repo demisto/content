@@ -101,19 +101,19 @@ class FeedEntryBase:
                         "value": relationship_value,
                         "entitycategory": relationship.get("related_entity_category", ""),
                     }
-
                 )
             fields["cyrenfeedrelationships"] = relationship_indicators
 
         raw_json = self.entry.copy()
         raw_json["source_tag"] = FeedSource.PRIMARY
         raw_json["tags"] = self.get_tags()
-        primary = {"value": self.get_value(),
-                   "type": self.get_type(),
-                   "rawJSON": raw_json,
-                   "score": self.get_score(),
-                   "fields": fields
-                   }
+        primary = {
+            "value": self.get_value(),
+            "type": self.get_type(),
+            "rawJSON": raw_json,
+            "score": self.get_score(),
+            "fields": fields,
+        }
 
         indicators = self.get_indicators_from_relationships(primary)
         indicators.append(primary)
@@ -134,7 +134,7 @@ class FeedEntryBase:
                         "timestamp": relationship.get("relationship_ts"),
                         "value": primary_indicator["value"],
                         "entitycategory": relationship.get("related_entity_category"),
-                        "description": relationship.get("relationship_description")
+                        "description": relationship.get("relationship_description"),
                     }
                 ]
             }
@@ -147,7 +147,8 @@ class FeedEntryBase:
                     "rawJSON": raw_json,
                     "score": self.get_relationship_score(primary_indicator, relationship),
                     "fields": fields,
-                })
+                }
+            )
 
         return indicators
 
@@ -172,10 +173,7 @@ class FeedEntryBase:
 
     def get_fields(self) -> dict:
         timestamp = self.entry.get("timestamp")
-        fields = {
-            "updateddate": timestamp,
-            "indicatoridentification": self.payload.get("identifier")
-        }
+        fields = {"updateddate": timestamp, "indicatoridentification": self.payload.get("identifier")}
 
         if self.action == FeedAction.ADD:
             fields["published"] = timestamp
@@ -451,9 +449,7 @@ def get_offset_command(client: Client, args: dict) -> CommandResults:
     if offset_stored:
         readable_output = f"Cyren Threat InDepth {client.feed_name} feed client offset is {offset_stored} {offset_api_text}."
     else:
-        readable_output = (
-            f"Cyren Threat InDepth {client.feed_name} feed client offset has not been set yet {offset_api_text}."
-        )
+        readable_output = f"Cyren Threat InDepth {client.feed_name} feed client offset has not been set yet {offset_api_text}."
     return CommandResults(readable_output=readable_output, raw_response=offset_stored)
 
 

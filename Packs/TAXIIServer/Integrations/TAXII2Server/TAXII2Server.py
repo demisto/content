@@ -261,7 +261,7 @@ class TAXII2Server:
 
         first_added = None
         last_added = None
-        objects = iocs[offset: offset + limit]
+        objects = iocs[offset : offset + limit]
         if iocs and not objects:
             raise RequestedRangeNotSatisfiable
 
@@ -298,7 +298,7 @@ class TAXII2Server:
         last_added = None
         limited_extensions = None
 
-        limited_iocs = iocs[offset: offset + limit]
+        limited_iocs = iocs[offset : offset + limit]
         if iocs and not limited_iocs:
             raise RequestedRangeNotSatisfiable
 

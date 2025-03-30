@@ -153,8 +153,8 @@ def get_attachment_command(client, args):
     filename_header = raw_res.headers.get("content-disposition")
 
     f_attr = "filename="
-    if filename_header and f_attr in filename_header:   # noqa: RET503
-        filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
+    if filename_header and f_attr in filename_header:  # noqa: RET503
+        filename = filename_header[filename_header.index(f_attr) + len(f_attr) :]
         return fileResult(filename, raw_res.content)
 
 

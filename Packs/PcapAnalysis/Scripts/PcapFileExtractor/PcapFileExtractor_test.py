@@ -4,7 +4,7 @@ import pytest
 from CommonServerPython import CommandResults
 from magic import Magic
 from PcapFileExtractor import EXCLUSIVE, INCLUSIVE, filter_files, upload_files
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 
 OUTPUTS = [
     {

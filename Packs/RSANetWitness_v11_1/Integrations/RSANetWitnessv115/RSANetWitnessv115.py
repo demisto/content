@@ -382,7 +382,7 @@ class Client(BaseClient):
             page_number -= 1
 
         # bring the last 'fetch_limit' items, as order is reversed
-        total_items = total_items[len(total_items) - fetch_limit:]
+        total_items = total_items[len(total_items) - fetch_limit :]
         return total_items, last_fetched_ids, timestamp
 
 
@@ -665,7 +665,7 @@ def snapshot_details_get_command(client: Client, args: dict[str, Any]) -> Comman
 
     response = client.snapshot_details_get_request(agent_id, snapshot_timestamp, service_id, categories)
 
-    results = response[offset: offset + limit]
+    results = response[offset : offset + limit]
     humanReadable = tableToMarkdown(
         f"Snapshot details for agent id {agent_id}- \nshowing {len(results)} results out of {len(response)}",
         results,
@@ -1359,9 +1359,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
         if intCont.get(inc.get("id")):
             save_alert_count = intCont.get(inc.get("id"), {}).get("alertCount")
             save_event_count = intCont.get(inc.get("id"), {}).get("eventCount")
-            demisto.debug(
-                f"Last run incident {inc.get('id')} => Alert count: {save_alert_count} Event count: {save_event_count}"
-            )
+            demisto.debug(f"Last run incident {inc.get('id')} => Alert count: {save_alert_count} Event count: {save_event_count}")
             if save_alert_count != inc.get("alertCount") or save_event_count != inc.get("eventCount"):
                 # compare the save nb of alert to see if we need to pull the alert or not
                 if save_alert_count <= max_fetch_alerts:

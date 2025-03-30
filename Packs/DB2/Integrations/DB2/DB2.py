@@ -115,8 +115,10 @@ class Client:
             string containing all of the required parameters
         """
 
-        conn_string = (f"DRIVER={DRIVER_NAME};DATABASE={self.dbname};HOSTNAME={self.host};PORT"
-                       f"={self.port};PROTOCOL={PROTOCOL};UID={self.username};PWD={self.password};")
+        conn_string = (
+            f"DRIVER={DRIVER_NAME};DATABASE={self.dbname};HOSTNAME={self.host};PORT"
+            f"={self.port};PROTOCOL={PROTOCOL};UID={self.username};PWD={self.password};"
+        )
 
         if self.ssl_connect:
             conn_string += "SECURITY=SSL;"
@@ -319,7 +321,7 @@ def query_command(client: Client, args: dict, *_) -> CommandResults:
 
         converted_table = [dict(row) for row in result]
         table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
-        table = table[skip: skip + limit]
+        table = table[skip : skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers, removeNull=True)
 

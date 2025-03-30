@@ -364,7 +364,7 @@ class PCAP:
             if "IMF" in layers:
                 return self.extract_imf(packet)
 
-            if "SMTP" in layers:    # noqa: RET503
+            if "SMTP" in layers:  # noqa: RET503
                 return self.extract_smtp(packet)
 
     @logger

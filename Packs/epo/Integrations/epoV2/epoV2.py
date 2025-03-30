@@ -653,7 +653,7 @@ class Client(BaseClient):
         code = 0
         try:
             status = response[: response.index(":")].split(" ")[0]
-            result = response[response.index(":") + 1:].strip()
+            result = response[response.index(":") + 1 :].strip()
             if status == "Error":
                 code = int(response[: response.index(":")].split(" ")[1])
             else:

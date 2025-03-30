@@ -819,9 +819,7 @@ def similarity_command(client: Client, args: dict) -> Any:
         human_readable = f"### IP: {ip} - Similar Internet Scanners found in GreyNoise\n"
         human_readable += f'#### Total Similar IPs with Score above {min_score}%: {response.get("total")}\n'
         if response.get("total", 0) > limit:
-            human_readable += (
-                f"##### Displaying {limit} results below.  To see all results, visit the GreyNoise Visualizer.\n "
-            )
+            human_readable += f"##### Displaying {limit} results below.  To see all results, visit the GreyNoise Visualizer.\n "
 
         human_readable += tableToMarkdown(name="GreyNoise Similar IPs", t=tmp_response, headers=SIMILAR_HEADERS, removeNull=True)
 

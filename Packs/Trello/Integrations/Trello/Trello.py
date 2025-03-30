@@ -223,7 +223,7 @@ def select_outputs(result, output_keys):
 
     Capitlizes the result
     """
-    if type(result) is dict:    # noqa: RET503
+    if type(result) is dict:  # noqa: RET503
         output = {capitalize(k): result[k] for k in output_keys}
         # output = camelize(output)
         return output
@@ -243,7 +243,7 @@ def select_outputs_camelize(result, output_keys):
     Camelizes any result.
     """
     special_keys = ["card_id", "list_id", "board_id"]
-    if type(result) is dict:    # noqa: RET503
+    if type(result) is dict:  # noqa: RET503
         output = {k: result[k] for k in output_keys}
         output = camelize(output, "_")
         return output

@@ -546,7 +546,7 @@ EMAIL_THREADS = [
                     },
                     {
                         "EmailBCC": "",
-                        "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"    # noqa: E501
+                        "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"  # noqa: E501
                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <69433507> Test Email 2\r\n\r\nOutbound "
                         "test message from XSOAR to User.\r\n",
@@ -554,7 +554,7 @@ EMAIL_THREADS = [
                         "EmailCommsThreadId": "69433507",
                         "EmailCommsThreadNumber": "0",
                         "EmailFrom": "end_user@company.com",
-                        "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"    # noqa: E501
+                        "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"  # noqa: E501
                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <69433507> Test Email 2\r\n\r\nOutbound "
                         "test message from XSOAR to User.\r\n",
@@ -564,7 +564,7 @@ EMAIL_THREADS = [
                         "EmailTo": "soc_sender@company.com",
                         "EmailAttachments": "['None']",
                         "MessageDirection": "inbound",
-                        "MessageID": "AAMkAGRmOGZlZTEzLTkyZGDtNGJkNy1iOTMxLYM0NTAwODZhZjlmNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"    # noqa: E501
+                        "MessageID": "AAMkAGRmOGZlZTEzLTkyZGDtNGJkNy1iOTMxLYM0NTAwODZhZjlmNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"  # noqa: E501
                         "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJXBb0fRJWC0zdXEMqsAAApcWVYAAA=",
                         "MessageTime": "2022-02-04T20:58:20UTC",
                     },
@@ -587,7 +587,7 @@ EMAIL_THREADS = [
                     },
                     {
                         "EmailBCC": "",
-                        "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"    # noqa: E501
+                        "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"  # noqa: E501
                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <87692312> Test Email 4\r\n\r\nOutbound "
                         "test message from XSOAR to User.\r\n",
@@ -595,7 +595,7 @@ EMAIL_THREADS = [
                         "EmailCommsThreadId": "87692312",
                         "EmailCommsThreadNumber": "1",
                         "EmailFrom": "end_user@company.com",
-                        "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"    # noqa: E501
+                        "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"  # noqa: E501
                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <87692312> Test Email 4\r\n\r\nOutbound "
                         "test message from XSOAR to User.\r\n",
@@ -605,7 +605,7 @@ EMAIL_THREADS = [
                         "EmailTo": "soc_sender@company.com",
                         "EmailAttachments": "['None']",
                         "MessageDirection": "inbound",
-                        "MessageID": "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"    # noqa: E501
+                        "MessageID": "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"  # noqa: E501
                         "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",
                         "MessageTime": "2022-02-04T20:58:20UTC",
                     },

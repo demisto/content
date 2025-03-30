@@ -116,7 +116,7 @@ def filter_files(
     """
     # strip `.` from extension
     if extensions is not None:
-        extensions = {extension.split(".")[-1] for extension in extensions}   # type: ignore
+        extensions = {extension.split(".")[-1] for extension in extensions}  # type: ignore
     else:
         extensions = set()
     if types is None:

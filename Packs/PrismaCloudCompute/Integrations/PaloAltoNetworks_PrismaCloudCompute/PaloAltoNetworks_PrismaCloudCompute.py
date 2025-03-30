@@ -2740,7 +2740,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     if runtime_container_policy_events := client.get_runtime_container_policy():
         runtime_rules = runtime_container_policy_events.get("rules") or []
         if len(runtime_rules) > limit and not all_results:
-            runtime_rules = runtime_rules[offset * limit: offset * limit + limit]
+            runtime_rules = runtime_rules[offset * limit : offset * limit + limit]
 
         table = tableToMarkdown(
             name="Runtime Container Policy Events Information",

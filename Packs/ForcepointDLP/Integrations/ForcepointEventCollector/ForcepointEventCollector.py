@@ -202,9 +202,7 @@ def fetch_events_command_sub(
         # This means that we've more events in the minimal epoch, that we're able to get in a single fetch,
         # and we'll ignore any additional events in this particular second.
         next_fetch_time: str = to_str_time(from_time + timedelta(seconds=1))
-        demisto.info(
-            f"Moving the fetch to the next second:{next_fetch_time}. Any additional events in this second will be lost!"
-        )
+        demisto.info(f"Moving the fetch to the next second:{next_fetch_time}. Any additional events in this second will be lost!")
         return [], [], next_fetch_time
 
     # We've got events for this time span, so start from that to_time in the next fetch,
@@ -269,8 +267,7 @@ def main():  # pragma: no cover
             utc_now=datetime.utcnow(),
         )
         if command == "test-module":
-            test_module_first_fetch: datetime = arg_to_datetime(
-                DEFAULT_TEST_MODULE_SINCE_TIME, settings=DATEPARSER_SETTINGS)  # type: ignore[assignment]
+            test_module_first_fetch: datetime = arg_to_datetime(DEFAULT_TEST_MODULE_SINCE_TIME, settings=DATEPARSER_SETTINGS)  # type: ignore[assignment]
             return_results(test_module_command(client, test_module_first_fetch))
 
         elif command == "forcepoint-dlp-get-events":

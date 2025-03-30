@@ -186,10 +186,8 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     time_field_name = ALERT_TIME_FIELD if event_type == EventType.alert else AUDIT_LOGS_TIME_FIELD
 
     ids_for_dedup = cache.get("ids_for_dedup", [])
-    fetch_start_timestamp = cache.get("next_start_timestamp") or int(
-        arg_to_datetime("1 min").timestamp() * 1000000)  # type: ignore[union-attr]
-    fetch_end_timestamp = cache.get("next_end_timestamp") or int(
-        arg_to_datetime("Now").timestamp() * 1000000)  # type: ignore[union-attr]
+    fetch_start_timestamp = cache.get("next_start_timestamp") or int(arg_to_datetime("1 min").timestamp() * 1000000)  # type: ignore[union-attr]
+    fetch_end_timestamp = cache.get("next_end_timestamp") or int(arg_to_datetime("Now").timestamp() * 1000000)  # type: ignore[union-attr]
 
     # The latest_event_fetched_timestamp acts like a pointer to the newest event we ever fetched.
     latest_fetched_event_timestamp = cache.get("latest_event_fetched_timestamp")
@@ -308,8 +306,7 @@ def main() -> None:
 
     # Get helios service API url.
     base_url = urljoin(params.get("url"), API_VERSION)
-    max_fetch: int = min(arg_to_number(params.get("max_fetch", MAX_EVENTS_PER_TYPE)),
-                         MAX_EVENTS_PER_TYPE)  # type: ignore[assignment, type-var]
+    max_fetch: int = min(arg_to_number(params.get("max_fetch", MAX_EVENTS_PER_TYPE)), MAX_EVENTS_PER_TYPE)  # type: ignore[assignment, type-var]
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

@@ -324,8 +324,8 @@ def make_pcap_by_type(pcap_type: str, pcap_bytes: bytes) -> bytes:
                 break
 
             POS_FIRST_PACKET = 0x24
-            packet_time_be32 = pcap_bytes[16: 16 + 4]
-            packet_size_be16 = pcap_bytes[2: 2 + 2]
+            packet_time_be32 = pcap_bytes[16 : 16 + 4]
+            packet_size_be16 = pcap_bytes[2 : 2 + 2]
             packet_size = int.from_bytes(packet_size_be16, byteorder="big")
             if len(pcap_bytes) < packet_size + POS_FIRST_PACKET:
                 break
@@ -346,7 +346,7 @@ def make_pcap_by_type(pcap_type: str, pcap_bytes: bytes) -> bytes:
             pcap += b"\x00\x00" + packet_size_be16  # .len: length this packet (off wire)
 
             # packet payload
-            pcap += pcap_bytes[POS_FIRST_PACKET: POS_FIRST_PACKET + packet_size]
+            pcap += pcap_bytes[POS_FIRST_PACKET : POS_FIRST_PACKET + packet_size]
             return pcap
 
         if pcap_type != "auto":
