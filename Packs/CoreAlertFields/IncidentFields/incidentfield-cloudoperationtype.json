@@ -28,5 +28,5 @@
     "version": -1,
     "fromVersion": "6.5.0",
 	"x2_fields": "operation_name",
-    "marketplaces": ["marketplacev2"]
+    "marketplaces": ["marketplacev2", "platform"]
 }
