@@ -24,7 +24,7 @@ def main():
 
         feed_main(params, "Fastly Feed", "fastly")
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

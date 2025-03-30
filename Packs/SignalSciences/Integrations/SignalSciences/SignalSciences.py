@@ -1430,7 +1430,6 @@ def fetch_incidents():
 
 
 def main() -> None:
-
     LOG(f"command is {demisto.command()}")
     try:
         if not re.match(r"[0-9a-z_.-]+", CORPNAME):

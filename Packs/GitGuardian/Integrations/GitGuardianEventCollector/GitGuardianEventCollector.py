@@ -406,7 +406,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"GG: Setting next run: {next_run}.")
             demisto.setLastRun(next_run)
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
