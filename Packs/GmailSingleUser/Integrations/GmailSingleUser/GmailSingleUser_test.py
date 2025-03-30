@@ -522,3 +522,32 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     monkeypatch.setattr("GmailSingleUser.LEGACY_NAME", True)
     result = client.parse_mail_parts(part)
     assert result == expected_result
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+def test_get_incidents_command(mocker):
+    from GmailSingleUser import Client, get_incidents_command
+
+    client = Client()
+    args = {
+        "after": "24 Mar 2025 08:17:02 -0700",
+        "before": "24 Mar 2025 08:18:02 -0700"
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(
+        client,
+        "search",
+        return_value=(
+            util_load_json("test_data/search_email_list.json"),
+            "before:1742829482  after:1742829422",
+        ),
+    )
+    result = get_incidents_command(client)
+    emails: list = result.raw_response  # type: ignore
+    assert emails[0].get("internalDate") == "1742829478000"
+    assert len(emails) == 2
+    assert "2025-03-24T15:17:58.000Z | SENT | 111 |\n| test@test.com | Test message 1234 | 2025-03-24T1" in result.readable_output

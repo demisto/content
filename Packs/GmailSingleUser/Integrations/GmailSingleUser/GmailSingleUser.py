@@ -1324,6 +1324,7 @@ def get_incidents_command(client: Client):
     demisto.debug(
         f"Fetching emails with filters - subject: {subject}, from: {_from}, to: {to}, before: {before}, after: {after}"
     )
+    emails = []
     try:
         emails, final_query = client.search(
             user_id="me",
@@ -1339,13 +1340,14 @@ def get_incidents_command(client: Client):
             max_results=max_results,
             has_attachments=has_attachments,
         )
+        demisto.debug(f"\n{emails=}\n")
     except Exception as e:
         return_error(f"Failed to fetch emails: {str(e)}")
     demisto.info(f"search func raw_response: {emails, final_query}")
 
     if not emails:
         demisto.debug("No emails found for the given query.")
-        return_results(CommandResults(readable_output="No incidents found."))
+        return CommandResults(readable_output="No incidents found.")
     hr_emails = []
     for email in emails:
         hr_emails.append(
@@ -1363,23 +1365,15 @@ def get_incidents_command(client: Client):
             }
         )
 
-    demisto.debug(f"Retrieved {len(emails)} incidents using query: {final_query}")
+    demisto.debug(f"Retrieved {len(emails)} incidents using query: {final_query}\n\n{hr_emails=}\n\n")
 
-    return_results(
-        CommandResults(
-            readable_output=tableToMarkdown(
-                "Retrieved Gmail Incidents",
-                hr_emails,
-                headers=[
-                    "from",
-                    "snippet",
-                    "internalDatetime",
-                    "labelIds",
-                    "id",
-                ],
-            ),
-            raw_response=emails,
-        )
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Retrieved Gmail Incidents",
+            hr_emails,
+            headers=["from", "snippet", "internalDatetime", "labelIds", "id"]
+        ),
+        raw_response=emails,
     )
 
 
@@ -1402,7 +1396,6 @@ def main():  # pragma: no cover
         "gmail-auth-link": auth_link_command,
         "gmail-auth-test": auth_test_command,
         "gmail-get-attachments": get_attachments_command,
-        "gmail-get-incidents": get_incidents_command,
     }
 
     try:
@@ -1411,6 +1404,8 @@ def main():  # pragma: no cover
             sys.exit(0)
         if command in commands:
             demisto.results(commands[command](client))
+        if command == "gmail-get-incidents":
+            return_results(get_incidents_command(client))
     except Exception as e:
         return_error(f"An error occurred: {e}", error=e)
     finally:
