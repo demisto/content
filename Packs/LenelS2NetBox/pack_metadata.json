@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "IT",
+        "Compliance"
+    ],
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "LenelS2",
+        "NetBox"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
