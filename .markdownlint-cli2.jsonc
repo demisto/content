@@ -1,6 +1,5 @@
 {
   "config": {
-    "default": false,
-    "MD058": true
+    "default": false
   } , "fix" :true
 }
