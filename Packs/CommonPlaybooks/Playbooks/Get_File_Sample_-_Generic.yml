@@ -1,7 +1,7 @@
 id: Get File Sample - Generic
 version: -1
 name: Get File Sample - Generic
-description: Retrieves files from endpoints by the file hash or the file path.
+description: Retrieves files from endpoints by the file hash or the file path.TEST CHANGE. 
 starttaskid: "0"
 tasks:
   "0":

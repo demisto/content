@@ -11,10 +11,12 @@ import traceback
 
 
 ''' STANDALONE FUNCTION '''
-
+'''TEST CHANGE'''
 
 def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = False, allow_dups: bool = False) -> str:
     res = demisto.executeCommand('getList', {'listName': list_name})
+    x = 'TEST CHANGE.'
+    demisto.debug(x)
     if (
         not isinstance(res, list)
         or 'Contents' not in res[0]

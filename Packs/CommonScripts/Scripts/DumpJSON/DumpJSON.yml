@@ -16,7 +16,7 @@ args:
   description: The context path to the json object.
 outputs:
 - contextPath: JsonStr
-  description: The JSON object as string.
+  description: The JSON object as string. TEST CHANGE.
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.11.10.115186
