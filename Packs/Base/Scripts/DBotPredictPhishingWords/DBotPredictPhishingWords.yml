@@ -101,6 +101,7 @@ type: python
 dockerimage: demisto/ml:1.0.0.1870375
 tests:
 - Create Phishing Classifier V2 ML Test
+- DbotPredictOufOfTheBoxTestV2
 fromversion: 5.0.0
 marketplaces:
 - xsoar

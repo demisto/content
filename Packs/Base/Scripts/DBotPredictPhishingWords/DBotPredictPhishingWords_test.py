@@ -3,7 +3,6 @@ from collections import defaultdict
 import pytest
 from CommonServerPython import *
 from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main
-import demisto_ml as d
 
 TOKENIZATION_RESULT = None
 
@@ -317,36 +316,3 @@ def test_no_positive_words(mocker):
 
     res = main()
     assert res['Contents']['TextTokensHighlighted'] == TOKENIZATION_RESULT['originalText']
-
-
-# def test_predict_batch_incidents_light_output():
-#     from DBotPredictPhishingWords import predict_batch_incidents_light_output
-#     model = d.phishing_model_loads_handler(d.load_oob(), 'Phishing')
-
-#     res = predict_batch_incidents_light_output([
-#         '[Alert] Account Restricted Due to security reasons [Ref-160997]',
-#         '[IMPORTANT] We declined your last transaction for your safety.'
-#     ], [
-#         'Your account was restricted. Please click on this definitely super legit link to fix this. This is URGENT! Do it NOW!',
-#         'Dear sir. This is a very important message. We declined a transaction that very much happened (we would know of course). Please click here. Do it. Please.'
-#     ], model, 'torch_phishing', 5)
-
-#     assert res == {}
-
-
-def test_torch_model_predictions():
-    """
-    Given: Email data for the model to predict.
-    When: Using the model to predict.
-    Then: Make sure the output is correct.
-    """
-    with open('test_data/model_outputs.json') as f:
-        data = json.load(f)
-
-    model = d.phishing_model_loads_handler(d.load_oob(), d.ModelType.Torch.value)
-
-    res = model.filter_model_words(*data['single-filter_model_words']['input'])
-    assert res == data['single-filter_model_words']['output']
-
-    res = model.explain_model_words(*data['single-explain_model_words']['input'])
-    assert res == data['single-explain_model_words']['output']

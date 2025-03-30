@@ -50,3 +50,5 @@ dockerimage: demisto/pandas:1.0.0.117209
 fromversion: 5.0.0
 tests:
 - VerifyOOBV2Predictions-Test
+- Create Phishing Classifier V2 ML Test
+- DbotPredictOufOfTheBoxTestV2

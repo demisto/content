@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 78784216-c485-4b0e-8a76-59b41dc3a90f
+    taskid: 2827dba0-86a0-4d4b-84b3-ffac3ac2926b
     type: start
     task:
-      id: 78784216-c485-4b0e-8a76-59b41dc3a90f
+      id: 2827dba0-86a0-4d4b-84b3-ffac3ac2926b
       version: -1
       name: ""
       iscommand: false
@@ -19,10 +19,11 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 807.5,
           "y": 50
         }
       }
@@ -31,15 +32,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 22c9ea27-2fd5-4d40-8863-229dc43f3b48
+    taskid: 2dc05c7e-2f92-407e-874f-23499aa41a4f
     type: regular
     task:
-      id: 22c9ea27-2fd5-4d40-8863-229dc43f3b48
+      id: 2dc05c7e-2f92-407e-874f-23499aa41a4f
       version: -1
       name: Create incidents
       scriptName: TestCreateIncidentsForPhishingClassifier
@@ -55,10 +55,11 @@ tasks:
       numberOfIncidents:
         simple: "100"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 807.5,
           "y": 370
         }
       }
@@ -67,15 +68,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 69b3af92-e02e-42df-8457-060166618c7e
+    taskid: 2a0dfcf4-22f1-4dab-83fb-dbfbfe146541
     type: regular
     task:
-      id: 69b3af92-e02e-42df-8457-060166618c7e
+      id: 2a0dfcf4-22f1-4dab-83fb-dbfbfe146541
       version: -1
       name: Predict Tag1
       description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
@@ -92,6 +92,10 @@ tasks:
           closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           fall
+      extend-context:
+        simple: SinglePred1=.
+      ignore-outputs:
+        simple: "true"
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -101,11 +105,12 @@ tasks:
       modelStoreType:
         simple: mlModel
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1390
         }
       }
     note: false
@@ -113,15 +118,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 204180fd-5f72-4968-8e8c-c4fa68a2cf50
+    taskid: 08c949ca-a2b3-4a66-843d-71296282b957
     type: title
     task:
-      id: 204180fd-5f72-4968-8e8c-c4fa68a2cf50
+      id: 08c949ca-a2b3-4a66-843d-71296282b957
       version: -1
       name: Done
       type: title
@@ -129,11 +133,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 910,
+          "y": 1740
         }
       }
     note: false
@@ -141,15 +146,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 379f5987-21fa-48e7-8009-0f259984eb50
+    taskid: 82b02c96-b3e5-41b1-8e02-2f680e9179ba
     type: regular
     task:
-      id: 379f5987-21fa-48e7-8009-0f259984eb50
+      id: 82b02c96-b3e5-41b1-8e02-2f680e9179ba
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -163,10 +167,11 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 807.5,
           "y": 195
         }
       }
@@ -175,52 +180,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 29c71c43-3214-4f4f-816a-3b71511bb21b
-    type: regular
-    task:
-      id: 29c71c43-3214-4f4f-816a-3b71511bb21b
-      version: -1
-      name: clear context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      key:
-        simple: DBotPredictPhishingWords
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 056e0f50-15a3-4976-877f-992283bb1a6f
+    taskid: 861ca03d-b094-49c3-8608-372658ea60a8
     type: playbook
     task:
-      id: 056e0f50-15a3-4976-877f-992283bb1a6f
+      id: 861ca03d-b094-49c3-8608-372658ea60a8
       version: -1
       name: DBot Create Phishing Classifier V2
-      description: Create a phishing classifier using machine learning technique, based on email content
+      description: Create a phishing classifier using machine learning techniques, based on email content.
       playbookName: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
@@ -246,7 +216,11 @@ tasks:
       maxIncidentsToFetchOnTraining:
         simple: "3000"
       modelName:
-        simple: test_phishing_model
+        simple: fine_tune
+      modelTargetAccuracy:
+        simple: "0.8"
+      outputFormat:
+        simple: pickle
       overrideModel:
         simple: "true"
       phishingLabels:
@@ -254,6 +228,7 @@ tasks:
       removeShortTextThreshold:
         simple: "15"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -262,7 +237,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 807.5,
           "y": 545
         }
       }
@@ -271,15 +246,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c971bebc-164a-43dd-84f1-751002187ec8
+    taskid: 1b4c57cb-9b3a-442a-8376-4357ebbf18f6
     type: condition
     task:
-      id: c971bebc-164a-43dd-84f1-751002187ec8
+      id: 1b4c57cb-9b3a-442a-8376-4357ebbf18f6
       version: -1
       name: Model evaluation exist
       type: condition
@@ -287,7 +261,8 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "23"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -297,10 +272,11 @@ tasks:
             value:
               simple: DBotPhishingClassifier.EvaluationScores.Precision.All
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 807.5,
           "y": 720
         }
       }
@@ -309,15 +285,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: bfc6345f-19ec-4f66-810b-44109a362a08
+    taskid: a374ce1f-0ba4-4640-8c02-0aa1ac316403
     type: condition
     task:
-      id: bfc6345f-19ec-4f66-810b-44109a362a08
+      id: a374ce1f-0ba4-4640-8c02-0aa1ac316403
       version: -1
       name: 'Check the prediction label: Tag1'
       type: condition
@@ -325,7 +300,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -333,7 +308,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: DBotPredictPhishingWords.Label
+              simple: SinglePred1.Label
             iscontext: true
           right:
             value:
@@ -341,16 +316,17 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: DBotPredictPhishingWords.Probability
+              simple: SinglePred1.Probability
             iscontext: true
           right:
             value:
               simple: "0.9930823445320129"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1565
         }
       }
     note: false
@@ -358,15 +334,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a995bdfc-5c08-4fc8-8d2a-146274de35d9
+    taskid: 85b198a4-207e-4585-8bb9-35846584c34e
     type: condition
     task:
-      id: a995bdfc-5c08-4fc8-8d2a-146274de35d9
+      id: 85b198a4-207e-4585-8bb9-35846584c34e
       version: -1
       name: 'Check the prediction label: Tag2'
       type: condition
@@ -374,7 +349,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "19"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -382,7 +357,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: DBotPredictPhishingWords.Label
+              simple: SinglePred2.Label
             iscontext: true
           right:
             value:
@@ -390,16 +365,17 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: DBotPredictPhishingWords.Probability
+              simple: SinglePred2.Probability
             iscontext: true
           right:
             value:
               simple: "0.9941679239273071"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 480,
+          "y": 1565
         }
       }
     note: false
@@ -407,15 +383,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 746ca330-8d8e-4d0f-8bdf-fae786b24e0e
+    taskid: a04846bf-ec07-4038-8acf-2ac9ef3affdf
     type: regular
     task:
-      id: 746ca330-8d8e-4d0f-8bdf-fae786b24e0e
+      id: a04846bf-ec07-4038-8acf-2ac9ef3affdf
       version: -1
       name: Predict Tag2
       description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
@@ -432,6 +407,10 @@ tasks:
           ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           closed
+      extend-context:
+        simple: SinglePred2=.
+      ignore-outputs:
+        simple: "true"
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -441,11 +420,12 @@ tasks:
       modelStoreType:
         simple: mlModel
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 480,
+          "y": 1390
         }
       }
     note: false
@@ -453,15 +433,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c4dda492-d53f-4483-8571-c926877e47df
+    taskid: 0f370fc8-eb59-4b00-80d1-b08f2cd60400
     type: regular
     task:
-      id: c4dda492-d53f-4483-8571-c926877e47df
+      id: 0f370fc8-eb59-4b00-80d1-b08f2cd60400
       version: -1
       name: Predict Tag3
       description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
@@ -478,6 +457,10 @@ tasks:
           suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           boat
+      extend-context:
+        simple: SinglePred3=.
+      ignore-outputs:
+        simple: "true"
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -487,11 +470,12 @@ tasks:
       modelStoreType:
         simple: mlModel
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 910,
+          "y": 1390
         }
       }
     note: false
@@ -499,49 +483,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 482bab55-0675-4605-8c29-c28c3804836c
-    type: regular
-    task:
-      id: 482bab55-0675-4605-8c29-c28c3804836c
-      version: -1
-      name: clear context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      key:
-        simple: DBotPredictPhishingWords
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: df8d8ae6-eea4-40d0-8bce-f614ef5f9522
+    taskid: e206f37c-a6d7-4adf-80e2-79143fb1f34d
     type: condition
     task:
-      id: df8d8ae6-eea4-40d0-8bce-f614ef5f9522
+      id: e206f37c-a6d7-4adf-80e2-79143fb1f34d
       version: -1
       name: 'Check the prediction label: Tag3'
       type: condition
@@ -557,7 +506,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: DBotPredictPhishingWords.Label
+              simple: SinglePred3.Label
             iscontext: true
           right:
             value:
@@ -565,16 +514,17 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: DBotPredictPhishingWords.Probability
+              simple: SinglePred3.Probability
             iscontext: true
           right:
             value:
               simple: "0.9955088496208191"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 910,
+          "y": 1565
         }
       }
     note: false
@@ -582,8 +532,433 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: cb732adc-66c1-4f08-8e0b-861f4cb8515f
+    type: title
+    task:
+      id: cb732adc-66c1-4f08-8e0b-861f4cb8515f
+      version: -1
+      name: Predict Fine-Tune Batch
+      description: Apply a trained ML model on multiple incidents at once, to compare incidents how the incidents were labeled by analysts, to the predictions of the model. This script is aimed to help evaluate a trained model using past incidents.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "28"
+      - "29"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5c180aa8-da4d-42b2-8479-fc0e2013f509
+    type: regular
+    task:
+      id: 5c180aa8-da4d-42b2-8479-fc0e2013f509
+      version: -1
+      name: Predict batch
+      description: Apply a trained ML model on multiple incidents at once, to compare incidents how the incidents were labeled by analysts, to the predictions of the model. This script is aimed to help evaluate a trained model using past incidents.
+      scriptName: DBotPredictIncidentsBatch
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      emailbody:
+        simple: details
+      emailsubject:
+        simple: details
+      incidentTypes:
+        simple: Simulation
+      modelName:
+        simple: ${DBotPhishingClassifier.ModelName}
+      query:
+        simple: name:fine_tune_1|fine_tune_2|fine_tune_3
+      tagField:
+        simple: name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4fa8eab9-f334-4cb0-8b58-4d9f35048e49
+    type: title
+    task:
+      id: 4fa8eab9-f334-4cb0-8b58-4d9f35048e49
+      version: -1
+      name: Predict Fine-Tune Single
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "17"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 34b73063-4e92-457a-891d-47484f3eecbe
+    type: regular
+    task:
+      id: 34b73063-4e92-457a-891d-47484f3eecbe
+      version: -1
+      name: 'Create incident #1'
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      details:
+        simple: |-
+          closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
+          fall
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: fine_tune_1
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e7fa4db4-9ad3-4852-88c5-20dba79f74db
+    type: regular
+    task:
+      id: e7fa4db4-9ad3-4852-88c5-20dba79f74db
+      version: -1
+      name: 'Create incident #2'
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      details:
+        simple: |-
+          ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
+          closed
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: fine_tune_2
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 9dfe9918-d472-4c72-89b0-747864ac3346
+    type: regular
+    task:
+      id: 9dfe9918-d472-4c72-89b0-747864ac3346
+      version: -1
+      name: 'Create incident #3'
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      details:
+        simple: |-
+          suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
+          boat
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: fine_tune_3
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8693e144-5f8c-4d49-85f2-09c4e34fe7aa
+    type: regular
+    task:
+      id: 8693e144-5f8c-4d49-85f2-09c4e34fe7aa
+      version: -1
+      name: Parse Results
+      description: This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "37"
+      - "38"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 37d60dce-5d1e-4b0d-8c20-9905b3d24b68
+    type: condition
+    task:
+      id: 37d60dce-5d1e-4b0d-8c20-9905b3d24b68
+      version: -1
+      name: Check Prediction 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_1").Prediction
+            iscontext: true
+          right:
+            value:
+              simple: Tag1
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_1").Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9843030571937561"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 5b9c367b-7943-4ea8-8087-fa17e39d637a
+    type: condition
+    task:
+      id: 5b9c367b-7943-4ea8-8087-fa17e39d637a
+      version: -1
+      name: Check Prediction 2
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_2").Prediction
+            iscontext: true
+          right:
+            value:
+              simple: Tag2
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_2").Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.994461715221405"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 91c5aff9-7775-4a9a-8854-2d1c1ff67c1c
+    type: condition
+    task:
+      id: 91c5aff9-7775-4a9a-8854-2d1c1ff67c1c
+      version: -1
+      name: Check Prediction 3
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_3").Prediction
+            iscontext: true
+          right:
+            value:
+              simple: Tag3
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_3").Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9958837628364563"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -591,8 +966,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 380,
+        "height": 1755,
+        "width": 2530,
         "x": 50,
         "y": 50
       }
@@ -600,4 +975,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.1.0
+fromversion: 6.10.0
