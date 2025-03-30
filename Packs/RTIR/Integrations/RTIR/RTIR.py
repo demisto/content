@@ -50,7 +50,7 @@ def ticket_string_to_id(ticket_string):
     Translates 'ticket/1' to the integer 1
     """
     slash_index = ticket_string.index("/")
-    ticket_id = int(ticket_string[slash_index + 1:])
+    ticket_id = int(ticket_string[slash_index + 1 :])
     return ticket_id
 
 
@@ -226,7 +226,7 @@ def create_ticket():
         for cf in cf_list:
             equal_index = cf.index("=")
             key = f"CF-{cf[:equal_index]}: "
-            value = cf[equal_index + 1:]
+            value = cf[equal_index + 1 :]
             data = data + key + value + "\n"
 
     attachments = args.get("attachment", "")
@@ -527,7 +527,7 @@ def edit_ticket():
         for cf in cf_list:
             equal_index = cf.index("=")
             key = f"CF-{cf[:equal_index]}: "
-            value = cf[equal_index + 1:]
+            value = cf[equal_index + 1 :]
             content += "\n" + key + value
 
     edit_succeeded = False

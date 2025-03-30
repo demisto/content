@@ -374,7 +374,7 @@ def list_mfa_devices(args, client):
             }
         )
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * page_size:]
+        data = data[-1 * page_size :]
     human_readable = tableToMarkdown("AWS IAM Users MFA Devices", data)
     return CommandResults(
         readable_output=human_readable,
@@ -762,7 +762,7 @@ def list_user_policies(args, client):
     marker = response.get("Marker", None)
 
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * page_size:]
+        data = data[-1 * page_size :]
 
     policy_data = [
         {
@@ -800,7 +800,7 @@ def list_attached_user_policies(args, client):
     marker = response.get("Marker", None)
 
     if is_manual and page_size is not None and len(data) > page_size:
-        data = data[-1 * page_size:]
+        data = data[-1 * page_size :]
 
     policy_data = [
         {"UserName": user_name, "PolicyArn": policy.get("PolicyArn"), "PolicyName": policy.get("PolicyName")} for policy in data
@@ -838,7 +838,7 @@ def list_attached_group_policies(args, client):
     marker = response.get("Marker")
 
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * args.get("page_size"):]
+        data = data[-1 * args.get("page_size") :]
 
     policy_data = [
         {"GroupName": group_name, "PolicyArn": policy.get("PolicyArn"), "PolicyName": policy.get("PolicyName")} for policy in data

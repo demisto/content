@@ -353,7 +353,7 @@ class Client(BaseClient):
         if interface_type == "Out":
             res = self._http_request("POST", f"/api/access/out/{interface_name}/rules", json_data=rule_body, resp_type="response")
         loc = res.headers.get("Location", "")
-        rule = self._http_request("GET", loc[loc.find("/api"):])
+        rule = self._http_request("GET", loc[loc.find("/api") :])
         rule["interface"] = interface_name
         rule["interface_type"] = interface_type
         return rule
@@ -1378,7 +1378,7 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
             raw_rule = client.rule_action(rule_id, interface_name, interface_type, "GET")
         except Exception:
             location = rule.headers._store.get("location")[1]  # type: ignore
-            rule_id = location[location.rfind("/") + 1:]
+            rule_id = location[location.rfind("/") + 1 :]
             raw_rule = client.rule_action(rule_id, interface_name, interface_type, "GET")
 
         rules = raw_to_rules([raw_rule])

@@ -467,7 +467,7 @@ def list_policy_packages_command(client, args):
         policy_packages = policy_packages[from_val:]
 
     else:
-        policy_packages = policy_packages[from_val: int(to_val)]
+        policy_packages = policy_packages[from_val : int(to_val)]
 
     headers = ["name", "obj_ver", "type", "scope_member"] if not args.get("policy_package") else None
 
