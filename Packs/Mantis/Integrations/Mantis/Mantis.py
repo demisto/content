@@ -56,7 +56,7 @@ def test_module(client):
     if "issues" in result:
         return "ok"
     else:
-        return_error(result)    # noqa: RET503
+        return_error(result)  # noqa: RET503
 
 
 def create_output_result(resp):
@@ -81,7 +81,7 @@ def mantis_get_all_issues_command(client, args):
     Returns:
         list of Mantis issues
     """
-    if args is not None:    # noqa: RET503
+    if args is not None:  # noqa: RET503
         params = args
         resp = client.get_issues(params=params).get("issues")
         issues = [create_output_result(issue) for issue in resp]

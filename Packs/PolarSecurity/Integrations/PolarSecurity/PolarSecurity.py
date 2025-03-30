@@ -173,7 +173,7 @@ def test_module(server_url, username, password):
                 are correctly set"
         else:
             raise e
-    demisto.results("ok")   # noqa: RET503
+    demisto.results("ok")  # noqa: RET503
 
 
 def polar_list_data_stores_command(polar_client, limit: int, page_size: int, next_token):

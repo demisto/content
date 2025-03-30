@@ -747,9 +747,7 @@ def test_azure_firewall_ip_group_delete_command(requests_mock):
     assert len(result) == 1
     assert result[0].outputs is None
     assert result[0].outputs_prefix is None
-    assert (
-        result[0].readable_output == f"IP Group {ip_group_name} delete operation accepted and will complete asynchronously."
-    )
+    assert result[0].readable_output == f"IP Group {ip_group_name} delete operation accepted and will complete asynchronously."
 
 
 def test_azure_firewall_network_rule_collection_create_command_for_firewall(requests_mock):

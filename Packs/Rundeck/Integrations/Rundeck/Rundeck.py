@@ -515,9 +515,7 @@ class Client(BaseClient):
 
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
-            raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one."
-            )
+            raise DemistoException(f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one.")
         else:
             file_name = ntpath.basename(file_path)
 

@@ -128,7 +128,7 @@ def filter_results(entries: list, results_from: int | None, results_to: int | No
         results_to = len(entries)
     validate_filter_parameters(results_to, results_from)
 
-    return entries[results_from - 1: results_to], results_from, results_to
+    return entries[results_from - 1 : results_to], results_from, results_to
 
 
 def arg_to_int(arg_val: str | None, arg_name: str | None) -> int | None:

@@ -1057,9 +1057,7 @@ def custom_user_schema_update_command(client: Client, args: dict[str, Any]) -> C
 
     schema_key = args["schema_id"] if args.get("schema_id") else args.get("schema_name", "")
 
-    url_suffix = (
-        f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(customer_id))}/{urllib.parse.quote(schema_key)}"
-    )
+    url_suffix = f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(customer_id))}/{urllib.parse.quote(schema_key)}"
 
     client.set_authorized_http(scopes=SCOPES["CUSTOM_USER_SCHEMA"])
     response = client.http_request(method="PUT", url_suffix=url_suffix, body=body)
