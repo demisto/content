@@ -55,6 +55,7 @@ tasks:
       - "6"
       - "2"
       - "12"
+      - "5"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -113,7 +114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 190,
           "y": 280
         }
       }
@@ -201,7 +202,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -200,
           "y": 450
         }
       }
@@ -303,7 +304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
+          "x": 690,
           "y": 280
         }
       }
@@ -341,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1530
+          "x": 1120,
+          "y": 1700
         }
       }
     note: false
@@ -381,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -200,
           "y": 280
         }
       }
@@ -528,7 +529,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2410
+          "y": 2570
         }
       }
     note: false
@@ -570,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1690
+          "x": 1120,
+          "y": 1840
         }
       }
     note: false
@@ -599,7 +600,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2570
+          "y": 2730
         }
       }
     note: false
@@ -723,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1880
+          "x": 1120,
+          "y": 2030
         }
       }
     note: false
@@ -748,7 +749,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - "54"
       - "49"
     separatecontext: false
     continueonerrortype: ""
@@ -858,7 +859,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Select user account containment steps
-      description: The investigation identified several suspicious indicators, suggesting that the user who created the forwarding rule may have been compromised. The forwarding email and associated filters have been automatically removed. Please review and decide if any additional actions should be taken.
+      description: The investigation identified several pieces of suspicious evidence, suggesting that the user who created the forwarding rule may have been compromised. The forwarding email and associated filters have been automatically removed. Please review and decide if any additional actions should be taken.
       sender: ""
       expired: false
       totalanswers: 0
@@ -890,8 +891,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 2240
+          "x": 1530,
+          "y": 2390
         }
       }
     note: false
@@ -908,7 +909,7 @@ tasks:
     task:
       id: 1b880cd2-e9af-4734-8364-ead4ccdb0a7b
       version: -1
-      name: Suspend user in google workspace
+      name: Suspend user in Google Workspace
       description: Updates a user.
       script: '|||gsuite-user-update'
       type: regular
@@ -928,7 +929,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 1880
+          "y": 1875
         }
       }
     note: false
@@ -973,7 +974,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 1690
+          "y": 1700
         }
       }
     note: false
@@ -1004,7 +1005,7 @@ tasks:
       {
         "position": {
           "x": -580,
-          "y": 2270
+          "y": 2430
         }
       }
     note: false
@@ -1409,7 +1410,7 @@ tasks:
     task:
       id: 652eb822-a99d-4d31-8777-3d912ffd8e29
       version: -1
-      name: Check if multiple suspicious evidence detected
+      name: Check if multiple suspicious evidence detected and integration exists
       type: condition
       iscommand: false
       brand: ""
@@ -1417,6 +1418,8 @@ tasks:
     nexttasks:
       '#default#':
       - "17"
+      No Integration:
+      - "53"
       "yes":
       - "27"
     separatecontext: false
@@ -1492,7 +1495,78 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
                 accessor: brand
+            iscontext: true
+    - label: No Integration
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GSuiteAdmin
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Evidences
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Indicator
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1540,8 +1614,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 2240
+          "x": 1120,
+          "y": 2390
         }
       }
     note: false
@@ -1624,8 +1698,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 1880
+          "x": 1530,
+          "y": 2030
         }
       }
     note: false
@@ -1667,8 +1741,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 2040
+          "x": 1530,
+          "y": 2190
         }
       }
     note: false
@@ -1712,8 +1786,119 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 1120,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 0544fa30-fdab-4d99-8803-3f1dc679c109
+    type: regular
+    task:
+      id: 0544fa30-fdab-4d99-8803-3f1dc679c109
+      version: -1
+      name: Steps without Google Workspace Admin integration
+      description: "The investigation identified several **pieces of suspicious evidence**, suggesting that the user who created the forwarding rule may have been **compromised**.\n\n#### The following evidence was found: \n${Evidences}\n\nDue to the lack of integration with _Google Workspace Admin_, you will need to suspend user ${Core.OriginalAlert.raw_abioc.event.identity_name} **manually**.\n\n> We recommend setting up the integration for future use.\n>\n\n> _**Notice:**_ After this task, the alert **may be closed**.\n>\n"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: d9ba56c4-341e-45fa-8dd7-97a636de3671
+    type: condition
+    task:
+      id: d9ba56c4-341e-45fa-8dd7-97a636de3671
+      version: -1
+      name: Is Gmail integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "10"
+    scriptarguments:
+      brandname:
+        simple: Gmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 710,
-          "y": 2040
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 7611cf60-c371-4755-84a5-552cce113cb8
+    type: regular
+    task:
+      id: 7611cf60-c371-4755-84a5-552cce113cb8
+      version: -1
+      name: Steps without Gmail integration
+      description: |
+        Due to the lack of integration with _Gmail_, we will recommend the following steps:
+        1. Manually removing the suspicious forwarding rule from the user.
+        2. Updating the user about the above action.
+
+        * **User ID**: ${Core.OriginalAlert.event.raw_log.actor.profileId}
+        * **Forwarding Email Address**: ${Core.OriginalAlert.event.raw_log.events.parameters.value}
+
+        > In addition, we recommend setting up the integration for future use.
+        >
+
+        > _**Notice:**_ After this task, the alert **may be closed**.
+        >
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1700
         }
       }
     note: false
@@ -1726,21 +1911,25 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "18_17_#default#": 0.31,
-      "18_25_yes": 0.55,
-      "33_17_#default#": 0.32,
-      "37_17_#default#": 0.19,
+      "18_17_#default#": 0.39,
+      "18_25_yes": 0.54,
+      "33_17_#default#": 0.28,
+      "33_31_yes": 0.53,
+      "37_26_yes": 0.52,
       "3_5_#default#": 0.37,
       "46_17_#default#": 0.19,
-      "50_17_#default#": 0.19,
-      "50_30_yes": 0.76,
-      "52_17_#default#": 0.5,
-      "52_47_yes": 0.81
+      "46_27_yes": 0.52,
+      "46_53_No Integration": 0.52,
+      "50_17_#default#": 0.12,
+      "50_30_yes": 0.5,
+      "52_17_#default#": 0.55,
+      "52_47_yes": 0.5,
+      "54_55_#default#": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 2655,
-        "width": 2090,
+        "height": 2815,
+        "width": 2490,
         "x": -580,
         "y": -20
       }
