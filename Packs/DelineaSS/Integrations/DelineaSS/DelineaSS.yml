@@ -15,6 +15,10 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: Use Platform
+  name: isplatform
+  type: 8
+  required: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -33,26 +37,26 @@ name: DelineaSS
 script:
   commands:
   - arguments:
-    - description: Secret ID.
+    - description: Secret ID
       name: secret_id
       required: true
-    - description: Notes to get the password.
+    - description: Notes to get the password
       name: autoComment
-    description: Extracting the password field from the required secret.
+    description: Extracting the password field from the required secret
     name: delinea-secret-password-get
     outputs:
     - contextPath: Delinea.Secret.Password
-      description: Password from secret.
+      description: Password from secret
       type: String
   - arguments:
-    - description: Secret ID.
+    - description: Secret ID
       name: secret_id
       required: true
-    description: Extracting the username field from the required secret.
+    description: Extracting the username field from the required secret
     name: delinea-secret-username-get
     outputs:
     - contextPath: Delinea.Secret.Username
-      description: Username from secret.
+      description: Username from secret
       type: String
   - arguments:
     - description: Search for secret using secret name.
@@ -65,56 +69,56 @@ script:
       description: List of Secret IDs.
       type: String
   - arguments:
-    - description: Secret ID.
+    - description: Secret ID
       name: secret_id
       required: true
-    - description: New password value.
+    - description: New password value
       name: newpassword
       required: true
       secret: true
-    - description: Notes to update the password.
+    - description: Notes to update the password
       name: autoComment
-    description: Update password for a secret by ID.
+    description: Update password for a secret by ID
     name: delinea-secret-password-update
     outputs:
     - contextPath: Delinea.Secret.Newpassword
-      description: New password changed for secret.
+      description: New password changed for secret
       type: String
   - arguments:
-    - description: Secret ID.
+    - description: Secret ID
       name: secret_id
       required: true
-    description: Check Out a Secret.
+    description: Check Out a Secret
     name: delinea-secret-checkout
     outputs:
     - contextPath: Delinea.Secret.Checkout
-      description: Returns response (None = Successful).
+      description: Returns response (None = Successful)
       type: String
   - arguments:
-    - description: Secret ID.
+    - description: Secret ID
       name: secret_id
       required: true
-    description: Check In a secret.
+    description: Check In a secret
     name: delinea-secret-checkin
     outputs:
     - contextPath: Delinea.Secret.Checkin
-      description: Secret object.
+      description: Secret object
       type: String
   - arguments:
-    - description: Name for new folder.
+    - description: Name for new folder
       name: foldername
       required: true
     - defaultValue: '1'
-      description: Folder type ID, 1 - for folder.
+      description: Folder type ID, 1 - for folder
       name: foldertypeid
       predefined:
       - ''
       required: true
-    - description: Parent folder ID.
+    - description: Parent folder ID
       name: parentfolderid
       required: true
     - auto: PREDEFINED
-      description: 'Whether the folder should inherit permissions from its parent (default: true).'
+      description: 'Whether the folder should inherit permissions from its parent (default: true)'
       name: inheritpermissions
       predefined:
       - 'true'
@@ -125,95 +129,95 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Secret policy ID.
+    - description: Secret policy ID
       name: secretpolicyid
-    description: Create a new Secret folder.
+    description: Create a new Secret folder
     name: delinea-folder-create
     outputs:
     - contextPath: Delinea.Folder.Create
-      description: New object folder.
+      description: New object folder
       type: String
   - arguments:
-    - description: Search folder name.
+    - description: Search folder name
       name: foldername
       required: true
     description: Search a specific folder by name.
     name: delinea-folder-search
     outputs:
     - contextPath: Delinea.Folder.Id
-      description: List of Folder IDs.
+      description: List of Folder IDs
       type: String
   - arguments:
-    - description: Folder ID.
+    - description: Folder ID
       name: folder_id
       required: true
-    description: Delete a folder by folder ID.
+    description: Delete a folder by folder ID
     name: delinea-folder-delete
     outputs:
     - contextPath: Delinea.Folder.Delete
-      description: Folder ID.
+      description: Folder ID
       type: String
   - arguments:
-    - description: Secret ID.
+    - description: Secret ID
       name: secret_id
       required: true
-    - description: Notes to get a secret.
+    - description: Notes to get a secret
       name: autoComment
-    description: Get secret object by ID secret.
+    description: Get secret object by ID secret
     name: delinea-secret-get
     outputs:
     - contextPath: Delinea.Secret
-      description: Secret object.
+      description: Secret object
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Whether to allow DoubleLocks as part of the search. True by default.
+      description: Whether to allow DoubleLocks as part of the search. True by default
       name: filter_allowdoublelocks
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether to return the total number of secrets matching the filters. False by default.
+      description: Whether to return the total number of secrets matching the filters. False by default
       name: filter_donotcalculatetotal
       predefined:
       - 'true'
       - 'false'
-    - description: Only include Secrets with this DoubleLock ID assigned in the search results.
+    - description: Only include Secrets with this DoubleLock ID assigned in the search results
       name: filter_doublelockid
     - description: Names of Secret Template fields to return. Only exposed fields can be returned.
       name: filter_extendedfields
-    - description: Return only secrets matching a certain extended type.
+    - description: Return only secrets matching a certain extended type
       name: filter_extendedtypeid
-    - description: Return only secrets within a certain folder.
+    - description: Return only secrets within a certain folder
       name: filter_folderid
-    - description: Return only secrets with a certain heartbeat status.
+    - description: Return only secrets with a certain heartbeat status
       name: filter_heartbeatstatus
     - auto: PREDEFINED
-      description: Whether to include active secrets in results (when excluded equals true).
+      description: Whether to include active secrets in results (when excluded equals true)
       name: filter_includeactive
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether to include inactive secrets in results.
+      description: Whether to include inactive secrets in results
       name: filter_includeinactive
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: "Whether to include restricted secrets in results."
+      description: "Whether to include restricted secrets in results\t\t"
       name: filter_includerestricted
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether to do an exact match of the search text or a partial match.
+      description: Whether to do an exact match of the search text or a partial match
       name: filter_isexactmatch
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether to only include secrets whose template has Remote Password Changing enabled.
+      description: Whether to only include secrets whose template has Remote Password Changing enabled
       name: filter_onlyrpcenabled
       predefined:
       - 'true'
@@ -224,10 +228,10 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Return only secrets matching certain password types.
+    - description: Return only secrets matching certain password types
       name: filter_passwordtypelds
     - auto: PREDEFINED
-      description: Specify whether to filter by List, View, Edit, or Owner permission. Default is List. (List = 1, View = 2, Edit = 3, Owner = 4.
+      description: Specify whether to filter by List, View, Edit, or Owner permission. Default is List. (List = 1, View = 2, Edit = 3, Owner = 4
       name: filter_permissionrequired
       predefined:
       - '1'
@@ -235,73 +239,73 @@ script:
       - '3'
       - '4'
     - auto: PREDEFINED
-      description: Specify whether to search AllSecrets, Recent, or Favorites (All = 1, Recent = 2,Favorites = 3.
+      description: Specify whether to search AllSecrets, Recent, or Favorites (All = 1, Recent = 2,Favorites = 3
       name: filter_scope
       predefined:
       - '1'
       - '2'
       - '3'
-    - description: Field to search.
+    - description: Field to search
       name: filter_searchfield
     - description: Field-slug to search. This will override SearchField.
       name: filter_searchfieldslug
-    - description: Search text.
+    - description: Search text
       name: filter_searchtext
-    - description: Return only secrets matching a certain template.
+    - description: Return only secrets matching a certain template
       name: filter_secrettemplateid
-    - description: Return only secrets within a certain site.
+    - description: Return only secrets within a certain site
       name: filter_siteid
-    - description: Number of records to skip before taking results.
+    - description: Number of records to skip before taking results
       name: skip
-    - description: Sort direction.
+    - description: Sort direction
       name: sortBy_direction
-    - description: Sort field name.
+    - description: Sort field name
       name: sortBy_name
-    - description: Priority index. Sorts with lower values are executed earlier.
+    - description: Priority index. Sorts with lower values are executed earlier
       name: sortBy_priority
-    - description: Maximum number of records to include in results.
+    - description: Maximum number of records to include in results
       name: take
     - auto: PREDEFINED
-      description: Whether to include secrets in subfolders of the specified folder.
+      description: Whether to include secrets in subfolders of the specified folder
       name: filter_includesubfolders
       predefined:
       - 'true'
       - 'false'
-    description: Search secret ID by multiply parameters.
+    description: Search secret ID by multiply parameters
     name: delinea-secret-search
     outputs:
     - contextPath: Delinea.Secret.Secret
-      description: List of Folder IDs.
+      description: List of Folder IDs
       type: String
   - arguments:
-    - description: Folder name.
+    - description: Folder name
       name: foldername
-    - description: Folder type ID.
+    - description: Folder type ID
       name: foldertypeid
-    - description: Folder ID. Must match ID in path.
+    - description: Folder ID. Must match ID in path
       name: id
       required: true
     - auto: PREDEFINED
-      description: Whether the folder inherits permissions from its parent.
+      description: Whether the folder inherits permissions from its parent
       name: inheritpermissions
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether the folder inherits the secret policy.
+      description: Whether the folder inherits the secret policy
       name: inheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
-    - description: ID parent folder.
+    - description: ID parent folder
       name: parentfolderid
-    - description: Secret Policy ID.
+    - description: Secret Policy ID
       name: secretpolicyid
-    description: Update a single secret folder by ID.
+    description: Update a single secret folder by ID
     name: delinea-folder-update
     outputs:
     - contextPath: Delinea.Folder.Update
-      description: Folder object.
+      description: Folder object
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -340,7 +344,7 @@ script:
       name: folderid
     - description: When an SSH secret is proxied, you can choose to connect as another user and then do an su to the current secret’s user. This is a common practice for connecting with a lower privileged account and then switching to the root user.
       name: launcherconnectassecretid
-    - description: Secret name.
+    - description: Secret name
       name: name
       required: true
     - description: The id of the password change script to use on applicable web password secrets.
@@ -353,7 +357,7 @@ script:
       - 'false'
     - description: The id of the secret policy that controls the security and other settings of the secret.
       name: secretpolicyid
-    - description: Secret Template ID (integer).
+    - description: Secret Template ID (integer)
       name: secrettemplateid
       required: true
     - auto: PREDEFINED
@@ -388,23 +392,23 @@ script:
       - 'false'
     - description: The id of the mapping entity that associates this secret to a specific access request workflow.
       name: accessRequestWorkflowMapId
-    description: Create a new Secret.
+    description: Create a new Secret
     name: delinea-secret-create
     outputs:
     - contextPath: Delinea.Secret.Create
-      description: Secret object.
+      description: Secret object
       type: String
   - arguments:
-    - description: ID secret for delete.
+    - description: ID secret for delete
       name: id
       required: true
-    - description: Notes to Delete the secret.
+    - description: Notes to Delete the secret
       name: autoComment
-    description: Delete secret.
+    description: Delete secret
     name: delinea-secret-delete
     outputs:
     - contextPath: Delinea.Secret.Delete
-      description: Secret object.
+      description: Secret object
       type: String
   - arguments:
     - description: The user’s name as displayed in the user interface.
@@ -413,15 +417,15 @@ script:
     - description: Password for new user. The password used to log in.
       name: password
       required: true
-    - description: Username.
+    - description: Username
       name: username
       required: true
-    - description: Active Directory unique identifier.
+    - description: Active Directory unique identifier
       name: adguid
-    - description: Active Directory domain ID.
+    - description: Active Directory domain ID
       name: domainid
     - auto: PREDEFINED
-      description: Whether Duo two-factor authentication is enabled.
+      description: Whether Duo two-factor authentication is enabled
       name: duotwofactor
       predefined:
       - 'true'
@@ -436,7 +440,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether Duo two-factor authentication is enabled.
+      description: Whether Duo two-factor authentication is enabled
       name: fido2twofactor
       predefined:
       - 'true'
@@ -448,13 +452,13 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether OATH two-factor authentication is enabled.
+      description: Whether OATH two-factor authentication is enabled
       name: oathtwofactor
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether RADIUS two-factor authentication is enabled.
+      description: Whether RADIUS two-factor authentication is enabled
       name: radiustwofactor
       predefined:
       - 'true'
@@ -462,45 +466,45 @@ script:
     - description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
       name: radiususername
     - auto: PREDEFINED
-      description: Whether two-factor authentication is enabled.
+      description: Whether two-factor authentication is enabled
       name: twofactor
       predefined:
       - 'true'
       - 'false'
-    description: Create a new user.
+    description: Create a new user
     name: delinea-user-create
     outputs:
     - contextPath: Delinea.User.Create
-      description: User object.
+      description: User object
       type: String
   - arguments:
-    - description: Filter users by Active Directory domain (integer).
+    - description: Filter users by Active Directory domain (integer)
       name: filter_domainid
     - auto: PREDEFINED
-      description: Whether to include inactive users in the results.
+      description: Whether to include inactive users in the results
       name: filter_includeinactive
       predefined:
       - 'true'
       - 'false'
-    - description: Fields to search.
+    - description: Fields to search
       name: filter_searchfields
-    - description: Search text.
+    - description: Search text
       name: filter_searchtext
-    - description: Number of records to skip before taking results.
+    - description: Number of records to skip before taking results
       name: skip
-    - description: Sort direction.
+    - description: Sort direction
       name: sortBy_direction
-    - description: Sort field name.
+    - description: Sort field name
       name: sortBy_name
-    - description: Priority index. Sorts with lower values are executed earlier (integer).
+    - description: Priority index. Sorts with lower values are executed earlier (integer)
       name: sortBy_priority
-    - description: Maximum number of records to include in results(integer).
+    - description: Maximum number of records to include in results(integer)
       name: take
-    description: Search, filter, sort, and page users.
+    description: Search, filter, sort, and page users
     name: delinea-user-search
     outputs:
     - contextPath: Delinea.User.Search
-      description: List of User IDs.
+      description: List of User IDs
       type: String
   - arguments:
     - description: User ID. Must match ID in path.
@@ -545,7 +549,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether the user is locked out.
+      description: Whether the user is locked out
       name: isLockedout
       predefined:
       - 'true'
@@ -561,7 +565,7 @@ script:
     - description: Password for update user. The password used to log in.
       name: password
     - auto: PREDEFINED
-      description: Whether RADIUS two-factor authentication is enabled.
+      description: Whether RADIUS two-factor authentication is enabled
       name: radiustwofactor
       predefined:
       - 'true'
@@ -571,7 +575,7 @@ script:
     - description: The id of the time format to use when displaying times to this user. These options are defined in Admin > Configuration.
       name: timeoptionid
     - auto: PREDEFINED
-      description: Whether two-factor authentication is enabled.
+      description: Whether two-factor authentication is enabled
       name: twofactor
       predefined:
       - 'true'
@@ -584,38 +588,180 @@ script:
       - '1'
       - '2'
       - '3'
-    description: Update a single user by ID.
+    description: Update a single user by ID
     name: delinea-user-update
     outputs:
     - contextPath: Delinea.User.Update
-      description: User object.
+      description: User object
       type: String
   - arguments:
-    - description: User ID.
+    - description: User ID
       name: id
       required: true
-    description: Delete user by ID.
+    description: Delete user by ID
     name: delinea-user-delete
     outputs:
     - contextPath: Delinea.User.Delete
-      description: User object.
+      description: User object
       type: String
   - arguments:
-    - description: Secret ID.
+    deprecated: false
+    description: Get users list
+    execution: false
+    name: delinea-user-get
+    outputs:
+    - contextPath: Delinea.User
+      description: User object
+      type: String
+  - arguments:
+    - description: Secret ID
       name: secret_id
       required: true
-    - description: The new password.
+    - description: The new password
       name: newpassword
       required: true
-    - description: Notes to change the password.
+    - description: Notes to change the password
       name: autoComment
-    description: Remote Password Changing.
+    description: Remote Password Changing
     name: delinea-secret-rpc-changepassword
     outputs:
     - contextPath: Delinea.Secret.ChangePassword
-      description: Secret summary.
+      description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  - arguments:
+    - description: The user’s name as displayed in the user interface.
+      name: displayname
+      required: true
+    - description: Password for new user. The password used to log in.
+      name: password
+      required: true
+    - description: Username
+      name: name
+      required: true
+    - description: Account Expiration
+      name: AccountExp
+    - description: Description
+      name: Description
+    - auto: PREDEFINED
+      description: Whether Password Never Expire is enabled
+      name: PasswordNeverExpire
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The user's email address. Used by the system to send reports, access requests, and other notifications.
+      name: Mail
+      required: true
+    - auto: PREDEFINED
+      description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
+      name: Disabled
+      defaultValue: 'true'
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
+      name: ServiceUser
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Whether Force Password Change Next is enabled
+      name: ForcePasswordChangeNext
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Whether Send Email Invite is enabled
+      name: SendEmailInvite
+      predefined:
+        - 'true'
+        - 'false'
+    description: Create a new user in Platform
+    name: delinea-platform-user-create
+    outputs:
+    - contextPath: Delinea.Platform.User.Create
+      description: User object
+      type: String
+  - arguments:
+    - description: User ID
+      name: id
+      required: true
+    description: Delete user by ID
+    name: delinea-platform-user-delete
+    outputs:
+      - contextPath: Delinea.Platform.User.Delete
+        description: User object
+        type: String
+  - arguments:
+    - description: User ID. Must match ID in path.
+      name: id
+      required: true
+    - description: The user’s name as displayed in the user interface.
+      name: displayname
+      required: true
+    - description: Password for new user. The password used to log in.
+      name: password
+      required: true
+    - description: Username
+      name: name
+      required: true
+    - description: Account Expiration
+      name: AccountExp
+    - description: Description
+      name: Description
+    - auto: PREDEFINED
+      description: Whether Password Never Expire is enabled
+      name: PasswordNeverExpire
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The user's email address. Used by the system to send reports, access requests, and other notifications.
+      name: Mail
+      required: true
+    - auto: PREDEFINED
+#      defaultValue: 'true'
+      description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
+      name: Disabled
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
+      name: ServiceUser
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Whether Force Password Change Next is enabled
+      name: ForcePasswordChangeNext
+      predefined:
+        - 'true'
+        - 'false'
+    - auto: PREDEFINED
+      description: Whether Send Email Invite is enabled
+      name: SendEmailInvite
+      predefined:
+        - 'true'
+        - 'false'
+    description: Update a single user by ID
+    name: delinea-platform-user-update
+    outputs:
+      - contextPath: Delinea.Platform.User.Update
+        description: User object
+        type: String
+  - arguments:
+    - description: Secret ID
+      name: secret_id
+      required: true
+    - description: Notes to get a secret
+      name: autoComment
+    description: Get secret object by ID secret
+    name: delinea-platform-user-get
+    outputs:
+    - contextPath: Delinea.Platform.User.get
+      description: User object
+      type: String
+  dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
   subtype: python3
