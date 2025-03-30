@@ -2253,9 +2253,7 @@ def get_alert_command(client: Client, args: dict[str, Any]):
         "Description": alert["description"],
         "LastTriggered": timestamp_to_utc(alert["lastTriggered"], default_returned_value="Never"),
         "State": "Triggered" if alert["didTriggerLastEvaluation"] == "true" else "Not Triggered",
-        "Behavior": "Execute on every trigger "
-        if alert["executeOnEveryTrigger"] == "true"
-        else "Execute only on first trigger",
+        "Behavior": "Execute on every trigger " if alert["executeOnEveryTrigger"] == "true" else "Execute only on first trigger",
     }
 
     mapped_condition = {
@@ -2478,7 +2476,7 @@ def get_all_scan_results_command(client: Client, args: dict[str, Any]):
             "RepositoryName": elem["repository"].get("name"),
             "ImportStatus": elem.get("importStatus", ""),
         }
-        for elem in elements[page: page + limit]
+        for elem in elements[page : page + limit]
     ]
 
     readable_title = f"Tenable.sc Scan results - {page}-{page + limit - 1}"
