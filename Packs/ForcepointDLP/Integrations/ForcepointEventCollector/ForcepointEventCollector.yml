@@ -32,7 +32,7 @@ configuration:
     name: mirror_direction
     required: false
     type: 15
-    additionalinfo: "Choose the direction to mirror the incident: Incoming (from Cyberint to Cortex XSOAR), Outgoing (from Cortex XSOAR to Cyberint), or Incoming and Outgoing (from/to Cortex XSOAR and Cyberint)."
+    additionalinfo: "Choose the direction to mirror the incident: Incoming (from Forcepoint DLP to Cortex XSOAR), Outgoing (from Cortex XSOAR to Forcepoint DLP), or Incoming and Outgoing (from/to Cortex XSOAR and Forcepoint DLP)."
     defaultvalue: None
     options:
       - None
