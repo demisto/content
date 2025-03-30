@@ -1444,7 +1444,7 @@ def test_fetch_command(mocker):
         status_filter=[],
         impact_filter=[],
         urgency_filter=[],
-        custom_query=("('Submit Date' <= \"1657032797\" AND 'Submit Date'" '>"1657032797") AND (\'Urgency\' = "4-Low")'),   # noqa: ISC001
+        custom_query=("('Submit Date' <= \"1657032797\" AND 'Submit Date'" '>"1657032797") AND (\'Urgency\' = "4-Low")'),  # noqa: ISC001
         mirror_direction="both",
     )
     assert last_run_result["SRM:Request"]["last_create_time"] == expected_result

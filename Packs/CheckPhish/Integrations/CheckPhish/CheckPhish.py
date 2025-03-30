@@ -103,14 +103,14 @@ def submit_to_checkphish(url, api_key, base_url, use_ssl):
         return res["jobID"]
 
     else:
-        return_error(url + " is not a valid url")   # noqa: RET503
+        return_error(url + " is not a valid url")  # noqa: RET503
 
 
 def is_job_ready_checkphish(jobID, api_key, base_url, use_ssl):
     query = {"apiKey": api_key, "jobID": jobID}
     res = http_request("POST", base_url + STATUS_SUFFIX, use_ssl, data=json.dumps(query))
 
-    if res and res["status"] == DONE_STATUS:    # noqa: SIM103
+    if res and res["status"] == DONE_STATUS:  # noqa: SIM103
         return True
 
     return False

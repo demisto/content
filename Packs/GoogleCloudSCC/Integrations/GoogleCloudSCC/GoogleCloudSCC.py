@@ -239,9 +239,7 @@ class BaseGoogleClient:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
         except (httplib2.socks.HTTPError, IndexError) as e:
             # library not able to handle Proxy error and throws Index Error
-            demisto.debug(
-                f"Failed to execute {demisto.command()} command. Error: {e!s} , traceback: {traceback.format_exc()}"
-            )
+            demisto.debug(f"Failed to execute {demisto.command()} command. Error: {e!s} , traceback: {traceback.format_exc()}")
             raise ValueError(ERROR_MESSAGES["PROXY_ERROR"])
         except exceptions.RefreshError as error:
             error_message = ERROR_MESSAGES["INVALID_SERVICE_ACCOUNT"]
@@ -312,9 +310,7 @@ class BaseGoogleClient:
             else:
                 raise ValueError(ERROR_MESSAGES["UNKNOWN_ERROR"].format(status, reason))
         except httplib2.socks.HTTPError as e:
-            demisto.debug(
-                f"Failed to execute {demisto.command()} command. Error: {e!s} , traceback: {traceback.format_exc()}"
-            )
+            demisto.debug(f"Failed to execute {demisto.command()} command. Error: {e!s} , traceback: {traceback.format_exc()}")
             raise ValueError(ERROR_MESSAGES["PROXY_ERROR"])
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
@@ -356,7 +352,7 @@ class GoogleSccClient(BaseGoogleClient):
         :return: list of findings
         """
         request = (
-            self.service.organizations()     # pylint: disable=E1101
+            self.service.organizations()  # pylint: disable=E1101
             .sources()
             .findings()
             .list(  # pylint: disable=E1101
@@ -398,7 +394,7 @@ class GoogleSccClient(BaseGoogleClient):
         :return: list of assets
         """
         request = (
-            self.service.organizations()     # pylint: disable=E1101
+            self.service.organizations()  # pylint: disable=E1101
             .assets()
             .list(  # pylint: disable=E1101
                 parent=parent,
@@ -452,7 +448,7 @@ class GoogleSccClient(BaseGoogleClient):
         )
         update_mask = get_update_mask_for_update_finding(body, update_mask)  # type: ignore
         request = (
-            self.service.organizations()     # pylint: disable=E1101
+            self.service.organizations()  # pylint: disable=E1101
             .sources()
             .findings()
             .patch(  # pylint: disable=E1101
@@ -481,7 +477,7 @@ class GoogleSccClient(BaseGoogleClient):
         body = assign_params(startTime=event_time, state=state)
 
         request = (
-            self.service.organizations()     # pylint: disable=E1101
+            self.service.organizations()  # pylint: disable=E1101
             .sources()
             .findings()
             .setState(  # pylint: disable=E1101
@@ -1517,7 +1513,7 @@ def cloud_asset_owner_get_command(client: GoogleCloudAssetClient, args: dict) ->
     )
 
     # Remove duplicate project names and extract id's.
-    project_ids = list(map(lambda name: name.split("/")[-1], set(project_names)))   # noqa: C417
+    project_ids = list(map(lambda name: name.split("/")[-1], set(project_names)))  # noqa: C417
     page_token = ""
     matching_assets = []
     iteration = 0

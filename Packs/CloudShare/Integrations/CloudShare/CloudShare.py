@@ -20,7 +20,7 @@ class Client:
         self.apiKey = api_key
 
     def send_request(self, method: str, path: str, queryParams: dict = None, content: dict = None):
-        res = cloudshare.req(   # pylint: disable=E1101
+        res = cloudshare.req(  # pylint: disable=E1101
             hostname=self.hostname,
             method=method,
             path=path,
@@ -331,9 +331,7 @@ def modify_class_command(client, args):
 def get_students_command(client, args):
     classId = args.get("classId")
 
-    res = client.send_request(
-        "GET", f"class/{classId}/students", queryParams={"isFull": args.get("isFull", "false") == "true"}
-    )
+    res = client.send_request("GET", f"class/{classId}/students", queryParams={"isFull": args.get("isFull", "false") == "true"})
     if res.status == 200:
         md = tableToMarkdown(f"CloudShare students for class {classId}:", res.content)
         command_results = CommandResults(

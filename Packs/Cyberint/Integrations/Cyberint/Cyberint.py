@@ -837,8 +837,7 @@ def fetch_incidents(
                 current_attachments = dict_safe_get(alert, path, default_return_value=[])
                 attachment_list = current_attachments if isinstance(current_attachments, list) else [current_attachments]
                 # Retrieve alert Incident attachments files - Attachments, CSV, Screenshot, and Analysis report.
-                current_incident_attachments = get_alert_attachments(
-                    client, attachment_list, attachment_type, alert_id)  # type: ignore
+                current_incident_attachments = get_alert_attachments(client, attachment_list, attachment_type, alert_id)  # type: ignore
 
                 incident_attachments.extend(current_incident_attachments)
                 for tmp_attachment in attachment_list:

@@ -410,7 +410,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
-            item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
+            item.folder.absolute[len(TOIS_PATH) :] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
         )
         raw_dict["folder_path"] = folder_path
 
@@ -544,7 +544,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
     title = (
         f'EWS get attachment got item for "{target_email}", '
-        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'     # noqa: E501
+        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'  # noqa: E501
     )
 
     return get_entry_for_object(
@@ -1917,9 +1917,7 @@ def sub_main():  # pragma: no cover
             error_message_simple = "Got unauthorized from the server. "
 
         if "Status code: 503" in debug_log:
-            error_message_simple = (
-                "Got timeout from the server. Probably the server is not reachable with the current settings. "
-            )
+            error_message_simple = "Got timeout from the server. Probably the server is not reachable with the current settings. "
 
         if not error_message_simple:
             error_message = error_message_simple = str(e)

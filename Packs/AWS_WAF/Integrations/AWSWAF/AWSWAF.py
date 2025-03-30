@@ -177,9 +177,7 @@ def build_ip_rule_object(args: dict) -> dict:
     ip_set_arns = argToList(args.get("ip_set_arn"))
     condition_operator = args.get("condition_operator", "")
     if len(ip_set_arns) > 1 and not condition_operator:
-        raise DemistoException(
-            "The condition_operator argument must be specified when ip_set_arn contains more than one value."
-        )
+        raise DemistoException("The condition_operator argument must be specified when ip_set_arn contains more than one value.")
 
     if len(ip_set_arns) == 1:
         ip_rule["Statement"] = build_ip_statement(ip_set_arns[0])

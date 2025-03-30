@@ -93,7 +93,7 @@ class Client(BaseClient):
         return res.get("blocks")
 
     def query(self, query_type: str = "domain_search", body: dict = None, params: dict = None):
-        if query_type == "domain_search":   # noqa: RET503
+        if query_type == "domain_search":  # noqa: RET503
             return self._http_request(
                 "POST", "domains/list", params=params, json_data=body, ok_codes=(200, 403), timeout=self.timeout
             )

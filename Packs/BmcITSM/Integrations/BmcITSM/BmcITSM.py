@@ -2918,8 +2918,7 @@ def format_command_output(records: List[dict], mapper: Dict[str, Any], context_d
                     "RequestID",
                     "ID",
                 ):  # extract request ID out of pattern: <id|id> -> id
-                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(
-                        record_attributes[origin_attrib_name])  # type: ignore[index]
+                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(record_attributes[origin_attrib_name])  # type: ignore[index]
 
                 elif "Date" in formatted_attrib_name and record_attributes[origin_attrib_name]:  # type: ignore[index]
                     formatted_record[formatted_attrib_name] = FormatIso8601(
@@ -3838,8 +3837,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     mapping_response = GetMappingFieldsResponse()
     for ticket_type, incident_type in TICKET_TYPE_TO_INCIDENT_TYPE.items():
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type)
-        outgoing_fields = MIRRORING_COMMON_FIELDS + \
-            TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]  # type: ignore[union-attr,operator]
+        outgoing_fields = MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]  # type: ignore[union-attr,operator]
         for field in outgoing_fields:
             incident_type_scheme.add_field(field)
 

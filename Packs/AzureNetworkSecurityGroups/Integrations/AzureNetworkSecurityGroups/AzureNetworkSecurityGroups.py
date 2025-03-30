@@ -335,7 +335,7 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
             subscription_id=subscription_id, resource_group_name=resource_group_name, security_group=group
         )
         rules.extend(rules_returned.get("value", []))
-    rules = rules[rules_offset: rules_offset + rules_limit]
+    rules = rules[rules_offset : rules_offset + rules_limit]
     return format_rule(rules, f"in {security_group_name}")
 
 

@@ -23,7 +23,7 @@ def _trigger_workflow(client, **kwargs):
 def _test_module(client):  # pragma: no cover
     # test the client can reach the case list
     try:
-        client.cases    # noqa: B018
+        client.cases  # noqa: B018
     except JSONDecodeError as exc:
         raise RuntimeError("False API key provided to FTK Connect.", exc)
     except DemistoException as exc:

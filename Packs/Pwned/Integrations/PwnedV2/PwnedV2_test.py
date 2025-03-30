@@ -55,7 +55,7 @@ username_req = [
         "AddedDate": "2013-12-04T00:00:00Z",
         "IsVerified": True,
         "Description": "In December 2010, Gawker was attacked by the hacker collective &quot;Gnosis&quot;"
-                       " in retaliation for what was"
+        " in retaliation for what was"
         " reported to be a feud between Gawker and 4Chan. Information about Gawkers 1.3M users was published along"
         " with the data from Gawker's other web presences including Gizmodo and Lifehacker. Due to the prevalence of"
         ' password reuse, many victims of the breach <a href="http://www.troyhunt.com/2011/01/why-your-apps-security'
