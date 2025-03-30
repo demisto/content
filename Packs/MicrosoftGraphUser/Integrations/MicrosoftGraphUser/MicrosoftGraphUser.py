@@ -277,7 +277,7 @@ def test_function(client, _):
         if demisto.command() == 'test-module':
             if client.ms_client.grant_type != CLIENT_CREDENTIALS:
                 # cannot use test module due to the lack of ability to set refresh token to integration context
-                # for self deployed app 
+                # for self deployed app  
                 raise Exception("When using a self-deployed configuration with authorization code and redirect uri, "
                                 "Please enable the integration and run the !msgraph-user-test command in order to test it")
         else:
