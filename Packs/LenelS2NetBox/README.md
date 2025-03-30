@@ -53,7 +53,7 @@ Activate a database collector as described [here](https://docs-cortex.paloaltone
    | Parameter         | Value    
    | :---              | :---                    
    | `Rising Column`   | Enter *AutoID*.  
-   | `Retrieval Value` | Enter *0* for initializing the first retrieval to select all records within the view's defined time interval. For example, if the view is defined to select records from within the last hour (as in the sample SQL query above), the first retrieval would include all records from within the last hour. After the first initialization retrieval, the subsequent continuous polling would select only new records added from that point forward. Alternatively, set this value to the last known *EPOEvents.AutoID* value.
+   | `Retrieval Value` | Enter *0* for initializing the first retrieval to select all records within the view's defined time interval. For example, if the view is defined to select records from within the last hour (as in the sample SQL query above), the first retrieval would include all records from within the last hour. After the first initialization retrieval, the subsequent continuous polling would select only new records added from that point forward. Alternatively, set this value to the last known value.
    | `Unique IDs`      | Leave this parameter blank, as the *AutoID* rising column values are unique. 
    | `Collect Every`   | Select the requested polling time interval. This interval must be shorter than the time interval defined on the custom view SQL query (1 hour on the sample query above). 
    | `Vendor`          | Enter *LenelS2*. 

@@ -1,6 +1,6 @@
-
-    [MODEL: dataset="lenels2_netbox_raw"]
-alter
+[MODEL: dataset="lenels2_netbox_raw"]
+alter reason = if(reason = "", null), reasoncode = if(reasoncode = "", null)
+| alter
     xdm.event.type = type,
     xdm.event.id = to_string(typecode),
     xdm.alert.original_alert_id = to_string(logkey),
