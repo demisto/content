@@ -56,12 +56,11 @@ def test_reverse_dig_result(mocker):
 
     mocker.patch.object(Dig, "regex_result", return_value=(["0.0.0.0"], "1.1.1.1"))
     mocker.patch.object(subprocess, "check_output", return_value="OK")
-    reverse_dig_result("server", "name") == {   # noqa: B015
+    reverse_dig_result("server", "name") == {  # noqa: B015
         "name": "name",
-        "resolvedaddresses":
-        ["0.0.0.0"],
+        "resolvedaddresses": ["0.0.0.0"],
         "nameserver": "1.1.1.1",
-    }   # noqa: B015
+    }  # noqa: B015
     reverse_dig_result("", "name") == {"name": "name", "resolvedaddresses": ["0.0.0.0"], "nameserver": "1.1.1.1"}  # noqa: B015
 
 

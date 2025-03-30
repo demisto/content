@@ -43,7 +43,7 @@ API_KEY_PREFIX = "_api_key_id:"
 SERVER = demisto.params().get("url", "").rstrip("/")
 USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD: str = demisto.params().get("credentials", {}).get("password")
-API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
+API_KEY_ID = USERNAME[len(API_KEY_PREFIX) :] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
     USERNAME = ""
     API_KEY = (API_KEY_ID, PASSWORD)
@@ -334,7 +334,7 @@ def search_command(proxies):
 
     else:
         que = QueryString(query=query)
-        search = Search(using=es, index=index).query(que)[base_page: base_page + size]
+        search = Search(using=es, index=index).query(que)[base_page : base_page + size]
         if explain:
             # if 'explain parameter is set to 'true' - adds explanation section to search results
             search = search.extra(explain=True)
@@ -861,7 +861,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
         search = Search(using=es, index=requested_index).query(body.get("query"))
         if size and isinstance(page, int):
-            search = search[page: page + size]
+            search = search[page : page + size]
         response = search.execute().to_dict()
 
     else:  # Elasticsearch v7 and below or OpenSearch

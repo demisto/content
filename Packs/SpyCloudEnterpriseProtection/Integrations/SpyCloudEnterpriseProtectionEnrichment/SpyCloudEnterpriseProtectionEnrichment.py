@@ -147,7 +147,7 @@ def pagination(page: int | None, page_size: int | None, limit: int | None):
 
 
 def get_paginated_results(results: list, offset: int, limit: int) -> list:
-    return results[offset: offset + limit]
+    return results[offset : offset + limit]
 
 
 def test_module(client: Client) -> str:

@@ -137,7 +137,7 @@ def int_to_comma_hex(n: int, blength: int | None = None) -> str:
     if blength is not None:
         bhex = "00" * max(blength - len(bhex), 0) + bhex
 
-    return ":".join([bhex[i: i + 2] for i in range(0, len(bhex), 2)])
+    return ":".join([bhex[i : i + 2] for i in range(0, len(bhex), 2)])
 
 
 def public_key_context(

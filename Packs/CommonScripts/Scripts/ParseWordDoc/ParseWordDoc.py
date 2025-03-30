@@ -45,7 +45,7 @@ def parse_word_doc(entry_id):
         file_data = file_data + "\n\n\nExtracted links:\n* " + "\n* ".join(list(urls))
 
         file_name = cmd_res.get("name")
-        output_file_name = file_name[0: file_name.rfind(".")] + ".txt"
+        output_file_name = file_name[0 : file_name.rfind(".")] + ".txt"
         res = fileResult(output_file_name, file_data.encode("utf8"))
     except PackageNotFoundError:
         errEntry["Contents"] = "Input file is not a valid docx/doc file."

@@ -799,7 +799,7 @@ def main():
     except requests.exceptions.ConnectionError as exception:
         # Get originating Exception in Exception chain
         error_class = str(exception.__class__)
-        err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
+        err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
         err_msg = (
             "Verify that you have access to the server from your host."
             f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"

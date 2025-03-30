@@ -45,7 +45,7 @@ class WordParser:
         )
         demisto.debug(f"soffice output: [{output!s}]")
         # Requires office-utils docker image
-        output_file_name = self.file_name[0: self.file_name.rfind(".")] + ".docx"
+        output_file_name = self.file_name[0 : self.file_name.rfind(".")] + ".docx"
         self.file_path = self.file_path + ".docx"
         try:
             with open(self.file_path, "rb") as f:

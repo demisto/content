@@ -516,7 +516,7 @@ def http_request(
             e = cast(Any, e.__context__)
 
         error_class = str(e.__class__)
-        err_type = "<" + error_class[error_class.find("'") + 1: error_class.rfind("'")] + ">"
+        err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
         err_msg = (
             f"\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n"
             f"ADVICE: Check that the Server URL parameter is correct and that you"

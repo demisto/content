@@ -221,7 +221,7 @@ def get_html_from_response(response):
     text = response.text
     open_tag = text.lower().find("<html")
     close_tag = text.lower().find("</html>")
-    return text[open_tag: close_tag + len("</html>")]
+    return text[open_tag : close_tag + len("</html>")]
 
 
 def html_error_entry(html):
@@ -305,7 +305,7 @@ def get_machines(query, limit):
 
     if len(machines) > limit:
         # results exceeded limit
-        machines[limit - 1: -1] = []
+        machines[limit - 1 : -1] = []
 
     return machines
 
@@ -434,7 +434,7 @@ def list_iocs(machine_id, limit):
 
     if len(iocs) > limit:
         # results exceeded limit
-        iocs[limit - 1: -1] = []
+        iocs[limit - 1 : -1] = []
 
     return iocs
 
@@ -501,7 +501,7 @@ def get_machine_modules(machine_id, query, limit):
 
     if len(modules) > limit:
         # results exceeded limit
-        modules[limit - 1: -1] = []
+        modules[limit - 1 : -1] = []
 
     return modules
 

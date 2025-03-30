@@ -133,7 +133,7 @@ def _chunker(seq, size):
     """
     ret = []
     for i in range(0, len(seq), size):
-        chunk = seq[i: i + size]
+        chunk = seq[i : i + size]
 
         # Make sure the chunks are with a specified size
         padding = ["" for j in range(size - len(chunk))]
@@ -389,7 +389,7 @@ def main():
 
         # Cut results according to the user args (times 2, because we are working on pairs of requests and responses).
         if START:
-            http_flows = http_flows[int(START):]
+            http_flows = http_flows[int(START) :]
         if LIMIT:
             http_flows = http_flows[: int(LIMIT)]
 

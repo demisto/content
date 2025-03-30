@@ -1087,9 +1087,9 @@ class BMCContainer(Generic[AnyStr]):
         self.btype = self.BMC_CONTAINER
 
         if self.bdat[: len(self.BIN_FILE_HEADER)] == self.BIN_FILE_HEADER:
-            unpacked_bytes = unpack("<L", self.bdat[len(self.BIN_FILE_HEADER): len(self.BIN_FILE_HEADER) + 4])[0]
+            unpacked_bytes = unpack("<L", self.bdat[len(self.BIN_FILE_HEADER) : len(self.BIN_FILE_HEADER) + 4])[0]
             self.b_log("info", True, f"Subsequent header version: {unpacked_bytes}.")
-            self.bdat = self.bdat[len(self.BIN_FILE_HEADER) + 4:]
+            self.bdat = self.bdat[len(self.BIN_FILE_HEADER) + 4 :]
             self.btype = self.BIN_CONTAINER
 
             self.b_log("debug", True, f"Successfully loaded '{self.fname}' as a {self.btype.decode()} container.")
@@ -1115,7 +1115,7 @@ class BMCContainer(Generic[AnyStr]):
             key1, key2, t_width, t_height = unpack("<LLHH", t_hdr[:0xC])
             if self.btype == self.BIN_CONTAINER:
                 bl = 4 * t_width * t_height
-                t_bmp = self.b_parse_rgb32b(self.bdat[len(t_hdr): len(t_hdr) + bl])
+                t_bmp = self.b_parse_rgb32b(self.bdat[len(t_hdr) : len(t_hdr) + bl])
             elif self.btype == self.BMC_CONTAINER:
                 t_bmp = ""
                 t_len, t_params = unpack("<LL", t_hdr[-0x8:])
@@ -1132,7 +1132,7 @@ class BMCContainer(Generic[AnyStr]):
                             for b in [1, 2, 4]:
                                 if len(self.bdat) < len(t_hdr) + 64 * 64 * b + 8:
                                     break
-                                if unpack("<H", self.bdat[len(t_hdr) + 64 * 64 * b + 8:][:2])[0] == 64:
+                                if unpack("<H", self.bdat[len(t_hdr) + 64 * 64 * b + 8 :][:2])[0] == 64:
                                     bl = 64 * 64 * b
                                     break
                             if bl == 0:
@@ -1141,7 +1141,7 @@ class BMCContainer(Generic[AnyStr]):
                                 )
                                 return False
                     o_bmp = b""
-                    t_bmp = self.b_uncompress(self.bdat[len(t_hdr): len(t_hdr) + t_len], bl // (64 * 64))
+                    t_bmp = self.b_uncompress(self.bdat[len(t_hdr) : len(t_hdr) + t_len], bl // (64 * 64))
                     if len(t_bmp) > 0:
                         if len(t_bmp) != t_width * t_height * bl // (64 * 64):
                             self.b_log(
@@ -1164,13 +1164,13 @@ class BMCContainer(Generic[AnyStr]):
                         "2": self.b_parse_rgb565,
                     }
                     try:
-                        t_bmp = funcdict[str(cf)](self.bdat[len(t_hdr): len(t_hdr) + cf * t_width * t_height])
+                        t_bmp = funcdict[str(cf)](self.bdat[len(t_hdr) : len(t_hdr) + cf * t_width * t_height])
                         if t_height != 64:
-                            o_bmp = self.PALETTE + self.bdat[len(t_hdr) + cf * t_width * t_height: len(t_hdr) + cf * 64 * 64]
+                            o_bmp = self.PALETTE + self.bdat[len(t_hdr) + cf * t_width * t_height : len(t_hdr) + cf * 64 * 64]
                     except KeyError:
                         if cf == 1:
                             self.pal = True
-                            t_bmp = self.PALETTE + self.bdat[len(t_hdr): len(t_hdr) + cf * t_width * t_height]
+                            t_bmp = self.PALETTE + self.bdat[len(t_hdr) : len(t_hdr) + cf * t_width * t_height]
                         else:
                             self.b_log("error", False, f"Unexpected bpp {8*cf} found during processing; aborting.")
                     bl = cf * 64 * 64
@@ -1180,7 +1180,7 @@ class BMCContainer(Generic[AnyStr]):
                     self.o_bmps.append(o_bmp)
                 if len(self.bmps) % 100 == 0:
                     self.b_log("debug", True, f"{len(self.bmps)} tiles successfully extracted so far.")
-            self.bdat = self.bdat[len(t_hdr) + bl:]
+            self.bdat = self.bdat[len(t_hdr) + bl :]
             if self.cnt != 0 and len(self.bmps) == self.cnt:
                 break
         self.b_log("debug", False, f"{len(self.bmps)} tiles successfully extracted in the end.")
@@ -1289,12 +1289,12 @@ class BMCContainer(Generic[AnyStr]):
                     d_out += (self.COLOR_BLACK * bbp) * rl
                 else:
                     if bro > 0:
-                        c = d_out[-64 * bbp:][:bbp]
+                        c = d_out[-64 * bbp :][:bbp]
                         for i in range(bbp):
-                            d_out += bytearray((ord(c[i: i + 1]) ^ ord(fgc[i: i + 1]),))
+                            d_out += bytearray((ord(c[i : i + 1]) ^ ord(fgc[i : i + 1]),))
                         rl -= 1
                     while rl > 0:
-                        d_out += d_out[-64 * bbp:][:bbp]
+                        d_out += d_out[-64 * bbp :][:bbp]
                         rl -= 1
                 bro = len(d_out) // (64 * bbp)
             elif cmd in [0x20, 0xC0, 0xF1, 0xF6]:
@@ -1308,16 +1308,16 @@ class BMCContainer(Generic[AnyStr]):
                     d_out += fgc * rl
                 else:
                     while rl > 0:
-                        c = d_out[-64 * bbp:][:bbp]
+                        c = d_out[-64 * bbp :][:bbp]
                         for i in range(bbp):
-                            d_out += bytearray((ord(c[i: i + 1]) ^ ord(fgc[i: i + 1]),))
+                            d_out += bytearray((ord(c[i : i + 1]) ^ ord(fgc[i : i + 1]),))
                         rl -= 1
             elif cmd in [0xE0, 0xF8]:
                 if len(data) < 2 * bbp:
                     self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[: 2 * bbp] * rl
-                data = data[2 * bbp:]
+                data = data[2 * bbp :]
             elif cmd in [0x60, 0xF3]:
                 if len(data) < bbp:
                     self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
@@ -1347,7 +1347,7 @@ class BMCContainer(Generic[AnyStr]):
                 k = 0
                 while rl > 0:
                     if (k % 8) == 0:
-                        m = ord(msk[k // 8:][:1])
+                        m = ord(msk[k // 8 :][:1])
                     else:
                         m = 0
                         demisto.debug(f"{k % 8} != 0 -> {m=}")
@@ -1358,12 +1358,12 @@ class BMCContainer(Generic[AnyStr]):
                         else:
                             d_out += fgc
                     else:
-                        c = d_out[-64 * bbp:][:bbp]
+                        c = d_out[-64 * bbp :][:bbp]
                         if b == 0:
                             d_out += c
                         else:
                             for i in range(bbp):
-                                d_out += bytearray((ord(c[i: i + 1]) ^ ord(fgc[i: i + 1]),))
+                                d_out += bytearray((ord(c[i : i + 1]) ^ ord(fgc[i : i + 1]),))
                     k += 1
                     rl -= 1
             elif cmd in [0x80, 0xF4]:
@@ -1371,7 +1371,7 @@ class BMCContainer(Generic[AnyStr]):
                     self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[: rl * bbp]
-                data = data[rl * bbp:]
+                data = data[rl * bbp :]
             elif cmd == 0xFD:
                 d_out += self.COLOR_WHITE * bbp
             elif cmd == 0xFE:
@@ -1395,7 +1395,7 @@ class BMCContainer(Generic[AnyStr]):
                 pad *= 4
             for i in range(len(self.bmps)):
                 if self.pal:
-                    self.bmps[i] = self.bmps[i][len(self.PALETTE):]
+                    self.bmps[i] = self.bmps[i][len(self.PALETTE) :]
                 while len(self.bmps[i]) != 64 * 64 * len(pad):
                     self.bmps[i] += pad * 64
             w: int = 64 * len(self.bmps)
@@ -1413,7 +1413,7 @@ class BMCContainer(Generic[AnyStr]):
                 def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
                     return b"".join(
                         [
-                            b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j: 64 * PAD * (j + 1)] for k in WIDTH])
+                            b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j : 64 * PAD * (j + 1)] for k in WIDTH])
                             for j in range(64)
                         ]
                     )
@@ -1422,7 +1422,7 @@ class BMCContainer(Generic[AnyStr]):
                 def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
                     return b"".join(
                         [
-                            b"".join([a.bmps[a.STRIPE_WIDTH * x + k][64 * PAD * j: 64 * PAD * (j + 1)] for k in WIDTH])
+                            b"".join([a.bmps[a.STRIPE_WIDTH * x + k][64 * PAD * j : 64 * PAD * (j + 1)] for k in WIDTH])
                             for j in range(64)
                         ]
                     )

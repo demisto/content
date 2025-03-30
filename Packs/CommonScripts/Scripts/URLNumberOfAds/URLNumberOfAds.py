@@ -17,7 +17,7 @@ def ads(html, termlist):
         if item.startswith("###"):
             item = item[3:]
         if item.startswith("||"):
-            item = item[2: item.find("^$")]
+            item = item[2 : item.find("^$")]
         for t in tags:
             if item in t:
                 results[item] = (results[item] + 1) if item in results else 1

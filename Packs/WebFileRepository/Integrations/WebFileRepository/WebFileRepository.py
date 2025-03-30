@@ -3530,7 +3530,7 @@ class AttrsRepository:
         ents = {}
         for path, eattrs in self.repo.items():
             if path.startswith(sub_path):
-                comps = self.__split_path_components(path[len(abs_path):])
+                comps = self.__split_path_components(path[len(abs_path) :])
                 if len(comps) >= 1 and comps[0] not in ents:
                     if recursive or len(comps) == 1:
                         attrs = json.loads(eattrs)
@@ -3793,14 +3793,14 @@ class FullRepository(AttrsRepository):
                                     for chunk in FullRepository.new_reader(data_type, data_id):
                                         tf.write(chunk)
                                     tf.flush()
-                                    z.write(tf.name, path[len(os.sep):])
+                                    z.write(tf.name, path[len(os.sep) :])
                             elif data := repo.get(data_id):
                                 # Add a file to the zip
                                 with NamedTemporaryFile() as tf:
                                     for chunk in FullRepository.new_decoder(data_type, data):
                                         tf.write(chunk)
                                     tf.flush()
-                                    z.write(tf.name, path[len(os.sep):])
+                                    z.write(tf.name, path[len(os.sep) :])
 
             ztmp.flush()
             ztmp.seek(0)

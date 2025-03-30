@@ -790,8 +790,7 @@ def prepare_hr_for_message_metadata_get(message: dict[str, Any]) -> str:
             RECEIVED_ON: None
             if not message.get("receivedOn")
             else arg_to_datetime(message.get("receivedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
-            SENT_ON: None if not message.get("sentOn")
-            else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),   # type: ignore
+            SENT_ON: None if not message.get("sentOn") else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),  # type: ignore
             "Delivered On": None
             if not message.get("deliveredOn")
             else arg_to_datetime(message.get("deliveredOn")).strftime(HR_DATE_FORMAT),  # type: ignore
@@ -1305,7 +1304,7 @@ def prepare_hr_for_quarantine_job_get(response: dict[str, Any]) -> str:
             "Status": response.get("quarantineJobRuns", [])[-1].get("status"),
             COMPLETED_DATE: None
             if not response.get("quarantineJobRuns", [])[-1].get("completedDate")
-            else arg_to_datetime(   # type: ignore
+            else arg_to_datetime(  # type: ignore
                 response.get("quarantineJobRuns", [])[-1].get("completedDate")  # type: ignore
             ).strftime(HR_DATE_FORMAT),  # type: ignore
             "Messages": response.get("emailCount"),
@@ -1380,8 +1379,7 @@ def prepare_hr_for_message_search_results_get_command(response: dict[str, Any]) 
                 "Database ID": message.get("id"),
                 INTERNET_MESSAGE_ID: message.get("internetMessageId"),
                 "Subject": message.get("subject"),
-                SENT_ON: None if not message.get("sentOn")
-                else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),   # type: ignore
+                SENT_ON: None if not message.get("sentOn") else arg_to_datetime(message.get("sentOn")).strftime(HR_DATE_FORMAT),  # type: ignore
                 RECEIVED_ON: None
                 if not message.get("receivedOn")
                 else arg_to_datetime(message.get("receivedOn")).strftime(HR_DATE_FORMAT),  # type: ignore
@@ -1818,8 +1816,8 @@ def prepare_hr_for_update_iocs(response: dict) -> str:
             THREAT_LEVEL: threat_level,
             CREATED_AT: None
             if not response.get("metadata", {}).get("source", {}).get("created_at")
-            else arg_to_datetime(   # type: ignore
-                response.get("metadata", {}).get("source", {}).get("created_at")    # type: ignore
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("source", {}).get("created_at")  # type: ignore
             ).strftime(HR_DATE_FORMAT),  # type: ignore
             UPDATED_AT: None
             if not response.get("metadata", {}).get("source", {}).get("updated_at")
@@ -1870,8 +1868,8 @@ def prepare_hr_for_update_ioc(response: dict[str, Any]) -> str:
             ).strftime(HR_DATE_FORMAT),  # type: ignore
             EXPIRES_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("expires_at")
-            else arg_to_datetime(   # type: ignore
-                response.get("metadata", {}).get("quarantine", {}).get("expires_at")    # type: ignore
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("quarantine", {}).get("expires_at")  # type: ignore
             ).strftime(HR_DATE_FORMAT),  # type: ignore
         }
     )
@@ -1898,13 +1896,13 @@ def prepare_hr_for_get_ioc(response: dict[str, Any]) -> str:
             THREAT_VALUE: threat_value,
             CREATED_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("created_at")
-            else arg_to_datetime(   # type: ignore
-                response.get("metadata", {}).get("quarantine", {}).get("created_at")    # type: ignore
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("quarantine", {}).get("created_at")  # type: ignore
             ).strftime(HR_DATE_FORMAT),  # type: ignore
             EXPIRES_AT: None
             if not response.get("metadata", {}).get("quarantine", {}).get("expires_at")
-            else arg_to_datetime(   # type: ignore
-                response.get("metadata", {}).get("quarantine", {}).get("expires_at")    # type: ignore
+            else arg_to_datetime(  # type: ignore
+                response.get("metadata", {}).get("quarantine", {}).get("expires_at")  # type: ignore
             ).strftime(HR_DATE_FORMAT),  # type: ignore
         }
     )
