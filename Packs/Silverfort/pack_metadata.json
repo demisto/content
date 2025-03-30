@@ -5,7 +5,7 @@
     "currentVersion": "2.0.30",
     "author": "Silverfort",
     "url": "https://support.silverfort.com/",
-    "email": "support@silverfort.com",
+    "email": "ecosystem@silverfort.com",
     "created": "2020-03-17T16:09:03Z",
     "categories": [
         "Identity and Access Management"
@@ -21,6 +21,13 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
