@@ -942,7 +942,7 @@ def stream_detection_alerts(
                         else (length_of_incidents - total_ingested_incidents)
                     )
                     demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections being ingested: {current_batch}.")
-                    demisto.createIncidents(incidents[total_ingested_incidents: total_ingested_incidents + current_batch])
+                    demisto.createIncidents(incidents[total_ingested_incidents : total_ingested_incidents + current_batch])
                     total_ingested_incidents = total_ingested_incidents + current_batch
                     if current_batch == IDEAL_BATCH_SIZE:
                         generic_sleep_function(IDEAL_SLEEP_TIME_BETWEEN_BATCHES, ingestion=True)

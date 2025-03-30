@@ -10213,7 +10213,7 @@ def paginate_results(version: str, response: Union[List, dict[str, Any]], args: 
     if page and page_size:
         if page_size < len(output):
             first_item = page_size * (page - 1)
-            return output[first_item: (first_item + page_size)], pagination_message
+            return output[first_item : (first_item + page_size)], pagination_message
 
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
         return output, pagination_message

@@ -215,11 +215,11 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     if "filename|" in raw_type:
         pipe_index = hash_value.index("|")
         filename = hash_value[0:pipe_index]
-        hash_value = hash_value[pipe_index + 1:]
+        hash_value = hash_value[pipe_index + 1 :]
 
         indicator_obj["fields"]["Associated File Names"] = filename
         indicator_obj["value"] = hash_value
-        raw_type = raw_type[raw_type.index("|") + 1:]
+        raw_type = raw_type[raw_type.index("|") + 1 :]
 
     indicator_obj["fields"][raw_type.upper()] = hash_value
 
@@ -307,7 +307,7 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
     Returns: type of the indicator if there's one matching to the provided galaxy or None
     """
     if "galaxy" in galaxy_tag_name:
-        galaxy_name = galaxy_tag_name[0: galaxy_tag_name.index("=")]
+        galaxy_name = galaxy_tag_name[0 : galaxy_tag_name.index("=")]
         return GALAXY_MAP.get(galaxy_name, None)
     return None
 
@@ -375,10 +375,10 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
         type_ = get_galaxy_indicator_type(tag_name)
         if tag_name and type_:
             try:
-                value_ = tag_name[tag_name.index("=") + 2: tag_name.index(" -")]
+                value_ = tag_name[tag_name.index("=") + 2 : tag_name.index(" -")]
             except ValueError:
                 demisto.debug(f"A ValueError was raised on {tag_name=}, of type {type_}, trying to parse with no -")
-                value_ = tag_name[tag_name.index("=") + 2: tag_name.rindex('"')]
+                value_ = tag_name[tag_name.index("=") + 2 : tag_name.rindex('"')]
                 galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
                 continue
             galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))

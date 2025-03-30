@@ -717,7 +717,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> List:
 
     # remove excess results
     if len(alerts) > max_records:
-        alerts[int(max_records) - 1: -1] = []
+        alerts[int(max_records) - 1 : -1] = []
 
     return alerts
 
@@ -960,7 +960,7 @@ def get_all_indicators(
 
     # remove access results
     if len(indicators) > max_records:
-        indicators[int(max_records) - 1: -1] = []
+        indicators[int(max_records) - 1 : -1] = []
 
     return indicators
 
@@ -1213,7 +1213,7 @@ def get_all_hosts_information_command(client: Client, args: Dict[str, Any]) -> C
         offset = len(hosts)
 
     if len(hosts) > limit:
-        hosts[int(limit) - 1: -1] = []
+        hosts[int(limit) - 1 : -1] = []
 
     outputs = []
     for host in hosts:

@@ -10,10 +10,8 @@ import urllib.parse
 from datetime import datetime
 from typing import Any
 from collections.abc import Callable
-from domaintools import API
-from domaintools import utils
-import urllib.parse
-import copy
+import urllib3
+from domaintools import API, utils
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -90,12 +88,12 @@ def get_client(proxy_url: Optional[str] = None):
     return API(
         USERNAME,
         API_KEY,
-        app_partner='cortex_xsoar',
-        app_name='iris-plugin',
-        app_version='2.1',
+        app_partner="cortex_xsoar",
+        app_name="iris-plugin",
+        app_version="2.1",
         proxy_url=proxy_url,
         verify_ssl=VERIFY_CERT,
-        always_sign_api_key=True
+        always_sign_api_key=True,
     )
 
 
@@ -126,8 +124,8 @@ def http_request(method: str, params: dict = {}):
             response = api.hosting_history(params.get("domain")).response()
         elif method == "reverse-whois":
             response = api.reverse_whois(**params).response()
-        elif method == 'parsed-whois':
-            response = api.parsed_whois(params.get('domain')).response()
+        elif method == "parsed-whois":
+            response = api.parsed_whois(params.get("domain")).response()
         elif method == "parsed-domain-rdap":
             response = api.parsed_domain_rdap(query=params.get("domain"))
         elif method == "reverse-nameserver":
@@ -514,7 +512,7 @@ def parsed_whois(domain):
 
 
 def parsed_domain_rdap(domain: str) -> dict[str, Any]:
-    """ Returns the parsed domain rdap by a given domain.
+    """Returns the parsed domain rdap by a given domain.
 
     Args:
         domain (str): The domain to lookup.
@@ -525,10 +523,7 @@ def parsed_domain_rdap(domain: str) -> dict[str, Any]:
     """
     resp = http_request("parsed-domain-rdap", params={"domain": domain})
 
-    return {
-        "_raw": resp.response(),
-        "flat": resp.flattened()
-    }
+    return {"_raw": resp.response(), "flat": resp.flattened()}
 
 
 def reverse_nameserver(nameserver: str, limit: int | None = None) -> dict:
@@ -555,7 +550,7 @@ def add_key_to_json(cur, to_add):
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
-        yield lst[i: i + n]
+        yield lst[i : i + n]
 
 
 def format_enrich_output(result):
@@ -608,11 +603,9 @@ def format_enrich_output(result):
         "Popularity": indicators.get("domain", {}).rank,
     }
 
-    demisto_title = f'DomainTools Iris Enrich for {domain}.'
-    iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
-    human_readable = tableToMarkdown(
-        f'{demisto_title} {iris_title}', human_readable_data, headers=PROFILE_HEADERS
-    )
+    demisto_title = f"DomainTools Iris Enrich for {domain}."
+    iris_title = f"Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris."
+    human_readable = tableToMarkdown(f"{demisto_title} {iris_title}", human_readable_data, headers=PROFILE_HEADERS)
 
     return (human_readable, indicators)
 
@@ -1057,8 +1050,8 @@ def fetch_and_process_domains(iris_search_hash: dict[str, Any], iris_tags: dict[
 
 
 def to_camel_case(value):
-    result = f' {value.strip()}'
-    result = re.sub(r' ([a-z,A-Z])', lambda g: g.group(1).upper(), result)
+    result = f" {value.strip()}"
+    result = re.sub(r" ([a-z,A-Z])", lambda g: g.group(1).upper(), result)
     return result
 
 
@@ -1071,7 +1064,7 @@ def create_history_table(data, headers):
     return table
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 def domain_command():
@@ -1206,8 +1199,8 @@ def domain_analytics_command():
     )
 
     return CommandResults(
-        outputs_prefix='DomainTools',
-        outputs_key_field='Name',
+        outputs_prefix="DomainTools",
+        outputs_key_field="Name",
         outputs=domaintools_context,
         indicator=domain_indicator,
         readable_output=human_readable,
@@ -1290,8 +1283,8 @@ def threat_profile_command():
     human_readable = tableToMarkdown(f"{demisto_title} {iris_title}", human_readable_data, headers=headers)
 
     return CommandResults(
-        outputs_prefix='DomainTools',
-        outputs_key_field='Name',
+        outputs_prefix="DomainTools",
+        outputs_key_field="Name",
         outputs=domaintools_context,
         indicator=domain_indicator,
         readable_output=human_readable,
@@ -1397,8 +1390,8 @@ def domain_pivot_command():
     )
 
     return CommandResults(
-        outputs_prefix='DomainTools.Pivots',
-        outputs_key_field='Value',
+        outputs_prefix="DomainTools.Pivots",
+        outputs_key_field="Value",
         outputs=pivot_result,
         readable_output=human_readable,
         ignore_auto_extract=True,
@@ -1449,8 +1442,8 @@ def whois_history_command():
         human_readable = f'has history entries: {response.get("has_history_entries")}'
 
     return CommandResults(
-        outputs_prefix='DomainTools.History',
-        outputs_key_field='Value',
+        outputs_prefix="DomainTools.History",
+        outputs_key_field="Value",
         outputs=history_result,
         readable_output=human_readable,
         ignore_auto_extract=True,
@@ -1492,8 +1485,8 @@ def hosting_history_command():
     history_result = {"Value": domain, "IPHistory": ip_table, "NameserverHistory": ns_table, "RegistrarHistory": registrar_table}
 
     return CommandResults(
-        outputs_prefix='DomainTools.History',
-        outputs_key_field='Value',
+        outputs_prefix="DomainTools.History",
+        outputs_key_field="Value",
         outputs=history_result,
         readable_output=human_readable_all,
         ignore_auto_extract=True,
@@ -1518,11 +1511,11 @@ def reverse_whois_command():
         human_readable += f"* {domain}\n"
         context.append({"Name": domain})
 
-    all_context = {'Value': terms, 'Results': context}
+    all_context = {"Value": terms, "Results": context}
 
     return CommandResults(
-        outputs_prefix='DomainTools.ReverseWhois',
-        outputs_key_field='Value',
+        outputs_prefix="DomainTools.ReverseWhois",
+        outputs_key_field="Value",
         outputs=all_context,
         readable_output=human_readable,
         ignore_auto_extract=True,
@@ -1549,12 +1542,7 @@ def reverse_nameserver_command():
         context["Domain"].append({"Name": domain})
         human_readable += f"* {domain} \n"
 
-    return CommandResults(
-        readable_output=human_readable,
-        outputs=context,
-        raw_response=results,
-        ignore_auto_extract=True
-    )
+    return CommandResults(readable_output=human_readable, outputs=context, raw_response=results, ignore_auto_extract=True)
 
 
 def reverse_ip_command():
@@ -1584,12 +1572,7 @@ def reverse_ip_command():
             context["Domain"].append({"Name": domain})
             human_readable += f"* {domain} \n"
 
-    return CommandResults(
-        readable_output=human_readable,
-        outputs=context,
-        raw_response=results,
-        ignore_auto_extract=True
-    )
+    return CommandResults(readable_output=human_readable, outputs=context, raw_response=results, ignore_auto_extract=True)
 
 
 def parsed_whois_command():
@@ -1633,10 +1616,7 @@ def parsed_whois_command():
     )
 
     return CommandResults(
-        indicator=domain_indicator,
-        readable_output=human_readable,
-        raw_response=parsed,
-        ignore_auto_extract=True
+        indicator=domain_indicator, readable_output=human_readable, raw_response=parsed, ignore_auto_extract=True
     )
 
 
@@ -1644,7 +1624,7 @@ def parsed_domain_rdap_command():
     """
     Returns parsed domain rdap data in a given domain
     """
-    domain = demisto.args().get('domain')
+    domain = demisto.args().get("domain")
     results = parsed_domain_rdap(domain=domain)
 
     _raw_response = results.get("_raw") or {}
@@ -1656,13 +1636,9 @@ def parsed_domain_rdap_command():
 
     headers = list(flat_response.keys())
 
-    human_readable = tableToMarkdown(f'DomainTools parsed domain rdap result for {domain}', flat_response, headers=headers)
+    human_readable = tableToMarkdown(f"DomainTools parsed domain rdap result for {domain}", flat_response, headers=headers)
 
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=_raw_response,
-        ignore_auto_extract=True
-    )
+    return CommandResults(readable_output=human_readable, raw_response=_raw_response, ignore_auto_extract=True)
 
 
 def test_module():
@@ -1670,7 +1646,7 @@ def test_module():
     Tests the API key for a user.
     """
 
-    http_request('iris-investigate', {'domains': 'demisto.com'})
+    http_request("iris-investigate", {"domains": "demisto.com"})
 
     return "ok"
 
@@ -1710,7 +1686,7 @@ def main():
         "domaintools-hosting-history": hosting_history_command,
         "domaintools-reverse-whois": reverse_whois_command,
         "reverseNameServer": reverse_nameserver_command,
-        "reverseIP": reverse_ip_command
+        "reverseIP": reverse_ip_command,
     }
 
     try:
@@ -1718,14 +1694,12 @@ def main():
         demisto.debug(f"Command being called is {command}")
         if command in command_mapping:
             return_results(command_mapping[command]())
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             fetch_domains()
         else:
             raise NotImplementedError(f"Command {command} is not supported.")
     except Exception as e:
-        return_error(
-            f'Unable to perform command : {command}, Reason: {str(e)}'
-        )
+        return_error(f"Unable to perform command : {command}, Reason: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

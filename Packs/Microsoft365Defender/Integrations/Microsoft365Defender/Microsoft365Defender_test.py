@@ -258,7 +258,7 @@ class MockMicrosoft365DefenderClient(Client):
             - This method is useful for unit testing functions that rely on the `incidents_list` API call.
         """
         skip = kwargs.get("skip", 0)
-        batch = self.response_data["value"][skip: skip + MOCK_MAX_ENTRIES]
+        batch = self.response_data["value"][skip : skip + MOCK_MAX_ENTRIES]
         return {"@odata.context": self.response_data["@odata.context"], "value": batch}
 
 

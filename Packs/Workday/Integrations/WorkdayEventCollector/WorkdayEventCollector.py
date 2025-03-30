@@ -155,7 +155,7 @@ def remove_duplications(activity_loggings: list, last_run: dict):
                 break
         if log_found:
             demisto.debug(f"Found duplicated with {last_log_stored}, returning from {final_count}")
-            return activity_loggings[final_count + 1:]
+            return activity_loggings[final_count + 1 :]
     demisto.debug("Didn't find duplications, returning everything")
     return activity_loggings
 
