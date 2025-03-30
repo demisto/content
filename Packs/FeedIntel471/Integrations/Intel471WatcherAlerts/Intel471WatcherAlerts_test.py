@@ -88,6 +88,6 @@ def test_fetch_incidents(requests_mock):
                 "titanwatcher": 'Watcher on "sell"',
             },
             "details": "Source Object: INSTANT MESSAGE\nService: TestService\nChannel:"
-                       " TEST CHANNEL\nActor: \n\nPart 1 sell part2",
+            " TEST CHANNEL\nActor: \n\nPart 1 sell part2",
         }
     ]

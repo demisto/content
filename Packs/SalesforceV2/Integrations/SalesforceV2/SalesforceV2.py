@@ -729,9 +729,7 @@ def describe_sobject_field_command(client: Client, args: dict[str, Any]):
             if field.get("name") == field_to_search:
                 return field
 
-        raise Exception(
-            f"The field: {field_to_search} cannot be found in the sobject. Perhaps wrong field name or object name."
-        )
+        raise Exception(f"The field: {field_to_search} cannot be found in the sobject. Perhaps wrong field name or object name.")
     return None
 
 

@@ -4478,7 +4478,7 @@ def lateral_movement_evidence_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown(f"Lateral Movement Evidence Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4564,7 +4564,7 @@ def file_origin_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown("File Origin Hunt Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4608,7 +4608,7 @@ def process_details_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown(f"Process Details Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4651,7 +4651,7 @@ def network_connections_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown(f"Network Connections Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4683,7 +4683,7 @@ def privilege_escalation_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown("Privilege Escalation Hunt Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4713,7 +4713,7 @@ def tampering_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown("Tampering Hunt Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4758,7 +4758,7 @@ def cover_up_command(client, args):  # pragma: no cover
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get("Results")
     if isinstance(results, list) and page > 1:
-        results = results[(page - 1) * limit: limit * page]
+        results = results[(page - 1) * limit : limit * page]
     readable_output = tableToMarkdown(f"Cover Up Hunt ({query_purpose}) Results", results, removeNull=True)
     if show_query:
         readable_output = f"### The Query:\n{query}\n{readable_output}"
@@ -4793,8 +4793,7 @@ def get_indicator_dbot_object(indicator):
     indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE.get(indicator.get("indicatorType"))
     if indicator_type:
         indicator_value = indicator.get("indicatorValue")
-        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
-                                score=Common.DBotScore.NONE)  # type:ignore
+        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type, score=Common.DBotScore.NONE)  # type:ignore
         return get_dbot_indicator(indicator_type, dbot, indicator_value)
     else:
         return None

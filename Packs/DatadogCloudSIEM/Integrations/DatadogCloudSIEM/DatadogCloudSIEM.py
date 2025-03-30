@@ -90,7 +90,7 @@ def get_paginated_results(results: list, offset: int, limit: int) -> list:
     Returns:
         Paginated results list.
     """
-    return results[offset: offset + limit]
+    return results[offset : offset + limit]
 
 
 def table_header(sub_context: str, page: int | None, page_size: int | None) -> str:

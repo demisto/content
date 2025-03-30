@@ -421,8 +421,7 @@ def get_first_fetch_time(params: dict) -> tuple[str, str]:
     """
     # How much time before the first fetch to retrieve events
     first_fetch = params.get("first_fetch", "3 days")
-    first_fetch_time: datetime = arg_to_datetime(
-        arg=first_fetch, arg_name="First fetch time", required=True)  # type: ignore[assignment]
+    first_fetch_time: datetime = arg_to_datetime(arg=first_fetch, arg_name="First fetch time", required=True)  # type: ignore[assignment]
     first_fetch_str = first_fetch_time.strftime(DATE_FORMAT_SYMANTEC)
     # API limitation for created_timestamp is 6 months.
     days_ago_limitation: datetime = dateparser.parse("180 days", settings={"TIMEZONE": "UTC"})  # type: ignore[assignment]

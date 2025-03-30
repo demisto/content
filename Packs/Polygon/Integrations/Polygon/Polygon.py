@@ -101,11 +101,13 @@ class Client(BaseClient):
 
     def _check_report_available(self, file_info):
         report = False
-        if ("analgin_result" in file_info
+        if (
+            "analgin_result" in file_info
             and "commit" in file_info.get("analgin_result", {})
             and "reports" in file_info.get("analgin_result", {})
             and len(file_info["analgin_result"].get("reports", []))
-                and "id" in file_info["analgin_result"]["reports"][0]):
+            and "id" in file_info["analgin_result"]["reports"][0]
+        ):
             report = True
         return report
 

@@ -1,6 +1,6 @@
 import pytest
 from CommonServerPython import CommandResults, DemistoException
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 from SingleConnect import (
     Client,
     get_sapm_user_info_command,
