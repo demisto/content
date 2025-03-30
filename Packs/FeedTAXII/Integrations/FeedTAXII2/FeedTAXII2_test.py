@@ -3,11 +3,11 @@ import json
 import pytest
 from FeedTAXII2 import *
 
-with open('test_data/results.json') as f:
+with open("test_data/results.json") as f:
     RESULTS_JSON = json.load(f)
-with open('test_data/cortex_indicators_1.json') as f:
+with open("test_data/cortex_indicators_1.json") as f:
     CORTEX_IOCS_1 = json.load(f)
-with open('test_data/cortex_indicators_1.json') as f:
+with open("test_data/cortex_indicators_1.json") as f:
     CORTEX_IOCS_2 = json.load(f)
 
 
@@ -38,15 +38,15 @@ class TestFetchIndicators:
         Then:
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url="", collection_to_fetch="default", proxies=[], verify=False, objects_to_fetch=[])
         default_id = 1
         nondefault_id = 2
-        mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+        mock_client.collections = [MockCollection(default_id, "default"), MockCollection(nondefault_id, "not_default")]
 
         mock_client.collection_to_fetch = mock_client.collections[0]
         result = RESULTS_JSON.get("Contents")
-        mocker.patch.object(mock_client, 'build_iterator', return_value=result)
-        indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, {})
+        mocker.patch.object(mock_client, "build_iterator", return_value=result)
+        indicators, last_run = fetch_indicators_command(mock_client, "1 day", -1, {})
         assert indicators == result
         assert mock_client.collection_to_fetch.id in last_run
 
@@ -67,19 +67,19 @@ class TestFetchIndicators:
         - update last run with latest collection fetch time
         - don't update collection that wasn't fetched from
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url="", collection_to_fetch="default", proxies=[], verify=False, objects_to_fetch=[])
         default_id = 1
         nondefault_id = 2
-        mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+        mock_client.collections = [MockCollection(default_id, "default"), MockCollection(nondefault_id, "not_default")]
 
         mock_client.collection_to_fetch = mock_client.collections[0]
-        last_run = {mock_client.collections[1]: 'test'}
+        last_run = {mock_client.collections[1]: "test"}
         result = RESULTS_JSON.get("Contents")
-        mocker.patch.object(mock_client, 'build_iterator', return_value=result)
-        indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, last_run)
+        mocker.patch.object(mock_client, "build_iterator", return_value=result)
+        indicators, last_run = fetch_indicators_command(mock_client, "1 day", -1, last_run)
         assert indicators == result
         assert mock_client.collection_to_fetch.id in last_run
-        assert last_run.get(mock_client.collections[1]) == 'test'
+        assert last_run.get(mock_client.collections[1]) == "test"
 
     def test_multi_no_context(self, mocker):
         """
@@ -98,17 +98,17 @@ class TestFetchIndicators:
         - fetch 14 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url="", collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
         default_id = 1
         nondefault_id = 2
-        mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+        mock_client.collections = [MockCollection(default_id, "default"), MockCollection(nondefault_id, "not_default")]
 
-        mocker.patch.object(mock_client, 'build_iterator', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
-        indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, {})
+        mocker.patch.object(mock_client, "build_iterator", side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
+        indicators, last_run = fetch_indicators_command(mock_client, "1 day", -1, {})
         assert len(indicators) == 14
         assert mock_client.collection_to_fetch.id in last_run
 
-    @pytest.mark.parametrize('empty_collection_type', [None, ""])
+    @pytest.mark.parametrize("empty_collection_type", [None, ""])
     def test_multi_with_context(self, mocker, empty_collection_type):
         """
         Scenario: Test multi collection fetch with no last run, testing both types of empty collection
@@ -126,22 +126,23 @@ class TestFetchIndicators:
         - fetch 7 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=empty_collection_type, proxies=[],
-                                       verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(
+            url="", collection_to_fetch=empty_collection_type, proxies=[], verify=False, objects_to_fetch=[]
+        )
         id_1 = 1
         id_2 = 2
-        mock_client.collections = [MockCollection(id_1, 'a'), MockCollection(id_2, 'b')]
+        mock_client.collections = [MockCollection(id_1, "a"), MockCollection(id_2, "b")]
 
-        last_run = {mock_client.collections[1]: 'test'}
-        mocker.patch.object(mock_client, 'build_iterator', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
-        indicators, last_run = fetch_indicators_command(mock_client, '1 day', len(CORTEX_IOCS_1), last_run)
+        last_run = {mock_client.collections[1]: "test"}
+        mocker.patch.object(mock_client, "build_iterator", side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
+        indicators, last_run = fetch_indicators_command(mock_client, "1 day", len(CORTEX_IOCS_1), last_run)
         assert len(indicators) == len(CORTEX_IOCS_1)
-        assert last_run.get(mock_client.collections[1]) == 'test'
+        assert last_run.get(mock_client.collections[1]) == "test"
 
 
 def test_get_collections_function():
-    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
-    mock_client.collections = [MockCollection("first id", 'first name'), MockCollection("second id", 'second name')]
+    mock_client = Taxii2FeedClient(url="", collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+    mock_client.collections = [MockCollection("first id", "first name"), MockCollection("second id", "second name")]
 
     result = get_collections_command(mock_client)
 
@@ -150,23 +151,46 @@ def test_get_collections_function():
     assert result.outputs[1] == {"Name": "second name", "ID": "second id"}
 
 
-@pytest.mark.parametrize('response, expected_md_results',
-                         [([{'value': '1.1.1.1', 'type': 'IP'}, {'value': 'google.com', 'type': 'Domain'}],
-                          'Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n'),
-                          ([{'value': '1.1.1.1', 'type': 'IP'}, {'value': 'google.com', 'type': 'Domain'},
-                            {'value': '$$DummyIndicator$$',
-                             'relationships': [{'name': 'related-to', 'reverseName': 'related-to',
-                                                'type': 'IndicatorToIndicator', 'entityA': '1.1.1.1',
-                                                'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'google.com',
-                                                'entityBFamily': 'Indicator', 'entityBType': 'Domain',
-                                                'fields': {'lastseenbysource': '2023-03-26T12:45:55.068670Z',
-                                                           'firstseenbysource': '2023-03-26T12:45:55.068662Z'}}]}],
-                          'Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n\n\n\nRelations'
-                           ' ships:\n|entityA|entityAFamily|entityAType|entityB|entityBFamily|entityBType|fields|name|'
-                           'reverseName|type|\n|---|---|---|---|---|---|---|---|---|---|\n| 1.1.1.1 | Indicator | IP | '
-                           'google.com | Indicator | Domain | lastseenbysource: 2023-03-26T12:45:55.068670Z<br>'
-                           'firstseenbysource: 2023-03-26T12:45:55.068662Z | related-to | related-to | IndicatorToIndicator |\n')]
-                         )
+@pytest.mark.parametrize(
+    "response, expected_md_results",
+    [
+        (
+            [{"value": "1.1.1.1", "type": "IP"}, {"value": "google.com", "type": "Domain"}],
+            "Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n",
+        ),
+        (
+            [
+                {"value": "1.1.1.1", "type": "IP"},
+                {"value": "google.com", "type": "Domain"},
+                {
+                    "value": "$$DummyIndicator$$",
+                    "relationships": [
+                        {
+                            "name": "related-to",
+                            "reverseName": "related-to",
+                            "type": "IndicatorToIndicator",
+                            "entityA": "1.1.1.1",
+                            "entityAFamily": "Indicator",
+                            "entityAType": "IP",
+                            "entityB": "google.com",
+                            "entityBFamily": "Indicator",
+                            "entityBType": "Domain",
+                            "fields": {
+                                "lastseenbysource": "2023-03-26T12:45:55.068670Z",
+                                "firstseenbysource": "2023-03-26T12:45:55.068662Z",
+                            },
+                        }
+                    ],
+                },
+            ],
+            "Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n\n\n\nRelations"
+            " ships:\n|entityA|entityAFamily|entityAType|entityB|entityBFamily|entityBType|fields|name|"
+            "reverseName|type|\n|---|---|---|---|---|---|---|---|---|---|\n| 1.1.1.1 | Indicator | IP | "
+            "google.com | Indicator | Domain | lastseenbysource: 2023-03-26T12:45:55.068670Z<br>"
+            "firstseenbysource: 2023-03-26T12:45:55.068662Z | related-to | related-to | IndicatorToIndicator |\n",
+        ),
+    ],
+)
 def test_get_indicators_command(mocker, response, expected_md_results):
     """
     Given:
@@ -183,7 +207,7 @@ def test_get_indicators_command(mocker, response, expected_md_results):
     - Case 2: Relationships section is mentioned in the readable output,
     and both the indicators and the relationship are in the outputs section.
     """
-    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+    mock_client = Taxii2FeedClient(url="", collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
     mock_client.collection_to_fetch = [1]
     mocker.patch.object(Taxii2FeedClient, "build_iterator", return_value=response)
     results = get_indicators_command(mock_client)
@@ -195,11 +219,11 @@ def test_get_indicators_command(mocker, response, expected_md_results):
 
 class TestHelperFunctions:
     def test_try_parse_integer(self):
-        assert try_parse_integer(None, '') is None
-        assert try_parse_integer('8', '') == 8
-        assert try_parse_integer(8, '') == 8
-        with pytest.raises(DemistoException, match='parse failure'):
-            try_parse_integer('a', 'parse failure')
+        assert try_parse_integer(None, "") is None
+        assert try_parse_integer("8", "") == 8
+        assert try_parse_integer(8, "") == 8
+        with pytest.raises(DemistoException, match="parse failure"):
+            try_parse_integer("a", "parse failure")
 
     class TestAssertIncrementalFeedParams:
         """Scenario: Test assert_incremental_feed_params raises appropriate errors"""
@@ -282,8 +306,8 @@ class TestHelperFunctions:
             - return last fetch time
             """
             fetch_full_feed = False
-            last_fetch_time = 'last_fetch_mock'
-            initial_interval = 'initial_mock'
+            last_fetch_time = "last_fetch_mock"
+            initial_interval = "initial_mock"
 
             assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == last_fetch_time
 
@@ -303,8 +327,8 @@ class TestHelperFunctions:
             - return initial interval
             """
             fetch_full_feed = True
-            last_fetch_time = 'last_fetch_mock'
-            initial_interval = 'initial_mock'
+            last_fetch_time = "last_fetch_mock"
+            initial_interval = "initial_mock"
 
             assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval
 
@@ -325,48 +349,88 @@ class TestHelperFunctions:
             """
             fetch_full_feed = False
             last_fetch_time = None
-            initial_interval = 'initial_mock'
+            initial_interval = "initial_mock"
 
             assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval
 
-    @pytest.mark.parametrize("indicators, last_run, new_indicators", [
-        (
-            [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
-             {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}],
-            {},
-            [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
-             {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}]
-        ),
-        (
-            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}],
-            {"latest_indicators":
-             [{'test_one': '2023-06-14T13:18:21.598591Z'},
-              {'test_two': '2023-07-06T08:59:57.339606Z'},
-              {'test_three': '2023-07-06T08:59:57.339606Z'}
-              ]},
-            []
-        ),
-        (
-            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
-             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}},
-             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}],
-            {"latest_indicators":
-             [{'test_two': '2023-07-06T08:59:57.339606Z'},
-              {'test_three': '2023-07-06T08:59:57.339606Z'},
-              {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}
-              ]},
-            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
-             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}},
-             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}]
-        )
-
-    ])
+    @pytest.mark.parametrize(
+        "indicators, last_run, new_indicators",
+        [
+            (
+                [
+                    {"value": "one", "type": "IP", "rawJSON": {"id": "test_one", "modified": "2023-06-14T13:18:21.598591Z"}},
+                    {"value": "two", "type": "IP", "rawJSON": {"id": "test_two", "modified": "2023-07-06T08:59:57.339606Z"}},
+                    {
+                        "value": "three",
+                        "type": "Domain",
+                        "rawJSON": {"id": "test_three", "modified": "2023-07-06T08:59:57.339606Z"},
+                    },
+                    {"value": "$$DummyIndicator$$", "relationships": [{}, {}, {}]},
+                ],
+                {},
+                [
+                    {"value": "one", "type": "IP", "rawJSON": {"id": "test_one", "modified": "2023-06-14T13:18:21.598591Z"}},
+                    {"value": "two", "type": "IP", "rawJSON": {"id": "test_two", "modified": "2023-07-06T08:59:57.339606Z"}},
+                    {
+                        "value": "three",
+                        "type": "Domain",
+                        "rawJSON": {"id": "test_three", "modified": "2023-07-06T08:59:57.339606Z"},
+                    },
+                    {"value": "$$DummyIndicator$$", "relationships": [{}, {}, {}]},
+                ],
+            ),
+            (
+                [
+                    {"value": "two", "type": "IP", "rawJSON": {"id": "test_two", "modified": "2023-07-06T08:59:57.339606Z"}},
+                    {
+                        "value": "three",
+                        "type": "Domain",
+                        "rawJSON": {"id": "test_three", "modified": "2023-07-06T08:59:57.339606Z"},
+                    },
+                ],
+                {
+                    "latest_indicators": [
+                        {"test_one": "2023-06-14T13:18:21.598591Z"},
+                        {"test_two": "2023-07-06T08:59:57.339606Z"},
+                        {"test_three": "2023-07-06T08:59:57.339606Z"},
+                    ]
+                },
+                [],
+            ),
+            (
+                [
+                    {"value": "two", "type": "IP", "rawJSON": {"id": "test_two", "modified": "2023-10-02T05:34:45.339145Z"}},
+                    {
+                        "value": "three",
+                        "type": "Domain",
+                        "rawJSON": {"id": "test_three", "modified": "2023-07-06T08:59:57.339606Z"},
+                    },
+                    {
+                        "value": "four",
+                        "type": "Domain",
+                        "rawJSON": {"id": "test_four", "modified": "2023-10-02T05:34:28.339145Z"},
+                    },
+                    {"value": "$$DummyIndicator$$", "relationships": [{}, {}, {}]},
+                ],
+                {
+                    "latest_indicators": [
+                        {"test_two": "2023-07-06T08:59:57.339606Z"},
+                        {"test_three": "2023-07-06T08:59:57.339606Z"},
+                        {"value": "$$DummyIndicator$$", "relationships": [{}, {}, {}]},
+                    ]
+                },
+                [
+                    {"value": "two", "type": "IP", "rawJSON": {"id": "test_two", "modified": "2023-10-02T05:34:45.339145Z"}},
+                    {
+                        "value": "four",
+                        "type": "Domain",
+                        "rawJSON": {"id": "test_four", "modified": "2023-10-02T05:34:28.339145Z"},
+                    },
+                    {"value": "$$DummyIndicator$$", "relationships": [{}, {}, {}]},
+                ],
+            ),
+        ],
+    )
     def test_filter_previously_fetched_indicators(self, indicators, last_run, new_indicators):
         """
         Scenario: Test filtering indicators received from the fetch call before sending indicators to server
@@ -390,9 +454,12 @@ class TestHelperFunctions:
 
         from FeedTAXII2 import filter_previously_fetched_indicators
 
-        next_latest_indicators = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
-                                  if obj.get("value") != "$$DummyIndicator$$" else obj
-                                  for obj in indicators]
+        next_latest_indicators = [
+            {obj.get("rawJSON", {}).get("id"): obj.get("rawJSON", {}).get("modified")}
+            if obj.get("value") != "$$DummyIndicator$$"
+            else obj
+            for obj in indicators
+        ]
 
         result = filter_previously_fetched_indicators(indicators, last_run)
 
@@ -400,11 +467,15 @@ class TestHelperFunctions:
         assert last_run.get("latest_indicators") == next_latest_indicators
 
 
-@pytest.mark.parametrize("url, expected_result",
-                         [("https://test.com/taxii/", True),
-                          ("https://test.com/taxii2/", True),
-                          ("https://test.com/test/", False),
-                          ("domain.com/taxii2/bad_path/", False)])
+@pytest.mark.parametrize(
+    "url, expected_result",
+    [
+        ("https://test.com/taxii/", True),
+        ("https://test.com/taxii2/", True),
+        ("https://test.com/test/", False),
+        ("domain.com/taxii2/bad_path/", False),
+    ],
+)
 def test_is_valid_url(url, expected_result):
     """
     Scenario: Test validation of the is_valid_url method.
@@ -419,33 +490,30 @@ def test_is_valid_url(url, expected_result):
     - Ensure the function evaluates correctly the correctness of the URL.
     """
     from FeedTAXII2 import is_valid_taxii_url
+
     assert is_valid_taxii_url(url) == expected_result
 
 
 def test_feed_main_enrichment_excluded(mocker):
     """
-        Given: params with tlp_color set to RED and enrichmentExcluded set to False
-        When: Calling feed_main
-        Then: validate enrichment_excluded is set to True
+    Given: params with tlp_color set to RED and enrichmentExcluded set to False
+    When: Calling feed_main
+    Then: validate enrichment_excluded is set to True
     """
     from FeedTAXII2 import main
 
-    params = {
-        'tlp_color': 'RED',
-        'enrichmentExcluded': False,
-        'server_url': 'test.test.com'
-    }
+    params = {"tlp_color": "RED", "enrichmentExcluded": False, "server_url": "test.test.com"}
 
-    client_mocker = mocker.patch('FeedTAXII2.Taxii2FeedClient')
+    client_mocker = mocker.patch("FeedTAXII2.Taxii2FeedClient")
 
-    mocker.patch('FeedTAXII2.is_xsiam_or_xsoar_saas', return_value=True)
-    mocker.patch('FeedTAXII2.assert_incremental_feed_params')
-    mocker.patch('FeedTAXII2.fetch_indicators_command', return_value=([], []))
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch("FeedTAXII2.is_xsiam_or_xsoar_saas", return_value=True)
+    mocker.patch("FeedTAXII2.assert_incremental_feed_params")
+    mocker.patch("FeedTAXII2.fetch_indicators_command", return_value=([], []))
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="fetch-indicators")
 
     # Call the function under test
     main()
 
     # Assertion - verify that enrichment_excluded is set to True
-    assert client_mocker.call_args.kwargs.get('enrichment_excluded') is True
+    assert client_mocker.call_args.kwargs.get("enrichment_excluded") is True
