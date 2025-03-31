@@ -313,31 +313,25 @@ def test_update_content_item_gitlab(mocker):
         # Basic placeholder escaping
         ("Hello ${name}", "Hello $\\{name}"),
         ("${key.value}", "$\\{key.value}"),
-
         # Multiple placeholders
         ("${user.name} and ${user.id}", "$\\{user.name} and $\\{user.id}"),
-
         # Placeholders inside a sentence
         ("User: ${user.name}, ID: ${user.id}", "User: $\\{user.name}, ID: $\\{user.id}"),
-
         # Placeholder at the start of the string
         ("${start} of string", "$\\{start} of string"),
-
         # Placeholder at the end of the string
         ("End of string ${end}", "End of string $\\{end}"),
-
         # Placeholder with special characters inside
         ("Value: ${some.key_with-dash}", "Value: $\\{some.key_with-dash}"),
-
         # No placeholders - should remain unchanged
         ("No placeholders here", "No placeholders here"),
-
         # Empty string case
-        ("", "")
-    ]
+        ("", ""),
+    ],
 )
 def test_escape_placeholders(given, expected):
     from CommitFiles import escape_placeholders
+
     assert escape_placeholders(given) == expected
 
 
@@ -366,6 +360,7 @@ def test_commit_git_azure_devops():
 
 
 def test_commit_git_invalid_integration():
-    with pytest.raises(DemistoException,
-                       match="Unexpected git_integration=.* Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps."):
+    with pytest.raises(
+        DemistoException, match="Unexpected git_integration=.* Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps."
+    ):
         commit_git("Unknown", "main", MagicMock(), [], [], False)
