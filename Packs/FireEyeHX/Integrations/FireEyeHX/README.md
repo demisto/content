@@ -1352,9 +1352,9 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
   
 
   2. Navigate to **Settings** > **About** > **Troubleshooting** > **Server Configuration**.
- 4. click **Add Server Configuration**.
- 6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
- 8. Set the **value** field to the desired time limit for the command to run (in minutes).
+  4. click **Add Server Configuration**.
+  6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
+  8. Set the **value** field to the desired time limit for the command to run (in minutes).
   ![](../../doc_files/FireEyeHX_mceclip0.png)
 
   
