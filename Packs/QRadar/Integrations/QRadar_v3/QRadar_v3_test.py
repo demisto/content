@@ -1916,7 +1916,7 @@ def test_recovery_lastrun(mocker):
     assert context_data[LAST_FETCH_KEY] == 4
 
     # now the last run and the integration context are the same, make sure that update context is not called
-    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data")
+    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data_partial")
     set_integration_context({LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {
                             0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}})
     mocker.patch.object(QRadar_v3.demisto, "getLastRun", return_value={LAST_FETCH_KEY: 2})

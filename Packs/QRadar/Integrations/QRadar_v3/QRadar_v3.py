@@ -4050,7 +4050,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
             # delete the offense from the queue
-            delete_offense_from_context(offense_id, context_data, context_version)
+            delete_offense_from_context(offense_id)
             already_mirrored = True
         else:
             events, status = get_remote_events(client,
@@ -5145,9 +5145,8 @@ def validate_integration_context() -> None:
     elif MIRRORED_OFFENSES_FETCHED_CTX_KEY not in context_data:
         # Scenario: context is fine, but missing the 'mirrored_offenses_fetched' sub-dict.
         print_debug_msg(f"Adding {MIRRORED_OFFENSES_FETCHED_CTX_KEY} to context")
-        partial_changes = {MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
+        partial_changes: dict = {MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
         safely_update_context_data_partial(partial_changes)
-
 
 
 ''' MAIN FUNCTION '''
