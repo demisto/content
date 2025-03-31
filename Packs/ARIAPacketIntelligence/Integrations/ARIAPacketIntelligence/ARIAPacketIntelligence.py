@@ -1,15 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *
 import json
-import requests
-import time
 import re
+import time
+
+import demistomock as demisto
+import requests
 import urllib3
+from CommonServerPython import *
 
 
 class ParameterError(Exception):
-    """ Raised when the function parameters do not meet requirements """
-    pass
+    """Raised when the function parameters do not meet requirements"""
 
 
 """
@@ -86,7 +86,7 @@ class RCS:
 
         rcs = rcsp.group(2)
 
-        return RD_name, rcs, "success: {0}".format(rcsp.group(1))
+        return RD_name, rcs, f"success: {rcsp.group(1)}"
 
     """
     Parse a FQN
@@ -110,7 +110,7 @@ class RCS:
 
         rcs = rcsp.group(2)
 
-        return RD_fqn, rcs, "success: {0}".format(rcsp.group(1))
+        return RD_fqn, rcs, f"success: {rcsp.group(1)}"
 
     """
     Parse a security domain name SDN
@@ -134,7 +134,7 @@ class RCS:
 
         rcs = rcsp.group(2)
 
-        return RD_sdn, rcs, "success: {0}".format(rcsp.group(1))
+        return RD_sdn, rcs, f"success: {rcsp.group(1)}"
 
     """
     Parse an RGN label as a name
@@ -187,7 +187,7 @@ class RCS:
             elif rcsp.group(1) == "":
                 return None, None, "failed: RD rgn list rcsp.g1 name empty"
 
-            names = "{0}{1}".format(names, rcsp.group(1))
+            names = f"{names}{rcsp.group(1)}"
 
             rcs = rcsp.group(2)
             if rcs is None:
@@ -210,14 +210,14 @@ class RCS:
 
             rcs = rcsp.group(1)
 
-            names = "{},".format(names)
+            names = f"{names},"
 
         if names == "":
             return None, None, "failed: RD rgn list names empty"
 
-        names = "({})".format(names)
+        names = f"({names})"
 
-        return names, rcs, "success: {0}".format(names)
+        return names, rcs, f"success: {names}"
 
     """
     Parse an RGN label as asterik
@@ -255,37 +255,37 @@ class RCS:
                 rcs = rcsp.group(1)
                 label, rcs, msg = self._parse_RDL_RD_RGN_list(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label exclusive none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label exclusive none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label exclusive empty {0}".format(msg)
-                label = "!{0}".format(label)
+                    return None, None, f"failed: RD rgn label exclusive empty {msg}"
+                label = f"!{label}"
                 break
 
             rcsp = re.match(r"^[(].*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_list(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label inclusive none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label inclusive none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label inclusive empty {0}".format(msg)
+                    return None, None, f"failed: RD rgn label inclusive empty {msg}"
                 break
 
             rcsp = re.match(r"^\*.*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_asterik(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label asterik none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label asterik none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label asterik empty {0}".format(msg)
+                    return None, None, f"failed: RD rgn label asterik empty {msg}"
                 break
 
             rcsp = re.match(r"^[\w].*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_name(rcs)
                 if label is None:
-                    return None, None, "failed: RD rgn label name none {0}".format(msg)
+                    return None, None, f"failed: RD rgn label name none {msg}"
                 elif label == "":
-                    return None, None, "failed: RD rgn label name empty {0}".format(msg)
+                    return None, None, f"failed: RD rgn label name empty {msg}"
                 break
 
             return None, None, "failed: RD rgn label invalid"
@@ -304,13 +304,13 @@ class RCS:
 
         region, rcs, msg = self._parse_RDL_RD_RGN_label(rcs)
         if region is None:
-            return None, None, "failed: RD rgn region none {0}".format(msg)
+            return None, None, f"failed: RD rgn region none {msg}"
         elif region == "":
-            return None, None, "failed: RD rgn region empty {0}".format(msg)
+            return None, None, f"failed: RD rgn region empty {msg}"
         elif rcs is None:
-            return None, None, "failed: RD rgn region rcs none {0}".format(msg)
+            return None, None, f"failed: RD rgn region rcs none {msg}"
         elif rcs == "":
-            return None, None, "failed: RD rgn region rcs empty {0}".format(msg)
+            return None, None, f"failed: RD rgn region rcs empty {msg}"
 
         rcsp = re.match(r"^\.(.+)$", rcs)
         if rcsp is None:
@@ -323,13 +323,13 @@ class RCS:
 
         group, rcs, msg = self._parse_RDL_RD_RGN_label(rcs)
         if group is None:
-            return None, None, "failed: RD rgn group none {0}".format(msg)
+            return None, None, f"failed: RD rgn group none {msg}"
         elif group == "":
-            return None, None, "failed: RD rgn group empty {0}".format(msg)
+            return None, None, f"failed: RD rgn group empty {msg}"
         elif rcs is None:
-            return None, None, "failed: RD rgn group rcs none {0}".format(msg)
+            return None, None, f"failed: RD rgn group rcs none {msg}"
         elif rcs == "":
-            return None, None, "failed: RD rgn group rcs empty {0}".format(msg)
+            return None, None, f"failed: RD rgn group rcs empty {msg}"
 
         rcsp = re.match(r"^\.(.+)$", rcs)
         if rcsp is None:
@@ -342,11 +342,11 @@ class RCS:
 
         name, rcs, msg = self._parse_RDL_RD_RGN_label(rcs)
         if name is None:
-            return None, None, "failed: RD rgn name none {0}".format(msg)
+            return None, None, f"failed: RD rgn name none {msg}"
         elif name == "":
-            return None, None, "failed: RD rgn name empty {0}".format(msg)
+            return None, None, f"failed: RD rgn name empty {msg}"
 
-        RGN = ("RGN", "{0}.{1}.{2}".format(region, group, name))
+        RGN = ("RGN", f"{region}.{group}.{name}")
 
         return RGN, rcs, "success"
 
@@ -380,7 +380,7 @@ class RCS:
         while True:
             if rcs is None:
                 break
-            elif rcs == "":
+            if rcs == "":
                 break
 
             while True:
@@ -390,9 +390,9 @@ class RCS:
                         return None, None, "failure: RGN (all-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (all-obj) {0}".format(msg)
+                        return None, None, f"failure: RGN (all-obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (all len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (all len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -410,9 +410,9 @@ class RCS:
                         return None, None, "failure: SD (none)"
                     RD, rcs, msg = self._parse_RDL_RD_SDN(rcs)
                     if RD is None:
-                        return None, None, "failure: SD (empty) {0}".format(msg)
+                        return None, None, f"failure: SD (empty) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: SD (len != 2) {0}".format(msg)
+                        return None, None, f"failure: SD (len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -422,9 +422,9 @@ class RCS:
                         return None, None, "failure: FQN (empty)"
                     RD, rcs, msg = self._parse_RDL_RD_FQN(rcs)
                     if RD is None:
-                        return None, None, "failure: FQN (obj) {0}".format(msg)
+                        return None, None, f"failure: FQN (obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: FQN (len != 2) {0}".format(msg)
+                        return None, None, f"failure: FQN (len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -434,9 +434,9 @@ class RCS:
                         return None, None, "failure: RGN (exclusive-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (exclusive-obj) {0}".format(msg)
+                        return None, None, f"failure: RGN (exclusive-obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (exclusive len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (exclusive len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -446,9 +446,9 @@ class RCS:
                         return None, None, "failure: RGN (inclusive-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (inclusive-none) {0}".format(msg)
+                        return None, None, f"failure: RGN (inclusive-none) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (inclusive len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (inclusive len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -458,9 +458,9 @@ class RCS:
                         return None, None, "failure: RGN (asterik-none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN (asterik-none) {0}".format(msg)
+                        return None, None, f"failure: RGN (asterik-none) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN (asterik len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN (asterik len != 2) {msg}"
                     RDL.append(RD)
                     break
 
@@ -482,23 +482,23 @@ class RCS:
                         return None, None, "failure: name RGN (none)"
                     RD, rcs, msg = self._parse_RDL_RD_RGN(rcs)
                     if RD is None:
-                        return None, None, "failure: RGN name (obj) {0}".format(msg)
+                        return None, None, f"failure: RGN name (obj) {msg}"
                     elif len(RD) != 2:
-                        return None, None, "failure: RGN name (len != 2) {0}".format(msg)
+                        return None, None, f"failure: RGN name (len != 2) {msg}"
                     RDL.append(RD)
                     break
 
                 RD, rcs, msg = self._parse_RDL_RD_name(rcs)
                 if RD is None:
-                    return None, None, "failure: NAME (obj) {0}".format(msg)
+                    return None, None, f"failure: NAME (obj) {msg}"
                 elif len(RD) != 2:
-                    return None, None, "failure: NAME (len != 2) {0}".format(msg)
+                    return None, None, f"failure: NAME (len != 2) {msg}"
                 RDL.append(RD)
                 break
 
             if rcs is None:
                 break
-            elif rcs == "":
+            if rcs == "":
                 break
 
             rcsp = re.match("^,(.*)$", rcs)
@@ -510,14 +510,13 @@ class RCS:
                 return None, None, "failure: RDL , (empty)"
             rcs = rcsp.group(1)
 
-        if rcs is not None:
-            if rcs != "":
-                return None, "", "failure: RCS ended-!empty"
+        if rcs is not None and rcs != "":
+            return None, "", "failure: RCS ended-!empty"
 
         if len(RDL) <= 0:
             return None, None, "failure: RDL empty"
 
-        return RDL, None, "success: {0}".format(len(RDL))
+        return RDL, None, f"success: {len(RDL)}"
 
     """
      parse the RET component of the RCS:
@@ -534,7 +533,7 @@ class RCS:
 
         rcsp = re.match("^Remediation@(.+)$", rcs)
         if rcsp is None:
-            rcs = "Remediation@drop()${0}".format(rcs)
+            rcs = f"Remediation@drop()${rcs}"
             rcsp = re.match("^Remediation@(.+)$", rcs)
             if rcsp is None:
                 return None, rcs, "failure: RET failed insert drop()"
@@ -549,7 +548,7 @@ class RCS:
 
         rcsp = re.match(r"^\$(.+)$", rcs)
         if rcsp is not None:
-            rcs = "drop(){0}".format(rcs)
+            rcs = f"drop(){rcs}"
 
         while True:
             rcsp = re.match(r"(\w[\w]*)([(].+\$.+)$", rcs)
@@ -618,7 +617,7 @@ class RCS:
         if len(RET) <= 0:
             return None, None, "failure: RET list empty"
 
-        return RET, rcs, "success: {0}".format(len(RET))
+        return RET, rcs, f"success: {len(RET)}"
 
     """
      parse the SDL component of the RCS:
@@ -694,7 +693,7 @@ class RCS:
         if len(SDL) <= 0:
             return None, None, "failure: SDL list empty"
 
-        return SDL, rcs, "success: {0}".format(len(SDL))
+        return SDL, rcs, f"success: {len(SDL)}"
 
     """
     Parse out the components of the RCS: [SDL] | [RET] | RDL
@@ -719,32 +718,30 @@ class RCS:
             return None, None, None, None, "failed: space character found in RCS"
 
         SDL, rcs_next, msg = self._parse_SDL(rcs)
-        if SDL is not None:
-            if len(SDL) <= 0:
-                return None, None, None, None, "failed: SDL returned but is empty (msg={0})".format(msg)
+        if SDL is not None and len(SDL) <= 0:
+            return None, None, None, None, f"failed: SDL returned but is empty (msg={msg})"
         if rcs_next is None:
-            return SDL, None, None, None, "failed: RCS invalid parse after SDL (none) (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RCS invalid parse after SDL (none) (msg={msg})"
         elif rcs_next == "":
-            return SDL, None, None, None, "failed: RCS invalid parse after SDL (empty) (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RCS invalid parse after SDL (empty) (msg={msg})"
 
         RET, rcs_next, msg = self._parse_RET(rcs_next)
         if RET is None:
-            return SDL, None, None, None, "failed: RET is none (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RET is none (msg={msg})"
         elif len(RET) <= 0:
-            return SDL, None, None, None, "failed: RET is empty (msg={0})".format(msg)
+            return SDL, None, None, None, f"failed: RET is empty (msg={msg})"
         elif rcs_next is None:
-            return SDL, RET, None, None, "failed: RCS invalid parse after RET (none) (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RCS invalid parse after RET (none) (msg={msg})"
         elif rcs_next == "":
-            return SDL, RET, None, None, "failed: RCS invalid parse after RET (none) (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RCS invalid parse after RET (none) (msg={msg})"
 
         RDL, rcs_next, msg = self._parse_RDL(rcs_next)
         if RDL is None:
-            return SDL, RET, None, None, "failed: RDL is none (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RDL is none (msg={msg})"
         elif len(RDL) <= 0:
-            return SDL, RET, None, None, "failed: RDL is empty (msg={0})".format(msg)
-        elif rcs_next is not None:
-            if rcs_next != "":
-                return SDL, RET, RDL, None, "failed: RCS invalid parse after RDL (not empty) (msg={0})".format(msg)
+            return SDL, RET, None, None, f"failed: RDL is empty (msg={msg})"
+        elif rcs_next is not None and rcs_next != "":
+            return SDL, RET, RDL, None, f"failed: RCS invalid parse after RDL (not empty) (msg={msg})"
 
         return SDL, RET, RDL, rcs_next, "success"
 
@@ -760,14 +757,11 @@ class RCS:
         # rcs_save = rcs
 
         SDL, RET, RDL, rcs, rmsg = self._parse(rcs)
-        if RDL is None:
-            # print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation
-            # to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
-            return False
+        # print("ARIA: remediation configuraton string (RCS) is invalid -- this will prevent remediation
+        # to ARIA PI devices from working (rcs={0}:: rmsg={1})".format(rcs_save, rmsg))
 
         # print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
-
-        return True
+        return RDL is not None
 
     """
     Returns true if the RCS provided at object instantiation
@@ -775,10 +769,7 @@ class RCS:
     """
 
     def valid(self):
-        if not self._valid(self.rcs):
-            return False
-
-        return True
+        return self._valid(self.rcs)
 
     """
     Allows setting the RCS string to act on, this will only
@@ -860,8 +851,7 @@ class RCS:
         return RET, True
 
 
-class ARIA(object):
-
+class ARIA:
     def __init__(self, sdso_url: str, verify_cert: bool = True):
         self.sdso_url = sdso_url
         self.time_out = 20
@@ -870,9 +860,10 @@ class ARIA(object):
     """HELPER FUNCTION"""
 
     @staticmethod
-    def _build_alert_instruction(transport_type: str, tti_index: int, aio_index: int,
-                                 trigger_type: str, trigger_value: int) -> str:
-        """ Create an alert instruction
+    def _build_alert_instruction(
+        transport_type: str, tti_index: int, aio_index: int, trigger_type: str, trigger_value: int
+    ) -> str:
+        """Create an alert instruction
 
         Args:
             transport_type: The type of notification to generate.
@@ -889,39 +880,39 @@ class ARIA(object):
             ValueError: If parameters are out of range or not in the type list.
 
         """
-        transport_type_list = ['email', 'SMS', 'syslog', 'webhook']
+        transport_type_list = ["email", "SMS", "syslog", "webhook"]
 
         if transport_type not in transport_type_list:
-            raise ValueError(f'Wrong transport_type {transport_type}! Valid values are email, SMS, syslog or webhook')
+            raise ValueError(f"Wrong transport_type {transport_type}! Valid values are email, SMS, syslog or webhook")
 
         if tti_index > 7 or tti_index < 0:
             # This is an ARIA PI Reaper production requirement
-            raise ValueError('Transport type info index(tti_index) out of range! '
-                             'Valid value must be in the range [0, 7].')
+            raise ValueError("Transport type info index(tti_index) out of range! Valid value must be in the range [0, 7].")
 
         if aio_index > 15 or aio_index < 0:
             # This is an ARIA PI Reaper production requirement
-            raise ValueError('Alert info object index(aio_index) out of range! '
-                             'Valid value must be in range [0, 15]')
+            raise ValueError("Alert info object index(aio_index) out of range! Valid value must be in range [0, 15]")
 
-        trigger_type_list = ['one-shot', 're-trigger-count', 're-trigger-timed-ms', 're-trigger-timed-sec']
+        trigger_type_list = ["one-shot", "re-trigger-count", "re-trigger-timed-ms", "re-trigger-timed-sec"]
 
         if trigger_type not in trigger_type_list:
             # This is an ARIA PI Reaper production requirement
-            raise ValueError(f'Wrong trigger_type {trigger_type}! Valid values are one-shot, re-trigger-count, '
-                             're-trigger-timed-ms, re-trigger-timed-sec')
+            raise ValueError(
+                f"Wrong trigger_type {trigger_type}! Valid values are one-shot, re-trigger-count, "
+                "re-trigger-timed-ms, re-trigger-timed-sec"
+            )
 
         if trigger_value < 1 or trigger_value > 8191:
             # This is an ARIA PI Reaper production requirement
-            raise ValueError('Trigger value(trigger_value) out of range! It must be in range [1, 8191]')
+            raise ValueError("Trigger value(trigger_value) out of range! It must be in range [1, 8191]")
 
-        instruction = f'ALERT {transport_type} {tti_index} {aio_index} {trigger_type} {trigger_value}'
+        instruction = f"ALERT {transport_type} {tti_index} {aio_index} {trigger_type} {trigger_value}"
 
         return instruction
 
     @staticmethod
     def _process_port_range(port_range: str = None) -> str:
-        """ Validation function for range of ports
+        """Validation function for range of ports
 
         Args:
             port_range: The source or destination port(s). This accepts a
@@ -934,38 +925,37 @@ class ARIA(object):
 
         """
         if not port_range:
-            port_range = '0-65535'  # default port_range value
+            port_range = "0-65535"  # default port_range value
 
-        split_port_range = port_range.replace(' ', '').split(',')
+        split_port_range = port_range.replace(" ", "").split(",")
 
-        res = ''
+        res = ""
 
         for port in split_port_range:
             if res:
-                res = res + ', '
+                res = res + ", "
 
-            if '-' in port:
-
-                beg, end = port.replace(' ', '').split('-')
+            if "-" in port:
+                beg, end = port.replace(" ", "").split("-")
 
                 for j in beg, end:
                     if int(j) < 0 or int(j) > 65535:
-                        raise ValueError('Port must be in 0-65535!')
+                        raise ValueError("Port must be in 0-65535!")
 
                 if int(beg) > int(end):
-                    raise ValueError('Wrong port range format!')
+                    raise ValueError("Wrong port range format!")
 
-                res += beg + ' - ' + end
+                res += beg + " - " + end
             else:
                 if int(port) < 0 or int(port) > 65535:
-                    raise ValueError('Port must be in 0-65535!')
+                    raise ValueError("Port must be in 0-65535!")
                 res += port
 
         return res
 
     @staticmethod
     def _process_ip_address(ip: str) -> str:
-        """ Validation function for IP address
+        """Validation function for IP address
 
         Args:
             ip: The IP address and mask of the IP address, in the format <IP_address>/<mask>. If the mask is omitted,
@@ -977,30 +967,30 @@ class ARIA(object):
             ValueError: If the netmask is out of range or IP address is not expressed in CIDR notation
 
         """
-        netmask = '32'
+        netmask = "32"
 
-        ip_str = ip.replace(' ', '')
+        ip_str = ip.replace(" ", "")
 
-        if '/' in ip_str:
-            ip_addr, netmask = ip_str.split('/')
+        if "/" in ip_str:
+            ip_addr, netmask = ip_str.split("/")
         else:
             ip_addr = ip_str
 
         if int(netmask) > 32 or int(netmask) < 1:
-            raise ValueError('Subnet mask must be in range [1, 32].')
+            raise ValueError("Subnet mask must be in range [1, 32].")
 
-        ip_addr_split = ip_addr.split('.')
+        ip_addr_split = ip_addr.split(".")
         for syllable in ip_addr_split:
             if int(syllable) < 0 or int(syllable) > 255:
-                raise ValueError('Wrong IP format!')
+                raise ValueError("Wrong IP format!")
         if len(ip_addr_split) != 4:
-            raise ValueError('Wrong IP format!')
-        res = ip_addr + '/' + netmask
+            raise ValueError("Wrong IP format!")
+        res = ip_addr + "/" + netmask
         return res
 
     @staticmethod
     def _parse_rcs(rcs):
-        """ Parse Remediation Configuration String
+        """Parse Remediation Configuration String
 
         Args:
             rcs: Remediation Configuration String.
@@ -1015,7 +1005,7 @@ class ARIA(object):
         """
         rcs = RCS(rcs)
         if not rcs.valid():
-            raise ParameterError('Your Input RCS is not valid!')
+            raise ParameterError("Your Input RCS is not valid!")
         sd_list_tuple, sd_list_valid = rcs.security_domain()
         sd_list = []
         if sd_list_valid:
@@ -1027,17 +1017,21 @@ class ARIA(object):
         sd_list = [{"SDN": "all"}]
         if sia_list_valid:
             for element in sia_list_tuple:
-                sia_object = {
-                    'sia_specification_type': element[0],
-                    'sia_specification': element[1]
-                }
+                sia_object = {"sia_specification_type": element[0], "sia_specification": element[1]}
                 sia_list.append(sia_object)
         return sd_list, sia_list
 
     @staticmethod
-    def _generate_rule_forward_spec(rule_name: str, logic_block: str, rule: str, named_rule_action: str, sd_list: list,
-                                    sia_list: list, instance_id: str = None) -> dict:
-        """ Generate rule forward spec for ruleforward API
+    def _generate_rule_forward_spec(
+        rule_name: str,
+        logic_block: str,
+        rule: str,
+        named_rule_action: str,
+        sd_list: list,
+        sia_list: list,
+        instance_id: str = None,
+    ) -> dict:
+        """Generate rule forward spec for ruleforward API
 
         Args:
             rule_name: The name of the rule to create.
@@ -1051,35 +1045,33 @@ class ARIA(object):
         Returns: Dictionary data of named rule.
 
         """
-        instance_id_type = 'instance-number'
+        instance_id_type = "instance-number"
 
         if instance_id is None:
-            instance_id_type = 'all'
-            instance_id = ''
+            instance_id_type = "all"
+            instance_id = ""
 
-        if named_rule_action == 'remove':
-            rule = ''
+        if named_rule_action == "remove":
+            rule = ""
 
-        named_rule = f'\"name\": \"{rule_name}\", \"logic_block\": \"{logic_block}\", \"rule\": \"{rule}\"'
+        named_rule = f'"name": "{rule_name}", "logic_block": "{logic_block}", "rule": "{rule}"'
 
         named_rule_distribution = {
-            'kind': 'NamedRuleDistribution',
-            'instance_id': instance_id,
-            'instance_id_type': instance_id_type,
-            'named_rule': named_rule,
-            'named_rule_action': named_rule_action,
-            'sd_list': sd_list,
-            'sia_list': sia_list
+            "kind": "NamedRuleDistribution",
+            "instance_id": instance_id,
+            "instance_id_type": instance_id_type,
+            "named_rule": named_rule,
+            "named_rule_action": named_rule_action,
+            "sd_list": sd_list,
+            "sia_list": sia_list,
         }
 
-        rule_forward_spec = {
-            'selector': named_rule_distribution
-        }
+        rule_forward_spec = {"selector": named_rule_distribution}
 
         return rule_forward_spec
 
     def _wait_for_trid(self, trid: str) -> bool:
-        """ Valid whether the request completed by trid
+        """Valid whether the request completed by trid
 
         Args:
             trid: The request id when you want to adding a rule to ARIA PI Reaper.
@@ -1089,7 +1081,7 @@ class ARIA(object):
         """
 
         # url to valid the request
-        trid_url = self.sdso_url + f'/packetClassification/completion/transaction?PC_TRID={trid}'
+        trid_url = self.sdso_url + f"/packetClassification/completion/transaction?PC_TRID={trid}"
 
         # Use trid of transaction to get if a transaction success
 
@@ -1104,21 +1096,21 @@ class ARIA(object):
 
             if res.ok:
                 try:
-                    tcl_list = res.json().get('tclList')
+                    tcl_list = res.json().get("tclList")
                 except json.JSONDecodeError:
                     raise
 
                 for tcl_entry in tcl_list:
-                    if 'SUCCESS' in tcl_entry['status']:
+                    if "SUCCESS" in tcl_entry["status"]:
                         return True
-                    elif 'FAILURE' in tcl_entry['status']:
+                    elif "FAILURE" in tcl_entry["status"]:
                         return False
             time.sleep(1)
 
         return False
 
     def _remove_rule(self, rule_name: str, logic_block: str, instance_id: str = None, rcs: str = None) -> dict:
-        """ Remove rule in the ARIA PI Reaper
+        """Remove rule in the ARIA PI Reaper
 
         Args:
             rule_name: The name of the rule to create.
@@ -1130,58 +1122,56 @@ class ARIA(object):
 
         """
 
-        url = self.sdso_url + '/ruleForward'
+        url = self.sdso_url + "/ruleForward"
 
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        headers = {"Content-type": "application/json", "Accept": "text/plain"}
 
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block=logic_block, rule='no-rule',
-                                                named_rule_action='remove', instance_id=instance_id,
-                                                sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name,
+            logic_block=logic_block,
+            rule="no-rule",
+            named_rule_action="remove",
+            instance_id=instance_id,
+            sd_list=sd_list,
+            sia_list=sia_list,
+        )
         try:
-            response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out,
-                                    verify=self.verify_cert)
+            response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out, verify=self.verify_cert)
         except requests.exceptions.RequestException:
             raise
 
-        command_state_str = 'Failure'
+        command_state_str = "Failure"
         response_timestamp = None
         ep_res = None
 
         if response and response.ok:
             response_json = response.json()
-            endpoints = response_json.get('endpoints')
+            endpoints = response_json.get("endpoints")
 
             if not endpoints or len(endpoints) == 0:
-                command_state_str = 'Endpoint matching RCS not found!'
+                command_state_str = "Endpoint matching RCS not found!"
             else:
-                command_state_str = 'Success'
+                command_state_str = "Success"
                 for ep in endpoints:
-                    trid = ep.get('trid')
+                    trid = ep.get("trid")
                     status = self._wait_for_trid(str(trid))
-                    ep['completion'] = status
+                    ep["completion"] = status
                     if not status:
-                        command_state_str = 'Failure'
-            response_timestamp = response_json.get('timestamp')
+                        command_state_str = "Failure"
+            response_timestamp = response_json.get("timestamp")
             ep_res = endpoints
 
         context = {
-            'Rule': {
-                'Name': rule_name,
-                'Definition': f'Remove {rule_name}',
-                'RCS': rcs
-            },
-            'Status': {
-                'command_state': command_state_str,
-                'timestamp': response_timestamp
-            },
-            'Endpoints': ep_res
+            "Rule": {"Name": rule_name, "Definition": f"Remove {rule_name}", "RCS": rcs},
+            "Status": {"command_state": command_state_str, "timestamp": response_timestamp},
+            "Endpoints": ep_res,
         }
 
         return context
 
     def _do_request(self, data: dict, rule_name: str, rule: str, rcs: str = None) -> dict:
-        """ Send a request to ARIA PI Reaper to create a rule
+        """Send a request to ARIA PI Reaper to create a rule
 
         Args:
             data: Rule Forward Spec data.
@@ -1191,22 +1181,23 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        url = self.sdso_url + '/ruleForward'
+        url = self.sdso_url + "/ruleForward"
 
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        headers = {"Content-type": "application/json", "Accept": "text/plain"}
 
-        data['selector']['instance_id_type'] = 'instance-number'
-        data['selector']['instance_id'] = '0'
+        data["selector"]["instance_id_type"] = "instance-number"
+        data["selector"]["instance_id"] = "0"
 
         instance_number = 10  # 10 total instances in ARIA PI Reaper
 
-        command_state_str = 'Failure'
+        command_state_str = "Failure"
         response_timestamp = None
         endpoints = None
 
         try:
-            response = requests.put(url=url, data=json.dumps(data), headers=headers, timeout=self.time_out,
-                                    verify=self.verify_cert)
+            response = requests.put(
+                url=url, data=json.dumps(data), headers=headers, timeout=self.time_out, verify=self.verify_cert
+            )
         except requests.exceptions.RequestException:
             raise
 
@@ -1214,15 +1205,15 @@ class ARIA(object):
         success_endpoints_index = []
         if response and response.ok:
             response_json = response.json()
-            endpoints = response_json.get('endpoints')
-            response_timestamp = response_json.get('timestamp')
+            endpoints = response_json.get("endpoints")
+            response_timestamp = response_json.get("timestamp")
             if endpoints and len(endpoints) > 0:
                 for ep_index, ep in enumerate(endpoints):
-                    trid = ep.get('trid')
+                    trid = ep.get("trid")
                     status = self._wait_for_trid(str(trid))
                     # Add completion and instance_number in ep field
-                    ep['instance_number'] = '0'
-                    ep['completion'] = status
+                    ep["instance_number"] = "0"
+                    ep["completion"] = status
                     if status:
                         success_endpoints_index.append(ep_index)
                     else:
@@ -1241,24 +1232,26 @@ class ARIA(object):
                 command_state_str = "Success"
                 for ep_index in failed_endpoints_index:
                     ep = endpoints[ep_index]
-                    AgentFQN = ep.get('AgentFQN')
+                    AgentFQN = ep.get("AgentFQN")
                     temp_forward_data = data.copy()
-                    sia_object = {
-                        'sia_specification_type': 'FQN',
-                        'sia_specification': AgentFQN
-                    }
-                    temp_forward_data['selector']['sia_list'] = [sia_object]
+                    sia_object = {"sia_specification_type": "FQN", "sia_specification": AgentFQN}
+                    temp_forward_data["selector"]["sia_list"] = [sia_object]
                     ep_state = False
 
                     for i in range(1, instance_number):
-                        data['selector']['instance_id'] = str(i)
+                        data["selector"]["instance_id"] = str(i)
                         try:
-                            ep_response = requests.put(url=url, data=json.dumps(temp_forward_data), headers=headers,
-                                                       timeout=self.time_out, verify=self.verify_cert)
+                            ep_response = requests.put(
+                                url=url,
+                                data=json.dumps(temp_forward_data),
+                                headers=headers,
+                                timeout=self.time_out,
+                                verify=self.verify_cert,
+                            )
                             ep_response_json = ep_response.json()
-                            if ep_response_json.get('endpoints'):
-                                cur_ep = ep_response_json.get('endpoints')[0]
-                                cur_trid = cur_ep.get('trid')
+                            if ep_response_json.get("endpoints"):
+                                cur_ep = ep_response_json.get("endpoints")[0]
+                                cur_trid = cur_ep.get("trid")
                                 cur_state = self._wait_for_trid(str(cur_trid))
                                 if cur_state:
                                     ep_state = True
@@ -1266,30 +1259,31 @@ class ARIA(object):
                         except requests.exceptions.RequestException:
                             pass
                     if not ep_state:
-                        command_state_str = 'Failure'
-                    ep['completion'] = ep_state
-                    ep['instance_number'] = i if ep_state else None
+                        command_state_str = "Failure"
+                    ep["completion"] = ep_state
+                    ep["instance_number"] = i if ep_state else None
 
         context = {
-            'Rule': {
-                'Name': rule_name,
-                'Definition': rule,
-                'RCS': rcs
-            },
-            'Status': {
-                'command_state': command_state_str,
-                'timestamp': response_timestamp
-            },
-            'Endpoints': endpoints
+            "Rule": {"Name": rule_name, "Definition": rule, "RCS": rcs},
+            "Status": {"command_state": command_state_str, "timestamp": response_timestamp},
+            "Endpoints": endpoints,
         }
 
         return context
 
     """SOAR API"""
 
-    def block_conversation(self, src_ip: str, target_ip: str, rule_name: str, src_port: str = None,
-                           target_port: str = None, protocol: str = None, rcs: str = None) -> dict:
-        """ Creates a rule that drops all packets matching the specified 5-tuple values.
+    def block_conversation(
+        self,
+        src_ip: str,
+        target_ip: str,
+        rule_name: str,
+        src_port: str = None,
+        target_port: str = None,
+        protocol: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that drops all packets matching the specified 5-tuple values.
 
         Args:
             src_ip: The source IP address.
@@ -1314,20 +1308,21 @@ class ARIA(object):
         target_port = self._process_port_range(target_port)
 
         if not protocol:
-            protocol = 'HOPOPT-255'  # default protocol is no value provided
+            protocol = "HOPOPT-255"  # default protocol is no value provided
 
         protocol = protocol.upper()
 
-        rule = f'{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : DROP, END'
+        rule = f"{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : DROP, END"
 
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='5-tuple', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="5-tuple", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
 
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_conversation(self, rule_name: str, rcs: str = None) -> dict:
-        """ Deletes a named rule from the 5-tuple logic block.
+        """Deletes a named rule from the 5-tuple logic block.
 
             This allows the previously blocked conversation to resume.
 
@@ -1338,13 +1333,26 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='5-tuple', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="5-tuple", instance_id=None, rcs=rcs)
 
-    def record_conversation(self, src_ip: str, target_ip: str, vlan_id: str, rule_name: str, src_port: str = None,
-                            target_port: str = None, protocol: str = None, sia_interface: str = None,
-                            transport_type: str = None, tti_index: str = None, aio_index: str = None,
-                            trigger_type: str = None, trigger_value: str = None, rcs: str = None) -> dict:
-        """ Creates a rule that redirects a conversation matching 5-tuple values
+    def record_conversation(
+        self,
+        src_ip: str,
+        target_ip: str,
+        vlan_id: str,
+        rule_name: str,
+        src_port: str = None,
+        target_port: str = None,
+        protocol: str = None,
+        sia_interface: str = None,
+        transport_type: str = None,
+        tti_index: str = None,
+        aio_index: str = None,
+        trigger_type: str = None,
+        trigger_value: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that redirects a conversation matching 5-tuple values
             to the Packet Recorder and generates an alert.
 
             Packets are tagged with the VID specified in the command.
@@ -1375,8 +1383,8 @@ class ARIA(object):
             ParameterError: Raised when transport_type is used but one or more parameters in tti_index,
                 aio_index, trigger_type and trigger_value are missing.
         """
-        if sia_interface is None or sia_interface != 'B':
-            sia_interface = 'A'  # SIA use labels A and B to select its interface (data port), default to A.
+        if sia_interface is None or sia_interface != "B":
+            sia_interface = "A"  # SIA use labels A and B to select its interface (data port), default to A.
 
         src_ip = self._process_ip_address(src_ip)
 
@@ -1387,32 +1395,34 @@ class ARIA(object):
         target_port = self._process_port_range(target_port)
 
         if not protocol:
-            protocol = 'HOPOPT-255'
+            protocol = "HOPOPT-255"
 
         protocol = protocol.upper()
 
-        rule = f'{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : ' \
-            f'REDIRECT-VLAN {sia_interface} {vlan_id}'
+        rule = f"{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : REDIRECT-VLAN {sia_interface} {vlan_id}"
         if transport_type is not None:
-
             if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
-                raise ParameterError(f'Please provide tti_index, aio_index, trigger_type and trigger_value to '
-                                     f'use {transport_type} to send an alert.')
+                raise ParameterError(
+                    f"Please provide tti_index, aio_index, trigger_type and trigger_value to "
+                    f"use {transport_type} to send an alert."
+                )
 
-            rule += ', '
+            rule += ", "
 
-            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                                  trigger_type, int(trigger_value))
+            rule += self._build_alert_instruction(
+                transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value)
+            )
 
-        rule += ', END'
+        rule += ", END"
 
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='5-tuple', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="5-tuple", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def stop_recording_conversation(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes the named rule from the 5-tuple block.
+        """Removes the named rule from the 5-tuple block.
 
             This stops redirecting traffic to the Packet Recorder.
 
@@ -1423,12 +1433,24 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='5-tuple', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="5-tuple", instance_id=None, rcs=rcs)
 
-    def alert_conversation(self, src_ip: str, target_ip: str, rule_name: str, transport_type: str, tti_index: str,
-                           aio_index: str, trigger_type: str, trigger_value: str, src_port: str = None,
-                           target_port: str = None, protocol: str = None, rcs: str = None) -> dict:
-        """ Adds a rule that generates an alert when a conversation matching the specified 5-tuple values is detected.
+    def alert_conversation(
+        self,
+        src_ip: str,
+        target_ip: str,
+        rule_name: str,
+        transport_type: str,
+        tti_index: str,
+        aio_index: str,
+        trigger_type: str,
+        trigger_value: str,
+        src_port: str = None,
+        target_port: str = None,
+        protocol: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Adds a rule that generates an alert when a conversation matching the specified 5-tuple values is detected.
 
         Args:
             src_ip: The source IP address.
@@ -1459,22 +1481,25 @@ class ARIA(object):
         target_port = self._process_port_range(target_port)
 
         if not protocol:
-            protocol = 'HOPOPT-255'  # default protocol
+            protocol = "HOPOPT-255"  # default protocol
 
         protocol = protocol.upper()
 
-        rule = f'{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : '
+        rule = f"{target_ip} @ {target_port} & {src_ip} @ {src_port} <> {protocol} : "
 
-        rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                              trigger_type, int(trigger_value)) + ', END'
+        rule += (
+            self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            + ", END"
+        )
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='5-tuple', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="5-tuple", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
 
         return self._do_request(data, rule_name, rule, rcs)
 
     def mute_alert_conversation(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the 5-tuple logic block, disabling the alerts.
+        """Removes a named rule from the 5-tuple logic block, disabling the alerts.
 
         Args:
             rule_name: The name of the rule to delete.
@@ -1483,10 +1508,10 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='5-tuple', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="5-tuple", instance_id=None, rcs=rcs)
 
     def block_dest_port(self, port_range: str, rule_name: str, rcs: str) -> dict:
-        """ Creates a rule that blocks packets destined for one or more specific ports.
+        """Creates a rule that blocks packets destined for one or more specific ports.
 
         Args:
             port_range: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”),
@@ -1497,14 +1522,15 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_port_range(port_range)}: DROP, END'
+        rule = f"{self._process_port_range(port_range)}: DROP, END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='dst-port', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="dst-port", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_dest_port(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the destination port logic block.
+        """Removes a named rule from the destination port logic block.
 
             This allows the previously blocked traffic to resume.
 
@@ -1515,12 +1541,22 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='dst-port', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="dst-port", instance_id=None, rcs=rcs)
 
-    def record_dest_port(self, port_range: str, vlan_id: str, rule_name: str, sia_interface: str = None,
-                         transport_type: str = None, tti_index: str = None, aio_index: str = None,
-                         trigger_type: str = None, trigger_value: str = None, rcs: str = None) -> dict:
-        """ Adds a rule that redirects traffic destined for one or more ports to the Packet Recorder
+    def record_dest_port(
+        self,
+        port_range: str,
+        vlan_id: str,
+        rule_name: str,
+        sia_interface: str = None,
+        transport_type: str = None,
+        tti_index: str = None,
+        aio_index: str = None,
+        trigger_type: str = None,
+        trigger_value: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Adds a rule that redirects traffic destined for one or more ports to the Packet Recorder
             and generates an alert.
 
             Packets are tagged with the VID specified in the command.
@@ -1546,30 +1582,33 @@ class ARIA(object):
             ParameterError: Raised when transport_type is used but one or more parameters in tti_index,
                 aio_index, trigger_type and trigger_value are missing.
         """
-        if sia_interface is None or sia_interface != 'B':
-            sia_interface = 'A'  # SIA use labels A and B to select its interface (data port), default to A.
+        if sia_interface is None or sia_interface != "B":
+            sia_interface = "A"  # SIA use labels A and B to select its interface (data port), default to A.
 
-        rule = f'{self._process_port_range(port_range)}: REDIRECT-VLAN {sia_interface} {vlan_id}'
+        rule = f"{self._process_port_range(port_range)}: REDIRECT-VLAN {sia_interface} {vlan_id}"
 
         if transport_type is not None:
-
             if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
-                raise ParameterError(f'Please provide tti_index, aio_index, trigger_type and trigger_value '
-                                     f'to use {transport_type} to send an alert.')
+                raise ParameterError(
+                    f"Please provide tti_index, aio_index, trigger_type and trigger_value "
+                    f"to use {transport_type} to send an alert."
+                )
 
-            rule += ', '
+            rule += ", "
 
-            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                                  trigger_type, int(trigger_value))
-        rule += ', END'
+            rule += self._build_alert_instruction(
+                transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value)
+            )
+        rule += ", END"
 
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='dst-port', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="dst-port", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def stop_recording_dest_port(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the destination port logic block.
+        """Removes a named rule from the destination port logic block.
 
             This stops redirecting traffic to the Packet Recorder.
 
@@ -1581,11 +1620,20 @@ class ARIA(object):
 
         """
 
-        return self._remove_rule(rule_name=rule_name, logic_block='dst-port', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="dst-port", instance_id=None, rcs=rcs)
 
-    def alert_dest_port(self, port_range: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
-                        trigger_type: str, trigger_value: str, rcs: str = None) -> dict:
-        """ Creates a rule that generates an alert when traffic destined for one or more ports is detected.
+    def alert_dest_port(
+        self,
+        port_range: str,
+        rule_name: str,
+        transport_type: str,
+        tti_index: str,
+        aio_index: str,
+        trigger_type: str,
+        trigger_value: str,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that generates an alert when traffic destined for one or more ports is detected.
 
         Args:
             port_range: The destination port(s). This accepts a comma-separated list (e.g., “1, 3”),
@@ -1602,18 +1650,21 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_port_range(port_range)}: '
+        rule = f"{self._process_port_range(port_range)}: "
 
-        rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type,
-                                              int(trigger_value)) + ', END'
+        rule += (
+            self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            + ", END"
+        )
 
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='dst-port', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="dst-port", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def mute_alert_dest_port(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the destination port logic block, disabling the alerts.
+        """Removes a named rule from the destination port logic block, disabling the alerts.
 
         Args:
             rule_name: The name of the rule to delete.
@@ -1622,10 +1673,10 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='dst-port', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="dst-port", instance_id=None, rcs=rcs)
 
     def block_src_port(self, port_range: str, rule_name: str, rcs: str = None) -> dict:
-        """ Adds a rule that blocks packets originating from one or more specific ports.
+        """Adds a rule that blocks packets originating from one or more specific ports.
 
         Args:
             port_range: The source port(s). This accepts a comma-separated list (e.g., “1, 3”),
@@ -1636,14 +1687,15 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_port_range(port_range)}: DROP, END'
+        rule = f"{self._process_port_range(port_range)}: DROP, END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-port', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="src-port", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_src_port(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the source port logic block.
+        """Removes a named rule from the source port logic block.
 
             This allows the previously blocked traffic to resume.
 
@@ -1654,12 +1706,22 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='src-port', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="src-port", instance_id=None, rcs=rcs)
 
-    def record_src_port(self, port_range: str, vlan_id: str, rule_name: str, sia_interface: str = None,
-                        transport_type: str = None, tti_index: str = None, aio_index: str = None,
-                        trigger_type: str = None, trigger_value: str = None, rcs: str = None) -> dict:
-        """ Adds a rule that redirects traffic originating from one or more ports to
+    def record_src_port(
+        self,
+        port_range: str,
+        vlan_id: str,
+        rule_name: str,
+        sia_interface: str = None,
+        transport_type: str = None,
+        tti_index: str = None,
+        aio_index: str = None,
+        trigger_type: str = None,
+        trigger_value: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Adds a rule that redirects traffic originating from one or more ports to
             the Packet Recorder and generates an alert.
 
             Packets are tagged with the VID specified in the command.
@@ -1686,30 +1748,33 @@ class ARIA(object):
                 aio_index, trigger_type and trigger_value are missing.
 
         """
-        if sia_interface is None or sia_interface != 'B':
-            sia_interface = 'A'  # SIA use labels A and B to select its interface (data port), default to A.
+        if sia_interface is None or sia_interface != "B":
+            sia_interface = "A"  # SIA use labels A and B to select its interface (data port), default to A.
 
-        rule = f'{self._process_port_range(port_range)}: REDIRECT-VLAN {sia_interface} {vlan_id}'
+        rule = f"{self._process_port_range(port_range)}: REDIRECT-VLAN {sia_interface} {vlan_id}"
 
         if transport_type is not None:
-
             if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
-                raise ParameterError(f'Please provide tti_index, aio_index, trigger_type and trigger_value '
-                                     f'to use {transport_type} to send an alert.')
+                raise ParameterError(
+                    f"Please provide tti_index, aio_index, trigger_type and trigger_value "
+                    f"to use {transport_type} to send an alert."
+                )
 
-            rule += ', '
+            rule += ", "
 
-            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type,
-                                                  int(trigger_value))
+            rule += self._build_alert_instruction(
+                transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value)
+            )
 
-        rule += ', END'
+        rule += ", END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-port', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="src-port", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def stop_recording_src_port(self, rule_name: str, rcs: str = None):
-        """ Removes a named rule from the source port logic block.
+        """Removes a named rule from the source port logic block.
 
             This stops redirecting traffic to the Packet Recorder.
 
@@ -1721,11 +1786,20 @@ class ARIA(object):
 
         """
 
-        return self._remove_rule(rule_name=rule_name, logic_block='src-port', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="src-port", instance_id=None, rcs=rcs)
 
-    def alert_src_port(self, port_range: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
-                       trigger_type: str, trigger_value: str, rcs: str = None) -> dict:
-        """ Creates a rule that generates an alert when traffic originating from one or more ports is detected.
+    def alert_src_port(
+        self,
+        port_range: str,
+        rule_name: str,
+        transport_type: str,
+        tti_index: str,
+        aio_index: str,
+        trigger_type: str,
+        trigger_value: str,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that generates an alert when traffic originating from one or more ports is detected.
 
         Args:
             port_range: The source port(s). This accepts a comma-separated list (e.g., “1, 3”),
@@ -1742,17 +1816,20 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_port_range(port_range)}: '
+        rule = f"{self._process_port_range(port_range)}: "
 
-        rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                              trigger_type, int(trigger_value)) + ', END'
+        rule += (
+            self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            + ", END"
+        )
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-port', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="src-port", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def mute_alert_src_port(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the source port logic block, disabling the alerts.
+        """Removes a named rule from the source port logic block, disabling the alerts.
 
         Args:
             rule_name: The name of the rule to delete.
@@ -1761,10 +1838,10 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='src-port', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="src-port", instance_id=None, rcs=rcs)
 
     def block_dest_subnet(self, target_ip: str, rule_name: str, rcs: str = None) -> dict:
-        """ Adds a rule that blocks packets destined for a specific IP address or range of IP addresses.
+        """Adds a rule that blocks packets destined for a specific IP address or range of IP addresses.
 
         Args:
             target_ip: The IP address and mask of the destination IP address(es), in the format <IP_address>/<mask>.
@@ -1775,14 +1852,15 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_ip_address(target_ip)}: DROP, END'
+        rule = f"{self._process_ip_address(target_ip)}: DROP, END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='dst-subnet', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="dst-subnet", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_dest_subnet(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the destination subnet logic block.
+        """Removes a named rule from the destination subnet logic block.
 
             This allows the previously blocked traffic to resume.
 
@@ -1793,12 +1871,22 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='dst-subnet', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="dst-subnet", instance_id=None, rcs=rcs)
 
-    def record_dest_subnet(self, target_ip: str, vlan_id: str, rule_name: str, sia_interface: str = None,
-                           transport_type: str = None, tti_index: str = None, aio_index: str = None,
-                           trigger_type: str = None, trigger_value: str = None, rcs: str = None) -> dict:
-        """ Creates a rule that redirects traffic destined for a specific IP address or
+    def record_dest_subnet(
+        self,
+        target_ip: str,
+        vlan_id: str,
+        rule_name: str,
+        sia_interface: str = None,
+        transport_type: str = None,
+        tti_index: str = None,
+        aio_index: str = None,
+        trigger_type: str = None,
+        trigger_value: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that redirects traffic destined for a specific IP address or
             range of IP addresses to the Packet Recorder and generates an alert.
 
             Packets are tagged with the VID specified in the command.
@@ -1826,29 +1914,32 @@ class ARIA(object):
 
         """
 
-        if sia_interface is None or sia_interface != 'B':
-            sia_interface = 'A'  # SIA use labels A and B to select its interface (data port), default to A.
+        if sia_interface is None or sia_interface != "B":
+            sia_interface = "A"  # SIA use labels A and B to select its interface (data port), default to A.
 
-        rule = f'{self._process_ip_address(target_ip)}: REDIRECT-VLAN {sia_interface} {vlan_id}'
+        rule = f"{self._process_ip_address(target_ip)}: REDIRECT-VLAN {sia_interface} {vlan_id}"
 
         if transport_type is not None:
-
             if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
-                raise ParameterError(f'Please provide tti_index, aio_index, trigger_type and trigger_value '
-                                     f'to use {transport_type} to send an alert.')
+                raise ParameterError(
+                    f"Please provide tti_index, aio_index, trigger_type and trigger_value "
+                    f"to use {transport_type} to send an alert."
+                )
 
-            rule += ', '
+            rule += ", "
 
-            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                                  trigger_type, int(trigger_value))
-        rule += ', END'
+            rule += self._build_alert_instruction(
+                transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value)
+            )
+        rule += ", END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='dst-subnet', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="dst-subnet", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def stop_recording_dest_subnet(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the destination subnet logic block.
+        """Removes a named rule from the destination subnet logic block.
 
             This stops redirecting traffic to the Packet Recorder.
 
@@ -1860,11 +1951,20 @@ class ARIA(object):
 
         """
 
-        return self._remove_rule(rule_name=rule_name, logic_block='dst-subnet', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="dst-subnet", instance_id=None, rcs=rcs)
 
-    def alert_dest_subnet(self, target_ip: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
-                          trigger_type: str, trigger_value: str, rcs: str = None) -> dict:
-        """ Creates a rule that generates an alert when traffic destined for
+    def alert_dest_subnet(
+        self,
+        target_ip: str,
+        rule_name: str,
+        transport_type: str,
+        tti_index: str,
+        aio_index: str,
+        trigger_type: str,
+        trigger_value: str,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that generates an alert when traffic destined for
             a specific IP address or range of IP addresses is detected.
 
         Args:
@@ -1882,17 +1982,20 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_ip_address(target_ip)}: '
+        rule = f"{self._process_ip_address(target_ip)}: "
 
-        rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type,
-                                              int(trigger_value)) + ', END'
+        rule += (
+            self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            + ", END"
+        )
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='dst-subnet', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="dst-subnet", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def mute_alert_dest_subnet(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the destination subnet logic block, disabling the alerts.
+        """Removes a named rule from the destination subnet logic block, disabling the alerts.
 
         Args:
             rule_name: The name of the rule to delete.
@@ -1901,10 +2004,10 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='dst-subnet', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="dst-subnet", instance_id=None, rcs=rcs)
 
     def block_src_subnet(self, src_ip: str, rule_name: str, rcs: str = None) -> dict:
-        """ Adds a rule that blocks packets originating from a specific IP address or range of IP addresses.
+        """Adds a rule that blocks packets originating from a specific IP address or range of IP addresses.
 
         Args:
             src_ip: The IP address and mask of the source IP address(es), in the format <IP_address>/<mask>.
@@ -1915,14 +2018,15 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_ip_address(src_ip)}: DROP, END'
+        rule = f"{self._process_ip_address(src_ip)}: DROP, END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-subnet', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="src-subnet", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def unblock_src_subnet(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the source subnet logic block.
+        """Removes a named rule from the source subnet logic block.
 
             This allows the previously blocked traffic to resume.
 
@@ -1933,12 +2037,22 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='src-subnet', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="src-subnet", instance_id=None, rcs=rcs)
 
-    def record_src_subnet(self, src_ip: str, vlan_id: str, rule_name: str, sia_interface: str = None,
-                          transport_type: str = None, tti_index: str = None, aio_index: str = None,
-                          trigger_type: str = None, trigger_value: str = None, rcs: str = None) -> dict:
-        """ Creates a rule that redirects traffic originating from one or more specific IP addresses
+    def record_src_subnet(
+        self,
+        src_ip: str,
+        vlan_id: str,
+        rule_name: str,
+        sia_interface: str = None,
+        transport_type: str = None,
+        tti_index: str = None,
+        aio_index: str = None,
+        trigger_type: str = None,
+        trigger_value: str = None,
+        rcs: str = None,
+    ) -> dict:
+        """Creates a rule that redirects traffic originating from one or more specific IP addresses
             to the Packet Recorder and generates an alert.
 
             Packets are tagged with the VID specified in the command.
@@ -1966,30 +2080,33 @@ class ARIA(object):
 
         """
 
-        if sia_interface is None or sia_interface != 'B':
-            sia_interface = 'A'  # SIA use labels A and B to select its interface (data port), default to A.
+        if sia_interface is None or sia_interface != "B":
+            sia_interface = "A"  # SIA use labels A and B to select its interface (data port), default to A.
 
-        rule = f'{self._process_ip_address(src_ip)}: REDIRECT-VLAN {sia_interface} {vlan_id}'
+        rule = f"{self._process_ip_address(src_ip)}: REDIRECT-VLAN {sia_interface} {vlan_id}"
 
         if transport_type is not None:
-
             if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
-                raise ParameterError(f'Please provide tti_index, aio_index, trigger_type and trigger_value '
-                                     f'to use {transport_type} to send an alert.')
-            rule += ', '
+                raise ParameterError(
+                    f"Please provide tti_index, aio_index, trigger_type and trigger_value "
+                    f"to use {transport_type} to send an alert."
+                )
+            rule += ", "
 
-            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                                  trigger_type, int(trigger_value))
+            rule += self._build_alert_instruction(
+                transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value)
+            )
 
-        rule += ', END'
+        rule += ", END"
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-subnet', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="src-subnet", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
 
         return self._do_request(data, rule_name, rule, rcs)
 
     def stop_recording_src_subnet(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the source subnet logic block.
+        """Removes a named rule from the source subnet logic block.
 
             This stops redirecting traffic to the Packet Recorder.
 
@@ -2000,11 +2117,20 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='src-subnet', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="src-subnet", instance_id=None, rcs=rcs)
 
-    def alert_src_subnet(self, src_ip: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
-                         trigger_type: str, trigger_value: str, rcs: str = None) -> dict:
-        """ Adds a rule that generates an alert when traffic originating from a specific IP address
+    def alert_src_subnet(
+        self,
+        src_ip: str,
+        rule_name: str,
+        transport_type: str,
+        tti_index: str,
+        aio_index: str,
+        trigger_type: str,
+        trigger_value: str,
+        rcs: str = None,
+    ) -> dict:
+        """Adds a rule that generates an alert when traffic originating from a specific IP address
             or range of IP addresses is detected.
 
         Args:
@@ -2022,17 +2148,20 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        rule = f'{self._process_ip_address(src_ip)}: '
+        rule = f"{self._process_ip_address(src_ip)}: "
 
-        rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
-                                              trigger_type, int(trigger_value)) + ', END'
+        rule += (
+            self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            + ", END"
+        )
         sd_list, sia_list = self._parse_rcs(rcs)
-        data = self._generate_rule_forward_spec(rule_name=rule_name, logic_block='src-subnet', rule=rule,
-                                                named_rule_action='add', sd_list=sd_list, sia_list=sia_list)
+        data = self._generate_rule_forward_spec(
+            rule_name=rule_name, logic_block="src-subnet", rule=rule, named_rule_action="add", sd_list=sd_list, sia_list=sia_list
+        )
         return self._do_request(data, rule_name, rule, rcs)
 
     def mute_alert_src_subnet(self, rule_name: str, rcs: str = None) -> dict:
-        """ Removes a named rule from the source subnet logic block, disabling the alerts.
+        """Removes a named rule from the source subnet logic block, disabling the alerts.
 
         Args:
             rule_name: The name of the rule to delete.
@@ -2041,14 +2170,14 @@ class ARIA(object):
         Returns: Dictionary context data contains useful response information.
 
         """
-        return self._remove_rule(rule_name=rule_name, logic_block='src-subnet', instance_id=None, rcs=rcs)
+        return self._remove_rule(rule_name=rule_name, logic_block="src-subnet", instance_id=None, rcs=rcs)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def func_call(instance: ARIA, func_name: str, command_name: str, demisto_arguments: list, args: dict):
-    """ Helper function used to call different demisto command
+    """Helper function used to call different demisto command
 
     Args:
         instance: An ARIA instance.
@@ -2065,182 +2194,276 @@ def func_call(instance: ARIA, func_name: str, command_name: str, demisto_argumen
 
     context_entry = getattr(instance, func_name)(*tuple(arguments_value))  # get returned tuple
 
-    table_header = ['Rule', 'Status', 'Endpoints']
+    table_header = ["Rule", "Status", "Endpoints"]
 
-    context_name = func_name.title().replace('_', '')
+    context_name = func_name.title().replace("_", "")
 
-    ec = {
-        f'Aria.{context_name}(val.name && val.name == obj.name)': context_entry
-    }
+    ec = {f"Aria.{context_name}(val.name && val.name == obj.name)": context_entry}
 
     readable_output = tableToMarkdown(command_name, context_entry, table_header)
 
     return readable_output, ec
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def block_conversation_command(instance, args):
-    demisto_arguments = ['src_ip', 'target_ip', 'rule_name', 'src_port', 'target_port', 'protocol', 'rcs']
-    return func_call(instance, 'block_conversation', 'aria-block-conversation', demisto_arguments, args)
+    demisto_arguments = ["src_ip", "target_ip", "rule_name", "src_port", "target_port", "protocol", "rcs"]
+    return func_call(instance, "block_conversation", "aria-block-conversation", demisto_arguments, args)
 
 
 def unblock_conversation_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'unblock_conversation', 'aria-unblock-conversation', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "unblock_conversation", "aria-unblock-conversation", demisto_arguments, args)
 
 
 def record_conversation_command(instance, args):
-    demisto_arguments = ['src_ip', 'target_ip', 'vlan_id', 'rule_name', 'src_port', 'target_port', 'protocol',
-                         'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'rcs']
-    return func_call(instance, 'record_conversation', 'aria-record-conversation', demisto_arguments, args)
+    demisto_arguments = [
+        "src_ip",
+        "target_ip",
+        "vlan_id",
+        "rule_name",
+        "src_port",
+        "target_port",
+        "protocol",
+        "sia_interface",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "record_conversation", "aria-record-conversation", demisto_arguments, args)
 
 
 def stop_recording_conversation_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'stop_recording_conversation', 'aria-stop-recording-conversation',
-                     demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "stop_recording_conversation", "aria-stop-recording-conversation", demisto_arguments, args)
 
 
 def alert_conversation_command(instance, args):
-    demisto_arguments = ['src_ip', 'target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
-                         'trigger_value', 'src_port', 'target_port', 'protocol', 'rcs']
-    return func_call(instance, 'alert_conversation', 'aria-alert-conversation', demisto_arguments, args)
+    demisto_arguments = [
+        "src_ip",
+        "target_ip",
+        "rule_name",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "src_port",
+        "target_port",
+        "protocol",
+        "rcs",
+    ]
+    return func_call(instance, "alert_conversation", "aria-alert-conversation", demisto_arguments, args)
 
 
 def mute_alert_conversation_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'mute_alert_conversation', 'aria-mute-alert-conversation', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "mute_alert_conversation", "aria-mute-alert-conversation", demisto_arguments, args)
 
 
 def block_dest_port_command(instance, args):
-    demisto_arguments = ['port_range', 'rule_name', 'rcs']
-    return func_call(instance, 'block_dest_port', 'aria-block-dest-port', demisto_arguments, args)
+    demisto_arguments = ["port_range", "rule_name", "rcs"]
+    return func_call(instance, "block_dest_port", "aria-block-dest-port", demisto_arguments, args)
 
 
 def unblock_dest_port_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'unblock_dest_port', 'aria-unblock-dest-port', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "unblock_dest_port", "aria-unblock-dest-port", demisto_arguments, args)
 
 
 def record_dest_port_command(instance, args):
-    demisto_arguments = ['port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index',
-                         'aio_index', 'trigger_type', 'trigger_value', 'rcs']
-    return func_call(instance, 'record_dest_port', 'aria-record-dest-port', demisto_arguments, args)
+    demisto_arguments = [
+        "port_range",
+        "vlan_id",
+        "rule_name",
+        "sia_interface",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "record_dest_port", "aria-record-dest-port", demisto_arguments, args)
 
 
 def stop_recording_dest_port_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'stop_recording_dest_port', 'aria-stop-recording-dest-port', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "stop_recording_dest_port", "aria-stop-recording-dest-port", demisto_arguments, args)
 
 
 def alert_dest_port_command(instance, args):
-    demisto_arguments = ['port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
-                         'trigger_value', 'rcs']
-    return func_call(instance, 'alert_dest_port', 'aria-alert-dest-port', demisto_arguments, args)
+    demisto_arguments = [
+        "port_range",
+        "rule_name",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "alert_dest_port", "aria-alert-dest-port", demisto_arguments, args)
 
 
 def mute_alert_dest_port_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'mute_alert_dest_port', 'aria-mute-alert-dest-port', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "mute_alert_dest_port", "aria-mute-alert-dest-port", demisto_arguments, args)
 
 
 def block_src_port_command(instance, args):
-    demisto_arguments = ['port_range', 'rule_name', 'rcs']
-    return func_call(instance, 'block_src_port', 'aria-block-src-port', demisto_arguments, args)
+    demisto_arguments = ["port_range", "rule_name", "rcs"]
+    return func_call(instance, "block_src_port", "aria-block-src-port", demisto_arguments, args)
 
 
 def unblock_src_port_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'unblock_src_port', 'aria-unblock-src-port', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "unblock_src_port", "aria-unblock-src-port", demisto_arguments, args)
 
 
 def record_src_port_command(instance, args):
-    demisto_arguments = ['port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index',
-                         'aio_index', 'trigger_type', 'trigger_value', 'rcs']
-    return func_call(instance, 'record_src_port', 'aria-record-src-port', demisto_arguments, args)
+    demisto_arguments = [
+        "port_range",
+        "vlan_id",
+        "rule_name",
+        "sia_interface",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "record_src_port", "aria-record-src-port", demisto_arguments, args)
 
 
 def stop_recording_src_port_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'stop_recording_src_port', 'aria-stop-recording-src-port', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "stop_recording_src_port", "aria-stop-recording-src-port", demisto_arguments, args)
 
 
 def alert_src_port_command(instance, args):
-    demisto_arguments = ['port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
-                         'trigger_value', 'rcs']
-    return func_call(instance, 'alert_src_port', 'aria-alert-src-port', demisto_arguments, args)
+    demisto_arguments = [
+        "port_range",
+        "rule_name",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "alert_src_port", "aria-alert-src-port", demisto_arguments, args)
 
 
 def mute_alert_src_port_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'mute_alert_src_port', 'aria-mute-alert-src-port', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "mute_alert_src_port", "aria-mute-alert-src-port", demisto_arguments, args)
 
 
 def block_dest_subnet_command(instance, args):
-    demisto_arguments = ['target_ip', 'rule_name', 'rcs']
-    return func_call(instance, 'block_dest_subnet', 'aria-block-dest-subnet', demisto_arguments, args)
+    demisto_arguments = ["target_ip", "rule_name", "rcs"]
+    return func_call(instance, "block_dest_subnet", "aria-block-dest-subnet", demisto_arguments, args)
 
 
 def unblock_dest_subnet_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'unblock_dest_subnet', 'aria-unblock-dest-subnet', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "unblock_dest_subnet", "aria-unblock-dest-subnet", demisto_arguments, args)
 
 
 def record_dest_subnet_command(instance, args):
-    demisto_arguments = ['target_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index',
-                         'aio_index', 'trigger_type', 'trigger_value', 'rcs']
-    return func_call(instance, 'record_dest_subnet', 'aria-record-dest-subnet', demisto_arguments, args)
+    demisto_arguments = [
+        "target_ip",
+        "vlan_id",
+        "rule_name",
+        "sia_interface",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "record_dest_subnet", "aria-record-dest-subnet", demisto_arguments, args)
 
 
 def stop_recording_dest_subnet_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'stop_recording_dest_subnet', 'aria-stop-recording-dest-subnet',
-                     demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "stop_recording_dest_subnet", "aria-stop-recording-dest-subnet", demisto_arguments, args)
 
 
 def alert_dest_subnet_command(instance, args):
-    demisto_arguments = ['target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
-                         'trigger_value', 'rcs']
-    return func_call(instance, 'alert_dest_subnet', 'aria-alert-dest-subnet', demisto_arguments, args)
+    demisto_arguments = [
+        "target_ip",
+        "rule_name",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "alert_dest_subnet", "aria-alert-dest-subnet", demisto_arguments, args)
 
 
 def mute_alert_dest_subnet_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'mute_alert_dest_subnet', 'aria-mute-alert-dest-subnet', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "mute_alert_dest_subnet", "aria-mute-alert-dest-subnet", demisto_arguments, args)
 
 
 def block_src_subnet_command(instance, args):
-    demisto_arguments = ['src_ip', 'rule_name', 'rcs']
-    return func_call(instance, 'block_src_subnet', 'aria-block-src-subnet', demisto_arguments, args)
+    demisto_arguments = ["src_ip", "rule_name", "rcs"]
+    return func_call(instance, "block_src_subnet", "aria-block-src-subnet", demisto_arguments, args)
 
 
 def unblock_src_subnet_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'unblock_src_subnet', 'aria-unblock-src-subnet', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "unblock_src_subnet", "aria-unblock-src-subnet", demisto_arguments, args)
 
 
 def record_src_subnet_command(instance, args):
-    demisto_arguments = ['src_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
-                         'trigger_type', 'trigger_value', 'rcs']
-    return func_call(instance, 'record_src_subnet', 'aria-record-src-subnet', demisto_arguments, args)
+    demisto_arguments = [
+        "src_ip",
+        "vlan_id",
+        "rule_name",
+        "sia_interface",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "record_src_subnet", "aria-record-src-subnet", demisto_arguments, args)
 
 
 def stop_recording_src_subnet_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'stop_recording_src_subnet', 'aria-stop-recording-src-subnet', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "stop_recording_src_subnet", "aria-stop-recording-src-subnet", demisto_arguments, args)
 
 
 def alert_src_subnet_command(instance, args):
-    demisto_arguments = ['src_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
-                         'trigger_value', 'rcs']
-    return func_call(instance, 'alert_src_subnet', 'aria-alert-src-subnet', demisto_arguments, args)
+    demisto_arguments = [
+        "src_ip",
+        "rule_name",
+        "transport_type",
+        "tti_index",
+        "aio_index",
+        "trigger_type",
+        "trigger_value",
+        "rcs",
+    ]
+    return func_call(instance, "alert_src_subnet", "aria-alert-src-subnet", demisto_arguments, args)
 
 
 def mute_alert_src_subnet_command(instance, args):
-    demisto_arguments = ['rule_name', 'rcs']
-    return func_call(instance, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', demisto_arguments, args)
+    demisto_arguments = ["rule_name", "rcs"]
+    return func_call(instance, "mute_alert_src_subnet", "aria-mute-alert-src-subnet", demisto_arguments, args)
 
 
 def main():
@@ -2248,66 +2471,66 @@ def main():
     urllib3.disable_warnings()
 
     # IP address or FQDN of your SDSo node
-    SDSO = demisto.params().get('sdso')
+    SDSO = demisto.params().get("sdso")
 
     handle_proxy()
 
-    INSECURE = demisto.params().get('insecure', False)
+    INSECURE = demisto.params().get("insecure", False)
 
     verify_cert = not INSECURE
 
-    sdso_url = f'{SDSO}/Aria/SS/1.0.0/PacketIntelligence/server'
+    sdso_url = f"{SDSO}/Aria/SS/1.0.0/PacketIntelligence/server"
 
     aria = ARIA(sdso_url, verify_cert)
 
     commnds_dict = {
-        'aria-block-conversation': block_conversation_command,
-        'aria-unblock-conversation': unblock_conversation_command,
-        'aria-record-conversation': record_conversation_command,
-        'aria-stop-recording-conversation': stop_recording_conversation_command,
-        'aria-alert-conversation': alert_conversation_command,
-        'aria-mute-alert-conversation': mute_alert_conversation_command,
-        'aria-block-dest-port': block_dest_port_command,
-        'aria-unblock-dest-port': unblock_dest_port_command,
-        'aria-record-dest-port': record_dest_port_command,
-        'aria-stop-recording-dest-port': stop_recording_dest_port_command,
-        'aria-alert-dest-port': alert_dest_port_command,
-        'aria-mute-alert-dest-port': mute_alert_dest_port_command,
-        'aria-block-src-port': block_src_port_command,
-        'aria-unblock-src-port': unblock_src_port_command,
-        'aria-record-src-port': record_src_port_command,
-        'aria-stop-recording-src-port': stop_recording_src_port_command,
-        'aria-alert-src-port': alert_src_port_command,
-        'aria-mute-alert-src-port': mute_alert_src_port_command,
-        'aria-block-dest-subnet': block_dest_subnet_command,
-        'aria-unblock-dest-subnet': unblock_dest_subnet_command,
-        'aria-record-dest-subnet': record_dest_subnet_command,
-        'aria-stop-recording-dest-subnet': stop_recording_dest_subnet_command,
-        'aria-alert-dest-subnet': alert_dest_subnet_command,
-        'aria-mute-alert-dest-subnet': mute_alert_dest_subnet_command,
-        'aria-block-src-subnet': block_src_subnet_command,
-        'aria-unblock-src-subnet': unblock_src_subnet_command,
-        'aria-record-src-subnet': record_src_subnet_command,
-        'aria-stop-recording-src-subnet': stop_recording_src_subnet_command,
-        'aria-alert-src-subnet': alert_src_subnet_command,
-        'aria-mute-alert-src-subnet': mute_alert_src_subnet_command
+        "aria-block-conversation": block_conversation_command,
+        "aria-unblock-conversation": unblock_conversation_command,
+        "aria-record-conversation": record_conversation_command,
+        "aria-stop-recording-conversation": stop_recording_conversation_command,
+        "aria-alert-conversation": alert_conversation_command,
+        "aria-mute-alert-conversation": mute_alert_conversation_command,
+        "aria-block-dest-port": block_dest_port_command,
+        "aria-unblock-dest-port": unblock_dest_port_command,
+        "aria-record-dest-port": record_dest_port_command,
+        "aria-stop-recording-dest-port": stop_recording_dest_port_command,
+        "aria-alert-dest-port": alert_dest_port_command,
+        "aria-mute-alert-dest-port": mute_alert_dest_port_command,
+        "aria-block-src-port": block_src_port_command,
+        "aria-unblock-src-port": unblock_src_port_command,
+        "aria-record-src-port": record_src_port_command,
+        "aria-stop-recording-src-port": stop_recording_src_port_command,
+        "aria-alert-src-port": alert_src_port_command,
+        "aria-mute-alert-src-port": mute_alert_src_port_command,
+        "aria-block-dest-subnet": block_dest_subnet_command,
+        "aria-unblock-dest-subnet": unblock_dest_subnet_command,
+        "aria-record-dest-subnet": record_dest_subnet_command,
+        "aria-stop-recording-dest-subnet": stop_recording_dest_subnet_command,
+        "aria-alert-dest-subnet": alert_dest_subnet_command,
+        "aria-mute-alert-dest-subnet": mute_alert_dest_subnet_command,
+        "aria-block-src-subnet": block_src_subnet_command,
+        "aria-unblock-src-subnet": unblock_src_subnet_command,
+        "aria-record-src-subnet": record_src_subnet_command,
+        "aria-stop-recording-src-subnet": stop_recording_src_subnet_command,
+        "aria-alert-src-subnet": alert_src_subnet_command,
+        "aria-mute-alert-src-subnet": mute_alert_src_subnet_command,
     }
 
     command = demisto.command()
-    LOG('ARIA: command is %s' % (command,))
+    LOG(f"ARIA: command is {command}")
 
-    if demisto.command() == 'test-module':
+    if demisto.command() == "test-module":
         # Test if the ARIA PI Reaper is ready
-        url = sdso_url + '/endPoint'
+        url = sdso_url + "/endPoint"
         try:
             res = requests.get(url, timeout=20, verify=verify_cert)
             size = len(json.loads(res.text))
             if res.ok and size != 0:
-                demisto.results('ok')
+                demisto.results("ok")
             else:
-                return_error('Fail to Connect to SDSo or no PacketIntelligence Service!')
+                return_error("Fail to Connect to SDSo or no PacketIntelligence Service!")
         except (json.JSONDecodeError, requests.exceptions.RequestException):
-            return_error('Fail to Connect to SDSo or no PacketIntelligence Service!')
+            return_error("Fail to Connect to SDSo or no PacketIntelligence Service!")
 
     else:
         cmd_func = commnds_dict.get(command)
@@ -2320,15 +2543,15 @@ def main():
 
             LOG(json.dumps(ec))
 
-            if context_entry['Status']['command_state'] == 'Success':
+            if context_entry["Status"]["command_state"] == "Success":
                 return_outputs(readable_output, ec)
-            elif context_entry['Status']['command_state'] == 'Failure':
+            elif context_entry["Status"]["command_state"] == "Failure":
                 LOG.print_log()
-                return_error(f'One or more endpoint(s) fail to create/remove rules. Please see {context_entry}')
+                return_error(f"One or more endpoint(s) fail to create/remove rules. Please see {context_entry}")
             else:
-                return_error(f'Endpoint matching RCS not found! Please see {context_entry}')
+                return_error(f"Endpoint matching RCS not found! Please see {context_entry}")
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
