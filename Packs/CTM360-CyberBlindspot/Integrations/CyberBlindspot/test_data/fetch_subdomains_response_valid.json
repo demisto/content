@@ -1,0 +1,50 @@
+[
+    {
+        "first_seen": "28-12-2024 05:33:36 PM",
+        "last_seen": "28-12-2024 05:34:19 PM",
+        "id": "RD-RA144D26C",
+        "remarks": "RD-RA144D26C",
+        "subject": "ww25.hose-monster.trybackme.up",
+        "severity": "High",
+        "type": "Subdomain Infringement",
+        "risks": [
+            "SSL issued on domain"
+        ],
+        "status": "monitoring",
+        "brand": "RiskAssess Demo",
+        "timestamp": 1735407216507
+    },
+    {
+        "first_seen": "27-12-2024 03:27:49 AM",
+        "last_seen": "27-12-2024 03:29:07 AM",
+        "id": "RD-5049BCA31",
+        "remarks": "RD-5049BCA31",
+        "subject": "webemail.trybackme.io",
+        "severity": "High",
+        "type": "Subdomain Infringement",
+        "risks": [
+            "SSL issued on domain"
+        ],
+        "status": "monitoring",
+        "brand": "RiskAssess Demo",
+        "timestamp": 1735270069133
+    },
+    {
+        "first_seen": "26-12-2024 06:40:46 AM",
+        "last_seen": "26-12-2024 06:46:33 AM",
+        "id": "RD-FBD354127",
+        "remarks": "RD-FBD354127",
+        "subject": "signature-evasion-trybackme.brandifyo.cfd",
+        "severity": "High",
+        "type": "Subdomain Infringement",
+        "risks": [
+            "Has MX Record",
+            "Has DNS Record",
+            "SSL issued on domain",
+            "Has A Record"
+        ],
+        "status": "monitoring",
+        "brand": "RiskAssess Demo",
+        "timestamp": 1735195246025
+    }
+]

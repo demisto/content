@@ -1,20 +1,20 @@
 id: Retrieve File from Endpoint - Generic V3 Test
 version: -1
 name: Retrieve File from Endpoint - Generic V3 Test
-description: This Test Playbook tests the Retrieve File from endpoint V3 playbook with multiple inputs
+description: This Test Playbook tests the Retrieve File from endpoint V3 playbook
+  with multiple inputs
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 221f67e0-08b4-4b91-85e3-d9190aa9270e
+    taskid: ceaa8d0d-7fe6-4888-8730-d716d3b77e3c
     type: start
     task:
-      id: 221f67e0-08b4-4b91-85e3-d9190aa9270e
+      id: ceaa8d0d-7fe6-4888-8730-d716d3b77e3c
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -250
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -36,16 +36,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a80d8c44-cd63-4f4b-8d04-c0f1d95fd8b8
+    taskid: bf805b44-61eb-4c83-8a06-6b726e33dd1c
     type: title
     task:
-      id: a80d8c44-cd63-4f4b-8d04-c0f1d95fd8b8
+      id: bf805b44-61eb-4c83-8a06-6b726e33dd1c
       version: -1
       name: Test Empty Inputs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -54,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -80
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -67,27 +66,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 045bcf10-46e0-4877-8d60-781f0429f9de
+    taskid: b3540699-4cfe-4e38-87e0-aad915c36b43
     type: regular
     task:
-      id: 045bcf10-46e0-4877-8d60-781f0429f9de
+      id: b3540699-4cfe-4e38-87e0-aad915c36b43
       version: -1
       name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -96,8 +93,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 60
+          "x": 265,
+          "y": 340
         }
       }
     note: false
@@ -109,27 +106,42 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c5740b1b-bfe7-4118-85d7-277c0e0b6f9a
+    taskid: 7bb9a393-8a55-4add-81df-bde26a907033
     type: playbook
     task:
-      id: c5740b1b-bfe7-4118-85d7-277c0e0b6f9a
+      id: 7bb9a393-8a55-4add-81df-bde26a907033
       version: -1
       name: Retrieve File from Endpoint - Generic V3
+      description: |-
+        'This playbook retrieves a file sample from an endpoint using the following playbooks:'
+        - Get File Sample From Path - Generic v2.
+        - Get File Sample By Hash - Generic v3.
       playbookName: Retrieve File from Endpoint - Generic V3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
+    scriptarguments:
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 240
+          "x": 265,
+          "y": 690
         }
       }
     note: false
@@ -141,16 +153,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 60e13c13-8887-4922-886a-6615732a5b20
+    taskid: e828386d-624e-4487-808c-c8b0fc28183e
     type: title
     task:
-      id: 60e13c13-8887-4922-886a-6615732a5b20
+      id: e828386d-624e-4487-808c-c8b0fc28183e
       version: -1
       name: Test Empty Inputs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -159,8 +170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 420
+          "x": 265,
+          "y": 865
         }
       }
     note: false
@@ -172,27 +183,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ab133e91-813d-4e57-826d-99bc9bb78e93
+    taskid: a53997a3-d8bf-4e9a-8b8e-3c92cc030e6a
     type: regular
     task:
-      id: ab133e91-813d-4e57-826d-99bc9bb78e93
+      id: a53997a3-d8bf-4e9a-8b8e-3c92cc030e6a
       version: -1
       name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "11"
     scriptarguments:
       all:
         simple: "yes"
@@ -201,8 +210,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 560
+          "x": 265,
+          "y": 1010
         }
       }
     note: false
@@ -214,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 97825721-3306-45d7-8a68-b647783580d9
+    taskid: e01e3ca6-7197-4419-8cf3-9cff5f71a794
     type: playbook
     task:
-      id: 97825721-3306-45d7-8a68-b647783580d9
+      id: e01e3ca6-7197-4419-8cf3-9cff5f71a794
       version: -1
       name: Retrieve File from Endpoint - Generic V3
       description: |-
@@ -245,7 +254,11 @@ tasks:
       Path:
         simple: C:\\Windows\\system32\\drivers\\etc\\HOSTS
       SHA256:
-        simple: 055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -256,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 770
+          "x": 265,
+          "y": 1360
         }
       }
     note: false
@@ -269,23 +282,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7d2aaba7-fcdb-4f47-8e05-72fc7e1eb312
+    taskid: 103d0f3b-1791-424f-84ef-7a10c48912b2
     type: title
     task:
-      id: 7d2aaba7-fcdb-4f47-8e05-72fc7e1eb312
+      id: 103d0f3b-1791-424f-84ef-7a10c48912b2
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1190
+          "x": 480,
+          "y": 1725
         }
       }
     note: false
@@ -297,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d790f956-606e-4106-8070-054cba1c9849
+    taskid: 1b9c7ef6-6fb9-444f-823e-cec0dd3b6ba8
     type: condition
     task:
-      id: d790f956-606e-4106-8070-054cba1c9849
+      id: 1b9c7ef6-6fb9-444f-823e-cec0dd3b6ba8
       version: -1
       name: Check If File Was Retrieved
       type: condition
@@ -326,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 930
+          "x": 265,
+          "y": 1535
         }
       }
     note: false
@@ -339,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6f75061d-af5b-4201-8921-11deabdb987c
+    taskid: de754623-2f5f-4fa2-859c-701af7509155
     type: regular
     task:
-      id: 6f75061d-af5b-4201-8921-11deabdb987c
+      id: de754623-2f5f-4fa2-859c-701af7509155
       version: -1
       name: Test Failure
       description: Prints an error entry with a given message
@@ -358,8 +370,72 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 1175
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5ebd2ccb-b809-403f-885c-4a8a99d97067
+    type: regular
+    task:
+      id: 5ebd2ccb-b809-403f-885c-4a8a99d97067
+      version: -1
+      name: Get SHA256
+      description: Returns information about Cylance Protect threats.
+      script: Cylance Protect v2|||cylance-protect-get-threats
+      type: regular
+      iscommand: true
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 196efd5f-cc6e-4cbc-8147-c524a89af78d
+    type: regular
+    task:
+      id: 196efd5f-cc6e-4cbc-8147-c524a89af78d
+      version: -1
+      name: Get SHA256
+      description: Returns information about Cylance Protect threats.
+      script: Cylance Protect v2|||cylance-protect-get-threats
+      type: regular
+      iscommand: true
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
         }
       }
     note: false
@@ -374,10 +450,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1520,
-        "width": 870,
-        "x": 260,
-        "y": -250
+        "height": 1755,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }

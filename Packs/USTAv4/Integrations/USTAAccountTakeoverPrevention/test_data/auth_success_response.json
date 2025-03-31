@@ -1,0 +1,10 @@
+{
+    "id": 1,
+    "name": "Test Corp Client",
+    "sector": {
+        "id": 1,
+        "name": "Finance"
+    },
+    "is_soc_company": false,
+    "is_managed_by_soc": false
+}

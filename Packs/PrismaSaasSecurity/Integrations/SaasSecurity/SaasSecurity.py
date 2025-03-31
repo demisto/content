@@ -224,6 +224,34 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def validate_limit(limit: Optional[int]) -> int:
+    """
+    Validate the limit according to the following rules:
+
+    1. if the limit is 0 or negative, raise an exception.
+    2. if the limit is less than 10, the limit will be equal to 10.
+    3. if the limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
+    4. if limit > MAX_LIMIT (200) - make sure it will always be MAX_LIMIT (200).
+    5. if a limit is not provided, set it up for the default limit which is 50.
+    """
+    demisto.debug(f'limit before validate: {limit}')
+    if limit:
+        if limit <= 0:
+            raise DemistoException('The limit parameter cannot be negative number or zero')
+        if limit < LIMIT_MIN:
+            limit = LIMIT_MIN
+        if limit > LIMIT_MAX:  # do not allow a limit of more than 200 to avoid timeouts
+            limit = LIMIT_MAX
+        if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS API limit)
+            # round down the limit
+            limit = int(limit // 10) * 10
+    else:
+        limit = LIMIT_DEFAULT
+
+    demisto.debug(f'limit after validate: {limit}')
+    return limit
+
+
 def get_passed_mins(start_time, end_time_str, tz=None):
     """
     Calculates the amount of minutes passed between 2 dates.
@@ -276,7 +304,7 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     """
     List incidents with query.
     """
-    limit = arg_to_number(args.get('limit')) or LIMIT_DEFAULT
+    limit = validate_limit(arg_to_number(args.get('limit')))
     from_time = args.get('from')
     to_time = args.get('to')
     app_ids = ','.join(argToList(args.get('app_ids', [])))
@@ -284,10 +312,6 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     severity = ','.join(argToList(args.get('severity', [])))
     status = ','.join(STATUS_MAP.get(x) for x in argToList(args.get('status', [])))  # type: ignore[misc]
     next_page = args.get('next_page')
-
-    if limit > LIMIT_MAX or limit < LIMIT_MIN:
-        demisto.debug('SaaSSecurity: limit must be between 10 to 500. Setting limit to the default value of 50.')
-        limit = LIMIT_MIN
 
     raw_res = client.get_incidents(limit, from_time, to_time, app_ids, state, severity, status, next_page)
     incidents = raw_res.get('resources', [])
@@ -653,7 +677,7 @@ def main() -> None:
 
     # Fetch incident related params:
     first_fetch_time = params.get('first_fetch', '3 days')
-    fetch_limit = arg_to_number(params.get('max_fetch', LIMIT_DEFAULT))
+    fetch_limit = validate_limit(arg_to_number(params.get('max_fetch')))
     fetch_state = params.get('state')
     fetch_severity = params.get('severity')
     fetch_status = ','.join(STATUS_MAP.get(x) for x in argToList(params.get('status', [])))  # type: ignore[misc]

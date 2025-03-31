@@ -1,6 +1,9 @@
 commonfields:
   id: Jira V3
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
@@ -12,31 +15,45 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+  section: Connect
 - display: User name
   name: basic_credentials
   displaypassword: API key
   required: false
   type: 9
+  section: Connect
 - name: cloud_id
   display: Cloud ID
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
   required: false
+  section: Connect
 - name: callback_url
   display: Callback URL
   type: 0
   required: false
+  section: Connect
 - display: Client ID
   type: 9
   name: credentials
   displaypassword: Client Secret
   required: false
+  section: Connect
+- display: Personal Access Token
+  displaypassword: Personal Access Token
+  name: pat_credential
+  type: 9
+  required: false
+  hiddenusername: true
+  additionalinfo: Use the Personal Access Token for API Authentication.
+  section: Connect
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
-  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
+  additionalinfo: The field selected in the "Issue Field to fetch by" can't be used in the query.
   name: fetch_query
   type: 0
   required: false
+  section: Collect
 - defaultvalue: id
   display: Issue Field to fetch by
   name: issue_field_to_fetch_from
@@ -47,37 +64,46 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
   required: false
+  section: Collect
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
   defaultvalue: '0'
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: Time range for initial data fetch
   additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
@@ -86,6 +112,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
 - defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
@@ -98,6 +125,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
@@ -106,6 +134,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
@@ -114,6 +144,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
@@ -122,6 +154,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
@@ -130,24 +164,29 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
   required: false
+  section: Collect
 script:
   commands:
   - arguments:
@@ -316,6 +355,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's labels.
@@ -486,6 +528,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's project description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
       type: Array
@@ -542,6 +587,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
@@ -757,6 +805,12 @@ script:
       type: String
     - contextPath: InfoFile.Info
       description: Basic information about the file.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
   - arguments:
     - description: The maximum number of results to return. Default is 50 and maximum is 5000.
@@ -1691,7 +1745,66 @@ script:
     - contextPath: Jira.IssueField.Schema.configuration
       description: If the field is a custom field, the configuration of the field.
       type: Object
-  dockerimage: demisto/btfl-soup:1.0.1.117589
+  - arguments:
+    - description: 'A summary of the issue. Use issue fields as variables to enrich the text. Example: ${issue.name}.'
+      name: summary
+      prettyname: Summary
+      required: true
+    - description: The Jira project key where the issue will be created.
+      name: project_key
+      prettyname: Project Key
+      required: true
+    - description: 'Selects an issue type by name, for example: "Bug" or "Task".'
+      name: issue_type_name
+      prettyname: Issue Type
+      required: true
+    - description: 'A description of the issue. Use issue fields as variables to enrich the text. Example: ${issue.details}.'
+      name: description
+      prettyname: Description
+      required: true
+    - description: A CSV list of labels.
+      isArray: true
+      name: labels
+    - name: priority
+      description: Priority of the ticket.
+      predefined:
+      - 1 - High
+      - 2 - Medium
+      - 3 - Low
+    - description: The due date for the issue (in the format yyyy-mm-dd).
+      name: due_date
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+      name: assignee
+    - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    - description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: reporter_id
+    - description: The name of the of the reporter. Relevant for Jira Server only. Use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
+      name: reporter
+    - description: The parent issue key (if you're creating a sub-task).
+      name: parent_issue_key
+    - description: The parent issue ID (if you're creating a sub-task).
+      name: parent_issue_id
+    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+      name: environment
+    - description: The security level of the issue. For example security="Anyone".
+      name: security
+    - description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem instance, the entered components must already exist.
+      isArray: true
+      name: components
+    description: Creates a new issue in Jira.
+    name: jira-create-issue-quick-action
+    prettyname: Create Jira Ticket
+    hidden: true
+    quickaction: true
+    outputs:
+      - contextPath: Ticket.Id
+        description: The ticket ID.
+        type: String
+      - contextPath: Ticket.Key
+        description: The ticket key.
+        type: String
+  dockerimage: demisto/btfl-soup:1.0.1.2129515
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1703,5 +1816,6 @@ script:
 tests:
 - JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
+supportsquickactions: true
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0

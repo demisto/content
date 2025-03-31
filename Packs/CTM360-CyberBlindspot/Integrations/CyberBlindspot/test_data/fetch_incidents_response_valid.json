@@ -8,8 +8,8 @@
         "status": "Member Feedback",
         "coa": "Takedown",
         "remarks": "New Exposed Email Address with severity High found",
-        "created_date": "20-12-2023 04:51:51 AM",
-        "updated_date": "20-12-2023 04:51:51 AM",
+        "first_seen": "20-12-2023 04:51:51 AM",
+        "last_seen": "20-12-2023 04:51:51 AM",
         "brand": "Mock Brand",
         "timestamp": 1703047911349
     },
@@ -22,8 +22,8 @@
         "status": "Member Feedback",
         "coa": "Member Side Action",
         "remarks": "New leaked_credential with severity High found",
-        "created_date": "20-12-2023 04:50:30 AM",
-        "updated_date": "20-12-2023 04:50:30 AM",
+        "first_seen": "20-12-2023 04:50:30 AM",
+        "last_seen": "20-12-2023 04:50:30 AM",
         "brand": "Mock Brand",
         "timestamp": 1703047830650
     },
@@ -36,8 +36,8 @@
         "status": "Member Feedback",
         "coa": "Takedown",
         "remarks": "New Exposed Email Address with severity High found",
-        "created_date": "20-12-2023 03:17:10 AM",
-        "updated_date": "20-12-2023 03:17:10 AM",
+        "first_seen": "20-12-2023 03:17:10 AM",
+        "last_seen": "20-12-2023 03:17:10 AM",
         "brand": "Mock Brand",
         "timestamp": 1703042231364
     }

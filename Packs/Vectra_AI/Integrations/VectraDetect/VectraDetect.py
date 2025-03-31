@@ -2594,7 +2594,8 @@ def get_modified_remote_data_command(client: Client) -> GetModifiedRemoteDataRes
                 # Extract the query parameters
                 query_params = parse_qs(parsed_url.query)
                 page = arg_to_number(query_params.get('page', [''])[0], arg_name='page')  # type: ignore
-                page_size = arg_to_number(query_params.get('page_size', [''])[0], arg_name='page_size')
+                page_size = arg_to_number(query_params.get('page_size', [''])[
+                                          0], arg_name='page_size')  # type: ignore[assignment]
                 query_string = query_params.get('query_string', [''])[0]  # type: ignore
             else:
                 query_string = '_doc_modified_ts:>=' + command_last_run_date

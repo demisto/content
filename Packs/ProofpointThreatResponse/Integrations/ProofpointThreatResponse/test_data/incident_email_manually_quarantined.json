@@ -1,0 +1,104 @@
+
+[{
+        "id": 3065,
+        "summary": "",
+        "description": "",
+        "score": 200,
+        "state": "4000",
+        "created_at": "2021-03-30T11:44:24Z",
+        "updated_at": "2021-03-30T11:44:24Z",
+        "event_count": 3,
+        "false_positive_count": null,
+        "event_sources": [
+            "Proofpoint TAP"
+        ],
+        "users": [],
+        "assignee": "Unassigned",
+        "team": "TEST-TEST",
+        "hosts": {
+            "url": [
+                "http://test.com/"
+            ]
+        },
+        "incident_field_values": [
+            {
+                "name": "Classification",
+                "value": "Phishing"
+            },
+            {
+                "name": "Attack Vector",
+                "value": "Email"
+            },
+            {
+                "name": "Abuse Disposition",
+                "value": null
+            },
+            {
+                "name": "Severity",
+                "value": "High"
+            }
+        ],
+        "events": [
+            {
+                "category": "phish",
+                "attackDirection": "inbound",
+                "alertType": "phish",
+                "severity": "Major",
+                "received": "2021-03-30T11:44:24Z",
+                "attackers": [
+                    {
+                        "location": "127.0.0.1"
+                    },
+                    {
+                        "location": "http://test.com/"
+                    }
+                ],
+                "falsePositive": false,
+                "emails": [
+                    {
+                        "messageDeliveryTime": "2021-04-30T11:17:39Z",
+                        "sender": {
+                            "vap": false,
+                            "email": "t.t@test.com"
+                        },
+                        "abuseCopy": false,
+                        "messageId": "<ABCD1234@cpus>",
+                        "recipient": {
+                            "vap": false,
+                            "email": "sabrina.test@test.com"
+                        },
+                        "subject": "[EXTERNAL] FW: Message from test Reception 01:28 PM, March 30, 2021",
+                        "attachments": [
+                            {
+                                "timestamp": {
+                                    "epochSecond": 1629455474,
+                                    "nano": 0
+                                },
+                                "safename": "9e7d56ad15ebe0705686ffbae32827ag.JPG",
+                                "realnamePII": {
+                                    "secret": "test.JPG"
+                                },
+                                "size": 26091,
+                                "contentType": "image/jpeg",
+                                "md5": "12ddf622c090be352f4cb7c1df0e7f1k",
+                                "sha256": "g82a86a8dd3ce77c203177de514a4d6851bba0a13caa7f273567a096df816f1c"
+                            }
+                        ]
+                    }
+                ],
+                "source": "Proofpoint TAP",
+                "state": "Linked",
+                "id": 9225
+            }
+        ],
+        "event_ids": [
+            44249,
+            44248,
+            44247
+        ],
+        "comments": [],
+        "quarantine_results": [{"messageId":"<ABCD1234@cpus>", "recipient": "sabrina.test@test.com", "startTime": "2021-04-30T08:17:39Z"}],
+        "successful_quarantines": 0,
+        "failed_quarantines": 0,
+        "pending_quarantines": 0
+    }]
