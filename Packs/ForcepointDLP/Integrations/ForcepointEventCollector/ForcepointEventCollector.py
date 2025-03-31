@@ -1071,6 +1071,7 @@ def list_policy_rule_command(client: Client, args: dict) -> list[CommandResults]
             for rule in rules
         ],
     }
+    outputs = remove_empty_elements(outputs)
 
     readable_output = tableToMarkdown(
         f"Policy `{policy_name}` Rule List:\nDescription: {description}\nPolicy level: {policy_level}\n",
