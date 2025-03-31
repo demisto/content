@@ -2,7 +2,7 @@
     "name": "JsonWhoIs",
     "description": "Provides data enrichment for domains and IP addresses.",
     "support": "xsoar",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
