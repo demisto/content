@@ -413,7 +413,7 @@ def get_url_command(
         removeNull=False,
     )
 
-    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
+    detected_activities: list = (indicator_data.get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities:
         activity = activity or {}
@@ -434,7 +434,7 @@ def get_url_command(
             removeNull=False,
         )
 
-    related_entities: list = (indicator.get("data", {}).get("enrichment", {}) or {}).get("related_entities", []) or []
+    related_entities: list = (indicator_data.get("enrichment", {}) or {}).get("related_entities", []) or []
 
     for entity in related_entities:
         entity = entity or {}
@@ -456,8 +456,8 @@ def get_url_command(
         readable_output=human_readable,
         outputs_prefix="Cyberint.url",
         outputs_key_field="value",
-        raw_response=indicator,
-        outputs=indicator,
+        raw_response=indicator_data,
+        outputs=indicator_data,
     )
 
 
@@ -512,10 +512,10 @@ def get_ipv4_command(
         removeNull=False,
     )
 
-    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
+    detected_activities: list = (indicator_data.get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities:
-        activity = activity or {}  # Ensure each activity is a valid dictionary
+        activity = activity or {}
         activities_formatted = [{
             "type": activity.get("type", ""),
             "observation_date": activity.get("observation_date", ""),
@@ -533,7 +533,7 @@ def get_ipv4_command(
             removeNull=False,
         )
 
-    related_entities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("related_entities", [])
+    related_entities: list = (indicator_data.get("risk", {}) or {}).get("related_entities", [])
 
     for entity in related_entities:
         entity = entity or {}
@@ -555,8 +555,8 @@ def get_ipv4_command(
         readable_output=human_readable,
         outputs_prefix="Cyberint.ipv4",
         outputs_key_field="value",
-        raw_response=indicator,
-        outputs=indicator,
+        raw_response=indicator_data,
+        outputs=indicator_data,
     )
 
 
@@ -625,7 +625,7 @@ def get_domain_command(
         removeNull=False,
     )
 
-    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
+    detected_activities: list = (indicator_data.get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities or []:
         activities_formatted = [{
@@ -645,7 +645,7 @@ def get_domain_command(
             removeNull=False,
         )
 
-    related_entities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("related_entities", [])
+    related_entities: list = (indicator_data.get("risk", {}) or {}).get("related_entities", [])
 
     for entity in related_entities or []:
         entities_formatted = [{
@@ -666,8 +666,8 @@ def get_domain_command(
         readable_output=human_readable,
         outputs_prefix="Cyberint.domain",
         outputs_key_field="value",
-        raw_response=indicator,
-        outputs=indicator,
+        raw_response=indicator_data,
+        outputs=indicator_data,
     )
 
 
@@ -718,7 +718,7 @@ def get_file_sha256_command(
         removeNull=False,
     )
 
-    detected_activities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("detected_activities", [])
+    detected_activities: list = (indicator_data.get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities or []:
         activity = activity or {}
@@ -739,7 +739,7 @@ def get_file_sha256_command(
             removeNull=False,
         )
 
-    related_entities: list = (indicator.get("data", {}).get("risk", {}) or {}).get("related_entities", [])
+    related_entities: list = (indicator_data.get("risk", {}) or {}).get("related_entities", [])
 
     for entity in related_entities or []:
         entity = entity or {}
@@ -761,8 +761,8 @@ def get_file_sha256_command(
         readable_output=human_readable,
         outputs_prefix="Cyberint.file_sha256",
         outputs_key_field="value",
-        raw_response=indicator,
-        outputs=indicator,
+        raw_response=indicator_data,
+        outputs=indicator_data,
     )
 
 
