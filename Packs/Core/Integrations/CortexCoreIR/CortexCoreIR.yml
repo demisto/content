@@ -4027,17 +4027,17 @@ script:
       required: false
       isArray: false
       type: Boolean
-    - description: Link the response action to triggered incident.
+    - description: Link the response action to the triggered incident.
       name: incident_id
       required: false
       isArray: false
       type: String
-    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands that are run independently.
       name: is_raw_command
       required: false
       isArray: false
       type: Boolean
-    - description: "Type of shell command. Possible values are: powershell, native."
+    - description: Type of shell command.
       name: command_type
       required: false
       isArray: false
@@ -4045,7 +4045,7 @@ script:
       predefined:
       - "powershell"
       - "native"
-    description: run command on a specific endpoint and return it's result.
+    description: Run command on a specific endpoint and return its result.
     name: core-execute-command
     polling: true
     outputs:
