@@ -33,26 +33,18 @@ def write_test_data(file_path, string_to_write):
 
 
 def test_format_investigate():
-    human_readable_output, context = format_investigate_output(
-        mock_response.domaintools_response
-    )
+    human_readable_output, context = format_investigate_output(mock_response.domaintools_response)
 
     expected_investigate_domaintools_context = expected.domaintools_investigate_context
     domaintools_context = context.get("domaintools")
-    assert domaintools_context.get(
-        "Name"
-    ) == expected_investigate_domaintools_context.get("domaintools", {}).get("Name")
+    assert domaintools_context.get("Name") == expected_investigate_domaintools_context.get("domaintools", {}).get("Name")
 
 
 def test_format_enrich():
-    human_readable_output, context = format_enrich_output(
-        mock_response.domaintools_response
-    )
+    human_readable_output, context = format_enrich_output(mock_response.domaintools_response)
     expected_enrich_domaintools_context = expected.domaintools_enrich_context
     domaintools_context = context.get("domaintools")
-    assert domaintools_context.get("Name") == expected_enrich_domaintools_context.get(
-        "domaintools", {}
-    ).get("Name")
+    assert domaintools_context.get("Name") == expected_enrich_domaintools_context.get("domaintools", {}).get("Name")
 
 
 def test_analytics_command(mocker):
@@ -73,9 +65,7 @@ def test_analytics_command(mocker):
 
 
 def test_threat_profile_command(mocker):
-    mocker.patch.object(
-        demisto, "command", return_value="domaintoolsiris-threat-profile"
-    )
+    mocker.patch.object(demisto, "command", return_value="domaintoolsiris-threat-profile")
     mocker.patch.object(demisto, "args", return_value={"domain": "domaintools.com"})
     mocker.patch(
         "DomainTools_Iris.domain_investigate",
@@ -177,12 +167,7 @@ def test_whois_command(mocker):
     main()
     results = demisto.results.call_args[0]
 
-    assert (
-        results[0]["EntryContext"]["Domain(val.Name && val.Name == obj.Name)"][0][
-            "Name"
-        ]
-        == "domaintools.com"
-    )
+    assert results[0]["EntryContext"]["Domain(val.Name && val.Name == obj.Name)"][0]["Name"] == "domaintools.com"
 
 
 def test_domainRdap_command(mocker):
@@ -278,16 +263,12 @@ def test_reverseIP_command(mocker, args, attribute, type):
         "ip": expected.reverseIP_ip_params_table,
         "domain": expected.reverseIP_domain_params_table,
     }
-    assert " ".join(human_readable.split()) == " ".join(
-        expected_human_readable[type].split()
-    )
+    assert " ".join(human_readable.split()) == " ".join(expected_human_readable[type].split())
 
 
 def test_reverseNameserver_command(mocker):
     mocker.patch.object(demisto, "command", return_value="reverseNameServer")
-    mocker.patch.object(
-        demisto, "args", return_value={"nameServer": "ns01.domaincontrol.com"}
-    )
+    mocker.patch.object(demisto, "args", return_value={"nameServer": "ns01.domaincontrol.com"})
 
     mocker.patch(
         "DomainTools_Iris.reverse_nameserver",
