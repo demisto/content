@@ -2,7 +2,7 @@
     "name": "HPE Aruba Clearpass",
     "description": "Aruba ClearPass Policy Manager provides role and device-based network access control for employees, contractors, and guests across any multivendor wired, wireless and VPN infrastructure.",
     "support": "xsoar",
-    "currentVersion": "1.0.28",
+    "currentVersion": "1.0.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
