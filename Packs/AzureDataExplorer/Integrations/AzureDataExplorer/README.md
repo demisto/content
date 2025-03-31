@@ -586,7 +586,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
