@@ -4037,7 +4037,7 @@ script:
       required: false
       isArray: false
       type: Boolean
-    - description: "Type of shell command. Possible values are: powershell, native."
+    - description: Type of shell command.
       name: command_type
       required: false
       isArray: false
