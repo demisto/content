@@ -1816,6 +1816,7 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces:
+marketplaces: 
 - marketplacev2
+- platform
 fromversion: 6.8.0
