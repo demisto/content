@@ -4045,7 +4045,7 @@ script:
       predefined:
       - "powershel"
       - "native"
-    description: run command on a specific endpoint and return it's result.
+    description: Run command on a specific endpoint and return its result.
     name: core-execute-command
     polling: true
     outputs:
