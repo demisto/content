@@ -47,6 +47,10 @@
         "AzureAppService": {
             "mandatory": true,
             "display_name": "Azure App Service"
+        },
+        "AzureAppService": {
+            "mandatory": true,
+            "display_name": "Azure DevOps"
         }
     },
     "supportedModules": [
