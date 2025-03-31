@@ -1,12 +1,12 @@
-import dateparser
-import pytest
-import os
 import json
+import os
 from http import HTTPStatus
 
+import dateparser
 import demistomock as demisto
-from ForcepointEventCollector import fetch_events, Client, get_events_command
+import pytest
 from CommonServerPython import *
+from ForcepointEventCollector import Client, fetch_events, get_events_command
 
 
 @pytest.fixture(autouse=True)
@@ -286,7 +286,8 @@ def test_error_list_policy_command(requests_mock, mock_client):
     """
     Test case to validate handling of HTTP 420 status code and ensure correct error message.
     """
-    from ForcepointEventCollector import list_policy_command, NO_CONTENT_CODE, NO_CONTENT_MESSAGE
+    from ForcepointEventCollector import (NO_CONTENT_CODE, NO_CONTENT_MESSAGE,
+                                          list_policy_command)
 
     requests_mock.get(
         url=f"{mock_client._base_url}/policy/enabled-names?type=DLP",
@@ -344,11 +345,8 @@ def test_error_list_policy_rule_command(requests_mock, mock_client):
     """
     Test case to validate handling of HTTP 420 status code and ensure correct error message.
     """
-    from ForcepointEventCollector import (
-        list_policy_rule_command,
-        NO_CONTENT_CODE,
-        NO_CONTENT_MESSAGE,
-    )
+    from ForcepointEventCollector import (NO_CONTENT_CODE, NO_CONTENT_MESSAGE,
+                                          list_policy_rule_command)
 
     requests_mock.get(
         url=f"{mock_client._base_url}/policy/rules",
@@ -1000,31 +998,6 @@ def test_build_rule_payload():
     assert result["rules"][0]["rule_name"] == "new_rule"
     assert result["rules"][0]["classifiers"][0]["classifier_name"] == "new_classifier"
     assert result["description"] == "New rule description"
-
-    # test when using payload
-    # result = build_rule_payload(
-    #     dlp_version="10.2.0",
-    #     policy_name="hard4",
-    #     policy_enabled="true",
-    #     predefined_policy="false",
-    #     rule_name="rule1",
-    #     rule_enabled="false",
-    #     parts_count_type="ANY",
-    #     condition_relation_type="OR",
-    #     classifier_name="test",
-    #     classifier_predefined="true",
-    #     classifier_position=1,
-    #     threshold_type="CHECK_EMPTY",
-    #     threshold_value_from=0,
-    #     threshold_value_to=0,
-    #     threshold_calculate_type="ALL",
-    #     description="Updated description",
-    #     policy_level=3,
-    #     policy_level_data_type="NEW_NETWORKING",
-    #     policy=policy,
-    #     payload={"payload": "yes"},
-    # )
-    # assert result["payload"] == "yes"
 
 
 @pytest.mark.parametrize(
