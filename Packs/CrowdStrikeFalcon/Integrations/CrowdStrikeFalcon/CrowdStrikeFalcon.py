@@ -31,7 +31,8 @@ OFP_DETECTION = "OFP detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
-MEMBER_CID = demisto.args().get('member_cid') or ''
+MEMBER_CID = demisto.args().get('member_cid')
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS['url'].removesuffix('/')
 # Should we use SSL
