@@ -92,6 +92,7 @@ script:
           required: true
       description: Gets security events from Forcepoint DLP.
       name: forcepoint-dlp-get-events
+      hidden: true
     - name: fp-dlp-policy-list
       description: List the names of all enabled policies displayed in the 'Manage DLP and Discovery Policies' section.
       arguments:
