@@ -1,5 +1,27 @@
 {
   "config": {
-    "default": false
+    "default": false,
+  "MD004": true,
+  "MD007": true,
+  "MD009": true,
+  "MD010": true,
+  "MD011": true,
+  "MD012": true,
+  "MD014": true,
+  "MD018": true,
+  "MD019": true,
+  "MD022": true,
+  "MD023": true,
+  "MD026": true,
+  "MD027": true,
+  "MD030": true,
+  "MD031": true,
+  "MD032": true,
+  "MD037": true,
+  "MD038": true,
+  "MD047": true,
+  "MD049": true,
+  "MD050": true,
+  "MD058": true
   } , "fix" :true
 }
