@@ -4049,76 +4049,43 @@ script:
     name: core-execute-command
     polling: true
     outputs:
-    - contextPath: RunCommandWithOutputResults.ScriptRun.action_id
+    - contextPath: Core.ScriptResult.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: RunCommandWithOutputResults.ScriptRun.endpoints_count
-      description: Number of endpoints the action was initiated on.
-      type: Number
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.bucket
-      description: The bucket in which the error occurred.
-      type: String
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.file_name
-      description: The name of the file that caused the error.
-      type: String
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.file_path
-      description: The path of the file that caused the error.
-      type: String
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.file_size
-      description: The size of the file that caused the error.
-      type: Number
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.missing_files
-      description: The missing files that caused the error.
-      type: Unknown
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.errorData
-      description: The error reason data.
-      type: String
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.terminated_by
-      description: The instance ID which terminated the action and caused the error.
-      type: String
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.errorDescription
-      description: The error reason description.
-      type: String
-    - contextPath: RunCommandWithOutputResults.GetActionStatus.ErrorReasons.terminate_result
-      description: The error reason terminate result.
-      type: Unknown
-    - contextPath: RunCommandWithOutputResults.action_id
-      description: ID of the action initiated.
-      type: Number
-    - contextPath: RunCommandWithOutputResults.results.retrieved_files
+    - contextPath: Core.ScriptResult.results.retrieved_files
       description: Number of successfully retrieved files.
       type: Number
-    - contextPath: RunCommandWithOutputResults.results.endpoint_ip_address
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
       description: Endpoint IP address.
       type: String
-    - contextPath: RunCommandWithOutputResultst.results.endpoint_name
+    - contextPath: Core.ScriptResult.results.endpoint_name
       description: Endpoint name.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.failed_files
+    - contextPath: Core.ScriptResult.results.failed_files
       description: Number of files failed to retrieve.
       type: Number
-    - contextPath: RunCommandWithOutputResults.results.endpoint_status
+    - contextPath: Core.ScriptResult.results.endpoint_status
       description: Endpoint status.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.domain
+    - contextPath: Core.ScriptResult.results.domain
       description: Domain to which the endpoint belongs.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.endpoint_id
+    - contextPath: Core.ScriptResult.results.endpoint_id
       description: Endpoint ID.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.execution_status
+    - contextPath: Core.ScriptResult.results.execution_status
       description: Execution status of this endpoint.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.return_value
+    - contextPath: Core.ScriptResult.results.return_value
       description: Value returned by the script in case the type is not a dictionary.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.standard_output
+    - contextPath: Core.ScriptResult.results.standard_output
       description: The STDOUT and the STDERR logged by the script during the execution.
       type: String
-    - contextPath: RunCommandWithOutputResults.results.retention_date
+    - contextPath: Core.ScriptResult.results.retention_date
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
-    - contextPath: RunCommandWithOutputResults.results.command
+    - contextPath: Core.ScriptResult.results.command
       description: The command that was executed by the script.
       type: String
   runonce: false

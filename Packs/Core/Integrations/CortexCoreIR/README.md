@@ -3095,3 +3095,88 @@ xdm__asset__type__name | xdm__asset__strong_id |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
 
+
+### core-execute-command
+
+***
+run command on a specific endpoint and return it's result
+
+#### Base Command
+
+`core-execute-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
+| command | Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas. (Useful when using \\|\\|, &amp;amp;&amp;amp;, ; separators for controlling the flow of multiple commands. | Required | 
+| timeout | The input timeout should be used here to limit the max running time for the command. Default is 600. | Optional | 
+| verbose | No description provided. | Optional | 
+| incident_id | Link the response action to triggered incident. | Optional | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
+| command_type | Type of shell command. Possible values are: powershell, native. Possible values are: powershel, native. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ScriptResult.action_id | Number | ID of the action initiated. | 
+| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| Core.ScriptResult.results.endpoint_name | String | Endpoint name. | 
+| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
+| Core.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+| Core.ScriptResult.results.command | String | The command that was executed by the script. | 
+
+##### Command Example
+
+```!core-get-asset-details asset_id=123```
+
+##### Context Example
+
+```
+{
+    "Core.ScriptResult": [
+        {
+            "action_id": 1,
+            "results": [
+                {
+                    "retrieved_files" : 0,
+                    "standard_output": ""
+                    "domain" : "222",
+                    "endpoint_id" : "111",
+                    "endpoint_ip_address" : ["1.1.1.1"],
+                    "command" : "_return_value",
+                    "_return_value": [],
+                    "retention_date" : NULL,
+                    "command_output" : [],
+                    "endpoint_name" : "test",
+                    "failed_files" : 0,
+                    "execution_status" : "COMPLETED_SUCCESSFULLY",
+                    "endpoint_status" : "STATUS_010_CONNECTED"
+                },
+            ]
+        }
+    ],
+    "Core.ScriptRun": [
+        {
+            "action_id": 1,
+            "endpoints_count": 1,
+            "status": 1
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+>| _return_value| domain | endpoint_id| endpoint_ip_address| endpoint_name| endpoint_status| execution_status| failed_files| retention_date| retrieved_files| standard_output|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>||222|111|1.1.1.1|test|STATUS_010_CONNECTED|COMPLETED_SUCCESSFULLY|0||0||
