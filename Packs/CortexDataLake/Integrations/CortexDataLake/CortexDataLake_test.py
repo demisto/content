@@ -257,8 +257,8 @@ def test_query_gp_logs_command():
     _, results_xform, _ = query_gp_logs_command({'limit': '1', 'start_time': '1970-01-01 00:00:00'}, MockClient())
 
     assert results_xform == {'CDL.Logging.GlobalProtect': cdl_records_xform}
-       
-    
+
+
 class TestPagination:
     """
     A class to test the pagination mechanism in the Cortex Data Lake integration
