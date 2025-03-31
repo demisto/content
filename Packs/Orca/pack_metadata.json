@@ -16,7 +16,14 @@
     "githubUser": "edenorca",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Orca Event Collector"
+    "defaultDataSource": "Orca Event Collector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
