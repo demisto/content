@@ -216,6 +216,24 @@ configuration:
   type: 0
   required: false
   section: Collect
+- display: User Related Fields
+  name: user_related_fields
+  defaultvalue: user,src_user
+  type: 0
+  required: false
+  additionalinfo: List of fields to join on for Identity enrichment (comma-separated).
+- display: Asset Related Fields
+  name: asset_related_fields
+  defaultvalue: src,dest,dvc,src_ip,dst_ip,dest_ip,dvc_ip
+  type: 0
+  required: false
+  additionalinfo: List of fields to join on for Asset enrichment (comma-separated).
+- display: Case Insensitive Asset Identity
+  name: case_insensitive_asset_identity
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Enables case-insensitive matching for asset and identity enrichment. Before the lookup with Splunk, it lowercases both the asset and identity fields to achieve this.
 - display: 'Enrichment Timeout (Minutes)'
   name: enrichment_timeout
   type: 0
