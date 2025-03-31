@@ -961,7 +961,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client, first_fetch, max_fetch):
+def fetch_events(client, max_fetch):
     events = []
     forward = demisto.getLastRun().get("forward") or {
         "last_fetch": to_str_time(datetime.utcnow() + timedelta(seconds=1)),
@@ -2769,13 +2769,6 @@ def main():  # pragma: no cover
     }
 
     try:
-        first_fetch = (
-            arg_to_datetime(params.get("first_fetch"), settings=DATEPARSER_SETTINGS)
-            if params.get("first_fetch")
-            else None
-        )
-        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-
         client = Client(
             base_url=base_url,
             verify=not params.get("insecure", False),
@@ -2786,26 +2779,25 @@ def main():  # pragma: no cover
         )
         if command == "test-module":
             return_results(test_module(client))
-
         elif command == "forcepoint-dlp-get-events":
             results, events = get_events_command(client, args)
             return_results(results)
+
             if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events, VENDOR, PRODUCT)  # noqa
-
         elif command == "fetch-events":
-            fetch_events(client, first_fetch, max_fetch)
-        elif command in commands:
-            return_results(commands[command](client, args))
+            max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+            fetch_events(client, max_fetch)
         elif command == "fetch-incidents":
-            first_fetch = arg_to_datetime(params.get("first_fetch"))
-            if not first_fetch:
-                raise DemistoException("First fetch time must be specified.")
+            max_fetch=arg_to_number(params.get("max_fetch")) or 50
+            first_fetch = (
+                arg_to_datetime(params.get("first_fetch", "1 day"), settings=DATEPARSER_SETTINGS)
+            )
 
             incidents, last_run = fetch_incidents(
                 client=client,
                 first_fetch=first_fetch,
-                max_fetch=arg_to_number(params.get("max_fetch")) or 50,
+                max_fetch=max_fetch,
                 mirror_direction=MIRROR_DIRECTION_MAPPING.get(
                     params.get("mirror_direction", "None")
                 ),
@@ -2816,6 +2808,10 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
+        elif command in commands:
+            return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     # Log exceptions
     except Exception as e:

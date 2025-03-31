@@ -76,13 +76,12 @@ def generate_mocked_event(event_id, event_time):
 
 
 @pytest.mark.parametrize(
-    "scenario, first_fetch, utc_now, max_fetch, last_fetch_time, api_limit, last_events_ids, incidents_per_time,"
+    "scenario, utc_now, max_fetch, last_fetch_time, api_limit, last_events_ids, incidents_per_time,"
     "returned_events_ids, forward_last_events_ids, forward_last_fetch, backward_done, backward_last_events_ids,"
     "backward_last_fetch, backward_to_time",
     [
         (
             "get all events between the timespan",  # scenario
-            "01/01/2020 00:00:00",  # first fetch
             "01/01/2020 00:01:00",  # utc now
             10,  # max_fetch.
             "01/01/2020 00:00:00",  # last_fetch_time
@@ -112,7 +111,6 @@ def generate_mocked_event(event_id, event_time):
         ),
         (
             "all events were already fetched, force move to next second",  # scenario
-            "01/01/2020 00:00:00",  # first fetch
             "01/01/2020 00:01:00",  # utc now
             10,  # max_fetch.
             "01/01/2020 00:00:00",  # last_fetch_time
@@ -142,7 +140,6 @@ def generate_mocked_event(event_id, event_time):
         ),
         (
             "testing starting from a timestamp where we already have existing events in the last fetch (dedup)",  # scenario
-            "01/01/2020 00:00:00",  # first fetch
             "01/01/2020 00:01:00",  # utc now
             10,  # max_fetch.
             "01/01/2020 00:00:09",  # last_fetch_time
@@ -168,7 +165,6 @@ def generate_mocked_event(event_id, event_time):
 def test_fetch_events(
     mocker,
     scenario,
-    first_fetch,
     utc_now,
     max_fetch,
     last_fetch_time,
@@ -216,7 +212,6 @@ def test_fetch_events(
 
     fetch_events(
         client=mocked_client,
-        first_fetch=first_fetch,
         max_fetch=max_fetch,
     )
 
