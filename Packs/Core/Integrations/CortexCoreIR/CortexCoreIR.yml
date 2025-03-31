@@ -4043,7 +4043,7 @@ script:
       isArray: false
       type: String
       predefined:
-      - "powershel"
+      - "powershell"
       - "native"
     description: run command on a specific endpoint and return it's result.
     name: core-execute-command
