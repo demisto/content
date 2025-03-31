@@ -15,4 +15,4 @@ To connect an application to Forcepoint DLP through a REST API connection, you n
 
 ### Test Connection
 
-After inputting the Base URL, Port and Credentials, click Test to validate the connection.
+After inserting the Base URL, Port and Credentials, click Test to validate the connection.
