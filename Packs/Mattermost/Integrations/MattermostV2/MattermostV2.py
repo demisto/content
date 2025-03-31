@@ -1734,7 +1734,7 @@ def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> Comm
     member_details = client.list_group_members_request(group_id, params)
     member_details['id'] = group_id
 
-    hr = tableToMarkdown('Group members:', member_details.get("members"), headers=['username', 'email', 'id'])
+    hr = tableToMarkdown(f'Group {group_id} members ({len(member_details.get("members",[]))}/{member_details.get("total_member_count", "Unknown")}):', member_details.get("members"), headers=['username', 'email', 'id'])
     return CommandResults(
         outputs_prefix='Mattermost.Groups',
         outputs_key_field='id',
@@ -1750,7 +1750,15 @@ def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     user_ids = argToList(args.get('user_ids', ''))
 
     data = {'user_ids': user_ids}
-    response = client.add_group_member_request(group_id, data)
+    try:
+        response = client.add_group_member_request(group_id, data)
+    except Exception as ex:
+        message = ex.message.split("\n")
+        error_json = json.loads(message[1])
+        if error_json.get("status_code") == 500:
+            error_json["detailed_error"] = "invalid user id"
+        ex.message = message[0] + "\n" + json.dumps(error_json)
+        raise ex
 
     hr = []
     for user in user_ids:
@@ -1770,7 +1778,15 @@ def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Com
     user_ids = argToList(args.get('user_ids', ''))
 
     data = {'user_ids': user_ids}
-    response = client.remove_group_member_request(group_id, data)
+    try:
+        response = client.remove_group_member_request(group_id, data)
+    except Exception as ex:
+        message = ex.message.split("\n")
+        error_json = json.loads(message[1])
+        if error_json.get("status_code") == 500:
+            error_json["detailed_error"] = "invalid user id or user id not in group"
+        ex.message = message[0] + "\n" + json.dumps(error_json)
+        raise ex
 
     hr = []
     for user in user_ids:
