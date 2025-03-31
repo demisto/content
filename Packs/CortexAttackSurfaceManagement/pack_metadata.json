@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.7.65",
+    "currentVersion": "1.7.67",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -100,7 +100,8 @@
     },
     "marketplaces": [
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
     ],
     "itemPrefix": [
         "ASM"
@@ -121,5 +122,14 @@
         "Jira",
         "Tenable_io",
         "Venafi"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
