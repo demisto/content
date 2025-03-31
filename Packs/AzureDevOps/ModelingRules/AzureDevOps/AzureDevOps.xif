@@ -1,6 +1,5 @@
 [RULE: generic_devops_rule]
-filter Type = "AzureDevOpsAuditing"
-| alter
+alter
     IpAddressv4 = arrayindex(regextract(IpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
     IpAddressv6 = arrayindex(regextract(IpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
     IsUser = if(ActorCUID = "00000000-0000-0000-0000-000000000000", to_boolean("False"), to_boolean("True"))
@@ -83,7 +82,7 @@ filter Area = "Library"
     xdm.target.resource.name = coalesce(AgentPoolName, ConnectionName, VariableGroupName),
     xdm.target.resource.type = ResourceType,
     xdm.target.resource.sub_type = coalesce(Data -> ConnectionType, Data -> VariableGroupType, Data -> Type),
-    xdm.source.process.name = Data -> CallerProcedure, //Not sure about that
+    xdm.source.process.name = Data -> CallerProcedure,
     xdm.target.agent.type = if(Data -> AgentId != null OR Data -> AgentId != "", XDM_CONST.AGENT_TYPE_CLOUD),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 

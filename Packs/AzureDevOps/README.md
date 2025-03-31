@@ -43,7 +43,6 @@ This pack contains an integration, whose main purpose is to manage Git repositor
 ### Timestamp Ingestion:
 For *msft_azure_devops_raw*, timestamp ingestion is according to one of the following fields;
 - TimeGenerated
-- properties.TimeGenerated
 
 In UTC time zone YYYY-mm-ddTHH:MM:SS.ssssZ format. E.g; 2025-02-04T11:23:29.0324070Z
 
