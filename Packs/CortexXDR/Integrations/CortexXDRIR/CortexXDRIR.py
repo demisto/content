@@ -12,6 +12,7 @@ from CoreIRApiModule import *
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
+FETCH_LOOKBACK = 10_000
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
@@ -490,7 +491,7 @@ class Client(CoreClient):
         # pop the incidents and then log the reply data so as not to overload the logs
         incidents = reply.pop('incidents', []) if isinstance(reply, dict) else reply  # type: ignore
         demisto.debug(f'reply data: {reply}')
-        demisto.debug(f'Incidents fetched: {[i.get("incident", i).get("incident_id") for i in incidents]}')
+        demisto.debug(f'Incidents fetched: {list(map(get_incident_id, incidents))}')
         return incidents
 
     def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
@@ -509,6 +510,10 @@ class Client(CoreClient):
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response['reply']['alerts_ids']
+
+
+def get_incident_id(incident: dict) -> str:
+    return incident.get("incident", incident).get("incident_id")
 
 
 def get_headers(params: dict) -> dict:
@@ -1163,7 +1168,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
 
-    next_dedup_incidents = dedup_incidents = last_run.get('dedup_incidents') or []
+    fetched_incidents = last_run.get('dedup_incidents') or []
 
     demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
@@ -1187,7 +1192,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             gte_creation_time_milliseconds=last_fetch,
             # adding len of deduped events so that we don't loop on the same incidents infinitely.
             # There might be a case where deduped incident doesn't come back and we are returning more than the limit.
-            statuses=statuses, limit=max_fetch + len(dedup_incidents), starred=starred,
+            statuses=statuses, limit=max_fetch + len(fetched_incidents), starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
             exclude_artifacts=exclude_artifacts, excluded_alert_fields=excluded_alert_fields,
             remove_nulls_from_alerts=remove_nulls_from_alerts
@@ -1196,7 +1201,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     # remove duplicate incidents
     raw_incidents = [
         inc for inc in raw_incidents
-        if inc.get("incident", inc).get("incident_id") not in dedup_incidents
+        if get_incident_id(inc) not in fetched_incidents
     ]
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
@@ -1239,10 +1244,6 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             if creation_time > last_fetch:
                 demisto.debug(f'updating last_fetch,  {incident_id=}')
                 last_fetch = incident_data['creation_time']
-                next_dedup_incidents = [incident_id]
-            elif creation_time == last_fetch:
-                demisto.debug(f'got incident at same time for dedup, {incident_id=}')
-                next_dedup_incidents.append(incident_id)
             else:
                 demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
 
@@ -1258,8 +1259,8 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
 
     next_run = {
         'incidents_from_previous_run': non_created_incidents,
-        'time': last_fetch,
-        'dedup_incidents': next_dedup_incidents
+        'time': last_fetch - FETCH_LOOKBACK,
+        'dedup_incidents': list(map(get_incident_id, fetched_incidents))
     }
 
     if non_created_incidents:
