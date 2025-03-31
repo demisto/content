@@ -174,7 +174,7 @@ MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS = {
 }
 
 # https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
-MICROSOFT_DEFENDER_XDR_265_TOKEN_RETRIEVAL_ENDPOINTS = {
+MICROSOFT_DEFENDER_XDR_365_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.windows.net',
     'geo-us': 'https://login.windows.net',
     'geo-eu': 'https://login.windows.net',

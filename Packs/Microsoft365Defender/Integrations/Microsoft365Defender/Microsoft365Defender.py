@@ -47,7 +47,7 @@ class Client:
 
             # used for device code flow
             resource=MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
-            token_retrieval_url=f'{MICROSOFT_DEFENDER_XDR_265_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
+            token_retrieval_url=f'{MICROSOFT_DEFENDER_XDR_365_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}'
                                 f'/organizations/oauth2/v2.0/token' if not client_credentials else None,
             # used for client credentials flow
             tenant_id=tenant_id,
