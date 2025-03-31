@@ -2,7 +2,7 @@
     "name": "IBM QRadar",
     "description": "Fetch offenses as incidents and search QRadar",
     "support": "xsoar",
-    "currentVersion": "2.5.11",
+    "currentVersion": "2.5.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -44,7 +44,17 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "QRadar v3"
+    "defaultDataSource": "QRadar v3",
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

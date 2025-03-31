@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
@@ -16,7 +17,6 @@ from taxii2client.common import TokenAuth, _HTTPConnection
 from taxii2client.exceptions import InvalidJSONError
 import tempfile
 import uuid
-from dateutil.parser import parse
 from stix2patterns.pattern import Pattern
 
 # disable insecure warnings
@@ -347,6 +347,7 @@ class XSOAR2STIXParser:
                     if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                         stix_ioc = self.convert_sco_to_indicator_sdo(
                             stix_ioc, xsoar_indicator)
+                    demisto.debug(f"T2API: create_indicators {stix_ioc=}")
                     if self.has_extension and stix_ioc:
                         iocs.append(stix_ioc)
                         if extension_definition:
@@ -378,12 +379,16 @@ class XSOAR2STIXParser:
         else:
             demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
             return {}
+        date_added = arg_to_datetime(xsoar_indicator.get('timestamp'))
+        version = arg_to_datetime(xsoar_indicator.get('modified'))
+        demisto.debug(f"T2API: create_manifest_entry {xsoar_indicator.get('timestamp')=} {xsoar_indicator.get('modified')=}")
         entry = {
             'id': stix_id,
-            'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # type: ignore[arg-type]
+            'date_added': date_added.strftime(STIX_DATE_FORMAT) if date_added else '',
         }
         if self.server_version == TAXII_VER_2_1:
-            entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            entry['version'] = version.strftime(STIX_DATE_FORMAT) if version else ''
+        demisto.debug(f"T2API: create_manifest_entry {entry=}")
         return entry
 
     def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple[dict, dict, dict]:
@@ -415,10 +420,15 @@ class XSOAR2STIXParser:
             demisto.debug(f"Skip indicator of type 'file' with value: '{indicator_value}', as it is not a valid hash.")
             return {}, {}, {}
 
-        created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        demisto.debug(f"T2API: {xsoar_indicator=}")
+        timestamp_datetime = arg_to_datetime(xsoar_indicator.get('timestamp', ''))
+        created_parsed = timestamp_datetime.strftime(STIX_DATE_FORMAT) if timestamp_datetime else ''
+        demisto.debug(f"T2API: {created_parsed=}")
 
         try:
-            modified_parsed = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            modified_datetime = arg_to_datetime(xsoar_indicator.get('modified', ''))
+            modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ''
+            demisto.debug(f"T2API: {modified_parsed=}")
         except Exception:
             modified_parsed = ''
         # Properties required for STIX objects in all versions: id, type, created, modified.
@@ -429,6 +439,7 @@ class XSOAR2STIXParser:
             'created': created_parsed,
             'modified': modified_parsed,
         }
+        demisto.debug(f"T2API: {stix_object=}")
         if xsoar_type == ThreatIntel.ObjectsNames.REPORT:
             stix_object['object_refs'] = [ref['objectstixid']
                                           for ref in xsoar_indicator['CustomFields'].get('reportobjectreferences', [])]
@@ -461,6 +472,7 @@ class XSOAR2STIXParser:
 
         if is_sdo:
             stix_object['description'] = (xsoar_indicator.get('CustomFields') or {}).get('description', "")
+        demisto.debug(f"T2API: at the end of the function create_stix_object {stix_object=}")
         return stix_object, extension_definition, extensions_dict
 
     def handle_report_relationships(self, relationships: list[dict[str, Any]], stix_iocs: list[dict[str, Any]]):
@@ -555,7 +567,10 @@ class XSOAR2STIXParser:
             https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
         """
         try:
-            expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+            demisto.debug(f"T2API: convert_sco_to_indicator_sdo {xsoar_indicator.get('expiration')=}")
+            expiration_datetime = arg_to_datetime(xsoar_indicator.get('expiration'))
+            expiration_parsed = expiration_datetime.strftime(STIX_DATE_FORMAT) if expiration_datetime else ''
+            demisto.debug(f"T2API: convert_sco_to_indicator_sdo {expiration_parsed=}")
         except Exception:
             expiration_parsed = ''
 
@@ -684,6 +699,7 @@ class XSOAR2STIXParser:
                     xsoar_indicator, xsoar_type, extensions_dict)
                 if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                     stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
+                demisto.debug(f"T2API: create_entity_b_stix_objects {stix_ioc=}")
                 if self.has_extension and stix_ioc:
                     entity_b_objects.append(stix_ioc)
                     if extension_definition:
@@ -722,8 +738,12 @@ class XSOAR2STIXParser:
                               f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
                 continue
             try:
-                created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
-                modified_parsed = parse(relationship.get('modified')).strftime(STIX_DATE_FORMAT)
+                demisto.debug(f"T2API: in create_relationships_objects {relationship=}")
+                created_datetime = arg_to_datetime(relationship.get('createdInSystem'))
+                modified_datetime = arg_to_datetime(relationship.get('modified'))
+                created_parsed = created_datetime.strftime(STIX_DATE_FORMAT) if created_datetime else ''
+                modified_parsed = modified_datetime.strftime(STIX_DATE_FORMAT) if modified_datetime else ''
+                demisto.debug(f"T2API: {created_parsed=} {modified_parsed=}")
             except Exception as e:
                 created_parsed, modified_parsed = '', ''
                 demisto.debug(f"Error parsing dates for relationship {relationship.get('id')}: {e}")
@@ -1920,7 +1940,7 @@ class STIX2XSOARParser(BaseClient):
         relationships_list = []
         for relationships_object in relationships_lst:
             relationship_type = relationships_object.get('relationship_type')
-            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():
+            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES:
                 if relationship_type == 'indicates':
                     relationship_type = 'indicated-by'
                 else:

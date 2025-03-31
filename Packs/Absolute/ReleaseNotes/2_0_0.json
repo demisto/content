@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The integration now supports API V3. There are breaking changes in the commands: absolute-custom-device-field-list, absolute-device-freeze-request-get, absolute-device-unenroll, absolute-device-application-list . For more information, refer to the integration documentation."
+}

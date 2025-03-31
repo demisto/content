@@ -113,6 +113,7 @@ def get_observables(
     limit: int | None = 500,
     last_run_id: str | None = None,
     search: str = "",
+    additional_filters: list[dict] = None,
     get_all: bool = False
 ) -> dict:
     """ Retrieving observables from the API
@@ -124,6 +125,7 @@ def get_observables(
         last_run_id: The last id from the previous call to use pagination.
         limit: the max observables to fetch
         search: The observable's value to filter by.
+        additional_filters: List of filters to apply. Items format: {key: str, operator: str, values: list[str], mode: str}.
         get_all: Whether to fetch all observables or just the page (default False).
 
     Returns:
@@ -138,7 +140,8 @@ def get_observables(
             'operator': 'eq',
             'mode': 'or'
         }],
-        'filterGroups': []}
+        'filterGroups': []
+    }
     if score:
         filters["filters"].append({
             'key': 'x_opencti_score',
@@ -146,6 +149,9 @@ def get_observables(
             'operator': 'eq',
             'mode': 'or'
         })
+    if additional_filters:
+        for filter_item in additional_filters:
+            filters["filters"].append(filter_item)
 
     observables = client.stix_cyber_observable.list(
         after=last_run_id,
@@ -173,6 +179,7 @@ def get_indicators(
     limit: int | None = 50,
     last_run_id: str = None,
     search: str = "",
+    additional_filters: list[dict] = None,
     get_all: bool = False
 ) -> dict:
     """Retrieving indicators from the OpenCTI API with filters and pagination.
@@ -192,6 +199,7 @@ def get_indicators(
         limit: The maximum number of indicators to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
         search: Search string for the indicator value.
+        additional_filters: List of filters to apply. Items format: {key: str, operator: str, values: list[str], mode: str}.
         get_all: Whether to fetch all indicators or just the page (default False).
 
     Returns:
@@ -266,6 +274,10 @@ def get_indicators(
             'values': [valid_until_before],
             'operator': 'lt'
         })
+    if additional_filters:
+        for filter_item in additional_filters:
+            filters["filters"].append(filter_item)
+
     try:
         indicator_list = client.indicator.list(
             after=last_run_id,
@@ -292,6 +304,7 @@ def get_incidents(
     limit: int | None = 50,
     last_run_id: str = None,
     search: str = "",
+    additional_filters: list[dict] = None,
     get_all: bool = False
 ) -> dict:
     """Retrieving incidents from the OpenCTI API with filters and pagination.
@@ -307,6 +320,7 @@ def get_incidents(
         limit: The maximum number of incidents to fetch (default 50).
         last_run_id: The last ID from the previous call for pagination.
         search: Search string for the incident value.
+        additional_filters: List of filters to apply. Items format: {key: str, operator: str, values: list[str], mode: str}.
         get_all: Whether to fetch all incidents or just the page (default False).
 
     Returns:
@@ -357,6 +371,10 @@ def get_incidents(
             'values': [created_before],
             'operator': 'lt'
         })
+    if additional_filters:
+        for filter_item in additional_filters:
+            filters["filters"].append(filter_item)
+
     try:
         incident_list = client.incident.list(
             after=last_run_id,
@@ -544,6 +562,7 @@ def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Com
     created_before = args.get('created_before')
     search = args.get('search', '')
     incident_types = argToList(args.get('incident_types'))
+    additional_filters = argToList(args.get("additional_filters", []))
     get_all = argToBoolean(args.get('all_results', 'false'))
 
     raw_response = get_incidents(
@@ -557,6 +576,7 @@ def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Com
         limit=limit,
         last_run_id=last_run_id,
         search=search,
+        additional_filters=additional_filters,
         get_all=get_all
     )
 
@@ -788,6 +808,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
     end = arg_to_number(args.get('score_end', 100))  # type:ignore
     score = args.get('score')
     search = args.get("search", "")
+    additional_filters = argToList(args.get("additional_filters", []))
     get_all = argToBoolean(args.get('all_results', 'false'))
     scores = None
     if score:
@@ -808,6 +829,7 @@ def get_observables_command(client: OpenCTIApiClient, args: dict) -> CommandResu
         last_run_id=last_run_id,
         score=scores,
         search=search,
+        additional_filters=additional_filters,
         get_all=get_all
     )
 
@@ -1397,6 +1419,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
     valid_from_before = args.get('valid_from_before')
     search = args.get('search', '')
     indicator_types = argToList(args.get('indicator_types'))
+    additional_filters = argToList(args.get("additional_filters", []))
     get_all = argToBoolean(args.get('all_results', 'false'))
 
     raw_response = get_indicators(
@@ -1414,6 +1437,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> Co
         limit=limit,
         last_run_id=last_run_id,
         search=search,
+        additional_filters=additional_filters,
         get_all=get_all
     )
 

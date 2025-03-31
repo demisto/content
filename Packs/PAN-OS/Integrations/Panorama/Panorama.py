@@ -645,7 +645,7 @@ def dict_to_xml(_dictionary, contains_xml_chars=False):
     Returns:
         str: the dict representation in XML.
     """
-    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    xml = re.sub(r'<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
     if contains_xml_chars:
         return xml.replace('&gt;', '>').replace('&lt;', '<')
     return xml
@@ -5607,7 +5607,9 @@ def panorama_query_logs_command(args: dict):
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
                       or time_generated or time_generated_after or action or port_dst or rule or url or filedigest):
-            raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
+            raise Exception(
+                "To build your query, use the query argument or use a combination of the following arguments (but not both): time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest."
+            )
 
         result: PanosResponse = PanosResponse(
             panorama_query_logs(
@@ -11166,8 +11168,11 @@ class UniversalCommand:
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
             command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
-            response = run_op_command(device, command)
-
+            try:
+                response = run_op_command(device, command)
+            except panos.errors.PanDeviceXapiError:
+                demisto.debug(f'Could not find The given ID {id} in the specific device {device}.')
+                continue
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData, job)
 
@@ -11178,10 +11183,16 @@ class UniversalCommand:
                 ):
                     result_data.append(result_data_obj)
 
+            # Avoiding iterating over all devices when an ID is provided.
+            if id is not None:
+                break
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
             return result_data[0]  # type: ignore
+
+        if not result_data and id:  # in case of an empty list and a specific ID, it means ID not found in all devices
+            raise DemistoException(f"The given ID {id} is not found in all devices of the topology.")
 
         return result_data
 

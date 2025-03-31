@@ -19,5 +19,5 @@ archer-list-users
 archer-search-records applicationId=84 fullData=False fieldsToGet=`Name (Full),Id` fieldsToDisplay=`Name (Full),Id` fieldToSearchOn=`Name (Full)` searchValue=john
 archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open`
 archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Days Open` numericOperator=GreaterThan searchValue=64 maxResults=10
-archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z maxResults=100
+archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z xmlForFiltering=`<TextFilterCondition><Operator>Contains</Operator><Field name="Incident Priority">456</Field><Value>High</Value></TextFilterCondition>` maxResults=100
 archer-search-records-by-report reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12
