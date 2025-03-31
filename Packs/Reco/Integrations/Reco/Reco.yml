@@ -425,6 +425,16 @@ script:
       - contextPath: Reco.SensitiveAssets.sensitivity_level
         description: The sensitivity level of the asset.
         type: Number
+  - arguments:
+      - description: Alert ID.
+        name: alert_id
+        required: true
+    description: Get alert ai summary from Reco.
+    name: reco-get-alert-ai-summary
+    outputs:
+      - contextPath: Reco.AlertSummary.markdown
+        description: The markdown of the alert summary.
+        type: String
 tests:
 - No tests
 fromversion: 6.5.0
