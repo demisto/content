@@ -828,7 +828,7 @@ Must have manage_system permission.
 
 #### Human Readable Output
 
->### Group members:
+>### Group moi9ygz8qby1pr1xgkcfuqww9r members (2/2):
 
 >|username|email|id|
 >|---|---|---|
