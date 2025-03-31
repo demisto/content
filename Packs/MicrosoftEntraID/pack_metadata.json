@@ -28,7 +28,8 @@
         "Activity Logs"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "AzureFirewall": {
@@ -47,5 +48,11 @@
             "mandatory": true,
             "display_name": "Azure App Service"
         }
-    }
+    },
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
