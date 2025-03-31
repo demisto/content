@@ -2,7 +2,7 @@
     "name": "GitHub",
     "description": "Manage GitHub issues and pull requests directly from Cortex XSOAR",
     "support": "xsoar",
-    "currentVersion": "2.1.4",
+    "currentVersion": "2.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,7 +21,17 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Github Event Collector"
+    "defaultDataSource": "Github Event Collector",
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
