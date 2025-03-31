@@ -857,7 +857,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >   * ## Net_Neighbors
 >   * ## Network_Resources
 
-<!-- markdownlint-enable MD005 -->.
+<!-- markdownlint-enable MD005 -->
 
 ### ios-interfaces
 ***
