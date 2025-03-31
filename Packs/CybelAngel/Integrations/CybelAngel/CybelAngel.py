@@ -209,11 +209,9 @@ class Client(BaseClient):
 
         return response.text, response.status_code
 
-    def update_status(self, status: str, report_id: str):
-        """ Retrieve CBA Reports using the polling interval
-            Statuses: open, resolved """
-        self.check_token()
-        url = f"{self.base_url}api/v1/reports/{report_id}/status"
+    def update_status(self, status: str, report_id: str): 
+    """ Retrieve CBA Reports using the polling interval Statuses: open, resolved """
+        self.check_token() url = f"{self.base_url}api/v1/reports/{report_id}/status"
         headers = {'Content-Type': "application/json",
                    'Authorization': str(self.token)}
 
@@ -366,9 +364,15 @@ def remediate_command(client: Client, args: dict[str, Any]) -> CommandResults:
         response, status_code = client.remediate(str(report_id), email=str(email),
                                                  requester_fullname=str(requester_name))
         _set_context(client)
+        returnMessage = ""
+        if status_code == 200:
+            returnMessage = "Successful"
+        else: 
+            returnMessage = "Failed" 
+
         return CommandResults(
             outputs_prefix='CybelAngel.Remediation',
-            readable_output=f'Remediation Status {report_id} : {status_code}',
+            readable_output=f'Remediation Status {report_id} : {returnMessage}',
             raw_response=response
         )
     except Exception as e:
@@ -416,11 +420,18 @@ def update_status_command(client: Client, args: dict[str, Any]) -> CommandResult
     report_id = args.get('report_id')
     status = args.get('status')
     try:
-        response = client.update_status(status=str(status), report_id=str(report_id))
+        response, status_code = client.update_status(status=str(status), report_id=str(report_id))
         _set_context(client)
+        returnMessage = ""
+        if status_code == 200:
+            returnMessage = "Successful"
+        else: 
+            returnMessage = "Failed" 
+
+
         return CommandResults(
             outputs_prefix='CybelAngel.StatusUpdate',
-            readable_output=f'Status Update for Report {report_id}, {response}',
+            readable_output=f'Status Update for Report {report_id}, {returnMessage}',
             raw_response=response
         )
     except Exception as e:
