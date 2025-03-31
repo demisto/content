@@ -71,9 +71,7 @@ def get_installation_access_token(installation_id: str, jwt_token: str):
     :param jwt_token: str token needed in the request for retrieving the access token
     """
     response = requests.post(
-        "{}/app/installations/{}/access_tokens".format(
-            BASE_URL, installation_id
-        ),
+        f"{BASE_URL}/app/installations/{installation_id}/access_tokens",
         headers={
             "Authorization": f"Bearer {jwt_token}",
             "Accept": MEDIA_TYPE_INTEGRATION_PREVIEW,
@@ -1658,6 +1656,13 @@ def list_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
+def remove_slashes(content) -> str:
+    """If the content string contains $\\{<some_value>} the function will
+       remove the slashes and returns it like this: ${<some_value>}
+    """
+    return re.sub(r"\$\\({[^}]+})", r"$\1", content)
+
+
 def commit_file_command():
     args = demisto.args()
     commit_message = args.get('commit_message')
@@ -1666,6 +1671,7 @@ def commit_file_command():
     entry_id = args.get('entry_id')
     file_text = args.get('file_text')
     file_sha = args.get('file_sha')
+    placeholders_escaped = argToBoolean(args.get('placeholders_escaped') or False)
 
     if not entry_id and not file_text:
         raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
@@ -1673,6 +1679,9 @@ def commit_file_command():
         file_path = demisto.getFilePath(entry_id).get('path')
         with open(file_path, 'rb') as f:
             content = f.read()
+    elif placeholders_escaped:
+        demisto.debug(f"Github-commit-file command got {placeholders_escaped=} and will decode them.")
+        content = bytes(remove_slashes(file_text), encoding='utf8')
     else:
         content = bytes(file_text, encoding='utf8')
 
