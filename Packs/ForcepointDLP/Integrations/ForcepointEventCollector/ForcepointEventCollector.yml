@@ -60,8 +60,8 @@ configuration:
   - display: Fetch incidents
     name: isFetch
     type: 8
-description: Use this integration to fetch security incidents from Forcepoint DLP as Cortex XSIAM events.
-display: Forcepoint DLP Event Collector (Beta)
+description: Forcepoint Data Loss Prevention (DLP) enables businesses to discover, classify, monitor, and protect data intuitively with zero friction to the user experience. Audit behavior in real-time with Risk-Adaptive Protection to stop data loss before it occurs. Use this integration to fetch security incidents as Cortex XSIAM events or XSOAR incidents.
+display: Forcepoint DLP
 name: Forcepoint DLP Event Collector
 beta: true
 script:
