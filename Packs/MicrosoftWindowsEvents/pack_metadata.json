@@ -7,11 +7,19 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "IT Services"
+        "IT Services",
+        "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "microsoft",
+        "windows"
+    ],
     "dependencies": {
         "MicrosoftDNS": {
             "mandatory": false,
