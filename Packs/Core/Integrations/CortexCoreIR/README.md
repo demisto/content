@@ -3315,7 +3315,7 @@ Run command on a specific endpoint and return its result
 | command | Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas. (Useful when using \\|\\|, &amp;amp;&amp;amp;, ; separators for controlling the flow of multiple commands. | Required | 
 | timeout | The input timeout should be used here to limit the max running time for the command. Default is 600. | Optional | 
 | verbose | No description provided. | Optional | 
-| incident_id | Link the response action to triggered incident. | Optional | 
+| incident_id | Link the response action to the triggered incident. | Optional | 
 | is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently. | Optional | 
 | command_type | Type of shell command. Possible values are: powershell, native. Possible values are: powershel, native. | Optional | 
 
