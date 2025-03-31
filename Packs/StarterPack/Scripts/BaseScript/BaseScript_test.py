@@ -12,7 +12,7 @@ import json
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -27,12 +27,12 @@ def test_basescript_dummy():
     """
     from BaseScript import basescript_dummy_command
 
-    args = {
-        'dummy': 'this is a dummy response'
-    }
+    args = {"dummy": "this is a dummy response"}
     response = basescript_dummy_command(args)
 
-    mock_response = util_load_json('test_data/basescript-dummy.json')
+    mock_response = util_load_json("test_data/basescript-dummy.json")
 
     assert response.outputs == mock_response
+
+
 # TODO: ADD HERE your unit tests
