@@ -66,16 +66,13 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         try:
             if sub_section == 'passive_dns':
-                result = self._http_request('GET',
+                return self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params,
                                         timeout=30)
-                demisto.debug("Succeeded querying")
-                return result
             result = self._http_request('GET',
                                         url_suffix=suffix,
                                         params=params)
-            demisto.debug("Succeeded querying")
         except DemistoException as e:
             demisto.debug("DemistoException was raised")
             if hasattr(e.res, 'status_code'):
@@ -84,10 +81,7 @@ class Client(BaseClient):
                     result = 404
                 elif e.res.status_code == 400:
                     demisto.debug("The status code is 400")
-                    try:
-                        demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
-                    except Exception:
-                        demisto.debug('An 400 status error was raised.')
+                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
                     if not self.should_error:
                         return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
@@ -95,47 +89,15 @@ class Client(BaseClient):
                     demisto.debug(f"The status code is {e.res.status_code}")
                     if self.should_error:
                         raise e
-                    try:
-                        return_warning(f"{e.res.text}", exit=True)
-                    except Exception as e:
-                        return_warning("Could not handle e.res.text", exit=True)
-                else:
-                    try:
-                        demisto.debug(f"The DemistoException status code is not handled, raising an error {str(e)}")
-                    except Exception:
-                        demisto.debug("The DemistoException status code is not handled, raising an error")
-                    raise
-            else:
-                try:
-                    demisto.debug(f"The DemistoException does not have a status_code attribute, raising an error {str(e)}")
-                except Exception:
-                    demisto.debug("The DemistoException does not have a status_code attribute, raising an error")
-                raise
+                    return_warning(f"{e.res.text} response received from server", exit=True)
         except requests.exceptions.ReadTimeout as e:
             demisto.debug("A ReadTimeout error was raised.")
             if self.should_error:
                 raise e
-            demisto.debug("A ReadTimeout error was raised but should be handled as a warning.")
-            try:
-                return_warning(f"{e}")
-            except Exception:
-                return_warning("A ReadTimeout was raised.")
+            return_warning(f"A ReadTimeout was raised {str(e)}")
             result = {}
             if section == 'url':
                 result =  404
-        except Exception as e:
-            try:
-                demisto.debug(f"An exception was caught, raising an error. {str(e)}")
-            except Exception:
-                demisto.debug("An exception was caught, raising an error.")
-            if self.should_error:
-                demisto.debug("raising an error for general exception")
-                raise e
-            demisto.debug("not raising an error for general exception")
-            try:
-                return_warning(f"An exception was caught, raising a warning {str(e)}", exit=True)
-            except Exception:
-                return_warning("An exception was caught, raising a warning", exit=True)
         return result
 
 
