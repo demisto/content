@@ -1781,7 +1781,9 @@ def fetch_incidents(
 
     Args:
         client (Client): ForcePoint DLP client.
-        params (dict): Instance parameters.
+        first_fetch (datetime): If last_run is None then fetch all incidents since first_fetch.
+        max_fetch (int): Maximum numbers of incidents per fetch.
+        mirror_direction (str | None): Whether the incident is incoming, outgoing or both.
 
     Returns:
         tuple[list[dict], dict[str, Any]]: Incidents and the next fetch metadata.
