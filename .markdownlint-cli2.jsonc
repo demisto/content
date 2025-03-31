@@ -10,6 +10,7 @@
         "MD047": true,
         "MD048": true,
         "MD053": true,
-        "MD054": true
+        "MD054": true,
+        "MD042" : true
   } , "fix" :true
 }
