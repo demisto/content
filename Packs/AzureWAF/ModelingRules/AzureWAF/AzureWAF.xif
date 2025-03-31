@@ -70,7 +70,7 @@ Handle Frond Door Access Logs
     target_ipv4 = arrayindex(regextract(originIp_s , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     target_ipv6 = arrayindex(regextract(originIp_s, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
     trim_domain = replex(domain_s , ":\d+",""),
-    error_information_outcome = if(errorInfo_s = "NoError", "XDM_CONST.OUTCOME_SUCCESS", "XDM_CONST.OUTCOME_FAILED"),
+    error_information_outcome = if(errorInfo_s = "NoError", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
     error_information_outcome_reason= if(
     errorInfo_s ="NoError", "NoError: No error was found.",
     errorInfo_s ="CertificateError","CertificateError: Generic SSL certificate error.",
