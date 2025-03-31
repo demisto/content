@@ -1,5 +1,5 @@
 Forcepoint Data Loss Prevention (DLP) enables businesses to discover, classify, monitor, and protect data intuitively with zero friction to the user experience. Audit behavior in real-time with Risk-Adaptive Protection to stop data loss before it occurs.
-This integration was integrated and tested with version xx of ForcePointDLP.
+This integration was integrated and tested with version 10.2 of ForcePointDLP.
 
 ## Configure ForcePoint DLP on Cortex XSOAR
 
