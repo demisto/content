@@ -1,7 +1,9 @@
 Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. 
 
+<~XSOAR>
 The data in ServiceNow tickets can be mirrored to Cortex XSOAR so that you can track the status and information in the task. 
-You can also provide comments or attachments in Cortex XSOAR which will appear in ServiceNow. 
+You can also provide comments or attachments in Cortex XSOAR which will appear in ServiceNow.
+</~XSOAR>
 
 
 # What does this pack do?
