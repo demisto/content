@@ -133,7 +133,16 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
     Returns:
         list: A list of sorted and deduplicated events.
     """
-    events: list = client.get_events(start, end).get('data', [])
+    try:
+        response = client.get_events(start, end)
+    except Exception as e:
+        demisto.debug(f'Got unexpected error from API: {e}.')
+        response = {}
+    if not isinstance(response, dict):
+        demisto.debug(f'Got unexpected {response=} from API.')
+        response = {}
+
+    events = response.get('data', [])
     demisto.debug(f'Raw events from Proofpoint Isolation api: {events}')
     events = sort_events_by_date(events)
     remove_duplicate_events(start, ids, events)
