@@ -719,8 +719,8 @@ class Client(BaseClient):
         if custom_api:
             if not custom_api.startswith("/"):
                 return_error("Argument custom_api must start with a leading forward slash '/'")
-            server_url = demisto.params()['url']
-            url = f'{get_server_url(server_url)}{custom_api}{path}'
+            server_url = demisto.params()["url"]
+            url = f"{get_server_url(server_url)}{custom_api}{path}"
         elif sc_api:
             url = f"{self._sc_server_url}{path}"
         elif cr_api:
@@ -736,38 +736,80 @@ class Client(BaseClient):
 
     def _send_file_request(self, url: str, method: str, headers: dict, body: dict, params: dict, file: dict) -> requests.Response:
         # Not supported in v2
-        url = url.replace('/v2', '/v1')
+        url = url.replace("/v2", "/v1")
         try:
-            file_entry = file['id']
-            file_name = file['name']
-            file_path = demisto.getFilePath(file_entry)['path']
-            with open(file_path, 'rb') as f:
+            file_entry = file["id"]
+            file_name = file["name"]
+            file_path = demisto.getFilePath(file_entry)["path"]
+            with open(file_path, "rb") as f:
                 file_info = (file_name, f, self.get_content_type(file_name))
                 if self.use_oauth:
                     access_token = self.snow_client.get_access_token()
-                    headers.update({'Authorization': f'Bearer {access_token}'})
-                    return requests.request(method, url, headers=headers, data=body, params=params,
-                                            files={'file': file_info}, verify=self._verify, proxies=self._proxies)
+                    headers.update({"Authorization": f"Bearer {access_token}"})
+                    return requests.request(
+                        method,
+                        url,
+                        headers=headers,
+                        data=body,
+                        params=params,
+                        files={"file": file_info},
+                        verify=self._verify,
+                        proxies=self._proxies,
+                    )
                 else:
-                    return requests.request(method, url, headers=headers, data=body, params=params,
-                                            files={'file': file_info}, auth=self._auth,
-                                            verify=self._verify, proxies=self._proxies)
+                    return requests.request(
+                        method,
+                        url,
+                        headers=headers,
+                        data=body,
+                        params=params,
+                        files={"file": file_info},
+                        auth=self._auth,
+                        verify=self._verify,
+                        proxies=self._proxies,
+                    )
         except Exception as err:
-            raise Exception(f'Failed to upload file - {str(err)}')
+            raise Exception(f"Failed to upload file - {str(err)}")
 
     def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
         if self.use_oauth:
             access_token = self.snow_client.get_access_token()
-            headers.update({'Authorization': f'Bearer {access_token}'})
-            return requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                    params=params, verify=self._verify, proxies=self._proxies)
+            headers.update({"Authorization": f"Bearer {access_token}"})
+            return requests.request(
+                method,
+                url,
+                headers=headers,
+                data=json.dumps(body) if body else {},
+                params=params,
+                verify=self._verify,
+                proxies=self._proxies,
+            )
         else:
-            return requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                    params=params, auth=self._auth, verify=self._verify, proxies=self._proxies)
+            return requests.request(
+                method,
+                url,
+                headers=headers,
+                data=json.dumps(body) if body else {},
+                params=params,
+                auth=self._auth,
+                verify=self._verify,
+                proxies=self._proxies,
+            )
 
-    def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
-                     headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
-                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}, custom_api: str = ''):
+    def send_request(
+        self,
+        path: str,
+        method: str = "GET",
+        body: dict | None = None,
+        params: dict | None = None,
+        headers: dict | None = None,
+        file=None,
+        sc_api: bool = False,
+        cr_api: bool = False,
+        get_attachments: bool = False,
+        no_record_found_res: dict = {"result": []},
+        custom_api: str = "",
+    ):
         """Generic request to ServiceNow.
             This method handles both regular requests and file uploads
         Args:
@@ -792,15 +834,8 @@ class Client(BaseClient):
         body = body or {}
         params = params or {}
         url = self._construct_url(custom_api, sc_api, cr_api, path, get_attachments)
-        headers = headers or {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-        demisto.debug(
-            f"Constructed URL: {url}\n"
-            f"Request headers: {headers}\n"
-            f"Request params: {params}"
-        )
+        headers = headers or {"Accept": "application/json", "Content-Type": "application/json"}
+        demisto.debug(f"Constructed URL: {url}\nRequest headers: {headers}\nRequest params: {params}")
 
         for attempt in range(1, MAX_RETRY + 1):
             # retry mechanism for 401 Unauthorized errors
@@ -828,22 +863,22 @@ class Client(BaseClient):
                     return ""
                 raise Exception(f"Error parsing reply - {res.content!s} - {err!s}")
 
-            if error := json_res.get('error', {}):
+            if error := json_res.get("error", {}):
                 if res.status_code == 401 and attempt < MAX_RETRY:
                     demisto.debug(f"Got status code 401. Retrying... (Attempt {attempt} of {MAX_RETRY})")
                     continue
                 else:
                     if isinstance(error, dict):
-                        message = error.get('message')
-                        details = error.get('detail')
-                        if message == 'No Record found':
+                        message = error.get("message")
+                        details = error.get("detail")
+                        if message == "No Record found":
                             demisto.debug("No record found, returning empty result")
                             return no_record_found_res
                         else:
                             raise Exception(
-                                f'ServiceNow Error: {message}, details: {details}'
-                                f' Got status code {res.status_code} with url {url} with body {str(res.content)}'
-                                f' with response headers {str(res.headers)}'
+                                f"ServiceNow Error: {message}, details: {details}"
+                                f" Got status code {res.status_code} with url {url} with body {str(res.content)}"
+                                f" with response headers {str(res.headers)}"
                             )
                     else:
                         raise Exception(f"ServiceNow Error: {error}")
@@ -852,8 +887,8 @@ class Client(BaseClient):
                 return json_res
             else:
                 raise Exception(
-                    f'Got status code {res.status_code} with url {url} with body {str(res.content)}'
-                    f' with response headers {str(res.headers)}'
+                    f"Got status code {res.status_code} with url {url} with body {str(res.content)}"
+                    f" with response headers {str(res.headers)}"
                 )
         return json_res
 
@@ -3441,7 +3476,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     command = demisto.command()
-    demisto.debug(f'Executing command {command}')
+    demisto.debug(f"Executing command {command}")
 
     params = demisto.params()
     args = demisto.args()
@@ -3552,33 +3587,33 @@ def main():
             display_date_format=display_date_format,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
-            'test-module': test_module,
-            'servicenow-oauth-test': oauth_test_module,
-            'servicenow-oauth-login': login_command,
-            'servicenow-update-ticket': update_ticket_command,
-            'servicenow-create-ticket': create_ticket_command,
-            'servicenow-create-ticket-quick-action': create_ticket_command,
-            'servicenow-delete-ticket': delete_ticket_command,
-            'servicenow-query-tickets': query_tickets_command,
-            'servicenow-add-link': add_link_command,
-            'servicenow-add-comment': add_comment_command,
-            'servicenow-upload-file': upload_file_command,
-            'servicenow-add-tag': add_tag_command,
-            'servicenow-get-record': get_record_command,
-            'servicenow-update-record': update_record_command,
-            'servicenow-create-record': create_record_command,
-            'servicenow-delete-record': delete_record_command,
-            'servicenow-query-table': query_table_command,
-            'servicenow-list-table-fields': list_table_fields_command,
-            'servicenow-query-computers': query_computers_command,
-            'servicenow-query-groups': query_groups_command,
-            'servicenow-query-users': query_users_command,
-            'servicenow-get-table-name': get_table_name_command,
-            'servicenow-query-items': query_items_command,
-            'servicenow-get-item-details': get_item_details_command,
-            'servicenow-create-item-order': create_order_item_command,
-            'servicenow-document-route-to-queue': document_route_to_table,
-            'servicenow-delete-file': delete_attachment_command,
+            "test-module": test_module,
+            "servicenow-oauth-test": oauth_test_module,
+            "servicenow-oauth-login": login_command,
+            "servicenow-update-ticket": update_ticket_command,
+            "servicenow-create-ticket": create_ticket_command,
+            "servicenow-create-ticket-quick-action": create_ticket_command,
+            "servicenow-delete-ticket": delete_ticket_command,
+            "servicenow-query-tickets": query_tickets_command,
+            "servicenow-add-link": add_link_command,
+            "servicenow-add-comment": add_comment_command,
+            "servicenow-upload-file": upload_file_command,
+            "servicenow-add-tag": add_tag_command,
+            "servicenow-get-record": get_record_command,
+            "servicenow-update-record": update_record_command,
+            "servicenow-create-record": create_record_command,
+            "servicenow-delete-record": delete_record_command,
+            "servicenow-query-table": query_table_command,
+            "servicenow-list-table-fields": list_table_fields_command,
+            "servicenow-query-computers": query_computers_command,
+            "servicenow-query-groups": query_groups_command,
+            "servicenow-query-users": query_users_command,
+            "servicenow-get-table-name": get_table_name_command,
+            "servicenow-query-items": query_items_command,
+            "servicenow-get-item-details": get_item_details_command,
+            "servicenow-create-item-order": create_order_item_command,
+            "servicenow-document-route-to-queue": document_route_to_table,
+            "servicenow-delete-file": delete_attachment_command,
         }
         if command == "fetch-incidents":
             raise_exception = True
@@ -3592,24 +3627,24 @@ def main():
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
-        elif command == 'get-mapping-fields':
+        elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command(client))
-        elif command == 'get-modified-remote-data':
+        elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args, update_timestamp_field, mirror_limit))
-        elif command == 'servicenow-create-co-from-template':
+        elif command == "servicenow-create-co-from-template":
             return_results(create_co_from_template_command(client, demisto.args()))
-        elif command == 'servicenow-get-tasks-for-co':
+        elif command == "servicenow-get-tasks-for-co":
             return_results(get_tasks_for_co_command(client, demisto.args()))
-        elif command == 'servicenow-get-ticket-notes':
+        elif command == "servicenow-get-ticket-notes":
             return_results(get_ticket_notes_command(client, args, params))
-        elif command == 'servicenow-get-ticket-attachments':
+        elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
             raise_exception = True
-            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {command}')
+            raise NotImplementedError(f"{COMMAND_NOT_IMPLEMENTED_MSG}: {command}")
 
     except Exception as err:
         LOG(err)

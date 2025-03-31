@@ -1508,49 +1508,61 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     - Verify debug messages
     - Ensure the send_request function runs successfully without exceptions
     """
-    mocker.patch.object(demisto, 'debug')
-    client = Client('http://server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
-                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
-                    'ticket_type', 'get_attachments', 'incident_name')
-    requests_mock.get('http://server_url', [
-        {
-            'status_code': 401,
-            'json': {
-                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
-                'status': 'failure'
-            }
-        },
-        {
-            'status_code': 401,
-            'json': {
-                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
-                'status': 'failure'
-            }
-        },
-        {
-            'status_code': 200,
-            'json': {}
-        }
-    ])
-    assert client.send_request('') == {}
+    mocker.patch.object(demisto, "debug")
+    client = Client(
+        "http://server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+    requests_mock.get(
+        "http://server_url",
+        [
+            {
+                "status_code": 401,
+                "json": {
+                    "error": {"message": "User Not Authenticated", "detail": "Required to provide Auth information"},
+                    "status": "failure",
+                },
+            },
+            {
+                "status_code": 401,
+                "json": {
+                    "error": {"message": "User Not Authenticated", "detail": "Required to provide Auth information"},
+                    "status": "failure",
+                },
+            },
+            {"status_code": 200, "json": {}},
+        ],
+    )
+    assert client.send_request("") == {}
     debug = demisto.debug.call_args_list
 
-    assert debug[0][0][0] == 'Sending request to ServiceNow. Method: GET, Path: '
+    assert debug[0][0][0] == "Sending request to ServiceNow. Method: GET, Path: "
     assert debug[1][0][0] == (
         "Constructed URL: http://server_url\nRequest headers: "
         "{'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
     )
-    assert debug[2][0][0] == f'Request attempt 1 of {MAX_RETRY}'
-    assert debug[3][0][0] == 'Sending regular request'
-    assert debug[4][0][0] == 'Response status code: 401'
-    assert debug[5][0][0] == f'Got status code 401. Retrying... (Attempt 1 of {MAX_RETRY})'
-    assert debug[6][0][0] == f'Request attempt 2 of {MAX_RETRY}'
-    assert debug[7][0][0] == 'Sending regular request'
-    assert debug[8][0][0] == 'Response status code: 401'
-    assert debug[9][0][0] == f'Got status code 401. Retrying... (Attempt 2 of {MAX_RETRY})'
-    assert debug[10][0][0] == f'Request attempt 3 of {MAX_RETRY}'
-    assert debug[11][0][0] == 'Sending regular request'
-    assert debug[12][0][0] == 'Response status code: 200'
+    assert debug[2][0][0] == f"Request attempt 1 of {MAX_RETRY}"
+    assert debug[3][0][0] == "Sending regular request"
+    assert debug[4][0][0] == "Response status code: 401"
+    assert debug[5][0][0] == f"Got status code 401. Retrying... (Attempt 1 of {MAX_RETRY})"
+    assert debug[6][0][0] == f"Request attempt 2 of {MAX_RETRY}"
+    assert debug[7][0][0] == "Sending regular request"
+    assert debug[8][0][0] == "Response status code: 401"
+    assert debug[9][0][0] == f"Got status code 401. Retrying... (Attempt 2 of {MAX_RETRY})"
+    assert debug[10][0][0] == f"Request attempt 3 of {MAX_RETRY}"
+    assert debug[11][0][0] == "Sending regular request"
+    assert debug[12][0][0] == "Response status code: 200"
 
 
 def test_not_authenticated_retry_negative(requests_mock, mocker: MockerFixture):
@@ -1565,37 +1577,55 @@ def test_not_authenticated_retry_negative(requests_mock, mocker: MockerFixture):
     - Verify debug messages
     - Ensure the send_request function fails and raises expected error message
     """
-    mocker.patch.object(demisto, 'debug')
-    client = Client('http://server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
-                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
-                    'ticket_type', 'get_attachments', 'incident_name')
-    requests_mock.get('http://server_url', [
-        {
-            'status_code': 401,
-            'json': {
-                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
-                'status': 'failure'
-            }
-        },
-    ] * MAX_RETRY)
+    mocker.patch.object(demisto, "debug")
+    client = Client(
+        "http://server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+    requests_mock.get(
+        "http://server_url",
+        [
+            {
+                "status_code": 401,
+                "json": {
+                    "error": {"message": "User Not Authenticated", "detail": "Required to provide Auth information"},
+                    "status": "failure",
+                },
+            },
+        ]
+        * MAX_RETRY,
+    )
     with pytest.raises(Exception) as ex:
-        client.send_request('')
-    assert str(ex.value) == "ServiceNow Error: User Not Authenticated, details: Required to provide Auth information " \
-                            "Got status code 401 with url http://server_url with body b'{\"error\": {\"message\": " \
-                            "\"User Not Authenticated\", \"detail\": \"Required to provide Auth information\"}, " \
-                            "\"status\": \"failure\"}' with response headers {}"
+        client.send_request("")
+    assert (
+        str(ex.value) == "ServiceNow Error: User Not Authenticated, details: Required to provide Auth information "
+        'Got status code 401 with url http://server_url with body b\'{"error": {"message": '
+        '"User Not Authenticated", "detail": "Required to provide Auth information"}, '
+        '"status": "failure"}\' with response headers {}'
+    )
 
     debug = demisto.debug.call_args_list
 
-    assert debug[0][0][0] == 'Sending request to ServiceNow. Method: GET, Path: '
+    assert debug[0][0][0] == "Sending request to ServiceNow. Method: GET, Path: "
     assert debug[1][0][0] == (
         "Constructed URL: http://server_url\nRequest headers: "
         "{'Accept': 'application/json', 'Content-Type': 'application/json'}\nRequest params: {}"
     )
-    assert debug[2][0][0] == f'Request attempt 1 of {MAX_RETRY}'
-    assert debug[3][0][0] == 'Sending regular request'
-    assert debug[4][0][0] == 'Response status code: 401'
-    assert debug[5][0][0] == f'Got status code 401. Retrying... (Attempt 1 of {MAX_RETRY})'
+    assert debug[2][0][0] == f"Request attempt 1 of {MAX_RETRY}"
+    assert debug[3][0][0] == "Sending regular request"
+    assert debug[4][0][0] == "Response status code: 401"
+    assert debug[5][0][0] == f"Got status code 401. Retrying... (Attempt 1 of {MAX_RETRY})"
 
 
 def test_oauth_authentication(mocker, requests_mock):
@@ -3122,13 +3152,17 @@ def test_update_remote_data_upload_file_exception(mocker):
     assert res == "1234"
 
 
-@pytest.mark.parametrize('mock_json, expected_results',
-                         [
-                             ({'error': 'invalid client.'}, 'ServiceNow Error: invalid client.'),
-                             ({'error': {'message': 'invalid client', 'detail': 'the client you have entered is invalid.'}},
-                              'ServiceNow Error: invalid client, details: the client you have entered is invalid. '
-                              'Got status code 400 with url server_urltable with body  with response headers {}')
-                         ])
+@pytest.mark.parametrize(
+    "mock_json, expected_results",
+    [
+        ({"error": "invalid client."}, "ServiceNow Error: invalid client."),
+        (
+            {"error": {"message": "invalid client", "detail": "the client you have entered is invalid."}},
+            "ServiceNow Error: invalid client, details: the client you have entered is invalid. "
+            "Got status code 400 with url server_urltable with body  with response headers {}",
+        ),
+    ],
+)
 def test_send_request_with_str_error_response(mocker, mock_json, expected_results):
     """
     Given:
