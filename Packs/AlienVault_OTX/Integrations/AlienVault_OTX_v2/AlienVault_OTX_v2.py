@@ -90,6 +90,10 @@ class Client(BaseClient):
                     if self.should_error:
                         raise e
                     return_warning(f"{e.res.text} response received from server", exit=True)
+                else:
+                    raise
+            else:
+                raise
         except requests.exceptions.ReadTimeout as e:
             demisto.debug("A ReadTimeout error was raised.")
             if self.should_error:
