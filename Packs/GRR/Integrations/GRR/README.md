@@ -118,19 +118,19 @@
 <h5>Context Example</h5>
 <pre>"Flow": [
         {
-            "Expires": null, 
-            "IsRobot": null, 
-            "Description": null, 
-            "Creator": "admin", 
-            "NestedFlow": null, 
-            "LastActiveAt": 1535900542748033, 
+            "Expires": null,
+            "IsRobot": null,
+            "Description": null,
+            "Creator": "admin",
+            "NestedFlow": null,
+            "LastActiveAt": 1535900542748033,
             "Args": {
                 "request": {}
-            }, 
-            "State": "RUNNING", 
-            "StartedAt": 1535900542745106, 
-            "ID": "F:B51D6EAB", 
-            "Created": null, 
+            },
+            "State": "RUNNING",
+            "StartedAt": 1535900542745106,
+            "ID": "F:B51D6EAB",
+            "Created": null,
             "Name": "AnalyzeClientMemory"
         }
     ]
@@ -226,35 +226,35 @@
 <pre>{
     "Flow": [
         {
-            "Expires": null, 
-            "IsRobot": null, 
-            "Description": null, 
-            "Creator": "admin", 
-            "NestedFlow": [], 
-            "LastActiveAt": 1535900632278975, 
+            "Expires": null,
+            "IsRobot": null,
+            "Description": null,
+            "Creator": "admin",
+            "NestedFlow": [],
+            "LastActiveAt": 1535900632278975,
             "Args": {
                 "request": {}
-            }, 
-            "State": "TERMINATED", 
-            "StartedAt": 1535900542745106, 
-            "ID": "F:B51D6EAB", 
-            "Created": null, 
+            },
+            "State": "TERMINATED",
+            "StartedAt": 1535900542745106,
+            "ID": "F:B51D6EAB",
+            "Created": null,
             "Name": "AnalyzeClientMemory"
-        }, 
+        },
         {
-            "Expires": null, 
-            "IsRobot": null, 
-            "Description": null, 
-            "Creator": "admin", 
-            "NestedFlow": [], 
-            "LastActiveAt": 1535854160731193, 
+            "Expires": null,
+            "IsRobot": null,
+            "Description": null,
+            "Creator": "admin",
+            "NestedFlow": [],
+            "LastActiveAt": 1535854160731193,
             "Args": {
                 "request": {}
-            }, 
-            "State": "TERMINATED", 
-            "StartedAt": 1535853917723700, 
-            "ID": "F:88F4F65D", 
-            "Created": null, 
+            },
+            "State": "TERMINATED",
+            "StartedAt": 1535853917723700,
+            "ID": "F:88F4F65D",
+            "Created": null,
             "Name": "AnalyzeClientMemory"
         }
     ]
@@ -364,23 +364,23 @@
 <pre>{
     "Hunt": [
         {
-            "Expires": 1537063517000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:7B7F45F", 
-            "Created": 1535853917657925, 
+            "Expires": 1537063517000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:7B7F45F",
+            "Created": 1535853917657925,
             "Name": "GenericHunt"
-        }, 
+        },
         {
-            "Expires": 1537059453000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:AED24E68", 
-            "Created": 1535849853550599, 
+            "Expires": 1537059453000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:AED24E68",
+            "Created": 1535849853550599,
             "Name": "GenericHunt"
         }
     ]
@@ -470,13 +470,13 @@
 <pre>{
     "Hunt": [
         {
-            "Expires": 1537063517000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:7B7F45F", 
-            "Created": 1535853917657925, 
+            "Expires": 1537063517000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:7B7F45F",
+            "Created": 1535853917657925,
             "Name": "GenericHunt"
         }
     ]
@@ -525,13 +525,13 @@
 <pre>{
     "Hunt": [
         {
-            "Expires": 1537117003000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:74EB48EE", 
-            "Created": 1535907403638694, 
+            "Expires": 1537117003000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:74EB48EE",
+            "Created": 1535907403638694,
             "Name": "GenericHunt"
         }
     ]
@@ -648,91 +648,91 @@
     "Client": [
         {
             "HardwareInfo": {
-                "system_product_name": "HVM domU", 
-                "bios_rom_size": "64 kB", 
-                "bios_vendor": "Xen", 
-                "system_sku_number": "Not Specified", 
-                "system_family": "Not Specified", 
-                "system_uuid": "EC2EDE26-BB13-B80C-1915-DC53118B923F", 
-                "system_manufacturer": "Xen", 
-                "bios_release_date": "08/24/2006", 
-                "bios_version": "4.2.amazon", 
-                "serial_number": "ec2ede26-bb13-b80c-1915-dc53118b923f", 
+                "system_product_name": "HVM domU",
+                "bios_rom_size": "64 kB",
+                "bios_vendor": "Xen",
+                "system_sku_number": "Not Specified",
+                "system_family": "Not Specified",
+                "system_uuid": "EC2EDE26-BB13-B80C-1915-DC53118B923F",
+                "system_manufacturer": "Xen",
+                "bios_release_date": "08/24/2006",
+                "bios_version": "4.2.amazon",
+                "serial_number": "ec2ede26-bb13-b80c-1915-dc53118b923f",
                 "bios_revision": "4.2"
-            }, 
-            "LastClock": 1535907460060247, 
+            },
+            "LastClock": 1535907460060247,
             "Interfaces": [
                 {
-                    "ifname": "lo", 
+                    "ifname": "lo",
                     "addresses": [
                         {
-                            "packed_bytes": "fwAAAQ==", 
+                            "packed_bytes": "fwAAAQ==",
                             "address_type": "INET"
-                        }, 
+                        },
                         {
-                            "packed_bytes": "AAAAAAAAAAAAAAAAAAAAAQ==", 
+                            "packed_bytes": "AAAAAAAAAAAAAAAAAAAAAQ==",
                             "address_type": "INET6"
                         }
-                    ], 
+                    ],
                     "mac_address": "AAAAAAAA"
-                }, 
+                },
                 {
-                    "ifname": "eth0", 
+                    "ifname": "eth0",
                     "addresses": [
                         {
-                            "packed_bytes": "rB8sWw==", 
+                            "packed_bytes": "rB8sWw==",
                             "address_type": "INET"
-                        }, 
+                        },
                         {
-                            "packed_bytes": "/oAAAAAAAAAE1kv//h5yfg==", 
+                            "packed_bytes": "/oAAAAAAAAAE1kv//h5yfg==",
                             "address_type": "INET6"
                         }
-                    ], 
+                    ],
                     "mac_address": "BtZLHnJ+"
                 }
-            ], 
+            ],
             "OS": {
-                "kernel": "4.4.0-1065-aws", 
-                "install_date": 1534280169000000, 
-                "system": "Linux", 
-                "fqdn": "ip-172-31-44-91.eu-central-1.compute.internal", 
-                "machine": "x86_64", 
-                "version": "16.4", 
+                "kernel": "4.4.0-1065-aws",
+                "install_date": 1534280169000000,
+                "system": "Linux",
+                "fqdn": "ip-172-31-44-91.eu-central-1.compute.internal",
+                "machine": "x86_64",
+                "version": "16.4",
                 "release": "Ubuntu"
-            }, 
+            },
             "AgentInfo": {
-                "client_name": "grr", 
-                "client_description": "grr linux amd64", 
-                "client_version": 3232, 
+                "client_name": "grr",
+                "client_description": "grr linux amd64",
+                "client_version": 3232,
                 "build_time": "2018-06-28 09:37:57"
-            }, 
-            "Labels": [], 
-            "LastBootedAt": 1535292604000000, 
-            "FirstSeenAt": 1535293827970976, 
+            },
+            "Labels": [],
+            "LastBootedAt": 1535292604000000,
+            "FirstSeenAt": 1535293827970976,
             "User": [
                 {
-                    "username": "ubuntu", 
-                    "shell": "/bin/bash", 
-                    "homedir": "/home/ubuntu", 
-                    "last_logon": 1535356309000000, 
-                    "gid": 1000, 
-                    "full_name": "Ubuntu", 
+                    "username": "ubuntu",
+                    "shell": "/bin/bash",
+                    "homedir": "/home/ubuntu",
+                    "last_logon": 1535356309000000,
+                    "gid": 1000,
+                    "full_name": "Ubuntu",
                     "uid": 1000
                 }
-            ], 
+            ],
             "Volumes": [
                 {
-                    "total_allocation_units": 50808745, 
-                    "bytes_per_sector": 4096, 
-                    "sectors_per_allocation_unit": 1, 
+                    "total_allocation_units": 50808745,
+                    "bytes_per_sector": 4096,
+                    "sectors_per_allocation_unit": 1,
                     "unixvolume": {
                         "mount_point": "/"
-                    }, 
+                    },
                     "actual_available_allocation_units": 50027766
                 }
-            ], 
-            "LastCrashAt": null, 
-            "LastSeenAt": 1535907460075229, 
+            ],
+            "LastCrashAt": null,
+            "LastSeenAt": 1535907460075229,
             "ID": "C.d824a5afc0ee6a46"
         }
     ]

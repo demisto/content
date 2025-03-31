@@ -1,6 +1,7 @@
 Gets all MAC addresses in context, excluding ones given.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Gets all MAC addresses in context, excluding ones given.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Gets all MAC addresses in context, excluding ones given.
 | excludedMACAddress | MAC addresses to exclude \(separated by commas\) |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

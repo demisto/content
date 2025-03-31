@@ -1,9 +1,10 @@
 Brute Force investigations require security teams to reconcile data from many different sources. Valuable time is lost shuttling between screens and executing repeatable tasks while an attack continues to manifest.
 This Brute Force content pack contains the ‘Brute Force Investigation - Generic’ playbook, that automates response to different Brute Force incidents. The pack also contains the corresponding custom Brute Force incident fields, views and layouts to facilitate analyst investigation.
 
-
 ##### What does this pack do?
+
 The playbook  included in this pack handles the following use-cases:
+
 - Brute Force IP Detected - A detection of source IPs that are exceeding a high threshold of rejected and/or invalid logins.
 - Brute Force Increase Percentage - A detection of large increase percentages in various brute force statistics over different periods of time.
 - Brute Force Potentially Compromised Accounts - A detection of accounts that have shown a high amount of failed logins with one successful login.

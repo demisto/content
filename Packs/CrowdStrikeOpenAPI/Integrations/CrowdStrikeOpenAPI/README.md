@@ -8,7 +8,6 @@ For more details, refer to the [CrowdStrike OAuth2-Based APIs documentation](htt
 
 ## Configure CrowdStrike OpenAPI in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Cloud Base URL | True |

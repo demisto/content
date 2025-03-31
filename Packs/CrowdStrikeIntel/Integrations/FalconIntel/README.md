@@ -195,7 +195,7 @@ Vendor:CrowdStrike
 <h5>Command Example</h5>
 <p><code>!url url="http://8.8.8.8/google.doc" using="FalconIntel V2_instance_1"</code></p>
 <h5>Raw Output</h5>
-<pre> 
+<pre>
 DBotScore
 {  
    "Indicator":"http://8.8.8.8/google.doc",
@@ -301,7 +301,7 @@ Domain
 }
  </pre>
 <h5>Context Example</h5>
-<pre> 
+<pre>
 DBotScore:[] 4 items 3:{} 4 items
 Indicator:dns02.hpupdat.net
 Score:3

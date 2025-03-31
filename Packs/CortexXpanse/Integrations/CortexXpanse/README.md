@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 
 ## Configure Cortex Xpanse in Cortex
 
-
 | **Parameter**                                                                    | **Description**                                                                                                                                                                                                                                         | **Required** |
 |----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | Server URL                                                                       | The web UI with \`api-\` appended to front \(e.g., <https://api-xsiam.paloaltonetworks.com\>). For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>. | True         |
@@ -19,8 +18,6 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 | Alert Severities to Fetch                                                        | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.                | False        |
 | Source Reliability                                                               | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                           | False        |
 | Look Back (Minutes to look back when fetching) | Use this parameter to determine how far back in time to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False        |
-
-
 
 ## Commands
 
@@ -40,29 +37,29 @@ Get a list of all your external services filtered by business units, externally 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address on which to search. | Optional | 
-| domain | Domain on which to search. | Optional | 
-| is_active | Whether the service is active. Possible values are: yes, no. | Optional | 
-| discovery_type | How service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional | 
+| ip_address | IP address on which to search. | Optional |
+| domain | Domain on which to search. | Optional |
+| is_active | Whether the service is active. Possible values are: yes, no. | Optional |
+| discovery_type | How service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.ExternalService.service_id | String | External service UUID. | 
-| ASM.ExternalService.service_name | String | Name of the external service. | 
-| ASM.ExternalService.service_type | String | Type of the external service. | 
-| ASM.ExternalService.ip_address | String | IP address of the external service. | 
-| ASM.ExternalService.externally_detected_providers | String | Providers of external service. | 
-| ASM.ExternalService.is_active | String | Whether the external service is active. | 
-| ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
-| ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
-| ASM.ExternalService.port | Number | Port number of the external service. | 
-| ASM.ExternalService.protocol | String | Protocol number of the external service. | 
-| ASM.ExternalService.inactive_classifications | String | External service classifications that are no longer active. | 
-| ASM.ExternalService.discovery_type | String | How the external service was discovered. | 
-| ASM.ExternalService.business_units | String | External service associated business units. | 
-| ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
+| ASM.ExternalService.service_id | String | External service UUID. |
+| ASM.ExternalService.service_name | String | Name of the external service. |
+| ASM.ExternalService.service_type | String | Type of the external service. |
+| ASM.ExternalService.ip_address | String | IP address of the external service. |
+| ASM.ExternalService.externally_detected_providers | String | Providers of external service. |
+| ASM.ExternalService.is_active | String | Whether the external service is active. |
+| ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. |
+| ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. |
+| ASM.ExternalService.port | Number | Port number of the external service. |
+| ASM.ExternalService.protocol | String | Protocol number of the external service. |
+| ASM.ExternalService.inactive_classifications | String | External service classifications that are no longer active. |
+| ASM.ExternalService.discovery_type | String | How the external service was discovered. |
+| ASM.ExternalService.business_units | String | External service associated business units. |
+| ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. |
 
 #### Command example
 
@@ -196,7 +193,6 @@ Get a list of all your external services filtered by business units, externally 
 >| HttpServer,<br/>MicrosoftOWAServer,<br/>ServerSoftware,<br/>MicrosoftIisWebServer,<br/>ApplicationServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | autodiscover.acme.com | Microsoft Azure | 1659395040000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663024320000 | 80 | TCP | 4c755fea-59e8-3719-8829-9f6adde65068 | HTTP Server at autodiscover.acme.com:80 | HttpServer |
 >| HttpServer,<br/>ServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | web.acme.com | Amazon Web Services | 1659396480000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663029060000 | 80 | TCP | 32c85ab1-fc98-3061-a813-2fe5daf7e7c5 | HTTP Server at web.acme.com:80 | HttpServer |
 
-
 ### asm-get-external-service
 
 ***
@@ -210,27 +206,27 @@ Get service details according to the service ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | A string representing the service ID you want to get details for. | Required | 
+| service_id | A string representing the service ID you want to get details for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.ExternalService.service_id | String | External service UUID. | 
-| ASM.ExternalService.service_name | String | Name of the external service. | 
-| ASM.ExternalService.service_type | String | Type of the external service. | 
-| ASM.ExternalService.ip_address | String | IP address of the external service. | 
-| ASM.ExternalService.externally_detected_providers | String | Providers of the external service. | 
-| ASM.ExternalService.is_active | String | Whether the external service is active. | 
-| ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
-| ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
-| ASM.ExternalService.port | Number | Port number of the external service. | 
-| ASM.ExternalService.protocol | String | Protocol of the external service. | 
-| ASM.ExternalService.inactive_classifications | String | External service classifications that are no longer active. | 
-| ASM.ExternalService.discovery_type | String | How the external service was discovered. | 
-| ASM.ExternalService.business_units | String | External service associated business units. | 
-| ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
-| ASM.ExternalService.details | String | Additional details. | 
+| ASM.ExternalService.service_id | String | External service UUID. |
+| ASM.ExternalService.service_name | String | Name of the external service. |
+| ASM.ExternalService.service_type | String | Type of the external service. |
+| ASM.ExternalService.ip_address | String | IP address of the external service. |
+| ASM.ExternalService.externally_detected_providers | String | Providers of the external service. |
+| ASM.ExternalService.is_active | String | Whether the external service is active. |
+| ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. |
+| ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. |
+| ASM.ExternalService.port | Number | Port number of the external service. |
+| ASM.ExternalService.protocol | String | Protocol of the external service. |
+| ASM.ExternalService.inactive_classifications | String | External service classifications that are no longer active. |
+| ASM.ExternalService.discovery_type | String | How the external service was discovered. |
+| ASM.ExternalService.business_units | String | External service associated business units. |
+| ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. |
+| ASM.ExternalService.details | String | Additional details. |
 
 #### Command example
 
@@ -585,12 +581,10 @@ Get service details according to the service ID.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| SSHWeakMACAlgorithmsEnabled,<br/>SshServer,<br/>OpenSSH | Acme | serviceKey: 1.1.1.1:22<br/>serviceKeyType: IP<br/>businessUnits: {'name': 'Acme'}<br/>providerDetails: {'name': 'AWS', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>certificates: <br/>domains: <br/>ips: {'ip': 873887795, 'protocol': 'TCP', 'provider': 'AWS', 'geolocation': {'latitude': 39.0438, 'longitude': -77.4879, 'countryCode': 'US', 'city': 'ASHBURN', 'regionCode': 'VA', 'timeZone': None}, 'activityStatus': 'Active', 'lastObserved': 1663026500000, 'firstObserved': 1662774169000}<br/>classifications: {'name': 'SshServer', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'SSHWeakMACAlgorithmsEnabled', 'activityStatus': 'Active', 'values': [{'jsonValue': '{}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'OpenSSH', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"7.6"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000}<br/>tlsVersions: <br/>inferredCvesObserved: {'inferredCve': {'cveId': 'CVE-2020-15778', 'cvssScoreV2': 6.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.8, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-41617', 'cvssScoreV2': 4.4, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.0, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6110', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6109', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2020-14145', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6111', 'cvssScoreV2': 5.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-20685', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15919', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2016-20012', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15473', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-36368', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 3.7, 'cveSeverityV3': 'LOW', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>enrichedObservationSource: CLOUD<br/>ip_ranges: {} | ColocatedOnIp | Amazon Web Services | CVE-2020-15778,<br/>CVE-2021-41617,<br/>CVE-2019-6110,<br/>CVE-2019-6109,<br/>CVE-2020-14145,<br/>CVE-2019-6111,<br/>CVE-2018-20685,<br/>CVE-2018-15919,<br/>CVE-2016-20012,<br/>CVE-2018-15473,<br/>CVE-2021-36368 | 7.8 | 1662774120000 | 1.1.1.1 | Active | 1663026480000 | 22 | TCP | 94232f8a-f001-3292-aa65-63fa9d981427 | SSH Server at 1.1.1.1:22 | SshServer |
 
-
 ### asm-list-external-ip-address-range
 
 ***
 Get a list of all your internet exposures filtered by business units and organization handles. Maximum result limit is 100 ranges.
-
 
 #### Base Command
 
@@ -601,19 +595,18 @@ Get a list of all your internet exposures filtered by business units and organiz
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.ExternalIpAddressRange.range_id | String | External IP address range UUID. | 
-| ASM.ExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. | 
-| ASM.ExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. | 
-| ASM.ExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. | 
-| ASM.ExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. | 
-| ASM.ExternalIpAddressRange.date_added | Date | Date the external IP address range was added. | 
-| ASM.ExternalIpAddressRange.business_units | String | External IP address range associated business units. | 
-| ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. | 
+| ASM.ExternalIpAddressRange.range_id | String | External IP address range UUID. |
+| ASM.ExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. |
+| ASM.ExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. |
+| ASM.ExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. |
+| ASM.ExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. |
+| ASM.ExternalIpAddressRange.date_added | Date | Date the external IP address range was added. |
+| ASM.ExternalIpAddressRange.business_units | String | External IP address range associated business units. |
+| ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. |
 
 #### Command example
 
@@ -672,12 +665,10 @@ Get a list of all your internet exposures filtered by business units and organiz
 >| 0 | VanDelay Industries | 1663031000145 | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 >| 0 | VanDelay Industries | 1663031000144 | 1.1.1.1 | 16 | 1.1.1.1 | AR17615-RIPE,<br/>EASYNET-UK-MNT,<br/>JW372-RIPE,<br/>EH92-RIPE | 6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5 |
 
-
 ### asm-get-external-ip-address-range
 
 ***
 Get external IP address range details according to the range IDs.
-
 
 #### Base Command
 
@@ -687,22 +678,21 @@ Get external IP address range details according to the range IDs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id | A string representing the range ID for which you want to get the details. | Required | 
-
+| range_id | A string representing the range ID for which you want to get the details. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.ExternalIpAddressRange.range_id | String | External IP address range UUID. | 
-| ASM.ExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. | 
-| ASM.ExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. | 
-| ASM.ExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. | 
-| ASM.ExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. | 
-| ASM.ExternalIpAddressRange.date_added | Date | Date the external IP address range was added. | 
-| ASM.ExternalIpAddressRange.business_units | String | External IP address range associated business units. | 
-| ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. | 
-| ASM.ExternalIpAddressRange.details | String | Additional information. | 
+| ASM.ExternalIpAddressRange.range_id | String | External IP address range UUID. |
+| ASM.ExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. |
+| ASM.ExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. |
+| ASM.ExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. |
+| ASM.ExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. |
+| ASM.ExternalIpAddressRange.date_added | Date | Date the external IP address range was added. |
+| ASM.ExternalIpAddressRange.business_units | String | External IP address range associated business units. |
+| ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. |
+| ASM.ExternalIpAddressRange.details | String | Additional information. |
 
 #### Command example
 
@@ -804,7 +794,6 @@ Get external IP address range details according to the range IDs.
 >|---|---|---|---|---|---|---|---|---|
 >| 0 | VanDelay Industries | 1663031000145 | networkRecords: {'handle': '1.1.1.1 - 1.1.1.1', 'firstIp': '1.1.1.1', 'lastIp': '1.1.1.1', 'name': 'SEARS-HK', 'whoIsServer': 'whois.apnic.net', 'lastChanged': 1663030241931, 'organizationRecords': [{'handle': 'MAINT-HK-PCCW-BIA-CS', 'dateAdded': 1663029346957, 'address': '', 'email': 'noc@acme.com', 'phone': '', 'org': '', 'formattedName': '', 'kind': 'group', 'roles': ['registrant'], 'lastChanged': None, 'firstRegistered': None, 'remarks': ''}, {'handle': 'BNA2-AP', 'dateAdded': 1663029346957, 'address': "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ", 'email': 'cs@acme.com', 'phone': '+852-2888-6932', 'org': '', 'formattedName': 'BIZ NETVIGATOR ADMINISTRATORS', 'kind': 'group', 'roles': ['administrative'], 'lastChanged': 1514892767000, 'firstRegistered': 1220514857000, 'remarks': ''}, {'handle': 'TA66-AP', 'dateAdded': 1663029346957, 'address': 'HKT Limited\nPO Box 9896 GPO          ', 'email': 'noc@acme.com', 'phone': '+852-2883-5151', 'org': '', 'formattedName': 'TECHNICAL ADMINISTRATORS', 'kind': 'group', 'roles': ['technical'], 'lastChanged': 1468555410000, 'firstRegistered': 1220514856000, 'remarks': ''}], 'remarks': 'Sears Holdings Global Sourcing Ltd'} | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 
-
 ### asm-list-asset-internet-exposure
 
 ***
@@ -818,46 +807,45 @@ Get a list of all your internet exposures filtered by IP address, domain, type, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address on which to search. | Optional | 
-| name | Name of the asset on which to search. | Optional | 
-| type | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
-| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no. | Optional | 
-| search_from | Represents the start offset index of results. Default is 0. | Optional | 
-| search_to | Represents the end offset index of results. | Optional | 
-| asm_id_list | List of asm ids. | Optional | 
-| ipv6_address | IPv6 address on which to search. | Optional | 
-| gcp_cloud_tags | Search based on GCP cloud tags. | Optional | 
-| aws_cloud_tags | Search based on AWS cloud tags. | Optional | 
-| azure_cloud_tags | Search based on AZURE cloud tags. | Optional | 
-| has_xdr_agent | Search based on xdr agent. | Optional | 
-| externally_detected_providers | Search on externally detected providers. | Optional | 
-| externally_inferred_cves | Search on externally inferred cve. | Optional | 
-| business_units_list | Search on Business units list. | Optional | 
-| has_bu_overrides | Whether it has BU overrides. Possible values are: True, False. | Optional | 
-| mac_address | Search based on MAC address. | Optional | 
+| ip_address | IP address on which to search. | Optional |
+| name | Name of the asset on which to search. | Optional |
+| type | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional |
+| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no. | Optional |
+| search_from | Represents the start offset index of results. Default is 0. | Optional |
+| search_to | Represents the end offset index of results. | Optional |
+| asm_id_list | List of asm ids. | Optional |
+| ipv6_address | IPv6 address on which to search. | Optional |
+| gcp_cloud_tags | Search based on GCP cloud tags. | Optional |
+| aws_cloud_tags | Search based on AWS cloud tags. | Optional |
+| azure_cloud_tags | Search based on AZURE cloud tags. | Optional |
+| has_xdr_agent | Search based on xdr agent. | Optional |
+| externally_detected_providers | Search on externally detected providers. | Optional |
+| externally_inferred_cves | Search on externally inferred cve. | Optional |
+| business_units_list | Search on Business units list. | Optional |
+| has_bu_overrides | Whether it has BU overrides. Possible values are: True, False. | Optional |
+| mac_address | Search based on MAC address. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.AssetInternetExposure.asm_ids | String | Attack surface management UUID. | 
-| ASM.AssetInternetExposure.name | String | Name of the exposed asset. | 
-| ASM.AssetInternetExposure.asset_type | String | Type of the exposed asset. | 
-| ASM.AssetInternetExposure.cloud_provider | Unknown | The cloud provider used to collect these cloud assets as either GCP, AWS, or Azure. | 
-| ASM.AssetInternetExposure.region | Unknown | Displays the region as provided by the cloud provider. | 
-| ASM.AssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. | 
-| ASM.AssetInternetExposure.first_observed | Unknown | First time the exposure was observed. | 
-| ASM.AssetInternetExposure.has_active_externally_services | Boolean | Whether the internet exposure is associated with an active external service\(s\). | 
-| ASM.AssetInternetExposure.has_xdr_agent | String | Whether the internet exposure asset has an XDR agent. | 
-| ASM.AssetInternetExposure.cloud_id | Unknown | Displays the resource ID as provided from the cloud provider. | 
-| ASM.AssetInternetExposure.domain_resolves | Boolean | Whether the asset domain is resolvable. | 
-| ASM.AssetInternetExposure.operation_system | Unknown | The operating system reported by the source for this asset. | 
-| ASM.AssetInternetExposure.agent_id | Unknown | The endpoint ID if there is an endpoint installed on this asset. | 
-| ASM.AssetInternetExposure.externally_detected_providers | String | The provider of the asset as determined by an external assessment. | 
-| ASM.AssetInternetExposure.service_type | String | Type of the asset. | 
-| ASM.AssetInternetExposure.externally_inferred_cves | String | If the internet exposure has associated CVEs. | 
-| ASM.AssetInternetExposure.ips | String | IP addresses associated with the internet exposure. | 
-
+| ASM.AssetInternetExposure.asm_ids | String | Attack surface management UUID. |
+| ASM.AssetInternetExposure.name | String | Name of the exposed asset. |
+| ASM.AssetInternetExposure.asset_type | String | Type of the exposed asset. |
+| ASM.AssetInternetExposure.cloud_provider | Unknown | The cloud provider used to collect these cloud assets as either GCP, AWS, or Azure. |
+| ASM.AssetInternetExposure.region | Unknown | Displays the region as provided by the cloud provider. |
+| ASM.AssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. |
+| ASM.AssetInternetExposure.first_observed | Unknown | First time the exposure was observed. |
+| ASM.AssetInternetExposure.has_active_externally_services | Boolean | Whether the internet exposure is associated with an active external service\(s\). |
+| ASM.AssetInternetExposure.has_xdr_agent | String | Whether the internet exposure asset has an XDR agent. |
+| ASM.AssetInternetExposure.cloud_id | Unknown | Displays the resource ID as provided from the cloud provider. |
+| ASM.AssetInternetExposure.domain_resolves | Boolean | Whether the asset domain is resolvable. |
+| ASM.AssetInternetExposure.operation_system | Unknown | The operating system reported by the source for this asset. |
+| ASM.AssetInternetExposure.agent_id | Unknown | The endpoint ID if there is an endpoint installed on this asset. |
+| ASM.AssetInternetExposure.externally_detected_providers | String | The provider of the asset as determined by an external assessment. |
+| ASM.AssetInternetExposure.service_type | String | Type of the asset. |
+| ASM.AssetInternetExposure.externally_inferred_cves | String | If the internet exposure has associated CVEs. |
+| ASM.AssetInternetExposure.ips | String | IP addresses associated with the internet exposure. |
 
 #### Command example
 
@@ -967,12 +955,10 @@ Get a list of all your internet exposures filtered by IP address, domain, type, 
 >| cfa1cd5a-77f1-3963-8557-7f652309a143 | CERTIFICATE | Acme,<br/>VanDelay Industries | SHA256withRSA | LongExpiration,<br/>Wildcard,<br/>Expired | DigiCert | false | false | NA | *.digital-dev.acme.com | XPANSE |
 >| 78a11e94-58a9-329c-99ca-e527d2db6cfb | CERTIFICATE | Acme,<br/>VanDelay Industries | SHA256withRSA | LongExpiration,<br/>Wildcard,<br/>Expired | DigiCert | false | false | NA | *.digital-prod.acme.com | XPANSE |
 
-
 ### asm-get-asset-internet-exposure
 
 ***
 Get internet exposure asset details according to the asset ID.
-
 
 #### Base Command
 
@@ -982,27 +968,26 @@ Get internet exposure asset details according to the asset ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asm_id | A string representing the asset ID for which you want to get the details. | Required | 
-
+| asm_id | A string representing the asset ID for which you want to get the details. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.AssetInternetExposure.asm_ids | String | Attack surface management UUID. | 
-| ASM.AssetInternetExposure.name | String | Name of the exposed asset. | 
-| ASM.AssetInternetExposure.type | String | Type of the exposed asset. | 
-| ASM.AssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. | 
-| ASM.AssetInternetExposure.first_observed | Unknown | First time the exposure was observed. | 
-| ASM.AssetInternetExposure.created | Date | Date the ASM issue was created. | 
-| ASM.AssetInternetExposure.business_units | String | Asset associated business units. | 
-| ASM.AssetInternetExposure.domain | Unknown | Asset associated domain. | 
-| ASM.AssetInternetExposure.certificate_issuer | String | Asset certificate issuer. | 
-| ASM.AssetInternetExposure.certificate_algorithm | String | Asset certificate algorithm. | 
-| ASM.AssetInternetExposure.certificate_classifications | String | Asset certificate classifications. | 
-| ASM.AssetInternetExposure.resolves | Boolean | Whether the asset has DNS resolution. | 
-| ASM.AssetInternetExposure.details | Unknown | Additional details. | 
-| ASM.AssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score. | 
+| ASM.AssetInternetExposure.asm_ids | String | Attack surface management UUID. |
+| ASM.AssetInternetExposure.name | String | Name of the exposed asset. |
+| ASM.AssetInternetExposure.type | String | Type of the exposed asset. |
+| ASM.AssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. |
+| ASM.AssetInternetExposure.first_observed | Unknown | First time the exposure was observed. |
+| ASM.AssetInternetExposure.created | Date | Date the ASM issue was created. |
+| ASM.AssetInternetExposure.business_units | String | Asset associated business units. |
+| ASM.AssetInternetExposure.domain | Unknown | Asset associated domain. |
+| ASM.AssetInternetExposure.certificate_issuer | String | Asset certificate issuer. |
+| ASM.AssetInternetExposure.certificate_algorithm | String | Asset certificate algorithm. |
+| ASM.AssetInternetExposure.certificate_classifications | String | Asset certificate classifications. |
+| ASM.AssetInternetExposure.resolves | Boolean | Whether the asset has DNS resolution. |
+| ASM.AssetInternetExposure.details | Unknown | Additional details. |
+| ASM.AssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score. |
 
 #### Command example
 
@@ -1107,7 +1092,6 @@ Get internet exposure asset details according to the asset ID.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3c176460-8735-333c-b618-8262e2fb660c | Acme | SHA1withRSA | Wildcard,<br/>Expired,<br/>InsecureSignature | Thawte | 1663030146931 | providerDetails: <br/>domain: null<br/>topLevelAssetMapperDomain: null<br/>domainAssetType: null<br/>isPaidLevelDomain: false<br/>domainDetails: null<br/>dnsZone: null<br/>latestSampledIp: null<br/>subdomainMetadata: null<br/>recentIps: <br/>businessUnits: {'name': 'Acme'}<br/>certificateDetails: {"issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA", "issuerAlternativeNames": "", "issuerCountry": "US", "issuerEmail": null, "issuerLocality": null, "issuerName": "Thawte SSL CA", "issuerOrg": "Thawte\\\\, Inc.", "formattedIssuerOrg": "Thawte", "issuerOrgUnit": null, "issuerState": null, "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB", "publicKeyAlgorithm": "RSA", "publicKeyRsaExponent": 65537, "signatureAlgorithm": "SHA1withRSA", "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.acme.com", "subjectAlternativeNames": "*.acme.com", "subjectCountry": "US", "subjectEmail": null, "subjectLocality": "Wayne", "subjectName": "*.acme.com", "subjectOrg": "Acme", "subjectOrgUnit": "MIS", "subjectState": "New Jersey", "serialNumber": "91384582774546160650506315451812470612", "validNotBefore": 1413158400000, "validNotAfter": 1444780799000, "version": "3", "publicKeyBits": 2048, "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d", "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=", "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb", "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8", "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"}<br/>inferredCvesObserved: <br/>ip_ranges: {} | *.acme.com | false | Certificate |
 
-
 ### asm-list-alerts
 
 ***
@@ -1121,32 +1105,32 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 | **Argument Name**     | **Description**                                                                                                                                                                                                                                   | **Required** |
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| alert_id_list         | Comma-separated list of alert IDs.                                                                                                                                                                                                 | Optional | 
-| severity              | Comma-separated list of alert severities (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional | 
-| tags                  | Comma-separated list of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                             | Optional | 
-| status                | Comma-separated list of the alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
-| business_units_list   | Comma-separated list business units.                                                                                                                                                                                            | Optional | 
-| case_id_list          | Comma-separated list of case (incident) IDs.                                                                                                                                                                                       | Optional | 
-| lte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional | 
-| gte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                 | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
-| sort_by_severity      | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
-| page                  | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                    | Optional | 
-| limit                 | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                   | Optional | 
+| alert_id_list         | Comma-separated list of alert IDs.                                                                                                                                                                                                 | Optional |
+| severity              | Comma-separated list of alert severities (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional |
+| tags                  | Comma-separated list of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                             | Optional |
+| status                | Comma-separated list of the alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional |
+| business_units_list   | Comma-separated list business units.                                                                                                                                                                                            | Optional |
+| case_id_list          | Comma-separated list of case (incident) IDs.                                                                                                                                                                                       | Optional |
+| lte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional |
+| gte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                 | Optional |
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional |
+| sort_by_severity      | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional |
+| page                  | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                    | Optional |
+| limit                 | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                   | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Alert.alert_id | String | A unique identifier that Cortex XSIAM assigns to each alert. | 
-| ASM.Alert.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informational, Low, Medium, High, Critical, or Unknown\). | 
-| ASM.Alert.external_id | String | The alert ID as recorded in the detector from which this alert was sent. | 
-| ASM.Alert.name | String | Summary of the ASM internet exposure alert. | 
-| ASM.Alert.description | String | More detailed explanation of internet exposure alert. | 
-| ASM.Alert.host_name | String | The hostname of the endpoint or server on which this alert triggered. | 
-| ASM.Alert.dynamic_fields | Unknown | Alert fields pulled from Cortex XSOAR context. | 
-| ASM.Alert.events | Unknown | Individual events that comprise the alert. | 
-| ASM.Alert.detection_timestamp | Date | Date the alert was created. | 
+| ASM.Alert.alert_id | String | A unique identifier that Cortex XSIAM assigns to each alert. |
+| ASM.Alert.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informational, Low, Medium, High, Critical, or Unknown\). |
+| ASM.Alert.external_id | String | The alert ID as recorded in the detector from which this alert was sent. |
+| ASM.Alert.name | String | Summary of the ASM internet exposure alert. |
+| ASM.Alert.description | String | More detailed explanation of internet exposure alert. |
+| ASM.Alert.host_name | String | The hostname of the endpoint or server on which this alert triggered. |
+| ASM.Alert.dynamic_fields | Unknown | Alert fields pulled from Cortex XSOAR context. |
+| ASM.Alert.events | Unknown | Individual events that comprise the alert. |
+| ASM.Alert.detection_timestamp | Date | Date the alert was created. |
 
 #### Command example
 
@@ -1484,7 +1468,6 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 >| NOT_AVAILABLE | N/A | NO_HOST | 231 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452808759 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452808759, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240725450 | 1659455267908 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
 >| NOT_AVAILABLE | N/A | NO_HOST | 33 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452809020 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452809020, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240426055 | 1659455246812 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
 
-
 ### asm-get-attack-surface-rule
 
 ***
@@ -1498,25 +1481,25 @@ Fetches attack surface rules related to how Cortex Xpanse does assessment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enabled_status | Enablement status to search rules with. Valid values are  "On" and "Off". | Optional | 
-| category | Comma-separated list of strings attack surface rule categories. | Optional | 
-| priority | Comma-separated list of strings attack surface rule priorities. | Optional | 
-| attack_surface_rule_ids | Comma-separated list of strings attack surface rule IDs. | Optional | 
-| limit | Maximum number of results to return. | Optional | 
+| enabled_status | Enablement status to search rules with. Valid values are  "On" and "Off". | Optional |
+| category | Comma-separated list of strings attack surface rule categories. | Optional |
+| priority | Comma-separated list of strings attack surface rule priorities. | Optional |
+| attack_surface_rule_ids | Comma-separated list of strings attack surface rule IDs. | Optional |
+| limit | Maximum number of results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.AttackSurfaceRules.priority | unknown | Priority level for the different rules. Low, Medium, High, Critical. | 
-| ASM.AttackSurfaceRules.attack_surface_rule_name | unknown | Name of the attack surface rule. | 
-| ASM.AttackSurfaceRules.attack_surface_rule_id | unknown | ID of the attack surface rule. | 
-| ASM.AttackSurfaceRules.description | unknown | Description of the attack surface rule. | 
-| ASM.AttackSurfaceRules.category | unknown | Category of the attack surface rule. | 
-| ASM.AttackSurfaceRules.remediation_guidance | unknown | Guidance for how to address various ASM risks. | 
-| ASM.AttackSurfaceRules.enabled_status | unknown | Enablement status of the attack surface rule. | 
-| ASM.AttackSurfaceRules.created | unknown | Creation date of the attack surface rule. | 
-| ASM.AttackSurfaceRules.modified | unknown | Last modification of the attack surface rule. | 
+| ASM.AttackSurfaceRules.priority | unknown | Priority level for the different rules. Low, Medium, High, Critical. |
+| ASM.AttackSurfaceRules.attack_surface_rule_name | unknown | Name of the attack surface rule. |
+| ASM.AttackSurfaceRules.attack_surface_rule_id | unknown | ID of the attack surface rule. |
+| ASM.AttackSurfaceRules.description | unknown | Description of the attack surface rule. |
+| ASM.AttackSurfaceRules.category | unknown | Category of the attack surface rule. |
+| ASM.AttackSurfaceRules.remediation_guidance | unknown | Guidance for how to address various ASM risks. |
+| ASM.AttackSurfaceRules.enabled_status | unknown | Enablement status of the attack surface rule. |
+| ASM.AttackSurfaceRules.created | unknown | Creation date of the attack surface rule. |
+| ASM.AttackSurfaceRules.modified | unknown | Last modification of the attack surface rule. |
 
 #### Command example
 
@@ -1565,8 +1548,8 @@ Assigns tags to a list of assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asm_id_list | Comma-separated list of asset IDs to add tags to. | Required | 
-| tags | The name of the tags to apply to supplied assets. | Required | 
+| asm_id_list | Comma-separated list of asset IDs to add tags to. | Required |
+| tags | The name of the tags to apply to supplied assets. | Required |
 
 #### Context Output
 
@@ -1603,8 +1586,8 @@ Removes tags from a list of assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asm_id_list | Comma-separated list of asset IDs to remove tags from. | Optional | 
-| tags | The name of the tags to remove from supplied assets. | Optional | 
+| asm_id_list | Comma-separated list of asset IDs to remove tags from. | Optional |
+| tags | The name of the tags to remove from supplied assets. | Optional |
 
 #### Context Output
 
@@ -1641,8 +1624,8 @@ Assigns tags to a list of IP ranges.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id_list | Comma-separated list of range IDs to add tags to. | Optional | 
-| tags | The name of the tags to apply to supplied assets. | Optional | 
+| range_id_list | Comma-separated list of range IDs to add tags to. | Optional |
+| tags | The name of the tags to apply to supplied assets. | Optional |
 
 #### Context Output
 
@@ -1679,8 +1662,8 @@ Removes tags from a list of IP ranges.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range_id_list | Comma-separated list of range IDs to remove tags from. | Optional | 
-| tags | The name of the tags to remove from supplied IP ranges. | Optional | 
+| range_id_list | Comma-separated list of range IDs to remove tags from. | Optional |
+| tags | The name of the tags to remove from supplied IP ranges. | Optional |
 
 #### Context Output
 
@@ -1717,45 +1700,45 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id_list | Incident IDs to filter on. Note: Incident IDs may also be references as "Case IDs' elsewhere in the API. | Optional | 
-| description | String to search for within the incident description field. | Optional | 
-| status | Status to search incidents for. Possible values are: new, under_investigation, resolved. | Optional | 
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
-| sort_by_severity | Sorts returned incidents by the severity of the incident. | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
+| incident_id_list | Incident IDs to filter on. Note: Incident IDs may also be references as "Case IDs' elsewhere in the API. | Optional |
+| description | String to search for within the incident description field. | Optional |
+| status | Status to search incidents for. Possible values are: new, under_investigation, resolved. | Optional |
+| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional |
+| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional |
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional |
+| sort_by_severity | Sorts returned incidents by the severity of the incident. | Optional |
+| page | Page number (for pagination). The default is 0 (the first page). | Optional |
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Incident.alert_count | Number | Number of alerts included in the incident. | 
-| ASM.Incident.alerts_grouping_status | String | Whether alert grouping is enabled. | 
-| ASM.Incident.assigned_user_mail | Unknown | Email of the assigned user. | 
-| ASM.Incident.assigned_user_pretty_name | Unknown | Friendly name of the assigned user. | 
-| ASM.Incident.creation_time | Date | Creation timestamp. | 
-| ASM.Incident.critical_severity_alert_count | Number | Number of critical alerts. | 
-| ASM.Incident.description | String | Description of the incident. | 
-| ASM.Incident.high_severity_alert_count | Number | Number of high alerts. | 
-| ASM.Incident.incident_id | String | ID of the incident. | 
-| ASM.Incident.incident_name | Unknown | Incident name. | 
-| ASM.Incident.incident_sources | String | Incident source. | 
-| ASM.Incident.low_severity_alert_count | Number | Number of low alerts. | 
-| ASM.Incident.manual_severity | Unknown | Severity override. | 
-| ASM.Incident.med_severity_alert_count | Number | Number of medium alerts. | 
-| ASM.Incident.modification_time | Date | Modification timestamp. | 
-| ASM.Incident.notes | Unknown | Incident notes. | 
-| ASM.Incident.original_tags | Unknown | Tags on the incident at creation time. | 
-| ASM.Incident.resolve_comment | Unknown | Resolution comment \(optional\). | 
-| ASM.Incident.resolved_timestamp | Unknown | Resolution timestamp. | 
-| ASM.Incident.severity | String | Severity of the incident. | 
-| ASM.Incident.starred | Boolean | Whether the incident has been starred. | 
-| ASM.Incident.status | String | Status of the incident. | 
-| ASM.Incident.tags | String | Tags on the incident. | 
-| ASM.Incident.xdr_url | String | Link to navigate to the incident. | 
-| ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident. | 
+| ASM.Incident.alert_count | Number | Number of alerts included in the incident. |
+| ASM.Incident.alerts_grouping_status | String | Whether alert grouping is enabled. |
+| ASM.Incident.assigned_user_mail | Unknown | Email of the assigned user. |
+| ASM.Incident.assigned_user_pretty_name | Unknown | Friendly name of the assigned user. |
+| ASM.Incident.creation_time | Date | Creation timestamp. |
+| ASM.Incident.critical_severity_alert_count | Number | Number of critical alerts. |
+| ASM.Incident.description | String | Description of the incident. |
+| ASM.Incident.high_severity_alert_count | Number | Number of high alerts. |
+| ASM.Incident.incident_id | String | ID of the incident. |
+| ASM.Incident.incident_name | Unknown | Incident name. |
+| ASM.Incident.incident_sources | String | Incident source. |
+| ASM.Incident.low_severity_alert_count | Number | Number of low alerts. |
+| ASM.Incident.manual_severity | Unknown | Severity override. |
+| ASM.Incident.med_severity_alert_count | Number | Number of medium alerts. |
+| ASM.Incident.modification_time | Date | Modification timestamp. |
+| ASM.Incident.notes | Unknown | Incident notes. |
+| ASM.Incident.original_tags | Unknown | Tags on the incident at creation time. |
+| ASM.Incident.resolve_comment | Unknown | Resolution comment \(optional\). |
+| ASM.Incident.resolved_timestamp | Unknown | Resolution timestamp. |
+| ASM.Incident.severity | String | Severity of the incident. |
+| ASM.Incident.starred | Boolean | Whether the incident has been starred. |
+| ASM.Incident.status | String | Status of the incident. |
+| ASM.Incident.tags | String | Tags on the incident. |
+| ASM.Incident.xdr_url | String | Link to navigate to the incident. |
+| ASM.Incident.xpanse_risk_score | Unknown | Risk score of the incident. |
 
 #### Command example
 
@@ -1840,14 +1823,14 @@ Returns additional details about a specific incident. Note: Incident IDs may als
 
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
-| ASM.Incident.incident_id | String   | The ID of the incident. | 
-| ASM.Incident.xpanse_risk_score | Number   | The Xpanse risk score of the incident. | 
-| ASM.Incident.alerts | Unknown  | The alerts included in the incident. | 
-| ASM.Incident.tags | Unknown  | Tags assigned to assets included in the incident. | 
-| ASM.Incident.status | String   | The status of the incident. | 
-| ASM.Incident.severity | String   | The severity of the incident. | 
-| ASM.Incident.description | String   | Description of the incident. | 
-| ASM.Incident.notes | String   | User-provided notes related to the incident. | 
+| ASM.Incident.incident_id | String   | The ID of the incident. |
+| ASM.Incident.xpanse_risk_score | Number   | The Xpanse risk score of the incident. |
+| ASM.Incident.alerts | Unknown  | The alerts included in the incident. |
+| ASM.Incident.tags | Unknown  | Tags assigned to assets included in the incident. |
+| ASM.Incident.status | String   | The status of the incident. |
+| ASM.Incident.severity | String   | The severity of the incident. |
+| ASM.Incident.description | String   | Description of the incident. |
+| ASM.Incident.notes | String   | User-provided notes related to the incident. |
 
 #### Command example
 
@@ -2009,20 +1992,19 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 | **Argument Name** | **Description**                                                                                      | **Required** |
 | --- |------------------------------------------------------------------------------------------------------| --- |
-| incident_id | ID of the incident to modify.                                                                        | Required | 
-| alert_id | Used for scoping updates such as comments to the alert level.                                        | Optional | 
-| assigned_user_mail | Email address of the user to assign incident to. This user must exist within your Expander instance. | Optional | 
-| manual_severity | Administrator-defined severity for the incident.                                                     | Optional | 
-| status | Incident status. Possible values are: new, under_investigation, resolved.                            | Optional | 
-| resolve_comment | Optional resolution comment when resolving the incident.                                             | Optional | 
-| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.     | Optional | 
+| incident_id | ID of the incident to modify.                                                                        | Required |
+| alert_id | Used for scoping updates such as comments to the alert level.                                        | Optional |
+| assigned_user_mail | Email address of the user to assign incident to. This user must exist within your Expander instance. | Optional |
+| manual_severity | Administrator-defined severity for the incident.                                                     | Optional |
+| status | Incident status. Possible values are: new, under_investigation, resolved.                            | Optional |
+| resolve_comment | Optional resolution comment when resolving the incident.                                             | Optional |
+| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.     | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.IncidentUpdate | unknown | Whether the incident update was successful. | 
-
+| ASM.IncidentUpdate | unknown | Whether the incident update was successful. |
 
 #### Command example
 
@@ -2042,7 +2024,6 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 ```Update operation successful: true```
 
-
 ### asm-update-alerts
 
 ***
@@ -2056,9 +2037,9 @@ Updates the state of one or more alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
-| status | Updated alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
-| severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
+| alert_id_list | Comma-separated list of integers of the alert ID. | Optional |
+| status | Updated alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional |
+| severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional |
 | resolution_comment | Descriptive comment explaining the alert change. | Optional |
 
 #### Context Output
@@ -2098,7 +2079,7 @@ Updates the state of one or more alerts.
 
 | **Argument Name** | **Description**       | **Required** |
 |-------------------|-----------------------|--------------|
-| ip                | IP address to enrich. | Required     | 
+| ip                | IP address to enrich. | Required     |
 
 #### Context Output
 
@@ -2127,7 +2108,6 @@ Updates the state of one or more alerts.
 | ASM.TIM.IP.id             | String   | The existing indicator ID in the Cortex XSOAR indicators                              |
 | ASM.TIM.IP.reliability    | String   | The existing indicator reliability recently updated in the Cortex XSOAR indicators    |
 | ASM.TIM.IP.score          | Integer  | The existing indicator score recently updated in the Cortex XSOAR indicators          |
-
 
 #### Command example
 
@@ -2251,14 +2231,13 @@ If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the las
 If the indicator was updated in Cortex XSOAR in the last 3 days:
 
 > ### XSOAR Indicator Discovered IP List (Not Related to Cortex Xpanse)
-> 
+>
 > This IP list is from existing records found in Cortex XSOAR within the last 3 days.
 > These IPs have not been found to be attributed to Cortex Xpanse.
-> 
+>
 > |integrations|name|
 > |---|---|
 > | VirusTotal (API v3) | 8.8.8.8 |
-
 
 ### domain
 
@@ -2273,7 +2252,7 @@ If the indicator was updated in Cortex XSOAR in the last 3 days:
 
 | **Argument Name** | **Description**   | **Required** |
 |-------------------|-------------------|--------------|
-| domain            | Domain to enrich. | Required     | 
+| domain            | Domain to enrich. | Required     |
 
 #### Context Output
 
@@ -2407,7 +2386,7 @@ If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
 >
 > |asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
 > |---|---|---|---|---|---|---|---|---|---|---|---|
-> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 |*.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
 
 If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
 
@@ -2423,13 +2402,13 @@ If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the las
 If the indicator was updated in Cortex XSOAR in the last 3 days:
 
 > ### XSOAR Indicator Discovered Domain List (Not Related to Xpanse)
-> 
+>
 > This domain list is from existing records found in Cortex XSOAR within the last 3 days.
 > These domains have not been found to be attributed to Cortex Xpanse.
+>
 > |integrations|name|
 > |---|---|
 > | VirusTotal (API v3) | www.fakedomain.com |
-
 
 ### asm-list-external-websites
 
@@ -2444,27 +2423,27 @@ Get a list of all your external websites filtered by authentication type. Maximu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| authentication | Authentication type string on which to search. | Optional | 
-| limit | Maximum number of assets to return. The default and maximum is 100. | Optional | 
+| authentication | Authentication type string on which to search. | Optional |
+| limit | Maximum number of assets to return. The default and maximum is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Externalwebsite.website_id | String | External website UUID. | 
-| ASM.Externalwebsite.website_name | String | Name of the external website. | 
-| ASM.Externalwebsite.website_type | String | Type of the external website. | 
-| ASM.Externalwebsite.ip_address | String | IP address of the external website. | 
-| ASM.Externalwebsite.externally_detected_providers | String | Providers of external website. | 
-| ASM.Externalwebsite.is_active | String | Whether the external website is active. | 
-| ASM.Externalwebsite.first_observed | Date | Date of the first observation of the external website. | 
-| ASM.Externalwebsite.last_observed | Date | Date of the last observation of the external website. | 
-| ASM.Externalwebsite.port | Number | Port number of the external website. | 
-| ASM.Externalwebsite.protocol | String | Protocol number of the external website. | 
-| ASM.Externalwebsite.inactive_classifications | String | External website classifications that are no longer active. | 
-| ASM.Externalwebsite.discovery_type | String | How the external website was discovered. | 
-| ASM.Externalwebsite.business_units | String | External website associated business units. | 
-| ASM.Externalwebsite.externally_inferred_vulnerability_score | Unknown | External website vulnerability score. | 
+| ASM.Externalwebsite.website_id | String | External website UUID. |
+| ASM.Externalwebsite.website_name | String | Name of the external website. |
+| ASM.Externalwebsite.website_type | String | Type of the external website. |
+| ASM.Externalwebsite.ip_address | String | IP address of the external website. |
+| ASM.Externalwebsite.externally_detected_providers | String | Providers of external website. |
+| ASM.Externalwebsite.is_active | String | Whether the external website is active. |
+| ASM.Externalwebsite.first_observed | Date | Date of the first observation of the external website. |
+| ASM.Externalwebsite.last_observed | Date | Date of the last observation of the external website. |
+| ASM.Externalwebsite.port | Number | Port number of the external website. |
+| ASM.Externalwebsite.protocol | String | Protocol number of the external website. |
+| ASM.Externalwebsite.inactive_classifications | String | External website classifications that are no longer active. |
+| ASM.Externalwebsite.discovery_type | String | How the external website was discovered. |
+| ASM.Externalwebsite.business_units | String | External website associated business units. |
+| ASM.Externalwebsite.externally_inferred_vulnerability_score | Unknown | External website vulnerability score. |
 
 #### Command example
 
@@ -2902,8 +2881,7 @@ Get a list of all your external websites filtered by authentication type. Maximu
 >
 >|Host|Authentication Type|
 >|---|---|
->| example.com | Form based authentication | 
-
+>| example.com | Form based authentication |
 
 ### asm-add-note-to-asset
 
@@ -2915,8 +2893,8 @@ Get a list of all your external websites filtered by authentication type. Maximu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Authentication type string on which to search. | Required | 
-| entity_type | Maximum number of assets to return. The default and maximum is 100. | Required | 
+| asset_id | Authentication type string on which to search. | Required |
+| entity_type | Maximum number of assets to return. The default and maximum is 100. | Required |
 | note_to_add | The custom note to be added to the notes section of the asset in Cortex Xpanse | Required |
 | should_append | Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. Default is 'true'. | Optional |
 
@@ -2924,13 +2902,11 @@ Get a list of all your external websites filtered by authentication type. Maximu
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.AssetAnnotation.status | String | Status of the note being added to the asset in Xpanse. | 
+| ASM.AssetAnnotation.status | String | Status of the note being added to the asset in Xpanse. |
 
 #### Command example
 
-
 ```!asm-add-note-to-asset asset_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx entity_type=asset note_to_add="Test adding note to asset."```
-
 
 #### Context Example
 
@@ -2943,17 +2919,15 @@ Get a list of all your external websites filtered by authentication type. Maximu
 #### Human Readable Output
 
 > ### Status
-> 
+>
 >|Status|
 >|---|
 >| succeeded |
-
 
 ### asm-reset-last-run
 
 ***
 Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-
 
 #### Base Command
 
@@ -2963,7 +2937,6 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 

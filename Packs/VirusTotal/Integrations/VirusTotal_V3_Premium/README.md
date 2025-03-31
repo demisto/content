@@ -4,11 +4,12 @@ The differences between VirusTotal's Public API and Premium API can be found [in
 This integration was integrated and tested with VirusTotal - Premium (API v3)
 
 ## Use Cases
+
 - Fetch live hunt notifications as incidents.
 - Use retro hunt to analyze files with custom YARA rule.
 - Download suspicious files from VirusTotal for further analysis.
 - Group several files from VirusTotal into a password-protected ZIP file.
-- Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
+- Get a PCAP file generated from VirusTotal's sandbox for further analysis.
 
 ## Configure VirusTotal - Premium (API v3) in Cortex
 
@@ -23,65 +24,72 @@ This integration was integrated and tested with VirusTotal - Premium (API v3)
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
+### Acquire API Key
 
-### Acquire API Key 
 Your API key can be found in your VirusTotal account user menu.
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## Fetch Incidents
-Fetch incidents will fetch livehunt notifications of the given ruleset or identifier. 
+
+Fetch incidents will fetch livehunt notifications of the given ruleset or identifier.
 As an example, you can fetch incidents that were created by the CyberGate ruleset by using the "cybergate" tag.
 The scope of the rule-set should be narrowed to catch only indicators that you want to analyze by a playbook.
 Defining a broad rule-set will cause the integration to create multiple redundant incidents.  
 
 ## VirusTotal - Private API compatibility
+
 The following 2 commands appear in both the *VirusTotal - Private API* and *VirusTotal Premium - (API v3)* integrations.
+
 - **vt-private-search-file**
 - **vt-private-download-file**
-- It is recommended to use these commands in the *VirusTotal Premium - (API v3)* integration.   
+- It is recommended to use these commands in the *VirusTotal Premium - (API v3)* integration.
 - For all other commands, you should use the *VirusTotal - Private API* integration.
 
 ## Report commands alternatives / Enrichment
+
 To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vt-private-download-file
+
 ***
 Downloads file from VirusTotal
-
 
 #### Base Command
 
 `vt-private-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | SHA-256, SHA-1 or MD5 identifying the file. | Required | 
-
+| hash | SHA-256, SHA-1 or MD5 identifying the file. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | The file details command results. | 
-| File.Name | String | The full file name \(including the file extension\). | 
-| File.EntryID | String | The ID for locating the file in the War Room. | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Extension | String | The file extension. For example: "xls". | 
-| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-
+| File | Unknown | The file details command results. |
+| File.Name | String | The full file name \(including the file extension\). |
+| File.EntryID | String | The ID for locating the file in the War Room. |
+| File.Size | Number | The size of the file in bytes. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Extension | String | The file extension. For example: "xls". |
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
 
 #### Command Example
+
 ```!vt-private-download-file hash=0f555ed56bb78c5511f4e488cd37f24d1425fcfa```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -99,40 +107,40 @@ Downloads file from VirusTotal
 }
 ```
 
-
 ### vt-private-zip-create
+
 ***
 Creates a password-protected ZIP file containing files from VirusTotal.
-
 
 #### Base Command
 
 `vt-private-zip-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A commma separated list of hashes (SHA-256, SHA-1, or MD5) for the files included in the ZIP. | Required | 
-| password | A password to protect the zip. | Optional | 
-
+| file | A commma separated list of hashes (SHA-256, SHA-1, or MD5) for the files included in the ZIP. | Required |
+| password | A password to protect the zip. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.Zip.id | String | ID of the zip | 
-| VirusTotal.Zip.type | String | Type of the ID \(zip_file\) | 
-| VirusTotal.Zip.links.self | String | Self link to file | 
-| VirusTotal.Zip.attributes.files_error | Number | The number of files resulted in error | 
-| VirusTotal.Zip.attributes.files_ok | Number | The number of files resulted in success zipped. | 
-| VirusTotal.Zip.attributes.progress | Number | Progress of the zipping command in percentage. | 
-| VirusTotal.Zip.attributes.status | String | The status of the zip process. "finished" is the state when finished. | 
-
+| VirusTotal.Zip.id | String | ID of the zip |
+| VirusTotal.Zip.type | String | Type of the ID \(zip_file\) |
+| VirusTotal.Zip.links.self | String | Self link to file |
+| VirusTotal.Zip.attributes.files_error | Number | The number of files resulted in error |
+| VirusTotal.Zip.attributes.files_ok | Number | The number of files resulted in success zipped. |
+| VirusTotal.Zip.attributes.progress | Number | Progress of the zipping command in percentage. |
+| VirusTotal.Zip.attributes.status | String | The status of the zip process. "finished" is the state when finished. |
 
 #### Command Example
+
 ```!vt-private-zip-create file=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f password=apassword```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -155,44 +163,45 @@ Creates a password-protected ZIP file containing files from VirusTotal.
 
 #### Human Readable Output
 
->### The request to create the ZIP was submitted successfully!
+>### The request to create the ZIP was submitted successfully
+>
 >|id|status|
 >|---|---|
 >| 6268237216776192 | starting |
 
-
 ### vt-private-zip-get
+
 ***
 Retrieve information about a ZIP file.
-
 
 #### Base Command
 
 `vt-private-zip-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| zip_id | A zip ID. Can be retrieved from the output of vt-private-zip-create. | Required | 
-
+| zip_id | A zip ID. Can be retrieved from the output of vt-private-zip-create. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.Zip.id | String | ID of the zip | 
-| VirusTotal.Zip.type | String | Type of the ID \(zip_file\) | 
-| VirusTotal.Zip.links.self | String | Self link to file | 
-| VirusTotal.Zip.attributes.files_error | Number | The number of files resulted in error | 
-| VirusTotal.Zip.attributes.files_ok | Number | The number of files resulted in success zipped. | 
-| VirusTotal.Zip.attributes.progress | Number | Progress of the zipping command in percentage. | 
-| VirusTotal.Zip.attributes.status | String | The status of the zip process. "finished" is the state when finished. | 
-
+| VirusTotal.Zip.id | String | ID of the zip |
+| VirusTotal.Zip.type | String | Type of the ID \(zip_file\) |
+| VirusTotal.Zip.links.self | String | Self link to file |
+| VirusTotal.Zip.attributes.files_error | Number | The number of files resulted in error |
+| VirusTotal.Zip.attributes.files_ok | Number | The number of files resulted in success zipped. |
+| VirusTotal.Zip.attributes.progress | Number | Progress of the zipping command in percentage. |
+| VirusTotal.Zip.attributes.status | String | The status of the zip process. "finished" is the state when finished. |
 
 #### Command Example
+
 ```!vt-private-zip-get zip_id=5548746369433600```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -218,118 +227,116 @@ Retrieve information about a ZIP file.
 >ZIP creation status is "finished"
 
 ### vt-private-zip-download
+
 ***
 Download a ZIP file.
-
 
 #### Base Command
 
 `vt-private-zip-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| zip_id | A zip ID. Can be retrieved from the output of vt-private-zip-create. | Required | 
-
+| zip_id | A zip ID. Can be retrieved from the output of vt-private-zip-create. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | The file details command results. | 
-| File.Name | String | The full file name \(including the file extension\). | 
-| File.EntryID | String | The ID for locating the file in the War Room. | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Extension | String | The file extension. For example: "xls". | 
-| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-
+| File | Unknown | The file details command results. |
+| File.Name | String | The full file name \(including the file extension\). |
+| File.EntryID | String | The ID for locating the file in the War Room. |
+| File.Size | Number | The size of the file in bytes. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Extension | String | The file extension. For example: "xls". |
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
 
 #### Command Example
+
 ```!vt-private-zip-download zip_id=5548746369433600```
 
-
-
 ### vt-private-file-sandbox-pcap
+
 ***
 Extracted PCAP from a sandbox analysis.
-
 
 #### Base Command
 
 `vt-private-file-sandbox-pcap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | Sandbox report ID. Can be aquired from vt-file-sandbox-report. | Required | 
-
+| report_id | Sandbox report ID. Can be aquired from vt-file-sandbox-report. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | The file details command results. | 
-| File.Name | String | The full file name \(including the file extension\). | 
-| File.EntryID | String | The ID for locating the file in the War Room. | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Extension | String | The file extension. For example: "xls". | 
-| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-
+| File | Unknown | The file details command results. |
+| File.Name | String | The full file name \(including the file extension\). |
+| File.EntryID | String | The ID for locating the file in the War Room. |
+| File.Size | Number | The size of the file in bytes. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Extension | String | The file extension. For example: "xls". |
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
 
 #### Command Example
+
 ```!vt-private-file-sandbox-pcap report_id="699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox"```
 
-
 ### vt-private-intelligence-search
+
 ***
 Search for files.
-
 
 #### Base Command
 
 `vt-private-intelligence-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search query. | Required | 
-| limit | Maximum number of results. Default is 10. | Optional | 
-| order | The order value can be sorted depends on the query type. See documentation. https://docs.virustotal.com/reference/intelligence-search. | Optional | 
-| cursor | Continuation cursor. | Optional | 
-| descriptors_only | Whether to return full object information or just object descriptors. Possible values are: true, false. Default is false. | Optional | 
-| extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional | 
-
+| query | Search query. | Required |
+| limit | Maximum number of results. Default is 10. | Optional |
+| order | The order value can be sorted depends on the query type. See documentation. https://docs.virustotal.com/reference/intelligence-search. | Optional |
+| cursor | Continuation cursor. | Optional |
+| descriptors_only | Whether to return full object information or just object descriptors. Possible values are: true, false. Default is false. | Optional |
+| extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. | 
-| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious | 
-| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. | 
-| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. | 
-| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. | 
-| VirusTotal.IntelligenceSearch.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. | 
-| VirusTotal.IntelligenceSearch.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. | 
-| VirusTotal.IntelligenceSearch.attributes.total_votes.harmless | Number | number of positive votes. | 
-| VirusTotal.IntelligenceSearch.attributes.total_votes.malicious | Number | number of negative votes. | 
-| VirusTotal.IntelligenceSearch.type | String | The type of the indicator \(ip_address, domain, url, file\) | 
-| VirusTotal.IntelligenceSearch.id | String | ID of the indicator | 
-| VirusTotal.IntelligenceSearch.links.self | String | Link to the response | 
-
+| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. |
+| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious |
+| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. |
+| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. |
+| VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. |
+| VirusTotal.IntelligenceSearch.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. |
+| VirusTotal.IntelligenceSearch.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. |
+| VirusTotal.IntelligenceSearch.attributes.total_votes.harmless | Number | number of positive votes. |
+| VirusTotal.IntelligenceSearch.attributes.total_votes.malicious | Number | number of negative votes. |
+| VirusTotal.IntelligenceSearch.type | String | The type of the indicator \(ip_address, domain, url, file\) |
+| VirusTotal.IntelligenceSearch.id | String | ID of the indicator |
+| VirusTotal.IntelligenceSearch.links.self | String | Link to the response |
 
 #### Command Example
+
 ```!vt-private-intelligence-search query=699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -535,127 +542,130 @@ Search for files.
 #### Human Readable Output
 
 >### Results
+>
 >|attributes|id|
->|---|---| 
->| type_description: Win32 EXE | 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3 | 
-
+>|---|---|
+>| type_description: Win32 EXE | 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3 |
 
 ### vt-private-search-file
+
 ***
 Search for files.
-
 
 #### Base Command
 
 `vt-private-search-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | File search query. For example, query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'". | Required | 
-| fullResponse | Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false". Possible values are: true, false. Default is false. | Optional | 
-
+| query | File search query. For example, query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'". | Required |
+| fullResponse | Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false". Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.SearchFile.SearchResult | string | The hashes of files that fit the query | 
-| VirusTotal.SearchFile.Query | string | Original search query | 
-
+| VirusTotal.SearchFile.SearchResult | string | The hashes of files that fit the query |
+| VirusTotal.SearchFile.Query | string | Original search query |
 
 #### Command Example
+
 ```!vt-private-search-file query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"```
 
 #### Human Readable Output
+>
 > ### Found hashes for query: "type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
+>
 >| Found hashes |
 >|---|
 >| 83bafb3147b885c78fbda8a4f6a7f9f58c82b86681da38f48232e0205c57774b |
 
-
 ### vt-private-livehunt-rules-get-by-id
+
 ***
 Retrieve VT Hunting livehunt rulesets.
-
 
 #### Base Command
 
 `vt-private-livehunt-rules-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list command. | Required | 
-
+| id | Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name | 
-| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents | 
-| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not | 
-| VirusTotal.LiveHuntRule.attributes.creation_date | Number | Creation date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | 
-| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set | 
-| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) | 
-| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset | 
-| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset | 
-
+| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name |
+| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents |
+| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not |
+| VirusTotal.LiveHuntRule.attributes.creation_date | Number | Creation date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. |
+| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set |
+| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) |
+| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset |
+| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset |
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-get-by-id id=6360290934161408```
 
 #### Human Readable Output
+>
 > ### Livehunt Ruleset 5950298890469376
+>
 > | name | enabled | rule_names |
 > |---|---|---|
-> | A rule name | false | foobar | 
-
+> | A rule name | false | foobar |
 
 ### vt-private-livehunt-rules-list
+
 ***
 Retrieve VT Hunting livehunt rulesets.
-
 
 #### Base Command
 
 `vt-private-livehunt-rules-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Return the rulesets matching the given criteria only. | Optional | 
-| limit | Maximum number of results. Default is 10. | Optional | 
-| order | Sort order. Possible values are: name-, creation_date-, modification_date-, name+, creation_date+, modification_date+. | Optional | 
-| cursor | Continuation cursor. | Optional | 
-| enabled | Should list only enabled or disabled rules. Possible values are: true, false. | Optional | 
-
+| filter | Return the rulesets matching the given criteria only. | Optional |
+| limit | Maximum number of results. Default is 10. | Optional |
+| order | Sort order. Possible values are: name-, creation_date-, modification_date-, name+, creation_date+, modification_date+. | Optional |
+| cursor | Continuation cursor. | Optional |
+| enabled | Should list only enabled or disabled rules. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name | 
-| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents | 
-| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not | 
-| VirusTotal.LiveHuntRule.attributes.creation_date | Number | creation date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | 
-| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set | 
-| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) | 
-| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset | 
-| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset | 
-
+| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name |
+| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents |
+| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not |
+| VirusTotal.LiveHuntRule.attributes.creation_date | Number | creation date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. |
+| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set |
+| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) |
+| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset |
+| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset |
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-list limit=1 enabled=false order="modification_date-"```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -686,51 +696,52 @@ Retrieve VT Hunting livehunt rulesets.
 #### Human Readable Output
 
 >### VT Hunting Livehunt rulesets
+>
 >|id|name|enabled|rule_names|
 >|---|---|---|---|
 >| 5551558908215296 | a new rule | false | foobar |
 
-
 ### vt-private-livehunt-rules-create
+
 ***
 Create a new VT Hunting Livehunt ruleset.
-
 
 #### Base Command
 
 `vt-private-livehunt-rules-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the rule. | Required | 
-| yara_rule | The rule itself. | Required | 
-| enabled | Whatever to enable the rule. Possible values are: true, false. Default is false. | Optional | 
-| notification_emails | A comma-separated list of emails to notify. | Optional | 
-| limit | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | Optional | 
-
+| name | Name of the rule. | Required |
+| yara_rule | The rule itself. | Required |
+| enabled | Whatever to enable the rule. Possible values are: true, false. Default is false. | Optional |
+| notification_emails | A comma-separated list of emails to notify. | Optional |
+| limit | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name | 
-| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents | 
-| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not | 
-| VirusTotal.LiveHuntRule.attributes.creation_date | Number | creation date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | 
-| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set | 
-| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) | 
-| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset | 
-| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset | 
-
+| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name |
+| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents |
+| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not |
+| VirusTotal.LiveHuntRule.attributes.creation_date | Number | creation date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. |
+| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set |
+| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) |
+| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset |
+| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset |
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-create limit=100 name="a new rule" yara_rule=`rule foobar { strings: $ = "foobar" condition: all of them }````
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -761,51 +772,52 @@ Create a new VT Hunting Livehunt ruleset.
 #### Human Readable Output
 
 >### New rule "a new rule" was created successfully
+>
 >|id|name|number_of_rules|
 >|---|---|---|
 >| 5551558908215296 | a new rule | 1 |
 
-
 ### vt-private-livehunt-rules-update
+
 ***
 Update a VT Hunting Livehunt ruleset.
-
 
 #### Base Command
 
 `vt-private-livehunt-rules-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list command. | Required | 
-| yara_rule | The rule itself. | Optional | 
-| enabled | Whatever to enable the rule. Possible values are: true, false. Default is false. | Optional | 
-| notification_emails | A comma-separated list of emails to notify. | Optional | 
-| limit | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | Optional | 
-
+| id | Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list command. | Required |
+| yara_rule | The rule itself. | Optional |
+| enabled | Whatever to enable the rule. Possible values are: true, false. Default is false. | Optional |
+| notification_emails | A comma-separated list of emails to notify. | Optional |
+| limit | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name | 
-| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents | 
-| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not | 
-| VirusTotal.LiveHuntRule.attributes.creation_date | Number | creation date as UTC timestamp. | 
-| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. | 
-| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set | 
-| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) | 
-| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset | 
-| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset | 
-
+| VirusTotal.LiveHuntRule.attributes.name | String | The rule's name |
+| VirusTotal.LiveHuntRule.attributes.modification_date | Number | last modification date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rules | String | rule file contents |
+| VirusTotal.LiveHuntRule.attributes.enabled | Boolean | whether it's enabled or not |
+| VirusTotal.LiveHuntRule.attributes.creation_date | Number | creation date as UTC timestamp. |
+| VirusTotal.LiveHuntRule.attributes.rule_names | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntRule.attributes.limit | Number | max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored. |
+| VirusTotal.LiveHuntRule.attributes.number_of_rules | Number | Number of rules presented in the set |
+| VirusTotal.LiveHuntRule.type | String | The type of the entry \(hunting_ruleset\) |
+| VirusTotal.LiveHuntRule.id | Date | ID of the ruleset |
+| VirusTotal.LiveHuntRule.links.self | String | Link to the ruleset |
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-update id=6360290934161408 enabled=false```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -835,32 +847,33 @@ Update a VT Hunting Livehunt ruleset.
 
 #### Human Readable Output
 
->### Rule "6360290934161408" has been updated!
+>### Rule "6360290934161408" has been updated
+>
 >|id|name|number_of_rules|
 >|---|---|---|
 >| 6360290934161408 | a new rule | 1 |
 
-
 ### vt-private-livehunt-rules-delete
+
 ***
 Delete a VT Hunting Livehunt ruleset.
-
 
 #### Base Command
 
 `vt-private-livehunt-rules-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list. | Required | 
-
+| id | Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-private-livehunt-rules-delete id=5030439520337920```
 
 #### Human Readable Output
@@ -868,48 +881,49 @@ There is no context output for this command.
 >Rule "5030439520337920" was deleted successfully
 
 ### vt-private-livehunt-notifications-list
+
 ***
 Retrieve VT Hunting Livehunt notifications.
-
 
 #### Base Command
 
 `vt-private-livehunt-notifications-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of notifications to retrieve. Maximum can be up to 40. Default is 10. | Optional | 
-| from_time | Fetch notification from given time. Can be epoch time, a date or time range (3 days, 1 year). | Optional | 
-| to_time | Fetch notification from given time. Can be epoch time or a date. | Optional | 
-| cursor | Continuation cursor. | Optional | 
-| tag | Filter notifications by tag. | Optional | 
-
+| limit | Maximum number of notifications to retrieve. Maximum can be up to 40. Default is 10. | Optional |
+| from_time | Fetch notification from given time. Can be epoch time, a date or time range (3 days, 1 year). | Optional |
+| to_time | Fetch notification from given time. Can be epoch time or a date. | Optional |
+| cursor | Continuation cursor. | Optional |
+| tag | Filter notifications by tag. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntNotification.meta.count | Number | Notification count | 
-| VirusTotal.LiveHuntNotification.meta.cursor | String | The cursor of the list | 
-| VirusTotal.LiveHuntNotification.data.attributes.tags | String | notification tags. | 
-| VirusTotal.LiveHuntNotification.data.attributes.source_country | String | Source country of the notification | 
-| VirusTotal.LiveHuntNotification.data.attributes.source_key | String | Source key of the notificaton | 
-| VirusTotal.LiveHuntNotification.data.attributes.snippet | String | The snippet ID \(if exists\) | 
-| VirusTotal.LiveHuntNotification.data.attributes.rule_name | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntNotification.data.attributes.date | Number | The date of the notification in epoch | 
-| VirusTotal.LiveHuntNotification.data.attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. | 
-| VirusTotal.LiveHuntNotification.data.type | String | Type of the notification \(hunting_notification\) | 
-| VirusTotal.LiveHuntNotification.data.id | String | The ID of the notification | 
-| VirusTotal.LiveHuntNotification.data.links.self | String | The link to the notificaton | 
-| VirusTotal.LiveHuntNotification.links.self | String | The link to the current page | 
-| VirusTotal.LiveHuntNotification.links.next | String | The link to the next page | 
-
+| VirusTotal.LiveHuntNotification.meta.count | Number | Notification count |
+| VirusTotal.LiveHuntNotification.meta.cursor | String | The cursor of the list |
+| VirusTotal.LiveHuntNotification.data.attributes.tags | String | notification tags. |
+| VirusTotal.LiveHuntNotification.data.attributes.source_country | String | Source country of the notification |
+| VirusTotal.LiveHuntNotification.data.attributes.source_key | String | Source key of the notificaton |
+| VirusTotal.LiveHuntNotification.data.attributes.snippet | String | The snippet ID \(if exists\) |
+| VirusTotal.LiveHuntNotification.data.attributes.rule_name | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntNotification.data.attributes.date | Number | The date of the notification in epoch |
+| VirusTotal.LiveHuntNotification.data.attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. |
+| VirusTotal.LiveHuntNotification.data.type | String | Type of the notification \(hunting_notification\) |
+| VirusTotal.LiveHuntNotification.data.id | String | The ID of the notification |
+| VirusTotal.LiveHuntNotification.data.links.self | String | The link to the notificaton |
+| VirusTotal.LiveHuntNotification.links.self | String | The link to the current page |
+| VirusTotal.LiveHuntNotification.links.next | String | The link to the next page |
 
 #### Command Example
+
 ```!vt-private-livehunt-notifications-list filter=malicious_executables limit=1```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -949,94 +963,95 @@ Retrieve VT Hunting Livehunt notifications.
 
 #### Human Readable Output
 
->### Notifications found:
+>### Notifications found
+>
 >|id|
 >|---|
 >| 5883562783178752-e3df8c66cef961b7ddcb0d21a4d1eabc-843bdd8f7843fd1f9ce488666dd6cf88e79c6b098e9c9aada96af1d802aab7e2-1617025081 |
 
-
 ### vt-private-livehunt-notifications-files-list
+
 ***
 Retrieve file objects for VT Hunting Livehunt notifications.
-
 
 #### Base Command
 
 `vt-private-livehunt-notifications-files-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | String to search within the hunting notification tags. | Optional | 
-| cursor | Continuation cursor. | Optional | 
-| limit | Maximum number of notifications to retrieve. Default is 10. | Optional | 
-
+| filter | String to search within the hunting notification tags. | Optional |
+| cursor | Continuation cursor. | Optional |
+| limit | Maximum number of notifications to retrieve. Default is 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntFiles.meta.count | Number | Total file's count. | 
-| VirusTotal.LiveHuntFiles.meta.cursor | String | Cursor of the call | 
-| VirusTotal.LiveHuntFiles.data.attributes.type_description | String | describes the file type. | 
-| VirusTotal.LiveHuntFiles.data.attributes.tlsh | String | Trend Micro's TLSH hash | 
-| VirusTotal.LiveHuntFiles.data.attributes.vhash | String | in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files. | 
-| VirusTotal.LiveHuntFiles.data.attributes.exiftool | String | exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not. | 
-| VirusTotal.LiveHuntFiles.data.attributes.trid.file_type | String | TrID is a utility designed to identify file types from their binary signatures. | 
-| VirusTotal.LiveHuntFiles.data.attributes.trid.probability | Number | probability of file format identification \(given as percentage\). | 
-| VirusTotal.LiveHuntFiles.data.attributes.creation_date | Number | extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. | 
-| VirusTotal.LiveHuntFiles.data.attributes.names | String | all file names associated with the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.type_tag | String | tag representing the file type. Can be used in vt-private-intelligence-search | 
-| VirusTotal.LiveHuntFiles.data.attributes.times_submitted | Number | number of times the file has been posted to VirusTotal. | 
-| VirusTotal.LiveHuntFiles.data.attributes.total_votes.harmless | Number | number of positive votes. | 
-| VirusTotal.LiveHuntFiles.data.attributes.total_votes.malicious | Number | number of negative votes. | 
-| VirusTotal.LiveHuntFiles.data.attributes.size | Number | file size in bytes. | 
-| VirusTotal.LiveHuntFiles.data.attributes.type_extension | String | specifies file extension. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_submission_date | Number | most recent date the file was posted to VirusTotal. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.downloadable | Boolean | true if the file can be downloaded, false otherwise. \(use vt-private-file-download to download the file\) | 
-| VirusTotal.LiveHuntFiles.data.attributes.sha256 | String | SHA-256 of the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.tags | String | The file's tags. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_date | Number | most recent scan date. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.unique_sources | Number | indicates from how many different sources the file has been posted from. | 
-| VirusTotal.LiveHuntFiles.data.attributes.first_submission_date | Number | date when the file was first seen in VirusTotal. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.ssdeep | String | SSDeep of the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.md5 | String | MD5 of the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.sha1 | String | SHA-1 if the file | 
-| VirusTotal.LiveHuntFiles.data.attributes.magic | String | magic identifier of this app in hex format. | 
-| VirusTotal.LiveHuntFiles.data.attributes.main_icon.raw_md5 | String | MD5 of the file's icon. | 
-| VirusTotal.LiveHuntFiles.data.attributes.main_icon.dhash | Date | The dhash of the file's icon | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.type-unsupported | Number | number of AV engines that don't support that type of file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.confirmed-timeout | Number | number of AV engines that reach a timeout when analysing that file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.failure | Number | number of AV engines that fail when analysing that file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. | 
-| VirusTotal.LiveHuntFiles.data.attributes.meaningful_name | String | the most interesting name out of all file's names. | 
-| VirusTotal.LiveHuntFiles.data.type | String | Type of the entry \(file\) | 
-| VirusTotal.LiveHuntFiles.data.id | String | file ID | 
-| VirusTotal.LiveHuntFiles.data.links.self | String | link to the file | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_id | String | The notification ID the file is connected to | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_key | String | The notification's source key | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_tags | String | notification tags. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_name | String | matched rule's ruleset name. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_country | String | The notification's source country of the notification | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.rule_name | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_snippet | String | The notification snippet ID | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_id | Date | VirusTotal's ruleset ID. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_date | Number | The notification date in epch. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. | 
-| VirusTotal.LiveHuntFiles.links.self | String | Link to the current apge | 
-| VirusTotal.LiveHuntFiles.links.next | String | Link to the next page | 
-
+| VirusTotal.LiveHuntFiles.meta.count | Number | Total file's count. |
+| VirusTotal.LiveHuntFiles.meta.cursor | String | Cursor of the call |
+| VirusTotal.LiveHuntFiles.data.attributes.type_description | String | describes the file type. |
+| VirusTotal.LiveHuntFiles.data.attributes.tlsh | String | Trend Micro's TLSH hash |
+| VirusTotal.LiveHuntFiles.data.attributes.vhash | String | in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files. |
+| VirusTotal.LiveHuntFiles.data.attributes.exiftool | String | exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not. |
+| VirusTotal.LiveHuntFiles.data.attributes.trid.file_type | String | TrID is a utility designed to identify file types from their binary signatures. |
+| VirusTotal.LiveHuntFiles.data.attributes.trid.probability | Number | probability of file format identification \(given as percentage\). |
+| VirusTotal.LiveHuntFiles.data.attributes.creation_date | Number | extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. |
+| VirusTotal.LiveHuntFiles.data.attributes.names | String | all file names associated with the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.type_tag | String | tag representing the file type. Can be used in vt-private-intelligence-search |
+| VirusTotal.LiveHuntFiles.data.attributes.times_submitted | Number | number of times the file has been posted to VirusTotal. |
+| VirusTotal.LiveHuntFiles.data.attributes.total_votes.harmless | Number | number of positive votes. |
+| VirusTotal.LiveHuntFiles.data.attributes.total_votes.malicious | Number | number of negative votes. |
+| VirusTotal.LiveHuntFiles.data.attributes.size | Number | file size in bytes. |
+| VirusTotal.LiveHuntFiles.data.attributes.type_extension | String | specifies file extension. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_submission_date | Number | most recent date the file was posted to VirusTotal. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.downloadable | Boolean | true if the file can be downloaded, false otherwise. \(use vt-private-file-download to download the file\) |
+| VirusTotal.LiveHuntFiles.data.attributes.sha256 | String | SHA-256 of the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.tags | String | The file's tags. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_date | Number | most recent scan date. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.unique_sources | Number | indicates from how many different sources the file has been posted from. |
+| VirusTotal.LiveHuntFiles.data.attributes.first_submission_date | Number | date when the file was first seen in VirusTotal. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.ssdeep | String | SSDeep of the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.md5 | String | MD5 of the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.sha1 | String | SHA-1 if the file |
+| VirusTotal.LiveHuntFiles.data.attributes.magic | String | magic identifier of this app in hex format. |
+| VirusTotal.LiveHuntFiles.data.attributes.main_icon.raw_md5 | String | MD5 of the file's icon. |
+| VirusTotal.LiveHuntFiles.data.attributes.main_icon.dhash | Date | The dhash of the file's icon |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.type-unsupported | Number | number of AV engines that don't support that type of file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.confirmed-timeout | Number | number of AV engines that reach a timeout when analysing that file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.failure | Number | number of AV engines that fail when analysing that file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. |
+| VirusTotal.LiveHuntFiles.data.attributes.meaningful_name | String | the most interesting name out of all file's names. |
+| VirusTotal.LiveHuntFiles.data.type | String | Type of the entry \(file\) |
+| VirusTotal.LiveHuntFiles.data.id | String | file ID |
+| VirusTotal.LiveHuntFiles.data.links.self | String | link to the file |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_id | String | The notification ID the file is connected to |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_key | String | The notification's source key |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_tags | String | notification tags. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_name | String | matched rule's ruleset name. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_country | String | The notification's source country of the notification |
+| VirusTotal.LiveHuntFiles.data.context_attributes.rule_name | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_snippet | String | The notification snippet ID |
+| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_id | Date | VirusTotal's ruleset ID. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_date | Number | The notification date in epch. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. |
+| VirusTotal.LiveHuntFiles.links.self | String | Link to the current apge |
+| VirusTotal.LiveHuntFiles.links.next | String | Link to the next page |
 
 #### Command Example
+
 ```!vt-private-livehunt-notifications-files-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1177,176 +1192,179 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 
 #### Human Readable Output
 
->### Notifications file listed:
+>### Notifications file listed
+>
 >|id|meaningful_name|last_analysis_stats|
 >|---|---|---|
 >| 843bdd8f7843fd1f9ce488666dd6cf88e79c6b098e9c9aada96af1d802aab7e2 | Warface Repair Assistent.exe | harmless: 0<br/>type-unsupported: 5<br/>suspicious: 0<br/>confirmed-timeout: 0<br/>timeout: 0<br/>failure: 0<br/>malicious: 64<br/>undetected: 6 |
 
-
 ### vt-private-livehunt-notifications-files-get-by-hash
+
 ***
 Retrieve file objects for VT Hunting Livehunt notifications.
-
 
 #### Base Command
 
 `vt-private-livehunt-notifications-files-get-by-hash`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Hashes to search within VirusTotal. Will search only hashes and will ignore any other value. | Required | 
-| cursor | Continuation cursor. | Optional | 
-
+| hash | Hashes to search within VirusTotal. Will search only hashes and will ignore any other value. | Required |
+| cursor | Continuation cursor. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntFiles.meta.count | Number | Total file's count. | 
-| VirusTotal.LiveHuntFiles.meta.cursor | String | Cursor of the call | 
-| VirusTotal.LiveHuntFiles.data.attributes.type_description | String | describes the file type. | 
-| VirusTotal.LiveHuntFiles.data.attributes.tlsh | String | Trend Micro's TLSH hash | 
-| VirusTotal.LiveHuntFiles.data.attributes.vhash | String | in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files. | 
-| VirusTotal.LiveHuntFiles.data.attributes.exiftool | String | exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not. | 
-| VirusTotal.LiveHuntFiles.data.attributes.trid.file_type | String | TrID is a utility designed to identify file types from their binary signatures. | 
-| VirusTotal.LiveHuntFiles.data.attributes.trid.probability | Number | probability of file format identification \(given as percentage\). | 
-| VirusTotal.LiveHuntFiles.data.attributes.creation_date | Number | extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. | 
-| VirusTotal.LiveHuntFiles.data.attributes.names | String | all file names associated with the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.type_tag | String | tag representing the file type. Can be used in vt-private-intelligence-search | 
-| VirusTotal.LiveHuntFiles.data.attributes.times_submitted | Number | number of times the file has been posted to VirusTotal. | 
-| VirusTotal.LiveHuntFiles.data.attributes.total_votes.harmless | Number | number of positive votes. | 
-| VirusTotal.LiveHuntFiles.data.attributes.total_votes.malicious | Number | number of negative votes. | 
-| VirusTotal.LiveHuntFiles.data.attributes.size | Number | file size in bytes. | 
-| VirusTotal.LiveHuntFiles.data.attributes.type_extension | String | specifies file extension. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_submission_date | Number | most recent date the file was posted to VirusTotal. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.downloadable | Boolean | true if the file can be downloaded, false otherwise. \(use vt-private-file-download to download the file\) | 
-| VirusTotal.LiveHuntFiles.data.attributes.sha256 | String | SHA-256 of the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.tags | String | The file's tags. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_date | Number | most recent scan date. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.unique_sources | Number | indicates from how many different sources the file has been posted from. | 
-| VirusTotal.LiveHuntFiles.data.attributes.first_submission_date | Number | date when the file was first seen in VirusTotal. UTC timestamp. | 
-| VirusTotal.LiveHuntFiles.data.attributes.ssdeep | String | SSDeep of the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.md5 | String | MD5 of the file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.sha1 | String | SHA-1 if the file | 
-| VirusTotal.LiveHuntFiles.data.attributes.magic | String | magic identifier of this app in hex format. | 
-| VirusTotal.LiveHuntFiles.data.attributes.main_icon.raw_md5 | String | MD5 of the file's icon. | 
-| VirusTotal.LiveHuntFiles.data.attributes.main_icon.dhash | Date | The dhash of the file's icon | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.type-unsupported | Number | number of AV engines that don't support that type of file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.confirmed-timeout | Number | number of AV engines that reach a timeout when analysing that file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.failure | Number | number of AV engines that fail when analysing that file. | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious | 
-| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. | 
-| VirusTotal.LiveHuntFiles.data.attributes.meaningful_name | String | the most interesting name out of all file's names. | 
-| VirusTotal.LiveHuntFiles.data.type | String | Type of the entry \(file\) | 
-| VirusTotal.LiveHuntFiles.data.id | String | file ID | 
-| VirusTotal.LiveHuntFiles.data.links.self | String | link to the file | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_id | String | The notification ID the file is connected to | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_key | String | The notification's source key | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_tags | String | notification tags. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_name | String | matched rule's ruleset name. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_country | String | The notification's source country of the notification | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.rule_name | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_snippet | String | The notification snippet ID | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_id | Date | VirusTotal's ruleset ID. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.notification_date | Number | The notification date in epch. | 
-| VirusTotal.LiveHuntFiles.data.context_attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. | 
-| VirusTotal.LiveHuntFiles.links.self | String | Link to the current apge | 
-| VirusTotal.LiveHuntFiles.links.next | String | Link to the next page | 
-
+| VirusTotal.LiveHuntFiles.meta.count | Number | Total file's count. |
+| VirusTotal.LiveHuntFiles.meta.cursor | String | Cursor of the call |
+| VirusTotal.LiveHuntFiles.data.attributes.type_description | String | describes the file type. |
+| VirusTotal.LiveHuntFiles.data.attributes.tlsh | String | Trend Micro's TLSH hash |
+| VirusTotal.LiveHuntFiles.data.attributes.vhash | String | in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files. |
+| VirusTotal.LiveHuntFiles.data.attributes.exiftool | String | exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not. |
+| VirusTotal.LiveHuntFiles.data.attributes.trid.file_type | String | TrID is a utility designed to identify file types from their binary signatures. |
+| VirusTotal.LiveHuntFiles.data.attributes.trid.probability | Number | probability of file format identification \(given as percentage\). |
+| VirusTotal.LiveHuntFiles.data.attributes.creation_date | Number | extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. |
+| VirusTotal.LiveHuntFiles.data.attributes.names | String | all file names associated with the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.type_tag | String | tag representing the file type. Can be used in vt-private-intelligence-search |
+| VirusTotal.LiveHuntFiles.data.attributes.times_submitted | Number | number of times the file has been posted to VirusTotal. |
+| VirusTotal.LiveHuntFiles.data.attributes.total_votes.harmless | Number | number of positive votes. |
+| VirusTotal.LiveHuntFiles.data.attributes.total_votes.malicious | Number | number of negative votes. |
+| VirusTotal.LiveHuntFiles.data.attributes.size | Number | file size in bytes. |
+| VirusTotal.LiveHuntFiles.data.attributes.type_extension | String | specifies file extension. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_submission_date | Number | most recent date the file was posted to VirusTotal. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.downloadable | Boolean | true if the file can be downloaded, false otherwise. \(use vt-private-file-download to download the file\) |
+| VirusTotal.LiveHuntFiles.data.attributes.sha256 | String | SHA-256 of the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.tags | String | The file's tags. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_date | Number | most recent scan date. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.unique_sources | Number | indicates from how many different sources the file has been posted from. |
+| VirusTotal.LiveHuntFiles.data.attributes.first_submission_date | Number | date when the file was first seen in VirusTotal. UTC timestamp. |
+| VirusTotal.LiveHuntFiles.data.attributes.ssdeep | String | SSDeep of the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.md5 | String | MD5 of the file. |
+| VirusTotal.LiveHuntFiles.data.attributes.sha1 | String | SHA-1 if the file |
+| VirusTotal.LiveHuntFiles.data.attributes.magic | String | magic identifier of this app in hex format. |
+| VirusTotal.LiveHuntFiles.data.attributes.main_icon.raw_md5 | String | MD5 of the file's icon. |
+| VirusTotal.LiveHuntFiles.data.attributes.main_icon.dhash | Date | The dhash of the file's icon |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.type-unsupported | Number | number of AV engines that don't support that type of file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.confirmed-timeout | Number | number of AV engines that reach a timeout when analysing that file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.failure | Number | number of AV engines that fail when analysing that file. |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious |
+| VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. |
+| VirusTotal.LiveHuntFiles.data.attributes.meaningful_name | String | the most interesting name out of all file's names. |
+| VirusTotal.LiveHuntFiles.data.type | String | Type of the entry \(file\) |
+| VirusTotal.LiveHuntFiles.data.id | String | file ID |
+| VirusTotal.LiveHuntFiles.data.links.self | String | link to the file |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_id | String | The notification ID the file is connected to |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_key | String | The notification's source key |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_tags | String | notification tags. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_name | String | matched rule's ruleset name. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_country | String | The notification's source country of the notification |
+| VirusTotal.LiveHuntFiles.data.context_attributes.rule_name | String | contains the names of all rules in the ruleset. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_snippet | String | The notification snippet ID |
+| VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_id | Date | VirusTotal's ruleset ID. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.notification_date | Number | The notification date in epch. |
+| VirusTotal.LiveHuntFiles.data.context_attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. |
+| VirusTotal.LiveHuntFiles.links.self | String | Link to the current apge |
+| VirusTotal.LiveHuntFiles.links.next | String | Link to the next page |
 
 #### Command Example
+
 ```!vt-private-livehunt-notifications-files-get-by-hash hash=389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79```
 
 #### Human Readable Output
->### Notifications file listed:
+>
+>### Notifications file listed
+>
 >|id|meaningful_name|last_analysis_stats|
 >|---|---|---|
 >| 389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79 | /tmp/eml_attach_for_scan/c1726acd63066eeabfb9af65d1e7c3ba.file | harmless: 0<br>type-unsupported: 12<br>suspicious: 0<br>confirmed-timeout: 0<br>timeout: 1<br>failure: 1<br>malicious: 0<br>undetected: 59 |
 
-
 ### vt-private-livehunt-rule-list-files
+
 ***
 Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
-
 
 #### Base Command
 
 `vt-private-livehunt-rule-list-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list command. | Required | 
-| cursor | Continuation cursor. | Optional | 
-| limit | Maximum number of notifications to retrieve. Default is 10. | Optional | 
-
+| id | Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list command. | Required |
+| cursor | Continuation cursor. | Optional |
+| limit | Maximum number of notifications to retrieve. Default is 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.LiveHuntFiles.id | String | ID of the file | 
-| VirusTotal.LiveHuntFiles.type | String | Type of the entry \(file\) | 
-
+| VirusTotal.LiveHuntFiles.id | String | ID of the file |
+| VirusTotal.LiveHuntFiles.type | String | Type of the entry \(file\) |
 
 #### Command Example
+
 ```!vt-private-livehunt-rule-list-files id=6393327418376192```
 
 #### Human Readable Output
+>
 >### Files found by rule 6393327418376192
+>
 >|context_attributes|id|type|
 >|---|---|---|
 >| notification_id: 6393327418376192-9d90aa797c1c16ea7afac7368c53cc0b-389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79-1617876439<br>notification_source_key: 9d712fef<br>notification_tags: new_file_from_china,<br>389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79,<br>chinese_files<br>ruleset_name: Chinese Files<br>notification_source_country: CN<br>rule_name: new_file_from_china<br>notification_snippet: <br>ruleset_id: 6393327418376192<br>rule_tags: <br>notification_date: 1617880045<br>match_in_subfile: false | 389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79 | file |
 
-
 ### vt-private-retrohunt-jobs-list
+
 ***
 Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
-
 
 #### Base Command
 
 `vt-private-retrohunt-jobs-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Return the jobs matching the given criteria only. | Optional | 
-| cursor | Continuation cursor. | Optional | 
-| limit | Maximum number jobs to retrieve. Default is 10. | Optional | 
-
+| filter | Return the jobs matching the given criteria only. | Optional |
+| cursor | Continuation cursor. | Optional |
+| limit | Maximum number jobs to retrieve. Default is 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.RetroHuntJob.attributes.status | String | can be either "starting", "running", "aborting", "aborted" or "finished". | 
-| VirusTotal.RetroHuntJob.attributes.finish_date | Number | date when the Retrohunt job finished | 
-| VirusTotal.RetroHuntJob.attributes.rules | String | The ruleset in the job | 
-| VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range | Number | Matches outside time range | 
-| VirusTotal.RetroHuntJob.attributes.scanned_bytes | Date | Total scanned bytes | 
-| VirusTotal.RetroHuntJob.attributes.time_range.start | Number | Start of job's time range | 
-| VirusTotal.RetroHuntJob.attributes.time_range.end | Number | End of job's time range | 
-| VirusTotal.RetroHuntJob.attributes.num_matches | Number | Number of matches. | 
-| VirusTotal.RetroHuntJob.attributes.progress | Number | The progress in percentage | 
-| VirusTotal.RetroHuntJob.attributes.corpus | String | Corpus of the job \(main/goodware\) | 
-| VirusTotal.RetroHuntJob.attributes.creation_date | Number | Job's creation date as UTC timestamp. | 
-| VirusTotal.RetroHuntJob.attributes.start_date | Number | The start date of the job in epch. | 
-| VirusTotal.RetroHuntJob.type | String | Type of the entry \(retrohunt_job\) | 
-| VirusTotal.RetroHuntJob.id | String | ID of the retro job. | 
-| VirusTotal.RetroHuntJob.links.self | String | Link to the entry | 
-
+| VirusTotal.RetroHuntJob.attributes.status | String | can be either "starting", "running", "aborting", "aborted" or "finished". |
+| VirusTotal.RetroHuntJob.attributes.finish_date | Number | date when the Retrohunt job finished |
+| VirusTotal.RetroHuntJob.attributes.rules | String | The ruleset in the job |
+| VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range | Number | Matches outside time range |
+| VirusTotal.RetroHuntJob.attributes.scanned_bytes | Date | Total scanned bytes |
+| VirusTotal.RetroHuntJob.attributes.time_range.start | Number | Start of job's time range |
+| VirusTotal.RetroHuntJob.attributes.time_range.end | Number | End of job's time range |
+| VirusTotal.RetroHuntJob.attributes.num_matches | Number | Number of matches. |
+| VirusTotal.RetroHuntJob.attributes.progress | Number | The progress in percentage |
+| VirusTotal.RetroHuntJob.attributes.corpus | String | Corpus of the job \(main/goodware\) |
+| VirusTotal.RetroHuntJob.attributes.creation_date | Number | Job's creation date as UTC timestamp. |
+| VirusTotal.RetroHuntJob.attributes.start_date | Number | The start date of the job in epch. |
+| VirusTotal.RetroHuntJob.type | String | Type of the entry \(retrohunt_job\) |
+| VirusTotal.RetroHuntJob.id | String | ID of the retro job. |
+| VirusTotal.RetroHuntJob.links.self | String | Link to the entry |
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-list limit=1```
 
 #### Context Example
+
 ```json
     {"VirusTotal": {
         "RetroHuntJob": {
@@ -1376,52 +1394,53 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
 #### Human Readable Output
 
->### Retrohunt jobs listed:
+>### Retrohunt jobs listed
+>
 >|id|corpus|status|rules|
 >|---|---|---|---|
 >| akrupnik_panw-1617056777 | goodware | starting | rule foobar { strings: $ = "foobar" condition: all of them } |
 
-
 ### vt-private-retrohunt-jobs-get-by-id
+
 ***
 Retrieve a retrohunt job.
-
 
 #### Base Command
 
 `vt-private-retrohunt-jobs-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Job identifier. Can be acquired from vt-private-retrohunt-jobs-list. | Required | 
-
+| id | Job identifier. Can be acquired from vt-private-retrohunt-jobs-list. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.RetroHuntJob.attributes.status | String | can be either "starting", "running", "aborting", "aborted" or "finished". | 
-| VirusTotal.RetroHuntJob.attributes.finish_date | Number | date when the Retrohunt job finished | 
-| VirusTotal.RetroHuntJob.attributes.rules | String | The ruleset in the job | 
-| VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range | Number | Matches outside time range | 
-| VirusTotal.RetroHuntJob.attributes.scanned_bytes | Date | Total scanned bytes | 
-| VirusTotal.RetroHuntJob.attributes.time_range.start | Number | Start of job's time range | 
-| VirusTotal.RetroHuntJob.attributes.time_range.end | Number | End of job's time range | 
-| VirusTotal.RetroHuntJob.attributes.num_matches | Number | Number of matches. | 
-| VirusTotal.RetroHuntJob.attributes.progress | Number | The progress in percentage | 
-| VirusTotal.RetroHuntJob.attributes.corpus | String | Corpus of the job \(main/goodware\) | 
-| VirusTotal.RetroHuntJob.attributes.creation_date | Number | Job's creation date as UTC timestamp. | 
-| VirusTotal.RetroHuntJob.attributes.start_date | Number | The start date of the job in epch. | 
-| VirusTotal.RetroHuntJob.type | String | Type of the entry \(retrohunt_job\) | 
-| VirusTotal.RetroHuntJob.id | String | ID of the retro job. | 
-| VirusTotal.RetroHuntJob.links.self | String | Link to the entry | 
-
+| VirusTotal.RetroHuntJob.attributes.status | String | can be either "starting", "running", "aborting", "aborted" or "finished". |
+| VirusTotal.RetroHuntJob.attributes.finish_date | Number | date when the Retrohunt job finished |
+| VirusTotal.RetroHuntJob.attributes.rules | String | The ruleset in the job |
+| VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range | Number | Matches outside time range |
+| VirusTotal.RetroHuntJob.attributes.scanned_bytes | Date | Total scanned bytes |
+| VirusTotal.RetroHuntJob.attributes.time_range.start | Number | Start of job's time range |
+| VirusTotal.RetroHuntJob.attributes.time_range.end | Number | End of job's time range |
+| VirusTotal.RetroHuntJob.attributes.num_matches | Number | Number of matches. |
+| VirusTotal.RetroHuntJob.attributes.progress | Number | The progress in percentage |
+| VirusTotal.RetroHuntJob.attributes.corpus | String | Corpus of the job \(main/goodware\) |
+| VirusTotal.RetroHuntJob.attributes.creation_date | Number | Job's creation date as UTC timestamp. |
+| VirusTotal.RetroHuntJob.attributes.start_date | Number | The start date of the job in epch. |
+| VirusTotal.RetroHuntJob.type | String | Type of the entry \(retrohunt_job\) |
+| VirusTotal.RetroHuntJob.id | String | ID of the retro job. |
+| VirusTotal.RetroHuntJob.links.self | String | Link to the entry |
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-get-by-id id=akrupnik_panw-1615822819```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1455,141 +1474,143 @@ Retrieve a retrohunt job.
 #### Human Readable Output
 
 >### Retrohunt job: akrupnik_panw-1615822819
+>
 >|attributes|corpus|creation_date|finish_date|id|links|num_matches|num_matches_outside_time_range|progress|rules|scanned_bytes|start_date|status|time_range|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| status: finished<br/>finish_date: 1615822869<br/>rules: rule foobar { strings: $ = "foobar" condition: all of them }<br/>num_matches_outside_time_range: 556<br/>scanned_bytes: 146897923532<br/>time_range: {"start": 1615563618, "end": 1615822818}<br/>num_matches: 0<br/>progress: 100.0<br/>corpus: goodware<br/>creation_date: 1615822819<br/>start_date: 1615822824 | goodware | 1615822819 | 1615822869 | akrupnik_panw-1615822819 | self: https://www.virustotal.com/api/v3/intelligence/retrohunt_jobs/akrupnik_panw-1615822819 | 0 | 556 | 100.0 | rule foobar { strings: $ = "foobar" condition: all of them } | 146897923532 | 1615822824 | finished | start: 1615563618<br/>end: 1615822818 | retrohunt_job |
 
-
 ### vt-private-retrohunt-jobs-get-matching-files
+
 ***
 Retrieve matches for a retrohunt job matching file relationship.
-
 
 #### Base Command
 
 `vt-private-retrohunt-jobs-get-matching-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Job identifier. Can be acquired from vt-private-retrohunt-jobs-list. | Required | 
-| extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional | 
-
+| id | Job identifier. Can be acquired from vt-private-retrohunt-jobs-list. | Required |
+| extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.RetroHuntJobFiles.attributes.type_description | String | describes the file type. | 
-| VirusTotal.RetroHuntJobFiles.attributes.tlsh | String | Trend Micro's TLSH hash | 
-| VirusTotal.RetroHuntJobFiles.attributes.vhash | String | in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files. | 
-| VirusTotal.RetroHuntJobFiles.attributes.exiftool | String | exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not. | 
-| VirusTotal.RetroHuntJobFiles.attributes.trid.file_type | String | TrID is a utility designed to identify file types from their binary signatures. | 
-| VirusTotal.RetroHuntJobFiles.attributes.trid.probability | Number | probability of file format identification \(given as percentage\). | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.rule_name | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.description | String | matched rule description. | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.author | String | rule author. | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.ruleset_id | String | VirusTotal's ruleset ID. | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.ruleset_name | String | matched rule's ruleset name. | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.match_in_subfile | Boolean | whether the match was in a subfile or not. | 
-| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.source | String | ruleset source. | 
-| VirusTotal.RetroHuntJobFiles.attributes.creation_date | Number | extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp. | 
-| VirusTotal.RetroHuntJobFiles.attributes.names | String | all file names associated with the file. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. | 
-| VirusTotal.RetroHuntJobFiles.attributes.type_tag | String | tag representing the file type. Can be used in vt-private-intelligence-search | 
-| VirusTotal.RetroHuntJobFiles.attributes.capabilities_tags | String | list of representative tags related to the file's capabilities | 
-| VirusTotal.RetroHuntJobFiles.attributes.total_votes.harmless | Number | number of positive votes. | 
-| VirusTotal.RetroHuntJobFiles.attributes.total_votes.malicious | Number | number of negative votes. | 
-| VirusTotal.RetroHuntJobFiles.attributes.size | Number | file size in bytes. | 
-| VirusTotal.RetroHuntJobFiles.attributes.authentihash | String | sha256 hash used by Microsoft to verify that the relevant sections of a PE image file have not been altered. This specific type of hash is used by Microsoft AppLocker. | 
-| VirusTotal.RetroHuntJobFiles.attributes.times_submitted | Number | number of times the file has been posted to VirusTotal. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_submission_date | Number | most recent date the file was posted to VirusTotal. UTC timestamp. | 
-| VirusTotal.RetroHuntJobFiles.attributes.meaningful_name | String | the most interesting name out of all file's names. | 
-| VirusTotal.RetroHuntJobFiles.attributes.downloadable | Boolean | true if the file can be downloaded, false otherwise. | 
-| VirusTotal.RetroHuntJobFiles.attributes.sha256 | String | SHA-256 of the file | 
-| VirusTotal.RetroHuntJobFiles.attributes.type_extension | String | specifies file extension. | 
-| VirusTotal.RetroHuntJobFiles.attributes.tags | String | list of representative tags related to the file's capabilities | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_date | Number | Most recent scan date. UTC timestamp. | 
-| VirusTotal.RetroHuntJobFiles.attributes.unique_sources | Number | indicates from how many different sources the file has been posted from. | 
-| VirusTotal.RetroHuntJobFiles.attributes.first_submission_date | Number | date when the file was first seen in VirusTotal. UTC timestamp. | 
-| VirusTotal.RetroHuntJobFiles.attributes.sha1 | String | SHA-1 of the file | 
-| VirusTotal.RetroHuntJobFiles.attributes.magic | String | magic identifier of this app in hex format. | 
-| VirusTotal.RetroHuntJobFiles.attributes.ssdeep | String | SSDeep of the file | 
-| VirusTotal.RetroHuntJobFiles.attributes.md5 | String | MD5 of the file | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.type-unsupported | Number | number of AV engines that don't support that type of file. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.confirmed-timeout | Number | number of AV engines that reach a timeout when analysing that file. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.failure | Number | number of AV engines that fail when analysing that file. | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious | 
-| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. | 
-| VirusTotal.RetroHuntJobFiles.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. | 
-| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.high | Number | number of matched high severity rules. | 
-| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.medium | Number | number of matched medium severity rules. | 
-| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.critical | Number | number of matched critical severity rules. | 
-| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.low | Number | number of matched low severity rules. | 
-| VirusTotal.RetroHuntJobFiles.type | String | The type of the entry \(file\) | 
-| VirusTotal.RetroHuntJobFiles.id | String | ID of file | 
-| VirusTotal.RetroHuntJobFiles.links.self | String | A link to the entry | 
-| VirusTotal.RetroHuntJobFiles.context_attributes.rule_name | String | contains the names of all rules in the ruleset. | 
-| VirusTotal.RetroHuntJobFiles.context_attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. | 
-
+| VirusTotal.RetroHuntJobFiles.attributes.type_description | String | describes the file type. |
+| VirusTotal.RetroHuntJobFiles.attributes.tlsh | String | Trend Micro's TLSH hash |
+| VirusTotal.RetroHuntJobFiles.attributes.vhash | String | in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files. |
+| VirusTotal.RetroHuntJobFiles.attributes.exiftool | String | exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not. |
+| VirusTotal.RetroHuntJobFiles.attributes.trid.file_type | String | TrID is a utility designed to identify file types from their binary signatures. |
+| VirusTotal.RetroHuntJobFiles.attributes.trid.probability | Number | probability of file format identification \(given as percentage\). |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.rule_name | String | contains the names of all rules in the ruleset. |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.description | String | matched rule description. |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.author | String | rule author. |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.ruleset_id | String | VirusTotal's ruleset ID. |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.ruleset_name | String | matched rule's ruleset name. |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.match_in_subfile | Boolean | whether the match was in a subfile or not. |
+| VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.source | String | ruleset source. |
+| VirusTotal.RetroHuntJobFiles.attributes.creation_date | Number | extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp. |
+| VirusTotal.RetroHuntJobFiles.attributes.names | String | all file names associated with the file. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_modification_date | Number | date when the object itself was last modified. UTC timestamp. |
+| VirusTotal.RetroHuntJobFiles.attributes.type_tag | String | tag representing the file type. Can be used in vt-private-intelligence-search |
+| VirusTotal.RetroHuntJobFiles.attributes.capabilities_tags | String | list of representative tags related to the file's capabilities |
+| VirusTotal.RetroHuntJobFiles.attributes.total_votes.harmless | Number | number of positive votes. |
+| VirusTotal.RetroHuntJobFiles.attributes.total_votes.malicious | Number | number of negative votes. |
+| VirusTotal.RetroHuntJobFiles.attributes.size | Number | file size in bytes. |
+| VirusTotal.RetroHuntJobFiles.attributes.authentihash | String | sha256 hash used by Microsoft to verify that the relevant sections of a PE image file have not been altered. This specific type of hash is used by Microsoft AppLocker. |
+| VirusTotal.RetroHuntJobFiles.attributes.times_submitted | Number | number of times the file has been posted to VirusTotal. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_submission_date | Number | most recent date the file was posted to VirusTotal. UTC timestamp. |
+| VirusTotal.RetroHuntJobFiles.attributes.meaningful_name | String | the most interesting name out of all file's names. |
+| VirusTotal.RetroHuntJobFiles.attributes.downloadable | Boolean | true if the file can be downloaded, false otherwise. |
+| VirusTotal.RetroHuntJobFiles.attributes.sha256 | String | SHA-256 of the file |
+| VirusTotal.RetroHuntJobFiles.attributes.type_extension | String | specifies file extension. |
+| VirusTotal.RetroHuntJobFiles.attributes.tags | String | list of representative tags related to the file's capabilities |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_date | Number | Most recent scan date. UTC timestamp. |
+| VirusTotal.RetroHuntJobFiles.attributes.unique_sources | Number | indicates from how many different sources the file has been posted from. |
+| VirusTotal.RetroHuntJobFiles.attributes.first_submission_date | Number | date when the file was first seen in VirusTotal. UTC timestamp. |
+| VirusTotal.RetroHuntJobFiles.attributes.sha1 | String | SHA-1 of the file |
+| VirusTotal.RetroHuntJobFiles.attributes.magic | String | magic identifier of this app in hex format. |
+| VirusTotal.RetroHuntJobFiles.attributes.ssdeep | String | SSDeep of the file |
+| VirusTotal.RetroHuntJobFiles.attributes.md5 | String | MD5 of the file |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.type-unsupported | Number | number of AV engines that don't support that type of file. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.confirmed-timeout | Number | number of AV engines that reach a timeout when analysing that file. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.timeout | Number | number of timeouts when analysing this URL/file. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.failure | Number | number of AV engines that fail when analysing that file. |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious |
+| VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.undetected | Number | number of reports saying that is undetected. |
+| VirusTotal.RetroHuntJobFiles.attributes.reputation | Number | file's score calculated from all votes posted by the VirusTotal community. |
+| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.high | Number | number of matched high severity rules. |
+| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.medium | Number | number of matched medium severity rules. |
+| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.critical | Number | number of matched critical severity rules. |
+| VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.low | Number | number of matched low severity rules. |
+| VirusTotal.RetroHuntJobFiles.type | String | The type of the entry \(file\) |
+| VirusTotal.RetroHuntJobFiles.id | String | ID of file |
+| VirusTotal.RetroHuntJobFiles.links.self | String | A link to the entry |
+| VirusTotal.RetroHuntJobFiles.context_attributes.rule_name | String | contains the names of all rules in the ruleset. |
+| VirusTotal.RetroHuntJobFiles.context_attributes.match_in_subfile | Boolean | whether the match was in a subfile or not. |
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-get-matching-files id=akrupnik_panw-1610969096```
 
 #### Human Readable Output
+>
 >### Files matching id "akrupnik_panw-1610969096"
+>
 >|sha256|popular_threat_classification|reputation|
 >|---|---|---|
 >| cf13811bb818c02149ad1745c95a11ef8b122801953aee463343627a2ffaa29a |  | 0 |
 
-
 ### vt-private-retrohunt-jobs-create
+
 ***
 Create a new retrohunt job.
-
 
 #### Base Command
 
 `vt-private-retrohunt-jobs-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rules | The rules to create. | Required | 
-| corpus | The "main" corpus is a composition of files sent to VirusTotal during the last few months. The "goodware" corpus is a random selection of ~1.000.000 files from the NSRL that are not detected by any antivirus engine. Possible values are: main, goodware. Default is main. | Optional | 
-| notification_email | A comma-separated list of emails to notify. | Optional | 
-| start_time | Fetch retrohunt jobs from given time. Can be epoch time, a date or time range (3 days, 1 year). | Optional | 
-| end_time | Fetch retrohunt jobs to given time. Can be epoch time, a date or time range. If start_time supplied and not end_time, end_time will be the current time. | Optional | 
-
+| rules | The rules to create. | Required |
+| corpus | The "main" corpus is a composition of files sent to VirusTotal during the last few months. The "goodware" corpus is a random selection of ~1.000.000 files from the NSRL that are not detected by any antivirus engine. Possible values are: main, goodware. Default is main. | Optional |
+| notification_email | A comma-separated list of emails to notify. | Optional |
+| start_time | Fetch retrohunt jobs from given time. Can be epoch time, a date or time range (3 days, 1 year). | Optional |
+| end_time | Fetch retrohunt jobs to given time. Can be epoch time, a date or time range. If start_time supplied and not end_time, end_time will be the current time. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.RetroHuntJob.attributes.status | String | can be either "starting", "running", "aborting", "aborted" or "finished". | 
-| VirusTotal.RetroHuntJob.attributes.finish_date | Number | date when the Retrohunt job finished | 
-| VirusTotal.RetroHuntJob.attributes.rules | String | The ruleset in the job | 
-| VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range | Number | Matches outside time range | 
-| VirusTotal.RetroHuntJob.attributes.scanned_bytes | Date | Total scanned bytes | 
-| VirusTotal.RetroHuntJob.attributes.time_range.start | Number | Start of job's time range | 
-| VirusTotal.RetroHuntJob.attributes.time_range.end | Number | End of job's time range | 
-| VirusTotal.RetroHuntJob.attributes.num_matches | Number | Number of matches. | 
-| VirusTotal.RetroHuntJob.attributes.progress | Number | The progress in percentage | 
-| VirusTotal.RetroHuntJob.attributes.corpus | String | Corpus of the job \(main/goodware\) | 
-| VirusTotal.RetroHuntJob.attributes.creation_date | Number | Job's creation date as UTC timestamp. | 
-| VirusTotal.RetroHuntJob.attributes.start_date | Number | The start date of the job in epch. | 
-| VirusTotal.RetroHuntJob.type | String | Type of the entry \(retrohunt_job\) | 
-| VirusTotal.RetroHuntJob.id | String | ID of the retro job. | 
-| VirusTotal.RetroHuntJob.links.self | String | Link to the entry | 
-
+| VirusTotal.RetroHuntJob.attributes.status | String | can be either "starting", "running", "aborting", "aborted" or "finished". |
+| VirusTotal.RetroHuntJob.attributes.finish_date | Number | date when the Retrohunt job finished |
+| VirusTotal.RetroHuntJob.attributes.rules | String | The ruleset in the job |
+| VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range | Number | Matches outside time range |
+| VirusTotal.RetroHuntJob.attributes.scanned_bytes | Date | Total scanned bytes |
+| VirusTotal.RetroHuntJob.attributes.time_range.start | Number | Start of job's time range |
+| VirusTotal.RetroHuntJob.attributes.time_range.end | Number | End of job's time range |
+| VirusTotal.RetroHuntJob.attributes.num_matches | Number | Number of matches. |
+| VirusTotal.RetroHuntJob.attributes.progress | Number | The progress in percentage |
+| VirusTotal.RetroHuntJob.attributes.corpus | String | Corpus of the job \(main/goodware\) |
+| VirusTotal.RetroHuntJob.attributes.creation_date | Number | Job's creation date as UTC timestamp. |
+| VirusTotal.RetroHuntJob.attributes.start_date | Number | The start date of the job in epch. |
+| VirusTotal.RetroHuntJob.type | String | Type of the entry \(retrohunt_job\) |
+| VirusTotal.RetroHuntJob.id | String | ID of the retro job. |
+| VirusTotal.RetroHuntJob.links.self | String | Link to the entry |
 
 #### Command Example
+
 ```!vt-private-retrohunt-jobs-create rules=`rule foobar { strings: $ = "foobar" condition: all of them }` corpus=goodware start_time="3 days"```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1621,91 +1642,92 @@ Create a new retrohunt job.
 #### Human Readable Output
 
 >### Retrohunt job has been successfully created
+>
 >|id|corpus|status|rules|
 >|---|---|---|---|
 >| akrupnik_panw-1617056777 | goodware | starting | rule foobar { strings: $ = "foobar" condition: all of them } |
 
-
 ### vt-private-quota-limits-list
+
 ***
 Retrieve user's API usage.
-
 
 #### Base Command
 
 `vt-private-quota-limits-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | User ID or API key. If not supplied, will use the API Key configured in the integration. | Optional | 
-
+| id | User ID or API key. If not supplied, will use the API Key configured in the integration. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.QuotaLimits.cases_creation_monthly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.cases_creation_monthly.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.monitor_uploaded_files.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.monitor_uploaded_files.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.monitor_uploaded_bytes.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.monitor_uploaded_bytes.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.monitor_storage_files.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.monitor_storage_files.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.api_requests_monthly.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.api_requests_monthly.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.api_requests_monthly.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.api_requests_monthly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.api_requests_monthly.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_downloads_monthly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_downloads_monthly.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.api_requests_hourly.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.api_requests_hourly.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.api_requests_hourly.group.allowed | Number | hourly api requests group's quota limit | 
-| VirusTotal.QuotaLimits.api_requests_hourly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.api_requests_hourly.user.allowed | Date | hourly api requests user's quota limit | 
-| VirusTotal.QuotaLimits.intelligence_hunting_rules.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.intelligence_hunting_rules.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_hunting_rules.group.allowed | Number | intelligence_hunting_rules group's quota limit | 
-| VirusTotal.QuotaLimits.intelligence_hunting_rules.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_hunting_rules.user.allowed | Number | intelligence_hunting_rules user's quota limit | 
-| VirusTotal.QuotaLimits.intelligence_graphs_private.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.intelligence_graphs_private.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_graphs_private.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_graphs_private.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_graphs_private.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.api_requests_daily.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.api_requests_daily.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.api_requests_daily.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.api_requests_daily.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.api_requests_daily.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.monitor_storage_bytes.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.monitor_storage_bytes.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.user.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_searches_monthly.group.inherited_from | String | group from which the quota is inherited. | 
-| VirusTotal.QuotaLimits.intelligence_searches_monthly.group.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_searches_monthly.group.allowed | Number | quota limit. | 
-| VirusTotal.QuotaLimits.intelligence_searches_monthly.user.group.used | Number | quota has been used. | 
-| VirusTotal.QuotaLimits.intelligence_searches_monthly.user.allowed | Number | quota limit. | 
-
+| VirusTotal.QuotaLimits.cases_creation_monthly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.cases_creation_monthly.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.monitor_uploaded_files.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.monitor_uploaded_files.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.monitor_uploaded_bytes.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.monitor_uploaded_bytes.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.monitor_storage_files.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.monitor_storage_files.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.api_requests_monthly.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.api_requests_monthly.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.api_requests_monthly.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.api_requests_monthly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.api_requests_monthly.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_downloads_monthly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_downloads_monthly.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.api_requests_hourly.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.api_requests_hourly.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.api_requests_hourly.group.allowed | Number | hourly api requests group's quota limit |
+| VirusTotal.QuotaLimits.api_requests_hourly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.api_requests_hourly.user.allowed | Date | hourly api requests user's quota limit |
+| VirusTotal.QuotaLimits.intelligence_hunting_rules.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.intelligence_hunting_rules.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_hunting_rules.group.allowed | Number | intelligence_hunting_rules group's quota limit |
+| VirusTotal.QuotaLimits.intelligence_hunting_rules.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_hunting_rules.user.allowed | Number | intelligence_hunting_rules user's quota limit |
+| VirusTotal.QuotaLimits.intelligence_graphs_private.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.intelligence_graphs_private.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_graphs_private.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_graphs_private.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_graphs_private.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.api_requests_daily.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.api_requests_daily.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.api_requests_daily.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.api_requests_daily.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.api_requests_daily.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.monitor_storage_bytes.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.monitor_storage_bytes.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.user.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_searches_monthly.group.inherited_from | String | group from which the quota is inherited. |
+| VirusTotal.QuotaLimits.intelligence_searches_monthly.group.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_searches_monthly.group.allowed | Number | quota limit. |
+| VirusTotal.QuotaLimits.intelligence_searches_monthly.user.group.used | Number | quota has been used. |
+| VirusTotal.QuotaLimits.intelligence_searches_monthly.user.allowed | Number | quota limit. |
 
 #### Command Example
+
 ```!vt-private-quota-limits-list```
 
 #### Context Example
+
 ```json
 {
     "VirusTotal": {
@@ -1846,7 +1868,8 @@ Retrieve user's API usage.
 
 #### Human Readable Output
 
->### Monthly quota data: More data can be found in the Context.
+>### Monthly quota data: More data can be found in the Context
+>
 >|api_requests_monthly|cases_creation_monthly|intelligence_downloads_monthly|intelligence_retrohunt_jobs_monthly|intelligence_searches_monthly|intelligence_vtdiff_creation_monthly|
 >|---|---|---|---|---|---|
 >| group: {"inherited_from": "palo_alto_networks", "used": 13551234, "allowed": 1000000000}<br/>user: {"used": 2564, "allowed": 1000000000} | user: {"used": 0, "allowed": 20} | group: {"inherited_from": "palo_alto_networks", "used": 6214, "allowed": 100000}<br/>user: {"used": 5, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 163, "allowed": 300}<br/>user: {"used": 0, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 16328, "allowed": 100000}<br/>user: {"used": 12, "allowed": 0} | group: {"inherited_from": "palo_alto_networks", "used": 23, "allowed": 100000000}<br/>user: {"used": 0, "allowed": 0} |

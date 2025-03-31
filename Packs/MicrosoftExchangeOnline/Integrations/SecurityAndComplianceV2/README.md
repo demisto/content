@@ -59,7 +59,7 @@ To set up the integration and register the application in Azure, follow these st
 
 ### Authentication Requirements
 
-To access the Security & Compliance Center, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups. 
+To access the Security & Compliance Center, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups.
 
 **Note:** The account used by the integration does not require Global Administrator permissions.
 
@@ -109,13 +109,12 @@ The username and password for the user you intend to use must be added to the **
 
    **Expected Output:**
 
-   >    ## Security and Compliance - Authorize Instructions
+   > ## Security and Compliance - Authorize Instructions
    >
-   >    1. To sign in, open [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) in a web browser and enter the code **XXXXXXX** to authenticate.
-   >    2. Run the `!o365-sc-auth-complete` command in the War Room.
+   > 1. To sign in, open [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) in a web browser and enter the code **XXXXXXX** to authenticate.
+   > 2. Run the `!o365-sc-auth-complete` command in the War Room.
 
    4. Test OAuth2.0 authorization by running the `!o365-sc-auth-test` command.
-
 
 ## Troubleshooting and Testing
 
@@ -127,6 +126,7 @@ The username and password for the user you intend to use must be added to the **
 
 **Solution:**
 **Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
+
 - **URL**: Ensure the correct URL is provided for the Security & Compliance Center.
 - **App Secret**: The client secret created in Azure.
 - **App ID**: The application (client) ID from Azure.
@@ -137,6 +137,7 @@ The username and password for the user you intend to use must be added to the **
 Missing or incorrect values in these fields can cause a 404 error, as the integration might be attempting to connect to an incorrect or non-existent endpoint.
 
 **Additional Steps:**
+
 - **Check the ConnectionUri**: Verify that the `ConnectionUri` in your configuration matches the environment you are operating in (e.g., Microsoft 365, GCC High, DoD, etc.).
 - **Review Endpoint Configuration**: Ensure that the `AzureADAuthorizationEndpointUri` is correctly set according to your environment.
 
@@ -146,6 +147,7 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 
 **Solution:**
 **Check Parameters for Accuracy:** A 400 Bad Request error often indicates that there is a problem with the request sent to the server. Double-check the following:
+
 - **App ID and Tenant ID**: Ensure these are correctly copied from your Azure app registration.
 - **App Secret**: Verify that the secret has been correctly entered and has not expired.
 - **UPN/Email**: Ensure that the email address is correctly formatted and belongs to a user with the necessary permissions.
@@ -158,11 +160,13 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 **Scenario:** After running the `!o365-sc-auth-start` command, the authorization process fails, and the integration cannot authenticate with the Security & Compliance Center.
 
 **Solution:**
+
 - **Double-Check App Permissions**: Make sure that the app registration in Azure has the necessary permissions, specifically `Exchange.ManageAsApp`.
 - **Grant Admin Consent**: Ensure that admin consent has been granted for the required permissions. Without this, the application cannot function correctly.
 - **Review Authentication Setup**: Ensure that "Allow public client flows" is enabled in the Azure app registration settings under **Authentication**.
 
 **Additional Steps:**
+
 - **Use the `!o365-sc-auth-test` Command**: Run this command to verify if the integration can successfully authenticate. If this test fails, revisit the app registration settings and verify all configurations.
 
 ### Testing the Integration
@@ -188,19 +192,20 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
   - [Azure AD Sign-in Logs](https://docs.microsoft.com/en-us/azure/active-directory/reports-monitoring/concept-sign-ins)
   - [OAuth2.0 Authorization Troubleshooting](https://docs.microsoft.com/en-us/azure/active-directory/develop/troubleshoot-oauth2-authorization-code-grant-flow)
 
-
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### o365-sc-auth-start
+
 ***
 OAuth2.0 - Start authorization.
-
 
 #### Base Command
 
 `o365-sc-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -210,23 +215,25 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-auth-start```
 
 #### Human Readable Output
 
 >## Security And Compliance - Authorize instructions
+>
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
 >2. Run the ***!o365-sc-auth-complete*** command in the War Room.
 
-
 ### o365-sc-auth-complete
+
 ***
 OAuth2.0 - Complete authorization.
-
 
 #### Base Command
 
 `o365-sc-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
@@ -236,22 +243,22 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-auth-complete```
 
 #### Human Readable Output
 
 >Your account **successfully** authorized!
 
-
-
 ### o365-sc-auth-test
+
 ***
 OAuth2.0 - Test authorization.
-
 
 #### Base Command
 
 `o365-sc-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -261,21 +268,22 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-auth-test```
 
 #### Human Readable Output
 
 >**Test ok!**
 
-
 ### o365-sc-new-search
+
 ***
 Create compliance search in the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-new-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -291,7 +299,6 @@ Create compliance search in the Security & Compliance Center.
 | public_folder_location | Comma-separated list of public folders to include, or you can use the value "All" to include all. | Optional |
 | share_point_location | Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites. | Optional |
 | share_point_location_exclusion | Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. | Optional |
-
 
 #### Context Output
 
@@ -328,11 +335,12 @@ Create compliance search in the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.Search.Status | String | Security and compliance search status. |
 | O365.SecurityAndCompliance.ContentSearch.Search.TenantId | String | Security and compliance search Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-new-search search_name="example" exchange_location="user1@demistodev.onmicrosoft.com,user2@demistodev.onmicrosoft.com" allow_not_found_exchange_locations=true kql="Rodrigo"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -385,21 +393,20 @@ Create compliance search in the Security & Compliance Center.
 #### Human Readable Output
 
 >### Security And Compliance - New search 'example' created
+>
 >| ContentMatchQuery | CreatedBy | Description | LastModifiedTime | Name
 >| --- | --- | --- | --- | ---
 >| Rodrigo | XSOAR-user | Short description | 11/29/2020 7:12:46 AM | example
-
-
 
 ### o365-sc-set-search
 
 ***
 Modifies non-running compliance searches in the Security & Compliance Center.
 
-
 #### Base Command
 
 `o365-sc-set-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,58 +426,54 @@ Modifies non-running compliance searches in the Security & Compliance Center.
 | remove_share_point_location | Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value. | Optional |
 | remove_share_point_location_exclusion | Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-set-search search_name="example" remove_exchange_location="test2@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
 
 >Security And Compliance - Search **example** modified!
 
-
-
 ### o365-sc-remove-search
 
 ***
 Remove compliance search by name from the Security & Compliance Center.
 
-
 #### Base Command
 
 `o365-sc-remove-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-remove-search search_name="example"```
 
 #### Human Readable Output
 
 >Security And Compliance - Search **example** removed!
 
-
-
 ### o365-sc-list-search
 
 ***
 List compliance searches in the Security & Compliance Center.
 
-
 #### Base Command
 
 `o365-sc-list-search`
+
 #### Input
 
 There are no input arguments for this command.
@@ -510,11 +513,12 @@ There are no input arguments for this command.
 | O365.SecurityAndCompliance.ContentSearch.Search.Status | String | Security and compliance search status. |
 | O365.SecurityAndCompliance.ContentSearch.Search.TenantId | String | Security and compliance search Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-list-search```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -601,20 +605,21 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Security And Compliance - Search configurations
+>
 >| CreatedBy | Description | LastModifiedTime | Name | RunBy
 >| --- | --- | --- | --- | ---
 >| XSOAR-user1 | Short description | 8/22/2019 6:43:48 AM | example1 | XSOAR-user1
 >| XSOAR-user2 | Short description | 1/8/2020 12:44:30 AM | example2 | XSOAR-user2
 
-
 ### o365-sc-get-search
+
 ***
 Gets compliance search by name from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-get-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -624,7 +629,6 @@ Gets compliance search by name from the Security & Compliance Center.
 | all_results | Whether to include mailboxes which have no results in results entry context. | Optional |
 | export | Whether to export search results as json file to war-room. | Optional |
 | statistics | Show search statistics. Default is "false". | Optional |
-
 
 #### Context Output
 
@@ -664,11 +668,12 @@ Gets compliance search by name from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.ItemsCount | Number | The number of security and compliance search results in location. |
 | O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size | Number | The byte size of the security and compliance search results in location. |
 
-
 #### Command Example
+
 ```!o365-sc-get-search search_name="example"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -724,31 +729,32 @@ Gets compliance search by name from the Security & Compliance Center.
 #### Human Readable Output
 
 >### Security And Compliance - 'example' search
+>
 >| CreatedBy | Description | LastModifiedTime | Name | RunBy | Status
 >| --- | --- | --- | --- | --- | ---
 >| XSOAR-user | Short description | 2020-11-29T07:20:43.283 | example | XSOAR-user | NotStarted
 
-
 ### o365-sc-start-search
+
 ***
 Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-start-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-start-search search_name="example"```
 
 #### Human Readable Output
@@ -756,56 +762,57 @@ There is no context output for this command.
 >Security And Compliance - search **example** started !
 
 ### o365-sc-stop-search
+
 ***
 Stop running compliance search in the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-stop-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-stop-search search_name="example"```
 
 #### Human Readable Output
 
 >Security And Compliance - search **example** stopped !
 
-
 ### o365-sc-new-search-action
+
 ***
 After you create a content search using the ***o365-sc-new-search*** command and run it using the ***o365-sc-start-search*** command, you assign a search action to the search using the ***o365-sc-new-search-action*** command.
 
 Please note that when performing the *Delete* action, items which are deleted will still follow your EWS365 data retention policies. Some data retention policies will move emails to the "Purges" or "Recoverable Items" folder.
 
-
 #### Base Command
 
 `o365-sc-new-search-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_name | The name of the compliance search. | Required | 
-| action | Search action to perform. Possible values are: Preview, Purge, Export. Default is Preview. | Optional | 
-| purge_type | Purge type. Possible values are: SoftDelete, HardDelete. Default is SoftDelete. | Optional | 
-| share_point_archive_format | Specifies how to export SharePoint and OneDrive search results. Possible values are: IndividualMessage, PerUserZip, SingleZip. IndividualMessage: Export the files uncompressed. This is the default value. PerUserZip: One ZIP file for each user. Each ZIP file contains the exported files for the user. SingleZip: One ZIP file for all users. The ZIP file contains all exported files from all users. This output setting is available only in PowerShell. To specify the format for Exchange search results, use the exchange_archive_format parameter.  | Optional | 
-| format | The Format parameter specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files. Possible values are: FxStream, Mime, Msg. | Optional | 
-| include_sharepoint_document_versions | Specifies whether to export previous versions of the document when you use the Export action. Possible values are: true, false. | Optional | 
-| notify_email | Specifies the email address target for the search results when you use the Export action. | Optional | 
-| notify_email_cc | Specifies the cc email address target for the search results when you use the Export action. | Optional | 
-| scenario | Specifies the scenario type when you use the Export action. Possible values are: AnalyzeWithZoom, General, GenerateReportsOnly, Inventory, RetentionReports, TriagePreview. | Optional | 
-| scope | Specifies the items to include when the action is Export. Possible values are: IndexedItemsOnly, UnindexedItemsOnly, BothIndexedAndUnindexedItems. | Optional | 
+| search_name | The name of the compliance search. | Required |
+| action | Search action to perform. Possible values are: Preview, Purge, Export. Default is Preview. | Optional |
+| purge_type | Purge type. Possible values are: SoftDelete, HardDelete. Default is SoftDelete. | Optional |
+| share_point_archive_format | Specifies how to export SharePoint and OneDrive search results. Possible values are: IndividualMessage, PerUserZip, SingleZip. IndividualMessage: Export the files uncompressed. This is the default value. PerUserZip: One ZIP file for each user. Each ZIP file contains the exported files for the user. SingleZip: One ZIP file for all users. The ZIP file contains all exported files from all users. This output setting is available only in PowerShell. To specify the format for Exchange search results, use the exchange_archive_format parameter.  | Optional |
+| format | The Format parameter specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files. Possible values are: FxStream, Mime, Msg. | Optional |
+| include_sharepoint_document_versions | Specifies whether to export previous versions of the document when you use the Export action. Possible values are: true, false. | Optional |
+| notify_email | Specifies the email address target for the search results when you use the Export action. | Optional |
+| notify_email_cc | Specifies the cc email address target for the search results when you use the Export action. | Optional |
+| scenario | Specifies the scenario type when you use the Export action. Possible values are: AnalyzeWithZoom, General, GenerateReportsOnly, Inventory, RetentionReports, TriagePreview. | Optional |
+| scope | Specifies the items to include when the action is Export. Possible values are: IndexedItemsOnly, UnindexedItemsOnly, BothIndexedAndUnindexedItems. | Optional |
 
 #### Context Output
 
@@ -843,11 +850,12 @@ Please note that when performing the *Delete* action, items which are deleted wi
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status. Either "Started" or "Completed". |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-new-search-action search_name="example" action="Preview"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -898,31 +906,32 @@ Please note that when performing the *Delete* action, items which are deleted wi
 #### Human Readable Output
 
 >### Security And Compliance - search action 'example_Preview' created
+>
 >| Action | LastModifiedTime | Name | RunBy | SearchName | Status
 >| --- | --- | --- | --- | --- | ---
 >| Preview | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
-
 ### o365-sc-remove-search-action
+
 ***
 Removes compliance search action by search the action name from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-remove-search-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_action_name | The name of the compliance search action. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!o365-sc-remove-search-action search_action_name="example_Preview"```
 
 #### Human Readable Output
@@ -930,13 +939,14 @@ There is no context output for this command.
 >Security And Compliance - search action **example_Preview** removed!
 
 ### o365-sc-list-search-action
+
 ***
 Lists compliance search actions from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-list-search-action`
+
 #### Input
 
 There are no input arguments for this command.
@@ -977,11 +987,12 @@ There are no input arguments for this command.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status \(Started/Completed\). |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
 
-
 #### Command Example
+
 ```!o365-sc-list-search-action```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -1022,7 +1033,7 @@ There are no input arguments for this command.
                         "Status": "Completed",
                         "TenantId": "xxxxx"
                     },
-                  	{
+                   {
                         "Action": "Purge",
                         "AllowNotFoundExchangeLocationsEnabled": false,
                         "AzureBatchFrameworkEnabled": false,
@@ -1066,21 +1077,22 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Security And Compliance - search actions
+>
 >| Action | JobEndTime | LastModifiedTime | Name | RunBy | SearchName | Status
 >| --- | --- | --- | --- | --- | --- | ---
 >| Preview | 10/14/2020 1:47:00 PM | 10/14/2020 1:45:44 PM | example_Preview | XSOAR-user | example | Completed
 >| Purge | 11/25/2020 10:51:04 AM | 11/25/2020 10:50:37 AM | example\_Purge | XSOAR-user | example | Completed
 >
 
-
 ### o365-sc-get-search-action
+
 ***
 Gets compliance search action from the Security & Compliance Center.
-
 
 #### Base Command
 
 `o365-sc-get-search-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1089,7 +1101,6 @@ Gets compliance search action from the Security & Compliance Center.
 | limit | The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument. | Optional |
 | export | Whether to export search results as json file to war-room. | Optional |
 | results | Whether to print the results in the War Room. Default is "false". | Optional |
-
 
 #### Context Output
 
@@ -1138,9 +1149,11 @@ Gets compliance search action from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
 
 #### Command Example
+
 ```!o365-sc-get-search-action search_action_name="example_Preview"```
 
 #### Context Example
+
 ```json
 {
     "O365": {
@@ -1210,19 +1223,20 @@ Gets compliance search action from the Security & Compliance Center.
 #### Human Readable Output
 
 >### Security And Compliance - search action 'example_Preview'
+>
 >| Action | JobEndTime | LastModifiedTime | Name | RunBy | SearchName | Status
 >| --- | --- | --- | --- | --- | --- | ---
 >| Preview | 11/29/2020 7:24:05 AM | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
-
 ## Tips for finding messages to remove
-* Keyword Query Language (KQL)
-    * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
-    * If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
-    * If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
-    * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
-* Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
-* Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
+
+- Keyword Query Language (KQL)
+  - If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
+  - If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
+  - If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
+  - For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
+- Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
+- Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
 
 ### o365-sc-compliance-case-create
 
@@ -1237,18 +1251,18 @@ Create eDiscovery cases in the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_name | Case name create. | Required | 
-| case_type | "AdvancedEdiscovery: Used to manage legal or other types of investigations.<br/> ComplianceClassifier: This type of case corresponds to a trainable classifier.<br/> DataInvestigation: Data investigation cases are used to investigate data spillage incidents.<br/> DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.<br/> eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.<br/> This is the default value.<br/> InsiderRisk: Insider risk cases are used to manage insider risk management cases.<br/> Typically, insider risk management cases are manually created in the Microsoft Purview<br/> compliance portal to further investigate activity based on a risk alert.<br/> SupervisionPolicy: This type of case corresponds to communication compliance policy."<br/>. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. Default is eDiscovery. | Optional | 
-| description | Case description. | Optional | 
-| external_id | Case external ID. | Optional | 
+| case_name | Case name create. | Required |
+| case_type | "AdvancedEdiscovery: Used to manage legal or other types of investigations.<br/> ComplianceClassifier: This type of case corresponds to a trainable classifier.<br/> DataInvestigation: Data investigation cases are used to investigate data spillage incidents.<br/> DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.<br/> eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.<br/> This is the default value.<br/> InsiderRisk: Insider risk cases are used to manage insider risk management cases.<br/> Typically, insider risk management cases are manually created in the Microsoft Purview<br/> compliance portal to further investigate activity based on a risk alert.<br/> SupervisionPolicy: This type of case corresponds to communication compliance policy."<br/>. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. Default is eDiscovery. | Optional |
+| description | Case description. | Optional |
+| external_id | Case external ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.ComplianceCase.Name | String | Case name. | 
-| O365.SecurityAndCompliance.ComplianceCase.Status | String | Case status. | 
-| O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime | String | Case created date time. | 
+| O365.SecurityAndCompliance.ComplianceCase.Name | String | Case name. |
+| O365.SecurityAndCompliance.ComplianceCase.Status | String | Case status. |
+| O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime | String | Case created date time. |
 
 ### o365-sc-compliance-case-list
 
@@ -1263,23 +1277,24 @@ List different types of compliance cases in the Microsoft Purview compliance por
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | List cases by identity. | Optional | 
-| case_type | List cases by type. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. | Optional | 
-| limit | Limit returned cases list size. Default is 50. | Optional | 
+| identity | List cases by identity. | Optional |
+| case_type | List cases by type. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. | Optional |
+| limit | Limit returned cases list size. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.ComplianceCase.Name | String | Case name. | 
-| O365.SecurityAndCompliance.ComplianceCase.Status | String | Case status. | 
-| O365.SecurityAndCompliance.ComplianceCase.GUID | UUID | Case GUID. | 
-| O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime | String | Case created date time. | 
+| O365.SecurityAndCompliance.ComplianceCase.Name | String | Case name. |
+| O365.SecurityAndCompliance.ComplianceCase.Status | String | Case status. |
+| O365.SecurityAndCompliance.ComplianceCase.GUID | UUID | Case GUID. |
+| O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime | String | Case created date time. |
 
 ### o365-sc-compliance-case-delete
 
 ***
 Removes compliance cases from the Microsoft Purview compliance portal.
+
 #### Base Command
 
 `o365-sc-compliance-case-delete`
@@ -1288,11 +1303,12 @@ Removes compliance cases from the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | Delete case by identity. | Required | 
+| identity | Delete case by identity. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### o365-sc-case-hold-policy-create
 
 ***
@@ -1306,22 +1322,22 @@ Creates new case hold policies in the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Name of the policy to create. | Required | 
-| case | eDiscovery case, Case Name, Case Identity (GUID value). | Required | 
-| comment | Attach a comment to the case. | Optional | 
-| exchange_location | Mailbox or distribution group. | Optional | 
-| public_folder_location | Comma-separated list of public folders to include, or you can use the value "All" to include all. | Optional | 
-| share_point_location | SharePoint Online and OneDrive for Business sites to include. | Optional | 
-| enabled | Set hold policy as enabled or not. Possible values are: true, false. Default is true. | Optional | 
+| policy_name | Name of the policy to create. | Required |
+| case | eDiscovery case, Case Name, Case Identity (GUID value). | Required |
+| comment | Attach a comment to the case. | Optional |
+| exchange_location | Mailbox or distribution group. | Optional |
+| public_folder_location | Comma-separated list of public folders to include, or you can use the value "All" to include all. | Optional |
+| share_point_location | SharePoint Online and OneDrive for Business sites to include. | Optional |
+| enabled | Set hold policy as enabled or not. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Enabled | String | Is case hold policy enabled. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Enabled | String | Is case hold policy enabled. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. |
 
 ### o365-sc-case-hold-policy-get
 
@@ -1336,20 +1352,20 @@ View existing case hold policies in the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | Identify of the case hold policy to get. | Optional | 
-| case | Case of policy to get. Case name or case GUID. | Optional | 
-| distribution_detail | Whether to include distribution details or not. Possible values are: true, false. Default is true. | Optional | 
-| include_bindings | Whether to include bindings or not. Possible values are: true, false. Default is true. | Optional | 
+| identity | Identify of the case hold policy to get. | Optional |
+| case | Case of policy to get. Case name or case GUID. | Optional |
+| distribution_detail | Whether to include distribution details or not. Possible values are: true, false. Default is true. | Optional |
+| include_bindings | Whether to include bindings or not. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.GUID | String | Case hold policy GUID. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Status | String | Case hold policy status. | 
-| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.GUID | String | Case hold policy GUID. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Status | String | Case hold policy status. |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. |
 
 ### o365-sc-case-hold-policy-delete
 
@@ -1364,12 +1380,13 @@ Removes case hold policies from the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | Identify of the case hold policy to delete. | Required | 
-| force_delete | Whether to use force delete or not. Possible values are: true, false. Default is false. | Optional | 
+| identity | Identify of the case hold policy to delete. | Required |
+| force_delete | Whether to use force delete or not. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### o365-sc-case-hold-rule-create
 
 ***
@@ -1383,19 +1400,19 @@ Creates new case hold rules in the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_name | Create rule with the specified name. | Required | 
-| policy_name | Create rule for the specified policy. | Required | 
-| query | Query using Keyword Query Language (KQL). | Optional | 
-| comment | Attach a comment to the created rule. | Optional | 
-| is_disabled | Whether the rule is disabled or not. Possible values are: true, false. Default is false. | Optional | 
+| rule_name | Create rule with the specified name. | Required |
+| policy_name | Create rule for the specified policy. | Required |
+| query | Query using Keyword Query Language (KQL). | Optional |
+| comment | Attach a comment to the created rule. | Optional |
+| is_disabled | Whether the rule is disabled or not. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Status | String | Case hold policy status. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. |
+| O365.SecurityAndCompliance.CaseHoldRule.Status | String | Case hold policy status. |
+| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. |
 
 ### o365-sc-case-hold-rule-list
 
@@ -1410,18 +1427,18 @@ View case hold rules in the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identify | Get hold rule list by identity. | Optional | 
-| policy | Get hold rule list by policy. | Optional | 
-| limit | Limit the returned items list size. Default is 50. | Optional | 
+| identify | Get hold rule list by identity. | Optional |
+| policy | Get hold rule list by policy. | Optional |
+| limit | Limit the returned items list size. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. | 
-| O365.SecurityAndCompliance.CaseHoldRule.GUID | UUID | Case hold policy GUID. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Enabled | String | Whether case hold policy is enabled. | 
-| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. |
+| O365.SecurityAndCompliance.CaseHoldRule.GUID | UUID | Case hold policy GUID. |
+| O365.SecurityAndCompliance.CaseHoldRule.Enabled | String | Whether case hold policy is enabled. |
+| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. |
 
 ### o365-sc-case-hold-rule-delete
 
@@ -1436,20 +1453,22 @@ Removes case hold rules from the Microsoft Purview compliance portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | Delete rule by identity. | Optional | 
-| force_delete | Whether to use force delete or not. Possible values are: true, false. Default is false. | Optional | 
+| identity | Delete rule by identity. | Optional |
+| force_delete | Whether to use force delete or not. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ## Known Limitations
 
-* Security and compliance integrations do not support Security and compliance on-premise.
-* Each security and compliance command creates an IPS-Session (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
-* Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
-* Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
-* A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).
-* For more Microsoft known limitations see [Limits for eDiscovery search](https://docs.microsoft.com/en-us/microsoft-365/compliance/limits-for-content-search?view=o365-worldwide).
+- Security and compliance integrations do not support Security and compliance on-premise.
+- Each security and compliance command creates an IPS-Session (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
+- Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
+- Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
+- A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).
+- For more Microsoft known limitations see [Limits for eDiscovery search](https://docs.microsoft.com/en-us/microsoft-365/compliance/limits-for-content-search?view=o365-worldwide).
+
 ### o365-sc-case-hold-policy-set
 
 ***
@@ -1463,15 +1482,15 @@ Update inputs for case hold policies.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | Identity of the policy to update. | Required | 
-| add_exchange_locations | Exchange locations to add to the policy. | Optional | 
-| add_sharepoint_locations | Sharepoint locations to add to the policy. | Optional | 
-| add_public_locations | Public locations to add to the policy. | Optional | 
-| remove_exchange_locations | Exchange locations to remove from the policy. | Optional | 
-| remove_sharepoint_locations | Sharepoint locations to remove from the policy. | Optional | 
-| remove_public_locations | Public locations to remove from the policy. | Optional | 
-| comment | Add a comment to existing policy. | Optional | 
-| enabled | Enable or disable the policy. Possible values are: true, false. Default is true. | Optional | 
+| identity | Identity of the policy to update. | Required |
+| add_exchange_locations | Exchange locations to add to the policy. | Optional |
+| add_sharepoint_locations | Sharepoint locations to add to the policy. | Optional |
+| add_public_locations | Public locations to add to the policy. | Optional |
+| remove_exchange_locations | Exchange locations to remove from the policy. | Optional |
+| remove_sharepoint_locations | Sharepoint locations to remove from the policy. | Optional |
+| remove_public_locations | Public locations to remove from the policy. | Optional |
+| comment | Add a comment to existing policy. | Optional |
+| enabled | Enable or disable the policy. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 

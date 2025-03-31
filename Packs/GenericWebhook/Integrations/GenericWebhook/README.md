@@ -1,4 +1,4 @@
-The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration. 
+The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 
 The Generic Webhook integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
 
@@ -24,10 +24,12 @@ The Generic Webhook integration is a long-running integration. For more informat
      2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
 ## Set up Authentication
+
 The Generic Webhook integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant requires basic authentication. Running on an engine does not require basic authentication, but it is recommended.
 For Cortex XSOAR On-prem (6.x or 8) or when running on an engine, you can set up authentication using custom certificates. For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
 
-## Trigger the Webhook URL 
+## Trigger the Webhook URL
+
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
 For example, `ext-xsoar.mycompany.com`.
@@ -87,8 +89,8 @@ The response is an array containing an object with the created incident metadata
 - We recommend using the authorization header, as described below, to validate the requests sent from your app. If you do not use this header it might result in incident creation from unexpected requests.
 - To validate an incident request creation you can use the *Username/Password* integration parameters for one of the following:
   - Basic authentication
-  - Verification token given in a request header, by setting the username to `_header:<HEADER-NAME>` and the password to be the header value. 
-     
+  - Verification token given in a request header, by setting the username to `_header:<HEADER-NAME>` and the password to be the header value.
+
         For example, if the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
-    
+
 - If you are not using server rerouting as described above, you can configure an HTTPS server by providing a certificate and private key.

@@ -1,6 +1,6 @@
 Query Indicators of Compromise in AlienVault OTX.
-## Configure AlienVault OTX v2 in Cortex
 
+## Configure AlienVault OTX v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -14,49 +14,52 @@ Query Indicators of Compromise in AlienVault OTX.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Queries an IP address in AlienVault OTX.
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| ip | The IP address to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | The address of the IP. | 
-| IP.ASN | String | The autonomous system name for the IP address. For example, "AS8948". | 
-| IP.Geo.Country | String | The country where the IP address is located. | 
-| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
-| AlienVaultOTX.IP.Reputation | String | The reputation of the IP address. | 
-| AlienVaultOTX.IP.IP | String | IP address | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-
+| IP.Address | String | The address of the IP. |
+| IP.ASN | String | The autonomous system name for the IP address. For example, "AS8948". |
+| IP.Geo.Country | String | The country where the IP address is located. |
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. |
+| AlienVaultOTX.IP.Reputation | String | The reputation of the IP address. |
+| AlienVaultOTX.IP.IP | String | IP address |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| IP.Relationships.EntityA | string | The source of the relationship. |
+| IP.Relationships.EntityB | string | The destination of the relationship. |
+| IP.Relationships.Relationship | string | The name of the relationship. |
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```!ip ip=98.136.103.23```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -146,49 +149,50 @@ Queries an IP address in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for ips query
+>
 >|ASN|Address|Geo|Relationships|
 >|---|---|---|---|
 >| AS36647 YAHOO-GQ1 | 98.136.103.23 | Location: 37.751:-97.822<br/>Country: US | {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1140 - Deobfuscate/Decode Files or Information', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1040 - Network Sniffing', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1053 - Scheduled Task/Job', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1060 - Registry Run Keys / Startup Folder', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP', 'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'Attack Pattern'} |
 
-
 ### domain
+
 ***
 Queries a domain in AlienVault OTX.
-
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the domain is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| domain | The domain to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the domain is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The domain name. For example, "google.com". | 
-| AlienVaultOTX.Domain.Alexa | String | Alexa URL for the domain data. | 
-| AlienVaultOTX.Domain.Whois | String | Whois URL for the domain data. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| Domain.Relationships.EntityA | string | The source of the relationship. | 
-| Domain.Relationships.EntityB | string | The destination of the relationship. | 
-| Domain.Relationships.Relationship | string | The name of the relationship. | 
-| Domain.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-
+| Domain.Name | String | The domain name. For example, "google.com". |
+| AlienVaultOTX.Domain.Alexa | String | Alexa URL for the domain data. |
+| AlienVaultOTX.Domain.Whois | String | Whois URL for the domain data. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Domain.Relationships.EntityA | string | The source of the relationship. |
+| Domain.Relationships.EntityB | string | The destination of the relationship. |
+| Domain.Relationships.Relationship | string | The name of the relationship. |
+| Domain.Relationships.EntityAType | string | The type of the source of the relationship. |
+| Domain.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```!domain domain=ahnlab.myfw.us```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -244,44 +248,45 @@ Queries a domain in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for Domain query
+>
 >|Alexa|Name|Whois|
 >|---|---|---|
 >| http://www.alexa.com/siteinfo/ahnlab.myfw.us | ahnlab.myfw.us | http://whois.domaintools.com/ahnlab.myfw.us |
 
-
 ### alienvault-search-ipv6
+
 ***
 Queries IPv6 in AlienVault OTX.
-
 
 #### Base Command
 
 `alienvault-search-ipv6`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| ip | The IP address to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | The IP address. | 
-| IP.ASN | String | The autonomous system name for the IP address. For example, "AS8948". | 
-| IP.AlienVaultOTX.Reputation | String | The IP reputation in AlienVault OTX. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-
+| IP.Address | String | The IP address. |
+| IP.ASN | String | The autonomous system name for the IP address. For example, "AS8948". |
+| IP.AlienVaultOTX.Reputation | String | The IP reputation in AlienVault OTX. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 #### Command Example
+
 ```!alienvault-search-ipv6 ip=2001:4860:4860::8888```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -371,45 +376,46 @@ Queries IPv6 in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for ips query
+>
 >|ASN|Address|Geo|Relationships|
 >|---|---|---|---|
 >| AS15169 GOOGLE | 2001:4860:4860::8888 | Location: 37.751:-97.822<br/>Country: US | {'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.004 - DNS', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.001 - Web Protocols', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.003 - Mail Protocols', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1071.002 - File Transfer Protocols', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'TA0011 - Command and Control', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1048 - Exfiltration Over Alternative Protocol', 'EntityBType': 'Attack Pattern'},<br/>{'Relationship': 'indicator-of', 'EntityA': '2001:4860:4860::8888', 'EntityAType': 'IPv6', 'EntityB': 'T1041 - Exfiltration Over C2 Channel', 'EntityBType': 'Attack Pattern'} |
 
-
 ### alienvault-search-hostname
+
 ***
 Searches for a host name in AlienVault OTX.
-
 
 #### Base Command
 
 `alienvault-search-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The host name to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the host name is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| hostname | The host name to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the host name is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | The hostname that is mapped to the endpoint. | 
-| AlienVaultOTX.Endpoint.Hostname | String | The hostname that is mapped to the endpoint. | 
-| AlienVaultOTX.Endpoint.Alexa | String | The Alexa URL endpoint. | 
-| AlienVaultOTX.Endpoint.Whois | String | The Whois URL endpoint. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-
+| Endpoint.Hostname | String | The hostname that is mapped to the endpoint. |
+| AlienVaultOTX.Endpoint.Hostname | String | The hostname that is mapped to the endpoint. |
+| AlienVaultOTX.Endpoint.Alexa | String | The Alexa URL endpoint. |
+| AlienVaultOTX.Endpoint.Whois | String | The Whois URL endpoint. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Indicator | String | The indicator that was tested. |
 
 #### Command Example
+
 ```!alienvault-search-hostname hostname=demisto.com```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -435,53 +441,54 @@ Searches for a host name in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for Hostname query
+>
 >|Alexa|Hostname|Whois|
 >|---|---|---|
 >| http://www.alexa.com/siteinfo/demisto.com | demisto.com | http://whois.domaintools.com/demisto.com |
 
-
 ### file
+
 ***
 Query a file in AlienVault OTX.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The file hash to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the file is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| file | The file hash to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the file is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Malicious.PulseIDs | String | IDs of pulses which are marked as malicious. | 
-| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). | 
-| File.Relationships.EntityA | string | The source of the relationship. | 
-| File.Relationships.EntityB | string | The destination of the relationship. | 
-| File.Relationships.Relationship | string | The name of the relationship. | 
-| File.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| File.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.PulseIDs | String | IDs of pulses which are marked as malicious. |
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
+| File.Size | Number | The size of the file in bytes. |
+| File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). |
+| File.Relationships.EntityA | string | The source of the relationship. |
+| File.Relationships.EntityB | string | The destination of the relationship. |
+| File.Relationships.Relationship | string | The name of the relationship. |
+| File.Relationships.EntityAType | string | The type of the source of the relationship. |
+| File.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 #### Command Example
+
 ```!file file=6c5360d41bd2b14b1565f5b18e5c203cf512e493```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -508,46 +515,47 @@ Query a file in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for File hash query
+>
 >|MD5|Malicious|SHA1|SHA256|SSDeep|Size|Type|
 >|---|---|---|---|---|---|---|
 >| 2eb14920c75d5e73264f77cfa273ad2c | PulseIDs:  | 6c5360d41bd2b14b1565f5b18e5c203cf512e493 | 4cf9322c49adebf63311a599dc225bbcbf16a253eca59bbe1a02e4ae1d824412 |  | 437760 | PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows |
 
-
 ### alienvault-search-cve
+
 ***
 Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
-
 
 #### Base Command
 
 `alienvault-search-cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | The CVE to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the CVE is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| cve_id | The CVE to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the CVE is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE. For example, "CVE-2015-1653". | 
-| CVE.CVSS | String | The CVSS of the CVE. For example, "10.0". | 
-| CVE.Published | String | The timestamp of when the CVE was published. | 
-| CVE.Modified | String | The timestamp of when the CVE was last modified. | 
-| CVE.Description | String | A description of the CVE. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-
+| CVE.ID | String | The ID of the CVE. For example, "CVE-2015-1653". |
+| CVE.CVSS | String | The CVSS of the CVE. For example, "10.0". |
+| CVE.Published | String | The timestamp of when the CVE was published. |
+| CVE.Modified | String | The timestamp of when the CVE was last modified. |
+| CVE.Description | String | A description of the CVE. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Indicator | String | The indicator that was tested. |
 
 #### Command Example
+
 ```!alienvault-search-cve cve_id=CVE-2014-0160```
 
 #### Context Example
+
 ```json
 {
     "CVE": {
@@ -570,38 +578,39 @@ Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for Hostname query
+>
 >|CVSS|Description|ID|Modified|Published|
 >|---|---|---|---|---|
 >| 5.0 | The (1) TLS and (2) DTLS implementations in OpenSSL 1.0.1 before 1.0.1g do not properly handle Heartbeat Extension packets, which allows remote attackers to obtain sensitive information from process memory via crafted packets that trigger a buffer over-read, as demonstrated by reading private keys, related to d1_both.c and t1_lib.c, aka the Heartbleed bug. | CVE-2014-0160 | 2020-07-28T17:11:00 | 2014-04-07T22:55:00 |
 
-
 ### alienvault-get-related-urls-by-indicator
+
 ***
 Returns related URLs by indicator.
-
 
 #### Base Command
 
 `alienvault-get-related-urls-by-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname", or "url". Possible values are: IPv4, IPv6, domain, hostname, url. | Required | 
-| indicator | The indicator for which to search related URLs. | Required | 
-
+| indicator_type | The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname", or "url". Possible values are: IPv4, IPv6, domain, hostname, url. | Required |
+| indicator | The indicator for which to search related URLs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlienVaultOTX.URL.Data | Unknown | The path of the related URLs. | 
-
+| AlienVaultOTX.URL.Data | Unknown | The path of the related URLs. |
 
 #### Command Example
+
 ```!alienvault-get-related-urls-by-indicator indicator=8.8.8.8 indicator_type=IPv4```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -617,38 +626,39 @@ Returns related URLs by indicator.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Related url list to queried indicator
+>
 >|Data|
 >|---|
 >| https://test.com |
 
-
 ### alienvault-get-related-hashes-by-indicator
+
 ***
 Returns related hashes by indicator.
-
 
 #### Base Command
 
 `alienvault-get-related-hashes-by-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The indicator for which to search for related hashes. | Optional | 
-| indicator_type | The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname". Possible values are: IPv4, IPv6, domain, hostname. | Optional | 
-
+| indicator | The indicator for which to search for related hashes. | Optional |
+| indicator_type | The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname". Possible values are: IPv4, IPv6, domain, hostname. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlienVaultOTX.File.Hash | Unknown | The path of the url. | 
-
+| AlienVaultOTX.File.Hash | Unknown | The path of the url. |
 
 #### Command Example
+
 ```!alienvault-get-related-hashes-by-indicator indicator=8.8.8.8 indicator_type=IPv4```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -685,41 +695,42 @@ Returns related hashes by indicator.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Related malware list to queried indicator
+>
 >**No entries.**
 
-
 ### alienvault-get-passive-dns-data-by-indicator
+
 ***
 Returns passive DNS records by indicator.
-
 
 #### Base Command
 
 `alienvault-get-passive-dns-data-by-indicator`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname". Possible values are: IPv4, IPv6, domain, hostname. | Required | 
-| indicator | The indicator for which to search URLs. | Required | 
-
+| indicator_type | The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname". Possible values are: IPv4, IPv6, domain, hostname. | Required |
+| indicator | The indicator for which to search URLs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlienVaultOTX.PassiveDNS.Hostname | String | The domain value. | 
-| AlienVaultOTX.PassiveDNS.IP | String | The IP passive DNS. | 
-| AlienVaultOTX.PassiveDNS.Domain | String | The domain value. | 
-| AlienVaultOTX.PassiveDNS.Type | String | The asset type. | 
-| AlienVaultOTX.PassiveDNS.FirstSeen | Date | The date first seen. | 
-| AlienVaultOTX.PassiveDNS.LastSeen | Date | The date last seen. | 
-
+| AlienVaultOTX.PassiveDNS.Hostname | String | The domain value. |
+| AlienVaultOTX.PassiveDNS.IP | String | The IP passive DNS. |
+| AlienVaultOTX.PassiveDNS.Domain | String | The domain value. |
+| AlienVaultOTX.PassiveDNS.Type | String | The asset type. |
+| AlienVaultOTX.PassiveDNS.FirstSeen | Date | The date first seen. |
+| AlienVaultOTX.PassiveDNS.LastSeen | Date | The date last seen. |
 
 #### Command Example
+
 ```!alienvault-get-passive-dns-data-by-indicator indicator=8.8.8.8 indicator_type=IPv4```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -746,47 +757,48 @@ Returns passive DNS records by indicator.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Related passive dns list to queried indicator
+>
 >|FirstSeen|Hostname|IP|LastSeen|Type|
 >|---|---|---|---|---|
 >| 2021-04-27T09:48:48 | www.heyheyitskateforay.com | 8.8.8.8 | 2021-04-27T09:49:05 | hostname |
 >| 2021-04-27T09:48:30 | www.djjimmykennedy.com | 8.8.8.8 | 2021-04-27T09:49:11 | hostname |
 
-
 ### alienvault-search-pulses
+
 ***
 Searches for pulses in AlienVault OTX.
-
 
 #### Base Command
 
 `alienvault-search-pulses`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | The page of the pulse to retrieve. | Required | 
-
+| page | The page of the pulse to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlienVaultOTX.Pulses.ID | String | The ID of the pulse. | 
-| AlienVaultOTX.Pulses.Author.ID | String | The ID of the Author. | 
-| AlienVaultOTX.Pulses.Author.Username | String | The username of the Author. | 
-| AlienVaultOTX.Pulses.Count | String | The pulse count. | 
-| AlienVaultOTX.Pulses.Modified | Date | The date of the pulse modification. | 
-| AlienVaultOTX.Pulses.Name | String | The name of the pulse. | 
-| AlienVaultOTX.Pulses.Source | String | The source of the Pulse. | 
-| AlienVaultOTX.Pulses.SubscriberCount | String | The count of the pulse subscriber. | 
-| AlienVaultOTX.Pulses.Tags | String | The tags of the pulse. | 
-| AlienVaultOTX.Pulses.Description | String | The description of the pulse. | 
-
+| AlienVaultOTX.Pulses.ID | String | The ID of the pulse. |
+| AlienVaultOTX.Pulses.Author.ID | String | The ID of the Author. |
+| AlienVaultOTX.Pulses.Author.Username | String | The username of the Author. |
+| AlienVaultOTX.Pulses.Count | String | The pulse count. |
+| AlienVaultOTX.Pulses.Modified | Date | The date of the pulse modification. |
+| AlienVaultOTX.Pulses.Name | String | The name of the pulse. |
+| AlienVaultOTX.Pulses.Source | String | The source of the Pulse. |
+| AlienVaultOTX.Pulses.SubscriberCount | String | The count of the pulse subscriber. |
+| AlienVaultOTX.Pulses.Tags | String | The tags of the pulse. |
+| AlienVaultOTX.Pulses.Description | String | The description of the pulse. |
 
 #### Command Example
+
 ```!alienvault-search-pulses page=1```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -865,6 +877,7 @@ Searches for pulses in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - pulse page 1
+>
 >|Author|Count|ID|Modified|Name|Source|SubscriberCount|
 >|---|---|---|---|---|---|---|
 >| ID: 2<br/>Username: AlienVault | 28 | 546ce8eb11d40838dc6e43f1 | 1273 days ago  | PoS Scammers Toolbox | web | 141735 |
@@ -873,39 +886,39 @@ Searches for pulses in AlienVault OTX.
 >| ID: 2<br/>Username: AlienVault | 23 | 546fc7bf11d4083bc021c37f | 1341 days ago  | Operation Double Tap | web | 141711 |
 >| ID: 2<br/>Username: AlienVault | 60 | 5473709d11d4083bc021c387 | 824 days ago  | Regin | web | 141690 |
 
-
 ### alienvault-get-pulse-details
+
 ***
 Returns pulse details.
-
 
 #### Base Command
 
 `alienvault-get-pulse-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pulse_id | The ID of the pulse. | Required | 
-
+| pulse_id | The ID of the pulse. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlienVaultOTX.Pulses.Created | Date | The date the pulse was created. | 
-| AlienVaultOTX.Pulses.Author.Username | String | The author username of the pulse. | 
-| AlienVaultOTX.Pulses.ID | String | The ID of the pulse. | 
-| AlienVaultOTX.Pulses.Name | String | The name of the pulse. | 
-| AlienVaultOTX.Pulses.Tags | String | The tags of the pulse. | 
-| AlienVaultOTX.Pulses.TargetedCountries | String | The targeted countries of the pulse. | 
-| AlienVaultOTX.Pulses.Description | String | The description of the pulse. | 
-
+| AlienVaultOTX.Pulses.Created | Date | The date the pulse was created. |
+| AlienVaultOTX.Pulses.Author.Username | String | The author username of the pulse. |
+| AlienVaultOTX.Pulses.ID | String | The ID of the pulse. |
+| AlienVaultOTX.Pulses.Name | String | The name of the pulse. |
+| AlienVaultOTX.Pulses.Tags | String | The tags of the pulse. |
+| AlienVaultOTX.Pulses.TargetedCountries | String | The targeted countries of the pulse. |
+| AlienVaultOTX.Pulses.Description | String | The description of the pulse. |
 
 #### Command Example
+
 ```!alienvault-get-pulse-details pulse_id=57204e9b3c4c3e015d93cb12```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -936,52 +949,53 @@ Returns pulse details.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - pulse id details
+>
 >|Author|Created|Description|ID|Name|Tags|TargetedCountries|
 >|---|---|---|---|---|---|---|
 >| Username: AlienVault | 2016-04-27T05:31:06.941000 | The infamous Remote Access Trojan (RAT) Poison Ivy (hereafter referred to as PIVY) has resurfaced recently, and exhibits some new behaviors. PIVY has been observed targeting a number of Asian countries for various purposes over the past year. Palo Alto Networks’ Unit 42 recently blogged about a new Poison Ivy variant targeting Hong Kong activists dubbed SPIVY that uses DLL sideloading and operates quite differently from a variant recently observed by ASERT that has been active for at least the past 12 months. | 57204e9b3c4c3e015d93cb12 | Poison Ivy Activity Targeting Myanmar, Asian Countries | rat,<br/>remote access trojan,<br/>poison ivy,<br/>pivy,<br/>Myanmar,<br/>asia,<br/>Hong Kong,<br/>arbornetworks |  |
 
-
 ### url
+
 ***
 Queries a URL in AlienVault OTX.
-
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to query. | Required | 
-| threshold | If the number of pulses is bigger than the threshold, the URL is considered as malicious. If threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional | 
-
+| url | The URL to query. | Required |
+| threshold | If the number of pulses is bigger than the threshold, the URL is considered as malicious. If threshold is not specified, the default indicator threshold is used, which is configured in the instance settings. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | The URL. | 
-| AlienVaultOTX.URL.Hostname | String | The host name of the URL. | 
-| AlienVaultOTX.URL.Domain | String | The domain of the URL. | 
-| AlienVaultOTX.URL.Alexa | String | The domain data for the Alexa URL. | 
-| AlienVaultOTX.URL.Url | String | Url | 
-| AlienVaultOTX.URL.Whois | String | The Whois URL for domain data. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| URL.Relationships.EntityA | string | The source of the relationship. | 
-| URL.Relationships.EntityB | string | The destination of the relationship. | 
-| URL.Relationships.Relationship | string | The name of the relationship. | 
-| URL.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| URL.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-
+| URL.Data | String | The URL. |
+| AlienVaultOTX.URL.Hostname | String | The host name of the URL. |
+| AlienVaultOTX.URL.Domain | String | The domain of the URL. |
+| AlienVaultOTX.URL.Alexa | String | The domain data for the Alexa URL. |
+| AlienVaultOTX.URL.Url | String | Url |
+| AlienVaultOTX.URL.Whois | String | The Whois URL for domain data. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| URL.Relationships.EntityA | string | The source of the relationship. |
+| URL.Relationships.EntityB | string | The destination of the relationship. |
+| URL.Relationships.Relationship | string | The name of the relationship. |
+| URL.Relationships.EntityAType | string | The type of the source of the relationship. |
+| URL.Relationships.EntityBType | string | The type of the destination of the relationship. |
 
 #### Command Example
+
 ```!url url="http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list"```
 
 #### Context Example
+
 ```json
 {
     "AlienVaultOTX": {
@@ -1018,21 +1032,23 @@ Queries a URL in AlienVault OTX.
 #### Human Readable Output
 
 >### AlienVault OTX v2 - Results for url query
+>
 >|Alexa|Domain|Hostname|Url|Whois|
 >|---|---|---|---|---|
 >| http://www.alexa.com/siteinfo/fotoidea.com | fotoidea.com | www.fotoidea.com | http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list | http://whois.domaintools.com/fotoidea.com |
 
-
 ## Additional Information
- - AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
 
+- AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
 
 ## Dbot score calculation method
+
 In case AlienVault OTX API response contains `accepted` under the `false_positive.assessment` key, the DbotScore will be set to **Good**.
 
 Otherwise, if the response includes one validation, DbotScore will be set to **SUSPICIOUS**, if there's no validation in the response then the DbotScore will be set by the `pulse_info` length in the following manner:
-   - **Bad** - If the length of is greater or equal to the default threshold given by the user.
-   - **SUSPICIOUS** - If the length is shorter than the default threshold.
-   - **None** - If the length is zero.
+
+- **Bad** - If the length of is greater or equal to the default threshold given by the user.
+- **SUSPICIOUS** - If the length is shorter than the default threshold.
+- **None** - If the length is zero.
 
 In any other case, the DbotScore will be set to **Good**.

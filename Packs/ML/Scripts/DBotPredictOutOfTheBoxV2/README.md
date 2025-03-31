@@ -1,6 +1,7 @@
 Predict phishing incidents using the out-of-the-box pre-trained model.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Predict phishing incidents using the out-of-the-box pre-trained model.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,6 +28,7 @@ Predict phishing incidents using the out-of-the-box pre-trained model.
 | setIncidentFields | Whether to set Cortex XSOAR out-of-the-box DBot fields. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

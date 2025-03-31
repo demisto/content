@@ -3,7 +3,6 @@ This integration was integrated and tested with version 13.11 of Cyberwatch.
 
 ## Configure Cyberwatch in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Master scanner URL (e.g. https://192.168.0.1) | The Cyberwatch master scanner URL. | True |
@@ -11,7 +10,6 @@ This integration was integrated and tested with version 13.11 of Cyberwatch.
 | API Secret key | See the Cyberwatch documentation for instructions to generate the API access and secret keys. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -31,33 +29,36 @@ Get a list of CVEs from Cyberwatch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exploit_code_maturity[] | Filter CVE announcements with exploit_code_maturity. Available values: undefined, unproven, proof_of_concept, functional, high. Possible values are: undefined, unproven, proof_of_concept, functional, high. | Optional | 
-| access_vector[] | Filter CVE announcements with access_vector. Available values: access_vector_physical, access_vector_local, access_vector_adjacent, access_vector_network. Possible values are: access_vector_physical, access_vector_local, access_vector_adjacent, access_vector_network. | Optional | 
-| active | Filter CVE announcements that are active or not (true or false). Possible values are: true, false. | Optional | 
-| level | Filter CVE announcements based on their level. Available values: level_unknown, level_none, level_low, level_medium, level_high, level_critical. Possible values are: level_unknown, level_none, level_low, level_medium, level_high, level_critical. | Optional | 
-| ignored | Filter CVE announcements that are ignored or not  (true or false). Possible values are: true, false. | Optional | 
-| prioritized | Filter CVE announcements that are prioritized or not (true or false). Possible values are: true, false. | Optional | 
-| technology_product | Filter CVE announcements with technology_product (CPE product field). | Optional | 
-| technology_vendor | Filter CVE announcements with technology_vendor (CPE vendor field). | Optional | 
-| groups[] | Filter CVE announcements with a list of groups. Multiple groups can be provided with comma, e.g. groups[]=GroupA,GroupB. | Optional | 
-| page | Get a specific CVE announcements page. If not specified, get all CVEs. | Optional | 
-| per_page | Specify the number of CVE per page. Default value 500. | Optional | 
-| hard_limit | Specify the maximum number of results. This is useful to avoid memory issues on Cortex. Default value is 2000. | Optional | 
+| exploit_code_maturity[] | Filter CVE announcements with exploit_code_maturity. Available values: undefined, unproven, proof_of_concept, functional, high. Possible values are: undefined, unproven, proof_of_concept, functional, high. | Optional |
+| access_vector[] | Filter CVE announcements with access_vector. Available values: access_vector_physical, access_vector_local, access_vector_adjacent, access_vector_network. Possible values are: access_vector_physical, access_vector_local, access_vector_adjacent, access_vector_network. | Optional |
+| active | Filter CVE announcements that are active or not (true or false). Possible values are: true, false. | Optional |
+| level | Filter CVE announcements based on their level. Available values: level_unknown, level_none, level_low, level_medium, level_high, level_critical. Possible values are: level_unknown, level_none, level_low, level_medium, level_high, level_critical. | Optional |
+| ignored | Filter CVE announcements that are ignored or not  (true or false). Possible values are: true, false. | Optional |
+| prioritized | Filter CVE announcements that are prioritized or not (true or false). Possible values are: true, false. | Optional |
+| technology_product | Filter CVE announcements with technology_product (CPE product field). | Optional |
+| technology_vendor | Filter CVE announcements with technology_vendor (CPE vendor field). | Optional |
+| groups[] | Filter CVE announcements with a list of groups. Multiple groups can be provided with comma, e.g. groups[]=GroupA,GroupB. | Optional |
+| page | Get a specific CVE announcements page. If not specified, get all CVEs. | Optional |
+| per_page | Specify the number of CVE per page. Default value 500. | Optional |
+| hard_limit | Specify the maximum number of results. This is useful to avoid memory issues on Cortex. Default value is 2000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.CVE.cve_code | string | CVE reference | 
-| Cyberwatch.CVE.score | number | CVE score | 
-| Cyberwatch.CVE.exploitable | boolean | CVE exploitability | 
-| Cyberwatch.CVE.epss | number | CVE EPSS | 
-| Cyberwatch.CVE.published | date | CVE publication date | 
-| Cyberwatch.CVE.last_modified | date | CVE last modification date | 
+| Cyberwatch.CVE.cve_code | string | CVE reference |
+| Cyberwatch.CVE.score | number | CVE score |
+| Cyberwatch.CVE.exploitable | boolean | CVE exploitability |
+| Cyberwatch.CVE.epss | number | CVE EPSS |
+| Cyberwatch.CVE.published | date | CVE publication date |
+| Cyberwatch.CVE.last_modified | date | CVE last modification date |
 
 #### Command example
+
 ```!cyberwatch-list-cves page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -236,6 +237,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2014-7552 | The Zombie Diary (aka com.ezjoy.feelingtouch.zombiediary)... | 2014-10-20T08:55:10 | 2014-11-14T13:13:46 | level_medium | 5.4 | 0.00049 |  |
@@ -244,10 +246,12 @@ Get a list of CVEs from Cyberwatch.
 >| CVE-2014-7387 | The ACC Advocacy Action (aka com.acc.app.android.ui) application 2.0... | 2014-10-19T08:55:15 | 2014-11-14T13:10:30 | level_medium | 5.4 | 0.00049 |  |
 >| CVE-2013-4319 | pbs_mom in Terascale Open-Source Resource and Queue Manager (aka TORQUE Resource Manager)... | 2013-10-11T20:55:40 | 2013-10-15T14:05:34 | level_critical | 9.0 | 0.0026 |  |
 
-
 #### Command example
+
 ```!cyberwatch-list-cves prioritized=true page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -521,6 +525,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2020-15683 | Mozilla developers and community members... | 2020-10-22T19:15:13 | 2022-04-28T16:24:03 | level_critical | 9.8 | 0.01033 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
@@ -529,10 +534,12 @@ Get a list of CVEs from Cyberwatch.
 >| CVE-2020-26950 | In certain circumstances, the MCallGetProperty opcode can be emitted... | 2020-12-09T00:15:12 | 2022-04-08T09:28:19 | level_high | 8.8 | 0.92391 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_required<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
 >| CVE-2021-30547 | Out of bounds write in ANGLE in Google Chrome prior... | 2021-06-15T20:15:08 | 2023-11-07T02:33:06 | level_high | 8.8 | 0.00829 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_required<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
 
-
 #### Command example
+
 ```!cyberwatch-list-cves exploit_code_maturity[]=functional,high access_vector[]=access_vector_physical,access_vector_network active=true level=level_critical ignored=false page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -772,6 +779,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2018-13382 | An Improper Authorization vulnerability... | 2019-06-04T19:29:00 | 2021-06-03T09:15:08 | level_critical | 9.1 | 0.89131 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_none |
@@ -780,10 +788,12 @@ Get a list of CVEs from Cyberwatch.
 >| CVE-2023-32412 | A use-after-free issue was addressed with improved... | 2023-06-23T16:15:13 | 2023-07-27T02:15:34 | level_critical | 9.8 | 0.02044 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
 >| CVE-2024-21762 | A out-of-bounds write in Fortinet FortiOS versions 7.4.0... | 2024-02-09T08:15:08 | 2024-02-13T17:21:14 | level_critical | 9.8 | 0.01842 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
 
-
 #### Command example
+
 ```!cyberwatch-list-cves page=1 per_page=5 groups[]=ENV_PRODUCTION,Cloud active=true ignored=false prioritized=true```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1069,6 +1079,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2021-26411 | Internet Explorer Memory Corruption Vulnerability | 2021-03-11T15:15:13 | 2023-12-29T16:15:59 | level_high | 8.8 | 0.04096 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_required<br/>***scope***: scope_changed<br/>***confidentiality_impact***: confidentiality_impact_low<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_low |
@@ -1077,10 +1088,12 @@ Get a list of CVEs from Cyberwatch.
 >| CVE-2021-26894 | Windows DNS Server Remote Code Execution Vulnerability | 2021-03-11T15:15:16 | 2023-12-29T19:15:56 | level_critical | 9.8 | 0.04652 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
 >| CVE-2021-26895 | Windows DNS Server Remote Code Execution Vulnerability | 2021-03-11T15:15:16 | 2023-12-29T19:15:56 | level_critical | 9.8 | 0.04652 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high |
 
-
 #### Command example
+
 ```!cyberwatch-list-cves exploit_code_maturity[]=high,functional technology_vendor=openbsd technology_product=openssh page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1265,6 +1278,7 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2012-0814 | The auth_parse_options function in auth-options... | 2012-01-27T18:55:01 | 2023-11-07T01:10:02 | level_low | 3.5 | 0.00285 |  |
@@ -1273,10 +1287,12 @@ Get a list of CVEs from Cyberwatch.
 >| CVE-2008-3259 | OpenSSH before 5.1 sets the SO_REUSEADDR socket... | 2008-07-22T14:41:00 | 2017-08-07T23:31:43 | level_low | 1.2 | 0.00042 |  |
 >| CVE-2007-2243 | OpenSSH 4.6 and earlier, when ChallengeResponseAuthentication is enabled... | 2007-04-25T14:19:00 | 2017-07-28T23:31:19 | level_medium | 5.0 | 0.00721 |  |
 
-
 #### Command example
+
 ```!cyberwatch-list-cves exploit_code_maturity[]=high,functional technology_vendor=openbsd technology_product=openssh page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1321,10 +1337,10 @@ Get a list of CVEs from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVEs
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|
 >|---|---|---|---|---|---|---|---|
 >| CVE-2014-7552 | The Zombie Diary... | 2014-10-20T08:55:10 | 2014-11-14T13:13:46 | level_medium | 5.4 | 0.00049 |  |
-
 
 ### cyberwatch-fetch-cve
 
@@ -1339,22 +1355,25 @@ Get all details for a CVE from Cyberwatch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_code | The CVE number to fetch. | Required | 
+| cve_code | The CVE number to fetch. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.CVE.cve_code | string | CVE reference | 
-| Cyberwatch.CVE.score | number | CVE score | 
-| Cyberwatch.CVE.exploitable | boolean | CVE exploitability | 
-| Cyberwatch.CVE.epss | number | CVE EPSS | 
-| Cyberwatch.CVE.published | date | CVE publication date | 
-| Cyberwatch.CVE.last_modified | date | CVE last modification date | 
+| Cyberwatch.CVE.cve_code | string | CVE reference |
+| Cyberwatch.CVE.score | number | CVE score |
+| Cyberwatch.CVE.exploitable | boolean | CVE exploitability |
+| Cyberwatch.CVE.epss | number | CVE EPSS |
+| Cyberwatch.CVE.published | date | CVE publication date |
+| Cyberwatch.CVE.last_modified | date | CVE last modification date |
 
 #### Command example
+
 ```!cyberwatch-fetch-cve cve_code=CVE-2024-21413```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1533,10 +1552,10 @@ Get all details for a CVE from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch CVE
+>
 >|cve_code|content|published|last_modified|level|score|epss|cvss_v3|servers_count|security_announcements_count|
 >|---|---|---|---|---|---|---|---|---|---|
 >| CVE-2024-21413 | Microsoft Outlook Remote Code Execution Vulnerability | 2024-02-13T17:16:00 | 2024-05-28T22:15:34 | level_critical | 9.8 | 0.00586 | ***access_vector***: access_vector_network<br/>***access_complexity***: access_complexity_low<br/>***privileges_required***: privileges_required_none<br/>***user_interaction***: user_interaction_none<br/>***scope***: scope_unchanged<br/>***confidentiality_impact***: confidentiality_impact_high<br/>***integrity_impact***: integrity_impact_high<br/>***availability_impact***: availability_impact_high | 2 | 2 |
-
 
 ### cyberwatch-list-assets
 
@@ -1551,35 +1570,38 @@ Get a list of assets scanned by Cyberwatch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| environment_id | Filter assets by environment (criticality) ID. | Optional | 
-| reboot_required | Filter assets that require a reboot (true or false). Possible values are: true, false. | Optional | 
-| os | Filter assets by OS (must use keys as mentioned on &lt;URL_SCANNER&gt;/cbw_assets/os). | Optional | 
-| group_id | Filter assets by group ID. | Optional | 
-| hostname | Filter assets by hostname. | Optional | 
-| address | Filter assets by IP address. | Optional | 
-| category | Filter assets by category. Available values : no_category, server, desktop, hypervisor, network_device, network_target_or_website, docker_image, industrial_device, cloud, mobile. Possible values are: no_category, server, desktop, hypervisor, network_device, network_target_or_website, docker_image, industrial_device, cloud, mobile. | Optional | 
-| communication_failed | Filter assets with communication failed (true or false). Possible values are: true, false. | Optional | 
-| page | Get a specific asset page. If not specified, get all assets. | Optional | 
-| per_page | Specify the number of assets per page. Default value 500. | Optional | 
+| environment_id | Filter assets by environment (criticality) ID. | Optional |
+| reboot_required | Filter assets that require a reboot (true or false). Possible values are: true, false. | Optional |
+| os | Filter assets by OS (must use keys as mentioned on &lt;URL_SCANNER&gt;/cbw_assets/os). | Optional |
+| group_id | Filter assets by group ID. | Optional |
+| hostname | Filter assets by hostname. | Optional |
+| address | Filter assets by IP address. | Optional |
+| category | Filter assets by category. Available values : no_category, server, desktop, hypervisor, network_device, network_target_or_website, docker_image, industrial_device, cloud, mobile. Possible values are: no_category, server, desktop, hypervisor, network_device, network_target_or_website, docker_image, industrial_device, cloud, mobile. | Optional |
+| communication_failed | Filter assets with communication failed (true or false). Possible values are: true, false. | Optional |
+| page | Get a specific asset page. If not specified, get all assets. | Optional |
+| per_page | Specify the number of assets per page. Default value 500. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.Asset.id | number | Asset ID | 
-| Cyberwatch.Asset.hostname | string | Asset hostname | 
-| Cyberwatch.Asset.description | string | Asset description | 
-| Cyberwatch.Asset.created_at | date | Asset creation date | 
-| Cyberwatch.Asset.last_communication | date | Asset last communication date | 
-| Cyberwatch.Asset.analyzed_at | date | Asset last analysis date | 
-| Cyberwatch.Asset.cve_announcements_count | number | Number of active CVEs on the asset | 
-| Cyberwatch.Asset.updates_count | number | Number of recommended security updates on the asset | 
-| Cyberwatch.Asset.prioritized_cve_announcements_count | number | Number of prioritized CVEs on the asset | 
-| Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement | 
+| Cyberwatch.Asset.id | number | Asset ID |
+| Cyberwatch.Asset.hostname | string | Asset hostname |
+| Cyberwatch.Asset.description | string | Asset description |
+| Cyberwatch.Asset.created_at | date | Asset creation date |
+| Cyberwatch.Asset.last_communication | date | Asset last communication date |
+| Cyberwatch.Asset.analyzed_at | date | Asset last analysis date |
+| Cyberwatch.Asset.cve_announcements_count | number | Number of active CVEs on the asset |
+| Cyberwatch.Asset.updates_count | number | Number of recommended security updates on the asset |
+| Cyberwatch.Asset.prioritized_cve_announcements_count | number | Number of prioritized CVEs on the asset |
+| Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement |
 
 #### Command example
+
 ```!cyberwatch-list-assets page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1817,6 +1839,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 912 | ip-192-168-0-214 | None | server | 2020-11-10T15:36:29 | Ubuntu 14.04 LTS | High | ***values***: ENV_PRODUCTION, Sentinelo, auditeur, APP_Apache, LINUX  | 0 | 0 | 0 | ***values***:  |
@@ -1825,10 +1848,12 @@ Get a list of assets scanned by Cyberwatch.
 >| 1187 | ip-192-168-0-39 | True | server | 2019-02-11T09:15:01 | Ubuntu 18.04 LTS | Low | ***values***: ENV_PRODUCTION, LINUX  | 1167 | 9 | 217 | ***values***:  |
 >| 1188 | MacBook-Pro.local | False | desktop | 2019-05-16T14:29:20 | Mac OS X | Low | ***values***: Direction_Comm | 3966 | 86 | 19 | ***values***:  |
 
-
 #### Command example
+
 ```!cyberwatch-list-assets environment_id=27 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -1932,15 +1957,18 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1548 | Siemens Rapidlab 1200 | None | industrial_device | 2022-10-19T09:50:02 | Siemens | Actif isolé critique | ***values***: Sante | 2 | 0 | 1 | ***values***:  |
 >| 1577 | WIN-09PACDLD | False | desktop | 2022-12-08T14:26:31 | Windows 10 1809 | Actif isolé critique | ***values***:  | 1038 | 44 | 2 | ***values***:  |
 
-
 #### Command example
+
 ```!cyberwatch-list-assets reboot_required=true communication_failed=false page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2166,6 +2194,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1187 | ip-192-168-0-39 | True | server | 2019-02-11T09:15:01 | Ubuntu 18.04 LTS | Low | ***values***: ENV_PRODUCTION, LINUX  | 1167 | 9 | 217 | ***values***:  |
@@ -2174,10 +2203,12 @@ Get a list of assets scanned by Cyberwatch.
 >| 1393 | ip-192-168-0-128 | True | server | 2024-07-03T07:53:49 | Ubuntu 20.04 LTS | Medium | ***values***: LINUX  | 1167 | 88 | 207 | ***values***:  |
 >| 1555 | EC2AMAZ-SNIAI0J | True | server | 2022-11-04T09:05:52 | Windows Server 2022 | Medium | ***values***:  | 1355 | 256 | 3 | ***values***:  |
 
-
 #### Command example
+
 ```!cyberwatch-list-assets hostname=WIN-GNVEC8UIKUD page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2285,15 +2316,18 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1197 | WIN-GNVEC8UIKUD | False | server | 2019-09-13T09:14:34 | Windows Server 2012 R2 | High | ***values***: APP_Apache, APP_BaseDeDonnees, AmazonWebServices | 1699 | 645 | 9 | ***values***:  |
 >| 1198 | WIN-GNVEC8UIKUD | False | server | 2019-09-21T12:57:20 | Windows Server 2012 R2 | High | ***values***: APP_BaseDeDonnees | 1699 | 644 | 9 | ***values***:  |
 
-
 #### Command example
+
 ```!cyberwatch-list-assets address=127.0.0.1 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2524,6 +2558,7 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1188 | MacBook-Pro.local | False | desktop | 2019-05-16T14:29:20 | Mac OS X | Low | ***values***: Direction_Comm | 3966 | 86 | 19 | ***values***:  |
@@ -2532,10 +2567,12 @@ Get a list of assets scanned by Cyberwatch.
 >| 1208 | melchior | True | server | 2021-04-12T07:48:36 | Windows Server 2012 R2 | Medium | ***values***:  | 1060 | 230 | 5 | ***values***:  |
 >| 1186 | ip-192-168-0-56 | False | server | 2019-02-11T09:14:01 | Ubuntu 18.04 LTS | Low | ***values***: Cloud, LINUX  | 1210 | 9 | 225 | ***values***:  |
 
-
 #### Command example
+
 ```!cyberwatch-list-assets os=windows_2008_r2 category=server group_id=768 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2587,10 +2624,10 @@ Get a list of assets scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Assets
+>
 >|id|hostname|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1200 | WIN-IUVBSL1UF49 | False | server | 2019-09-21T12:56:28 | Windows Server 2008 R2 | Low | ***values***: AmazonWebServices | 1800 | 66 | 12 | ***values***:  |
-
 
 ### cyberwatch-fetch-asset
 
@@ -2605,25 +2642,28 @@ Get security details for an asset scanned by Cyberwatch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The asset ID to fetch. | Required | 
+| id | The asset ID to fetch. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.Asset.id | number | Asset ID | 
-| Cyberwatch.Asset.hostname | string | Asset hostname | 
-| Cyberwatch.Asset.description | string | Asset description | 
-| Cyberwatch.Asset.created_at | date | Asset creation date | 
-| Cyberwatch.Asset.last_communication | date | Asset last communication date | 
-| Cyberwatch.Asset.analyzed_at | date | Asset last analysis date | 
-| Cyberwatch.Asset.cve_announcements_count | number | Number of active CVEs on the asset | 
-| Cyberwatch.Asset.prioritized_cve_announcements_count | number | Number of prioritized CVEs on the asset | 
-| Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement | 
+| Cyberwatch.Asset.id | number | Asset ID |
+| Cyberwatch.Asset.hostname | string | Asset hostname |
+| Cyberwatch.Asset.description | string | Asset description |
+| Cyberwatch.Asset.created_at | date | Asset creation date |
+| Cyberwatch.Asset.last_communication | date | Asset last communication date |
+| Cyberwatch.Asset.analyzed_at | date | Asset last analysis date |
+| Cyberwatch.Asset.cve_announcements_count | number | Number of active CVEs on the asset |
+| Cyberwatch.Asset.prioritized_cve_announcements_count | number | Number of prioritized CVEs on the asset |
+| Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement |
 
 #### Command example
+
 ```!cyberwatch-fetch-asset id=1206```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -2825,6 +2865,7 @@ Get security details for an asset scanned by Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Asset
+>
 >|id|hostname|description|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1206 | vps418658 | None | False | server | 2020-11-03T10:25:01 | Debian 10 (Buster) | Privacy | ***values***: 0_Compliance, demonstration, LINUX  | 898 | 117 | 127 | ***values***: Security_Best_Practices |
@@ -2842,25 +2883,28 @@ Get all details for an asset scanned by Cyberwatch, including packages, ports, s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The asset ID to fetch with all details. | Required | 
+| id | The asset ID to fetch with all details. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.Asset.id | number | Asset ID | 
-| Cyberwatch.Asset.hostname | string | Asset hostname | 
-| Cyberwatch.Asset.description | string | Asset description | 
-| Cyberwatch.Asset.created_at | date | Asset creation date | 
-| Cyberwatch.Asset.last_communication | date | Asset last communication date | 
-| Cyberwatch.Asset.analyzed_at | date | Asset last analysis date | 
-| Cyberwatch.Asset.cve_announcements_count | number | Number of active CVEs on the asset | 
-| Cyberwatch.Asset.prioritized_cve_announcements_count | number | Number of prioritized CVEs on the asset | 
-| Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement | 
+| Cyberwatch.Asset.id | number | Asset ID |
+| Cyberwatch.Asset.hostname | string | Asset hostname |
+| Cyberwatch.Asset.description | string | Asset description |
+| Cyberwatch.Asset.created_at | date | Asset creation date |
+| Cyberwatch.Asset.last_communication | date | Asset last communication date |
+| Cyberwatch.Asset.analyzed_at | date | Asset last analysis date |
+| Cyberwatch.Asset.cve_announcements_count | number | Number of active CVEs on the asset |
+| Cyberwatch.Asset.prioritized_cve_announcements_count | number | Number of prioritized CVEs on the asset |
+| Cyberwatch.Asset.reboot_required | boolean | Asset reboot requirement |
 
 #### Command example
+
 ```!cyberwatch-fetch-asset-fulldetails id=1206```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3041,6 +3085,7 @@ Get all details for an asset scanned by Cyberwatch, including packages, ports, s
 #### Human Readable Output
 
 ### Cyberwatch Asset
+
 |id|hostname|description|reboot_required|category|last_communication|os|environment|groups|cve_announcements_count|prioritized_cve_announcements_count|updates_count|compliance_repositories|packages_count|metadata_count|services_count|ports_count|connector_type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1206 | vps418658 | None | False | server | 2020-11-03T10:25:01 | Debian 10 (Buster) | Privacy | ***values***: 0_Compliance, demonstration, LINUX  | 898 | 117 | 127 | ***values***: Security_Best_Practices | 312 | 0 | 0 | 0 | Agent |
@@ -3058,25 +3103,28 @@ Get a list of Security issues from Cyberwatch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| level | Filter Security Issues based on their level. Available values: level_info, level_low, level_medium, level_high, level_critical. Possible values are: level_info, level_low, level_medium, level_high, level_critical. | Optional | 
-| sid | Filter Security Issues by Security Issue reference / sid. | Optional | 
-| page | Get a specific Security Issues page. If not specified, get all Security Issues. | Optional | 
-| per_page | Specify the number of Security Issues per page. Default value 500. | Optional | 
+| level | Filter Security Issues based on their level. Available values: level_info, level_low, level_medium, level_high, level_critical. Possible values are: level_info, level_low, level_medium, level_high, level_critical. | Optional |
+| sid | Filter Security Issues by Security Issue reference / sid. | Optional |
+| page | Get a specific Security Issues page. If not specified, get all Security Issues. | Optional |
+| per_page | Specify the number of Security Issues per page. Default value 500. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.SecurityIssue.id | number | Security Issue ID | 
-| Cyberwatch.SecurityIssue.title | string | Security Issue title | 
-| Cyberwatch.SecurityIssue.description | string | Security Issue description | 
-| Cyberwatch.SecurityIssue.level | string | Security Issue level | 
-| Cyberwatch.SecurityIssue.sid | string | Security Issue SID | 
-| Cyberwatch.SecurityIssue.editable | boolean | Security Issue editability | 
+| Cyberwatch.SecurityIssue.id | number | Security Issue ID |
+| Cyberwatch.SecurityIssue.title | string | Security Issue title |
+| Cyberwatch.SecurityIssue.description | string | Security Issue description |
+| Cyberwatch.SecurityIssue.level | string | Security Issue level |
+| Cyberwatch.SecurityIssue.sid | string | Security Issue SID |
+| Cyberwatch.SecurityIssue.editable | boolean | Security Issue editability |
 
 #### Command example
+
 ```!cyberwatch-list-securityissues page=1 per_page=5 level=level_critical```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3104,6 +3152,7 @@ Get a list of Security issues from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Security Issues
+>
 >|id|sid|level|title|description|
 >|---|---|---|---|---|
 >| 42 | Pentest-2020-01 | level_critical | Capacité à faire une injection SQL |  |
@@ -3112,10 +3161,12 @@ Get a list of Security issues from Cyberwatch.
 >| 48 | WSTG-INPV-06 | level_critical | LDAP Injection | LDAP injection is a server ... |
 >| 50 | WSTG-INPV-08 | level_critical | SSI Injection | The Server-Side Includes attack ... |
 
-
 #### Command example
+
 ```!cyberwatch-list-securityissues sid=WSTG-INPV-05 page=1 per_page=5```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3134,10 +3185,10 @@ Get a list of Security issues from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Security Issues
+>
 >|id|sid|level|title|description|
 >|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | level_critical | SQL Injection | An SQL injection attack ... |
-
 
 ### cyberwatch-fetch-securityissue
 
@@ -3152,22 +3203,25 @@ Get all details for a Security issue from Cyberwatch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Security Issue ID to fetch. | Required | 
+| id | The Security Issue ID to fetch. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cyberwatch.SecurityIssue.id | number | Security Issue ID | 
-| Cyberwatch.SecurityIssue.title | string | Security Issue title | 
-| Cyberwatch.SecurityIssue.description | string | Security Issue description | 
-| Cyberwatch.SecurityIssue.level | string | Security Issue level | 
-| Cyberwatch.SecurityIssue.sid | string | Security Issue SID | 
-| Cyberwatch.SecurityIssue.editable | boolean | Security Issue editability | 
+| Cyberwatch.SecurityIssue.id | number | Security Issue ID |
+| Cyberwatch.SecurityIssue.title | string | Security Issue title |
+| Cyberwatch.SecurityIssue.description | string | Security Issue description |
+| Cyberwatch.SecurityIssue.level | string | Security Issue level |
+| Cyberwatch.SecurityIssue.sid | string | Security Issue SID |
+| Cyberwatch.SecurityIssue.editable | boolean | Security Issue editability |
 
 #### Command example
+
 ```!cyberwatch-fetch-securityissue id=47```
+
 #### Context Example
+
 ```json
 {
     "Cyberwatch": {
@@ -3201,6 +3255,7 @@ Get all details for a Security issue from Cyberwatch.
 #### Human Readable Output
 
 >### Cyberwatch Security Issue
+>
 >|id|sid|title|description|servers_count|cve_announcements_count|
 >|---|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | SQL Injection | An SQL injection attack... |  |  |

@@ -3,7 +3,6 @@
 ---
 Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) integration for preventative protection, post-breach detection, automated investigation, and response.
 
-
 ## Deprecation Announcement
 
 Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
@@ -11,7 +10,8 @@ Note: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/confi
 - **14 commands**
 - **Fetch-incidents functionality**
 
-### Replacement Options:
+### Replacement Options
+
 - Some commands have direct replacements in the **Microsoft Graph Security** integration.
 - Others do not have exact replacements but offer alternatives that return similar data.
 - A few commands have no available replacements.
@@ -34,14 +34,13 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ## Authentication
 
 ---
-There are two different authentication methods for self-deployed configuration: 
+There are two different authentication methods for self-deployed configuration:
 
 - [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
 - [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
-
 
 **Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
 
@@ -59,7 +58,7 @@ Please add the following permissions to the app registration. Choose application
 - WindowsDefenderATP - Machine.RestrictExecution - Application / Delegated
 - WindowsDefenderATP - Machine.Scan - Application / Delegated
 - WindowsDefenderATP - Machine.StopAndQuarantine - Application / Delegated
-- WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+- WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required.
 - WindowsDefenderATP - Url.Read.All - Application / Delegated
 - WindowsDefenderATP - User.Read.All - Application / Delegated
 - WindowsDefenderATP - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
@@ -75,7 +74,7 @@ Please add the following permissions to the app registration. Choose application
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Defender for Endpoint.
 3. Click **Add instance** to create and configure a new integration instance.
-    
+
     | **Parameter**                                           | **Description**                                                                                                               | **Example**                              |
     |---------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|
     | Name                                                    | A meaningful name for the integration instance.                                                                               | XXXXX Instance Alpha                     |
@@ -114,7 +113,7 @@ Please add the following permissions to the app registration. Choose application
     | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
     | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
     | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
-   
+
    - Note: In most cases setting Endpoint type is preferred to setting Server URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 
 5. Click **Test** to validate the URLs, token, and connection.
@@ -146,9 +145,6 @@ Please add the following permissions to the app registration. Choose application
 - relatedUser
 - comments
 - evidence
-
-
-
 
 ## Commands
 
@@ -221,7 +217,7 @@ Isolates a machine from accessing external network.
 
 ##### Required Permissions
 
-Machine.Isolate	
+Machine.Isolate
 
 ##### Base Command
 
@@ -231,27 +227,26 @@ Machine.Isolate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
-| comment | A comment to associate with the action. | Required | 
-| isolation_type | Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network). Possible values are: Full, Selective. | Required | 
-
+| machine_id | A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required |
+| comment | A comment to associate with the action. | Required |
+| isolation_type | Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network). Possible values are: Full, Selective. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Type | String | Type of the machine action. | 
-| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. |
+| MicrosoftATP.MachineAction.Type | String | Type of the machine action. |
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". |
 
 ##### Command example
 
@@ -302,13 +297,12 @@ Machine.Isolate
 
 ##### Human Readable Output
 
->##### The isolation request has been submitted successfully:
+>##### The isolation request has been submitted successfully
 >
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
 >| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
 >| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
-
 
 ### 2. microsoft-atp-unisolate-machine
 
@@ -317,7 +311,7 @@ Remove a machine from isolation.
 
 ##### Required Permissions
 
-Machine.Isolate	
+Machine.Isolate
 
 ##### Base Command
 
@@ -327,26 +321,25 @@ Machine.Isolate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
-| comment | Comment to associate with the action. | Required | 
-
+| machine_id | A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required |
+| comment | Comment to associate with the action. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Type | String | Type of the action. | 
-| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The fileIdentifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. |
+| MicrosoftATP.MachineAction.Type | String | Type of the action. |
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The fileIdentifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". |
 
 ##### Command example
 
@@ -397,19 +390,17 @@ Machine.Isolate
 
 ##### Human Readable Output
 
->### The request to stop the isolation has been submitted successfully:
+>### The request to stop the isolation has been submitted successfully
 >
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
 >| 488176cc | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | 4899036531e3 | devicename_2 |
 >| a6422c40 | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | f70f9fe6b29 | devicename_1 |
 
-
 ### 3. microsoft-atp-get-machines
 
 ---
 Retrieves a collection of machines that have communicated with WDATP cloud in the last 30 days. Note, only ip or hostname can be a comma-separated list. If both are given as lists, an error will appear.
-
 
 #### Base Command
 
@@ -419,37 +410,36 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | A comma-separated list of computer DNS name. | Optional | 
-| ip | A comma-separated list of the last machine IPs to access the internet. | Optional | 
-| risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional | 
-| health_status | The machine health status. Possible values are: Active, Inactive. | Optional | 
-| os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
-| page_size | Number of machines to return in a page - must be lower or equal to 10,000. | Optional | 
-| page_num | The page number to retrieve. Default is 1. | Optional | 
-
+| hostname | A comma-separated list of computer DNS name. | Optional |
+| ip | A comma-separated list of the last machine IPs to access the internet. | Optional |
+| risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional |
+| health_status | The machine health status. Possible values are: Active, Inactive. | Optional |
+| os_platform | The machine's OS platform. Only a single platform can be added. | Optional |
+| page_size | Number of machines to return in a page - must be lower or equal to 10,000. | Optional |
+| page_num | The page number to retrieve. Default is 1. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Machine.ID | String | The machine ID. | 
-| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
-| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
-| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
-| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
-| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
-| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
-| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
+| MicrosoftATP.Machine.ID | String | The machine ID. |
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. |
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. |
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. |
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. |
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. |
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. |
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. |
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. |
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. |
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. |
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. |
 
 #### Command example
 
@@ -515,12 +505,11 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 
 #### Human Readable Output
 
->### Microsoft Defender ATP Machines:
+>### Microsoft Defender ATP Machines
 >
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
 >| f70f9fe6b29 | desktop-s | Windows10 | 1.2.3.4 | 127.0.0.1 | Active | Medium | Medium |
-
 
 ### 4. microsoft-atp-get-file-related-machines
 
@@ -539,32 +528,31 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | A comma-separated list of file SHA1 hash to get the related machines. | Required | 
-
+| file_hash | A comma-separated list of file SHA1 hash to get the related machines. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.FileMachine.Machines.ID | String | The machine ID. | 
-| MicrosoftATP.FileMachine.Machines.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.FileMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.FileMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.FileMachine.Machines.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.FileMachine.Machines.OSVersion | String | The operating system version. | 
-| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.FileMachine.Machines.OSBuild | Number | Operating system build number. | 
-| MicrosoftATP.FileMachine.Machines.LastIPAddress | String | The last IP on the machine. | 
-| MicrosoftATP.FileMachine.Machines.LastExternalIPAddress | String | The last machine IP to access the internet. | 
-| MicrosoftATP.FileMachine.Machines.HelathStatus | String | The machine health status. | 
-| MicrosoftATP.FileMachine.Machines.RBACGroupID | Number | The machine RBAC group ID. | 
-| MicrosoftATP.FileMachine.Machines.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.FileMachine.Machines.RiskScore | String | The machine risk score. | 
-| MicrosoftATP.FileMachine.Machines.ExposureLevel | String | The machine exposure score. | 
-| MicrosoftATP.FileMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
-| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD Device ID. | 
-| MicrosoftATP.FileMachine.Machines.MachineTags | String | Set of machine tags. | 
-| MicrosoftATP.FileMachine.File | String | The machine related file hash. | 
+| MicrosoftATP.FileMachine.Machines.ID | String | The machine ID. |
+| MicrosoftATP.FileMachine.Machines.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.FileMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.FileMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.FileMachine.Machines.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.FileMachine.Machines.OSVersion | String | The operating system version. |
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.FileMachine.Machines.OSBuild | Number | Operating system build number. |
+| MicrosoftATP.FileMachine.Machines.LastIPAddress | String | The last IP on the machine. |
+| MicrosoftATP.FileMachine.Machines.LastExternalIPAddress | String | The last machine IP to access the internet. |
+| MicrosoftATP.FileMachine.Machines.HelathStatus | String | The machine health status. |
+| MicrosoftATP.FileMachine.Machines.RBACGroupID | Number | The machine RBAC group ID. |
+| MicrosoftATP.FileMachine.Machines.RBACGroupName | String | The machine RBAC group name. |
+| MicrosoftATP.FileMachine.Machines.RiskScore | String | The machine risk score. |
+| MicrosoftATP.FileMachine.Machines.ExposureLevel | String | The machine exposure score. |
+| MicrosoftATP.FileMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. |
+| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD Device ID. |
+| MicrosoftATP.FileMachine.Machines.MachineTags | String | Set of machine tags. |
+| MicrosoftATP.FileMachine.File | String | The machine related file hash. |
 
 #### Command example
 
@@ -698,7 +686,6 @@ Machine.ReadWrite.All
 >| f70f9fe6 | desktop-s9 | Windows10 | 1.2.3.4 | 127.0.0.1 | Active | Medium | Medium |
 >| 48990365 | desktop-s8 | Windows10 | 1.2.3.5 | 127.0.0.1 | Active | Low | Medium |
 
-
 ### 5. microsoft-atp-get-machine-details
 
 ---
@@ -716,35 +703,34 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A comma-separated list of machine IDs used to get the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
-
+| machine_id | A comma-separated list of machine IDs used to get the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Machine.ID | String | The machine ID. | 
-| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
-| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
-| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
-| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
-| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
-| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure level. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
-| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
-| MicrosoftATP.Machine.NetworkInterfaces.MACAddress | String | MAC Address for the Network interface. | 
-| MicrosoftATP.Machine.NetworkInterfaces.IPAddresses | String | IP Address\(es\) for the Network interface. | 
-| MicrosoftATP.Machine.NetworkInterfaces.Type | String | Type of the Network interface \(e.g. Ethernet\). | 
-| MicrosoftATP.Machine.NetworkInterfaces.Status | String | Status for the Network interface \(e.g. Up, Down\). | 
+| MicrosoftATP.Machine.ID | String | The machine ID. |
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. |
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. |
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. |
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. |
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. |
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. |
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. |
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure level. |
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. |
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. |
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. |
+| MicrosoftATP.Machine.NetworkInterfaces.MACAddress | String | MAC Address for the Network interface. |
+| MicrosoftATP.Machine.NetworkInterfaces.IPAddresses | String | IP Address\(es\) for the Network interface. |
+| MicrosoftATP.Machine.NetworkInterfaces.Type | String | Type of the Network interface \(e.g. Ethernet\). |
+| MicrosoftATP.Machine.NetworkInterfaces.Status | String | Status for the Network interface \(e.g. Up, Down\). |
 
 #### Command example
 
@@ -861,13 +847,12 @@ Machine.ReadWrite.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP machines ['f70f9fe6b29','4899036531e'] details:
+>### Microsoft Defender ATP machines ['f70f9fe6b29','4899036531e'] details
 >
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|IPAddresses|
 >|---|---|---|---|---|---|---|---|---|
 >| f70f9fe6 | desktop-s9 | Windows10 | 1.2.3.4 | 127.0.0.1 | Active | Medium | Medium | 1. \| MAC : 1234645645 \| IP Addresses : 1.2.3.4,1234::1234:1234:3177:11dc \| Type : Ethernet         \| Status : Up<br/>2. \| MAC :              \| IP Addresses : 127.0.0.1,::1                          \| Type : SoftwareLoopback \| Status : Up |
 >| 48990365 | desktop-s8 | Windows10 | 1.2.3.5 | 127.0.0.1 | Active | Low | Medium | 1. \| MAC : 1234645645 \| IP Addresses : 1.2.3.5,1234::1234:1234:bc6e:23e1 \| Type : Ethernet         \| Status : Up<br/>2. \| MAC :              \| IP Addresses : 127.0.0.1,::1                          \| Type : SoftwareLoopback \| Status : Up |
-
 
 ### 6. microsoft-atp-run-antivirus-scan
 
@@ -876,7 +861,7 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 ##### Required Permissions
 
-Machine.Scan	
+Machine.Scan
 
 #### Base Command
 
@@ -886,27 +871,26 @@ Machine.Scan
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A comma-separated list of machine IDs to run the scan on. | Required | 
-| comment | A comment to associate with the action. | Required | 
-| scan_type | Defines the type of the scan. Possible values are: Quick, Full. | Required | 
-
+| machine_id | A comma-separated list of machine IDs to run the scan on. | Required |
+| comment | A comment to associate with the action. | Required |
+| scan_type | Defines the type of the scan. Possible values are: Quick, Full. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | Unknown | The scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. |
+| MicrosoftATP.MachineAction.Type | String | The type of the action. |
+| MicrosoftATP.MachineAction.Scope | Unknown | The scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". |
 
 #### Command example
 
@@ -964,7 +948,6 @@ Machine.Scan
 >| 98cf0adc | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | f70f9fe6 | desktop-s9 |
 >| ecee8124 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | 48990365 | desktop-s8 |
 
-
 ### 7. microsoft-atp-list-alerts (Deprecated)
 
 This command has been deprecated. Use the 'msg-search-alerts' command in the 'Microsoft Graph Security' integration instead.
@@ -974,7 +957,7 @@ Gets a list of alerts that are present on the system. Filtering can be done on a
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -989,7 +972,6 @@ Alert.ReadWrite.All
 | category | Alert category; only one can be added. | Optional |
 | limit | The maximum number of files to display. Default is 50. | Optional |
 | creation_time | The creation timestamp from which to get alerts (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional |
-
 
 #### Context Output
 
@@ -1107,12 +1089,11 @@ Alert.ReadWrite.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP alerts with limit of 1:
+>### Microsoft Defender ATP alerts with limit of 1
 >
 >|ID|Title|Description|IncidentID|Severity|Status|Category|ThreatFamilyName|MachineID|
 >|---|---|---|---|---|---|---|---|---|
 >| da637798264000574516_1915313662 | 'Test_File' malware was prevented | Malware and unwanted software are undesirable applications that perform annoying, disruptive, or harmful actions on affected machines. Some of these undesirable applications can replicate and spread from one machine to another. Others are able to receive commands from remote attackers and perform activities associated with cyber attacks.<br/><br/>This detection might indicate that the malware was stopped from delivering its payload. However, it is prudent to check the machine for signs of infection. | 648 | Informational | Resolved | Malware | Test_File | 4cceb3c642212014e0e9553aa8b59e999ea515ff |
-
 
 ### 8. microsoft-atp-update-alert (Deprecated)
 
@@ -1123,7 +1104,7 @@ Updates the properties of an alert entity.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -1133,44 +1114,42 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID to update. | Required | 
-| status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional | 
-| assigned_to | The owner of the alert. | Optional | 
-| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive", "InformationalExpectedActivity". | Optional | 
-| determination | The determination of the alert. Possible values: "NotAvailable", "Malware", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
-| comment | The comment to be added to the alert. | Optional | 
-
+| alert_id | The alert ID to update. | Required |
+| status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional |
+| assigned_to | The owner of the alert. | Optional |
+| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive", "InformationalExpectedActivity". | Optional |
+| determination | The determination of the alert. Possible values: "NotAvailable", "Malware", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional |
+| comment | The comment to be added to the alert. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Alert.ID | String | The ID of the alert. | 
-| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.Alert.Severity | String | The severity of the alert. | 
-| MicrosoftATP.Alert.Status | String | The current status of the alert. | 
-| MicrosoftATP.Alert.Classification | String | The alert classification. | 
-| MicrosoftATP.Alert.Determination | String | The determination of the alert. | 
-| MicrosoftATP.Alert.DetectionSource | String | The detection source. | 
-| MicrosoftATP.Alert.Category | String | The category of the alert. | 
-| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family of the alert. | 
-| MicrosoftATP.Alert.Title | String | The title of the alert. | 
-| MicrosoftATP.Alert.Description | String | The description of the alert. | 
-| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.Alert.MachineID | String | The ID of the machine that is associated with the alert. | 
-| MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.Alert.Comments.Comment | String | The comment string of the alert. | 
-| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert's comment created by the string. | 
-| MicrosoftATP.Alert.Comments.CreatedTime | Date | The time and date the alert's comment was created.  | 
-
+| MicrosoftATP.Alert.ID | String | The ID of the alert. |
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation. |
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.Alert.Severity | String | The severity of the alert. |
+| MicrosoftATP.Alert.Status | String | The current status of the alert. |
+| MicrosoftATP.Alert.Classification | String | The alert classification. |
+| MicrosoftATP.Alert.Determination | String | The determination of the alert. |
+| MicrosoftATP.Alert.DetectionSource | String | The detection source. |
+| MicrosoftATP.Alert.Category | String | The category of the alert. |
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family of the alert. |
+| MicrosoftATP.Alert.Title | String | The title of the alert. |
+| MicrosoftATP.Alert.Description | String | The description of the alert. |
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". |
+| MicrosoftATP.Alert.MachineID | String | The ID of the machine that is associated with the alert. |
+| MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.Alert.Comments.Comment | String | The comment string of the alert. |
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert's comment created by the string. |
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The time and date the alert's comment was created.  |
 
 ##### Command Example
 
@@ -1191,24 +1170,23 @@ Alert.ReadWrite.All
 
 The alert da637200417169017725_183736971 has been updated successfully
 
-
 ### 9. microsoft-atp-advanced-hunting (Deprecated)
 
 This command has been deprecated. Use the 'msg-advanced-hunting' command in the 'Microsoft Graph Security' integration instead.
 
 ---
-Runs programmatic queries in Microsoft Defender ATP Portal (<https://securitycenter.windows.com/hunting>). 
+Runs programmatic queries in Microsoft Defender ATP Portal (<https://securitycenter.windows.com/hunting>).
 
-- You can only run a query on data from the last 30 days. 
-- The maximum number of rows is 10,000. 
+- You can only run a query on data from the last 30 days.
+- The maximum number of rows is 10,000.
 - The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
 - This API can only query tables belonging to Microsoft Defender for Endpoint.
 The following reference - [Data Schema](https://learn.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-schema-tables?view=o365-worldwide#learn-the-schema-tables),
-lists all the tables in the schema. Each table name links to a page describing the column names for that table and which service it applies to. 
+lists all the tables in the schema. Each table name links to a page describing the column names for that table and which service it applies to.
 
 ##### Required Permissions
 
-AdvancedQuery.Read.All	
+AdvancedQuery.Read.All
 
 ##### Base Command
 
@@ -1218,18 +1196,17 @@ AdvancedQuery.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to run. Must be passed if query_batch argument is empty. | Optional | 
-| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array. Default is 10. | Optional | 
-| time_range | Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array. | Optional | 
-| query_batch | A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:<br/>[<br/>    {<br/>    "query": "query #1",<br/>    "name": "name #1",<br/>    "timeout": "timeout #1"<br/>    "time_range": "2 days ago"	// Non-mandatory, will override the {time_range} argument<br/>    },<br/>    {<br/>    "query": "query #2",<br/>    "name": "name #2",<br/>    "timeout": "timeout #2"<br/>    "time_range": "6 days ago"t<br/>    }<br/>  ]<br/>. The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.| Optional | 
-| name | If stated along with query, the response will be saved in context under the Result.name path. | Optional | 
-
+| query | The query to run. Must be passed if query_batch argument is empty. | Optional |
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array. Default is 10. | Optional |
+| time_range | Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array. | Optional |
+| query_batch | A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:<br/>[<br/>    {<br/>    "query": "query #1",<br/>    "name": "name #1",<br/>    "timeout": "timeout #1"<br/>    "time_range": "2 days ago" // Non-mandatory, will override the {time_range} argument<br/>    },<br/>    {<br/>    "query": "query #2",<br/>    "name": "name #2",<br/>    "timeout": "timeout #2"<br/>    "time_range": "6 days ago"t<br/>    }<br/>  ]<br/>. The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.| Optional |
+| name | If stated along with query, the response will be saved in context under the Result.name path. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Hunt.Result | String | The query results. | 
+| MicrosoftATP.Hunt.Result | String | The query results. |
 
 #### Command example
 
@@ -1260,13 +1237,12 @@ AdvancedQuery.Read.All
 
 #### Human Readable Output
 
->### Hunt results for name query:
+>### Hunt results for name query
 >
 >|DeviceName|
 >|---|
 >| msde-agent-host-centos7.c.dmst-integrations.internal |
 >| desktop-s2455r8 |
-
 
 ##### Command Example
 
@@ -1303,7 +1279,7 @@ Creates a new alert entity using event data, as obtained from the Advanced Hunti
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -1313,46 +1289,44 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The ID of the machine on which the event was identified. | Required | 
-| severity | The severity of the alert. Severity of the alert. Possible values: "Low", "Medium", and "High". | Required | 
-| title | The title of the alert. | Required | 
-| description | The description of the alert. | Required | 
-| recommended_action | Recommended action for the security officer to take when analyzing the alert. | Required | 
-| event_time | The time of the event, as obtained from the advanced query. | Required | 
-| report_id | The report ID, as obtained from the advanced query. | Required | 
-| category | The category of the alert. | Required | 
-
+| machine_id | The ID of the machine on which the event was identified. | Required |
+| severity | The severity of the alert. Severity of the alert. Possible values: "Low", "Medium", and "High". | Required |
+| title | The title of the alert. | Required |
+| description | The description of the alert. | Required |
+| recommended_action | Recommended action for the security officer to take when analyzing the alert. | Required |
+| event_time | The time of the event, as obtained from the advanced query. | Required |
+| report_id | The report ID, as obtained from the advanced query. | Required |
+| category | The category of the alert. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Alert.ID | String | The ID of the alert. | 
-| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.Alert.Severity | String | The severity of the alert. | 
-| MicrosoftATP.Alert.Status | String | The current status of the alert. | 
-| MicrosoftATP.Alert.Classification | String | The classification of the alert. | 
-| MicrosoftATP.Alert.Determination | String | The determination of the alert. | 
-| MicrosoftATP.Alert.DetectionSource | String | The detection source. | 
-| MicrosoftATP.Alert.Category | String | The category of the alert. | 
-| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family of the alert. | 
-| MicrosoftATP.Alert.Title | String | The title of the alert. | 
-| MicrosoftATP.Alert.Description | String | The description of the alert. | 
-| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
-| MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.Alert.Comments.Comment | String | The comment string of the alert. | 
-| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert's comment created by the string. | 
-| MicrosoftATP.Alert.Comments.CreatedTime | Date | The time and date the alert comment was created. | 
-
+| MicrosoftATP.Alert.ID | String | The ID of the alert. |
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation. |
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.Alert.Severity | String | The severity of the alert. |
+| MicrosoftATP.Alert.Status | String | The current status of the alert. |
+| MicrosoftATP.Alert.Classification | String | The classification of the alert. |
+| MicrosoftATP.Alert.Determination | String | The determination of the alert. |
+| MicrosoftATP.Alert.DetectionSource | String | The detection source. |
+| MicrosoftATP.Alert.Category | String | The category of the alert. |
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family of the alert. |
+| MicrosoftATP.Alert.Title | String | The title of the alert. |
+| MicrosoftATP.Alert.Description | String | The description of the alert. |
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". |
+| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.Alert.Comments.Comment | String | The comment string of the alert. |
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert's comment created by the string. |
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The time and date the alert comment was created. |
 
 ##### Command Example
 
@@ -1399,12 +1373,11 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Alert created:
+##### Alert created
 
 |ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
 |---|---|---|---|---|---|---|---|
 | da637204886635759335_1480542752 | testing alert | test | 18 | Low | New | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
-
 
 ### 11. microsoft-atp-get-alert-related-user (Deprecated)
 
@@ -1415,7 +1388,7 @@ Retrieves the user associated with a specific alert.
 
 ##### Required Permissions
 
-User.Read.All	
+User.Read.All
 
 ##### Base Command
 
@@ -1425,27 +1398,25 @@ User.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the alert. | Required | 
-
+| id | The ID of the alert. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.AlertUser.User.ID | String | The ID of the user. | 
-| MicrosoftATP.AlertUser.User.AccountName | String | The account name. | 
-| MicrosoftATP.AlertUser.User.AccountDomain | String | The account domain. | 
-| MicrosoftATP.AlertUser.User.AccountSID | String | The account SID. | 
-| MicrosoftATP.AlertUser.User.FirstSeen | Date | The user first seen date and time. | 
-| MicrosoftATP.AlertUser.User.LastSeen | Date | The user last seen date and time. | 
-| MicrosoftATP.AlertUser.User.MostPrevalentMachineID | String | The most prevalent machine ID. | 
-| MicrosoftATP.AlertUser.User.LeastPrevalentMachineID | String | The least prevalent machine ID. | 
-| MicrosoftATP.AlertUser.User.LogonTypes | String | The user logon types. | 
-| MicrosoftATP.AlertUser.User.LogonCount | Number | The user logon count. | 
+| MicrosoftATP.AlertUser.User.ID | String | The ID of the user. |
+| MicrosoftATP.AlertUser.User.AccountName | String | The account name. |
+| MicrosoftATP.AlertUser.User.AccountDomain | String | The account domain. |
+| MicrosoftATP.AlertUser.User.AccountSID | String | The account SID. |
+| MicrosoftATP.AlertUser.User.FirstSeen | Date | The user first seen date and time. |
+| MicrosoftATP.AlertUser.User.LastSeen | Date | The user last seen date and time. |
+| MicrosoftATP.AlertUser.User.MostPrevalentMachineID | String | The most prevalent machine ID. |
+| MicrosoftATP.AlertUser.User.LeastPrevalentMachineID | String | The least prevalent machine ID. |
+| MicrosoftATP.AlertUser.User.LogonTypes | String | The user logon types. |
+| MicrosoftATP.AlertUser.User.LogonCount | Number | The user logon count. |
 | MicrosoftATP.AlertUser.User.DomainAdmin | Number | The domain admin. |
 | MicrosoftATP.AlertUser.User.NetworkUser | Number | The network admin. |
-| MicrosoftATP.AlertUser.AlertID | String | The ID of the alert. | 
-
+| MicrosoftATP.AlertUser.AlertID | String | The ID of the alert. |
 
 ##### Command Example
 
@@ -1477,12 +1448,11 @@ User.Read.All
 
 ##### Human Readable Output
 
-##### Alert Related User:
+##### Alert Related User
 
 |AccountDomain|AccountName|AccountSID|DomainAdmin|FirstSeen|ID|LastSeen|LeastPrevalentMachineID|LogonCount|MostPrevalentMachineID|NetworkUser|
 |---|---|---|---|---|---|---|---|---|---|---|
 | desktop-s2455r8 | demisto | S-1-5-21-4197691174-1403503641-4006700887-1001 | false | 2020-02-23T07:14:42Z | desktop-s2455r8\demisto | 2020-03-03T12:32:51Z | 4899036531e374137f63289c3267bad772c13fef | 1 | 4899036531e374137f63289c3267bad772c13fef | false |
-
 
 ### 12. microsoft-atp-get-alert-related-files (Deprecated)
 
@@ -1493,7 +1463,7 @@ Retrieves the files associated to a specific alert.
 
 ##### Required Permissions
 
-File.Read.All	
+File.Read.All
 
 ##### Base Command
 
@@ -1503,33 +1473,31 @@ File.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the alert. | Required | 
-| limit | The limit of files to display. | Optional | 
-| offset | The page from which to get the related files. | Optional | 
-
+| id | The ID of the alert. | Required |
+| limit | The limit of files to display. | Optional |
+| offset | The page from which to get the related files. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.AlertFile.Files.FilePublisher | String | The file's publisher. | 
-| MicrosoftATP.AlertFile.Files.Size | Number | The size of the file. | 
-| MicrosoftATP.AlertFile.Files.GlobalLastObserved | Date | The last time the file was observed. | 
-| MicrosoftATP.AlertFile.Files.Sha1 | String | The SHA1 hash of the file. | 
-| MicrosoftATP.AlertFile.Files.IsValidCertificate | Number | Whether the signing of the certificate was successfully verified by the Microsoft Defender ATP agent. | 
-| MicrosoftATP.AlertFile.Files.Sha256 | String | The SHA256 hash of the file. | 
-| MicrosoftATP.AlertFile.Files.Signer | String | The file signer. | 
-| MicrosoftATP.AlertFile.Files.GlobalPrevalence | Number | The file prevalence across the organization. | 
-| MicrosoftATP.AlertFile.Files.DeterminationValue | String | The determination of the file's value. | 
-| MicrosoftATP.AlertFile.Files.GlobalFirstObserved | Date | The first time the file was observed. | 
-| MicrosoftATP.AlertFile.Files.FileType | String | The type of the file. | 
-| MicrosoftATP.AlertFile.Files.SignerHash | String | The hash of the signing certificate. | 
-| MicrosoftATP.AlertFile.Files.Issuer | String | The file issuer. | 
-| MicrosoftATP.AlertFile.Files.IsPeFile | Number | Wether the file is portable executable. | 
-| MicrosoftATP.AlertFile.Files.DeterminationType | String | The determination type of the file. | 
-| MicrosoftATP.AlertFile.Files.FileProductName | Unknown | The product name of the file.| 
-| MicrosoftATP.AlertFile.Files.Md5 | String | The MD5 hash of the file. | 
-
+| MicrosoftATP.AlertFile.Files.FilePublisher | String | The file's publisher. |
+| MicrosoftATP.AlertFile.Files.Size | Number | The size of the file. |
+| MicrosoftATP.AlertFile.Files.GlobalLastObserved | Date | The last time the file was observed. |
+| MicrosoftATP.AlertFile.Files.Sha1 | String | The SHA1 hash of the file. |
+| MicrosoftATP.AlertFile.Files.IsValidCertificate | Number | Whether the signing of the certificate was successfully verified by the Microsoft Defender ATP agent. |
+| MicrosoftATP.AlertFile.Files.Sha256 | String | The SHA256 hash of the file. |
+| MicrosoftATP.AlertFile.Files.Signer | String | The file signer. |
+| MicrosoftATP.AlertFile.Files.GlobalPrevalence | Number | The file prevalence across the organization. |
+| MicrosoftATP.AlertFile.Files.DeterminationValue | String | The determination of the file's value. |
+| MicrosoftATP.AlertFile.Files.GlobalFirstObserved | Date | The first time the file was observed. |
+| MicrosoftATP.AlertFile.Files.FileType | String | The type of the file. |
+| MicrosoftATP.AlertFile.Files.SignerHash | String | The hash of the signing certificate. |
+| MicrosoftATP.AlertFile.Files.Issuer | String | The file issuer. |
+| MicrosoftATP.AlertFile.Files.IsPeFile | Number | Wether the file is portable executable. |
+| MicrosoftATP.AlertFile.Files.DeterminationType | String | The determination type of the file. |
+| MicrosoftATP.AlertFile.Files.FileProductName | Unknown | The product name of the file.|
+| MicrosoftATP.AlertFile.Files.Md5 | String | The MD5 hash of the file. |
 
 ##### Command Example
 
@@ -1579,23 +1547,23 @@ File.Read.All
 
 ##### Human Readable Output
 
-##### Alert da637175364995825348_1865170845 Related Files:
+##### Alert da637175364995825348_1865170845 Related Files
 
 |Sha1|Sha256|SizeInBytes|
 |---|---|---|
 | d487580502354c61808c7180d1a336beb7ad4624 | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 181248 |
 | 36c5d12033b2eaf251bae61c00690ffb17fddc87 | 908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53 | 451584 |
 
-
 ### 13. microsoft-atp-get-alert-related-ips (Deprecated)
 
-This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details.
+This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details
 ---
+
 Retrieves the IP addresses associated to a specific alert.
 
 ##### Required Permissions
 
-Ip.Read.All	
+Ip.Read.All
 
 ##### Base Command
 
@@ -1605,18 +1573,16 @@ Ip.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the alert. | Required | 
-| limit | The limit of IP addresses to display. | Optional | 
-| offset | The page from which to get the related IP addresses. | Optional | 
-
+| id | The ID of the alert. | Required |
+| limit | The limit of IP addresses to display. | Optional |
+| offset | The page from which to get the related IP addresses. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.AlertIP.IPs.IpAddress | String | The address of the IP address. | 
-| MicrosoftATP.AlertIP.AlertID | String | The ID of the alert. | 
-
+| MicrosoftATP.AlertIP.IPs.IpAddress | String | The address of the IP address. |
+| MicrosoftATP.AlertIP.AlertID | String | The ID of the alert. |
 
 ##### Command Example
 
@@ -1637,7 +1603,6 @@ Ip.Read.All
 
 Alert da637200417169017725_183736971 Related IPs: []
 
-
 ### 14. microsoft-atp-get-alert-related-domains (Deprecated)
 
 This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
@@ -1647,7 +1612,7 @@ Retrieves the domains associated with a specific alert.
 
 ##### Required Permissions
 
-URL.Read.All	
+URL.Read.All
 
 ##### Base Command
 
@@ -1657,18 +1622,16 @@ URL.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the alert. | Required | 
-| limit | The limit of domains to display. | Optional | 
-| offset | The page from which to get the related domains. | Optional | 
-
+| id | The ID of the alert. | Required |
+| limit | The limit of domains to display. | Optional |
+| offset | The page from which to get the related domains. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.AlertDomain.Domains.Domain | String | The domain address. | 
-| MicrosoftATP.AlertDomain.AlertID | Unknown | The ID of the alert. | 
-
+| MicrosoftATP.AlertDomain.Domains.Domain | String | The domain address. |
+| MicrosoftATP.AlertDomain.AlertID | Unknown | The ID of the alert. |
 
 ##### Command Example
 
@@ -1689,7 +1652,6 @@ URL.Read.All
 
 Alert da637175364995825348_1865170845 Related Domains: []
 
-
 ### 15. microsoft-atp-list-machine-actions-details
 
 ---
@@ -1708,30 +1670,30 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the action. | Optional | 
-| status | The machine action status. Possible values are: Pending, InProgress, Succeeded, Failed, TimeOut, Cancelled. | Optional | 
-| machine_id | A comma-separated list of machine IDs on which the action was executed. | Optional | 
-| type | The machine action type. Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
-| requestor | The ID of the user that executed the action, only one can be added. | Optional | 
-| limit | The maximum number of machines to return. Default is 50. | Optional | 
-| filters | String representation of filters (Override every other filters). | Optional | 
+| id | ID of the action. | Optional |
+| status | The machine action status. Possible values are: Pending, InProgress, Succeeded, Failed, TimeOut, Cancelled. | Optional |
+| machine_id | A comma-separated list of machine IDs on which the action was executed. | Optional |
+| type | The machine action type. Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional |
+| requestor | The ID of the user that executed the action, only one can be added. | Optional |
+| limit | The maximum number of machines to return. Default is 50. | Optional |
+| filters | String representation of filters (Override every other filters). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. |
+| MicrosoftATP.MachineAction.Type | String | The type of the action. |
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". |
 
 #### Command example
 
@@ -1782,13 +1744,12 @@ Machine.ReadWrite.All
 
 #### Human Readable Output
 
->### Machine actions Info:
+>### Machine actions Info
 >
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
 >| 98cf0adc | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Succeeded | f70f9fe6 | desktop-s9 |
 >| 99a29fc5 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test2 | Succeeded | 48990365 | desktop-s8 |
-
 
 ### 16. microsoft-atp-collect-investigation-package
 
@@ -1807,27 +1768,25 @@ Machine.CollectForensics
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The ID of the machine. | Required | 
-| comment | The comment to associate with the action. | Required | 
-
+| machine_id | The ID of the machine. | Required |
+| comment | The comment to associate with the action. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
-
+| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. |
+| MicrosoftATP.MachineAction.Type | String | The type of the action. |
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". |
 
 ##### Command Example
 
@@ -1858,12 +1817,11 @@ Machine.CollectForensics
 
 ##### Human Readable Output
 
-##### Initiating collect investigation package from f70f9fe6b29cd9511652434919c6530618f06606 machine :
+##### Initiating collect investigation package from f70f9fe6b29cd9511652434919c6530618f06606 machine
 
 |ID|Type|Requestor|RequestorComment|Status|MachineID|
 |---|---|---|---|---|---|
 | fa952f94-d672-47a6-a637-70b91339c079 | CollectInvestigationPackage | 2f48b784-5da5-4e61-9957-012d2630f1e4 | testing | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
-
 
 ### 17. microsoft-atp-get-investigation-package-sas-uri
 
@@ -1882,15 +1840,13 @@ Machine.CollectForensics
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | The action ID of the machine. | Required | 
-
+| action_id | The action ID of the machine. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.InvestigationURI.Link | String | The investigation package URI. | 
-
+| MicrosoftATP.InvestigationURI.Link | String | The investigation package URI. |
 
 ##### Command Example
 
@@ -1911,7 +1867,6 @@ Machine.CollectForensics
 Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storage: `https:
 //userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV`
 
-
 ### 18. microsoft-atp-restrict-app-execution
 
 ---
@@ -1929,27 +1884,25 @@ Machine.RestrictExecution
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The ID of the machine. | Required | 
-| comment | The comment to associate with the action. | Optional | 
-
+| machine_id | The ID of the machine. | Required |
+| comment | The comment to associate with the action. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID the action was executed on. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
-
+| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. |
+| MicrosoftATP.MachineAction.Type | String | The type of the action. |
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID the action was executed on. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".|
 
 ##### Command Example
 
@@ -1980,12 +1933,11 @@ Machine.RestrictExecution
 
 ##### Human Readable Output
 
-##### Initiating Restrict execution of all applications on the machine f70f9fe6b29cd9511652434919c6530618f06606 except a predefined set:
+##### Initiating Restrict execution of all applications on the machine f70f9fe6b29cd9511652434919c6530618f06606 except a predefined set
 
 |ID|Type|Requestor|RequestorComment|Status|MachineID|
 |---|---|---|---|---|---|
 | 264c80f0-1452-43fb-92d0-5515dd0b821e | RestrictCodeExecution | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test restrict app | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
-
 
 ### 19. microsoft-atp-remove-app-restriction
 
@@ -2004,27 +1956,25 @@ Machine.RestrictExecution
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The ID of the machine. | Required | 
-| comment | The comment to associate with the action. | Required | 
-
+| machine_id | The ID of the machine. | Required |
+| comment | The comment to associate with the action. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID the action was executed on. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
-
+| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. |
+| MicrosoftATP.MachineAction.Type | String | The type of the action. |
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID the action was executed on. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".|
 
 ##### Command Example
 
@@ -2055,12 +2005,11 @@ Machine.RestrictExecution
 
 ##### Human Readable Output
 
-##### Removing applications restriction on the machine f70f9fe6b29cd9511652434919c6530618f06606:
+##### Removing applications restriction on the machine f70f9fe6b29cd9511652434919c6530618f06606
 
 |ID|Type|Requestor|RequestorComment|Status|MachineID|
 |---|---|---|---|---|---|
 | 5e3cc0b8-b1a1-4a07-92bf-4d63ecec1b18 | UnrestrictCodeExecution | 2f48b784-5da5-4e61-9957-012d2630f1e4 | testing remove restriction | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
-
 
 ### 20. microsoft-atp-stop-and-quarantine-file
 
@@ -2069,7 +2018,7 @@ Stops the execution of a file on a machine and deletes it.
 
 ##### Required Permissions
 
-Machine.StopAndQuarantine	
+Machine.StopAndQuarantine
 
 ##### Base Command
 
@@ -2079,28 +2028,26 @@ Machine.StopAndQuarantine
 
 | **Argument Name** | **Description**                                                                                                                          | **Required** |
 | --- |------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| machine_id | The ID of the machine. When providing multiple values, each value is checked for the same hash.                                           | Required | 
-| file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each value is checked for the same machine_id.  | Required | 
-| comment | The comment to associate with the action.                                                                                                | Required | 
-
+| machine_id | The ID of the machine. When providing multiple values, each value is checked for the same hash.                                           | Required |
+| file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each value is checked for the same machine_id.  | Required |
+| comment | The comment to associate with the action.                                                                                                | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID  of the machine. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
-
+| MicrosoftATP.MachineAction.ID | String | The action ID  of the machine. |
+| MicrosoftATP.MachineAction.Type | String | The type of the action. |
+| MicrosoftATP.MachineAction.Scope | String | The scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". |
 
 ##### Command Example
 
@@ -2128,12 +2075,11 @@ Machine.StopAndQuarantine
 
 ##### Human Readable Output
 
-##### Stopping the execution of a file on 12345678 machine and deleting it:
+##### Stopping the execution of a file on 12345678 machine and deleting it
 
 |ID|Type|Requestor|RequestorComment|Status|MachineID|
 |---|---|---|---|---|---|
 | 123 | StopAndQuarantineFile | 123abc | Test | Pending | 12345678 |
-
 
 ### 21. microsoft-atp-list-investigations
 
@@ -2142,7 +2088,7 @@ Retrieves a collection of investigations or retrieves a specific investigation b
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2152,25 +2098,23 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID can be the investigation ID or the investigation triggering an alert ID. | Optional | 
-| limit | The limit of investigations to display. | Optional | 
-| offset | The page from which to get the investigations. | Optional | 
-
+| id | The ID can be the investigation ID or the investigation triggering an alert ID. | Optional |
+| limit | The limit of investigations to display. | Optional |
+| offset | The page from which to get the investigations. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Investigation.ID | String | The ID of the investigation. | 
-| MicrosoftATP.Investigation.StartTime | Date | The date and time when the investigation was created. | 
-| MicrosoftATP.Investigation.EndTime | Date | The date and time when the investigation was completed. | 
-| MicrosoftATP.Investigation.State | String | The state of the investigation. | 
-| MicrosoftATP.Investigation.CancelledBy | Unknown | The ID of the user or application that cancelled that investigation. | 
-| MicrosoftATP.Investigation.StatusDetails | Unknown | The details of the state of the investigation. | 
-| MicrosoftATP.Investigation.MachineID | String | The machine ID the investigation is executed on.| 
-| MicrosoftATP.Investigation.ComputerDNSName | String | The machine DNS name the investigation is executed on. | 
-| MicrosoftATP.Investigation.TriggeringAlertID | String | The alert ID that triggered the investigation. | 
-
+| MicrosoftATP.Investigation.ID | String | The ID of the investigation. |
+| MicrosoftATP.Investigation.StartTime | Date | The date and time when the investigation was created. |
+| MicrosoftATP.Investigation.EndTime | Date | The date and time when the investigation was completed. |
+| MicrosoftATP.Investigation.State | String | The state of the investigation. |
+| MicrosoftATP.Investigation.CancelledBy | Unknown | The ID of the user or application that cancelled that investigation. |
+| MicrosoftATP.Investigation.StatusDetails | Unknown | The details of the state of the investigation. |
+| MicrosoftATP.Investigation.MachineID | String | The machine ID the investigation is executed on.|
+| MicrosoftATP.Investigation.ComputerDNSName | String | The machine DNS name the investigation is executed on. |
+| MicrosoftATP.Investigation.TriggeringAlertID | String | The alert ID that triggered the investigation. |
 
 ##### Command Example
 
@@ -2220,14 +2164,13 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Investigations Info:
+##### Investigations Info
 
 |ID|StartTime|EndTime|InvestigationState|MachineID|ComputerDNSName|TriggeringAlertID|
 |---|---|---|---|---|---|---|
 | 10 | 2020-03-17T11:35:17Z |  | PendingApproval | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | da637200417169017725_183736971 |
 | 9 | 2020-03-17T10:43:15Z |  | PendingApproval | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | da637200385941308230_1832866941 |
 | 8 | 2020-03-04T16:37:50Z | 2020-03-11T18:13:42Z | TerminatedBySystem | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | da637189366671550108_395377714 |
-
 
 ### 22. microsoft-atp-start-investigation
 
@@ -2236,7 +2179,7 @@ Starts an automated investigation on a machine.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2246,24 +2189,22 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The ID of the machine. | Required | 
-| comment | The comment to associate with the action. | Required | 
-
+| machine_id | The ID of the machine. | Required |
+| comment | The comment to associate with the action. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Investigation.ID | String | The ID of the investigation. | 
-| MicrosoftATP.Investigation.StartTime | Date | The date and time when the investigation was created. | 
-| MicrosoftATP.Investigation.EndTime | Date | The date and time when the investigation was completed. | 
-| MicrosoftATP.Investigation.State | String | The state of the investigation. | 
-| MicrosoftATP.Investigation.CancelledBy | Unknown | The ID of the user or application that cancelled that investigation. | 
-| MicrosoftATP.Investigation.StatusDetails | Unknown | The details of the state of the investigation. | 
-| MicrosoftATP.Investigation.MachineID | String | The machine ID the investigation is executed on. | 
-| MicrosoftATP.Investigation.ComputerDNSName | String | The machine DNS name the investigation is executed on. | 
-| MicrosoftATP.Investigation.TriggeringAlertID | String | The alert ID that triggered the investigation. | 
-
+| MicrosoftATP.Investigation.ID | String | The ID of the investigation. |
+| MicrosoftATP.Investigation.StartTime | Date | The date and time when the investigation was created. |
+| MicrosoftATP.Investigation.EndTime | Date | The date and time when the investigation was completed. |
+| MicrosoftATP.Investigation.State | String | The state of the investigation. |
+| MicrosoftATP.Investigation.CancelledBy | Unknown | The ID of the user or application that cancelled that investigation. |
+| MicrosoftATP.Investigation.StatusDetails | Unknown | The details of the state of the investigation. |
+| MicrosoftATP.Investigation.MachineID | String | The machine ID the investigation is executed on. |
+| MicrosoftATP.Investigation.ComputerDNSName | String | The machine DNS name the investigation is executed on. |
+| MicrosoftATP.Investigation.TriggeringAlertID | String | The alert ID that triggered the investigation. |
 
 ##### Command Example
 
@@ -2289,12 +2230,11 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Starting investigation da637205548921456173_375980286 on f70f9fe6b29cd9511652434919c6530618f06606 machine:
+##### Starting investigation da637205548921456173_375980286 on f70f9fe6b29cd9511652434919c6530618f06606 machine
 
 |ID|InvestigationState|TriggeringAlertID|
 |---|---|---|
 | da637205548921456173_375980286 | PendingApproval | da637205548921456173_375980286 |
-
 
 ### 23. microsoft-atp-get-domain-statistics
 
@@ -2304,7 +2244,7 @@ Retrieves statistics on the given domain.
 ##### Required Permissions
 
 URL.Read.All
-	
+
 ##### Base Command
 
 `microsoft-atp-get-domain-statistics`
@@ -2313,18 +2253,16 @@ URL.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain address. | Required | 
-
+| domain | The domain address. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.DomainStatistics.Statistics.Host | String | The domain host. | 
-| MicrosoftATP.DomainStatistics.Statistics.OrgPrevalence | String | The prevalence of the domain in the organization. | 
-| MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen | Date | The first date and time the domain was seen in the organization. | 
-| MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen | Date | The last date and time the domain was seen in the organization. | 
-
+| MicrosoftATP.DomainStatistics.Statistics.Host | String | The domain host. |
+| MicrosoftATP.DomainStatistics.Statistics.OrgPrevalence | String | The prevalence of the domain in the organization. |
+| MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen | Date | The first date and time the domain was seen in the organization. |
+| MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen | Date | The last date and time the domain was seen in the organization. |
 
 ##### Command Example
 
@@ -2348,22 +2286,22 @@ URL.Read.All
 
 ##### Human Readable Output
 
-##### Statistics on google.com domain:
+##### Statistics on google.com domain
 
 |Host|OrgFirstSeen|OrgLastSeen|OrgPrevalence|
 |---|---|---|---|
 | google.com | 2020-02-24T12:50:04Z | 2020-02-24T13:14:54Z | 1 |
 
-
 ### 24. microsoft-atp-get-domain-alerts (Deprecated)
 
-This command has been deprecated. No available replacement.
+This command has been deprecated. No available replacement
 ---
+
 Retrieves a collection of alerts related to a given domain address.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2373,40 +2311,38 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain address. | Required | 
-
+| domain | The domain address. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.DomainAlert.Domain | String | The domain address. | 
-| MicrosoftATP.DomainAlert.Alerts.ID | String | The ID of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.DomainAlert.Alerts.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.Severity | String | The severity of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.Status | String | The current status of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.Classification | String | The alert classification. | 
-| MicrosoftATP.DomainAlert.Alerts.Determination | String | The determination of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.DetectionSource | String | The detection source. | 
-| MicrosoftATP.DomainAlert.Alerts.Category | String | The category of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.ThreatFamilyName | String | The family name of the threat. | 
-| MicrosoftATP.DomainAlert.Alerts.Title | String | The title of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.Description | String | The description of the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.DomainAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.DomainAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.DomainAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.DomainAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
-| MicrosoftATP.DomainAlert.Alerts.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.DomainAlert.Alerts.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.DomainAlert.Alerts.Comments.Comment | String | The alert comment string. | 
-| MicrosoftATP.DomainAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. | 
-| MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime | Date | The alert comment create time and date. | 
-
+| MicrosoftATP.DomainAlert.Domain | String | The domain address. |
+| MicrosoftATP.DomainAlert.Alerts.ID | String | The ID of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.DomainAlert.Alerts.InvestigationState | String | The current state of the investigation. |
+| MicrosoftATP.DomainAlert.Alerts.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.Severity | String | The severity of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.Status | String | The current status of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.Classification | String | The alert classification. |
+| MicrosoftATP.DomainAlert.Alerts.Determination | String | The determination of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.DetectionSource | String | The detection source. |
+| MicrosoftATP.DomainAlert.Alerts.Category | String | The category of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.ThreatFamilyName | String | The family name of the threat. |
+| MicrosoftATP.DomainAlert.Alerts.Title | String | The title of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.Description | String | The description of the alert. |
+| MicrosoftATP.DomainAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.DomainAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.DomainAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.DomainAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.DomainAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". |
+| MicrosoftATP.DomainAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.DomainAlert.Alerts.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.DomainAlert.Alerts.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.DomainAlert.Alerts.Comments.Comment | String | The alert comment string. |
+| MicrosoftATP.DomainAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. |
+| MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime | Date | The alert comment create time and date. |
 
 ##### Command Example
 
@@ -2425,10 +2361,9 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Domain google.com related alerts Info:
+##### Domain google.com related alerts Info
 
 **No entries.**
-
 
 ### 25. microsoft-atp-get-domain-machines
 
@@ -2447,33 +2382,31 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain address. | Required | 
-
+| domain | The domain address. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.DomainMachine.Domain | String | The domain address. | 
-| MicrosoftATP.DomainMachine.Machines.ID | String | The ID of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.FirstSeen | Date | The first date and time when the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.DomainMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.DomainMachine.Machines.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.DomainMachine.Machines.OSVersion | String | The operating system version. | 
-| MicrosoftATP.DomainMachine.Machines.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.DomainMachine.Machines.LastIPAddress | String | The last IP address on the machine. | 
-| MicrosoftATP.DomainMachine.Machines.LastExternalIPAddress | String | The last IP address the machine accessed. | 
-| MicrosoftATP.DomainMachine.Machines.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.DomainMachine.Machines.HealthStatus | String | The health status of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.RBACGroupID | Number | The RBAC group ID of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.RBACGroupName | String | The RBAC group name of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.RiskScore | String | The risk score of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.ExposureLevel | String | The exposure level of the machine. | 
-| MicrosoftATP.DomainMachine.Machines.IsAADJoined | Boolean | Whether the machine is AAD joined. | 
-| MicrosoftATP.DomainMachine.Machines.AADDeviceID | String | The AAD device ID. | 
-| MicrosoftATP.DomainMachine.Machines.MachineTags | String | The set of machine tags. | 
-
+| MicrosoftATP.DomainMachine.Domain | String | The domain address. |
+| MicrosoftATP.DomainMachine.Machines.ID | String | The ID of the machine. |
+| MicrosoftATP.DomainMachine.Machines.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.DomainMachine.Machines.FirstSeen | Date | The first date and time when the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.DomainMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.DomainMachine.Machines.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.DomainMachine.Machines.OSVersion | String | The operating system version. |
+| MicrosoftATP.DomainMachine.Machines.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.DomainMachine.Machines.LastIPAddress | String | The last IP address on the machine. |
+| MicrosoftATP.DomainMachine.Machines.LastExternalIPAddress | String | The last IP address the machine accessed. |
+| MicrosoftATP.DomainMachine.Machines.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.DomainMachine.Machines.HealthStatus | String | The health status of the machine. |
+| MicrosoftATP.DomainMachine.Machines.RBACGroupID | Number | The RBAC group ID of the machine. |
+| MicrosoftATP.DomainMachine.Machines.RBACGroupName | String | The RBAC group name of the machine. |
+| MicrosoftATP.DomainMachine.Machines.RiskScore | String | The risk score of the machine. |
+| MicrosoftATP.DomainMachine.Machines.ExposureLevel | String | The exposure level of the machine. |
+| MicrosoftATP.DomainMachine.Machines.IsAADJoined | Boolean | Whether the machine is AAD joined. |
+| MicrosoftATP.DomainMachine.Machines.AADDeviceID | String | The AAD device ID. |
+| MicrosoftATP.DomainMachine.Machines.MachineTags | String | The set of machine tags. |
 
 ##### Command Example
 
@@ -2515,12 +2448,11 @@ Machine.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Machines that have communicated with google.com domain:
+##### Machines that have communicated with google.com domain
 
 |ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 |---|---|---|---|---|---|---|---|
 | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
-
 
 ### 26. microsoft-atp-get-file-statistics
 
@@ -2529,7 +2461,7 @@ Retrieves statistics for the given file.
 
 ##### Required Permissions
 
-File.Read.All	
+File.Read.All
 
 ##### Base Command
 
@@ -2539,23 +2471,22 @@ File.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | The file SHA1 hash to get statistics on. | Required | 
-
+| file_hash | The file SHA1 hash to get statistics on. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The number of times the file is detected in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The number of times the file is detected in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The number of times the file is detected across all organizations by Microsoft Defender ATP. | 
-| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The number of times the file is detected across all organizations by Microsoft Defender ATP. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. | 
-| MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. | 
-| MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. | 
+| MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. |
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The number of times the file is detected in the organization. |
+| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The number of times the file is detected in the organization. |
+| MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. |
+| MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. |
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The number of times the file is detected across all organizations by Microsoft Defender ATP. |
+| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The number of times the file is detected across all organizations by Microsoft Defender ATP. |
+| MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. |
+| MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. |
+| MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. |
 | File.SHA1 | String | The SHA1 hash of the file. |
 | File.OrganizationPrevalence | Number | The number of times the indicator is detected in the organization. |
 | File.GlobalPrevalence | Number | The number of times the indicator is detected across all organizations by Microsoft Defender ATP. |
@@ -2606,12 +2537,11 @@ File.Read.All
 
 ##### Human Readable Output
 
-##### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file:
+##### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file
 
 |Global First Observed|Global Last Observed|Global Prevalence|Organization Prevalence|Top File Names|
 |---|---|---|---|---|
 | 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
-
 
 ##### File Indicator Example
 
@@ -2628,7 +2558,7 @@ Retrieves a collection of alerts related to a given file hash.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2638,40 +2568,38 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | The file SHA1 hash to get statistics on. | Required | 
-
+| file_hash | The file SHA1 hash to get statistics on. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.FileAlert.Sha1 | String | The file SHA1 hash. | 
-| MicrosoftATP.FileAlert.Alerts.ID | String | The ID of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.FileAlert.Alerts.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.FileAlert.Alerts.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.Severity | String | The severity of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.Status | String | The current status of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.Classification | String | The alert classification. | 
-| MicrosoftATP.FileAlert.Alerts.Determination | String | The determination of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.DetectionSource | String | The detection source. | 
-| MicrosoftATP.FileAlert.Alerts.Category | String | The category of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.ThreatFamilyName | String | The family name of the threat. | 
-| MicrosoftATP.FileAlert.Alerts.Title | String | The title of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.Description | String | The description of the alert. | 
-| MicrosoftATP.FileAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.FileAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.FileAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.FileAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.FileAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
-| MicrosoftATP.FileAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.FileAlert.Alerts.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.FileAlert.Alerts.Comments.Comment | String | The alert comment string. | 
-| MicrosoftATP.FileAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. | 
-| MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime | Date | The time and date the alert comment was created. | 
-
+| MicrosoftATP.FileAlert.Sha1 | String | The file SHA1 hash. |
+| MicrosoftATP.FileAlert.Alerts.ID | String | The ID of the alert. |
+| MicrosoftATP.FileAlert.Alerts.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.FileAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.FileAlert.Alerts.InvestigationState | String | The current state of the investigation. |
+| MicrosoftATP.FileAlert.Alerts.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.FileAlert.Alerts.Severity | String | The severity of the alert. |
+| MicrosoftATP.FileAlert.Alerts.Status | String | The current status of the alert. |
+| MicrosoftATP.FileAlert.Alerts.Classification | String | The alert classification. |
+| MicrosoftATP.FileAlert.Alerts.Determination | String | The determination of the alert. |
+| MicrosoftATP.FileAlert.Alerts.DetectionSource | String | The detection source. |
+| MicrosoftATP.FileAlert.Alerts.Category | String | The category of the alert. |
+| MicrosoftATP.FileAlert.Alerts.ThreatFamilyName | String | The family name of the threat. |
+| MicrosoftATP.FileAlert.Alerts.Title | String | The title of the alert. |
+| MicrosoftATP.FileAlert.Alerts.Description | String | The description of the alert. |
+| MicrosoftATP.FileAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.FileAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.FileAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.FileAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.FileAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". |
+| MicrosoftATP.FileAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.FileAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.FileAlert.Alerts.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.FileAlert.Alerts.Comments.Comment | String | The alert comment string. |
+| MicrosoftATP.FileAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. |
+| MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime | Date | The time and date the alert comment was created. |
 
 ##### Command Example
 
@@ -2743,12 +2671,11 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### File 9fe3ba25e5660c23dfe478d577cfacde5795870c related alerts Info:
+##### File 9fe3ba25e5660c23dfe478d577cfacde5795870c related alerts Info
 
 |ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
 |---|---|---|---|---|---|---|---|
 | da637200429318902470_-1583197054 | test alert | Created for test | 15 | Medium | New | None | 4899036531e374137f63289c3267bad772c13fef |
-
 
 ### 28. microsoft-atp-get-ip-statistics
 
@@ -2757,7 +2684,7 @@ Retrieves statistics for the given IP address.
 
 ##### Required Permissions
 
-Ip.Read.All	
+Ip.Read.All
 
 ##### Base Command
 
@@ -2767,18 +2694,16 @@ Ip.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address. | Required | 
-
+| ip | The IP address. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.IPStatistics.Statistics.IPAddress | String | The IP address. | 
-| MicrosoftATP.IPStatistics.Statistics.OrgPrevalence | String | The prevalence of the IP address in the organization. | 
-| MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen | Date | The first date and time the IP address was seen in the organization. | 
-| MicrosoftATP.IPStatistics.Statistics.OrgLastSeen | Date | The last date and time the IP address was seen in the organization. | 
-
+| MicrosoftATP.IPStatistics.Statistics.IPAddress | String | The IP address. |
+| MicrosoftATP.IPStatistics.Statistics.OrgPrevalence | String | The prevalence of the IP address in the organization. |
+| MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen | Date | The first date and time the IP address was seen in the organization. |
+| MicrosoftATP.IPStatistics.Statistics.OrgLastSeen | Date | The last date and time the IP address was seen in the organization. |
 
 ##### Command Example
 
@@ -2801,12 +2726,11 @@ Ip.Read.All
 
 ##### Human Readable Output
 
-##### Statistics on 8.8.8.8 IP:
+##### Statistics on 8.8.8.8 IP
 
 |OrgFirstSeen|OrgLastSeen|OrgPrevalence|
 |---|---|---|
 | 2020-02-22T12:52:35Z | 2020-03-01T15:19:40Z | 1 |
-
 
 ### 29. microsoft-atp-get-ip-alerts (Deprecated)
 
@@ -2817,7 +2741,7 @@ Retrieves a collection of alerts related to a given IP address.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2827,40 +2751,38 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The Ip address. | Required | 
-
+| ip | The Ip address. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.IPAlert.IPAddress | String | The IP address. | 
-| MicrosoftATP.IPAlert.Alerts.ID | String | The alert ID. | 
-| MicrosoftATP.IPAlert.Alerts.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.IPAlert.Alerts.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.IPAlert.Alerts.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.Severity | String | The severity of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.Status | String | The current status of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.Classification | String | The alert classification. | 
-| MicrosoftATP.IPAlert.Alerts.Determination | String | The determination of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.DetectionSource | String | The detection source. | 
-| MicrosoftATP.IPAlert.Alerts.Category | String | The category of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.ThreatFamilyName | String | The family name of the threat. | 
-| MicrosoftATP.IPAlert.Alerts.Title | String | The title of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.Description | String | The description of the alert. | 
-| MicrosoftATP.IPAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.IPAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.IPAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.IPAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.IPAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
-| MicrosoftATP.IPAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.IPAlert.Alerts.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.IPAlert.Alerts.Comments.Comment | String | The alert's comment string. | 
-| MicrosoftATP.IPAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. | 
-| MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime | Date | The time and date the alert comment was created. | 
-
+| MicrosoftATP.IPAlert.IPAddress | String | The IP address. |
+| MicrosoftATP.IPAlert.Alerts.ID | String | The alert ID. |
+| MicrosoftATP.IPAlert.Alerts.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.IPAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.IPAlert.Alerts.InvestigationState | String | The current state of the investigation. |
+| MicrosoftATP.IPAlert.Alerts.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.IPAlert.Alerts.Severity | String | The severity of the alert. |
+| MicrosoftATP.IPAlert.Alerts.Status | String | The current status of the alert. |
+| MicrosoftATP.IPAlert.Alerts.Classification | String | The alert classification. |
+| MicrosoftATP.IPAlert.Alerts.Determination | String | The determination of the alert. |
+| MicrosoftATP.IPAlert.Alerts.DetectionSource | String | The detection source. |
+| MicrosoftATP.IPAlert.Alerts.Category | String | The category of the alert. |
+| MicrosoftATP.IPAlert.Alerts.ThreatFamilyName | String | The family name of the threat. |
+| MicrosoftATP.IPAlert.Alerts.Title | String | The title of the alert. |
+| MicrosoftATP.IPAlert.Alerts.Description | String | The description of the alert. |
+| MicrosoftATP.IPAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.IPAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.IPAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.IPAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.IPAlert.Alerts.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". |
+| MicrosoftATP.IPAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.IPAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.IPAlert.Alerts.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.IPAlert.Alerts.Comments.Comment | String | The alert's comment string. |
+| MicrosoftATP.IPAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. |
+| MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime | Date | The time and date the alert comment was created. |
 
 ##### Command Example
 
@@ -2879,10 +2801,9 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### IP 8.8.8.8 related alerts Info:
+##### IP 8.8.8.8 related alerts Info
 
 **No entries.**
-
 
 ### 30. microsoft-atp-get-user-alerts (Deprecated)
 
@@ -2893,7 +2814,7 @@ Retrieves a collection of alerts related to a given user ID.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2903,40 +2824,38 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID. The ID is not the full UPN, but only the username. For example, to retrieve alerts for "<user1@test.com>" use "user1". | Required | 
-
+| username | The user ID. The ID is not the full UPN, but only the username. For example, to retrieve alerts for "<user1@test.com>" use "user1". | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.UserAlert.Username | String | The name of the user. | 
-| MicrosoftATP.UserAlert.Alerts.ID | String | The ID of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.UserAlert.Alerts.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.UserAlert.Alerts.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.Severity | String | The severity of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.Status | String | The current status of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.Classification | String | The alert classification. | 
-| MicrosoftATP.UserAlert.Alerts.Determination | String | The determination of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.DetectionSource | String | The detection source. | 
-| MicrosoftATP.UserAlert.Alerts.Category | String | The category of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.ThreatFamilyName | String | The family name of the threat.  | 
-| MicrosoftATP.UserAlert.Alerts.Title | String | The title of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.Description | String | The description of the alert. | 
-| MicrosoftATP.UserAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.UserAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.UserAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.UserAlert.Alerts.ResolvedTime | Date | The date and time when the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.UserAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. | 
-| MicrosoftATP.UserAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.UserAlert.Alerts.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.UserAlert.Alerts.Comments.Comment | String | The comment string of the alert.| 
-| MicrosoftATP.UserAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. | 
-| MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime | Date | The time and date the alert comment was created. | 
-
+| MicrosoftATP.UserAlert.Username | String | The name of the user. |
+| MicrosoftATP.UserAlert.Alerts.ID | String | The ID of the alert. |
+| MicrosoftATP.UserAlert.Alerts.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.UserAlert.Alerts.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.UserAlert.Alerts.InvestigationState | String | The current state of the investigation. |
+| MicrosoftATP.UserAlert.Alerts.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.UserAlert.Alerts.Severity | String | The severity of the alert. |
+| MicrosoftATP.UserAlert.Alerts.Status | String | The current status of the alert. |
+| MicrosoftATP.UserAlert.Alerts.Classification | String | The alert classification. |
+| MicrosoftATP.UserAlert.Alerts.Determination | String | The determination of the alert. |
+| MicrosoftATP.UserAlert.Alerts.DetectionSource | String | The detection source. |
+| MicrosoftATP.UserAlert.Alerts.Category | String | The category of the alert. |
+| MicrosoftATP.UserAlert.Alerts.ThreatFamilyName | String | The family name of the threat.  |
+| MicrosoftATP.UserAlert.Alerts.Title | String | The title of the alert. |
+| MicrosoftATP.UserAlert.Alerts.Description | String | The description of the alert. |
+| MicrosoftATP.UserAlert.Alerts.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.UserAlert.Alerts.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.UserAlert.Alerts.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.UserAlert.Alerts.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.UserAlert.Alerts.ResolvedTime | Date | The date and time when the status of the alert was changed to "Resolved". |
+| MicrosoftATP.UserAlert.Alerts.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.UserAlert.Alerts.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.UserAlert.Alerts.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.UserAlert.Alerts.Comments.Comment | String | The comment string of the alert.|
+| MicrosoftATP.UserAlert.Alerts.Comments.CreatedBy | String | The alert comment created by the string. |
+| MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime | Date | The time and date the alert comment was created. |
 
 ##### Command Example
 
@@ -3068,12 +2987,11 @@ Alert.ReadWrite.All
 
 ##### Human Readable Output
 
-##### User XSOAR related alerts Info:
+##### User XSOAR related alerts Info
 
 |ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
 |---|---|---|---|---|---|---|---|
 | da637175364336494657_410871946 | Suspicious process injection observed | A process abnormally injected code into another process, As a result, unexpected code may be running in the target process memory. Injection is often used to hide malicious code execution within a trusted process. As a result, the target process may exhibit abnormal behaviors such as opening a listening port or connecting to a command and control server. | 7 | Medium | InProgress | DefenseEvasion | 4899036531e374137f63289c3267bad772c13fef |
-
 
 ### 31. microsoft-atp-get-user-machines
 
@@ -3092,33 +3010,31 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID. The ID is not the full UPN, but only the user name. For example, to retrieve machines for "<user1@test.com>" use "user1". | Required | 
-
+| username | The user ID. The ID is not the full UPN, but only the user name. For example, to retrieve machines for "<user1@test.com>" use "user1". | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.UserMachine.Username | String | The name of the user. | 
-| MicrosoftATP.UserMachine.Machines.ID | String | The ID of the machine. | 
-| MicrosoftATP.UserMachine.Machines.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.UserMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.UserMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.UserMachine.Machines.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.UserMachine.Machines.OSVersion | String | The operating system version. | 
-| MicrosoftATP.UserMachine.Machines.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.v.Machines.LastIPAddress | String | The last IP address on the machine. | 
-| MicrosoftATP.UserMachine.Machines.LastExternalIPAddress | String | The last IP address through which the machine accessed the internet. | 
-| MicrosoftATP.UserMachine.Machines.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.UserMachine.Machines.HealthStatus | String | The  health status of the machine. | 
-| MicrosoftATP.UserMachine.Machines.RBACGroupID | Number | The RBAC group ID of the machine. | 
-| MicrosoftATP.UserMachine.Machines.RBACGroupName | String | The RBAC group name of the machine. | 
-| MicrosoftATP.UserMachine.Machines.RiskScore | String | The risk score of the machine. | 
-| MicrosoftATP.UserMachine.Machines.ExposureLevel | String | The exposure level of the machine. | 
-| MicrosoftATP.UserMachine.Machines.IsAADJoined | Boolean | Whether the machine is AAD joined. | 
-| MicrosoftATP.UserMachine.Machines.AADDeviceID | String | The AAD device ID. | 
-| MicrosoftATP.UserMachine.Machines.MachineTags | String | The set of machine tags. | 
-
+| MicrosoftATP.UserMachine.Username | String | The name of the user. |
+| MicrosoftATP.UserMachine.Machines.ID | String | The ID of the machine. |
+| MicrosoftATP.UserMachine.Machines.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.UserMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.UserMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.UserMachine.Machines.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.UserMachine.Machines.OSVersion | String | The operating system version. |
+| MicrosoftATP.UserMachine.Machines.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.v.Machines.LastIPAddress | String | The last IP address on the machine. |
+| MicrosoftATP.UserMachine.Machines.LastExternalIPAddress | String | The last IP address through which the machine accessed the internet. |
+| MicrosoftATP.UserMachine.Machines.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.UserMachine.Machines.HealthStatus | String | The  health status of the machine. |
+| MicrosoftATP.UserMachine.Machines.RBACGroupID | Number | The RBAC group ID of the machine. |
+| MicrosoftATP.UserMachine.Machines.RBACGroupName | String | The RBAC group name of the machine. |
+| MicrosoftATP.UserMachine.Machines.RiskScore | String | The risk score of the machine. |
+| MicrosoftATP.UserMachine.Machines.ExposureLevel | String | The exposure level of the machine. |
+| MicrosoftATP.UserMachine.Machines.IsAADJoined | Boolean | Whether the machine is AAD joined. |
+| MicrosoftATP.UserMachine.Machines.AADDeviceID | String | The AAD device ID. |
+| MicrosoftATP.UserMachine.Machines.MachineTags | String | The set of machine tags. |
 
 ##### Command Example
 
@@ -3181,13 +3097,12 @@ Machine.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Machines that are related to user XSOAR:
+##### Machines that are related to user XSOAR
 
 |ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 |---|---|---|---|---|---|---|---|
 | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
 | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
-
 
 ### 32. microsoft-atp-add-remove-machine-tag
 
@@ -3206,34 +3121,32 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The ID of the machine. | Required | 
-| action | The action to use for the tag. | Required | 
-| tag | The name of the tag. | Required | 
-
+| machine_id | The ID of the machine. | Required |
+| action | The action to use for the tag. | Required |
+| tag | The name of the tag. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Machine.ID | String | The ID of the machine. | 
-| MicrosoftATP.Machine.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
-| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP address on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last IP address through which the machine accessed the internet. | 
-| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.Machine.HealthStatus | String | The health status of the machine.| 
-| MicrosoftATP.Machine.RBACGroupID | Number | The RBAC group ID of the machine. | 
-| MicrosoftATP.Machine.RBACGroupName | String | The RBAC group name of the machine. | 
-| MicrosoftATP.Machine.RiskScore | String | The risk score of the machine.| 
-| MicrosoftATP.Machine.ExposureLevel | String | The exposure level of the machine. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | Whether the machine is AAD joined. | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID. | 
-| MicrosoftATP.Machine.MachineTags | String | The set of machine tags. | 
-
+| MicrosoftATP.Machine.ID | String | The ID of the machine. |
+| MicrosoftATP.Machine.ComputerDNSName | String | The DNS name of the machine. |
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. |
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP address on the machine. |
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last IP address through which the machine accessed the internet. |
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.Machine.HealthStatus | String | The health status of the machine.|
+| MicrosoftATP.Machine.RBACGroupID | Number | The RBAC group ID of the machine. |
+| MicrosoftATP.Machine.RBACGroupName | String | The RBAC group name of the machine. |
+| MicrosoftATP.Machine.RiskScore | String | The risk score of the machine.|
+| MicrosoftATP.Machine.ExposureLevel | String | The exposure level of the machine. |
+| MicrosoftATP.Machine.IsAADJoined | Boolean | Whether the machine is AAD joined. |
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID. |
+| MicrosoftATP.Machine.MachineTags | String | The set of machine tags. |
 
 ##### Command Example
 
@@ -3269,7 +3182,7 @@ Machine.ReadWrite.All
 
 ##### Human Readable Output
 
-##### Succeed to Add tag to f70f9fe6b29cd9511652434919c6530618f06606:
+##### Succeed to Add tag to f70f9fe6b29cd9511652434919c6530618f06606
 
 |ID|ComputerDNSName|OSPlatform|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|MachineTags|
 |---|---|---|---|---|---|---|---|
@@ -3280,7 +3193,6 @@ Machine.ReadWrite.All
 ---
 Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all indicators by the ID that the system creates when the indicator is ingested.
 
-
 #### Base Command
 
 `microsoft-atp-indicator-list`
@@ -3289,71 +3201,69 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional | 
+| limit | The maximum number of indicators to return. Default is 50. | Optional |
 | page_size | Specify the page size of the result set. Maximum is 200. Default value is 50. | Optional |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. | 
-| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: "unknown", "adversary", "capability", "infrastructure", "victim". | 
-| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
-| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
-| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
-| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. | 
-| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. | 
-| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. | 
-| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. | 
-| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
-| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
-| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph". | 
-| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
-| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
-| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
-| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. | 
-| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
-| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
-| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
-| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
-| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
-| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. | 
-| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. | 
-| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. | 
-| MicrosoftATP.Indicators.networkPort | Number | TCP port. | 
-| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. | 
-| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. | 
-| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
-| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
-| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
-| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
-| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, amber, and red. | 
-| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
-| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
-| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
-
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. |
+| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. |
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: "unknown", "adversary", "capability", "infrastructure", "victim". |
+| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. |
+| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. |
+| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. |
+| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. |
+| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. |
+| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. |
+| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. |
+| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. |
+| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. |
+| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. |
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). |
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph". |
+| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. |
+| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. |
+| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. |
+| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. |
+| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. |
+| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. |
+| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. |
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. |
+| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. |
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. |
+| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. |
+| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. |
+| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. |
+| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. |
+| MicrosoftATP.Indicators.networkPort | Number | TCP port. |
+| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. |
+| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. |
+| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. |
+| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. |
+| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. |
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. |
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 |
+| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. |
+| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. |
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, amber, and red. |
+| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. |
+| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. |
+| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. |
 
 #### Command Example
 
@@ -3386,7 +3296,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 
 #### Human Readable Output
 
->### Indicators from Microsoft ATP:
+>### Indicators from Microsoft ATP
 >
 >|id|action|severity|domainName|
 >|---|---|---|---|
@@ -3397,7 +3307,6 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 ---
 Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets an indicator by its ID.
 
-
 #### Base Command
 
 `microsoft-atp-indicator-get-by-id`
@@ -3406,69 +3315,68 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_id | The ID of the indicator to get. | Required | 
-
+| indicator_id | The ID of the indicator to get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
-| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
-| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
-| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
-| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
-| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. | 
-| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. | 
-| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. | 
-| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. | 
-| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
-| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
-| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
-| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
-| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
-| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
-| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. | 
-| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
-| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
-| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
-| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
-| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
-| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. | 
-| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. | 
-| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. | 
-| MicrosoftATP.Indicators.networkPort | Number | TCP port. | 
-| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. | 
-| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. | 
-| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
-| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
-| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
-| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
-| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
-| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
-| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
-| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. |
+| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. |
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. |
+| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. |
+| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. |
+| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. |
+| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. |
+| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. |
+| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. |
+| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. |
+| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. |
+| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. |
+| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. |
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). |
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. |
+| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. |
+| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. |
+| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. |
+| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. |
+| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. |
+| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. |
+| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. |
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. |
+| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. |
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. |
+| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. |
+| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. |
+| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. |
+| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. |
+| MicrosoftATP.Indicators.networkPort | Number | TCP port. |
+| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. |
+| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. |
+| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. |
+| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. |
+| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. |
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. |
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 |
+| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. |
+| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. |
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. |
+| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. |
+| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. |
+| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. |
 
 #### Command Example
 
@@ -3501,18 +3409,16 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 
 #### Human Readable Output
 
->### Indicators from Microsoft ATP:
+>### Indicators from Microsoft ATP
 >
 >|id|action|severity|domainName|
 >|---|---|---|---|
 >| 17 | block | 2 | example.com |
 
-
 ### microsoft-atp-indicator-create-network
 
 ---
 Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a network indicator.
-
 
 #### Base Command
 
@@ -3522,94 +3428,93 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | The action to apply if the indicator is matched from within the targetProduct security tool. | Required | 
-| description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required | 
-| threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required | 
-| tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional | 
-| confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
-| tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
-| domain_name | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain (For example, example.domain.net) | Optional | 
-| network_cidr_block | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | Optional | 
-| network_destination_asn | The destination autonomous system identifier of the network referenced in the indicator. | Optional | 
-| network_destination_cidr_block | CIDR Block notation representation of the destination network in this indicator. | Optional | 
-| network_destination_ipv4 | IPv4 IP address destination. | Optional | 
-| network_destination_ipv6 | IPv6 IP address destination.<br/> | Optional | 
-| network_destination_port | TCP port destination. | Optional | 
-| network_ipv4 | IPv4 IP address. Use only if the Source and Destination cannot be identified. | Optional | 
-| network_ipv6 | IPv6 IP address. Use only if the Source and Destination cannot be identified. | Optional | 
-| network_port | TCP port. Use only if the Source and Destination cannot be identified. | Optional | 
-| network_protocol | Decimal representation of the protocol field in the IPv4 header. | Optional | 
-| network_source_asn | The source autonomous system identifier of the network referenced in the indicator. | Optional | 
-| network_source_cidr_block | CIDR Block notation representation of the source network in this indicator. | Optional | 
-| network_source_ipv4 | IPv4 IP address source. | Optional | 
-| network_source_ipv6 | IPv6 IP address source. | Optional | 
-| network_source_port | TCP port source. | Optional | 
-| url | Uniform Resource Locator. This URL must comply with RFC 1738. | Optional | 
-| user_agent | User-Agent string from a web request that could indicate compromise. | Optional | 
-
+| action | The action to apply if the indicator is matched from within the targetProduct security tool. | Required |
+| description | Brief description (100 characters or less) of the threat represented by the indicator. | Required |
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required |
+| threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required |
+| tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional |
+| confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional |
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional |
+| tags | A comma-separated list that stores arbitrary tags/keywords. | Optional |
+| domain_name | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain (For example, example.domain.net) | Optional |
+| network_cidr_block | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | Optional |
+| network_destination_asn | The destination autonomous system identifier of the network referenced in the indicator. | Optional |
+| network_destination_cidr_block | CIDR Block notation representation of the destination network in this indicator. | Optional |
+| network_destination_ipv4 | IPv4 IP address destination. | Optional |
+| network_destination_ipv6 | IPv6 IP address destination.<br/> | Optional |
+| network_destination_port | TCP port destination. | Optional |
+| network_ipv4 | IPv4 IP address. Use only if the Source and Destination cannot be identified. | Optional |
+| network_ipv6 | IPv6 IP address. Use only if the Source and Destination cannot be identified. | Optional |
+| network_port | TCP port. Use only if the Source and Destination cannot be identified. | Optional |
+| network_protocol | Decimal representation of the protocol field in the IPv4 header. | Optional |
+| network_source_asn | The source autonomous system identifier of the network referenced in the indicator. | Optional |
+| network_source_cidr_block | CIDR Block notation representation of the source network in this indicator. | Optional |
+| network_source_ipv4 | IPv4 IP address source. | Optional |
+| network_source_ipv6 | IPv6 IP address source. | Optional |
+| network_source_port | TCP port source. | Optional |
+| url | Uniform Resource Locator. This URL must comply with RFC 1738. | Optional |
+| user_agent | User-Agent string from a web request that could indicate compromise. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
-| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
-| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
-| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
-| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
-| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. | 
-| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. | 
-| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. | 
-| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. | 
-| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
-| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
-| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
-| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
-| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
-| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
-| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. | 
-| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
-| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
-| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
-| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
-| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
-| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. | 
-| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. | 
-| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. | 
-| MicrosoftATP.Indicators.networkPort | Number | TCP port. | 
-| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. | 
-| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. | 
-| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
-| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
-| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
-| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
-| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
-| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
-| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
-| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. |
+| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. |
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. |
+| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. |
+| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. |
+| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. |
+| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. |
+| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. |
+| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. |
+| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. |
+| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. |
+| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. |
+| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. |
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). |
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. |
+| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. |
+| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. |
+| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. |
+| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. |
+| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. |
+| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. |
+| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. |
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. |
+| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. |
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. |
+| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. |
+| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. |
+| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. |
+| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. |
+| MicrosoftATP.Indicators.networkPort | Number | TCP port. |
+| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. |
+| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. |
+| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. |
+| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. |
+| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. |
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. |
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 |
+| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. |
+| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. |
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. |
+| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. |
+| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. |
+| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. |
 
 #### Command Example
 
@@ -3642,7 +3547,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 
 #### Human Readable Output
 
->### Indicator 17 was successfully created:
+>### Indicator 17 was successfully created
 >
 >|id|action|severity|domainName|
 >|---|---|---|---|
@@ -3653,7 +3558,6 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 ---
 Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator
 
-
 #### Base Command
 
 `microsoft-atp-indicator-create-file`
@@ -3662,86 +3566,85 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | The action to apply if the indicator is matched from within the targetProduct security tool. | Required | 
-| description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required | 
-| threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required | 
-| tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional | 
-| confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
-| tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
-| file_compile_date_time | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | Optional | 
-| file_created_date_time | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | Optional | 
-| file_hash_type | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. | Optional | 
-| file_hash_value | The file hash value. | Optional | 
-| file_mutex_name | Mutex name used in file-based detections. | Optional | 
-| file_name | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | Optional | 
-| file_packer | The packer used to build the file in question. | Optional | 
-| file_path | Path of the file indicating a compromise. Can be a Windows or *nix style path. | Optional | 
-| file_size | Size of the file in bytes. | Optional | 
-| file_type | Text description of the type of file. For example, “Word Document” or “Binary”. | Optional | 
-
+| action | The action to apply if the indicator is matched from within the targetProduct security tool. | Required |
+| description | Brief description (100 characters or less) of the threat represented by the indicator. | Required |
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required |
+| threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required |
+| tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional |
+| confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional |
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional |
+| tags | A comma-separated list that stores arbitrary tags/keywords. | Optional |
+| file_compile_date_time | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | Optional |
+| file_created_date_time | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | Optional |
+| file_hash_type | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. | Optional |
+| file_hash_value | The file hash value. | Optional |
+| file_mutex_name | Mutex name used in file-based detections. | Optional |
+| file_name | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | Optional |
+| file_packer | The packer used to build the file in question. | Optional |
+| file_path | Path of the file indicating a compromise. Can be a Windows or *nix style path. | Optional |
+| file_size | Size of the file in bytes. | Optional |
+| file_type | Text description of the type of file. For example, “Word Document” or “Binary”. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
-| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
-| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
-| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
-| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
-| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. | 
-| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. | 
-| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. | 
-| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. | 
-| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
-| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
-| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
-| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
-| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
-| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
-| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. | 
-| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
-| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
-| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
-| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
-| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
-| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. | 
-| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. | 
-| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. | 
-| MicrosoftATP.Indicators.networkPort | Number | TCP port. | 
-| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. | 
-| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. | 
-| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
-| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
-| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
-| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
-| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
-| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
-| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
-| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. |
+| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. |
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. |
+| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. |
+| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. |
+| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. |
+| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. |
+| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. |
+| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. |
+| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. |
+| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. |
+| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. |
+| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. |
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). |
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. |
+| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. |
+| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. |
+| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. |
+| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. |
+| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. |
+| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. |
+| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. |
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. |
+| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. |
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. |
+| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. |
+| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. |
+| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. |
+| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. |
+| MicrosoftATP.Indicators.networkPort | Number | TCP port. |
+| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. |
+| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. |
+| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. |
+| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. |
+| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. |
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. |
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 |
+| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. |
+| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. |
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. |
+| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. |
+| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. |
+| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. |
 
 #### Command Example
 
@@ -3775,7 +3678,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 
 #### Human Readable Output
 
->### Indicator 18 was successfully created:
+>### Indicator 18 was successfully created
 >
 >|id|action|severity|fileHashType|fileHashValue|
 >|---|---|---|---|---|
@@ -3786,7 +3689,6 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 ---
 Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
 
-
 #### Base Command
 
 `microsoft-atp-indicator-update`
@@ -3795,72 +3697,71 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_id | The ID of the indicator to update. | Required | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all. | Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required | 
-| description | Brief description (100 characters or less) of the threat represented by the indicator. | Optional | 
-
+| indicator_id | The ID of the indicator to update. | Required |
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all. | Optional |
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required |
+| description | Brief description (100 characters or less) of the threat represented by the indicator. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
-| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
-| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
-| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
-| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
-| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. | 
-| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. | 
-| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. | 
-| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. | 
-| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
-| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
-| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
-| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
-| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
-| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
-| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. | 
-| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
-| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
-| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
-| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
-| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
-| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. | 
-| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. | 
-| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. | 
-| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. | 
-| MicrosoftATP.Indicators.networkPort | Number | TCP port. | 
-| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. | 
-| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. | 
-| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. | 
-| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
-| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
-| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
-| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
-| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
-| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
-| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
-| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. |
+| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. |
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. |
+| MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. |
+| MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. |
+| MicrosoftATP.Indicators.emailLanguage | String | The language of the email. |
+| MicrosoftATP.Indicators.emailRecipient | String | Recipient email address. |
+| MicrosoftATP.Indicators.emailSenderAddress | String | Email address of the attacker|victim. |
+| MicrosoftATP.Indicators.emailSenderName | String | Display name of the attacker|victim.. |
+| MicrosoftATP.Indicators.emailSourceDomain | String | Domain used in the email. |
+| MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. |
+| MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. |
+| MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. |
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). |
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. |
+| MicrosoftATP.Indicators.fileHashValue | String | The file hash value. |
+| MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. |
+| MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. |
+| MicrosoftATP.Indicators.filePacker | String | The packer used to build the file in question. |
+| MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. |
+| MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. |
+| MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. |
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. |
+| MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. |
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. |
+| MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. |
+| MicrosoftATP.Indicators.networkDestinationIPv4 | String | IPv4 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationIPv6 | String | IPv6 IP address destination. |
+| MicrosoftATP.Indicators.networkDestinationPort | Number | TCP port destination. |
+| MicrosoftATP.Indicators.networkIPv4 | String | IPv4 IP address. |
+| MicrosoftATP.Indicators.networkIPv6 | String | IPv6 IP address. |
+| MicrosoftATP.Indicators.networkPort | Number | TCP port. |
+| MicrosoftATP.Indicators.networkProtocol | Number | Decimal representation of the protocol field in the IPv4 header. |
+| MicrosoftATP.Indicators.networkSourceAsn | Number | The source autonomous system identifier of the network referenced in the indicator. |
+| MicrosoftATP.Indicators.networkSourceCidrBlock | String | CIDR Block notation representation of the source network in this indicator. |
+| MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. |
+| MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. |
+| MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. |
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. |
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 |
+| MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. |
+| MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. |
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. |
+| MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. |
+| MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. |
+| MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. |
 
 #### Command Example
 
@@ -3894,18 +3795,16 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 
 #### Human Readable Output
 
->### Indicator ID: 18 was updated successfully.
+>### Indicator ID: 18 was updated successfully
 >
 >|action|azureTenantId|description|expirationDateTime|fileHashType|fileHashValue|id|ingestedDateTime|isActive|severity|targetProduct|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| allow | TENANT-ID | Title: Indicator 50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c of type FileSha256, Description: A description | 2020-08-28T17:21:15Z | sha256 | 50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c | 18 | 2020-08-26T17:18:03.5249643Z | true | 0 | Microsoft Defender ATP |
 
-
 ### microsoft-atp-indicator-delete
 
 ---
 Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
-
 
 #### Base Command
 
@@ -3915,8 +3814,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_id | The ID of the indicator to delete. | Required | 
-
+| indicator_id | The ID of the indicator to delete. | Required |
 
 #### Context Output
 
@@ -3925,7 +3823,6 @@ There is no context output for this command.
 #### Command Example
 
 ```!microsoft-atp-indicator-delete indicator_id=18```
-
 
 #### Human Readable Output
 
@@ -3941,6 +3838,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 `Ti.ReadWrite`
 
 ##### Note
+
 To ensure that the application is accessible to all indicators, the 'Ti.ReadWrite.All' permission must be granted. Without this permission, the application will only be accessible to the indicators it has created.
 
 #### Base Command
@@ -3957,43 +3855,41 @@ To ensure that the application is accessible to all indicators, the 'Ti.ReadWrit
 | indicator_title | The title of the indicator to get. | Optional |
 | indicator_type | The type of the indicator to get. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | 
-| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. | 
-| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
-| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
-| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
-| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
-| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
-| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
-| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
-| MicrosoftATP.Indicators.title | String | Indicator title. | 
-| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
-| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. | 
-| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
-| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
-| MicrosoftATP.Indicators.category | Number | A number representing the indicator category. | 
-| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| IP.Address | String | IP address. | 
-| URL.Data | String | The URL. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. |
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. |
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. |
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. |
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. |
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. |
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. |
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. |
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. |
+| MicrosoftATP.Indicators.title | String | Indicator title. |
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. |
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. |
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. |
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. |
+| MicrosoftATP.Indicators.category | Number | A number representing the indicator category. |
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| IP.Address | String | IP address. |
+| URL.Data | String | The URL. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 
@@ -4085,7 +3981,6 @@ Updates the specified indicator.
 
 `Ti.ReadWrite`
 
-
 #### Base Command
 
 `microsoft-atp-sc-indicator-update`
@@ -4094,54 +3989,52 @@ Updates the specified indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_value | The value of the indicator to update. | Required | 
-| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
-| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional | 
-| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
-| indicator_title | Indicator alert title. | Required | 
-| indicator_application | The application associated with the indicator. | Optional | 
-| recommended_actions | TI indicator alert recommended actions. | Optional | 
-| rbac_group_names | Comma-separated list of RBAC group names the indicator is applied to. | Optional | 
-
+| indicator_value | The value of the indicator to update. | Required |
+| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required |
+| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required |
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional |
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional |
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required |
+| indicator_title | Indicator alert title. | Required |
+| indicator_application | The application associated with the indicator. | Optional |
+| recommended_actions | TI indicator alert recommended actions. | Optional |
+| rbac_group_names | Comma-separated list of RBAC group names the indicator is applied to. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | 
-| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. | 
-| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
-| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
-| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
-| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
-| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
-| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
-| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
-| MicrosoftATP.Indicators.title | String | Indicator title. | 
-| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
-| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. | 
-| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
-| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
-| MicrosoftATP.Indicators.category | Number | An number representing the indicator category. | 
-| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| IP.Address | String | IP address. | 
-| URL.Data | String | The URL. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. |
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. |
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. |
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. |
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. |
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. |
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. |
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. |
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. |
+| MicrosoftATP.Indicators.title | String | Indicator title. |
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. |
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. |
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. |
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. |
+| MicrosoftATP.Indicators.category | Number | An number representing the indicator category. |
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| IP.Address | String | IP address. |
+| URL.Data | String | The URL. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 
@@ -4190,7 +4083,7 @@ Updates the specified indicator.
 
 #### Human Readable Output
 
->### Indicator 2.2.2.2 was updated successfully.
+>### Indicator 2.2.2.2 was updated successfully
 >
 >|id|action|indicatorValue|indicatorType|severity|title|description|
 >|---|---|---|---|---|---|---|
@@ -4200,7 +4093,6 @@ Updates the specified indicator.
 
 ---
 Gets an indicator by its ID.
-
 
 ### Permissions
 
@@ -4214,45 +4106,43 @@ Gets an indicator by its ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_id | The ID of the indicator to get. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required | 
-
+| indicator_id | The ID of the indicator to get. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium" and "High", where High is the most severe and Informational is not severe at all. | 
-| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. | 
-| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
-| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
-| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
-| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
-| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
-| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
-| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
-| MicrosoftATP.Indicators.title | String | Indicator title. | 
-| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
-| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. | 
-| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
-| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
-| MicrosoftATP.Indicators.category | Number | An number representing the indicator category. | 
-| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| IP.Address | String | IP address. | 
-| URL.Data | String | The URL. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium" and "High", where High is the most severe and Informational is not severe at all. |
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. |
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. |
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. |
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. |
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. |
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. |
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. |
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. |
+| MicrosoftATP.Indicators.title | String | Indicator title. |
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. |
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. |
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. |
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. |
+| MicrosoftATP.Indicators.category | Number | An number representing the indicator category. |
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| IP.Address | String | IP address. |
+| URL.Data | String | The URL. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 
@@ -4335,8 +4225,7 @@ Deletes the specified indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_id | The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required | 
-
+| indicator_id | The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required |
 
 #### Context Output
 
@@ -4367,54 +4256,52 @@ Creates a new indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_value | The value of the indicator to update. | Required | 
-| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
-| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional | 
-| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
-| indicator_title | Indicator alert title. | Required | 
-| indicator_application | The application associated with the indicator. | Optional | 
-| recommended_actions | TI indicator alert recommended actions. | Optional | 
-| rbac_group_names | Comma-separated list of RBAC group names the indicator is applied to. | Optional | 
-
+| indicator_value | The value of the indicator to update. | Required |
+| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required |
+| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required |
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional |
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional |
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required |
+| indicator_title | Indicator alert title. | Required |
+| indicator_application | The application associated with the indicator. | Optional |
+| recommended_actions | TI indicator alert recommended actions. | Optional |
+| rbac_group_names | Comma-separated list of RBAC group names the indicator is applied to. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", "alert". | 
-| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | 
-| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. | 
-| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
-| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
-| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
-| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
-| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
-| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
-| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
-| MicrosoftATP.Indicators.title | String | Indicator title. | 
-| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
-| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. | 
-| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
-| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
-| MicrosoftATP.Indicators.category | Number | An number representing the indicator category. | 
-| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| IP.Address | String | IP address. | 
-| URL.Data | String | The URL. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", "alert". |
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. |
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. |
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. |
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. |
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. |
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. |
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. |
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. |
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. |
+| MicrosoftATP.Indicators.title | String | Indicator title. |
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. |
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. |
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. |
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. |
+| MicrosoftATP.Indicators.category | Number | An number representing the indicator category. |
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| IP.Address | String | IP address. |
+| URL.Data | String | The URL. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 
@@ -4461,7 +4348,7 @@ Creates a new indicator.
 
 #### Human Readable Output
 
->### Indicator 2.2.2.2 was updated successfully.
+>### Indicator 2.2.2.2 was updated successfully
 >
 >|id|action|indicatorValue|indicatorType|severity|title|description|
 >|---|---|---|---|---|---|---|
@@ -4484,18 +4371,17 @@ Vulnerability.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | A comma-separated list of CVE IDs used for getting the machines. | Required | 
-
+| cve_id | A comma-separated list of CVE IDs used for getting the machines. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.CveMachine.ID | String | The machine ID. | 
-| MicrosoftATP.CveMachine.ComputerDNSName | String | The machine hostname. | 
-| MicrosoftATP.CveMachine.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.CveMachine.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.CveMachine.CVE | Unknown | The given CVE IDs related to this machine. | 
+| MicrosoftATP.CveMachine.ID | String | The machine ID. |
+| MicrosoftATP.CveMachine.ComputerDNSName | String | The machine hostname. |
+| MicrosoftATP.CveMachine.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.CveMachine.RBACGroupName | String | The machine RBAC group name. |
+| MicrosoftATP.CveMachine.CVE | Unknown | The given CVE IDs related to this machine. |
 
 #### Command example
 
@@ -4552,34 +4438,33 @@ File.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information. | Required | 
-
+| hash | A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. | 
-| MicrosoftATP.File.Md5 | String | The MD5 hash of the file. | 
-| MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. | 
-| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across the organization. | 
-| MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. | 
-| MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. | 
-| MicrosoftATP.File.Size | Number | The size of the file. | 
-| MicrosoftATP.File.FileType | String | The type of the file. | 
-| MicrosoftATP.File.IsPeFile | Boolean | True if the file is portable executable, False otherwise. | 
-| MicrosoftATP.File.FilePublisher | String | The file's publisher. | 
-| MicrosoftATP.File.FileProductName | String | The file product name. | 
-| MicrosoftATP.File.Signer | String | The file signer. | 
-| MicrosoftATP.File.Issuer | String | The file issuer. | 
-| MicrosoftATP.File.SignerHash | String | The hash of the signing certificate. | 
-| MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. | 
-| MicrosoftATP.File.DeterminationValue | String | The file determination value. | 
-| MicrosoftATP.File.DeterminationType | String | The file determination type. | 
+| MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. |
+| MicrosoftATP.File.Md5 | String | The MD5 hash of the file. |
+| MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. |
+| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across the organization. |
+| MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. |
+| MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. |
+| MicrosoftATP.File.Size | Number | The size of the file. |
+| MicrosoftATP.File.FileType | String | The type of the file. |
+| MicrosoftATP.File.IsPeFile | Boolean | True if the file is portable executable, False otherwise. |
+| MicrosoftATP.File.FilePublisher | String | The file's publisher. |
+| MicrosoftATP.File.FileProductName | String | The file product name. |
+| MicrosoftATP.File.Signer | String | The file signer. |
+| MicrosoftATP.File.Issuer | String | The file issuer. |
+| MicrosoftATP.File.SignerHash | String | The hash of the signing certificate. |
+| MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. |
+| MicrosoftATP.File.DeterminationValue | String | The file determination value. |
+| MicrosoftATP.File.DeterminationType | String | The file determination type. |
 | File.SHA1 | String | The SHA1 hash of the file. |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Type | String | The file type. | 
-| File.Size | Number | The file size. | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type. |
+| File.Size | Number | The file size. |
 
 #### Command example
 
@@ -4642,7 +4527,6 @@ File.Read.All
 >| 3395856ce81 | 275a021bbfb648 | 68 |
 >| db79e9e669c | ef67e4b2bb4ee5 | 36768 |
 
-
 ### endpoint
 
 ---
@@ -4661,46 +4545,45 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The endpoint ID. | Optional | 
-| ip | The endpoint IP address. | Optional | 
-| hostname | The endpoint hostname. | Optional | 
-
+| id | The endpoint ID. | Optional |
+| ip | The endpoint IP address. | Optional |
+| hostname | The endpoint hostname. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.ID | String | The endpoint's identifier. | 
-| Endpoint.Hostname | String | The hostname of the endpoint. | 
-| Endpoint.OS | String | The endpoint's operating system. | 
-| Endpoint.OSVersion | String | The endpoint's operating system's version. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.Status | String | The health status of the endpoint. | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
-| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
-| MicrosoftATP.Machine.ID | String | The machine ID. | 
-| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
-| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
-| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
-| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
-| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
-| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
-| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
-| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
-| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
-| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
-| MicrosoftATP.Machine.IPAddresses.type | String | The machine macine IP address type. | 
-| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+| Endpoint.ID | String | The endpoint's identifier. |
+| Endpoint.Hostname | String | The hostname of the endpoint. |
+| Endpoint.OS | String | The endpoint's operating system. |
+| Endpoint.OSVersion | String | The endpoint's operating system's version. |
+| Endpoint.IPAddress | String | The endpoint's IP address. |
+| Endpoint.Status | String | The health status of the endpoint. |
+| Endpoint.MACAddress | String | The endpoint's MAC address. |
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. |
+| MicrosoftATP.Machine.ID | String | The machine ID. |
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. |
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. |
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. |
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. |
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. |
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. |
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. |
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. |
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. |
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. |
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. |
+| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. |
+| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. |
+| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. |
+| MicrosoftATP.Machine.IPAddresses.type | String | The machine macine IP address type. |
+| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. |
 
 #### Command example
 
@@ -4848,12 +4731,11 @@ Machine.ReadWrite.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP Machine:
+>### Microsoft Defender ATP Machine
 >
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
 >| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
-
 
 ### microsoft-atp-indicator-batch-update
 
@@ -4884,17 +4766,16 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_batch | A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]. | Required | 
-
+| indicator_batch | A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Indicators.ID | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
-| MicrosoftATP.Indicators.Value | String | The value of the indicator. | 
-| MicrosoftATP.Indicators.FailureReason | String | The reason for update failure. | 
-| MicrosoftATP.Indicators.IsFailed | Boolean | Whether the update failed. | 
+| MicrosoftATP.Indicators.ID | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
+| MicrosoftATP.Indicators.Value | String | The value of the indicator. |
+| MicrosoftATP.Indicators.FailureReason | String | The reason for update failure. |
+| MicrosoftATP.Indicators.IsFailed | Boolean | Whether the update failed. |
 
 #### Command example
 
@@ -4925,24 +4806,23 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 
 #### Human Readable Output
 
->### Indicators updated successfully.
+>### Indicators updated successfully
 >
 >|ID|Value|IsFailed|
 >|---|---|---|
 >| 5217 | 220e7d15b011d7fac48f2bd61114db1022197f7f | false |
 >| 5218 | 2233223322332233223322332233223322332233223322332233223322332222 | false |
 
-
 ### microsoft-atp-get-alert-by-id (Deprecated)
 
 This command has been deprecated. Use 'msg-get-alert-details' in the 'Microsoft Graph Security' integration instead.
 
 ---
-Retrieves specific alert by the given alert ID. 
+Retrieves specific alert by the given alert ID.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All	
+Alert.ReadWrite.All
 
 #### Base Command
 
@@ -4952,44 +4832,43 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_ids | A comma-separated list of alert IDs. | Required | 
-
+| alert_ids | A comma-separated list of alert IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Alert.ID | String | The alert ID. | 
-| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation. | 
-| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.Alert.Severity | String | The severity of the alert. | 
-| MicrosoftATP.Alert.Status | String | The current status of the alert. | 
-| MicrosoftATP.Alert.Classification | String | The alert Classification. | 
-| MicrosoftATP.Alert.Determination | String | The determination of the alert. | 
-| MicrosoftATP.Alert.DetectionSource | String | The detection source. | 
-| MicrosoftATP.Alert.Category | String | The category of the alert. | 
-| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family. | 
-| MicrosoftATP.Alert.Title | String | The alert title. | 
-| MicrosoftATP.Alert.Description | String | The alert description. | 
-| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.Alert.ResolvedTime | Date | The date and time when the status of the alert was changed to 'Resolved'. | 
-| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
-| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string. | 
-| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string. | 
-| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment created time date. | 
-| MicrosoftATP.Alert.Evidence | Unknown | Evidence related to the alert. | 
-| MicrosoftATP.Alert.DetectorID | String | The ID of the detector that triggered the alert. | 
-| MicrosoftATP.Alert.ThreatName | String | The threat name. | 
-| MicrosoftATP.Alert.RelatedUser | String | Details of the user related to a specific alert. | 
-| MicrosoftATP.Alert.MitreTechniques | String | MITRE Enterprise technique ID. | 
-| MicrosoftATP.Alert.RBACGroupName | String | The device RBAC group name. | 
+| MicrosoftATP.Alert.ID | String | The alert ID. |
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. |
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. |
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation. |
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.Alert.Severity | String | The severity of the alert. |
+| MicrosoftATP.Alert.Status | String | The current status of the alert. |
+| MicrosoftATP.Alert.Classification | String | The alert Classification. |
+| MicrosoftATP.Alert.Determination | String | The determination of the alert. |
+| MicrosoftATP.Alert.DetectionSource | String | The detection source. |
+| MicrosoftATP.Alert.Category | String | The category of the alert. |
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family. |
+| MicrosoftATP.Alert.Title | String | The alert title. |
+| MicrosoftATP.Alert.Description | String | The alert description. |
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. |
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time when the status of the alert was changed to 'Resolved'. |
+| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string. |
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string. |
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment created time date. |
+| MicrosoftATP.Alert.Evidence | Unknown | Evidence related to the alert. |
+| MicrosoftATP.Alert.DetectorID | String | The ID of the detector that triggered the alert. |
+| MicrosoftATP.Alert.ThreatName | String | The threat name. |
+| MicrosoftATP.Alert.RelatedUser | String | Details of the user related to a specific alert. |
+| MicrosoftATP.Alert.MitreTechniques | String | MITRE Enterprise technique ID. |
+| MicrosoftATP.Alert.RBACGroupName | String | The device RBAC group name. |
 
 #### Command example
 
@@ -5082,7 +4961,7 @@ Alert.ReadWrite.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP Alerts Info for IDs ['da637797972607470400_795854214', 'da637750706361180181_-1167994114']:
+>### Microsoft Defender ATP Alerts Info for IDs ['da637797972607470400_795854214', 'da637750706361180181_-1167994114']
 >
 >|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|MachineID|
 >|---|---|---|---|---|---|---|---|---|
@@ -5094,7 +4973,6 @@ Alert.ReadWrite.All
 ---
 Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
 
-
 #### Base Command
 
 `microsoft-atp-live-response-put-file`
@@ -5103,43 +4981,42 @@ Puts a file from the library to the device. Files are saved in a working folder 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | Machine ID to add file to. | Required | 
-| comment | A comment to associate with the action. | Required | 
-| file_name | File name to take from library to device. | Required | 
-| machine_action_id | Action ID to retrieve status and data for. | Optional | 
-
+| machine_id | Machine ID to add file to. | Required |
+| comment | A comment to associate with the action. | Required |
+| file_name | File name to take from library to device. | Required |
+| machine_action_id | Action ID to retrieve status and data for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.LiveResponseAction.id | String | The machine action ID. | 
-| MicrosoftATP.LiveResponseAction.type | String | The machine action type. | 
-| MicrosoftATP.LiveResponseAction.title | String | The machine action title. | 
-| MicrosoftATP.LiveResponseAction.requestor | String | The machine action requestor. | 
-| MicrosoftATP.LiveResponseAction.requestorComment | String | The machine action requestorComment. | 
-| MicrosoftATP.LiveResponseAction.status | String | The machine action status. | 
-| MicrosoftATP.LiveResponseAction.machineId | String | The machine ID. | 
-| MicrosoftATP.LiveResponseAction.computerDnsName | String | The computerDnsName. | 
-| MicrosoftATP.LiveResponseAction.creationDateTimeUtc | Date | The action creationDateTimeUtc. | 
-| MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc | Date | The machine action lastUpdateDateTimeUtc. | 
-| MicrosoftATP.LiveResponseAction.cancellationRequestor | String | The machine action cancellationRequestor. | 
-| MicrosoftATP.LiveResponseAction.cancellationComment | String | The machine action cancellationComment. | 
-| MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc | String | The cancellationDateTimeUtc. | 
-| MicrosoftATP.LiveResponseAction.errorHResult | String | The errorHResult if exists. | 
-| MicrosoftATP.LiveResponseAction.scope | String | The action scope. | 
-| MicrosoftATP.LiveResponseAction.externalId | String | The machine action externalId. | 
-| MicrosoftATP.LiveResponseAction.requestSource | String | The machine action requestSource. | 
-| MicrosoftATP.LiveResponseAction.relatedFileInfo | String | The machine action relatedFileInfo. | 
-| MicrosoftATP.LiveResponseAction.commands.index | String | The machine action command index. | 
-| MicrosoftATP.LiveResponseAction.commands.startTime | String | The machine action command startTime. | 
-| MicrosoftATP.LiveResponseAction.commands.endTime | String | The machine action command endTime. | 
-| MicrosoftATP.LiveResponseAction.commands.commandStatus | String | The machine action command Status. | 
-| MicrosoftATP.LiveResponseAction.commands.errors | String | The machine action command errors if found. | 
-| MicrosoftATP.LiveResponseAction.commands.command.type | String | The machine action command type. | 
-| MicrosoftATP.LiveResponseAction.commands.command.params.key | String | The machine action command params key. | 
-| MicrosoftATP.LiveResponseAction.commands.command.params.value | String | The machine action command params value. | 
-| MicrosoftATP.LiveResponseAction.troubleshootInfo | String | The machine action troubleshootInfo. | 
+| MicrosoftATP.LiveResponseAction.id | String | The machine action ID. |
+| MicrosoftATP.LiveResponseAction.type | String | The machine action type. |
+| MicrosoftATP.LiveResponseAction.title | String | The machine action title. |
+| MicrosoftATP.LiveResponseAction.requestor | String | The machine action requestor. |
+| MicrosoftATP.LiveResponseAction.requestorComment | String | The machine action requestorComment. |
+| MicrosoftATP.LiveResponseAction.status | String | The machine action status. |
+| MicrosoftATP.LiveResponseAction.machineId | String | The machine ID. |
+| MicrosoftATP.LiveResponseAction.computerDnsName | String | The computerDnsName. |
+| MicrosoftATP.LiveResponseAction.creationDateTimeUtc | Date | The action creationDateTimeUtc. |
+| MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc | Date | The machine action lastUpdateDateTimeUtc. |
+| MicrosoftATP.LiveResponseAction.cancellationRequestor | String | The machine action cancellationRequestor. |
+| MicrosoftATP.LiveResponseAction.cancellationComment | String | The machine action cancellationComment. |
+| MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc | String | The cancellationDateTimeUtc. |
+| MicrosoftATP.LiveResponseAction.errorHResult | String | The errorHResult if exists. |
+| MicrosoftATP.LiveResponseAction.scope | String | The action scope. |
+| MicrosoftATP.LiveResponseAction.externalId | String | The machine action externalId. |
+| MicrosoftATP.LiveResponseAction.requestSource | String | The machine action requestSource. |
+| MicrosoftATP.LiveResponseAction.relatedFileInfo | String | The machine action relatedFileInfo. |
+| MicrosoftATP.LiveResponseAction.commands.index | String | The machine action command index. |
+| MicrosoftATP.LiveResponseAction.commands.startTime | String | The machine action command startTime. |
+| MicrosoftATP.LiveResponseAction.commands.endTime | String | The machine action command endTime. |
+| MicrosoftATP.LiveResponseAction.commands.commandStatus | String | The machine action command Status. |
+| MicrosoftATP.LiveResponseAction.commands.errors | String | The machine action command errors if found. |
+| MicrosoftATP.LiveResponseAction.commands.command.type | String | The machine action command type. |
+| MicrosoftATP.LiveResponseAction.commands.command.params.key | String | The machine action command params key. |
+| MicrosoftATP.LiveResponseAction.commands.command.params.value | String | The machine action command params value. |
+| MicrosoftATP.LiveResponseAction.troubleshootInfo | String | The machine action troubleshootInfo. |
 
 #### Command example
 
@@ -5196,7 +5073,7 @@ Puts a file from the library to the device. Files are saved in a working folder 
 
 #### Human Readable Output
 
->### Machine Action:
+>### Machine Action
 >
 >|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 >|---|---|---|---|---|---|
@@ -5207,7 +5084,6 @@ Puts a file from the library to the device. Files are saved in a working folder 
 ---
 Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
 
-
 #### Base Command
 
 `microsoft-atp-live-response-run-script`
@@ -5216,27 +5092,25 @@ Runs a script from the library on a device. The Args parameter is passed to your
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | Machine ID to add file to. | Required | 
-| comment | A comment to associate with the action. | Required | 
-| scriptName | Script name to run on device. | Required | 
-| arguments | Arguments to run the script with. | Optional | 
-| machine_action_id | Action ID to retrieve status and data for. | Optional | 
-
+| machine_id | Machine ID to add file to. | Required |
+| comment | A comment to associate with the action. | Required |
+| scriptName | Script name to run on device. | Required |
+| arguments | Arguments to run the script with. | Optional |
+| machine_action_id | Action ID to retrieve status and data for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.LiveResponseAction.script_name | String | The script name. | 
-| MicrosoftATP.LiveResponseAction.exit_code | String | The script exit code. | 
-| MicrosoftATP.LiveResponseAction.script_output | String | The script outputs. | 
-| MicrosoftATP.LiveResponseAction.script_errors | String | The script errors if found. | 
+| MicrosoftATP.LiveResponseAction.script_name | String | The script name. |
+| MicrosoftATP.LiveResponseAction.exit_code | String | The script exit code. |
+| MicrosoftATP.LiveResponseAction.script_output | String | The script outputs. |
+| MicrosoftATP.LiveResponseAction.script_errors | String | The script errors if found. |
 
 ### microsoft-atp-live-response-get-file
 
 ---
 Collect file from a device. NOTE: Backslashes in path must be escaped.
-
 
 #### Base Command
 
@@ -5246,49 +5120,47 @@ Collect file from a device. NOTE: Backslashes in path must be escaped.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | Machine ID to add file to. | Required | 
-| comment | A comment to associate with the action. | Required | 
-| path | File path to get from device. | Required | 
-| machine_action_id | Action ID to retrieve status and data for. | Optional | 
-
+| machine_id | Machine ID to add file to. | Required |
+| comment | A comment to associate with the action. | Required |
+| path | File path to get from device. | Required |
+| machine_action_id | Action ID to retrieve status and data for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.LiveResponseAction.id | String | The machine action ID. | 
-| MicrosoftATP.LiveResponseAction.type | String | The machine action type. | 
-| MicrosoftATP.LiveResponseAction.title | String | The machine action title. | 
-| MicrosoftATP.LiveResponseAction.requestor | String | The machine action requestor. | 
-| MicrosoftATP.LiveResponseAction.requestorComment | String | The machine action requestorComment. | 
-| MicrosoftATP.LiveResponseAction.status | String | The machine action status. | 
-| MicrosoftATP.LiveResponseAction.machineId | String | The machine ID. | 
-| MicrosoftATP.LiveResponseAction.computerDnsName | String | The computerDnsName. | 
-| MicrosoftATP.LiveResponseAction.creationDateTimeUtc | Date | The action creationDateTimeUtc. | 
-| MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc | Date | The machine action lastUpdateDateTimeUtc. | 
-| MicrosoftATP.LiveResponseAction.cancellationRequestor | String | The machine action cancellationRequestor. | 
-| MicrosoftATP.LiveResponseAction.cancellationComment | String | The machine action cancellationComment. | 
-| MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc | String | The cancellationDateTimeUtc. | 
-| MicrosoftATP.LiveResponseAction.errorHResult | String | The errorHResult if exists. | 
-| MicrosoftATP.LiveResponseAction.scope | String | The action scope. | 
-| MicrosoftATP.LiveResponseAction.externalId | String | The machine action externalId. | 
-| MicrosoftATP.LiveResponseAction.requestSource | String | The machine action requestSource. | 
-| MicrosoftATP.LiveResponseAction.relatedFileInfo | String | The machine action relatedFileInfo. | 
-| MicrosoftATP.LiveResponseAction.commands.index | String | The machine action command index. | 
-| MicrosoftATP.LiveResponseAction.commands.startTime | String | The machine action command startTime. | 
-| MicrosoftATP.LiveResponseAction.commands.endTime | String | The machine action command endTime. | 
-| MicrosoftATP.LiveResponseAction.commands.commandStatus | String | The machine action command Status. | 
-| MicrosoftATP.LiveResponseAction.commands.errors | String | The machine action command errors if found. | 
-| MicrosoftATP.LiveResponseAction.commands.command.type | String | The machine action command type. | 
-| MicrosoftATP.LiveResponseAction.commands.command.params.key | String | The machine action command params key. | 
-| MicrosoftATP.LiveResponseAction.commands.command.params.value | String | The machine action command params value. | 
-| MicrosoftATP.LiveResponseAction.troubleshootInfo | String | The machine action troubleshootInfo. | 
+| MicrosoftATP.LiveResponseAction.id | String | The machine action ID. |
+| MicrosoftATP.LiveResponseAction.type | String | The machine action type. |
+| MicrosoftATP.LiveResponseAction.title | String | The machine action title. |
+| MicrosoftATP.LiveResponseAction.requestor | String | The machine action requestor. |
+| MicrosoftATP.LiveResponseAction.requestorComment | String | The machine action requestorComment. |
+| MicrosoftATP.LiveResponseAction.status | String | The machine action status. |
+| MicrosoftATP.LiveResponseAction.machineId | String | The machine ID. |
+| MicrosoftATP.LiveResponseAction.computerDnsName | String | The computerDnsName. |
+| MicrosoftATP.LiveResponseAction.creationDateTimeUtc | Date | The action creationDateTimeUtc. |
+| MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc | Date | The machine action lastUpdateDateTimeUtc. |
+| MicrosoftATP.LiveResponseAction.cancellationRequestor | String | The machine action cancellationRequestor. |
+| MicrosoftATP.LiveResponseAction.cancellationComment | String | The machine action cancellationComment. |
+| MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc | String | The cancellationDateTimeUtc. |
+| MicrosoftATP.LiveResponseAction.errorHResult | String | The errorHResult if exists. |
+| MicrosoftATP.LiveResponseAction.scope | String | The action scope. |
+| MicrosoftATP.LiveResponseAction.externalId | String | The machine action externalId. |
+| MicrosoftATP.LiveResponseAction.requestSource | String | The machine action requestSource. |
+| MicrosoftATP.LiveResponseAction.relatedFileInfo | String | The machine action relatedFileInfo. |
+| MicrosoftATP.LiveResponseAction.commands.index | String | The machine action command index. |
+| MicrosoftATP.LiveResponseAction.commands.startTime | String | The machine action command startTime. |
+| MicrosoftATP.LiveResponseAction.commands.endTime | String | The machine action command endTime. |
+| MicrosoftATP.LiveResponseAction.commands.commandStatus | String | The machine action command Status. |
+| MicrosoftATP.LiveResponseAction.commands.errors | String | The machine action command errors if found. |
+| MicrosoftATP.LiveResponseAction.commands.command.type | String | The machine action command type. |
+| MicrosoftATP.LiveResponseAction.commands.command.params.key | String | The machine action command params key. |
+| MicrosoftATP.LiveResponseAction.commands.command.params.value | String | The machine action command params value. |
+| MicrosoftATP.LiveResponseAction.troubleshootInfo | String | The machine action troubleshootInfo. |
 
 ### microsoft-atp-live-response-result
 
 ---
 Gets a result file for a specified action.
-
 
 #### Base Command
 
@@ -5298,15 +5170,14 @@ Gets a result file for a specified action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_action_id | Action ID to retrieve status and data for. | Required | 
-| command_index | A command index to retrieve file for. | Required | 
-
+| machine_action_id | Action ID to retrieve status and data for. | Required |
+| command_index | A command index to retrieve file for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.LiveResponseAction | String | The machine action ID. | 
+| MicrosoftATP.LiveResponseAction | String | The machine action ID. |
 
 #### Command example
 
@@ -5347,7 +5218,6 @@ Gets a result file for a specified action.
 
 ---
 Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
-
 
 #### Base Command
 
@@ -5415,7 +5285,6 @@ Detects evidence of attempted lateral movement. When you select a “query_purpo
 >|---|---|---|---|
 >| devicename_2 | ip1 | 54296 | 21 |
 
-
 #### Command example
 
 ```!microsoft-atp-advanced-hunting-lateral-movement-evidence query_purpose=smb_connections device_name=devicename_1```
@@ -5457,7 +5326,6 @@ Detects evidence of attempted lateral movement. When you select a “query_purpo
 >|---|---|---|---|---|
 >| devicename_1 | 2022-03-03T19:43:46.4373311Z | powershell.exe | 5748 | 5 |
 >| devicename_1 | 2022-03-03T19:51:43.2411889Z | powershell_ise.exe | 10084 | 17 |
-
 
 #### Command example
 
@@ -5505,7 +5373,6 @@ Detects evidence of attempted lateral movement. When you select a “query_purpo
 
 ---
 Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
-
 
 #### Base Command
 
@@ -5555,7 +5422,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 >### Persistence EvidenceHunt Hunt (scheduled_job) Results
 >
 >**No entries.**
-
 
 #### Command example
 
@@ -5609,7 +5475,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 >| devicename_2 | services.exe | services.exe | services.exe | Microsoft® Windows® Operating System | HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\MpKsl49022091 | None | 2022-03-12T00:45:51.2745622Z |
 >| devicename_2 | services.exe | services.exe | services.exe | Microsoft® Windows® Operating System | HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\MpKsl897892ef | None | 2022-03-13T00:45:49.9561415Z |
 
-
 #### Command example
 
 ```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=new_user device_name=desktop```
@@ -5645,7 +5510,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 >|AccountDomain|AccountName|AccountSid|DeviceName|InitiatingProcessAccountName|InitiatingProcessLogonId|Timestamp|
 >|---|---|---|---|---|---|---|
 >| devicename_1 | delete_me | accound-sid | devicename_1 | demisto | 74706995 | 2022-03-03T21:25:52.4538765Z |
-
 
 #### Command example
 
@@ -5684,7 +5548,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 >|---|---|---|---|---|
 >| {"GroupName":"Test_group_delete","GroupDomainName":"devicename_1","GroupSid":"S-1-5-21-4197691174-1403503641-4006700887-1006"} | devicename_1 | demisto | 74706995 | 2022-03-03T21:26:30.8791017Z |
 
-
 #### Command example
 
 ```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=group_user_change device_name=desktop```
@@ -5715,7 +5578,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 >|---|
 >| accound-sid |
 
-
 #### Command example
 
 ```!microsoft-atp-advanced-hunting-persistence-evidence query_purpose=local_firewall_change device_name=desktop```
@@ -5725,7 +5587,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 >### Persistence EvidenceHunt Hunt (local_firewall_change) Results
 >
 >**No entries.**
-
 
 #### Command example
 
@@ -5741,7 +5602,6 @@ Detects evidence of persistence. When you select a “query_purpose” argument,
 
 ---
 Detects process details. When you select a “query_purpose” argument, a designated query template is used.
-
 
 #### Base Command
 
@@ -5845,7 +5705,6 @@ Detects process details. When you select a “query_purpose” argument, a desig
 ---
 Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
 
-
 #### Base Command
 
 `microsoft-atp-advanced-hunting-network-connections`
@@ -5922,7 +5781,6 @@ Detects network connections. When you select a “query_purpose” argument, a d
 
 ---
 Detects cover up actions. When you select a “query_purpose” argument, a designated query template is used.
-
 
 #### Base Command
 
@@ -6050,7 +5908,6 @@ Detects cover up actions. When you select a “query_purpose” argument, a desi
 >| deviceid | devicename_1 | 99.0.4844.51_98.0.4758.102_chrome_updater.exe | C:\Program Files (x86)\Google\Update\Install\{CD86F442-5CCD-4E90-B0AC-36D19A65A0C5} | "GoogleUpdate.exe" /svc | GoogleUpdate.exe | Google Update | 2022-03-08T13:29:06.7875767Z |
 >| deviceid | devicename_1 | 99.0.4844.51_98.0.4758.102_chrome_updater.exe | C:\Program Files (x86)\Google\Update\Install\{CD86F442-5CCD-4E90-B0AC-36D19A65A0C5} | "GoogleUpdate.exe" /svc | GoogleUpdate.exe | Google Update | 2022-03-08T13:29:06.7877821Z |
 
-
 #### Command example
 
 ```!microsoft-atp-advanced-hunting-cover-up query_purpose=event_log_cleared device_name=devicename_1```
@@ -6089,7 +5946,6 @@ Detects cover up actions. When you select a “query_purpose” argument, a desi
 >|ClearedLogList|DeviceId|DeviceName|FileName|InitiatingProcessFileName|LogClearCount|Timestamp|
 >|---|---|---|---|---|---|---|
 >| "wevtutil.exe" clear-log System,<br/>"wevtutil.exe" cl System | deviceid | devicename_1 | wevtutil.exe | powershell.exe | 2 | 2022-03-09T07:15:00Z |
-
 
 #### Command example
 
@@ -6200,7 +6056,6 @@ Detects cover up actions. When you select a “query_purpose” argument, a desi
 ---
 How did the file get on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
 
-
 #### Base Command
 
 `microsoft-atp-advanced-hunting-file-origin`
@@ -6233,7 +6088,6 @@ How did the file get on the machine. Possible details are "dropped_file" - Was t
 ---
 Is there evidence for privilege escalation.
 
-
 #### Base Command
 
 `microsoft-atp-advanced-hunting-privilege-escalation`
@@ -6261,7 +6115,6 @@ Is there evidence for privilege escalation.
 
 ---
 Detect if there was any evidence of MSDE agent/sensor manipulation.
-
 
 #### Base Command
 
@@ -6291,7 +6144,6 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 ---
 Cancels an action with an unfinished status.
 
-
 #### Base Command
 
 `microsoft-atp-live-response-cancel-action`
@@ -6300,14 +6152,12 @@ Cancels an action with an unfinished status.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_action_id | Action ID to retrieve status and data for. | Required | 
-| comment | A comment to associate with the action. | Required | 
-
+| machine_action_id | Action ID to retrieve status and data for. | Required |
+| comment | A comment to associate with the action. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
 
 ### microsoft-atp-get-machine-users
 
@@ -6326,22 +6176,21 @@ User.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A machine ID used for getting logged on users. | Required | 
-
+| machine_id | A machine ID used for getting logged on users. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineUser.ID | String | The user ID. | 
-| MicrosoftATP.MachineUser.AccountName | String | The user account name. | 
-| MicrosoftATP.MachineUser.AccountDomain | String | The domain of the user account. | 
-| MicrosoftATP.MachineUser.FirstSeen | Date | The first date and time the user has logged on the machine. | 
-| MicrosoftATP.MachineUser.LastSeen | Date | The last date and time the user has logged on the machine. | 
-| MicrosoftATP.MachineUser.LogonTypes | String | The logon types of the user on the machine. | 
-| MicrosoftATP.MachineUser.DomainAdmin | Boolean | True if user is Domain Admin, False otherwise. | 
-| MicrosoftATP.MachineUser.NetworkUser | Boolean | True if user is network user, False otherwise. | 
-| MicrosoftATP.MachineUser.MachineID | String | The machine ID. | 
+| MicrosoftATP.MachineUser.ID | String | The user ID. |
+| MicrosoftATP.MachineUser.AccountName | String | The user account name. |
+| MicrosoftATP.MachineUser.AccountDomain | String | The domain of the user account. |
+| MicrosoftATP.MachineUser.FirstSeen | Date | The first date and time the user has logged on the machine. |
+| MicrosoftATP.MachineUser.LastSeen | Date | The last date and time the user has logged on the machine. |
+| MicrosoftATP.MachineUser.LogonTypes | String | The logon types of the user on the machine. |
+| MicrosoftATP.MachineUser.DomainAdmin | Boolean | True if user is Domain Admin, False otherwise. |
+| MicrosoftATP.MachineUser.NetworkUser | Boolean | True if user is network user, False otherwise. |
+| MicrosoftATP.MachineUser.MachineID | String | The machine ID. |
 
 #### Command example
 
@@ -6372,12 +6221,11 @@ User.Read.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP logon users for machine 111e6dd8c833c8a052ea231ec1b19adaf497b625:
+>### Microsoft Defender ATP logon users for machine 111e6dd8c833c8a052ea231ec1b19adaf497b625
 >
 >|ID|AccountName|AccountDomain|FirstSeen|LastSeen|LogonTypes|DomainAdmin|NetworkUser|
 >|---|---|---|---|---|---|---|---|
 >| contoso\\user1 | user1 | contoso | 2019-12-18T08:02:54Z | 2020-01-06T08:01:48Z | Interactive | True | False |
-
 
 ### microsoft-atp-get-machine-alerts (Deprecated)
 
@@ -6398,23 +6246,22 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id |A machine ID used for getting machine related alerts, e.g. 0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
-
+| machine_id |A machine ID used for getting machine related alerts, e.g. 0a3250e0693a109f1affc9217be9459028aa8424. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAlerts.ID | String | The alert ID. | 
-| MicrosoftATP.MachineAlerts.Title | String | The alert title. | 
-| MicrosoftATP.MachineAlerts.Description | String | The alert description. | 
-| MicrosoftATP.MachineAlerts.IncidentID | String | The incident ID, if alert belongs to one. | 
-| MicrosoftATP.MachineAlerts.Severity | String | The alert severtiy. | 
-| MicrosoftATP.MachineAlerts.Status | String | The alert status. | 
-| MicrosoftATP.MachineAlerts.Classification | String | The alert classification. | 
-| MicrosoftATP.MachineAlerts.Category | String | The alert category. | 
-| MicrosoftATP.MachineAlerts.ThreatFamilyName | String | The alert threat family name. | 
-| MicrosoftATP.MachineAlerts.MachineID | String | The alerts machine ID. | 
+| MicrosoftATP.MachineAlerts.ID | String | The alert ID. |
+| MicrosoftATP.MachineAlerts.Title | String | The alert title. |
+| MicrosoftATP.MachineAlerts.Description | String | The alert description. |
+| MicrosoftATP.MachineAlerts.IncidentID | String | The incident ID, if alert belongs to one. |
+| MicrosoftATP.MachineAlerts.Severity | String | The alert severtiy. |
+| MicrosoftATP.MachineAlerts.Status | String | The alert status. |
+| MicrosoftATP.MachineAlerts.Classification | String | The alert classification. |
+| MicrosoftATP.MachineAlerts.Category | String | The alert category. |
+| MicrosoftATP.MachineAlerts.ThreatFamilyName | String | The alert threat family name. |
+| MicrosoftATP.MachineAlerts.MachineID | String | The alerts machine ID. |
 
 #### Command example
 
@@ -6446,7 +6293,7 @@ Alert.ReadWrite.All
 
 #### Human Readable Output
 
->### Alerts that are related to machine 111e6dd8c833c8a052ea231ec1b19adaf497b625:
+>### Alerts that are related to machine 111e6dd8c833c8a052ea231ec1b19adaf497b625
 >
 >|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -6459,7 +6306,7 @@ Offboard a machine from microsoft ATP.
 
 ##### Required Permissions
 
-Machine.Offboard	
+Machine.Offboard
 
 ##### Base Command
 
@@ -6469,26 +6316,25 @@ Machine.Offboard
 
 | **Argument Name** | **Description**                                                                                                                                            | **Required** |
 | --- |------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| machine_id | A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+| machine_id | A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required |
 | comment | A comment to associate with the action.                                                                                                                    | Required |
-
 
 ##### Context Output
 
 | **Path** | **Type** | **Description**                                            |
 | --- | --- |------------------------------------------------------------|
-| MicrosoftATP.OffboardMachine.ID | String | The machine action ID.                                     | 
-| MicrosoftATP.OffboardMachine.Type | String | Type of the machine action.                                | 
-| MicrosoftATP.OffboardMachine.Scope | Unknown | Scope of the action.                                       | 
-| MicrosoftATP.OffboardMachine.Requestor | String | The ID of the user that executed the action.               | 
-| MicrosoftATP.OffboardMachine.RequestorComment | String | Comment that was written when issuing the action.          | 
-| MicrosoftATP.OffboardMachine.Status | String | The current status of the command.                         | 
-| MicrosoftATP.OffboardMachine.MachineID | String | The machine ID on which the action was executed.           | 
-| MicrosoftATP.OffboardMachine.ComputerDNSName | String | The machine DNS name on which the action was executed.     | 
-| MicrosoftATP.OffboardMachine.CreationDateTimeUtc | Date | The date and time when the action was created.             | 
-| MicrosoftATP.OffboardMachine.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
+| MicrosoftATP.OffboardMachine.ID | String | The machine action ID.                                     |
+| MicrosoftATP.OffboardMachine.Type | String | Type of the machine action.                                |
+| MicrosoftATP.OffboardMachine.Scope | Unknown | Scope of the action.                                       |
+| MicrosoftATP.OffboardMachine.Requestor | String | The ID of the user that executed the action.               |
+| MicrosoftATP.OffboardMachine.RequestorComment | String | Comment that was written when issuing the action.          |
+| MicrosoftATP.OffboardMachine.Status | String | The current status of the command.                         |
+| MicrosoftATP.OffboardMachine.MachineID | String | The machine ID on which the action was executed.           |
+| MicrosoftATP.OffboardMachine.ComputerDNSName | String | The machine DNS name on which the action was executed.     |
+| MicrosoftATP.OffboardMachine.CreationDateTimeUtc | Date | The date and time when the action was created.             |
+| MicrosoftATP.OffboardMachine.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
 | MicrosoftATP.OffboardMachine.cancellationDateTimeUtc | Date | The date and time when the action was canceled.      |
-| MicrosoftATP.OffboardMachine.RelatedFileInfo | String | The file info.                                             | 
+| MicrosoftATP.OffboardMachine.RelatedFileInfo | String | The file info.                                             |
 | MicrosoftATP.OffboardMachine.troubleshootInfo | String | Troubleshooting information.                               |
 
 ##### Command example
@@ -6523,7 +6369,7 @@ Machine.Offboard
 
 ##### Human Readable Output
 
->##### The offboarding request has been submitted successfully:
+>##### The offboarding request has been submitted successfully
 >
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
@@ -6536,7 +6382,6 @@ Machine.Offboard
 ---
 Collect and download an investigation package as a gz file.
 
-
 #### Base Command
 
 `microsoft-atp-request-and-download-investigation-package`
@@ -6545,37 +6390,35 @@ Collect and download an investigation package as a gz file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The machine ID. | Required | 
-| comment | A comment to associate with the action. | Required | 
-| timeout_in_seconds | Timeout for polling. | Optional | 
-| machine_action_id | Action ID to retrieve status and data for. | Optional | 
-
+| machine_id | The machine ID. | Required |
+| comment | A comment to associate with the action. | Required |
+| timeout_in_seconds | Timeout for polling. | Optional |
+| machine_action_id | Action ID to retrieve status and data for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the machine action. | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the machine action. |
 | MicrosoftATP.MachineAction.MachineID | String |  The machine ID on which the action was executed. |
-
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Type | String | Type of the machine action. | 
-| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. |
+| MicrosoftATP.MachineAction.Type | String | Type of the machine action. |
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. |
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. |
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. |
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. |
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. |
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". |
 
 ##### Command example
 
@@ -6626,7 +6469,7 @@ Collect and download an investigation package as a gz file.
 
 ##### Human Readable Output
 
->##### The isolation request has been submitted successfully:
+>##### The isolation request has been submitted successfully
 >
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
@@ -6637,7 +6480,6 @@ Collect and download an investigation package as a gz file.
 
 ---
 Tests connectivity to Microsoft Defender for Endpoint.
-
 
 #### Base Command
 
@@ -6651,19 +6493,17 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
-
 ### microsoft-atp-list-software
 
 ---
 Retrieves the organization software inventory.
- 
- 
+
 #### Base Command
- 
+
 `microsoft-atp-list-software`
 
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Software ID. | Optional |
@@ -6671,10 +6511,9 @@ Retrieves the organization software inventory.
 | vendor | Software publisher name. | Optional |
 | limit | Maximum number of results to retrieve. Default is 50. | Optional |
 | offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
- 
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Software.id | String | Software ID. |
@@ -6689,7 +6528,7 @@ Retrieves the organization software inventory.
 | MicrosoftATP.Software.isNormalized | Boolean | Whether the software is normalized. |
 | MicrosoftATP.Software.category | String | Software category. |
 | MicrosoftATP.Software.distributions | String | Software distributions. |
- 
+
 #### Command example
 
 ```!microsoft-atp-list-software id=some_id```
@@ -6716,42 +6555,38 @@ Retrieves the organization software inventory.
    }
 }
 ```
- 
+
 #### Human Readable Output
- 
->### Microsoft Defender ATP list software:
+
+>### Microsoft Defender ATP list software
 >
 >|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|
 >|---|---|---|---|---|---|---|---|
 >| some_id | some_name | some_vendor | 0 | false | 0 | 1 | false |
- 
-
 
 ### microsoft-atp-list-software-version-distribution
 
 ---
 Retrieves a list of your organization's software version distribution.
- 
- 
+
 #### Base Command
- 
+
 `microsoft-atp-list-software-version-distribution`
 
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
- 
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.SoftwareVersion.version | String | Version number |
 | MicrosoftATP.SoftwareVersion.installations | Number | Installations number. |
 | MicrosoftATP.SoftwareVersion.vulnerabilities | Number | Number of vulnerabilities. |
- 
+
 #### Command example
 
 ```!microsoft-atp-list-software-version-distribution id=some_id```
@@ -6776,37 +6611,33 @@ Retrieves a list of your organization's software version distribution.
    }
 }
 ```
- 
+
 #### Human Readable Output
- 
->### Microsoft Defender ATP software version distribution:
+
+>### Microsoft Defender ATP software version distribution
 >
 >|version|installations|vulnerabilities|
 >|---|---|---|
 >| 7.0.2.0 | 2 | 7 |
 >| 6.2.4.0 | 1 | 0 |
- 
- 
 
 ### microsoft-atp-list-machines-by-software
 
 ---
 Retrieve a list of device references that has this software installed.
- 
- 
+
 #### Base Command
- 
+
 `microsoft-atp-list-machines-by-software`
 
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
- 
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.SoftwareMachine.id | String | Machine identity. |
@@ -6814,7 +6645,7 @@ Retrieve a list of device references that has this software installed.
 | MicrosoftATP.SoftwareMachine.osPlatform | String | Operating system platform. |
 | MicrosoftATP.SoftwareMachine.rbacGroupName | String | Machine group name. |
 | MicrosoftATP.SoftwareMachine.rbacGroupId | Number | Machine group ID. |
- 
+
 #### Command example
 
 ```!microsoft-atp-list-machines-by-software id=some_id```
@@ -6850,9 +6681,9 @@ Retrieve a list of device references that has this software installed.
    }
 }
 ```
- 
+
 #### Human Readable Output
- 
+
 >### Microsoft Defender ATP list machines by software: some_id
 >
 >|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|
@@ -6860,7 +6691,6 @@ Retrieve a list of device references that has this software installed.
 >| 1111111111111111111111111111111111111111 | some_dns_name_1 | WindowsServer2016 | UnassignedGroup | 1111 |
 >| 2222222222222222222222222222222222222222 | some_dns_name_2 | WindowsServer2016 | UnassignedGroup | 2222 |
 >| 3333333333333333333333333333333333333333 | some_dns_name_3 | Windows10 | UnassignedGroup | 3333 |
- 
 
 ### microsoft-atp-list-vulnerabilities-by-software
 
@@ -6951,7 +6781,7 @@ Retrieves a list of all the vulnerabilities affecting the organization per softw
 >|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|
 >|---|---|---|---|---|---|---|---|---|---|
 >| CVE-2222-22222 | CVE-2222-22222 | This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website. | Medium | 5.9 | 2021-05-17T22:56:00Z | 2021-05-17T22:56:00Z | 2 | false | false |
- 
+
 ### microsoft-atp-list-vulnerabilities-by-machine
 
 ---
@@ -7023,13 +6853,12 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 
 #### Human Readable Output
 >
->### Microsoft Defender ATP vulnerability CVE-1111-1111:
+>### Microsoft Defender ATP vulnerability CVE-1111-1111
 >
 >|id|cveId|machineId|productName|productVendor|productVersion|severity|
 >|---|---|---|---|---|---|---|
 >| 1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
- 
- 
+
 ### microsoft-atp-list-vulnerabilities
 
 ---
@@ -7117,7 +6946,7 @@ Retrieves a list of all vulnerabilities.
 
 #### Human Readable Output
 >
->### Microsoft Defender ATP vulnerabilities:
+>### Microsoft Defender ATP vulnerabilities
 >
 >|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -7127,21 +6956,19 @@ Retrieves a list of all vulnerabilities.
 
 ---
 Retrieves missing KBs (security updates) by software ID.
- 
- 
+
 #### Base Command
- 
+
 `microsoft-atp-list-missing-kb-by-software`
 
 #### Input
- 
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Required |
- 
- 
+
 #### Context Output
- 
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicMicrosoftATP.SoftwareKB.id | String | Software ID. |
@@ -7151,7 +6978,7 @@ Retrieves missing KBs (security updates) by software ID.
 | MicMicrosoftATP.SoftwareKB.url | String | URL. |
 | MicMicrosoftATP.SoftwareKB.machineMissedOn | Number | Machine missed on. |
 | MicMicrosoftATP.SoftwareKB.cveAddressed | Number | CVE addressed. |
- 
+
 #### Command example
 
 ```!microsoft-atp-list-missing-kb-by-software id=some_id```
@@ -7188,16 +7015,15 @@ Retrieves missing KBs (security updates) by software ID.
    }
 }
 ```
- 
+
 #### Human Readable Output
- 
+
 >### Microsoft Defender ATP missing kb by software: some_id
 >
 >|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|
 >|---|---|---|---|---|---|---|
 >| 1111111 | some_name_1 | 22222 | some_id | some_url_1 | 1 | 2 |
 >| 2222222 | some_name_2 | 22222 | some_id | some_url_2 | 1 | 2 |
-
 
 ### microsoft-atp-generate-login-url
 
@@ -7230,7 +7056,6 @@ You will be automatically redirected to a link with the following structure:
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
-
 ### microsoft-atp-auth-reset
 
 ***
@@ -7247,6 +7072,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### microsoft-atp-get-machine-by-ip
 
 ***
@@ -7260,52 +7086,52 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The endpoint IP address. | Required | 
-| timestamp | The timestamp in witch the machines were seen with the internal ip address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required | 
-| limit | Maximum number of results to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional | 
+| ip | The endpoint IP address. | Required |
+| timestamp | The timestamp in witch the machines were seen with the internal ip address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required |
+| limit | Maximum number of results to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Machine.ID | String | The machine ID. | 
-| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
-| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
-| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
-| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
-| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
-| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
-| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
-| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
-| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
-| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
-| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
-| MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. | 
-| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+| MicrosoftATP.Machine.ID | String | The machine ID. |
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. |
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. |
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. |
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. |
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. |
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. |
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. |
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. |
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. |
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. |
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. |
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. |
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. |
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. |
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. |
+| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. |
+| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. |
+| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. |
+| MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. |
+| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. |
 
 #### Command example
+
 ```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
+
 #### Human Readable Output
 
->### Microsoft Defender ATP Machine:
+>### Microsoft Defender ATP Machine
 >
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
 >| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
 
-
 ## Deprecation Details
-
 
 | **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|

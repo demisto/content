@@ -20,7 +20,7 @@ This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 
 4. Click **Test** to validate the URLs, keys, and connection.
 
-### To create an API key for a project using the MongoDB Atlas UI:
+### To create an API key for a project using the MongoDB Atlas UI
 
 1. Log in to MongoDB Atlas.
 2. Click **Access Manager** in the navigation bar, then click your project.
@@ -39,17 +39,18 @@ This integration was integrated and tested with version 2.0 of MongoDB Atlas.
 ### IMPORTANT
 
 You need to allow access from Cortex XSIAM to MongoDB via the UI by adding a Cortex XSIAM IP address:
-https://cloud.mongodb.com/v2/<customer_organization_id>#/security/network/accessList 
-
+https://cloud.mongodb.com/v2/<customer_organization_id>#/security/network/accessList
 
 ## Additional Information
+
 Groups and projects are synonymous terms. Your group ID is the same as your project ID. For existing groups, your group/project ID remains the same. The resource and corresponding endpoints use the term groups.
 
-### Authentication and authorization:
-#### Grant Programmatic Access to a Project
-Use the following procedures to grant programmatic access to a project. 
-To learn more, see [Manage Programmatic Access to a Project](https://www.mongodb.com/docs/atlas/configure-api-access-project/#std-label-atlas-admin-api-access-project).
+### Authentication and authorization
 
+#### Grant Programmatic Access to a Project
+
+Use the following procedures to grant programmatic access to a project.
+To learn more, see [Manage Programmatic Access to a Project](https://www.mongodb.com/docs/atlas/configure-api-access-project/#std-label-atlas-admin-api-access-project).
 
 ## Commands
 
@@ -69,11 +70,11 @@ Retrieves a list of events from the MongoDB Atlas instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of events to return. Value range: 1-2500.| Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of events to return. Value range: 1-2500.| Required |
 
 #### Context Output
 
 | **Path**     | **Type** | **Description** |
 |--------------|------| --- |
-| MongoDBAtlas | List | The list of the events and the alerts. | 
+| MongoDBAtlas | List | The list of the events and the alerts. |

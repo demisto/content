@@ -37,10 +37,11 @@ This app allows Veeam Data Platform Advanced and Premium users to monitor variou
 - Veeam Backup & Replication
 - Veeam ONE
 
+### Monitoring
 
-### Monitoring:
 The app gets information from the event forwarding capabilities via syslog servers integrated with Veeam Backup & Replication and Veeam ONE, parses the data and displays it on the Veeam Data Platform Monitoring dashboard. For events and alarms with Medium, High and Critical severity, the app displays them on the Veeam Security Activities dashboard.
 It includes:
+
 - Built-in dashboards to monitor job statuses and security activities on a daily basis.
 - Built-in reports.
 - Multiple data source support.
@@ -48,13 +49,14 @@ It includes:
 ***Information:***\
 The Monitoring Dashboards and data processing will become available at the marketplace after pending Cortex XSIAM platform updates have been implemented. To manually download and import the dashboards, reports, and correlation rules please follow [this](https://www.veeam.com/download_add_packs/vmware-esx-backup/palo-alto-xsiam-monitoring/) link.
 
-### Automation:
+### Automation
+
 Using the data available in Palo Alto Networks Cortex XSIAM you can leverage built-in Veeam playbooks such as:
+
 - Start configuration backup
 - Start Instance VM Recovery manually
 - Start Instance VM Recovery automatically
 - Resolve alarms triggered by Veeam ONE
-
 
 # Documentation
 

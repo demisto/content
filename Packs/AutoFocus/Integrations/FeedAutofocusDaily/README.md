@@ -5,7 +5,6 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 
 ## Configure AutoFocus Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
@@ -17,17 +16,17 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
-| override_default_credentials | Override default credentials | False | 
+| override_default_credentials | Override default credentials | False |
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
-
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
+
 ***
 Gets the indicators from AutoFocus.
 
@@ -36,24 +35,26 @@ Note: This command does not create indicators within Cortex XSOAR.
 ##### Base Command
 
 `autofocus-daily-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Optional | 
-| offset | The index of the first indicator to fetch. | Optional | 
-
+| limit | The maximum number of indicators to return. The default value is 10. | Optional |
+| offset | The index of the first indicator to fetch. | Optional |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!autofocus-daily-get-indicators limit=4```
 
-
 ##### Human Readable Output
-### Indicators from AutoFocus:
+
+### Indicators from AutoFocus
+
 |Value|Type|
 |---|---|
 | demsito\<Span\>.com | Domain |

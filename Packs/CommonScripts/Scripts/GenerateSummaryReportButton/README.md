@@ -1,6 +1,7 @@
 This button will generate summary 'Case Report' template for a given Incident
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ This button will generate summary 'Case Report' template for a given Incident
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

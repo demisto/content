@@ -1,7 +1,9 @@
 Use this content pack to manage alerts.
 
 ## What does this pack do?
+
 The integration in this pack enables you to:
+
 - Fetch alerts using list alerts endpoint.
 - Get, pause, or unpause alerts.
 - Get or update users.

@@ -41,7 +41,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
-
 Configure only one of the following fields:
 
 - Cloud ID - Used for Jira Cloud instance.
@@ -54,29 +53,36 @@ Configure only one of the following fields:
 `https://admin.atlassian.com/s/{cloud_id}/users`
 
 ## Authentication
+
 ### Basic Authentication
+
 Leave the *Client ID*, *Client Secret* and *Personal Access Token* fields empty and fill in the following fields:
+
 - *User name* - Enter your user email.
 - *API key* - Enter the API token. To generate API token, see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
 
 ##### Basic Authentication permissions
+
 Ensure that you possess the necessary permissions by navigating to **Project Settings** > **Permissions** in the project.
 Locate permissions for the tasks listed below:
-* Browse projects
-* Create issues
-* Edit issues
-* Delete issues
-* Transition issues
-* Create attachments
-* Add comments
-* Link issues
+
+- Browse projects
+- Create issues
+- Edit issues
+- Delete issues
+- Transition issues
+- Create attachments
+- Add comments
+- Link issues
 
 ### Personal Access Token Authentication
+
 Leave the *User name*, *API key*, *Client ID* and *Client Secret* empty and fill in the following fields:
+
 - *Personal Access Token* - Enter the Personal Access Token you created for a user, see [here](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html)
 
-
 ### OAuth 2.0
+
 For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [OAuth 2.0 authorization Flow In Cortex XSOAR](#oauth-20-authorization-flow-in-cortex-xsoar)).
 
 #### Cloud authentication
@@ -99,19 +105,19 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 
 ##### Classic Scopes
 
-* read:jira-work
-* read:jira-user
-* write:jira-work
+- read:jira-work
+- read:jira-user
+- write:jira-work
 
 ##### Granular Scopes
 
-* read:jql:jira
-* read:issue-details:jira
-* write:board-scope:jira-software
-* read:board-scope:jira-software
-* read:sprint:jira-software
-* read:epic:jira-software
-* write:sprint:jira-software
+- read:jql:jira
+- read:issue-details:jira
+- write:board-scope:jira-software
+- read:board-scope:jira-software
+- read:sprint:jira-software
+- read:epic:jira-software
+- write:sprint:jira-software
 
 #### OnPrem authentication
 
@@ -147,9 +153,9 @@ Write
 
 When you enable incidents fetching, you have the option to configure a query which will be used to fetch Jira issues as incidents in Cortex XSOAR. The query uses one of the following fields in order to progressively fetch incidents:
 
-* `id` of Jira issues
-* `created time` of Jira issues
-* `updated time` of Jira issues (using this field may cause duplicates, so be wary)
+- `id` of Jira issues
+- `created time` of Jira issues
+- `updated time` of Jira issues (using this field may cause duplicates, so be wary)
 
 If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
 By default, 50 issues are fetched for each call.
@@ -593,7 +599,6 @@ Scope: `read:jira-work`
 | --- | --- | --- |
 | query | The query that will be used to retrieve the first issue ID in it. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -693,9 +698,7 @@ There is no context output for this command.
 >|---|---|---|---|
 >| https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/attachment/16505 | dummy.pdf | 16505 | PROJECTKEY-31 |
 
-
 ### jira-issue-delete-file
-
 
 ***
 Delete an attachment from an issue.
@@ -724,7 +727,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Attachment id ATTACHMENT_ID was deleted successfully.
-
 
 ### jira-list-transitions
 
@@ -928,7 +930,7 @@ Scope: `write:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's project description. |
-| Ticket.RawDescription | String | The ticket's project raw description. | 
+| Ticket.RawDescription | String | The ticket's project raw description. |
 | Ticket.Labels | Array | The ticket's project labels. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Priority | String | The ticket priority. |
@@ -2714,24 +2716,24 @@ Retrieves information about a specified Jira user. For on-prem instances, you sh
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | The user's key (On-prem only). | Optional | 
-| username | The user's username (On-prem only). | Optional | 
-| account_id | The user's account ID (Cloud only). | Optional | 
+| key | The user's key (On-prem only). | Optional |
+| username | The user's username (On-prem only). | Optional |
+| account_id | The user's account ID (Cloud only). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Jira.Users.Key | Unknown | The user's key or ID. | 
-| Jira.Users.Name | Unknown | Name of the user. | 
-| Jira.Users.Email | Unknown | User's email address. | 
-| Jira.Users.Display Name | Unknown | Display name for the user. | 
-| Jira.Users.Active | Unknown | If the user is active or not. | 
-| Jira.Users.Deleted | Unknown | If the user is deleted or not. | 
-| Jira.Users.Timezone | Unknown | Timezone setting for the user. | 
-| Jira.Users.Locale | Unknown | Locale setting for the user. | 
-| Jira.Users.AccountID | Unknown | The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5. Required in requests. | 
-| Jira.Users.AccountType | Unknown | The user account type. Can take the following values: atlassian, app, customer. | 
+| Jira.Users.Key | Unknown | The user's key or ID. |
+| Jira.Users.Name | Unknown | Name of the user. |
+| Jira.Users.Email | Unknown | User's email address. |
+| Jira.Users.Display Name | Unknown | Display name for the user. |
+| Jira.Users.Active | Unknown | If the user is active or not. |
+| Jira.Users.Deleted | Unknown | If the user is deleted or not. |
+| Jira.Users.Timezone | Unknown | Timezone setting for the user. |
+| Jira.Users.Locale | Unknown | Locale setting for the user. |
+| Jira.Users.AccountID | Unknown | The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5. Required in requests. |
+| Jira.Users.AccountType | Unknown | The user account type. Can take the following values: atlassian, app, customer. |
 
 #### Command example
 
@@ -2765,15 +2767,15 @@ Fetches questions and answers for forms tied to a Jira issue. This command requi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The issue ID. | Required | 
+| issue_id | The issue ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JiraForms.ID | Unknown | The ID of the form. | 
-| JiraForms.Issue | Unknown | Issue the form belongs to. | 
-| JiraForms.Questions | Unknown | Questions for the form. | 
+| JiraForms.ID | Unknown | The ID of the form. |
+| JiraForms.Issue | Unknown | Issue the form belongs to. |
+| JiraForms.Questions | Unknown | Questions for the form. |
 
 #### Command example
 
@@ -2892,18 +2894,18 @@ In order for the mirroring to work properly, please keep the timezone of the Jir
 
 ### 9 Incident Fields have been added/updated to enhance the mirroring experience
 
-* **dbotMirrorTags** - Determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Jira, and entries coming from Jira (Attachments or comments entries)
-  * You can set the tags for incoming entries in the instance configuration, using **Attachment Entry Tag from Jira**, and **Comment Entry Tag from Jira**.
-  * You can set the tags for outgoing entries in the instance configuration, using **Attachment Entry Tag to Jira**, and **Comment Entry Tag to Jira**.
-* **Jira Issue Type** - Shows the type of the Jira issue.
-* **JiraV3 Status** - Shows the status of the Jira issue. You can press on it in the **JiraV3 Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](../../doc_files/jira-status.png)
-* **Jira Estimate** - Shows the estimate of the Jira issue. The field can also be edited and mirrored out. Use the format 2w 4d 6h 45m (w - weeks, d - days, h - hours, m - minutes). Please add the `Time Tracking` field to the screen in your Jira projects in order for this field to work properly.
-* **Jira Component** - Shows the components of the Jira issue. The field can also be edited and mirrored out.
-* **Source Created By** - Shows the display name, and email of the user who created the Jira issue.
-* **Jira Subtask** - Shows the subtasks of the Jira issue in the form of a table.
-* **Jira Project** - Shows the project name where the Jira issue resides in.
-* **Last Update Time** - Shows the last updated time of the Jira issue.
-* **Jira Comment** - Shows the comments of the Jira issue in the form of a table.
+- **dbotMirrorTags** - Determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Jira, and entries coming from Jira (Attachments or comments entries)
+  - You can set the tags for incoming entries in the instance configuration, using **Attachment Entry Tag from Jira**, and **Comment Entry Tag from Jira**.
+  - You can set the tags for outgoing entries in the instance configuration, using **Attachment Entry Tag to Jira**, and **Comment Entry Tag to Jira**.
+- **Jira Issue Type** - Shows the type of the Jira issue.
+- **JiraV3 Status** - Shows the status of the Jira issue. You can press on it in the **JiraV3 Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](../../doc_files/jira-status.png)
+- **Jira Estimate** - Shows the estimate of the Jira issue. The field can also be edited and mirrored out. Use the format 2w 4d 6h 45m (w - weeks, d - days, h - hours, m - minutes). Please add the `Time Tracking` field to the screen in your Jira projects in order for this field to work properly.
+- **Jira Component** - Shows the components of the Jira issue. The field can also be edited and mirrored out.
+- **Source Created By** - Shows the display name, and email of the user who created the Jira issue.
+- **Jira Subtask** - Shows the subtasks of the Jira issue in the form of a table.
+- **Jira Project** - Shows the project name where the Jira issue resides in.
+- **Last Update Time** - Shows the last updated time of the Jira issue.
+- **Jira Comment** - Shows the comments of the Jira issue in the form of a table.
 
 #### Modify the incoming mapper
 
@@ -2932,8 +2934,8 @@ match.
 #### Configure the following integration parameters in order to customize the mirroring feature
 
 1. **Mirror Direction**:
-    * **Mirror outgoing incidents**: If enabled, any incident data changed in existing fetched incidents will be reflected in the remote Jira server.
-    * **Mirror incoming incidents**: If enabled, any incident data changed in the remote Jira server will be reflected in existing fetched incidents.
+    - **Mirror outgoing incidents**: If enabled, any incident data changed in existing fetched incidents will be reflected in the remote Jira server.
+    - **Mirror incoming incidents**: If enabled, any incident data changed in the remote Jira server will be reflected in existing fetched incidents.
 2. **Fetch incidents**: Should be enabled in order to mirror in, and out new incidents.
 3. **Incident type**: In order to mirror out changes, and mirror in incoming changes, provide an incident type that is associated with a layout containing the fields you want to mirror. You can use 'JiraV3 Incident', which already has a built-in layout, and functionality fit for the `JiraV3 Incident` type.
 4. **Attachment Entry Tag from Jira**: Choose a tag to add to an attachment entry when mirroring in an attachment from Jira.
@@ -2988,12 +2990,12 @@ match.
 
 **Notes**
 
-* The final `source of truth` of the incident for Cortex XSOAR are the values in Cortex XSOAR.
+- The final `source of truth` of the incident for Cortex XSOAR are the values in Cortex XSOAR.
   Meaning, if you change the severity in Cortex XSOAR and then change it back in Jira, the final value that will be presented is the one in Cortex XSOAR.
   You can see a list of these fields for each incident under "Context Data" -> "dbotDirtyFields".
-* If you wish to mirror in and out Jira's custom fields, please see the [Mirror In And Out Custom Fields](#mirror-in-and-out-custom-fields) section below.
-* If you wish to change the status of a JiraV3 Incident using the available transitions, please see the [Change Ticket's Status Using Transitions](#change-tickets-status-using-transitions) section below.
-* If you wish to change the status of a JiraV3 Incident using the available statuses, please see the [Change Ticket's Status](#change-tickets-status) section below.
+- If you wish to mirror in and out Jira's custom fields, please see the [Mirror In And Out Custom Fields](#mirror-in-and-out-custom-fields) section below.
+- If you wish to change the status of a JiraV3 Incident using the available transitions, please see the [Change Ticket's Status Using Transitions](#change-tickets-status-using-transitions) section below.
+- If you wish to change the status of a JiraV3 Incident using the available statuses, please see the [Change Ticket's Status](#change-tickets-status) section below.
 
 ## Mirror In And Out Custom Fields
 
@@ -3018,10 +3020,10 @@ Add a new custom field and add it to the incident type&#39;s layout:
 
 1. Configure the `Atlassian Jira V3` integration, and test the connection of the instance as explained in the [Authentication](#authentication).
 2. Make sure that:
-    * Under "Incident type" you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: `JiraV3 Incident`.
-    * The option `Fetch Incidents` is checked.
-    * You have filled the respective parameters for the fetch to work, as explained in [Fetch Incidents](#fetch-incidents)
-    * The `Mirror Direction` is set to **Incoming And Outgoing**.
+    - Under "Incident type" you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: `JiraV3 Incident`.
+    - The option `Fetch Incidents` is checked.
+    - You have filled the respective parameters for the fetch to work, as explained in [Fetch Incidents](#fetch-incidents)
+    - The `Mirror Direction` is set to **Incoming And Outgoing**.
     Finally, click `Done`, and wait for new JiraV3 Incidents to be pulled:
 
 3. Once you&#39;ve finished the setup stage, go to the `Mapper (incoming)` field and select the mapper you want to work with by clicking on **Select**:
@@ -3030,7 +3032,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
     1.For "Incident Type", please provide the incident type you&#39;ve selected in the integration settings.  
     2.In "Select Instance" choose the name of your instance. You can find it in the integration settings under `Name`.
     Once done, You&#39;ll see on the right side of the screen a JiraV3 Incident.  
-    * Note: If you want to work with a specific incident, in `Get data` select the option: `Upload JSON` and provide the wanted incident as JSON.  
+    - Note: If you want to work with a specific incident, in `Get data` select the option: `Upload JSON` and provide the wanted incident as JSON.  
     In order to get the incident as JSON, you can see the section: [How to get an incident as JSON](#how-to-get-an-incident-as-json) below.  
     On the left side, You&#39;ll see all JiraV3 Incident fields.
     3.Use "Search Cortex XSOAR field…" in order to find your new incident field by searching its name.  
@@ -3087,9 +3089,9 @@ The following sections list the changes in this version.
 
 #### The following commands were removed in this version
 
-* *jira-get-specific-field* - This command was removed, and its functionality is implemented using the *fields* argument in the *jira-get-issue* command.
+- *jira-get-specific-field* - This command was removed, and its functionality is implemented using the *fields* argument in the *jira-get-issue* command.
 
-* *jira-append-to-field* - This command was removed, and its functionality is implemented using the *action* argument when supplying it the value `append` in the *jira-edit-issue* command.
+- *jira-append-to-field* - This command was removed, and its functionality is implemented using the *action* argument when supplying it the value `append` in the *jira-edit-issue* command.
 
 ### Arguments
 
@@ -3097,22 +3099,21 @@ The following sections list the changes in this version.
 
 In the *jira-get-id-by-attribute* command:
 
-* *is_jirav2api* - The command does not require this argument anymore.
+- *is_jirav2api* - The command does not require this argument anymore.
 
 #### The behavior of the following arguments were changed
 
 In the *jira-create-issue* command:
 
-* *issueJson* - This argument will override the other arguments supplied to the command.
+- *issueJson* - This argument will override the other arguments supplied to the command.
 
 In the *jira-edit-issue* command:
 
-* *issueJson* - This argument will override the other arguments supplied to the command.
+- *issueJson* - This argument will override the other arguments supplied to the command.
 
 In the *jira-get-issue* command:
 
-* *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
-
+- *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
 
 ### jira-create-metadata-issue-types-list
 
@@ -3127,38 +3128,38 @@ Returns a page of issue type metadata for a specified project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id_or_key | The ID or key of the project. | Required | 
-| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
-| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+| project_id_or_key | The ID or key of the project. | Required |
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional |
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Jira.IssueType.AvatarID | Number | The ID of the issue type's avatar. | 
-| Jira.IssueType.Description | String | The description of the issue type. | 
-| Jira.IssueType.EntityID | String | Unique ID for next-gen projects. | 
-| Jira.IssueType.Expand | String | Expand options that include additional issue type metadata details in the response. | 
-| Jira.IssueType.IconURL | String | The URL of the issue type's avatar. | 
-| Jira.IssueType.ID | String | The ID of the issue type. | 
-| Jira.IssueType.Name | String | The name of the issue type. | 
-| Jira.IssueType.Self | String | The URL of these issue type details. | 
-| Jira.IssueType.Subtask | Boolean | Whether this issue type is used to create subtasks. | 
-| Jira.IssueType.Scope | Object | Details of the next-gen projects the issue type is available in. | 
-| Jira.IssueType.Scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE. | 
-| Jira.IssueType.Scope.project | Object | The project the item has scope in. | 
-| Jira.IssueType.Scope.project.self | String | The URL of the project details. | 
-| Jira.IssueType.Scope.project.id | String | The ID of the project. | 
-| Jira.IssueType.Scope.project.key | String | The key of the project. | 
-| Jira.IssueType.Scope.project.name | String | The name of the project. | 
-| Jira.IssueType.Scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business. | 
-| Jira.IssueType.Scope.project.simplified | Boolean | Whether or not the project is simplified. | 
-| Jira.IssueType.Scope.project.avatarUrls | Object | The URLs of the project's avatars. | 
-| Jira.IssueType.Scope.project.projectCategory | Object | The category the project belongs to. | 
-| Jira.IssueType.Scope.project.projectCategory.self | String | The URL of the project category. | 
-| Jira.IssueType.Scope.project.projectCategory.id | String | The ID of the project category. | 
-| Jira.IssueType.Scope.project.projectCategory.description | String | The name of the project category. | 
-| Jira.IssueType.Scope.project.projectCategory.name | String | The description of the project category. | 
+| Jira.IssueType.AvatarID | Number | The ID of the issue type's avatar. |
+| Jira.IssueType.Description | String | The description of the issue type. |
+| Jira.IssueType.EntityID | String | Unique ID for next-gen projects. |
+| Jira.IssueType.Expand | String | Expand options that include additional issue type metadata details in the response. |
+| Jira.IssueType.IconURL | String | The URL of the issue type's avatar. |
+| Jira.IssueType.ID | String | The ID of the issue type. |
+| Jira.IssueType.Name | String | The name of the issue type. |
+| Jira.IssueType.Self | String | The URL of these issue type details. |
+| Jira.IssueType.Subtask | Boolean | Whether this issue type is used to create subtasks. |
+| Jira.IssueType.Scope | Object | Details of the next-gen projects the issue type is available in. |
+| Jira.IssueType.Scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE. |
+| Jira.IssueType.Scope.project | Object | The project the item has scope in. |
+| Jira.IssueType.Scope.project.self | String | The URL of the project details. |
+| Jira.IssueType.Scope.project.id | String | The ID of the project. |
+| Jira.IssueType.Scope.project.key | String | The key of the project. |
+| Jira.IssueType.Scope.project.name | String | The name of the project. |
+| Jira.IssueType.Scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business. |
+| Jira.IssueType.Scope.project.simplified | Boolean | Whether or not the project is simplified. |
+| Jira.IssueType.Scope.project.avatarUrls | Object | The URLs of the project's avatars. |
+| Jira.IssueType.Scope.project.projectCategory | Object | The category the project belongs to. |
+| Jira.IssueType.Scope.project.projectCategory.self | String | The URL of the project category. |
+| Jira.IssueType.Scope.project.projectCategory.id | String | The ID of the project category. |
+| Jira.IssueType.Scope.project.projectCategory.description | String | The name of the project category. |
+| Jira.IssueType.Scope.project.projectCategory.name | String | The description of the project category. |
 
 ### jira-create-metadata-field-list
 
@@ -3173,29 +3174,29 @@ Returns a page of field metadata for a specified project and issue type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id_or_key | The ID or key of the project. | Required | 
-| issue_type_id | The issue type ID. | Required | 
-| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional | 
-| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional | 
+| project_id_or_key | The ID or key of the project. | Required |
+| issue_type_id | The issue type ID. | Required |
+| start_at | The index of the first item to return in a page of results (page offset). Default is 0. | Optional |
+| max_results | The maximum number of items to return per page. Between 0 and 200. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Jira.IssueField.AllowedValues | Array | The list of values allowed in the field. | 
-| Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. | 
-| Jira.IssueField.Configuration | Object | The configuration properties. | 
-| Jira.IssueField.DefaultValue | String | The default value of the field. | 
-| Jira.IssueField.FieldID | String | The field ID. | 
-| Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. | 
-| Jira.IssueField.Key | String | The key of the field. | 
-| Jira.IssueField.Name | String | The name of the field. | 
-| Jira.IssueField.Operations | Array | The list of operations that can be performed on the field. | 
-| Jira.IssueField.Required | Boolean | Whether the field is required. | 
-| Jira.IssueField.Schema | Object | The data type for the field. | 
-| Jira.IssueField.Schema.type | String | The data type of the field. | 
-| Jira.IssueField.Schema.items | String | When the data type is an array, the name of the field items within the array. | 
-| Jira.IssueField.Schema.system | String | If the field is a system field, the name of the field. | 
-| Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
-| Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
-| Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
+| Jira.IssueField.AllowedValues | Array | The list of values allowed in the field. |
+| Jira.IssueField.AutoCompleteUrl | String | The URL that can be used to automatically complete the field. |
+| Jira.IssueField.Configuration | Object | The configuration properties. |
+| Jira.IssueField.DefaultValue | String | The default value of the field. |
+| Jira.IssueField.FieldID | String | The field ID. |
+| Jira.IssueField.HasDefaultValue | Boolean | Whether the field has a default value. |
+| Jira.IssueField.Key | String | The key of the field. |
+| Jira.IssueField.Name | String | The name of the field. |
+| Jira.IssueField.Operations | Array | The list of operations that can be performed on the field. |
+| Jira.IssueField.Required | Boolean | Whether the field is required. |
+| Jira.IssueField.Schema | Object | The data type for the field. |
+| Jira.IssueField.Schema.type | String | The data type of the field. |
+| Jira.IssueField.Schema.items | String | When the data type is an array, the name of the field items within the array. |
+| Jira.IssueField.Schema.system | String | If the field is a system field, the name of the field. |
+| Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. |
+| Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. |
+| Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. |

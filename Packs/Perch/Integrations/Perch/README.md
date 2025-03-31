@@ -269,21 +269,21 @@
     "Perch": {
         "Alert": [
             {
-                "Protocol": "TCP", 
-                "Title": "ET TOR Known Tor Relay/Router (Not Exit) Node Traffic group 82", 
-                "SrcPort": 30834, 
-                "TS": "2019-07-22T08:49:28.518216+0000", 
-                "ID": 854408, 
-                "ObservableID": 908757, 
-                "DestIP": "172.31.46.243", 
-                "IndicatorID": "EmergingThreats:Indicator-2522162", 
-                "SrcIP": "77.247.181.163", 
-                "SensorID": 9185, 
+                "Protocol": "TCP",
+                "Title": "ET TOR Known Tor Relay/Router (Not Exit) Node Traffic group 82",
+                "SrcPort": 30834,
+                "TS": "2019-07-22T08:49:28.518216+0000",
+                "ID": 854408,
+                "ObservableID": 908757,
+                "DestIP": "172.31.46.243",
+                "IndicatorID": "EmergingThreats:Indicator-2522162",
+                "SrcIP": "77.247.181.163",
+                "SensorID": 9185,
                 "SrcGeo": {
-                    "Latitude": 52.3824, 
-                    "Country": "Netherlands", 
+                    "Latitude": 52.3824,
+                    "Country": "Netherlands",
                     "Longitude": 4.8995
-                }, 
+                },
                 "DestPort": 22
             }
         ]
@@ -412,12 +412,12 @@
 <pre>{
     "Perch": {
         "Community": {
-            "Selectablefeeds": true, 
-            "Allsectors": true, 
-            "Name": "Hail-a-TAXII", 
-            "Credentialreq": 2, 
-            "Poweredby": "Soltra Edge", 
-            "Id": 1, 
+            "Selectablefeeds": true,
+            "Allsectors": true,
+            "Name": "Hail-a-TAXII",
+            "Credentialreq": 2,
+            "Poweredby": "Soltra Edge",
+            "Id": 1,
             "Desc": "A repository of Open Source Cyber Threat Intellegence feeds in STIX format"
         }
     }
@@ -520,30 +520,30 @@
     "Perch": {
         "Community": [
             {
-                "Selectablefeeds": true, 
-                "Allsectors": true, 
-                "Name": "Hail-a-TAXII", 
-                "Credentialreq": 2, 
-                "Poweredby": "Soltra Edge", 
-                "Id": 1, 
+                "Selectablefeeds": true,
+                "Allsectors": true,
+                "Name": "Hail-a-TAXII",
+                "Credentialreq": 2,
+                "Poweredby": "Soltra Edge",
+                "Id": 1,
                 "Desc": "A repository of Open Source Cyber Threat Intellegence feeds in STIX format"
-            }, 
+            },
             {
-                "Selectablefeeds": false, 
-                "Allsectors": true, 
-                "Name": "DHS AIS", 
-                "Credentialreq": 2, 
-                "Poweredby": "Flare", 
-                "Id": 5, 
+                "Selectablefeeds": false,
+                "Allsectors": true,
+                "Name": "DHS AIS",
+                "Credentialreq": 2,
+                "Poweredby": "Flare",
+                "Id": 5,
                 "Desc": "Department of Homeland Security - Automated Indicator Sharing"
-            }, 
+            },
             {
-                "Selectablefeeds": true, 
-                "Allsectors": true, 
-                "Name": "Emerging Threats", 
-                "Credentialreq": 0, 
-                "Poweredby": "Emerging Threats", 
-                "Id": 8, 
+                "Selectablefeeds": true,
+                "Allsectors": true,
+                "Name": "Emerging Threats",
+                "Credentialreq": 0,
+                "Poweredby": "Emerging Threats",
+                "Id": 8,
                 "Desc": "Open source intelligence data provided by Emerging Threats/ProofPoint"
             }
         ]
@@ -736,13 +736,13 @@
     "Perch": {
         "Indicator": [
             {
-                "Description": "Sample Alert Generated via Demisto", 
-                "Title": "Sample Alert", 
-                "UpdatedAt": "2019-07-23T20:06:26.046774Z", 
-                "PerchID": "41716ec9-4001-4d20-8aba-04137fa47c83", 
-                "CreatedBy": 11728, 
-                "Team": 5394, 
-                "ID": 1236830, 
+                "Description": "Sample Alert Generated via Demisto",
+                "Title": "Sample Alert",
+                "UpdatedAt": "2019-07-23T20:06:26.046774Z",
+                "PerchID": "41716ec9-4001-4d20-8aba-04137fa47c83",
+                "CreatedBy": 11728,
+                "Team": 5394,
+                "ID": 1236830,
                 "CreatedAt": "2019-07-23T20:06:26.046757Z"
             }
         ]

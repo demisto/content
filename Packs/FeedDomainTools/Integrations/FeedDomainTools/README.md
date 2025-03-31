@@ -2,7 +2,6 @@ Real-Time Threat Intelligence Feeds provide data on the different stages of the 
 
 ## Configure FeedDomainTools in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Username | API Username and API Key | True |

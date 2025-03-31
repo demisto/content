@@ -18,7 +18,7 @@ Cyble Threat Intel is an integration which will help users to fetch Cyble's TAXI
     * __Indicator Fetch Limit__: The value to limit the indicator to be fetched per iteration
 
 4. Click __Test__ to validate the URLs, token, and connection.
- 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
@@ -37,18 +37,18 @@ Fetch the indicators based on the taxii service
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                         | **Required** |
+| __Argument Name__ | __Description__                                                                                         | __Required__ |
 |-----------------|-------------------------------------------------------------------------------------------------------|------------|
-| limit           | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional   | 
-| begin           | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   | 
-| end             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   | 
-| collection      | Collection name to fetch indicators from                                                              | Required   | 
+| limit           | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional   |
+| begin           | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   |
+| end             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   |
+| collection      | Collection name to fetch indicators from                                                              | Required   |
 
 #### Context Output
 
-| **Path**                  | **Type** | **Description**                                         |
+| __Path__                  | __Type__ | __Description__                                         |
 |-------------------------|--------|---------------------------------------------------------|
-| CybleIntel.Threat.details | String | Returns the Threat Intel details from the Taxii service | 
+| CybleIntel.Threat.details | String | Returns the Threat Intel details from the Taxii service |
 
 ### cyble-vision-get-collection-names
 
@@ -61,6 +61,6 @@ Fetch the available collection name for the taxii service
 
 #### Context Output
 
-| **Path**                    | **Type** | **Description**                                 |
+| __Path__                    | __Type__ | __Description__                                 |
 |---------------------------|--------|-----------------------------------------------|
-| CybleIntel.collection.names | String | Available collection names for the feed service | 
+| CybleIntel.collection.names | String | Available collection names for the feed service |

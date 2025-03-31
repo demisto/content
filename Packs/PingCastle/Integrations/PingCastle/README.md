@@ -5,13 +5,11 @@ PingCastle is a long-running integration. For more information about long-runnin
 
 ## Configure PingCastle in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | The API Key PingCastle must use to send reports. | True |
 | Long running instance | Whether this instance should listen for reports. | False |
 | Listen port, e.g. 7000 | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port will automatically be generated when the instance is saved.              | False |
-
 
 ## Commands
 
@@ -23,7 +21,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get the Currently saved Ping Castle Report
 
-
 #### Base Command
 
 `pingcastle-get-report`
@@ -32,15 +29,13 @@ Get the Currently saved Ping Castle Report
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| delete_report | Whether to delete the report after getting it or save it to allow retrieving it again. Possible values are: Yes, No. Default is No. | Optional | 
-
+| delete_report | Whether to delete the report after getting it or save it to allow retrieving it again. Possible values are: Yes, No. Default is No. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PingCastle.Report.report | String | The XML report sent by Ping Castle | 
-
+| PingCastle.Report.report | String | The XML report sent by Ping Castle |
 
 #### Command Example
 

@@ -1,8 +1,12 @@
 # Box
-This pack includes Cortex XSIAM content. 
+
+This pack includes Cortex XSIAM content.
 <~XSIAM>
+
 ## Time Zone support for XSIAM
+
 For supporting Time Zone parsing, time should be set to UTC +0000 [Product documentation](https://support.box.com/hc/en-us/articles/360044194253-Language-and-Time-Zones):
+
 1. Sign into your Box account.
 2. Click your initials in the top-right corner to open the **Account Menu**.
 3. Click **Account Settings**.

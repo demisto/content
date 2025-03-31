@@ -188,14 +188,14 @@
 <p> </p>
 <pre>{
     "CiscoISE.Endpoint": {
-        "MACAddress": "00:0E:35:D4:D8:51", 
-        "Group": "Internal Dev", 
-        "ID": "327b0120-4ba1-11e8-93bd-000c296ec148", 
-        "StaticProfileAssignment": false, 
+        "MACAddress": "00:0E:35:D4:D8:51",
+        "Group": "Internal Dev",
+        "ID": "327b0120-4ba1-11e8-93bd-000c296ec148",
+        "StaticProfileAssignment": false,
         "StaticGroupAssignment": false
-    }, 
+    },
     "Endpoint": {
-        "MACAddress": "00:0E:35:D4:D8:51", 
+        "MACAddress": "00:0E:35:D4:D8:51",
         "ID": "327b0120-4ba1-11e8-93bd-000c296ec148"
     }
 }
@@ -320,29 +320,29 @@
 <pre>{
     "CiscoISE.Endpoint": [
         {
-            "MACAddress": "00:0A:35:11:A9:00", 
+            "MACAddress": "00:0A:35:11:A9:00",
             "ID": "50080fc0-a07a-11e8-808e-000c295fdd32"
-        }, 
+        },
         {
-            "MACAddress": "00:0E:35:D4:D8:51", 
+            "MACAddress": "00:0E:35:D4:D8:51",
             "ID": "327b0120-4ba1-11e8-93bd-000c296ec148"
-        }, 
+        },
         {
-            "MACAddress": "11:22:33:AA:BB:CC", 
+            "MACAddress": "11:22:33:AA:BB:CC",
             "ID": "7d5e0530-133c-11e9-a5db-02420d3c5249"
         }
-    ], 
+    ],
     "Endpoint": [
         {
-            "MACAddress": "00:0A:35:11:A9:00", 
+            "MACAddress": "00:0A:35:11:A9:00",
             "ID": "50080fc0-a07a-11e8-808e-000c295fdd32"
-        }, 
+        },
         {
-            "MACAddress": "00:0E:35:D4:D8:51", 
+            "MACAddress": "00:0E:35:D4:D8:51",
             "ID": "327b0120-4ba1-11e8-93bd-000c296ec148"
-        }, 
+        },
         {
-            "MACAddress": "11:22:33:AA:BB:CC", 
+            "MACAddress": "11:22:33:AA:BB:CC",
             "ID": "7d5e0530-133c-11e9-a5db-02420d3c5249"
         }
     ]
@@ -503,93 +503,93 @@
 <pre>{
     "CiscoISE.Group": [
         {
-            "Name": "Sony-Device", 
-            "Description": "Identity Group for Profile: Sony-Device", 
+            "Name": "Sony-Device",
+            "Description": "Identity Group for Profile: Sony-Device",
             "ID": "38a73670-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Cisco-Meraki-Device", 
-            "Description": "Identity Group for Profile: Cisco-Meraki-Device", 
+            "Name": "Cisco-Meraki-Device",
+            "Description": "Identity Group for Profile: Cisco-Meraki-Device",
             "ID": "1e2700a0-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Apple-iDevice", 
-            "Description": "Identity Group for Profile: Apple-iDevice", 
+            "Name": "Apple-iDevice",
+            "Description": "Identity Group for Profile: Apple-iDevice",
             "ID": "0a4a50f0-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "BlackBerry", 
-            "Description": "Identity Group for Profile: BlackBerry", 
+            "Name": "BlackBerry",
+            "Description": "Identity Group for Profile: BlackBerry",
             "ID": "0cc7ad00-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Android", 
-            "Description": "Identity Group for Profile: Android", 
+            "Name": "Android",
+            "Description": "Identity Group for Profile: Android",
             "ID": "ffa36b00-8bff-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Axis-Device", 
-            "Description": "Identity Group for Profile: Axis-Device", 
+            "Name": "Axis-Device",
+            "Description": "Identity Group for Profile: Axis-Device",
             "ID": "0c4eac70-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Juniper-Device", 
-            "Description": "Identity Group for Profile: Juniper-Device", 
+            "Name": "Juniper-Device",
+            "Description": "Identity Group for Profile: Juniper-Device",
             "ID": "2b07d100-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Epson-Device", 
-            "Description": "Identity Group for Profile: Epson-Device", 
+            "Name": "Epson-Device",
+            "Description": "Identity Group for Profile: Epson-Device",
             "ID": "22c6c780-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Profiled", 
-            "Description": "Profiled Identity Group", 
+            "Name": "Profiled",
+            "Description": "Profiled Identity Group",
             "ID": "aa10ae00-8bff-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Blacklist", 
-            "Description": "Blacklist Identity Group", 
+            "Name": "Blacklist",
+            "Description": "Blacklist Identity Group",
             "ID": "aa000c30-8bff-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "GuestEndpoints", 
-            "Description": "Guest Endpoints Identity Group", 
+            "Name": "GuestEndpoints",
+            "Description": "Guest Endpoints Identity Group",
             "ID": "aa178bd0-8bff-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Synology-Device", 
-            "Description": "Identity Group for Profile: Synology-Device", 
+            "Name": "Synology-Device",
+            "Description": "Identity Group for Profile: Synology-Device",
             "ID": "3a1b38d0-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Vizio-Device", 
-            "Description": "Identity Group for Profile: Vizio-Device", 
+            "Name": "Vizio-Device",
+            "Description": "Identity Group for Profile: Vizio-Device",
             "ID": "3b113190-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Trendnet-Device", 
-            "Description": "Identity Group for Profile: Trendnet-Device", 
+            "Name": "Trendnet-Device",
+            "Description": "Identity Group for Profile: Trendnet-Device",
             "ID": "3a88eec0-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "RegisteredDevices", 
-            "Description": "Asset Registered Endpoints Identity Group", 
+            "Name": "RegisteredDevices",
+            "Description": "Asset Registered Endpoints Identity Group",
             "ID": "aa13bb40-8bff-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Cisco-IP-Phone", 
-            "Description": "Identity Group for Profile: Cisco-IP-Phone", 
+            "Name": "Cisco-IP-Phone",
+            "Description": "Identity Group for Profile: Cisco-IP-Phone",
             "ID": "14f5cac0-8c00-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Unknown", 
-            "Description": "Unknown Identity Group", 
+            "Name": "Unknown",
+            "Description": "Unknown Identity Group",
             "ID": "aa0e8b20-8bff-11e6-996c-525400b48521"
-        }, 
+        },
         {
-            "Name": "Workstation", 
-            "Description": "Identity Group for Profile: Workstation", 
+            "Name": "Workstation",
+            "Description": "Identity Group for Profile: Workstation",
             "ID": "3b76f840-8c00-11e6-996c-525400b48521"
         }
     ]
@@ -740,83 +740,83 @@
 <pre>{
     "CiscoISE.Policy": [
         {
-            "ID": "ANCPortBounce", 
+            "ID": "ANCPortBounce",
             "Name": "ANCPortBounce"
-        }, 
+        },
         {
-            "ID": "ANCQuarantine", 
+            "ID": "ANCQuarantine",
             "Name": "ANCQuarantine"
-        }, 
+        },
         {
-            "ID": "ANCShutdown", 
+            "ID": "ANCShutdown",
             "Name": "ANCShutdown"
-        }, 
+        },
         {
-            "ID": "azoce", 
+            "ID": "azoce",
             "Name": "azoce"
-        }, 
+        },
         {
-            "ID": "dpkef", 
+            "ID": "dpkef",
             "Name": "dpkef"
-        }, 
+        },
         {
-            "ID": "dvgoy", 
+            "ID": "dvgoy",
             "Name": "dvgoy"
-        }, 
+        },
         {
-            "ID": "gfibg", 
+            "ID": "gfibg",
             "Name": "gfibg"
-        }, 
+        },
         {
-            "ID": "jzbhh", 
+            "ID": "jzbhh",
             "Name": "jzbhh"
-        }, 
+        },
         {
-            "ID": "last-test", 
+            "ID": "last-test",
             "Name": "last-test"
-        }, 
+        },
         {
-            "ID": "ljnba", 
+            "ID": "ljnba",
             "Name": "ljnba"
-        }, 
+        },
         {
-            "ID": "mhxab", 
+            "ID": "mhxab",
             "Name": "mhxab"
-        }, 
+        },
         {
-            "ID": "mxiiw", 
+            "ID": "mxiiw",
             "Name": "mxiiw"
-        }, 
+        },
         {
-            "ID": "ncxer", 
+            "ID": "ncxer",
             "Name": "ncxer"
-        }, 
+        },
         {
-            "ID": "phzbe", 
+            "ID": "phzbe",
             "Name": "phzbe"
-        }, 
+        },
         {
-            "ID": "pjrgp", 
+            "ID": "pjrgp",
             "Name": "pjrgp"
-        }, 
+        },
         {
-            "ID": "policy0", 
+            "ID": "policy0",
             "Name": "policy0"
-        }, 
+        },
         {
-            "ID": "policy09", 
+            "ID": "policy09",
             "Name": "policy09"
-        }, 
+        },
         {
-            "ID": "policy1", 
+            "ID": "policy1",
             "Name": "policy1"
-        }, 
+        },
         {
-            "ID": "policy2", 
+            "ID": "policy2",
             "Name": "policy2"
-        }, 
+        },
         {
-            "ID": "policy3", 
+            "ID": "policy3",
             "Name": "policy3"
         }
     ]
@@ -980,7 +980,7 @@
         {
             "Action": [
                 "QUARANTINE"
-            ], 
+            ],
             "Name": "policy3"
         }
     ]
@@ -1061,7 +1061,7 @@
     "CiscoISE.Policy": {
         "Action": [
             "QUARANTINE"
-        ], 
+        ],
         "Name": "quarantinePolicy"
     }
 }
@@ -1169,8 +1169,8 @@
 <pre>{
     "CiscoISE.Endpoint": [
         {
-            "GroupName": "Blacklist", 
-            "ID": "327b0120-4ba1-11e8-93bd-000c296ec148", 
+            "GroupName": "Blacklist",
+            "ID": "327b0120-4ba1-11e8-93bd-000c296ec148",
             "Name": "00:0E:35:D4:D8:51"
         }
     ]
@@ -1195,7 +1195,6 @@
 </tbody>
 </table>
 
-
 ### cisco-ise-create-endpoint
 
 ***
@@ -1209,14 +1208,15 @@ Creates a new endpoint on Cisco ISE according to the passed MAC address and cust
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mac_address | MAC address of the endpoint (format: 11:22:33:44:55:66). | Required | 
-| attributes_map | A list of custom attributes. | Optional | 
+| mac_address | MAC address of the endpoint (format: 11:22:33:44:55:66). | Required |
+| attributes_map | A list of custom attributes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoISE.Endpoint.MACAddress | string | MAC address of the new endpoint. | 
+| CiscoISE.Endpoint.MACAddress | string | MAC address of the new endpoint. |
+
 ### cisco-ise-get-nodes
 
 ***
@@ -1234,7 +1234,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoISE.NodesData | unknown | Details of all deployment ISE nodes. | 
+| CiscoISE.NodesData | unknown | Details of all deployment ISE nodes. |
+
 ### cisco-ise-get-endpoint-id-by-name
 
 ***
@@ -1248,14 +1249,15 @@ Returns an EndpointID using its name (Available on ISE 2.3 and later versions).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mac_address | MAC address of the endpoint (format: 11:22:33:44:55:66). | Required | 
+| mac_address | MAC address of the endpoint (format: 11:22:33:44:55:66). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.ID | string | Endpoint ID. | 
-| Endpoint.MACAddress | string | Endpoint MAC address. | 
+| Endpoint.ID | string | Endpoint ID. |
+| Endpoint.MACAddress | string | Endpoint MAC address. |
+
 ### cisco-ise-remove-policy
 
 ***
@@ -1269,15 +1271,16 @@ Removes an Adapative Network Control policy from an endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mac_address | The MAC address from which to remove the policy. | Required | 
-| policy_name | The name of the policy to remove from the endpoint. | Required | 
+| mac_address | The MAC address from which to remove the policy. | Required |
+| policy_name | The name of the policy to remove from the endpoint. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoISE.Endpoint.MACAddress | string | The MAC address of the endpoint. | 
-| CiscoISE.Endpoint.PolicyName | string | The policy name that was removed from the endpoint. | 
+| CiscoISE.Endpoint.MACAddress | string | The MAC address of the endpoint. |
+| CiscoISE.Endpoint.PolicyName | string | The policy name that was removed from the endpoint. |
+
 ### cisco-ise-get-session-data-by-ip
 
 ***
@@ -1291,7 +1294,7 @@ Queries an IP address and returns its session data from an active endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address to query in the ISE platform. | Required | 
+| ip_address | IP address to query in the ISE platform. | Required |
 
 #### Context Output
 

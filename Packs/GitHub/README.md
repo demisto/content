@@ -1,7 +1,9 @@
 Use the GitHub integration to manage GitHub issues and pull requests directly from Cortex XSOAR.
 
 ## What does this pack do
+
 Among other things, this integration enables you to:
+
 - Create, close, or update a GitHub issue.
 - Get a list of all GitHub issues you have access to.
 - Create a branch in GitHub.

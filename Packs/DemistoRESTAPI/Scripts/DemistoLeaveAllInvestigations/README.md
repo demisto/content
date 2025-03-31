@@ -9,7 +9,6 @@ Leaves all investigations that the user is part of (clears out the incidents in 
 | Script Type | javascript |
 | Tags | DemistoAPI |
 
-
 ## Dependencies
 
 ---

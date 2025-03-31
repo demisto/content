@@ -1,9 +1,12 @@
 This script resolves the original URL from a given shortened URL and places the resolved URL in the playbook context and output.
 
 **Disclaimer:**  
+
 - Using online services for resolving URLs exposes the server IP address to these services.  
 - The `Built-In` service visits the URL and follows redirects on the server, which exposes the server IP address to the redirect URLs.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +16,7 @@ This script resolves the original URL from a given shortened URL and places the 
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +27,7 @@ This script resolves the original URL from a given shortened URL and places the 
 | insecure | Trust any certificate \(not secure\). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

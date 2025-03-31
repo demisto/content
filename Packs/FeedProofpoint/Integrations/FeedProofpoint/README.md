@@ -2,7 +2,6 @@ Detailed feed of domains and ips classified in different categories. You need a 
 
 ## Configure Proofpoint Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -20,23 +19,25 @@ Detailed feed of domains and ips classified in different categories. You need a 
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### proofpoint-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `proofpoint-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return to the output. The default value is "50". Default is 50. | Optional | 
-| indicator_type | The indicator type to fetch. Possible values are: all, domain, ip. Default is all. | Optional | 
-
+| limit | The maximum number of results to return to the output. The default value is "50". Default is 50. | Optional |
+| indicator_type | The indicator type to fetch. Possible values are: all, domain, ip. Default is all. | Optional |
 
 #### Context Output
 

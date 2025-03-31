@@ -2,19 +2,20 @@ HackerOne integration allows users to fetch reports by using the fetch incidents
 This integration was integrated and tested with API version v1 of HackerOne.
 
 ## Advanced Filter
+
 The`advanced_filter` parameter used both in the `hackerone-report-list` command and in the integration configuration, is used to filter results based on attribute values.
 The general filtering syntax is as follows:
 
 ```{"attribute": "value1, value2"}```
+
 - `attribute` is the name of the attribute that the filter will be applied against.
 - `value` is the value being checked for. You can specify multiple values as a comma-separated list for the attributes that are accepting the multiple values according to the API document.
-- To specify multiple filters, use the comma ( , ) to separate them 
+- To specify multiple filters, use the comma ( , ) to separate them
   (for example, `{"attribute1": "value1, value2", "attribute2" : "value3, value4"}`).
 
 To get the detailed information regarding the valid attributes for filtering user can refer to the [HackerOne API documentation](https://api.hackerone.com/customer-resources/#reports-get-all-reports).
 
 ## Configure HackerOne in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -32,165 +33,169 @@ To get the detailed information regarding the valid attributes for filtering use
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### hackerone-report-list
+
 ***
 Retrieves all the reports based on program handle and provided arguments.
-
 
 #### Base Command
 
 `hackerone-report-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| program_handle | The program handle to fetch the reports based on the specified handle. Users can get the list of the program_handle by executing the "hackerone-program-list" command.<br/><br/>Note: Supports comma separated values. | Required | 
-| sort_by | Sort the reports based on the attributes provided.<br/><br/>Possible values: swag_awarded_at, bounty_awarded_at, last_reporter_activity_at, first_program_activity_at, last_program_activity_at, triaged_at, created_at, closed_at, last_public_activity_at, last_activity_at, disclosed_at.<br/><br/>Note: The default sort order for an attribute is descending. Prefix the attributes with a hyphen to sort in ascending order. Supports comma separated values.<br/><br/>Example: -last_reporter_activity_at, created_at. | Optional | 
-| page_size | The number of reports to retrieve per page. Default value is 50. <br/><br/>Note: Possible values are between 1 and 100. | Optional | 
-| page_number | Page number to retrieve the reports from the specified page. Default value is 1. | Optional | 
-| advanced_filter | By providing advanced filters, users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "program_handle", "filter_by_keyword", "state" and "severity".<br/><br/>Format accepted: {"filter[attribute1][]": "value1, value2", "filter[attribute2]" : "value3"}<br/><br/>For example: {"filter[closed_at__gt]":"2020-10-26T10:48:16.834Z","filter[state][]":"new, triaged"}. | Optional | 
-| filter_by_keyword | The keyword filter to retrieve the reports by title and keywords. | Optional | 
-| state | The state filter to retrieve the reports by current report state.<br/><br/>Possible values: new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam, retesting.<br/><br/>Note: Supports comma separated values. | Optional | 
-| severity | The severity filter to retrieve the reports by the severity ratings.<br/><br/>Possible values: none, low, medium, high, critical.<br/><br/>Note: Supports comma separated values. | Optional | 
+| program_handle | The program handle to fetch the reports based on the specified handle. Users can get the list of the program_handle by executing the "hackerone-program-list" command.<br/><br/>Note: Supports comma separated values. | Required |
+| sort_by | Sort the reports based on the attributes provided.<br/><br/>Possible values: swag_awarded_at, bounty_awarded_at, last_reporter_activity_at, first_program_activity_at, last_program_activity_at, triaged_at, created_at, closed_at, last_public_activity_at, last_activity_at, disclosed_at.<br/><br/>Note: The default sort order for an attribute is descending. Prefix the attributes with a hyphen to sort in ascending order. Supports comma separated values.<br/><br/>Example: -last_reporter_activity_at, created_at. | Optional |
+| page_size | The number of reports to retrieve per page. Default value is 50. <br/><br/>Note: Possible values are between 1 and 100. | Optional |
+| page_number | Page number to retrieve the reports from the specified page. Default value is 1. | Optional |
+| advanced_filter | By providing advanced filters, users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "program_handle", "filter_by_keyword", "state" and "severity".<br/><br/>Format accepted: {"filter[attribute1][]": "value1, value2", "filter[attribute2]" : "value3"}<br/><br/>For example: {"filter[closed_at__gt]":"2020-10-26T10:48:16.834Z","filter[state][]":"new, triaged"}. | Optional |
+| filter_by_keyword | The keyword filter to retrieve the reports by title and keywords. | Optional |
+| state | The state filter to retrieve the reports by current report state.<br/><br/>Possible values: new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam, retesting.<br/><br/>Note: Supports comma separated values. | Optional |
+| severity | The severity filter to retrieve the reports by the severity ratings.<br/><br/>Possible values: none, low, medium, high, critical.<br/><br/>Note: Supports comma separated values. | Optional |
 | limit | Number of reports to retrieve. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HackerOne.Report.id | String | The unique ID of the report. | 
-| HackerOne.Report.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.attributes.title | String | The title of the report. | 
-| HackerOne.Report.attributes.state | String | The state of the Report. It can be new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam or retesting. | 
-| HackerOne.Report.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.vulnerability_information | String | Detailed information about the vulnerability including the steps to reproduce as well as supporting material and references. | 
-| HackerOne.Report.attributes.triaged_at | Date | The date and time the object was triaged. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.closed_at | Date | The date and time the object was closed. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.last_reporter_activity_at | String | The date and time that the most recent reporter activity was posted on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.first_program_activity_at | String | The date and time that the first program activity was posted on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.last_program_activity_at | String | The date and time that the most recent program activity was posted on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.bounty_awarded_at | String | The date and time that the most recent bounty was awarded on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.swag_awarded_at | String | The date and time that the most recent swag was awarded on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.disclosed_at | String | The date and time the report was disclosed. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.reporter_agreed_on_going_public_at | String | The date and time the reporter agreed for the public disclosure. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.last_public_activity_at | String | The date and time that the most recent public activity was posted on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.last_activity_at | String | The date and time that the most recent activity was posted on the report. Formatted according to ISO 8601. | 
-| HackerOne.Report.attributes.source | String | A free-form string defining the source of the report for tracking purposes. For example, "detectify", "rapid7" or "jira". | 
-| HackerOne.Report.attributes.timer_bounty_awarded_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting. | 
-| HackerOne.Report.attributes.timer_bounty_awarded_miss_at | Date | The date and time the system expects the program to have awarded a bounty by. The field is null when the system does not expect the report to receive a bounty at the time. | 
-| HackerOne.Report.attributes.timer_first_program_response_miss_at | Date | The date and time the system expects the program to have posted an initial public comment to the report by. | 
-| HackerOne.Report.attributes.timer_first_program_response_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting. | 
-| HackerOne.Report.attributes.timer_report_resolved_miss_at | Date | The date and time the system expects the program to have closed the report by. The field is null when the report seems blocked by the reporter. | 
-| HackerOne.Report.attributes.timer_report_resolved_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the  field is null and the corresponding miss_at field is set, it means the timer is still counting. | 
-| HackerOne.Report.attributes.timer_report_triage_miss_at | Date | The date and time the system expects the program to have triaged the report by. The  field is null when the system does not expect the report to be triaged at the time. | 
-| HackerOne.Report.attributes.timer_report_triage_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting. | 
-| HackerOne.Report.relationships.reporter.data.id | String | The unique ID of the reporter. | 
-| HackerOne.Report.relationships.reporter.data.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.relationships.reporter.data.attributes.username | String | The username of the reporter. | 
-| HackerOne.Report.relationships.reporter.data.attributes.name | String | The name of the reporter. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.disabled | Boolean | Indicates if the reporter is disabled. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.62x62 | String | URL of the profile photo of a reporter of size 62x62. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.82x82 | String | URL of the profile photo of a reporter of size 82x82. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.110x110 | String | URL of the profile photo of a reporter of size 110x110. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.260x260 | String | URL of the profile photo of a reporter of size 260x260. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.bio | String | The reporter's biography, as provided by the reporter. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.reputation | Number | The reputation of the reporter. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.signal | Number | The signal of the reporter. This number ranges from -10 to 7. The closer to 7, the higher the average submission quality of the reporter. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.impact | Number | The impact of the reporter. This number ranges from 0 to 50. The closer to 50, the higher the average severity of the reporter's reports is. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.website | String | The reporter's website, as provided by the reporter. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.location | String | The reporter's location, as provided by the reporter. | 
-| HackerOne.Report.data.relationships.reporter.data.attributes.hackerone_triager | Boolean | Indicates if the reporter is a hackerone triager. | 
-| HackerOne.Report.data.relationships.program.data.id | String | The unique ID of the program. | 
-| HackerOne.Report.data.relationships.program.data.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.data.relationships.program.data.attributes.handle | String | The handle of the program. | 
-| HackerOne.Report.data.relationships.program.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.program.data.attributes.updated_at | String | The date and time the object was updated. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.severity.data.id | String | The unique ID of the severity. | 
-| HackerOne.Report.data.relationships.severity.data.type | String | The type of the severity of HackerOne. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.rating | String | The qualitative rating of the severity. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.author_type | String | The involved party that provided the severity. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.user_id | Number | The unique id of the user who created the object. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.score | Number | The vulnerability score calculated from the Common Vulnerability Scoring System \(CVSS\). | 
-| HackerOne.Report.data.relationships.severity.data.attributes.attack_complexity | String | A CVSS metric that describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.attack_vector | String | A CVSS metric that reflects the context by which vulnerability exploitation is possible. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.availability | String | A CVSS metric that measures the availability of the impacted component resulting from a successfully exploited vulnerability. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.confidentiality | String | A CVSS metric that measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.integrity | String | A CVSS metric that measures the impact to the integrity of a successfully exploited vulnerability. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.privileges_required | String | A CVSS metric that describes the level of privileges an attacker must possess before successfully exploiting the vulnerability. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.user_interaction | String | A CVSS metric that captures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerability component. | 
-| HackerOne.Report.data.relationships.severity.data.attributes.scope | String | A CVSS metric that determines if a successful attack impacts a component other than the vulnerable component. | 
-| HackerOne.Report.data.relationships.weakness.data.id | String | The unique ID of the weakness. | 
-| HackerOne.Report.data.relationships.weakness.data.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.data.relationships.weakness.data.attributes.name | String | The name of the weakness. | 
-| HackerOne.Report.data.relationships.weakness.data.attributes.description | String | The raw description of the weakness. | 
-| HackerOne.Report.data.relationships.weakness.data.attributes.external_id | String | The weakness' external reference to CWE or CAPEC. | 
-| HackerOne.Report.data.relationships.weakness.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.id | String | The unique ID of the custom field value. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.attributes.value | String | The attribute's value. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.attributes.updated_at | String | The date and time the object was updated. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.id | String | The unique ID of the custom field attribute. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.field_type | String | The type of custom field. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.label | String | The attribute's label. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.internal | Boolean | Internal or public custom field. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.required | Boolean | Whether the field is required or not. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.error_message | String | A custom error message when the regex validation fails. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.helper_text | String | The helper text for custom_field_attribute. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.configuration | String | An optional configuration for the attribute's type. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.checkbox_text | String | The text shown with a checkbox field. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.regex | String | A regex used to validate the input for a text field. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.updated_at | String | The date and time the object was updated. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.archived_at | String | The date and time the object was archived. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.assignee.data.id | String | The unique ID of the user. | 
-| HackerOne.Report.data.relationships.assignee.data.type | String | The type of the object of HackerOne. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.name | Unknown | The name of the assignee. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.permissions | String | The permissions of the group/user. Possible values are reward_management, program_management, user_management, and report_management. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.username | String | The username of the assignee. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.disabled | Boolean | Indicates if the assignee is disabled. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.62x62 | String | URL of the profile photo of the assignee of size 62x62. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.82x82 | String | URL of the profile photo of the assignee of size 82x82. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.110x110 | String | URL of the profile photo of the assignee of size 110x110. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.260x260 | String | URL of the profile photo of the assignee of size 260x260. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.signal | Number | The signal of the assignee. The number ranges from -10 to 7. The closer to 7, the higher the average submission quality of the user. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.impact | Number | The impact of the assignee. This number ranges from 0 to 50. The closer to 50, the higher the average severity of the user's reports is. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.reputation | Number | The reputation of the assignee. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.bio | String | The assignee's biography, as provided by the assignee. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.website | String | The assignee's website, as provided by the assignee. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.location | String | The assignee's location, as provided by the assignee. | 
-| HackerOne.Report.data.relationships.assignee.data.attributes.hackerone_triager | Boolean | Indicates if the assignee is a hackerone triager. | 
-| HackerOne.Report.data.relationships.structured_scope.data.id | String | The unique ID of the scope. | 
-| HackerOne.Report.data.relationships.structured_scope.data.type | String | The type of the HackerOne object. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.asset_type | String | The type of the asset. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.asset_identifier | String | The identifier of the asset. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.eligible_for_bounty | Boolean | If the asset is eligible for a bounty. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.eligible_for_submission | Boolean | If the asset is eligible for a submission. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.instruction | String | The raw instruction of the asset provided by the program. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.max_severity | String | The qualitative rating of the maximum severity allowed on this asset. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.updated_at | Date | The date and time the object was updated. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.structured_scope.data.attributes.reference | String | The customer defined reference identifier or tag of the asset. | 
-| HackerOne.Report.data.relationships.bounties.data.id | String | The unique ID of the bounty. | 
-| HackerOne.Report.data.relationships.bounties.data.type | String | The type of the HackerOne object. | 
-| HackerOne.Report.data.relationships.bounties.data.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Report.data.relationships.bounties.data.attributes.amount | String | Amount in USD. | 
-| HackerOne.Report.data.relationships.bounties.data.attributes.bonus_amount | String | Bonus amount in USD. | 
-| HackerOne.Report.data.relationships.bounties.data.attributes.awarded_amount | String | Amount in awarded currency. | 
-| HackerOne.Report.data.relationships.bounties.data.attributes.awarded_bonus_amount | String | Bonus amount in awarded currency. | 
-| HackerOne.Report.data.relationships.bounties.data.attributes.awarded_currency | String | The currency used to award the bounty and bonus. | 
-
+| HackerOne.Report.id | String | The unique ID of the report. |
+| HackerOne.Report.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.attributes.title | String | The title of the report. |
+| HackerOne.Report.attributes.state | String | The state of the Report. It can be new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam or retesting. |
+| HackerOne.Report.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.vulnerability_information | String | Detailed information about the vulnerability including the steps to reproduce as well as supporting material and references. |
+| HackerOne.Report.attributes.triaged_at | Date | The date and time the object was triaged. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.closed_at | Date | The date and time the object was closed. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.last_reporter_activity_at | String | The date and time that the most recent reporter activity was posted on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.first_program_activity_at | String | The date and time that the first program activity was posted on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.last_program_activity_at | String | The date and time that the most recent program activity was posted on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.bounty_awarded_at | String | The date and time that the most recent bounty was awarded on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.swag_awarded_at | String | The date and time that the most recent swag was awarded on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.disclosed_at | String | The date and time the report was disclosed. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.reporter_agreed_on_going_public_at | String | The date and time the reporter agreed for the public disclosure. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.last_public_activity_at | String | The date and time that the most recent public activity was posted on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.last_activity_at | String | The date and time that the most recent activity was posted on the report. Formatted according to ISO 8601. |
+| HackerOne.Report.attributes.source | String | A free-form string defining the source of the report for tracking purposes. For example, "detectify", "rapid7" or "jira". |
+| HackerOne.Report.attributes.timer_bounty_awarded_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting. |
+| HackerOne.Report.attributes.timer_bounty_awarded_miss_at | Date | The date and time the system expects the program to have awarded a bounty by. The field is null when the system does not expect the report to receive a bounty at the time. |
+| HackerOne.Report.attributes.timer_first_program_response_miss_at | Date | The date and time the system expects the program to have posted an initial public comment to the report by. |
+| HackerOne.Report.attributes.timer_first_program_response_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting. |
+| HackerOne.Report.attributes.timer_report_resolved_miss_at | Date | The date and time the system expects the program to have closed the report by. The field is null when the report seems blocked by the reporter. |
+| HackerOne.Report.attributes.timer_report_resolved_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the  field is null and the corresponding miss_at field is set, it means the timer is still counting. |
+| HackerOne.Report.attributes.timer_report_triage_miss_at | Date | The date and time the system expects the program to have triaged the report by. The  field is null when the system does not expect the report to be triaged at the time. |
+| HackerOne.Report.attributes.timer_report_triage_elapsed_time | Number | The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting. |
+| HackerOne.Report.relationships.reporter.data.id | String | The unique ID of the reporter. |
+| HackerOne.Report.relationships.reporter.data.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.relationships.reporter.data.attributes.username | String | The username of the reporter. |
+| HackerOne.Report.relationships.reporter.data.attributes.name | String | The name of the reporter. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.disabled | Boolean | Indicates if the reporter is disabled. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.62x62 | String | URL of the profile photo of a reporter of size 62x62. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.82x82 | String | URL of the profile photo of a reporter of size 82x82. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.110x110 | String | URL of the profile photo of a reporter of size 110x110. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.260x260 | String | URL of the profile photo of a reporter of size 260x260. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.bio | String | The reporter's biography, as provided by the reporter. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.reputation | Number | The reputation of the reporter. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.signal | Number | The signal of the reporter. This number ranges from -10 to 7. The closer to 7, the higher the average submission quality of the reporter. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.impact | Number | The impact of the reporter. This number ranges from 0 to 50. The closer to 50, the higher the average severity of the reporter's reports is. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.website | String | The reporter's website, as provided by the reporter. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.location | String | The reporter's location, as provided by the reporter. |
+| HackerOne.Report.data.relationships.reporter.data.attributes.hackerone_triager | Boolean | Indicates if the reporter is a hackerone triager. |
+| HackerOne.Report.data.relationships.program.data.id | String | The unique ID of the program. |
+| HackerOne.Report.data.relationships.program.data.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.data.relationships.program.data.attributes.handle | String | The handle of the program. |
+| HackerOne.Report.data.relationships.program.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.program.data.attributes.updated_at | String | The date and time the object was updated. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.severity.data.id | String | The unique ID of the severity. |
+| HackerOne.Report.data.relationships.severity.data.type | String | The type of the severity of HackerOne. |
+| HackerOne.Report.data.relationships.severity.data.attributes.rating | String | The qualitative rating of the severity. |
+| HackerOne.Report.data.relationships.severity.data.attributes.author_type | String | The involved party that provided the severity. |
+| HackerOne.Report.data.relationships.severity.data.attributes.user_id | Number | The unique id of the user who created the object. |
+| HackerOne.Report.data.relationships.severity.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.severity.data.attributes.score | Number | The vulnerability score calculated from the Common Vulnerability Scoring System \(CVSS\). |
+| HackerOne.Report.data.relationships.severity.data.attributes.attack_complexity | String | A CVSS metric that describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. |
+| HackerOne.Report.data.relationships.severity.data.attributes.attack_vector | String | A CVSS metric that reflects the context by which vulnerability exploitation is possible. |
+| HackerOne.Report.data.relationships.severity.data.attributes.availability | String | A CVSS metric that measures the availability of the impacted component resulting from a successfully exploited vulnerability. |
+| HackerOne.Report.data.relationships.severity.data.attributes.confidentiality | String | A CVSS metric that measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability. |
+| HackerOne.Report.data.relationships.severity.data.attributes.integrity | String | A CVSS metric that measures the impact to the integrity of a successfully exploited vulnerability. |
+| HackerOne.Report.data.relationships.severity.data.attributes.privileges_required | String | A CVSS metric that describes the level of privileges an attacker must possess before successfully exploiting the vulnerability. |
+| HackerOne.Report.data.relationships.severity.data.attributes.user_interaction | String | A CVSS metric that captures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerability component. |
+| HackerOne.Report.data.relationships.severity.data.attributes.scope | String | A CVSS metric that determines if a successful attack impacts a component other than the vulnerable component. |
+| HackerOne.Report.data.relationships.weakness.data.id | String | The unique ID of the weakness. |
+| HackerOne.Report.data.relationships.weakness.data.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.data.relationships.weakness.data.attributes.name | String | The name of the weakness. |
+| HackerOne.Report.data.relationships.weakness.data.attributes.description | String | The raw description of the weakness. |
+| HackerOne.Report.data.relationships.weakness.data.attributes.external_id | String | The weakness' external reference to CWE or CAPEC. |
+| HackerOne.Report.data.relationships.weakness.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.custom_field_values.data.id | String | The unique ID of the custom field value. |
+| HackerOne.Report.data.relationships.custom_field_values.data.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.data.relationships.custom_field_values.data.attributes.value | String | The attribute's value. |
+| HackerOne.Report.data.relationships.custom_field_values.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.custom_field_values.data.attributes.updated_at | String | The date and time the object was updated. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.id | String | The unique ID of the custom field attribute. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.field_type | String | The type of custom field. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.label | String | The attribute's label. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.internal | Boolean | Internal or public custom field. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.required | Boolean | Whether the field is required or not. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.error_message | String | A custom error message when the regex validation fails. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.helper_text | String | The helper text for custom_field_attribute. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.configuration | String | An optional configuration for the attribute's type. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.checkbox_text | String | The text shown with a checkbox field. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.regex | String | A regex used to validate the input for a text field. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.updated_at | String | The date and time the object was updated. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.archived_at | String | The date and time the object was archived. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.assignee.data.id | String | The unique ID of the user. |
+| HackerOne.Report.data.relationships.assignee.data.type | String | The type of the object of HackerOne. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.name | Unknown | The name of the assignee. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.created_at | String | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.permissions | String | The permissions of the group/user. Possible values are reward_management, program_management, user_management, and report_management. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.username | String | The username of the assignee. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.disabled | Boolean | Indicates if the assignee is disabled. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.62x62 | String | URL of the profile photo of the assignee of size 62x62. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.82x82 | String | URL of the profile photo of the assignee of size 82x82. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.110x110 | String | URL of the profile photo of the assignee of size 110x110. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.profile_picture.260x260 | String | URL of the profile photo of the assignee of size 260x260. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.signal | Number | The signal of the assignee. The number ranges from -10 to 7. The closer to 7, the higher the average submission quality of the user. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.impact | Number | The impact of the assignee. This number ranges from 0 to 50. The closer to 50, the higher the average severity of the user's reports is. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.reputation | Number | The reputation of the assignee. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.bio | String | The assignee's biography, as provided by the assignee. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.website | String | The assignee's website, as provided by the assignee. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.location | String | The assignee's location, as provided by the assignee. |
+| HackerOne.Report.data.relationships.assignee.data.attributes.hackerone_triager | Boolean | Indicates if the assignee is a hackerone triager. |
+| HackerOne.Report.data.relationships.structured_scope.data.id | String | The unique ID of the scope. |
+| HackerOne.Report.data.relationships.structured_scope.data.type | String | The type of the HackerOne object. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.asset_type | String | The type of the asset. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.asset_identifier | String | The identifier of the asset. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.eligible_for_bounty | Boolean | If the asset is eligible for a bounty. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.eligible_for_submission | Boolean | If the asset is eligible for a submission. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.instruction | String | The raw instruction of the asset provided by the program. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.max_severity | String | The qualitative rating of the maximum severity allowed on this asset. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.updated_at | Date | The date and time the object was updated. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.structured_scope.data.attributes.reference | String | The customer defined reference identifier or tag of the asset. |
+| HackerOne.Report.data.relationships.bounties.data.id | String | The unique ID of the bounty. |
+| HackerOne.Report.data.relationships.bounties.data.type | String | The type of the HackerOne object. |
+| HackerOne.Report.data.relationships.bounties.data.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Report.data.relationships.bounties.data.attributes.amount | String | Amount in USD. |
+| HackerOne.Report.data.relationships.bounties.data.attributes.bonus_amount | String | Bonus amount in USD. |
+| HackerOne.Report.data.relationships.bounties.data.attributes.awarded_amount | String | Amount in awarded currency. |
+| HackerOne.Report.data.relationships.bounties.data.attributes.awarded_bonus_amount | String | Bonus amount in awarded currency. |
+| HackerOne.Report.data.relationships.bounties.data.attributes.awarded_currency | String | The currency used to award the bounty and bonus. |
 
 #### Command Example
+
 ```!hackerone-report-list program_handle=something_h1b page_size=2```
 
 #### Context Example
+
 ```json
 {
     "HackerOne": {
@@ -401,45 +406,46 @@ Retrieves all the reports based on program handle and provided arguments.
 #### Human Readable Output
 
 >### Report(s)
+>
 >|Report ID|Reporter Username|Title|State|Severity|Created At|Vulnerability Information|
 >|---|---|---|---|---|---|---|
 >| 1297733 | jahnvi_crest | Do not use depreciated function isSecure | new | medium | 2021-08-10T07:17:41.923Z | ## Summary:<br/>The depreciated function isSecure is not compatible with for SSL verification.<br/><br/>## Impact<br/><br/>SSL verification will fail regardless of certificate authenticity. |
 >| 1297727 | jahnvi_crest | SQL injection vulnerability in user signup form | resolved | low | 2021-08-10T07:09:28.496Z | ## Summary:<br/>[add summary of the vulnerability]<br/><br/>## Steps To Reproduce:<br/>[add details for how we can reproduce the issue]<br/><br/>  1. [add step]<br/>  1. [add step]<br/>  1. [add step]<br/><br/>## Supporting Material/References:<br/>[list any additional material (e.g. screenshots, logs, etc.)]<br/><br/>  * [attachment / reference]<br/><br/>## Impact<br/><br/>Can query for all users in db |
 
-
 ### hackerone-program-list
+
 ***
 Retrieves information about the programs in which the user is a member.
-
 
 #### Base Command
 
 `hackerone-program-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The number of programs to retrieve per page. Default value is 50.<br/><br/>Note: Possible values are between 1 and 100. | Optional | 
+| page_size | The number of programs to retrieve per page. Default value is 50.<br/><br/>Note: Possible values are between 1 and 100. | Optional |
 | page_number | Page number to retrieve the programs from the specified page. Default value is 1. | Optional |
 | limit | Number of programs to retrieve. | Optional |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HackerOne.Program.id | String | The unique ID of the program. | 
-| HackerOne.Program.type | String | The type of the object of HackerOne. | 
-| HackerOne.Program.attributes.handle | String | The handle of the program. | 
-| HackerOne.Program.attributes.policy | String | The policy of the program. | 
-| HackerOne.Program.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. | 
-| HackerOne.Program.attributes.updated_at | Date | The date and time the object was updated. Formatted according to ISO 8601. | 
-
+| HackerOne.Program.id | String | The unique ID of the program. |
+| HackerOne.Program.type | String | The type of the object of HackerOne. |
+| HackerOne.Program.attributes.handle | String | The handle of the program. |
+| HackerOne.Program.attributes.policy | String | The policy of the program. |
+| HackerOne.Program.attributes.created_at | Date | The date and time the object was created. Formatted according to ISO 8601. |
+| HackerOne.Program.attributes.updated_at | Date | The date and time the object was updated. Formatted according to ISO 8601. |
 
 #### Command Example
+
 ```!hackerone-program-list page_size=2```
 
 #### Context Example
+
 ```json
 {
     "HackerOne": {
@@ -472,6 +478,7 @@ Retrieves information about the programs in which the user is a member.
 #### Human Readable Output
 
 >### Program(s)
+>
 >|Program ID|Handle|Created At|Updated At|
 >|---|---|---|---|
 >| 53994 | something_h1b | 2021-08-09T13:39:20.342Z | 2021-08-10T09:29:56.853Z |

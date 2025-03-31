@@ -3,7 +3,6 @@ This integration was integrated and tested with version 5.0.0 of OPSWAT-Metadefe
 
 ## Configure OPSWAT-Metadefender v2 in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. http://localhost:8008/metascan_rest/) | True |
@@ -14,7 +13,6 @@ This integration was integrated and tested with version 5.0.0 of OPSWAT-Metadefe
 | Use system proxy settings | False |
 | The high threshold | False |
 | The low threshold | False |
-
 
 ## Commands
 
@@ -34,15 +32,15 @@ Scan file in OPSWAT
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileId | Entry id of a file in XSOAR. | Required | 
-| scanRule | Name of the Rule to use for scanning (Optional). | Optional | 
+| fileId | Entry id of a file in XSOAR. | Required |
+| scanRule | Name of the Rule to use for scanning (Optional). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPSWAT.FileName | string | OPSWAT file name to scan | 
-| OPSWAT.ScanId | string | OPSWAT scan id of the scan | 
+| OPSWAT.FileName | string | OPSWAT file name to scan |
+| OPSWAT.ScanId | string | OPSWAT scan id of the scan |
 
 ### opswat-hash
 
@@ -57,11 +55,12 @@ Check file hash on OPSWAT
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | File hash (Can be any hash type). | Required | 
+| hash | File hash (Can be any hash type). | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### opswat-scan-result
 
 ***
@@ -75,11 +74,12 @@ Get OPSWAT result
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | OPSWAT scan id. | Required | 
+| id | OPSWAT scan id. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### opswat-sanitization-result
 
 ***
@@ -94,7 +94,7 @@ In order to have sanitized versions of the file, the DeepCDR feature needs to be
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | OPSWAT scan id. | Required | 
+| id | OPSWAT scan id. | Required |
 
 #### Context Output
 

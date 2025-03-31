@@ -51,17 +51,17 @@ Gets application details or list of all applications.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| applicationId | The application ID to get details for. Leave empty to get a list of all applications. | Optional | 
+| applicationId | The application ID to get details for. Leave empty to get a list of all applications. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.Application.Guid | String | The application GUID. | 
-| Archer.Application.Id | Number | The unique ID of the application. | 
-| Archer.Application.Status | Number | The application Status. | 
-| Archer.Application.Type | Number | The application type. | 
-| Archer.Application.Name | String | The application name. | 
+| Archer.Application.Guid | String | The application GUID. |
+| Archer.Application.Id | Number | The unique ID of the application. |
+| Archer.Application.Status | Number | The application Status. |
+| Archer.Application.Type | Number | The application type. |
+| Archer.Application.Name | String | The application name. |
 
 #### Command Example
 
@@ -92,7 +92,6 @@ Gets application details or list of all applications.
 >|---|---|---|---|---|---|
 >| 982fc3be-7c43-4d79-89a1-858ed262b930 | 75 | 1 | Incidents | 1 | 2 |
 
-
 ### archer-get-application-fields
 
 ***
@@ -106,16 +105,16 @@ Gets all application fields by application ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| applicationId | The application ID to get the application fields for. | Required | 
+| applicationId | The application ID to get the application fields for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.ApplicationField.FieldId | Number | The unique ID of the field. | 
-| Archer.ApplicationField.FieldName | String | The field name. | 
-| Archer.ApplicationField.FieldType | String | The field type. | 
-| Archer.ApplicationField.LevelID | Number | The field level ID. | 
+| Archer.ApplicationField.FieldId | Number | The unique ID of the field. |
+| Archer.ApplicationField.FieldName | String | The field name. |
+| Archer.ApplicationField.FieldType | String | The field type. |
+| Archer.ApplicationField.LevelID | Number | The field level ID. |
 
 #### Command Example
 
@@ -194,16 +193,16 @@ Returns a mapping from list value name to list value ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldID | The ID of the field. | Required | 
+| fieldID | The ID of the field. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.ApplicationField.FieldId | Number | The unique ID of the field. | 
-| Archer.ApplicationField.FieldName | String | The field name. | 
-| Archer.ApplicationField.FieldType | String | The field type. | 
-| Archer.ApplicationField.LevelID | Number | The field level ID. | 
+| Archer.ApplicationField.FieldId | Number | The unique ID of the field. |
+| Archer.ApplicationField.FieldName | String | The field name. |
+| Archer.ApplicationField.FieldType | String | The field type. |
+| Archer.ApplicationField.LevelID | Number | The field level ID. |
 
 #### Command Example
 
@@ -245,17 +244,16 @@ Returns a mapping of fields by level ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| level | The ID of the level. | Required | 
-
+| level | The ID of the level. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.LevelMapping.Id | Number | The unique ID of the field. | 
-| Archer.LevelMapping.Name | String | The field name. | 
-| Archer.LevelMapping.Type | String | The field type. | 
-| Archer.LevelMapping.LevelId | Number | The field level ID. | 
+| Archer.LevelMapping.Id | Number | The unique ID of the field. |
+| Archer.LevelMapping.Name | String | The field name. |
+| Archer.LevelMapping.Type | String | The field type. |
+| Archer.LevelMapping.LevelId | Number | The field level ID. |
 
 #### Command Example
 
@@ -320,14 +318,14 @@ Gets information about a content record in the given application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| contentId | The content record ID. | Required | 
-| applicationId | The application ID. | Required | 
+| contentId | The content record ID. | Required |
+| applicationId | The application ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.Record.Id | Number | The unique ID of the content record. | 
+| Archer.Record.Id | Number | The unique ID of the content record. |
 
 #### Command Example
 
@@ -446,14 +444,14 @@ To determine the appropriate field type value, use the `archer-get-application-f
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| applicationId | The application ID. | Required | 
-| fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field names are case sensitive. | Required | 
+| applicationId | The application ID. | Required |
+| fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field names are case sensitive. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.Record.Id | Number | The unique ID of the content record. | 
+| Archer.Record.Id | Number | The unique ID of the content record. |
 
 #### Command Example
 
@@ -488,7 +486,7 @@ Deletes an existing content record in the given application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| contentId | The ID of the content record to delete. | Required | 
+| contentId | The ID of the content record to delete. | Required |
 
 #### Context Output
 
@@ -522,9 +520,9 @@ Note: When updating a record, make sure the values are sent through the *fieldsT
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| applicationId | The application ID. | Required | 
-| fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field name is case sensitive | Required | 
-| contentId | The ID of the content record ID. | Required | 
+| applicationId | The application ID. | Required |
+| fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field name is case sensitive | Required |
+| contentId | The ID of the content record ID. | Required |
 | levelId | The Level ID to use to update the record. If empty, the command by default takes the first level ID. | Optional |
 
 #### Context Output
@@ -558,8 +556,8 @@ Performs statistic search by report GUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reportGuid | The report GUID. | Required | 
-| maxResults | Maximum number of pages for the reports. | Required | 
+| reportGuid | The report GUID. | Required |
+| maxResults | Maximum number of pages for the reports. | Required |
 
 #### Context Output
 
@@ -578,33 +576,33 @@ There is no context output for this command.
 #### Human Readable Output
 
 >{
->  "Groups": {
->    "@count": "3",
->    "Metadata": {
->      "FieldDefinitions": {
->        "FieldDefinition": [
->          {
->            "@alias": "Classification",
->            "@guid": "769b2548-6a98-49b6-95c5-03e391f0a40e",
->            "@id": "76",
->            "@name": "Classification"
->          },
->          {
->            "@alias": "Standard_Name",
->            "@guid": "a569fd34-16f9-4965-93b0-889fcb91ba7a",
->            "@id": "1566",
->            "@name": "Standard Name"
->          }
->        ]
->      }
->    },
->    "Total": {
->      "Aggregate": {
->        "@Count": "1497",
->        "@FieldId": "1566"
->      }
->    }
->  }
+> "Groups": {
+> "@count": "3",
+> "Metadata": {
+> "FieldDefinitions": {
+> "FieldDefinition": [
+> {
+> "@alias": "Classification",
+> "@guid": "769b2548-6a98-49b6-95c5-03e391f0a40e",
+> "@id": "76",
+> "@name": "Classification"
+> },
+> {
+> "@alias": "Standard_Name",
+> "@guid": "a569fd34-16f9-4965-93b0-889fcb91ba7a",
+> "@id": "1566",
+> "@name": "Standard Name"
+> }
+> ]
+> }
+> },
+> "Total": {
+> "Aggregate": {
+> "@Count": "1497",
+> "@FieldId": "1566"
+> }
+> }
+> }
 >}
 
 ### archer-get-reports
@@ -661,8 +659,7 @@ Returns search criteria by report GUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reportGuid | The report GUID. | Required | 
-
+| reportGuid | The report GUID. | Required |
 
 #### Context Output
 
@@ -681,47 +678,47 @@ There is no context output for this command.
 #### Human Readable Output
 
 >{
->  "SearchReport": {
->    "Criteria": {
->      "ModuleCriteria": {
->        "BuildoutRelationship": "Union",
->        "IsKeywordModule": "True",
->        "Module": "421",
->        "SortFields": {
->          "SortField": [
->            {
->              "Field": "15711",
->              "SortType": "Ascending"
->            },
->            {
->              "Field": "15683",
->              "SortType": "Ascending"
->            }
->          ]
->        }
->      }
->    },
->    "DisplayFields": {
->      "DisplayField": [
->        "15683",
->        "15686",
->        "15687",
->        "15690",
->        "15706",
->        "15711",
->        "15710",
->        "15712",
->        "15713",
->        "15714",
->        "15715",
->        "15716",
->        "15725",
->        "15717",
->        "15718"
->      ]
->    },
->    "PageSize": "50"
->  }
+> "SearchReport": {
+> "Criteria": {
+> "ModuleCriteria": {
+> "BuildoutRelationship": "Union",
+> "IsKeywordModule": "True",
+> "Module": "421",
+> "SortFields": {
+> "SortField": [
+> {
+> "Field": "15711",
+> "SortType": "Ascending"
+> },
+> {
+> "Field": "15683",
+> "SortType": "Ascending"
+> }
+> ]
+> }
+> }
+> },
+> "DisplayFields": {
+> "DisplayField": [
+> "15683",
+> "15686",
+> "15687",
+> "15690",
+> "15706",
+> "15711",
+> "15710",
+> "15712",
+> "15713",
+> "15714",
+> "15715",
+> "15716",
+> "15725",
+> "15717",
+> "15718"
+> ]
+> },
+> "PageSize": "50"
+> }
 >}
 
 ### archer-reset-cache
@@ -753,7 +750,6 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
 ### archer-get-valuelist
 
 ***
@@ -767,16 +763,15 @@ Returns a list of values for a specified field, for example, fieldID=16114. This
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldID | The field ID. | Required | 
+| fieldID | The field ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.ApplicationField.ValuesList.Id | Number | The field value ID. | 
-| Archer.ApplicationField.ValuesList.IsSelectable | Boolean | Specifies whether you can select the field value. | 
-| Archer.ApplicationField.ValuesList.Name | String | The field value name. | 
-
+| Archer.ApplicationField.ValuesList.Id | Number | The field value ID. |
+| Archer.ApplicationField.ValuesList.IsSelectable | Boolean | Specifies whether you can select the field value. |
+| Archer.ApplicationField.ValuesList.Name | String | The field value name. |
 
 #### Command Example
 
@@ -850,9 +845,9 @@ Uploads a file to Archer. You can associate the file to a record by providing al
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | A comma seperated list of entry IDs of the files in Cortex XSOAR context. | Required | 
-| contentId | The content record ID to update.| Optional | 
-| applicationId | ID of the application which we want to upload the file to. | Optional | 
+| entryId | A comma seperated list of entry IDs of the files in Cortex XSOAR context. | Required |
+| contentId | The content record ID to update.| Optional |
+| applicationId | ID of the application which we want to upload the file to. | Optional |
 | associatedField | Archer field name to associate the file with. | Optional |
 
 #### Context Output
@@ -873,7 +868,6 @@ There is no context output for this command.
 
 >File uploaded successfully, attachment ID: 126
 
-
 ### archer-get-file
 
 ***
@@ -887,7 +881,7 @@ Downloads a file from Archer to Cortex XSOAR War Room context.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileId | The file ID. | Required | 
+| fileId | The file ID. | Required |
 
 #### Context Output
 
@@ -932,20 +926,20 @@ Gets details for a user or a list of all users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | The ID of the user to get details for. Leave empty to get a list of all users. | Optional | 
+| userId | The ID of the user to get details for. Leave empty to get a list of all users. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.User.AccountStatus | String | The account status of the user. | 
-| Archer.User.DisplayName | String | The display name of the user. | 
-| Archer.User.FirstName | String | The first name of the user. | 
-| Archer.User.Id | Number | The unique ID of the user. | 
-| Archer.User.LastLoginDate | Date | The last login date of user. | 
-| Archer.User.LastName | String | The last name of the user. | 
-| Archer.User.MiddleName | String | The middle name of the user. | 
-| Archer.User.UserName | String | The username associated with the account. | 
+| Archer.User.AccountStatus | String | The account status of the user. |
+| Archer.User.DisplayName | String | The display name of the user. |
+| Archer.User.FirstName | String | The first name of the user. |
+| Archer.User.Id | Number | The unique ID of the user. |
+| Archer.User.LastLoginDate | Date | The last login date of user. |
+| Archer.User.LastName | String | The last name of the user. |
+| Archer.User.MiddleName | String | The middle name of the user. |
+| Archer.User.UserName | String | The username associated with the account. |
 
 #### Command Example
 
@@ -991,15 +985,15 @@ Search for records inside the given application
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| applicationId | The ID of the application in which to search for records. | Required | 
-| fieldToSearchOn | The name of the field on which to search. Leave empty to search on all fields. | Optional | 
-| fieldToSearchById | The name of the primary Id field on which to search. Used instead of the fieldToSearchOn argument for searching by the application primary field. | Optional | 
-| searchValue | Search value. Leave empty to search for all. | Optional | 
-| maxResults | Maximum number of results to return from the search (default is 10). | Optional | 
-| fieldsToDisplay | Fields to present in the search results in array format. For example, "Title,Incident Summary". | Optional | 
-| numericOperator | Numeric search operator. Can be "Equals", "NotEqual", "GreaterThan", or "LessThan". | Optional | 
-| dateOperator | Date search operator. Can be "Equals", "DoesNotEqual", "GreaterThan", or "LessThan". | Optional | 
-| fieldsToGet | Fields to fetch from the the application. | Optional | 
+| applicationId | The ID of the application in which to search for records. | Required |
+| fieldToSearchOn | The name of the field on which to search. Leave empty to search on all fields. | Optional |
+| fieldToSearchById | The name of the primary Id field on which to search. Used instead of the fieldToSearchOn argument for searching by the application primary field. | Optional |
+| searchValue | Search value. Leave empty to search for all. | Optional |
+| maxResults | Maximum number of results to return from the search (default is 10). | Optional |
+| fieldsToDisplay | Fields to present in the search results in array format. For example, "Title,Incident Summary". | Optional |
+| numericOperator | Numeric search operator. Can be "Equals", "NotEqual", "GreaterThan", or "LessThan". | Optional |
+| dateOperator | Date search operator. Can be "Equals", "DoesNotEqual", "GreaterThan", or "LessThan". | Optional |
+| fieldsToGet | Fields to fetch from the the application. | Optional |
 | fullData | Whether to get extended responses with all of the data regarding this search. For example, "fullData=true" | Required |
 | isDescending | Whether to order by descending order. Possible values are: "true", "false". | Optional |
 | levelId | The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command by default takes the first level ID. | Optional |
@@ -1009,9 +1003,8 @@ Search for records inside the given application
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.Record | Unknown | The content object. | 
-| Archer.Record.Id | Number | The content record ID. | 
-
+| Archer.Record | Unknown | The content object. |
+| Archer.Record.Id | Number | The content record ID. |
 
 #### Command Example
 
@@ -1039,7 +1032,6 @@ Search for records inside the given application
 >|---|---|
 >| 2018-07-10T08:00:00Z | 30 |
 
-
 ### archer-search-records-by-report
 
 ***
@@ -1053,17 +1045,15 @@ Searches records by report GUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reportGuid | The report GUID. | Required | 
-
+| reportGuid | The report GUID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Archer.SearchByReport.ReportGUID | String | The report GUID. | 
-| Archer.SearchByReport.RecordsAmount | Number | The number of records found by the search. | 
-| Archer.SearchByReport.Record | Unknown | The records found by the search. | 
-
+| Archer.SearchByReport.ReportGUID | String | The report GUID. |
+| Archer.SearchByReport.RecordsAmount | Number | The number of records found by the search. |
+| Archer.SearchByReport.Record | Unknown | The records found by the search. |
 
 #### Command Example
 
@@ -1123,7 +1113,6 @@ Searches records by report GUID.
 >| <p>test_procedure_2 </p> | 227531 | test_procedure_2 | Malware | 227531 |
 >| <p>test_procedure_3</p> | 227532 | test_procedure_3 | Malware | 227532 |
 
-
 ### archer-print-cache
 
 ***
@@ -1154,71 +1143,71 @@ There is no context output for this command.
 #### Human Readable Output
 
 >{
->  "75": [
->    {
->      "level": 67,
->      "mapping": {
->        "10052": {
->          "FieldId": "10052",
->          "IsRequired": false,
->          "Name": "Related Incidents (2)",
->          "RelatedValuesListId": null,
->          "Type": 23
->        },
->        "10172": {
->          "FieldId": "10172",
->          "IsRequired": false,
->          "Name": "Source",
->          "RelatedValuesListId": 1176,
->          "Type": 4
->        },
->        "10183": {
->          "FieldId": "10183",
->          "IsRequired": false,
->          "Name": "Is BSA (Bank Secrecy Act) reporting required in the US?",
->          "RelatedValuesListId": 152,
->          "Type": 4
->        },
->        "10188": {
->          "FieldId": "10188",
->          "IsRequired": false,
->          "Name": "Batch File Format",
->          "RelatedValuesListId": 1183,
->          "Type": 4
->        }
->      }
->    }
->  ],
->  "fieldValueList": {
->    "7782": {
->      "FieldId": "7782",
->      "ValuesList": [
->        {
->          "Id": 6412,
->          "IsSelectable": true,
->          "Name": "New"
->        },
->        {
->          "Id": 6413,
->          "IsSelectable": true,
->          "Name": "Assigned"
->        },
->        {
->          "Id": 6414,
->          "IsSelectable": true,
->          "Name": "In Progress"
->        },
->        {
->          "Id": 6415,
->          "IsSelectable": true,
->          "Name": "On Hold"
->        },
->        {
->          "Id": 6416,
->          "IsSelectable": true,
->          "Name": "Closed"
->        }
->      ]
->    }
->  }
+> "75": [
+> {
+> "level": 67,
+> "mapping": {
+> "10052": {
+> "FieldId": "10052",
+> "IsRequired": false,
+> "Name": "Related Incidents (2)",
+> "RelatedValuesListId": null,
+> "Type": 23
+> },
+> "10172": {
+> "FieldId": "10172",
+> "IsRequired": false,
+> "Name": "Source",
+> "RelatedValuesListId": 1176,
+> "Type": 4
+> },
+> "10183": {
+> "FieldId": "10183",
+> "IsRequired": false,
+> "Name": "Is BSA (Bank Secrecy Act) reporting required in the US?",
+> "RelatedValuesListId": 152,
+> "Type": 4
+> },
+> "10188": {
+> "FieldId": "10188",
+> "IsRequired": false,
+> "Name": "Batch File Format",
+> "RelatedValuesListId": 1183,
+> "Type": 4
+> }
+> }
+> }
+> ],
+> "fieldValueList": {
+> "7782": {
+> "FieldId": "7782",
+> "ValuesList": [
+> {
+> "Id": 6412,
+> "IsSelectable": true,
+> "Name": "New"
+> },
+> {
+> "Id": 6413,
+> "IsSelectable": true,
+> "Name": "Assigned"
+> },
+> {
+> "Id": 6414,
+> "IsSelectable": true,
+> "Name": "In Progress"
+> },
+> {
+> "Id": 6415,
+> "IsSelectable": true,
+> "Name": "On Hold"
+> },
+> {
+> "Id": 6416,
+> "IsSelectable": true,
+> "Name": "Closed"
+> }
+> ]
+> }
+> }
 >}

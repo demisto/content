@@ -988,22 +988,22 @@
 <h5>Context Example</h5>
 <pre>{
     "DBotScore": {
-        "Vendor": "TruSTAR", 
-        "Indicator": "84c82835a5d21bbcf75a61706d8ab549", 
-        "Score": 3, 
+        "Vendor": "TruSTAR",
+        "Indicator": "84c82835a5d21bbcf75a61706d8ab549",
+        "Score": 3,
         "Type": "file"
-    }, 
+    },
     "TruSTAR": {
         "File": {
-            "Priority": "LOW", 
-            "Whitelisted": false, 
+            "Priority": "LOW",
+            "Whitelisted": false,
             "Value": "84c82835a5d21bbcf75a61706d8ab549"
         }
-    }, 
+    },
     "File": {
         "Malicious": {
             "Vendor": "TruSTAR"
-        }, 
+        },
         "MD5": "84c82835a5d21bbcf75a61706d8ab549"
     }
 }
@@ -1107,21 +1107,21 @@
 <pre>{
     "IP": {
         "Malicious": {
-            "Vendor": "TruSTAR", 
+            "Vendor": "TruSTAR",
             "Description": "LOW"
-        }, 
+        },
         "Address": "8.8.8.8"
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "TruSTAR", 
-        "Indicator": "8.8.8.8", 
-        "Score": 3, 
+        "Vendor": "TruSTAR",
+        "Indicator": "8.8.8.8",
+        "Score": 3,
         "Type": "ip"
-    }, 
+    },
     "TruSTAR": {
         "IP": {
-            "Priority": "LOW", 
-            "Whitelisted": false, 
+            "Priority": "LOW",
+            "Whitelisted": false,
             "Value": "8.8.8.8"
         }
     }
@@ -1226,21 +1226,21 @@
 <pre>{
     "URL": {
         "Malicious": {
-            "Vendor": "TruSTAR", 
+            "Vendor": "TruSTAR",
             "Description": "LOW"
-        }, 
+        },
         "Data": "www.google.com"
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "TruSTAR", 
-        "Indicator": "www.google.com", 
-        "Score": 3, 
+        "Vendor": "TruSTAR",
+        "Indicator": "www.google.com",
+        "Score": 3,
         "Type": "url"
-    }, 
+    },
     "TruSTAR": {
         "URL": {
-            "Priority": "LOW", 
-            "Whitelisted": false, 
+            "Priority": "LOW",
+            "Whitelisted": false,
             "Value": "www.google.com"
         }
     }
@@ -1344,23 +1344,23 @@
 <h5>Context Example</h5>
 <pre>{
     "DBotScore": {
-        "Vendor": "TruSTAR", 
-        "Indicator": "www.google.com", 
-        "Score": 3, 
+        "Vendor": "TruSTAR",
+        "Indicator": "www.google.com",
+        "Score": 3,
         "Type": "domain"
-    }, 
+    },
     "TruSTAR": {
         "Domain": {
-            "Priority": "LOW", 
-            "Whitelisted": false, 
+            "Priority": "LOW",
+            "Whitelisted": false,
             "Value": "www.google.com"
         }
-    }, 
+    },
     "Domain": {
         "Malicious": {
-            "Vendor": "TruSTAR", 
+            "Vendor": "TruSTAR",
             "Description": "LOW"
-        }, 
+        },
         "Name": "www.google.com"
     }
 }

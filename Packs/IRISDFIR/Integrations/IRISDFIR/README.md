@@ -3,7 +3,6 @@ This integration was integrated and tested with version v2.3.6 of IRIS DFIR
 
 ## Configure IRIS DFIR in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server IP or Host Name (e.g., https://192.168.0.1) |  | True |
@@ -14,7 +13,6 @@ This integration was integrated and tested with version v2.3.6 of IRIS DFIR
 | Incidents Fetch Interval |  | False |
 | Incident type |  | False |
 | Incident Last Case ID | Fetch all the cases starting from this value, not including it. | False |
-
 
 ## Commands
 
@@ -39,24 +37,27 @@ IRIS Command to get the last case information
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_soc_id | string | SOC ID ticket case | 
-| IRIS.case_id | number | case ID ticket number | 
-| IRIS.case_description | string | case description | 
-| IRIS.opened_by | unknown | case opened by | 
-| IRIS.owner | unknown | case owner | 
-| IRIS.classification_id | number | case classification ID | 
-| IRIS.state_name | string | case state name | 
-| IRIS.case_open_date | unknown | case open date | 
-| IRIS.case_name | string | case name | 
-| IRIS.client_name | string | case client name | 
-| IRIS.classification | string | case classification | 
-| IRIS.case_uuid | string | case uuid | 
-| IRIS.state_id | string | case state ID | 
-| IRIS.access_level | string | case access level | 
+| IRIS.case_soc_id | string | SOC ID ticket case |
+| IRIS.case_id | number | case ID ticket number |
+| IRIS.case_description | string | case description |
+| IRIS.opened_by | unknown | case opened by |
+| IRIS.owner | unknown | case owner |
+| IRIS.classification_id | number | case classification ID |
+| IRIS.state_name | string | case state name |
+| IRIS.case_open_date | unknown | case open date |
+| IRIS.case_name | string | case name |
+| IRIS.client_name | string | case client name |
+| IRIS.classification | string | case classification |
+| IRIS.case_uuid | string | case uuid |
+| IRIS.state_id | string | case state ID |
+| IRIS.access_level | string | case access level |
 
 #### Command example
+
 ```!iris-get-last-case-id```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -84,10 +85,10 @@ IRIS Command to get the last case information
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|access_level|case_description|case_id|case_name|case_open_date|case_uuid|classification|classification_id|client_name|opened_by|opened_by_user_id|owner|owner_id|state_id|state_name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 4 | TEST 7 | 32 | #32 - TEST 7 | 12/18/2023 | 47ae5435-4c25-4408-bf86-98277807b2fa | malicious-code:dialer | 9 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 3 | Opened |
-
 
 ### iris-get-all-cases
 
@@ -107,24 +108,27 @@ Return a list of all IRIS DFIR cases
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_soc_id | unknown | SOC ID ticket case | 
-| IRIS.case_id | number | case ID ticket number | 
-| IRIS.case_description | unknown | case description | 
-| IRIS.opened_by | unknown | case opened by | 
-| IRIS.owner | unknown | case owner | 
-| IRIS.classification_id | number | case classification ID | 
-| IRIS.state_name | unknown | case state name | 
-| IRIS.case_open_date | unknown | case open date | 
-| IRIS.case_name | unknown | case name | 
-| IRIS.client_name | unknown | case client name | 
-| IRIS.classification | unknown | case classification | 
-| IRIS.case_uuid | unknown | case uuid | 
-| IRIS.state_id | unknown | case state ID | 
-| IRIS.access_level | unknown | case access level | 
+| IRIS.case_soc_id | unknown | SOC ID ticket case |
+| IRIS.case_id | number | case ID ticket number |
+| IRIS.case_description | unknown | case description |
+| IRIS.opened_by | unknown | case opened by |
+| IRIS.owner | unknown | case owner |
+| IRIS.classification_id | number | case classification ID |
+| IRIS.state_name | unknown | case state name |
+| IRIS.case_open_date | unknown | case open date |
+| IRIS.case_name | unknown | case name |
+| IRIS.client_name | unknown | case client name |
+| IRIS.classification | unknown | case classification |
+| IRIS.case_uuid | unknown | case uuid |
+| IRIS.state_id | unknown | case state ID |
+| IRIS.access_level | unknown | case access level |
 
 #### Command example
+
 ```!iris-get-all-cases```
+
 #### Context Example
+
 ```json
 {
     "IRIS": [
@@ -629,6 +633,7 @@ Return a list of all IRIS DFIR cases
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|access_level|case_close_date|case_description|case_id|case_name|case_open_date|case_soc_id|case_uuid|classification|classification_id|client_name|opened_by|opened_by_user_id|owner|owner_id|state_id|state_name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 4 |  | TEST 7 | 32 | #32 - TEST 7 | 12/18/2023 |  | 47ae5435-4c25-4408-bf86-98277807b2fa | malicious-code:dialer | 9 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 3 | Opened |
@@ -658,7 +663,6 @@ Return a list of all IRIS DFIR cases
 >| 4 |  | A virus has been detected on machine **darkpace.evil** <br/><br/>\|  Port  \| Protocol   \|Hostname\|<br/>\|--\|--\|--\|<br/>\| 443   \| TCP   \|darkplace.evil\|<br/><br/><br/>\`\`\`echo Please investigate !\`\`\`<br/><br/>### HELP ! | 2 | #2 - virus-windows-11 | 06/05/2023 | CERT-EU-12 | 1a5e6534-571f-4788-b4f5-47cc6b0c18bc | malicious-code:virus | 4 | CERT-EU | nouser2 | 1 | nouser2 | 1 | 3 | Opened |
 >| 4 | 06/05/2023 | This is a demonstration. | 1 | #1 - Initial Demo | 06/05/2023 | soc_id_demo | 46480e7c-5b78-42c5-8b2e-678991a8a495 |  |  | CERT-EU | nouser2 | 1 | nouser2 | 1 | 2 | In progress |
 
-
 ### iris-close-case-id
 
 ***
@@ -672,20 +676,23 @@ Close a specific case by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Provide Case ID. | Required | 
+| case_id | Provide Case ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_name | unknown | case name | 
-| IRIS.case_soc_id | unknown | case soc ID | 
-| IRIS.open_date | unknown | case open date | 
-| IRIS.close_date | unknown | case close date | 
+| IRIS.case_name | unknown | case name |
+| IRIS.case_soc_id | unknown | case soc ID |
+| IRIS.open_date | unknown | case open date |
+| IRIS.close_date | unknown | case close date |
 
 #### Command example
+
 ```!iris-close-case-id case_id=9```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -828,10 +835,10 @@ Close a specific case by ID.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|case_customer|case_description|case_id|case_name|case_soc_id|case_uuid|classification_id|close_date|modification_history|open_date|owner_id|state_id|status_id|user_id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Social Eng | 9 | #9 - Social Eng | CERT-EU-15 | 35070554-73c1-421a-bdbb-b840f09411b4 | 13 | 2024-01-22 | 1686161424.82484: {"user": "nouser2", "user_id": 1, "action": "created"}<br/>1694445948.238388: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694446268.42952: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694446597.253438: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694446626.551442: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447102.368478: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447187.785556: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447233.805542: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447256.462593: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447324.542543: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447772.724512: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1694448681.95518: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694449204.048061: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694449647.332296: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1694449754.493539: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694450199.853172: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1694452250.114495: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694452672.978887: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1704711697.835427: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1704711700.739643: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1704711947.950361: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1704711950.774661: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1705935117.44055: {"user": "nouser2", "user_id": 1, "action": "case closed"} | 2023-06-07 | 1 | 9 | 0 | 1 |
-
 
 ### iris-reopen-case-id
 
@@ -846,22 +853,25 @@ Reopen a specific case by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | case ID. | Optional | 
+| case_id | case ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_soc_id | unknown | case soc ID | 
-| IRIS.case_id | unknown | case ID | 
-| IRIS.close_date | unknown | case close date | 
-| IRIS.open_date | unknown | case open date | 
-| IRIS.case_name | unknown | case name | 
-| IRIS.closing_note | unknown | case closing note | 
+| IRIS.case_soc_id | unknown | case soc ID |
+| IRIS.case_id | unknown | case ID |
+| IRIS.close_date | unknown | case close date |
+| IRIS.open_date | unknown | case open date |
+| IRIS.case_name | unknown | case name |
+| IRIS.closing_note | unknown | case closing note |
 
 #### Command example
+
 ```!iris-reopen-case-id case_id=9```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1009,10 +1019,10 @@ Reopen a specific case by ID.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|case_customer|case_description|case_id|case_name|case_soc_id|case_uuid|classification_id|modification_history|open_date|owner_id|state_id|status_id|user_id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Social Eng | 9 | #9 - Social Eng | CERT-EU-15 | 35070554-73c1-421a-bdbb-b840f09411b4 | 13 | 1686161424.82484: {"user": "nouser2", "user_id": 1, "action": "created"}<br/>1694445948.238388: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694446268.42952: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694446597.253438: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694446626.551442: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447102.368478: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447187.785556: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447233.805542: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447256.462593: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447324.542543: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694447772.724512: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1694448681.95518: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694449204.048061: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694449647.332296: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1694449754.493539: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694450199.853172: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1694452250.114495: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1694452672.978887: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1704711697.835427: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1704711700.739643: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1704711947.950361: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1704711950.774661: {"user": "nouser2", "user_id": 1, "action": "case reopened"}<br/>1705935117.44055: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1705935120.30414: {"user": "nouser2", "user_id": 1, "action": "case reopened"} | 2023-06-07 | 1 | 3 | 0 | 1 |
-
 
 ### iris-change-case-state
 
@@ -1027,21 +1037,24 @@ Change case state status
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID. | Required | 
-| case_name | Case name. | Required | 
-| case_state | Case state. Possible values are: In progress, Opened, Containement, Eradication, Recovery, Post-Incident, Reporting, Closed. | Required | 
+| case_id | Case ID. | Required |
+| case_name | Case name. | Required |
+| case_state | Case state. Possible values are: In progress, Opened, Containement, Eradication, Recovery, Post-Incident, Reporting, Closed. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_id | number | Case ID | 
-| IRIS.case_name | string | Case name | 
-| IRIS.case_state | string | Case state | 
+| IRIS.case_id | number | Case ID |
+| IRIS.case_name | string | Case name |
+| IRIS.case_state | string | Case state |
 
 #### Command example
+
 ```!iris-change-case-state case_id=1 case_state="In progress" case_name="#1 - Initial Demo"```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1084,10 +1097,10 @@ Change case state status
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|case_customer|case_description|case_id|case_name|case_soc_id|case_uuid|close_date|modification_history|open_date|owner_id|state_id|status_id|user_id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | This is a demonstration. | 1 | #1 - Initial Demo | soc_id_demo | 46480e7c-5b78-42c5-8b2e-678991a8a495 | 2023-06-05 | 1685985574.367342: {"user": "nouser2", "user_id": 1, "action": "case closed"}<br/>1704711960.320669: {"user": "nouser2", "user_id": 1, "action": "case info updated"}<br/>1705935129.662093: {"user": "nouser2", "user_id": 1, "action": "case info updated"} | 2023-06-05 | 1 | 2 | 0 | 1 |
-
 
 ### iris-create-notes-group
 
@@ -1102,15 +1115,19 @@ Creates notes group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID. | Required | 
-| group_title | Notes group tittle. | Required | 
+| case_id | Case ID. | Required |
+| group_title | Notes group tittle. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!iris-create-notes-group case_id=1 group_title="test group"```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1126,10 +1143,10 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|group_creationdate|group_id|group_lastupdate|group_title|group_uuid|
 >|---|---|---|---|---|
 >| 2024-01-22T14:52:12.540571 | 57 | 2024-01-22T14:52:12.540571 | test group | 62742497-8cf6-4cea-bac4-5ff50e4bb4e5 |
-
 
 ### iris-add-new-note-to-group
 
@@ -1144,17 +1161,21 @@ Add a new note to an existing group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID. | Required | 
-| note_title | Note tittle. | Required | 
-| note_content | Note content. | Required | 
-| group_id | Group ID. | Required | 
+| case_id | Case ID. | Required |
+| note_title | Note tittle. | Required |
+| note_content | Note content. | Required |
+| group_id | Group ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!iris-add-new-note-to-group case_id=1 group_id=55 note_content="test content" note_title="test tittle"```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1172,10 +1193,10 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|note_content|note_creationdate|note_id|note_lastupdate|note_title|note_uuid|
 >|---|---|---|---|---|---|
 >| test content | 2024-01-22T14:52:15.366100 | 63 | 2024-01-22T14:52:15.366100 | test tittle | a2cf6b17-d8be-4ca0-814d-12910aefa2f2 |
-
 
 ### iris-get-list-of-groups-and-notes
 
@@ -1190,14 +1211,18 @@ Get a list of the notes and groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID. | Required | 
+| case_id | Case ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!iris-get-list-of-groups-and-notes case_id=1```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1260,10 +1285,10 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|groups|state|
 >|---|---|
 >| {'group_id': 1, 'group_uuid': '98a49bf1-66a3-4014-94a3-b84f7465129e', 'group_title': 'test group', 'notes': []},<br/>{'group_id': 55, 'group_uuid': '89085dde-aa63-467b-a17a-d78d20bdc794', 'group_title': 'test group', 'notes': [{'note_id': 61, 'note_uuid': '1e7cfa4e-6ce0-4261-ae5d-a70eba2b1462', 'note_title': 'test tittle', 'user': 'nouser2', 'note_lastupdate': '2024-01-08T11:04:41.529018'}, {'note_id': 62, 'note_uuid': 'c1ceef5b-0020-48d7-ac0f-c0c4c40ef396', 'note_title': 'test tittle', 'user': 'nouser2', 'note_lastupdate': '2024-01-08T11:06:05.840447'}, {'note_id': 63, 'note_uuid': 'a2cf6b17-d8be-4ca0-814d-12910aefa2f2', 'note_title': 'test tittle', 'user': 'nouser2', 'note_lastupdate': '2024-01-22T14:52:15.366100'}]},<br/>{'group_id': 56, 'group_uuid': '36da7617-6eca-49d9-bbb6-64737db54aab', 'group_title': 'test group', 'notes': []},<br/>{'group_id': 57, 'group_uuid': '62742497-8cf6-4cea-bac4-5ff50e4bb4e5', 'group_title': 'test group', 'notes': []} | object_state: 8<br/>object_last_update: 2024-01-22T14:52:15.373121 |
-
 
 ### iris-get-list-of-iocs
 
@@ -1278,18 +1303,21 @@ Returns a list of IOCs as well as any existing linked with other cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID. | Required | 
+| case_id | Case ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_id | number | Case ID. | 
-| IRIS.case_name | string | Case Name. | 
+| IRIS.case_id | number | Case ID. |
+| IRIS.case_name | string | Case Name. |
 
 #### Command example
+
 ```!iris-get-list-of-iocs case_id=1```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1321,10 +1349,10 @@ Returns a list of IOCs as well as any existing linked with other cases.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|ioc|state|
 >|---|---|
 >| {'ioc_id': 5, 'ioc_uuid': '93ca5e50-13a5-4d59-8b92-b99bf4bb70fd', 'ioc_value': 'github-username-example', 'ioc_type_id': 65, 'ioc_type': 'github-username', 'ioc_description': 'This is an example', 'ioc_tags': '', 'ioc_misp': None, 'tlp_name': 'amber', 'tlp_bscolor': 'warning', 'ioc_tlp_id': 2, 'link': [], 'misp_link': None} | object_state: 1<br/>object_last_update: 2024-01-08T10:45:20.129696 |
-
 
 ### iris-get-ioc-content
 
@@ -1339,22 +1367,25 @@ Fetch the content of an ioc.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Case ID. | Required | 
-| ioc_id | IoC ID. | Required | 
+| case_id | Case ID. | Required |
+| ioc_id | IoC ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_id | number | Case ID. | 
-| IRIS.ioc_description | string | IoC Description. | 
-| IRIS.ioc_id | number | IoC ID. | 
-| IRIS.ioc_value | string | IoC Value. | 
-| IRIS.ioc_type | string | IoC Type. | 
+| IRIS.case_id | number | Case ID. |
+| IRIS.ioc_description | string | IoC Description. |
+| IRIS.ioc_id | number | IoC ID. |
+| IRIS.ioc_value | string | IoC Value. |
+| IRIS.ioc_type | string | IoC Type. |
 
 #### Command example
+
 ```!iris-get-ioc-content case_id=1 ioc_id=5```
+
 #### Context Example
+
 ```json
 {
     "IRIS": {
@@ -1384,6 +1415,7 @@ Fetch the content of an ioc.
 #### Human Readable Output
 
 >### Command successfully sent to IRIS DFIR"
+>
 >|ioc_description|ioc_id|ioc_tlp_id|ioc_type|ioc_type_id|ioc_uuid|ioc_value|user_id|
 >|---|---|---|---|---|---|---|---|
 >| This is an example | 5 | 2 | type_description: A github user name<br/>type_taxonomy: null<br/>type_id: 65<br/>type_name: github-username<br/>type_validation_regex: null<br/>type_validation_expect: null | 65 | 93ca5e50-13a5-4d59-8b92-b99bf4bb70fd | github-username-example | 1 |

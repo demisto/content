@@ -1,6 +1,7 @@
-Retrieves the current date and time. 
+Retrieves the current date and time.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Retrieves the current date and time.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +23,7 @@ Retrieves the current date and time.
 | hoursAgo | Subtracts hoursAgo hours from current time. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

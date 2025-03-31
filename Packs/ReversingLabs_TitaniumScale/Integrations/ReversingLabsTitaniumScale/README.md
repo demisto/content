@@ -1,26 +1,26 @@
 ## Overview
+
 This integration supports using ReversingLabs Advanced File Analysis to 'detonate file' on the TitaniumScale Advanced Malware
 Analysis Appliance.
 
-The ReversingLabs TitaniumScale Appliance is powered by TitaniumCore, the malware analysis engine that performs 
+The ReversingLabs TitaniumScale Appliance is powered by TitaniumCore, the malware analysis engine that performs
 automated static analysis using the Active File Decomposition technology.
 
-TitaniumCore unpacks and recursively analyzes files without executing them, and extracts internal threat indicators to 
-classify files and determine their threat level. TitaniumCore is capable of identifying thousands of file format 
-families. It recursively unpacks hundreds of file format families, and fully repairs extracted files to enable further 
+TitaniumCore unpacks and recursively analyzes files without executing them, and extracts internal threat indicators to
+classify files and determine their threat level. TitaniumCore is capable of identifying thousands of file format
+families. It recursively unpacks hundreds of file format families, and fully repairs extracted files to enable further
 analysis.
 
 * * *
+
 ## Prerequisites
 
 You need to obtain the following:
 
-*   TitaniumScale instance
-*   TitaniumScale API Token
-
+* TitaniumScale instance
+* TitaniumScale API Token
 
 ## Configure ReversingLabs TitaniumScale in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -36,7 +36,6 @@ You need to obtain the following:
 | HTTPS proxy address with the protocol and port number | False |
 | HTTPS proxy username | False |
 | HTTPS proxy password | False |
-
 
 ## Commands
 
@@ -56,32 +55,35 @@ Upload sample to TitaniumScale and retrieve analysis report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The file entry to upload. | Required | 
-| custom_token | A custom token for filtering processing tasks. | Optional | 
-| user_data | User-defined data in the form of a JSON string. This data is NOT included in file analysis reports. | Optional | 
-| custom_data | User-defined data in the form of a JSON string. This data is included in file analysis reports. | Optional | 
+| entryId | The file entry to upload. | Required |
+| custom_token | A custom token for filtering processing tasks. | Optional |
+| user_data | User-defined data in the form of a JSON string. This data is NOT included in file analysis reports. | Optional |
+| custom_data | User-defined data in the form of a JSON string. This data is included in file analysis reports. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.EntryID | String | The Entry ID. | 
-| File.Info | String | Information about the file. | 
-| File.Type | String | The type of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| ReversingLabs.tc_report | String | Full report. | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.EntryID | String | The Entry ID. |
+| File.Info | String | Information about the file. |
+| File.Type | String | The type of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| ReversingLabs.tc_report | String | Full report. |
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-upload-sample-and-get-results entryId="371@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422" custom_token="a-custom-token"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -626,7 +628,7 @@ Upload sample to TitaniumScale and retrieve analysis report.
 >## ReversingLabs TitaniumScale upload sample and get results
 >
 > **Type:** PE/Exe
->                             **Size:** 42544 bytes 
+> **Size:** 42544 bytes
 >
 > **IMPHASH:** 054e4e5c28d6533b44ae24cbf3e08a15
 > **MD5:** a984de0ce47a8d5337ef569c812b57d0
@@ -637,7 +639,6 @@ Upload sample to TitaniumScale and retrieve analysis report.
 > **Status:** malicious
 > **Antivirus (based on the RCA Classify):** Win32.Downloader.Unruy
 > **DBot score:** 3
-
 
 ### reversinglabs-titaniumscale-upload-sample
 
@@ -652,20 +653,23 @@ Upload sample to TitaniumScale for analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The file entry to upload. | Required | 
-| custom_token | A custom token for filtering processing tasks. | Optional | 
-| user_data | User-defined data in the form of a JSON string. This data is NOT included in file analysis reports. | Optional | 
-| custom_data | User-defined data in the form of a JSON string. This data is included in file analysis reports. | Optional | 
+| entryId | The file entry to upload. | Required |
+| custom_token | A custom token for filtering processing tasks. | Optional |
+| user_data | User-defined data in the form of a JSON string. This data is NOT included in file analysis reports. | Optional |
+| custom_data | User-defined data in the form of a JSON string. This data is included in file analysis reports. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.task_Url | Unknown | url to get report from. | 
+| ReversingLabs.task_Url | Unknown | url to get report from. |
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-upload-sample entryId="371@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422" custom_token="a-custom-token"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -684,6 +688,7 @@ Upload sample to TitaniumScale for analysis.
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale upload sample
+>
 > **Titanium Scale task URL**: https://tiscale-worker-integrations-demo-01.rl.lan/api/tiscale/v1/task/42
 
 ### reversinglabs-titaniumscale-get-results
@@ -699,25 +704,25 @@ Retrieve report of a previously uploaded file from TitaniumScale.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| taskUrl | The file entry to upload. | Required | 
+| taskUrl | The file entry to upload. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.EntryID | String | The Entry ID. | 
-| File.Info | String | Information about the file. | 
-| File.Type | String | The type of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| ReversingLabs.tc_report | String | Full report. | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.EntryID | String | The Entry ID. |
+| File.Info | String | Information about the file. |
+| File.Type | String | The type of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| ReversingLabs.tc_report | String | Full report. |
 
 ### reversinglabs-titaniumscale-list-processing-tasks
 
@@ -732,18 +737,21 @@ List active processing tasks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| age | Task age in seconds. | Optional | 
-| custom_token | A custom token for filtering processing tasks. | Optional | 
+| age | Task age in seconds. | Optional |
+| custom_token | A custom token for filtering processing tasks. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.list_processing_tasks | Unknown | Processing tasks. | 
+| ReversingLabs.list_processing_tasks | Unknown | Processing tasks. |
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-list-processing-tasks age="60" custom_token="a-custom-token"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -755,9 +763,10 @@ List active processing tasks.
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale List processing tasks
+>
 > ### Processing tasks
+>
 >**No entries.**
-
 
 ### reversinglabs-titaniumscale-get-processing-task-info
 
@@ -772,13 +781,13 @@ Retrieves information about a completed file processing task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | Task ID. | Required | 
+| task_id | Task ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.tc_report | Unknown | Full report. | 
+| ReversingLabs.tc_report | Unknown | Full report. |
 
 ### reversinglabs-titaniumscale-delete-processing-task
 
@@ -793,16 +802,20 @@ Deletes a processing task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | Task ID. | Required | 
+| task_id | Task ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-titaniumscale-delete-processing-task task_id="100"```
+
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale delete processing task
+>
 > Task 100 deleted successfully.
 
 ### reversinglabs-titaniumscale-delete-multiple-tasks
@@ -818,16 +831,20 @@ Deletes multiple processing tasks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| age | Task age in seconds. | Required | 
+| age | Task age in seconds. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-titaniumscale-delete-multiple-tasks age="20"```
+
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale delete multiple tasks
+>
 > Tasks of age 20 seconds or less deleted successfully.
 
 ### reversinglabs-titaniumscale-get-yara-id
@@ -847,11 +864,14 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.yara_id | Unknown | Identifier of the current set of YARA rules on the TitaniumScale Worker instance. | 
+| ReversingLabs.yara_id | Unknown | Identifier of the current set of YARA rules on the TitaniumScale Worker instance. |
 
 #### Command example
+
 ```!reversinglabs-titaniumscale-get-yara-id```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -865,4 +885,5 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >## ReversingLabs TitaniumScale YARA ruleset ID
+>
 > **ID**: f0a151ce303ae9b9e46b236492ac9196f3f72490

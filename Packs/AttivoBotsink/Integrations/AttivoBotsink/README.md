@@ -91,10 +91,10 @@
 <pre>{
     "Attivo": {
         "User": {
-            "IsDeceptive": true, 
+            "IsDeceptive": true,
             "Groups": [
                 "a-user-l-ftp"
-            ], 
+            ],
             "Name": "a-user-l-ftp-0"
         }
     }
@@ -131,15 +131,15 @@
 <pre>{
     "Attivo": {
         "Host": {
-            "IsDeceptive": true, 
+            "IsDeceptive": true,
             "HostInfo": {
                 "name": [
                     "linuxserver"
-                ], 
-                "ip": "162.236.53.68", 
-                "vlan": null, 
-                "user_defined": true, 
-                "mac": "52:54:00:9f:65:76", 
+                ],
+                "ip": "162.236.53.68",
+                "vlan": null,
+                "user_defined": true,
+                "mac": "52:54:00:9f:65:76",
                 "dhcp": false
             }
         }
@@ -371,56 +371,56 @@
 <pre>{
     "Attivo": {
         "Events": {
-            "Count": 2, 
+            "Count": 2,
             "List": [
                 {
-                    "geoip_src_latitude": null, 
-                    "Severity": "Medium", 
-                    "Service": "DNS SERVER", 
-                    "VLAN": null, 
-                    "AttackName": "DNS Response", 
-                    "TargetIP": "SinkHole", 
-                    "AttackPhase": "C&amp;C", 
-                    "TargetOS": "CentOS 7.0", 
-                    "Timestamp": "2018-12-01T00:01:43.500Z", 
-                    "geoip_dest_city_name": null, 
-                    "geoip_dest_country_code2": null, 
-                    "geoip_dest_country_code3": null, 
-                    "Attacker": "CentOS70", 
-                    "Device": "0", 
-                    "geoip_src_country_code3": null, 
-                    "geoip_src_country_code2": null, 
-                    "Target": "SinkHole", 
-                    "Server": "ZZZ-BServer01", 
-                    "geoip_dest_latitude": null, 
-                    "geoip_src_country_name": null, 
-                    "geoip_src_longitude": null, 
-                    "geoip_dest_country_name": null, 
+                    "geoip_src_latitude": null,
+                    "Severity": "Medium",
+                    "Service": "DNS SERVER",
+                    "VLAN": null,
+                    "AttackName": "DNS Response",
+                    "TargetIP": "SinkHole",
+                    "AttackPhase": "C&amp;C",
+                    "TargetOS": "CentOS 7.0",
+                    "Timestamp": "2018-12-01T00:01:43.500Z",
+                    "geoip_dest_city_name": null,
+                    "geoip_dest_country_code2": null,
+                    "geoip_dest_country_code3": null,
+                    "Attacker": "CentOS70",
+                    "Device": "0",
+                    "geoip_src_country_code3": null,
+                    "geoip_src_country_code2": null,
+                    "Target": "SinkHole",
+                    "Server": "ZZZ-BServer01",
+                    "geoip_dest_latitude": null,
+                    "geoip_src_country_name": null,
+                    "geoip_src_longitude": null,
+                    "geoip_dest_country_name": null,
                     "geoip_dest_longitude": null
-                }, 
+                },
                 {
-                    "geoip_src_latitude": null, 
-                    "Severity": "Medium", 
-                    "Service": "DNS SERVER", 
-                    "VLAN": null, 
-                    "AttackName": "DNS Response", 
-                    "TargetIP": "SinkHole", 
-                    "AttackPhase": "C&amp;C", 
-                    "TargetOS": "CentOS 7.0", 
-                    "Timestamp": "2018-12-01T00:01:38.500Z", 
-                    "geoip_dest_city_name": null, 
-                    "geoip_dest_country_code2": null, 
-                    "geoip_dest_country_code3": null, 
-                    "Attacker": "CentOS70", 
-                    "Device": "0", 
-                    "geoip_src_country_code3": null, 
-                    "geoip_src_country_code2": null, 
-                    "Target": "SinkHole", 
-                    "Server": "ZZZ-BServer01", 
-                    "geoip_dest_latitude": null, 
-                    "geoip_src_country_name": null, 
-                    "geoip_src_longitude": null, 
-                    "geoip_dest_country_name": null, 
+                    "geoip_src_latitude": null,
+                    "Severity": "Medium",
+                    "Service": "DNS SERVER",
+                    "VLAN": null,
+                    "AttackName": "DNS Response",
+                    "TargetIP": "SinkHole",
+                    "AttackPhase": "C&amp;C",
+                    "TargetOS": "CentOS 7.0",
+                    "Timestamp": "2018-12-01T00:01:38.500Z",
+                    "geoip_dest_city_name": null,
+                    "geoip_dest_country_code2": null,
+                    "geoip_dest_country_code3": null,
+                    "Attacker": "CentOS70",
+                    "Device": "0",
+                    "geoip_src_country_code3": null,
+                    "geoip_src_country_code2": null,
+                    "Target": "SinkHole",
+                    "Server": "ZZZ-BServer01",
+                    "geoip_dest_latitude": null,
+                    "geoip_src_country_name": null,
+                    "geoip_src_longitude": null,
+                    "geoip_dest_country_name": null,
                     "geoip_dest_longitude": null
                 }
             ]

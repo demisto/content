@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Use the Fidelis Endpoint integration for advanced endpoint detection and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
@@ -6,10 +7,12 @@ This integration was integrated and tested with version 9.2 of Fidelis EDR.
 
 The account must have appropriate permissions to execute API calls. While you could use an administrator account, use an account designated for executing API calls.
 
-
 To Get the appropriate permissions navigate to __Configuration__ > __Roles__ > __Create a role__ > __Permissions__
+
 ## Use Cases
+
 ---
+
 * Fetch Alerts
 * Get Alert Details
 * Download File to Cortex XSOAR
@@ -30,11 +33,12 @@ To Get the appropriate permissions navigate to __Configuration__ > __Roles__ > _
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
-
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. fidelis-endpoint-list-alerts
 2. fidelis-endpoint-host-info
 3. fidelis-endpoint-file-search
@@ -59,58 +63,65 @@ After you successfully execute a command, a DBot message appears in the War Room
 22. fidelis-endpoint-query-dns-by-server-ip
 23. fidelis-endpoint-query-dns-by-source-ip
 24. fidelis-endpoint-query-events
+
 ### 1. fidelis-endpoint-list-alerts
+
 ---
 Returns all alerts in the system.
+
 ##### Required Permissions
+
 The required permissions: View Alerts
+
 ##### Base Command
 
 `fidelis-endpoint-list-alerts`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| limit | The maximum number of alerts to return. | Optional | 
-| sort | Sorts the result before applying take and skip. Can be any property name of the alert object.<br/>For example: "insertionDate Descending" | Optional | 
-| start_date | The start of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z | Optional | 
-| end_date | The end of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z | Optional | 
-
+| limit | The maximum number of alerts to return. | Optional |
+| sort | Sorts the result before applying take and skip. Can be any property name of the alert object.<br/>For example: "insertionDate Descending" | Optional |
+| start_date | The start of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z | Optional |
+| end_date | The end of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z | Optional |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Alert.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Alert.IntelName | String | Intel name. | 
-| FidelisEndpoint.Alert.HasJob | Boolean | Whether the alert has an open job. | 
-| FidelisEndpoint.Alert.EventTime | Date | Alert event time. | 
-| FidelisEndpoint.Alert.ActionsTaken | String | The actions taken for this alert. | 
-| FidelisEndpoint.Alert.CreateDate | Date | Alert creation date. | 
-| FidelisEndpoint.Alert.ParentEventID | String | Parent event ID. | 
-| FidelisEndpoint.Alert.Name | String | Alert name. | 
-| FidelisEndpoint.Alert.ReportID | String | Report ID. | 
-| FidelisEndpoint.Alert.EndpointID | String | Endpoint ID. | 
-| FidelisEndpoint.Alert.IntelID | String | Intel ID. | 
-| FidelisEndpoint.Alert.Name | String | Alert Name. | 
-| FidelisEndpoint.Alert.EventType | Number | Event Type. | 
-| FidelisEndpoint.Alert.EventID | String | Event ID. | 
-| FidelisEndpoint.Alert.SourceType | Number | Source type. | 
-| FidelisEndpoint.Alert.AgentTag | String | Agent tag. | 
-| FidelisEndpoint.Alert.EventIndex | Number | Event index. | 
-| FidelisEndpoint.Alert.Telemetry | String | Telemetry data. | 
-| FidelisEndpoint.Alert.Source | String | Alert source. | 
-| FidelisEndpoint.Alert.ID | Number | Alert ID. | 
-| FidelisEndpoint.Alert.ValidatedDate | Date | Validation date. | 
-| FidelisEndpoint.Alert.Description | String | Alert description. | 
-| FidelisEndpoint.Alert.InsertionDate | Date | Alert insertion date. | 
-| FidelisEndpoint.Alert.Severity | Number | Alert severity. | 
-| FidelisEndpoint.Alert.ArtifactName | String | Artifact name. | 
-
+| FidelisEndpoint.Alert.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Alert.IntelName | String | Intel name. |
+| FidelisEndpoint.Alert.HasJob | Boolean | Whether the alert has an open job. |
+| FidelisEndpoint.Alert.EventTime | Date | Alert event time. |
+| FidelisEndpoint.Alert.ActionsTaken | String | The actions taken for this alert. |
+| FidelisEndpoint.Alert.CreateDate | Date | Alert creation date. |
+| FidelisEndpoint.Alert.ParentEventID | String | Parent event ID. |
+| FidelisEndpoint.Alert.Name | String | Alert name. |
+| FidelisEndpoint.Alert.ReportID | String | Report ID. |
+| FidelisEndpoint.Alert.EndpointID | String | Endpoint ID. |
+| FidelisEndpoint.Alert.IntelID | String | Intel ID. |
+| FidelisEndpoint.Alert.Name | String | Alert Name. |
+| FidelisEndpoint.Alert.EventType | Number | Event Type. |
+| FidelisEndpoint.Alert.EventID | String | Event ID. |
+| FidelisEndpoint.Alert.SourceType | Number | Source type. |
+| FidelisEndpoint.Alert.AgentTag | String | Agent tag. |
+| FidelisEndpoint.Alert.EventIndex | Number | Event index. |
+| FidelisEndpoint.Alert.Telemetry | String | Telemetry data. |
+| FidelisEndpoint.Alert.Source | String | Alert source. |
+| FidelisEndpoint.Alert.ID | Number | Alert ID. |
+| FidelisEndpoint.Alert.ValidatedDate | Date | Validation date. |
+| FidelisEndpoint.Alert.Description | String | Alert description. |
+| FidelisEndpoint.Alert.InsertionDate | Date | Alert insertion date. |
+| FidelisEndpoint.Alert.Severity | Number | Alert severity. |
+| FidelisEndpoint.Alert.ArtifactName | String | Artifact name. |
 
 ##### Command Example
+
 ```!fidelis-endpoint-list-alerts limit="5"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Alert": [
@@ -247,8 +258,11 @@ The required permissions: View Alerts
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint Alerts
+
 |ID|Name|EndpointName|EndpointID|Source|IntelName|Severity|CreateDate|
 |---|---|---|---|---|---|---|---|
 | 437 | Vulnerable Software Installed - 3/19/2020 | fidelis-endpoint.windows | 70815600-2b9c-4cbe-971f-ab5601ed1ce1 | Installed Software CVE |  | 2 | 2020-03-19T23:59:59.999Z |
@@ -256,35 +270,47 @@ The required permissions: View Alerts
 | 435 | Vulnerable Software - CVE-2020-10029 | fidelis-endpoint.windows | 70815600-2b9c-4cbe-971f-ab5601ed1ce1 | Installed Software CVE | CVE-2020-10029 | 4 | 2020-03-07T09:21:24.356Z |
 | 434 | Vulnerable Software - CVE-2015-8710 | fidelis-endpoint.windows | 70815600-2b9c-4cbe-971f-ab5601ed1ce1 | Installed Software CVE | CVE-2015-8710 | 2 | 2020-02-27T09:21:03.253Z |
 | 433 | Vulnerable Software - CVE-2014-4444 | fidelis-endpoint.windows | 70815600-2b9c-4cbe-971f-ab5601ed1ce1 | Installed Software CVE | CVE-2014-4650 | 2 | 2020-02-27T09:21:03.253Z |
+
 ### 2. fidelis-endpoint-host-info
+
 ---
 Searches for endpoints based on an IP address or hostname.
+
 ##### Base Command
+
 `fidelis-endpoint-host-info`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| ip_address | The IP address to search for. | Optional | 
-| host | The host name to search for. | Optional | 
+| ip_address | The IP address to search for. | Optional |
+| host | The host name to search for. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Host.AgentVersion | String | The agent version. | 
-| FidelisEndpoint.Host.MacAddress | String | Host MAC address. | 
-| FidelisEndpoint.Host.OS | String | Endpoint OS. | 
-| FidelisEndpoint.Host.IPAddress | String | Endpoint IP address. | 
-| FidelisEndpoint.Host.Isolated | Boolean | Whether the endpoint is isolated. | 
-| FidelisEndpoint.Host.AV_Enabled | Boolean | Whether AV is enabled. | 
-| FidelisEndpoint.Host.Hostname | String | Host name. | 
-| FidelisEndpoint.Host.AgentInstalled | Boolean | Whether an agent was installed. | 
-| FidelisEndpoint.Host.Groups | String | Endpoint groups. | 
-| FidelisEndpoint.Host.LastContactDate | Date | Host last contact date. | 
-| FidelisEndpoint.Host.ID | String | Host ID. | 
-| FidelisEndpoint.Host.ProcessorName | String | Processor name. | 
-| FidelisEndpoint.Host.OnNetwork | Boolean | Whether the host is on the network. | 
+| FidelisEndpoint.Host.AgentVersion | String | The agent version. |
+| FidelisEndpoint.Host.MacAddress | String | Host MAC address. |
+| FidelisEndpoint.Host.OS | String | Endpoint OS. |
+| FidelisEndpoint.Host.IPAddress | String | Endpoint IP address. |
+| FidelisEndpoint.Host.Isolated | Boolean | Whether the endpoint is isolated. |
+| FidelisEndpoint.Host.AV_Enabled | Boolean | Whether AV is enabled. |
+| FidelisEndpoint.Host.Hostname | String | Host name. |
+| FidelisEndpoint.Host.AgentInstalled | Boolean | Whether an agent was installed. |
+| FidelisEndpoint.Host.Groups | String | Endpoint groups. |
+| FidelisEndpoint.Host.LastContactDate | Date | Host last contact date. |
+| FidelisEndpoint.Host.ID | String | Host ID. |
+| FidelisEndpoint.Host.ProcessorName | String | Processor name. |
+| FidelisEndpoint.Host.OnNetwork | Boolean | Whether the host is on the network. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-host-info ip_address="2.2.2.2"```
+
 ##### Context Example
+
 ```
 {
     "Endpoint": [
@@ -316,34 +342,51 @@ Searches for endpoints based on an IP address or hostname.
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint Host Info
+
 |ID|OS|MacAddress|Isolated|LastContactDate|AgentInstalled|AgentVersion|OnNetwork|AV_Enabled|ProcessorName|
 |---|---|---|---|---|---|---|---|---|---|
 | 70815600-2b9c-4cbe-971f-ab5601ed1ce1 | CentOS Linux 7 (Core) Linux x64 | 23:01:0a:50:00:02 | false | 2020-03-26T04:35:02.2887847 | true | 9.2.4.31 | true | true | Intel(R) Xeon(R) CPU @ 2.30GHz |
+
 ### 3. fidelis-endpoint-file-search
+
 ---
 Searches for files on multiple hosts, using file hash, file extension, file size, and other search criteria.
+
 ##### Required Permissions
-The required permissions: Scripts, View Executables 
+
+The required permissions: Scripts, View Executables
+
 ##### Base Command
+
 `fidelis-endpoint-file-search`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| host | A comma-separated list of hosts in which to search for the specified file. | Optional | 
-| md5 | A comma-separated list MD5 hashes to search for. Get the hashes from the queries commands. | Required | 
-| file_extension | The file extension. | Optional | 
-| file_path | The file path (recommended to lower the search time). | Optional | 
-| file_size | The file size greater than. The default is 100. | Optional | 
+| host | A comma-separated list of hosts in which to search for the specified file. | Optional |
+| md5 | A comma-separated list MD5 hashes to search for. Get the hashes from the queries commands. | Required |
+| file_extension | The file extension. | Optional |
+| file_path | The file path (recommended to lower the search time). | Optional |
+| file_size | The file size greater than. The default is 100. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.FileSearch.JobID | String | The job ID. | 
-| FidelisEndpoint.FileSearch.JobResultID | String | The job result ID. | 
+| FidelisEndpoint.FileSearch.JobID | String | The job ID. |
+| FidelisEndpoint.FileSearch.JobResultID | String | The job result ID. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-file-search host="2.2.2.2" md5="098f6bcd4621d373cade4e832347b4f6" file_extension=".txt" file_size="0"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.FileSearch": {
@@ -352,32 +395,49 @@ The required permissions: Scripts, View Executables
     }
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint file search
+
 |JobID|JobResultID|
 |---|---|
 | fcb3b94c-7344-4c30-a47b-93f90bd2385e | e93e848a-2462-4933-b442-ab8a02118111 |
+
 ### 4. fidelis-endpoint-file-search-status
+
 ---
 Gets the file search job status.
+
 ##### Required Permissions
+
 The required permissions: View Executables
+
 ##### Base Command
+
 `fidelis-endpoint-file-search-status`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| job_id | The job ID. Get the ID from the file-search command. | Required | 
-| job_result_id | The job result ID. Get the ID from the file-search command. | Required | 
+| job_id | The job ID. Get the ID from the file-search command. | Required |
+| job_result_id | The job result ID. Get the ID from the file-search command. | Required |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.FileSearch.JobID | String | The file search job ID. | 
-| FidelisEndpoint.FileSearch.JobResultID | String | Job result ID. | 
-| FidelisEndpoint.FileSearch.Status | String | Job status. | 
+| FidelisEndpoint.FileSearch.JobID | String | The file search job ID. |
+| FidelisEndpoint.FileSearch.JobResultID | String | Job result ID. |
+| FidelisEndpoint.FileSearch.Status | String | Job status. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-file-search-status job_id=a345056b-b290-4746-b953-0822dab381ae job_result_id=0b7161ed-ffe9-4b87-b009-ab8a02034e0e```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.FileSearch": {
@@ -387,39 +447,55 @@ The required permissions: View Executables
     }
 }
 ```
+
 ##### Human Readable Output
+
 Fidelis Endpoint file search status is: Completed
+
 ### 5. fidelis-endpoint-file-search-result-metadata
+
 ---
 Gets the job results metadata. The maximum is 50 results.
+
 ##### Required Permissions
+
 The required permissions: View Executables
+
 ##### Base Command
+
 `fidelis-endpoint-file-search-result-metadata`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| job_id | The job ID. Get the job ID from the file-search command. | Required | 
-| job_result_id | The job result ID. Get the job result ID from the file-search command. | Required | 
+| job_id | The job ID. Get the job ID from the file-search command. | Required |
+| job_result_id | The job result ID. Get the job result ID from the file-search command. | Required |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.File.AgentID | String | Agent ID. | 
-| FidelisEndpoint.File.FileName | String | File name. | 
-| FidelisEndpoint.File.FilePath | String | File path. | 
-| FidelisEndpoint.File.FileSize | Number | File size. | 
-| FidelisEndpoint.File.HostIP | String | Host IP address. | 
-| FidelisEndpoint.File.HostName | String | Host name. | 
-| FidelisEndpoint.File.ID | String | File ID. | 
-| FidelisEndpoint.File.MD5Hash | String | File MD5 hash. | 
-| File.Path | String | The file path. | 
-| File.Hostname | String | The name of the host where the file was found. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Name | String | The full file name (including file extension). | 
-| File.Size | Number | The size of the file in bytes. | 
+| FidelisEndpoint.File.AgentID | String | Agent ID. |
+| FidelisEndpoint.File.FileName | String | File name. |
+| FidelisEndpoint.File.FilePath | String | File path. |
+| FidelisEndpoint.File.FileSize | Number | File size. |
+| FidelisEndpoint.File.HostIP | String | Host IP address. |
+| FidelisEndpoint.File.HostName | String | Host name. |
+| FidelisEndpoint.File.ID | String | File ID. |
+| FidelisEndpoint.File.MD5Hash | String | File MD5 hash. |
+| File.Path | String | The file path. |
+| File.Hostname | String | The name of the host where the file was found. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Name | String | The full file name (including file extension). |
+| File.Size | Number | The size of the file in bytes. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-file-search-result-metadata job_id=a345056b-b290-4746-b953-0822dab381ae job_result_id=0b7161ed-ffe9-4b87-b009-ab8a02034e0e```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.File": {
@@ -441,75 +517,120 @@ The required permissions: View Executables
     }
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint file results metadata
+
 |ID|FileName|FilePath|MD5Hash|FileSize|HostName|HostIP|AgentID|
 |---|---|---|---|---|---|---|---|
 | eyJOYW1lIjoidGVzdC50eHQiLCJQYXRoIjoiL3Jlc3VsdHMvMGI3MTYxZWQtZmZlOS00Yjg3LWIwMDktYWI4YTAyMDM0ZTBlL2IyUnZPVFl5YjFSUGNqRnZSRTkwYlU1aWQxQnJUemRUZDJkTUwzUmFNbUZWY21wMlJrRjFhRXRwTUQwPSJ90 | test.txt | Users\admin\Documents\test.txt | 098f6bcd4621d373cade4e832347b4f6 | 4 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 4088e5f0-0d18-4daa-a1a3-e0becc34c803 |
+
 ### 6. fidelis-endpoint-get-file
+
 ---
 Gets the file stream and download the file.
+
 ##### Required Permissions
+
 The required permissions: Scripts, View Executables
+
 ##### Base Command
+
 `fidelis-endpoint-get-file`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| file_id | The file ID. Get the ID from the file-search-result-metadata command. | Required | 
-| file_name | The file name to download (including extension). Get the file name from the file-search-result-metadata command. command). | Required | 
+| file_id | The file ID. Get the ID from the file-search-result-metadata command. | Required |
+| file_name | The file name to download (including extension). Get the file name from the file-search-result-metadata command. command). | Required |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| File.Size | Number | The size of the file in bytes. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The full file name (including file extension). | 
-| File.SSDeep | String | The ssdeep hash of the file (same as displayed in file entries). | 
-| File.EntryID | String | The ID for locating the file in the War Room. | 
-| File.Info | String | The file information. | 
-| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
-| File.MD5 | String | The MD5 hash of the file. | 
+| File.Size | Number | The size of the file in bytes. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The full file name (including file extension). |
+| File.SSDeep | String | The ssdeep hash of the file (same as displayed in file entries). |
+| File.EntryID | String | The ID for locating the file in the War Room. |
+| File.Info | String | The file information. |
+| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). |
+| File.MD5 | String | The MD5 hash of the file. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-get-file file_id=eyJOYW1lIjoidGVzdC50eHQiLCJQYXRoIjoiL3Jlc3VsdHMvMGI3MTYxZWQtZmZlOS00Yjg3LWIwMDktYWI4YTAyMDM0ZTBlL2IyUnZPVFl5YjFSUGNqRnZSRTkwYlU1aWQxQnJUemRUZDJkTUwzUmFNbUZWY21wMlJrRjFhRXRwTUQwPSJ90 file_name=test.txt```
+
 ##### Human Readable Output
+
 Return the file to download
+
 ### 7. fidelis-endpoint-delete-file-search-job
+
 ---
 Removes the job to free up space on the server.
+
 ##### Required Permissions
+
 The required permissions: Scripts, View Executables, Delete Executables
+
 ##### Base Command
+
 `fidelis-endpoint-delete-file-search-job`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| job_id | The job ID. Get the job ID from the file-search command. | Required | 
+| job_id | The job ID. Get the job ID from the file-search command. | Required |
+
 ##### Context Output
+
 There is no context output for this command.
+
 ##### Command Example
-```!fidelis-endpoint-delete-file-search-job job_id=a345056b-b290-4746-b953-0822dab381ae ```
+
+```!fidelis-endpoint-delete-file-search-job job_id=a345056b-b290-4746-b953-0822dab381ae```
+
 ##### Human Readable Output
+
 The job was successfully deleted
+
 ### 8. fidelis-endpoint-list-scripts
+
 ---
 Gets a list of all script packages.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors
+
 ##### Base Command
+
 `fidelis-endpoint-list-scripts`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Script.Description | String | The script description. | 
-| FidelisEndpoint.Script.ID | String | Script ID. | 
-| FidelisEndpoint.Script.Name | String | Script name. | 
+| FidelisEndpoint.Script.Description | String | The script description. |
+| FidelisEndpoint.Script.ID | String | Script ID. |
+| FidelisEndpoint.Script.Name | String | Script name. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-list-scripts```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Script": [
@@ -557,8 +678,11 @@ The required permissions: Read groups, View Behaviors
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint scripts
+
 |ID|Name|Description|
 |---|---|---|
 | 8d379688-dde1-451d-8fa2-4f29c84baf97 | Administrators | Lists all users with Administrator rights. Use the optional parameter to filter the results to usernames that contain the supplied text. |
@@ -572,35 +696,49 @@ The required permissions: Read groups, View Behaviors
 | c8adc3bc-6345-473d-a8cc-c45a76f9d62c | AntiVirus Information | Shows the AntiVirus and AntiSpyware products installed on client computer and whether they are enabled and up-to-date. Provide the optional filter to only return products that contain the filter text.  This script does not work on server class operating systems. |
 | c9b37e1e-3ec6-49a3-9426-b90a90b55071 | ARP Cache | Displays information from the Address Resolution Protocol Cache. Use the Optional Question box to filter the results by the specified text--results returned include data containing that value in any column. |
 | f3eb6edf-5764-4e11-8833-6da6b067e54e | ARP Cache | Displays information from the Address Resolution Protocol Cache. Use the Optional Question box to filter the results by the specified text--results returned include data containing that value in any column. |
+
 ### 9. fidelis-endpoint-get-script-manifest
+
 ---
 Gets the script manifest.
+
 ##### Required Permissions
+
 The required permissions: View Behaviors
+
 ##### Base Command
+
 `fidelis-endpoint-get-script-manifest`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| script_id | The script ID. Get the script ID from the list-scripts command. | Required | 
+| script_id | The script ID. Get the script ID from the list-scripts command. | Required |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Script.ResultColumns | String | The script results columns. | 
-| FidelisEndpoint.Script.Priority | String | Script priority. | 
-| FidelisEndpoint.Script.ImpersonationUser | String | Impersonation user. | 
-| FidelisEndpoint.Script.Name | String | Script name. | 
-| FidelisEndpoint.Script.Command | String | The script commands. | 
-| FidelisEndpoint.Script.Questions | String | Script questions. | 
-| FidelisEndpoint.Script.WizardOverridePassword | Boolean | Wizard override password. | 
-| FidelisEndpoint.Script.Platform | String | Scripts platforms (only true). | 
-| FidelisEndpoint.Script.ImpersonationPassword | String | Impersonation password. | 
-| FidelisEndpoint.Script.ID | String | Script ID. | 
-| FidelisEndpoint.Script.Description | String | The script description. | 
-| FidelisEndpoint.Script.TimeoutSeconds | Number | Script timeout in seconds. | 
+| FidelisEndpoint.Script.ResultColumns | String | The script results columns. |
+| FidelisEndpoint.Script.Priority | String | Script priority. |
+| FidelisEndpoint.Script.ImpersonationUser | String | Impersonation user. |
+| FidelisEndpoint.Script.Name | String | Script name. |
+| FidelisEndpoint.Script.Command | String | The script commands. |
+| FidelisEndpoint.Script.Questions | String | Script questions. |
+| FidelisEndpoint.Script.WizardOverridePassword | Boolean | Wizard override password. |
+| FidelisEndpoint.Script.Platform | String | Scripts platforms (only true). |
+| FidelisEndpoint.Script.ImpersonationPassword | String | Impersonation password. |
+| FidelisEndpoint.Script.ID | String | Script ID. |
+| FidelisEndpoint.Script.Description | String | The script description. |
+| FidelisEndpoint.Script.TimeoutSeconds | Number | Script timeout in seconds. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-get-script-manifest script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Script": {
@@ -678,33 +816,50 @@ The required permissions: View Behaviors
     }
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint script manifest
+
 |ID|Name|Description|Platform|Command|Questions|TimeoutSeconds|ResultColumns|WizardOverridePassword|
 |---|---|---|---|---|---|---|---|---|
 | 2d32a530-0716-4542-afdc-8da3bd47d8bf | Process List | Obtain the list of currently running processes.<br/>Optionally, information about open sockets, handles and loaded DLLs can be included. Cerberus Stage One analysis verifies digital signatures of the processes and performs a risk assessment of known system calls assigning an aggregate score.The filter field limits the results to processes that match the given text in any column. | windows32,windows64 | Volatile.bat sockets {[T:B,V:true]Include Sockets} handles {[T:B,V:true]Include Handles} dlls {[T:B,V:true]Include DLLs} injected {[T:B,?]Check for injected DLLs} jam {[T:B,?]Perform Cerberus Stage 1 Analysis (approximately 5 seconds per process)} filter {[T:T,?] Filter} | {'paramNumber': 1, 'question': 'Include Sockets', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br/>{'paramNumber': 2, 'question': 'Include Handles', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br/>{'paramNumber': 3, 'question': 'Include DLLs', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br/>{'paramNumber': 4, 'question': 'Check for injected DLLs', 'answer': 'false', 'isOptional': True, 'inputType': 'checkbox'},<br/>{'paramNumber': 5, 'question': 'Perform Cerberus Stage 1 Analysis (approximately 5 seconds per process)', 'answer': 'false', 'isOptional': True, 'inputType': 'checkbox'},<br/>{'paramNumber': 6, 'question': ' Filter', 'answer': None, 'isOptional': True, 'inputType': 'text'} | 0 | __detail,<br/>PID,<br/>Parent PID,<br/>Name,<br/>User,<br/>MD5,<br/>SHA1,<br/>Path,<br/>Start Time,<br/>Working Directory,<br/>Command Line,<br/>Is Hidden | false |
+
 ### 10. fidelis-endpoint-list-processes
+
 ---
 Gets a list all processes according to the OS system.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-list-processes`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| endpoint_ip | The endpoint IP. Get the endpoint IP from the host-info command. | Optional | 
-| operating_system | Ths system OS. Can be "Windows", "Linux", or "macOS". | Required | 
-| time_out | Script time out in seconds. The default is 300. | Optional | 
-| endpoint_name | The endpoint name. | Optional | 
+| endpoint_ip | The endpoint IP. Get the endpoint IP from the host-info command. | Optional |
+| operating_system | Ths system OS. Can be "Windows", "Linux", or "macOS". | Required |
+| time_out | Script time out in seconds. The default is 300. | Optional |
+| endpoint_name | The endpoint name. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Process.JobID | String | Job ID. | 
-| FidelisEndpoint.Process.ID | String | Script ID. | 
+| FidelisEndpoint.Process.JobID | String | Job ID. |
+| FidelisEndpoint.Process.ID | String | Script ID. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-list-processes operating_system=Windows endpoint_ip=2.2.2.2```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Process": {
@@ -713,43 +868,59 @@ The required permissions: Read groups, View Behaviors, View Task Results
     }
 }
 ```
+
 ##### Human Readable Output
-The job has been executed successfully. 
+
+The job has been executed successfully.
  Job ID: 71c6be70-fa49-40ba-8d0a-ab8a02118a19
+
 ### 11. fidelis-endpoint-get-script-result
+
 ---
 Gets script job results.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-get-script-result`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| job_id | The script execution job ID. Get the ID the following commands: script-execution, file-search, list-processes, kill-process-by-pid, delete-file, network-isolation, remove-network-isolation. | Required | 
+| job_id | The script execution job ID. Get the ID the following commands: script-execution, file-search, list-processes, kill-process-by-pid, delete-file, network-isolation, remove-network-isolation. | Required |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.ScriptResult.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.ScriptResult.ParentPID | String | Parent process ID. | 
-| FidelisEndpoint.ScriptResult.Path | String | File path. | 
-| FidelisEndpoint.ScriptResult.SHA1 | String | File SHA1 hash. | 
-| FidelisEndpoint.ScriptResult.PID | String | Process ID. | 
-| FidelisEndpoint.ScriptResult.Name | String | Process name. | 
-| FidelisEndpoint.ScriptResult.User | String | Script user. | 
-| FidelisEndpoint.ScriptResult.StartTime | Date | Script start time. | 
-| FidelisEndpoint.ScriptResult.EndpointID | String | Endpoint ID. | 
-| FidelisEndpoint.ScriptResult.Matches | Number | Script matches. | 
-| FidelisEndpoint.ScriptResult.IsHidden | String | Whether the endpoint is hidden. | 
-| FidelisEndpoint.ScriptResult.GroupID | String | Group ID. | 
-| FidelisEndpoint.ScriptResult.Tags | String | Script tags. | 
-| FidelisEndpoint.ScriptResult.ID | String | Script result ID. | 
-| FidelisEndpoint.ScriptResult.WorkingDirectory | String | Working directory. | 
-| FidelisEndpoint.ScriptResult.MD5 | String | File MD5 hash. | 
-| FidelisEndpoint.ScriptResult.CommandLine | String | Command line. | 
+| FidelisEndpoint.ScriptResult.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.ScriptResult.ParentPID | String | Parent process ID. |
+| FidelisEndpoint.ScriptResult.Path | String | File path. |
+| FidelisEndpoint.ScriptResult.SHA1 | String | File SHA1 hash. |
+| FidelisEndpoint.ScriptResult.PID | String | Process ID. |
+| FidelisEndpoint.ScriptResult.Name | String | Process name. |
+| FidelisEndpoint.ScriptResult.User | String | Script user. |
+| FidelisEndpoint.ScriptResult.StartTime | Date | Script start time. |
+| FidelisEndpoint.ScriptResult.EndpointID | String | Endpoint ID. |
+| FidelisEndpoint.ScriptResult.Matches | Number | Script matches. |
+| FidelisEndpoint.ScriptResult.IsHidden | String | Whether the endpoint is hidden. |
+| FidelisEndpoint.ScriptResult.GroupID | String | Group ID. |
+| FidelisEndpoint.ScriptResult.Tags | String | Script tags. |
+| FidelisEndpoint.ScriptResult.ID | String | Script result ID. |
+| FidelisEndpoint.ScriptResult.WorkingDirectory | String | Working directory. |
+| FidelisEndpoint.ScriptResult.MD5 | String | File MD5 hash. |
+| FidelisEndpoint.ScriptResult.CommandLine | String | Command line. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-get-script-result job_id=fc94568c-9a15-4fa2-af08-ab8a01f5e86c```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.ScriptResult": [
@@ -851,8 +1022,11 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint script job results
+
 |ID|Name|EndpointID|EndpointName|PID|User|SHA1|MD5|Path|WorkingDirectory|StartTime|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 7086ab52f0725e547095ff779e30153ae6088ccc | System | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 4 |  | 0000000000000000000000000000000000000000 | 00000000000000000000000000000000 |  |  | N/A |
@@ -866,29 +1040,43 @@ The required permissions: Read groups, View Behaviors, View Task Results
 | d81492c785d46ab06e001d5fed4f8d5e491b02b5 | svchost.exe | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 444 | LOCAL SERVICE | A1385CE20AD79F55DF235EFFD9780C31442AA234 | 8a0a29438052faed8a2532da50451234 | C:\Windows\system32\svchost.exe | C:\Windows\system32\ | 2020-03-12T03:58:08.526589 |
 | f211cdabce3ea5a029ad2a63b803a9962e63af96 | wininit.exe | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 448 |  | 389E257A924EA521E830C31712494D33B38841A8 | 4E20895E641F2C3E68AB3DB91A1A16F1 | C:\Windows\System32\wininit.exe |  | N/A |
 | 395b84b288830e96cf91fa20f7c399d8a21f2d8f | csrss.exe | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 456 |  | 779B8AFC3FA2528B090F400EF3D592E0E2775955 | 7D64128BC1EECE41196858897596EBC8 | C:\Windows\System32\csrss.exe |  | N/A |
+
 ### 12. fidelis-endpoint-kill-process
+
 ---
 Terminates the process that matches the required parameter's process ID.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-kill-process`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| endpoint_ip | The endpoint IP address. | Optional | 
-| time_out | Script time out (in seconds). The default is 300. | Optional | 
-| operating_system | System OS. Can be "Windows", "Linux", or "macOS". | Required | 
-| pid | Process ID. Get the PID from the script-manifest command. | Required | 
-| endpoint_name | The name of the endpoint. | Optional | 
+| endpoint_ip | The endpoint IP address. | Optional |
+| time_out | Script time out (in seconds). The default is 300. | Optional |
+| operating_system | System OS. Can be "Windows", "Linux", or "macOS". | Required |
+| pid | Process ID. Get the PID from the script-manifest command. | Required |
+| endpoint_name | The name of the endpoint. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Process.JobID | String | Script job ID. | 
-| FidelisEndpoint.Process.ID | String | Script ID. | 
+| FidelisEndpoint.Process.JobID | String | Script job ID. |
+| FidelisEndpoint.Process.ID | String | Script ID. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-kill-process operating_system=Windows pid=516 endpoint_ip=2.2.2.2```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Process": {
@@ -897,104 +1085,162 @@ The required permissions: Read groups, View Behaviors, View Task Results
     }
 }
 ```
+
 ##### Human Readable Output
-The job has been executed successfully. 
+
+The job has been executed successfully.
  Job ID: 25548787-e75c-4c55-96d5-ab8a0211a820
+
 ### 13. fidelis-endpoint-delete-file
+
 ---
 Deletes a file at the specified path.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-delete-file`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| endpoint_ip | Endpoint IP address. | Optional | 
-| time_out | Script time out (in seconds). The default is 300. | Optional | 
-| operating_system | System OS. Can be "Windows", "Linux", or "macOS". | Required | 
-| file_path | The path of the file to delete. | Required | 
-| endpoint_name | The name of the endpoint. | Optional | 
+| endpoint_ip | Endpoint IP address. | Optional |
+| time_out | Script time out (in seconds). The default is 300. | Optional |
+| operating_system | System OS. Can be "Windows", "Linux", or "macOS". | Required |
+| file_path | The path of the file to delete. | Required |
+| endpoint_name | The name of the endpoint. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Script.ID | String | Script ID. | 
-| FidelisEndpoint.Script.JobID | String | Script job ID. | 
+| FidelisEndpoint.Script.ID | String | Script ID. |
+| FidelisEndpoint.Script.JobID | String | Script job ID. |
+
 ##### Command Example
-```!fidelis-endpoint-delete-file file_path=c:\\Users\\admin\\Documents\\test.txt operating_system=Windows endpoint_ip=2.2.2.2 ```
+
+```!fidelis-endpoint-delete-file file_path=c:\\Users\\admin\\Documents\\test.txt operating_system=Windows endpoint_ip=2.2.2.2```
+
 ##### Human Readable Output
+
 The job has been executed successfully.
 Job ID: 4317e979-81df-46d8-8eb1-ab8a023ef4d8
+
 ### 14. fidelis-endpoint-isolate-network
+
 ---
 Quarantines an endpoint. While isolated, the endpoint's network communication is restricted to only the allowed servers.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-isolate-network`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| endpoint_ip | The endpoint IP address to isolate. | Optional | 
-| time_out | Script timeout (in seconds). The default is 300. | Optional | 
-| operating_system | The system OS. Can be "Windows", "Linux", or "macOS". | Required | 
-| allowed_server | The server IP address that can communicate with the isolated endpoint. For example: 2.2.2.2. | Required | 
-| endpoint_name | The name of the endpoint. | Optional | 
+| endpoint_ip | The endpoint IP address to isolate. | Optional |
+| time_out | Script timeout (in seconds). The default is 300. | Optional |
+| operating_system | The system OS. Can be "Windows", "Linux", or "macOS". | Required |
+| allowed_server | The server IP address that can communicate with the isolated endpoint. For example: 2.2.2.2. | Required |
+| endpoint_name | The name of the endpoint. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Isolation.ID | String | Script ID. | 
-| FidelisEndpoint.Isolation.JobID | String | Script job ID. | 
+| FidelisEndpoint.Isolation.ID | String | Script ID. |
+| FidelisEndpoint.Isolation.JobID | String | Script job ID. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-isolate-network operating_system=Windows allowed_server=10.10.10.10 endpoint_ip=10.10.0.1```
+
 ##### Human Readable Output
+
 The job has been executed successfully.
 Job ID: f25691bd-ba78-4f40-9a25-ab8a02420abc
+
 ### 15. fidelis-endpoint-remove-network-isolation
+
 ---
 Removes the endpoint from isolation.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-remove-network-isolation`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| endpoint_ip | The isolated endpoint IP address. | Optional | 
-| time_out | Script timeout (in seconds). The default is 300. | Optional | 
-| operating_system | System OS. Can be "Windows", "Linux", or "macOS". | Required | 
-| endpoint_name | The name of the endpoint. | Optional | 
+| endpoint_ip | The isolated endpoint IP address. | Optional |
+| time_out | Script timeout (in seconds). The default is 300. | Optional |
+| operating_system | System OS. Can be "Windows", "Linux", or "macOS". | Required |
+| endpoint_name | The name of the endpoint. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Isolation.ID | String | Script ID. | 
-| FidelisEndpoint.Isolation.JobID | String | Script job ID. | 
+| FidelisEndpoint.Isolation.ID | String | Script ID. |
+| FidelisEndpoint.Isolation.JobID | String | Script job ID. |
+
 ##### Command Example
-```!fidelis-endpoint-remove-network-isolation operating_system=Windows endpoint_ip=10.128.0.1 ```
+
+```!fidelis-endpoint-remove-network-isolation operating_system=Windows endpoint_ip=10.128.0.1```
+
 ##### Human Readable Output
+
 The job has been executed successfully.
 Job ID: 7a0a3179-3bce-43d1-80c0-ab8a0242d147
+
 ### 16. fidelis-endpoint-script-job-status
+
 ---
 Gets the script execution status.
+
 ##### Required Permissions
+
 The required permissions: Scripts, View Executables, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-script-job-status`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| job_result_id | The script execution job result ID. Get the ID from the following commands: script-execution, file-search, list-processes, kill-process-by-pid, delete-file, network-isolation, remove-network-isolation. | Required | 
+| job_result_id | The script execution job result ID. Get the ID from the following commands: script-execution, file-search, list-processes, kill-process-by-pid, delete-file, network-isolation, remove-network-isolation. | Required |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.ScriptResult.JobName | String | The job name. | 
-| FidelisEndpoint.ScriptResult.JobResultID | String | Job result ID. | 
-| FidelisEndpoint.ScriptResult.Name | String | Target name. | 
-| FidelisEndpoint.ScriptResult.Status | String | Script execution status. | 
+| FidelisEndpoint.ScriptResult.JobName | String | The job name. |
+| FidelisEndpoint.ScriptResult.JobResultID | String | Job result ID. |
+| FidelisEndpoint.ScriptResult.Name | String | Target name. |
+| FidelisEndpoint.ScriptResult.Status | String | Script execution status. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-script-job-status job_result_id=fc94568c-9a15-4fa2-af08-ab8a01f5e86c```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.ScriptResult": [
@@ -1007,34 +1253,51 @@ The required permissions: Scripts, View Executables, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint script job status
+
 |JobName|JobResultID|Name|Status|
 |---|---|---|---|
 | Process List-03-26-2020 9.08.12 | fc94568c-9a15-4fa2-af08-ab8a01f5e86c | fidelis-endpoint-winserver2019 | Completed |
+
 ### 17. fidelis-endpoint-execute-script
+
 ---
 Executes a script package from Fidelis endpoint packages.
+
 ##### Required Permissions
+
 The required permissions: Scripts, View Executables
+
 ##### Base Command
+
 `fidelis-endpoint-execute-script`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| script_id | Script ID. Get the script ID from the list-scripts command. | Required | 
-| time_out | Script time out (in seconds). The default is 300. | Optional | 
-| endpoint_ip | Endpoint IP address on which to run the script. | Optional | 
-| answer | The script to run. Get the answer from the script-manifest command. | Required | 
-| endpoint_name | The name of the endpoint. | Optional | 
+| script_id | Script ID. Get the script ID from the list-scripts command. | Required |
+| time_out | Script time out (in seconds). The default is 300. | Optional |
+| endpoint_ip | Endpoint IP address on which to run the script. | Optional |
+| answer | The script to run. Get the answer from the script-manifest command. | Required |
+| endpoint_name | The name of the endpoint. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Script.ID | String | Script ID. | 
-| FidelisEndpoint.Script.JobID | String | Script job ID. | 
+| FidelisEndpoint.Script.ID | String | Script ID. |
+| FidelisEndpoint.Script.JobID | String | Script job ID. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-execute-script script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf" time_out="300" endpoint_ip="2.2.2.2" answer="true"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Script": {
@@ -1043,66 +1306,82 @@ The required permissions: Scripts, View Executables
     }
 }
 ```
+
 ##### Human Readable Output
-The job has been executed successfully. 
+
+The job has been executed successfully.
  Job ID: 8ac08ab1-e6f4-4aa1-9784-ab8a02115483
+
 ### 18. fidelis-endpoint-query-file
+
 ---
 Queries a file by file hash.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results.
+
 ##### Base Command
+
 `fidelis-endpoint-query-file`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| file_hash | The MD5 file hash to search for. | Required | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| file_hash | The MD5 file hash to search for. | Required |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | Date | The process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.CertificateSubjectName | String | Certificate subject name. | 
-| FidelisEndpoint.Query.Size | Number | File size. | 
-| FidelisEndpoint.Query.FileExtension | String | File extension. | 
-| FidelisEndpoint.Query.Path | String | File path. | 
-| FidelisEndpoint.Query.CertificatePublisher | String | Certificate publisher. | 
-| FidelisEndpoint.Query.ParentID | String | Process parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query.SignedTime | Date | Signed time. | 
-| FidelisEndpoint.Query.Name | String | File name. | 
-| FidelisEndpoint.Query.TargetID | String | Target ID. | 
-| FidelisEndpoint.Query.Hash | String | File hash. | 
-| FidelisEndpoint.Query.StartTime | Date | Event start time. | 
-| FidelisEndpoint.Query.HashSHA1 | String | File SHA1 hash. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.HashSHA256 | String | File SHA256 hash. | 
-| FidelisEndpoint.Query.ParentName | String | Process parent name. | 
-| FidelisEndpoint.Query.FileType | Number | File type. | 
-| FidelisEndpoint.Query.Signature | Number | File signature. | 
-| FidelisEndpoint.Query.EventIndex | Number | Event index. | 
-| FidelisEndpoint.Query.FileCategory | Number | File category. | 
-| FidelisEndpoint.Query.CertificateIssuerName | String | Certificate issuer name. | 
-| FidelisEndpoint.Query.FileVersion | String | File version. | 
-| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
-| File.Name | String | The full file name (including file extension). | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Extension | String | The file extension, for example: "txt". | 
-| File.Type | Number | The file type, as determined by libmagic (same as displayed in file entries). | 
-| File.Path | String | The path where the file is located. | 
-| File.Hostname | String | The name of the host where the file was found. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.FileVersion | String | The file version. | 
+| FidelisEndpoint.Query.ProcessStartTime | Date | The process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.CertificateSubjectName | String | Certificate subject name. |
+| FidelisEndpoint.Query.Size | Number | File size. |
+| FidelisEndpoint.Query.FileExtension | String | File extension. |
+| FidelisEndpoint.Query.Path | String | File path. |
+| FidelisEndpoint.Query.CertificatePublisher | String | Certificate publisher. |
+| FidelisEndpoint.Query.ParentID | String | Process parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query.SignedTime | Date | Signed time. |
+| FidelisEndpoint.Query.Name | String | File name. |
+| FidelisEndpoint.Query.TargetID | String | Target ID. |
+| FidelisEndpoint.Query.Hash | String | File hash. |
+| FidelisEndpoint.Query.StartTime | Date | Event start time. |
+| FidelisEndpoint.Query.HashSHA1 | String | File SHA1 hash. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.HashSHA256 | String | File SHA256 hash. |
+| FidelisEndpoint.Query.ParentName | String | Process parent name. |
+| FidelisEndpoint.Query.FileType | Number | File type. |
+| FidelisEndpoint.Query.Signature | Number | File signature. |
+| FidelisEndpoint.Query.EventIndex | Number | Event index. |
+| FidelisEndpoint.Query.FileCategory | Number | File category. |
+| FidelisEndpoint.Query.CertificateIssuerName | String | Certificate issuer name. |
+| FidelisEndpoint.Query.FileVersion | String | File version. |
+| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+| File.Name | String | The full file name (including file extension). |
+| File.Size | Number | The size of the file in bytes. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension, for example: "txt". |
+| File.Type | Number | The file type, as determined by libmagic (same as displayed in file entries). |
+| File.Path | String | The path where the file is located. |
+| File.Hostname | String | The name of the host where the file was found. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.FileVersion | String | The file version. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-file logic="and" file_hash="8a0a29438052faed8a2532da50451234"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -1311,8 +1590,11 @@ The required permissions: Read groups, View Behaviors, View Task Results.
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint file hash query results
+
 |EndpointName|Name|Path|Hash|ProcessStartTime|ParentName|EventType|
 |---|---|---|---|---|---|---|
 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | 8a0a29438052faed8a2532da50451234 | 2020-03-26T09:02:26.511Z | svchost.exe | 2 |
@@ -1322,42 +1604,56 @@ The required permissions: Read groups, View Behaviors, View Task Results.
 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | 8a0a29438052faed8a2532da50451234 | 2020-03-26T06:02:25.581Z | svchost.exe | 2 |
 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | 8a0a29438052faed8a2532da50451234 | 2020-03-26T05:02:25.266Z | svchost.exe | 2 |
 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | 8a0a29438052faed8a2532da50451234 | 2020-03-26T04:54:08.244Z | svchost.exe | 2 |
+
 ### 19. fidelis-endpoint-query-process
+
 ---
 Query process.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-query-process`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| process_name | The process name to query. | Required | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| process_name | The process name to query. | Required |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | String | Process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.Path | String | The path of the process. | 
-| FidelisEndpoint.Query.ParentID | String | Process parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query.PID | String | Process ID. | 
-| FidelisEndpoint.Query.Name | String | Process name. | 
-| FidelisEndpoint.Query.User | String | The user of the system. | 
-| FidelisEndpoint.Query.TargetID | String | Process target ID. | 
-| FidelisEndpoint.Query.Hash | String | File hash. | 
-| FidelisEndpoint.Query.StartTime | Date | Process start time. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.ParentName | String | Process parent name. | 
-| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
+| FidelisEndpoint.Query.ProcessStartTime | String | Process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.Path | String | The path of the process. |
+| FidelisEndpoint.Query.ParentID | String | Process parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query.PID | String | Process ID. |
+| FidelisEndpoint.Query.Name | String | Process name. |
+| FidelisEndpoint.Query.User | String | The user of the system. |
+| FidelisEndpoint.Query.TargetID | String | Process target ID. |
+| FidelisEndpoint.Query.Hash | String | File hash. |
+| FidelisEndpoint.Query.StartTime | Date | Process start time. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.ParentName | String | Process parent name. |
+| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-process logic="and" process_name="svchost.exe"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -1459,8 +1755,11 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint process results
+
 |PID|EndpointName|Name|Path|User|Hash|ProcessStartTime|Parameters|ParentName|EventType|
 |---|---|---|---|---|---|---|---|---|---|
 | 4432 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | NT AUTHORITY\SYSTEM | 8a0a29438052faed8a2532da50451234 | 2020-03-26T09:02:26.511Z | C:\Windows\System32\svchost.exe -k netsvcs -p -s NetSetupSvc | services.exe | 0 |
@@ -1469,48 +1768,62 @@ The required permissions: Read groups, View Behaviors, View Task Results
 | 656 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | NT AUTHORITY\NETWORK SERVICE | 8a0a29438052faed8a2532da50451234 | 2020-03-26T06:15:07.125Z | C:\Windows\System32\svchost.exe -k NetworkService -p -s DoSvc | services.exe | 0 |
 | 1400 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | NT AUTHORITY\SYSTEM | 8a0a29438052faed8a2532da50451234 | 2020-03-26T06:02:25.581Z | C:\Windows\System32\svchost.exe -k netsvcs -p -s NetSetupSvc | services.exe | 0 |
 | 2800 | fidelis-endpoint-winserver2019 | svchost.exe | C:\Windows\System32\svchost.exe | NT AUTHORITY\SYSTEM | 8a0a29438052faed8a2532da50451234 | 2020-03-26T05:02:25.266Z | C:\Windows\System32\svchost.exe -k netsvcs -p -s NetSetupSvc | services.exe | 0 |
+
 ### 20. fidelis-endpoint-query-connection-by-remote-ip
+
 ---
 Queries a connection by remote IP address.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-query-connection-by-remote-ip`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| remote_ip | The remote IP address on which to query. | Required | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| remote_ip | The remote IP address on which to query. | Required |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.ParentID | String | Process parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query.RemotePort | Number | Remote port. | 
-| FidelisEndpoint.Query.LocalPort | Number | Local port. | 
-| FidelisEndpoint.Query.TargetID | String | Target ID. | 
-| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. | 
-| FidelisEndpoint.Query.StartTime | Date | Event start time. | 
-| FidelisEndpoint.Query.EndpointID | String | Endpoint ID. | 
-| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. | 
-| FidelisEndpoint.Query.LastEventTime | Date | Last event time. | 
-| FidelisEndpoint.Query.LocalIP | String | Local IP address. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.ParentName | String | Parent name. | 
-| FidelisEndpoint.Query.FirstEventTime | Date | First event time. | 
-| FidelisEndpoint.Query.EventIndex | Number | Event Index. | 
-| FidelisEndpoint.Query.Protocol | String | Protocol. | 
-| FidelisEndpoint.Query.PPID | Number | Process parent ID. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
-| FidelisEndpoint.Query.ParentHashSHA1 | String | Parent SHA1 hash. | 
+| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.ParentID | String | Process parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query.RemotePort | Number | Remote port. |
+| FidelisEndpoint.Query.LocalPort | Number | Local port. |
+| FidelisEndpoint.Query.TargetID | String | Target ID. |
+| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. |
+| FidelisEndpoint.Query.StartTime | Date | Event start time. |
+| FidelisEndpoint.Query.EndpointID | String | Endpoint ID. |
+| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. |
+| FidelisEndpoint.Query.LastEventTime | Date | Last event time. |
+| FidelisEndpoint.Query.LocalIP | String | Local IP address. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.ParentName | String | Parent name. |
+| FidelisEndpoint.Query.FirstEventTime | Date | First event time. |
+| FidelisEndpoint.Query.EventIndex | Number | Event Index. |
+| FidelisEndpoint.Query.Protocol | String | Protocol. |
+| FidelisEndpoint.Query.PPID | Number | Process parent ID. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+| FidelisEndpoint.Query.ParentHashSHA1 | String | Parent SHA1 hash. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-connection-by-remote-ip logic=and remote_ip=10.10.0.1 limit=5```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -1586,8 +1899,11 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint query results for connection by remote IP
+
 |EndpointID|EndpointName|PPID|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|FirstEventTime|LastEventTime|Protocol|ParentHashSHA1|ParentName|EventType|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 64669 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
@@ -1596,44 +1912,58 @@ The required permissions: Read groups, View Behaviors, View Task Results
 | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 53557 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
 | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 60427 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
 | 3494cb0f-67ba-41bc-9190-ab5d015dd57c | fidelis-endpoint-winserver2019 | 1196 | 2.2.2.2 | 60427 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | 2020-03-26T09:28:31.148Z | 2020-03-26T09:32:31.172Z | UDP | a1385ce20ad79f55df235effd9780c31442aa234 | svchost.exe | 3 |
+
 ### 21. fidelis-endpoint-query-by-dns
+
 ---
 Queries by DNS request.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-query-by-dns`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| url | URL or domain on which to query. | Required | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| url | URL or domain on which to query. | Required |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.ParentID | String | Parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query.RemotePort | Number | Remote port. | 
-| FidelisEndpoint.Query.DnsAnswer | String | The DNS answer. | 
-| FidelisEndpoint.Query.LocalPort | Number | Local port. | 
-| FidelisEndpoint.Query.TargetID | String | The target ID. | 
-| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. | 
-| FidelisEndpoint.Query.DnsQuestion | String | The DNS question. | 
-| FidelisEndpoint.Query.StartTime | Date | Event start time. | 
-| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. | 
-| FidelisEndpoint.Query.LocalIP | String | Local IP address. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.EventIndex | Number | Event index. | 
-| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
+| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.ParentID | String | Parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query.RemotePort | Number | Remote port. |
+| FidelisEndpoint.Query.DnsAnswer | String | The DNS answer. |
+| FidelisEndpoint.Query.LocalPort | Number | Local port. |
+| FidelisEndpoint.Query.TargetID | String | The target ID. |
+| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. |
+| FidelisEndpoint.Query.DnsQuestion | String | The DNS question. |
+| FidelisEndpoint.Query.StartTime | Date | Event start time. |
+| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. |
+| FidelisEndpoint.Query.LocalIP | String | Local IP address. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.EventIndex | Number | Event index. |
+| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-by-dns start_time="2019-10-02T00:00:00.842Z" end_time="2020-03-08T15:50:05.552Z" logic="and" url="login.live.com"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -1716,8 +2046,11 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint query results for the DNS request
+
 |EndpointName|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|DnsAnswer|EventType|
 |---|---|---|---|---|---|---|---|
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 49862 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"299"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"299"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"299"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"299"}]} | 17 |
@@ -1726,44 +2059,58 @@ The required permissions: Read groups, View Behaviors, View Task Results
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 57803 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"16"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"lgin.msa.trafficmanager.net","IP":"","TTL":"197"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"59"},{"name":"lgin.msa.trafficmanager.net","class":"IN","type":"A","alias":"","IP":"7.7.7.7","TTL":"59"}]} | 17 |
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 58656 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"288"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"288"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"288"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"2.2.2.20","TTL":"123"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"7.7.7.7","TTL":"123"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"10.10.10.10","TTL":"123"}]} | 17 |
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 59564 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_answers":[{"name":"login.live.com","class":"IN","type":"CNAME","alias":"login.msa.msidentity.com","IP":"","TTL":"238"},{"name":"login.msa.msidentity.com","class":"IN","type":"CNAME","alias":"login.msa.akadns6.net","IP":"","TTL":"238"},{"name":"login.msa.akadns6.net","class":"IN","type":"CNAME","alias":"ipv4.login.msa.akadns6.net","IP":"","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"7.7.7.7","TTL":"238"},{"name":"ipv4.login.msa.akadns6.net","class":"IN","type":"A","alias":"","IP":"10.10.10.10","TTL":"238"}]} | 17 |
+
 ### 22. fidelis-endpoint-query-dns-by-server-ip
+
 ---
 Queries DNS by server IP address.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-query-dns-by-server-ip`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| remote_ip | The remote IP on which to query. | Required | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| remote_ip | The remote IP on which to query. | Required |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.ParentID | String | Parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query.RemotePort | Number | Remote port. | 
-| FidelisEndpoint.Query.DnsAnswer | String | The DNS answer. | 
-| FidelisEndpoint.Query.LocalPort | Number | Local port. | 
-| FidelisEndpoint.Query.TargetID | String | The target ID. | 
-| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. | 
-| FidelisEndpoint.Query.DnsQuestion | String | The DNS question. | 
-| FidelisEndpoint.Query.StartTime | Date | Event start time. | 
-| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. | 
-| FidelisEndpoint.Query.LocalIP | String | Local IP address. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.EventIndex | Number | Event index. | 
-| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
+| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.ParentID | String | Parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query.RemotePort | Number | Remote port. |
+| FidelisEndpoint.Query.DnsAnswer | String | The DNS answer. |
+| FidelisEndpoint.Query.LocalPort | Number | Local port. |
+| FidelisEndpoint.Query.TargetID | String | The target ID. |
+| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. |
+| FidelisEndpoint.Query.DnsQuestion | String | The DNS question. |
+| FidelisEndpoint.Query.StartTime | Date | Event start time. |
+| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. |
+| FidelisEndpoint.Query.LocalIP | String | Local IP address. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.EventIndex | Number | Event index. |
+| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-dns-by-server-ip logic="or" remote_ip="10.10.0.1"```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -1865,8 +2212,11 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint query results for the DNS request by server IP
+
 |EndpointName|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|DnsAnswer|EventType|
 |---|---|---|---|---|---|---|---|
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 61597 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"1425"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcoleus06.cloudapp.net","IP":"","TTL":"45"},{"name":"skypedataprdcoleus06.cloudapp.net","class":"IN","type":"A","alias":"","IP":"2.2.2.2","TTL":"5"}]} | 17 |
@@ -1880,45 +2230,59 @@ The required permissions: Read groups, View Behaviors, View Task Results
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 54309 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"2327"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcoluks05.cloudapp.net","IP":"","TTL":"44"},{"name":"skypedataprdcoluks05.cloudapp.net","class":"IN","type":"A","alias":"","IP":"10.10.0.1","TTL":"7"}]} | 17 |
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 61757 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"3.3.3.3","TTL":"273"}]} | 17 |
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 49681 | 10.10.0.1 | 53 | 2020-03-12T03:58:09.962Z | {"dns_answers":[{"name":"v10.events.data.microsoft.com","class":"IN","type":"CNAME","alias":"global.events.data.trafficmanager.net","IP":"","TTL":"798"},{"name":"global.events.data.trafficmanager.net","class":"IN","type":"CNAME","alias":"skypedataprdcolwus08.cloudapp.net","IP":"","TTL":"40"},{"name":"fe2.update.microsoft.com.nsatc.net","class":"IN","type":"A","alias":"","IP":"10.10.0.1","TTL":"175"}]} | 17 |
+
 ### 23. fidelis-endpoint-query-dns-by-source-ip
+
 ---
 Queries DNS by source IP address.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-query-dns-by-source-ip`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| source_ip | The source IP address to query. | Required | 
-| domain | The domain to query. | Optional | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| source_ip | The source IP address to query. | Required |
+| domain | The domain to query. | Optional |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.ParentID | String | Parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query.RemotePort | Number | Remote port. | 
-| FidelisEndpoint.Query.DnsAnswer | String | The DNS answer. | 
-| FidelisEndpoint.Query.LocalPort | Number | Local port. | 
-| FidelisEndpoint.Query.TargetID | String | The target ID. | 
-| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. | 
-| FidelisEndpoint.Query.DnsQuestion | String | The DNS question. | 
-| FidelisEndpoint.Query.StartTime | Date | Event start time. | 
-| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. | 
-| FidelisEndpoint.Query.LocalIP | String | Local IP address. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.EventIndex | Number | Event index. | 
-| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
+| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.ParentID | String | Parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query.RemotePort | Number | Remote port. |
+| FidelisEndpoint.Query.DnsAnswer | String | The DNS answer. |
+| FidelisEndpoint.Query.LocalPort | Number | Local port. |
+| FidelisEndpoint.Query.TargetID | String | The target ID. |
+| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. |
+| FidelisEndpoint.Query.DnsQuestion | String | The DNS question. |
+| FidelisEndpoint.Query.StartTime | Date | Event start time. |
+| FidelisEndpoint.Query.NetworkDirection | Number | Network direction. |
+| FidelisEndpoint.Query.LocalIP | String | Local IP address. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.EventIndex | Number | Event index. |
+| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-dns-by-source-ip start_time="2020-01-01T00:00:00.842Z" end_time="2020-03-08T15:50:05.552Z" logic="or" source_ip="10.128.0.4" domain="logging.googleapis.com" limit=5```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -2039,8 +2403,11 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint query results for the DNS request by source IP
+
 |EndpointName|LocalIP|LocalPort|RemoteIP|RemotePort|ProcessStartTime|DnsQuestion|DnsAnswer|
 |---|---|---|---|---|---|---|---|
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 51663 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"87"}]} |
@@ -2049,54 +2416,68 @@ The required permissions: Read groups, View Behaviors, View Task Results
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 63755 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"282"}]} |
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 60331 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"61"}]} |
 | fidelis-endpoint-winserver2019 | 2.2.2.2 | 58452 | 10.10.0.1 | 53 | 2020-02-13T03:50:45.515Z | {"dns_questions":[{"name":"logging.googleapis.com","class":"IN","type":"A"}]} | {"dns_answers":[{"name":"logging.googleapis.com","class":"IN","type":"A","alias":"","IP":"6.6.6.6","TTL":"12"}]} |
+
 ### 24. fidelis-endpoint-query-events
+
 ---
 Queries events.
+
 ##### Required Permissions
+
 The required permissions: Read groups, View Behaviors, View Task Results
+
 ##### Base Command
+
 `fidelis-endpoint-query-events`
+
 ##### Input
-| **Argument Name** | **Description** | **Required** |
+
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
-| logic | The logic of the query. Can be "and" or "or". | Required | 
-| entity_type | Query entity type. Can be "antiMalware", "dns", "file", "network", "process", "registry", "remoteThread", "script", "usb", or "windowsevent". | Required | 
-| column | Column to query. For example: hash, name, remoteIP, dnsQuestion, localIP. | Required | 
-| value | The value to query. Can be an IP address, file hash, file path, and so on. | Required | 
-| operator | The operator, which describes how the "value" relates to the "field" (for example: "=", "!=", ">", "<"). | Required | 
-| limit | The maximum number of results to return. The default is 50. | Optional | 
-| additional_filter | An additional filter to use in the query. For example: pid = 1234, pid > 1233. | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional |
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional |
+| logic | The logic of the query. Can be "and" or "or". | Required |
+| entity_type | Query entity type. Can be "antiMalware", "dns", "file", "network", "process", "registry", "remoteThread", "script", "usb", or "windowsevent". | Required |
+| column | Column to query. For example: hash, name, remoteIP, dnsQuestion, localIP. | Required |
+| value | The value to query. Can be an IP address, file hash, file path, and so on. | Required |
+| operator | The operator, which describes how the "value" relates to the "field" (for example: "=", "!=", ">", "<"). | Required |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+| additional_filter | An additional filter to use in the query. For example: pid = 1234, pid > 1233. | Optional |
+
 ##### Context Output
-| **Path** | **Type** | **Description** |
+
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. | 
-| FidelisEndpoint.Query.EndpointName | String | Endpoint name. | 
-| FidelisEndpoint.Query.Path | String | File path. | 
-| FidelisEndpoint.Query.ParentID | String | Parent ID. | 
-| FidelisEndpoint.Query.EventTime | Date | Event time. | 
-| FidelisEndpoint.Query..RemotePort | Number | Remote port. | 
-| FidelisEndpoint.Query.DnsAnswer | String | DNS answer. | 
-| FidelisEndpoint.Query.PID | Number | Process ID. | 
-| FidelisEndpoint.Query.Name | String | Process name. | 
-| FidelisEndpoint.Query.User | String | Endpoint user. | 
-| FidelisEndpoint.Query.LocalPort | Number | Local port. | 
-| FidelisEndpoint.Query.TargetID | String | Target ID. | 
-| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. | 
-| FidelisEndpoint.Query.Hash | String | File hash. | 
-| FidelisEndpoint.Query.DnsQuestion | String | DNS question. | 
-| FidelisEndpoint.Query.StartTime | Date | Start time of the event. | 
-| FidelisEndpoint.Query.Entropy | Number | Entropy. | 
-| FidelisEndpoint.Query.LocalIP | String | Local IP address. | 
-| FidelisEndpoint.Query.EventType | Number | Event type. | 
-| FidelisEndpoint.Query.ParentName | String | Parent name. | 
-| FidelisEndpoint.Query.EventIndex | Number | Event index. | 
-| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. | 
-| FidelisEndpoint.Query.EntityType | Number | Entity type. | 
+| FidelisEndpoint.Query.ProcessStartTime | Date | Process start time. |
+| FidelisEndpoint.Query.EndpointName | String | Endpoint name. |
+| FidelisEndpoint.Query.Path | String | File path. |
+| FidelisEndpoint.Query.ParentID | String | Parent ID. |
+| FidelisEndpoint.Query.EventTime | Date | Event time. |
+| FidelisEndpoint.Query..RemotePort | Number | Remote port. |
+| FidelisEndpoint.Query.DnsAnswer | String | DNS answer. |
+| FidelisEndpoint.Query.PID | Number | Process ID. |
+| FidelisEndpoint.Query.Name | String | Process name. |
+| FidelisEndpoint.Query.User | String | Endpoint user. |
+| FidelisEndpoint.Query.LocalPort | Number | Local port. |
+| FidelisEndpoint.Query.TargetID | String | Target ID. |
+| FidelisEndpoint.Query.RemoteIP | String | Remote IP address. |
+| FidelisEndpoint.Query.Hash | String | File hash. |
+| FidelisEndpoint.Query.DnsQuestion | String | DNS question. |
+| FidelisEndpoint.Query.StartTime | Date | Start time of the event. |
+| FidelisEndpoint.Query.Entropy | Number | Entropy. |
+| FidelisEndpoint.Query.LocalIP | String | Local IP address. |
+| FidelisEndpoint.Query.EventType | Number | Event type. |
+| FidelisEndpoint.Query.ParentName | String | Parent name. |
+| FidelisEndpoint.Query.EventIndex | Number | Event index. |
+| FidelisEndpoint.Query.IndexingTime | Date | Indexing time. |
+| FidelisEndpoint.Query.EntityType | Number | Entity type. |
+
 ##### Command Example
+
 ```!fidelis-endpoint-query-events column=name entity_type=process logic=or value=cmd.exe additional_filter="pid = 3276" operator="="```
+
 ##### Context Example
+
 ```
 {
     "FidelisEndpoint.Query": [
@@ -2175,11 +2556,14 @@ The required permissions: Read groups, View Behaviors, View Task Results
     ]
 }
 ```
+
 ##### Human Readable Output
+
 ### Fidelis Endpoint query events result
+
 |PID|EndpointName|User|ProcessStartTime|ParentID|EventType|
 |---|---|---|---|---|---|
 | 908 | fidelis-endpoint-winserver2019 | NT AUTHORITY\SYSTEM | 2020-03-26T09:25:53.122Z | MKH6hK7yr75 | 0 |
 | 3376 | fidelis-endpoint-winserver2019 | NT AUTHORITY\SYSTEM | 2020-03-26T09:25:39.883Z | MKH6hK7yr75 | 0 |
 | 2804 | fidelis-endpoint-winserver2019 | NT AUTHORITY\SYSTEM | 2020-03-26T09:08:23.233Z | MKH6hK7yr75 | 0 |
- 24  Packs/FidelisEndpoint/pack_metadata.json 
+ 24  Packs/FidelisEndpoint/pack_metadata.json

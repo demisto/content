@@ -1,6 +1,7 @@
 Returns system information.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Returns system information.
 | Script Type | python |
 | Tags | epo |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * epo-command
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +25,7 @@ This script uses the following commands and scripts.
 | searchText | The free text to search for. Can be, "hostname", "agent guid", etc. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

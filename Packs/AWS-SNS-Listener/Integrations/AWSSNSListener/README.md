@@ -3,7 +3,6 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
 
 ## Configure AWS-SNS-Listener in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Long running instance |  Integration is long running by default| |
@@ -15,8 +14,6 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
 | Private Key (Required for HTTPS) | \(For Cortex XSOAR 6.x\) For use with HTTPS - the private key that the service should use. \(For Cortex XSOAR 8 and Cortex XSIAM\) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server. | False |
 | Store sample events for mapping | Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead. | False |
 | Use system proxy settings |  | False |
-
-
 
 ## Commands
 

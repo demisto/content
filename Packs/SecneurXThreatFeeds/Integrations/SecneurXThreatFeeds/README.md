@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.0 of SecneurX Threat
 
 ## Configure SecneurX Threat Feeds in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Feed URL | Input the url of SecneurX Threat Intelligence Feeds. | True |
@@ -21,32 +20,36 @@ This integration was integrated and tested with version 1.0.0 of SecneurX Threat
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### snxfeeds-get-indicators
+
 ***
 Retrieves a limited number of the indicators.
-
 
 #### Base Command
 
 `snxfeeds-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. The default is 10. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Human Readable Output
-Type |	Value  | Fields
+
+Type | Value  | Fields
 |---|---|---|
 Domain | mak.logupdates.xyz | firstseenbysource: 2022-06-13T10:37:23Z, indicatoridentification: indicator--c0f9425f-a3e9-4fcf-85c5-58e809f4e763, verdict: Malicious, tags: apt ,  Donot APT, modified: 2022-06-13T10:37:23Z, reportedby: SecneurX Threat Feeds |
 
 #### Notes
+
 Be aware, due to API limitations, `fetch-indicators` fetches only a limited number of indicators for each interval.
 Fetching all the indicators can take up to 24 hours.

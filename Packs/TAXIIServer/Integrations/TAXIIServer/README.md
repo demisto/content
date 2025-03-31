@@ -19,12 +19,16 @@ The collections are defined by a JSON object in the following format:
 ## How to Access the TAXII Service
 
 ### For Cortex XSOAR 6.x  
+
 Use one of the following options to access the TAXII service:
+
 - `https://<xsoar_address>/instance/execute/<instance_name>/taxii-discovery-service`
 - `http://<xsoar_address>:<listen_port>/taxii-discovery-service`
 
-### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
+### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM  
+
 Use one of the following options to access the TAXII service:
+
 - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
 - When using an engine: `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
   
@@ -32,11 +36,9 @@ Use one of the following options to access the TAXII service:
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
 For example, `ext-xsoar.mycompany.com`.  
 
-
-
 ## Access the TAXII Service by Instance Name
 
-To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled.
 
 1. For Cortex XSOAR 6.x:
    1. Navigate to **Settings > About > Troubleshooting**.
@@ -44,7 +46,7 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 2. Trigger the TAXII Service URL:
    - For Cortex XSOAR 6.x:  
      `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`.  
-     For example, `https://my.xsoar.live/instance/execute/taxiiserver`. 
+     For example, `https://my.xsoar.live/instance/execute/taxiiserver`.
    - For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM:  
      `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`  
      **Note**:
@@ -52,15 +54,19 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 
 ## How to Use HTTPS
 
-To use HTTPS, a certificate and private key have to be provided in the integration configuration.   
+To use HTTPS, a certificate and private key have to be provided in the integration configuration.
 The `HTTP Server` checkbox needs to be unchecked.
 
 ## Set up Authentication
+
 ### For Cortex XSOAR 8 Cloud Tenant or Cortex XSIAM Tenant
+
 The TAXII Service integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant enables using basic authentication in the requests.  
 To enable basic authentication, a user and password have to be supplied in the **Credentials** parameters in the integration configuration.  
 The server then authenticates the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.  
+
 ### For Cortex XSOAR On-prem (6.x or 8) or When Using Engines
+
 For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). For more information on setting up a custom certificate for Cortex XSOAR 6.x, see [HTTPS with a Signed Certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).
 
 ## Troubleshooting

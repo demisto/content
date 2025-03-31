@@ -1,7 +1,7 @@
 Integration with Atlassian OpsGenie V2
 This integration was integrated and tested with version 1.0.0 of Opsgeniev2
-## Configure Opsgeniev2 in Cortex
 
+## Configure Opsgeniev2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -11,61 +11,64 @@ This integration was integrated and tested with version 1.0.0 of Opsgeniev2
 | API Token | Must be created from the Teams API Integration section. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### list-alerts
+
 ***
 List the current alerts from OpsGenie.
-
 
 #### Base Command
 
 `list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum results to return. | Optional | 
-| sort | OpsGenie field to sort by. | Optional | 
-
+| limit | Maximum results to return. | Optional |
+| sort | OpsGenie field to sort by. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Alerts.acknowledged | Boolean | State of Acknoweledgement | 
-| OpsGenieV2.Alerts.alias | String | Alert Alias | 
-| OpsGenieV2.Alerts.count | Number | Count of Alert occurences | 
-| OpsGenieV2.Alerts.createdAt | Date | Time alert created | 
-| OpsGenieV2.Alerts.id | String | ID of alert | 
-| OpsGenieV2.Alerts.integration.id | String | ID of integration  | 
-| OpsGenieV2.Alerts.integration.name | String | Integration name | 
-| OpsGenieV2.Alerts.integration.type | String | Type of integration | 
-| OpsGenieV2.Alerts.isSeen | Boolean | Whether alert has been seen | 
-| OpsGenieV2.Alerts.lastOccurredAt | Date | Time alert last occured | 
-| OpsGenieV2.Alerts.message | String | Alert Message | 
-| OpsGenieV2.Alerts.owner | String | Owner of Alert | 
-| OpsGenieV2.Alerts.ownerTeamId | String | Team ID of Owner | 
-| OpsGenieV2.Alerts.priority | String | Alert Priority | 
-| OpsGenieV2.Alerts.responders.id | String | ID of responders | 
-| OpsGenieV2.Alerts.responders.type | String | Type of Responders | 
-| OpsGenieV2.Alerts.seen | Boolean | Seen status of alert | 
-| OpsGenieV2.Alerts.snoozed | Boolean | Whether alert has been snoozed | 
-| OpsGenieV2.Alerts.source | String | Source of Alert | 
-| OpsGenieV2.Alerts.status | String | Status of Alert | 
-| OpsGenieV2.Alerts.teams.id | String | ID Of teams associated with Alert | 
-| OpsGenieV2.Alerts.tinyId | String | Shorter ID for alert | 
-| OpsGenieV2.Alerts.updatedAt | Date | Last Updated time for Alert | 
-| OpsGenieV2.Alerts.report.ackTime | Number | Acknoweledgement Time of Alert | 
-| OpsGenieV2.Alerts.report.acknowledgedBy | String | User that Acknolwedged the alert | 
-| OpsGenieV2.Alerts.report.closeTime | Number | Time Alarm closed | 
-| OpsGenieV2.Alerts.report.closedBy | String | Who Closed the alarm | 
-
+| OpsGenieV2.Alerts.acknowledged | Boolean | State of Acknoweledgement |
+| OpsGenieV2.Alerts.alias | String | Alert Alias |
+| OpsGenieV2.Alerts.count | Number | Count of Alert occurences |
+| OpsGenieV2.Alerts.createdAt | Date | Time alert created |
+| OpsGenieV2.Alerts.id | String | ID of alert |
+| OpsGenieV2.Alerts.integration.id | String | ID of integration  |
+| OpsGenieV2.Alerts.integration.name | String | Integration name |
+| OpsGenieV2.Alerts.integration.type | String | Type of integration |
+| OpsGenieV2.Alerts.isSeen | Boolean | Whether alert has been seen |
+| OpsGenieV2.Alerts.lastOccurredAt | Date | Time alert last occured |
+| OpsGenieV2.Alerts.message | String | Alert Message |
+| OpsGenieV2.Alerts.owner | String | Owner of Alert |
+| OpsGenieV2.Alerts.ownerTeamId | String | Team ID of Owner |
+| OpsGenieV2.Alerts.priority | String | Alert Priority |
+| OpsGenieV2.Alerts.responders.id | String | ID of responders |
+| OpsGenieV2.Alerts.responders.type | String | Type of Responders |
+| OpsGenieV2.Alerts.seen | Boolean | Seen status of alert |
+| OpsGenieV2.Alerts.snoozed | Boolean | Whether alert has been snoozed |
+| OpsGenieV2.Alerts.source | String | Source of Alert |
+| OpsGenieV2.Alerts.status | String | Status of Alert |
+| OpsGenieV2.Alerts.teams.id | String | ID Of teams associated with Alert |
+| OpsGenieV2.Alerts.tinyId | String | Shorter ID for alert |
+| OpsGenieV2.Alerts.updatedAt | Date | Last Updated time for Alert |
+| OpsGenieV2.Alerts.report.ackTime | Number | Acknoweledgement Time of Alert |
+| OpsGenieV2.Alerts.report.acknowledgedBy | String | User that Acknolwedged the alert |
+| OpsGenieV2.Alerts.report.closeTime | Number | Time Alarm closed |
+| OpsGenieV2.Alerts.report.closedBy | String | Who Closed the alarm |
 
 #### Command Example
+
 ```!list-alerts```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -842,6 +845,7 @@ List the current alerts from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie Alerts
+>
 >|id|message|createdAt|
 >|---|---|---|
 >| 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | New message | 2021-02-15T01:49:39.202Z |
@@ -865,45 +869,44 @@ List the current alerts from OpsGenie.
 >| 8ba1bb77-69bf-4e47-a77c-2548e97e7ded-1613190814551 | Test Alert From XSOAR | 2021-02-13T04:33:34.551Z |
 >| c39c3863-5da0-45c2-b75a-f16eec9aa10d-1613120280203 | This is a test alert! | 2021-02-12T08:58:00.203Z |
 
-
 ### create-alert
-***
- 
 
+***
 
 #### Base Command
 
 `create-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | Alert message. | Required | 
-| alias | Client-defined identifier of the alert. | Optional | 
-| description | Description field of the alert that is generally used to provide a detailed information about the alert. | Optional | 
-| responders | Dictionary of team/user/escalation/schedule for notifications. Dictionary containing type and ID. | Optional | 
-| priority | Incident Priority. Possible values are: P1, P2, P3, P4, P5. | Optional | 
-
+| message | Alert message. | Required |
+| alias | Client-defined identifier of the alert. | Optional |
+| description | Description field of the alert that is generally used to provide a detailed information about the alert. | Optional |
+| responders | Dictionary of team/user/escalation/schedule for notifications. Dictionary containing type and ID. | Optional |
+| priority | Incident Priority. Possible values are: P1, P2, P3, P4, P5. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.CreatedAlert.action | String | Action of this Request | 
-| OpsGenieV2.CreatedAlert.alertId | String | ID Of created Alert | 
-| OpsGenieV2.CreatedAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.CreatedAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.CreatedAlert.isSuccess | Boolean | If the request was successful  | 
-| OpsGenieV2.CreatedAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.CreatedAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.CreatedAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.CreatedAlert.success | Boolean | Bool, whether the request was a success | 
-
+| OpsGenieV2.CreatedAlert.action | String | Action of this Request |
+| OpsGenieV2.CreatedAlert.alertId | String | ID Of created Alert |
+| OpsGenieV2.CreatedAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.CreatedAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.CreatedAlert.isSuccess | Boolean | If the request was successful  |
+| OpsGenieV2.CreatedAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.CreatedAlert.requestId | String | The ID of the request |
+| OpsGenieV2.CreatedAlert.status | String | The human readable result of the request |
+| OpsGenieV2.CreatedAlert.success | Boolean | Bool, whether the request was a success |
 
 #### Command Example
+
 ```!create-alert message="Example Message"```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -925,45 +928,46 @@ List the current alerts from OpsGenie.
 #### Human Readable Output
 
 >### OpsGenie Created Alert
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|requestId|status|success|
 >|---|---|---|---|---|---|---|---|---|
 >| Create | b4b23e8b-4003-453d-9200-7735641a272d-1613353863148 | b4b23e8b-4003-453d-9200-7735641a272d-1613353863148 | 26aaa576-0434-4b17-bc39-602a02fe417c | true | 2021-02-15T01:51:03.198Z | c660d3a0-7827-49f1-989a-98d358cc4ca2 | Created alert | true |
 
-
 ### delete-alert
+
 ***
 Delete an Alert from OpsGenie
-
 
 #### Base Command
 
 `delete-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The ID of the alert from opsgenie. | Required | 
-
+| alert-id | The ID of the alert from opsgenie. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.DeletedAlert.action | String | Action of this Request | 
-| OpsGenieV2.DeletedAlert.alertId | String | ID Of Deleted Alert | 
-| OpsGenieV2.DeletedAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.DeletedAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.DeletedAlert.isSuccess | Boolean | If the request was successful  | 
-| OpsGenieV2.DeletedAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.DeletedAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.DeletedAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.DeletedAlert.success | Boolean | Bool, whether the request was a success | 
-
+| OpsGenieV2.DeletedAlert.action | String | Action of this Request |
+| OpsGenieV2.DeletedAlert.alertId | String | ID Of Deleted Alert |
+| OpsGenieV2.DeletedAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.DeletedAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.DeletedAlert.isSuccess | Boolean | If the request was successful  |
+| OpsGenieV2.DeletedAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.DeletedAlert.requestId | String | The ID of the request |
+| OpsGenieV2.DeletedAlert.status | String | The human readable result of the request |
+| OpsGenieV2.DeletedAlert.success | Boolean | Bool, whether the request was a success |
 
 #### Command Example
+
 ```!delete-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -985,63 +989,64 @@ Delete an Alert from OpsGenie
 #### Human Readable Output
 
 >### OpsGenie Deleted Alert
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|requestId|status|success|
 >|---|---|---|---|---|---|---|---|---|
 >| Delete | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 26aaa576-0434-4b17-bc39-602a02fe417c | true | 2021-02-15T01:51:22.876Z | 6c0c5320-0849-4726-adf7-0480cf9fc7c4 | Deleted alert | true |
 
-
 ### get-alert
+
 ***
 Delete an Alert from OpsGenie
-
 
 #### Base Command
 
 `get-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The ID of the alert from opsgenie. | Required | 
-
+| alert-id | The ID of the alert from opsgenie. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Alert.acknowledged | Boolean | State of Acknoweledgement  | 
-| OpsGenieV2.Alert.alias | String | Alert Alias | 
-| OpsGenieV2.Alert.count | Number | Count of Alert occurences | 
-| OpsGenieV2.Alert.createdAt | Date | Time alert created | 
-| OpsGenieV2.Alert.id | String | ID of alert | 
-| OpsGenieV2.Alert.integration.id | String | ID of integration  | 
-| OpsGenieV2.Alert.integration.name | String | Integration name | 
-| OpsGenieV2.Alert.integration.type | String | Type of integration | 
-| OpsGenieV2.Alert.isSeen | Boolean | Whether alert has been seen | 
-| OpsGenieV2.Alert.lastOccurredAt | Date | Time alert last occured | 
-| OpsGenieV2.Alert.message | String | Alert Message | 
-| OpsGenieV2.Alert.owner | String | Owner of Alert | 
-| OpsGenieV2.Alert.ownerTeamId | String | Team ID of Owner | 
-| OpsGenieV2.Alert.priority | String | Alert Priority | 
-| OpsGenieV2.Alert.responders.id | String | ID of responders | 
-| OpsGenieV2.Alert.responders.type | String | Type of Responders | 
-| OpsGenieV2.Alert.seen | Boolean | Seen status of alert | 
-| OpsGenieV2.Alert.snoozed | Boolean | Whether alert has been snoozed | 
-| OpsGenieV2.Alert.source | String | Source of Alert | 
-| OpsGenieV2.Alert.status | String | Status of Alert | 
-| OpsGenieV2.Alert.teams.id | String | ID Of teams associated with Alert | 
-| OpsGenieV2.Alert.tinyId | String | Shorter ID for alert | 
-| OpsGenieV2.Alert.updatedAt | Date | Last Updated time for Alert | 
-| OpsGenieV2.Alert.report.ackTime | Number | Acknoweledgement Time of Alert | 
-| OpsGenieV2.Alert.report.acknowledgedBy | String | User that Acknolwedged the alert | 
-| OpsGenieV2.Alert.report.closeTime | Number | Time Alarm closed | 
-| OpsGenieV2.Alert.report.closedBy | String | Who Closed the alarm | 
-
+| OpsGenieV2.Alert.acknowledged | Boolean | State of Acknoweledgement  |
+| OpsGenieV2.Alert.alias | String | Alert Alias |
+| OpsGenieV2.Alert.count | Number | Count of Alert occurences |
+| OpsGenieV2.Alert.createdAt | Date | Time alert created |
+| OpsGenieV2.Alert.id | String | ID of alert |
+| OpsGenieV2.Alert.integration.id | String | ID of integration  |
+| OpsGenieV2.Alert.integration.name | String | Integration name |
+| OpsGenieV2.Alert.integration.type | String | Type of integration |
+| OpsGenieV2.Alert.isSeen | Boolean | Whether alert has been seen |
+| OpsGenieV2.Alert.lastOccurredAt | Date | Time alert last occured |
+| OpsGenieV2.Alert.message | String | Alert Message |
+| OpsGenieV2.Alert.owner | String | Owner of Alert |
+| OpsGenieV2.Alert.ownerTeamId | String | Team ID of Owner |
+| OpsGenieV2.Alert.priority | String | Alert Priority |
+| OpsGenieV2.Alert.responders.id | String | ID of responders |
+| OpsGenieV2.Alert.responders.type | String | Type of Responders |
+| OpsGenieV2.Alert.seen | Boolean | Seen status of alert |
+| OpsGenieV2.Alert.snoozed | Boolean | Whether alert has been snoozed |
+| OpsGenieV2.Alert.source | String | Source of Alert |
+| OpsGenieV2.Alert.status | String | Status of Alert |
+| OpsGenieV2.Alert.teams.id | String | ID Of teams associated with Alert |
+| OpsGenieV2.Alert.tinyId | String | Shorter ID for alert |
+| OpsGenieV2.Alert.updatedAt | Date | Last Updated time for Alert |
+| OpsGenieV2.Alert.report.ackTime | Number | Acknoweledgement Time of Alert |
+| OpsGenieV2.Alert.report.acknowledgedBy | String | User that Acknolwedged the alert |
+| OpsGenieV2.Alert.report.closeTime | Number | Time Alarm closed |
+| OpsGenieV2.Alert.report.closedBy | String | Who Closed the alarm |
 
 #### Command Example
+
 ```!get-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1092,45 +1097,46 @@ Delete an Alert from OpsGenie
 #### Human Readable Output
 
 >### OpsGenie Alert
+>
 >|message|acknowledged|seen|owner|count|
 >|---|---|---|---|---|
 >| New message | false | false |  | 1 |
 
-
 ### ack-alert
+
 ***
 Acknowledge an alert in OpsGenie
-
 
 #### Base Command
 
 `ack-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The ID of the alert from opsgenie. | Required | 
-
+| alert-id | The ID of the alert from opsgenie. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.AckedAlert.action | String | Action of this Request | 
-| OpsGenieV2.AckedAlert.alertId | String | ID Of created Alert | 
-| OpsGenieV2.AckedAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.AckedAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.AckedAlert.isSuccess | Boolean | If the request was successful  | 
-| OpsGenieV2.AckedAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.AckedAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.AckedAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.AckedAlert.success | Boolean | Bool, whether the request was a success | 
-
+| OpsGenieV2.AckedAlert.action | String | Action of this Request |
+| OpsGenieV2.AckedAlert.alertId | String | ID Of created Alert |
+| OpsGenieV2.AckedAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.AckedAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.AckedAlert.isSuccess | Boolean | If the request was successful  |
+| OpsGenieV2.AckedAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.AckedAlert.requestId | String | The ID of the request |
+| OpsGenieV2.AckedAlert.status | String | The human readable result of the request |
+| OpsGenieV2.AckedAlert.success | Boolean | Bool, whether the request was a success |
 
 #### Command Example
+
 ```!ack-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1152,51 +1158,52 @@ Acknowledge an alert in OpsGenie
 #### Human Readable Output
 
 >### OpsGenie Ack Alert
+>
 >|action|alertId|alias|integrationId|isSuccess|processedAt|requestId|status|success|
 >|---|---|---|---|---|---|---|---|---|
 >| Acknowledge | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 37816db1-844e-449f-bf61-b28834cad50f-1613353779202 | 26aaa576-0434-4b17-bc39-602a02fe417c | true | 2021-02-15T01:51:11.973Z | 204f7523-fce4-489a-9d38-083c8269d339 | Acknowledged alert | true |
 
-
 ### get-schedule
+
 ***
 Retrieve the provided Schedule (by ID) from LR
-
 
 #### Base Command
 
 `get-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule-id | Schedule to retrieve from LR. | Required | 
-
+| schedule-id | Schedule to retrieve from LR. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Schedule.description | String | Description of Schedule | 
-| OpsGenieV2.Schedule.enabled | Boolean | If this schedule is enabled | 
-| OpsGenieV2.Schedule.id | String | ID Of schedule | 
-| OpsGenieV2.Schedule.name | String | Name of Schedule | 
-| OpsGenieV2.Schedule.ownerTeam.id | String | ID Of the team owning this schedule | 
-| OpsGenieV2.Schedule.ownerTeam.name | String | Name of Team owning this Schedule | 
-| OpsGenieV2.Schedule.rotations.id | String | ID of rotations on this Schedule | 
-| OpsGenieV2.Schedule.rotations.length | Number | Length of Rotations on this Schedule | 
-| OpsGenieV2.Schedule.rotations.name | String | Name of Rotation on this Schedule | 
-| OpsGenieV2.Schedule.rotations.participants.id | String | ID Of Partipant attached to this schedule | 
-| OpsGenieV2.Schedule.rotations.participants.type | String | Type of Participant attached to this Schedule | 
-| OpsGenieV2.Schedule.rotations.participants.username | String | Username of Participant Attached to this Schedule | 
-| OpsGenieV2.Schedule.rotations.startDate | Date | Start Date of this Schedule | 
-| OpsGenieV2.Schedule.rotations.type | String | Type of this Rotation | 
-| OpsGenieV2.Schedule.timezone | String | Timezone of this Schedule | 
-
+| OpsGenieV2.Schedule.description | String | Description of Schedule |
+| OpsGenieV2.Schedule.enabled | Boolean | If this schedule is enabled |
+| OpsGenieV2.Schedule.id | String | ID Of schedule |
+| OpsGenieV2.Schedule.name | String | Name of Schedule |
+| OpsGenieV2.Schedule.ownerTeam.id | String | ID Of the team owning this schedule |
+| OpsGenieV2.Schedule.ownerTeam.name | String | Name of Team owning this Schedule |
+| OpsGenieV2.Schedule.rotations.id | String | ID of rotations on this Schedule |
+| OpsGenieV2.Schedule.rotations.length | Number | Length of Rotations on this Schedule |
+| OpsGenieV2.Schedule.rotations.name | String | Name of Rotation on this Schedule |
+| OpsGenieV2.Schedule.rotations.participants.id | String | ID Of Partipant attached to this schedule |
+| OpsGenieV2.Schedule.rotations.participants.type | String | Type of Participant attached to this Schedule |
+| OpsGenieV2.Schedule.rotations.participants.username | String | Username of Participant Attached to this Schedule |
+| OpsGenieV2.Schedule.rotations.startDate | Date | Start Date of this Schedule |
+| OpsGenieV2.Schedule.rotations.type | String | Type of this Rotation |
+| OpsGenieV2.Schedule.timezone | String | Timezone of this Schedule |
 
 #### Command Example
+
 ```!get-schedule schedule-id=092748e8-c17d-4e53-99da-e84345f06a90```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1234,52 +1241,53 @@ Retrieve the provided Schedule (by ID) from LR
 #### Human Readable Output
 
 >### OpsGenie Schedule
+>
 >|id|name|timezone|
 >|---|---|---|
 >| 092748e8-c17d-4e53-99da-e84345f06a90 | Test_schedule | Australia/Sydney |
 
-
 ### list-schedules
+
 ***
 List Schedules
-
 
 #### Base Command
 
 `list-schedules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Max number of results to return. | Optional | 
-| sort | OpsGenie field to sort on. | Optional | 
-
+| limit | Max number of results to return. | Optional |
+| sort | OpsGenie field to sort on. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Schedules.description | String | Description of Schedule | 
-| OpsGenieV2.Schedules.enabled | Boolean | If this schedule is enabled | 
-| OpsGenieV2.Schedules.id | String | ID Of schedule | 
-| OpsGenieV2.Schedules.name | String | Name of Schedule | 
-| OpsGenieV2.Schedules.ownerTeam.id | String | ID Of the team owning this schedule | 
-| OpsGenieV2.Schedules.ownerTeam.name | String | Name of Team owning this Schedule | 
-| OpsGenieV2.Schedules.rotations.id | String | ID of rotations on this Schedule | 
-| OpsGenieV2.Schedules.rotations.length | Number | Length of Rotations on this Schedule | 
-| OpsGenieV2.Schedules.rotations.name | String | Name of Rotation on this Schedule | 
-| OpsGenieV2.Schedules.rotations.participants.id | String | ID Of Partipant attached to this schedule | 
-| OpsGenieV2.Schedules.rotations.participants.type | String | Type of Participant attached to this Schedule | 
-| OpsGenieV2.Schedules.rotations.participants.username | String | Username of Participant Attached to this Schedule | 
-| OpsGenieV2.Schedules.rotations.startDate | Date | Start Date of this Schedule | 
-| OpsGenieV2.Schedules.rotations.type | String | Type of this Rotation | 
-| OpsGenieV2.Schedules.timezone | String | Timezone of this Schedule | 
-
+| OpsGenieV2.Schedules.description | String | Description of Schedule |
+| OpsGenieV2.Schedules.enabled | Boolean | If this schedule is enabled |
+| OpsGenieV2.Schedules.id | String | ID Of schedule |
+| OpsGenieV2.Schedules.name | String | Name of Schedule |
+| OpsGenieV2.Schedules.ownerTeam.id | String | ID Of the team owning this schedule |
+| OpsGenieV2.Schedules.ownerTeam.name | String | Name of Team owning this Schedule |
+| OpsGenieV2.Schedules.rotations.id | String | ID of rotations on this Schedule |
+| OpsGenieV2.Schedules.rotations.length | Number | Length of Rotations on this Schedule |
+| OpsGenieV2.Schedules.rotations.name | String | Name of Rotation on this Schedule |
+| OpsGenieV2.Schedules.rotations.participants.id | String | ID Of Partipant attached to this schedule |
+| OpsGenieV2.Schedules.rotations.participants.type | String | Type of Participant attached to this Schedule |
+| OpsGenieV2.Schedules.rotations.participants.username | String | Username of Participant Attached to this Schedule |
+| OpsGenieV2.Schedules.rotations.startDate | Date | Start Date of this Schedule |
+| OpsGenieV2.Schedules.rotations.type | String | Type of this Rotation |
+| OpsGenieV2.Schedules.timezone | String | Timezone of this Schedule |
 
 #### Command Example
+
 ```!list-schedules```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1304,42 +1312,43 @@ List Schedules
 #### Human Readable Output
 
 >### OpsGenie Schedules
+>
 >|description|id|name|timezone|
 >|---|---|---|---|
 >|  | 092748e8-c17d-4e53-99da-e84345f06a90 | Test_schedule | Australia/Sydney |
 
-
 ### get-on-call
+
 ***
 Get the on-call users for the provided schedule
-
 
 #### Base Command
 
 `get-on-call`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule-id | Schedule from which to return on-call users. | Optional | 
-
+| schedule-id | Schedule from which to return on-call users. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.OnCall._parent.enabled | Boolean | If this OnCall is Enabled | 
-| OpsGenieV2.OnCall._parent.id | String | ID Of parent schedule | 
-| OpsGenieV2.OnCall._parent.name | String | Name of parent Schedule | 
-| OpsGenieV2.OnCall.onCallParticipants.id | String | ID Of oncall participant | 
-| OpsGenieV2.OnCall.onCallParticipants.name | String | Name of oncall participant | 
-| OpsGenieV2.OnCall.onCallParticipants.type | String | Type of OnCall participant | 
-
+| OpsGenieV2.OnCall._parent.enabled | Boolean | If this OnCall is Enabled |
+| OpsGenieV2.OnCall._parent.id | String | ID Of parent schedule |
+| OpsGenieV2.OnCall._parent.name | String | Name of parent Schedule |
+| OpsGenieV2.OnCall.onCallParticipants.id | String | ID Of oncall participant |
+| OpsGenieV2.OnCall.onCallParticipants.name | String | Name of oncall participant |
+| OpsGenieV2.OnCall.onCallParticipants.type | String | Type of OnCall participant |
 
 #### Command Example
+
 ```!get-on-call schedule-id=092748e8-c17d-4e53-99da-e84345f06a90```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1364,45 +1373,46 @@ Get the on-call users for the provided schedule
 #### Human Readable Output
 
 >### OpsGenie OnCall Participants
+>
 >|id|name|type|
 >|---|---|---|
 >| 7f072844-38a7-4de7-b2ff-2a51ffbabe7b | john@doe.com | user |
 
-
 ### close-alert
+
 ***
 Close an OpsGenie Alert
-
 
 #### Base Command
 
 `close-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | ID Of opsgenie alert. | Required | 
-
+| alert-id | ID Of opsgenie alert. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.CloseAlert.action | String | Action of this Request | 
-| OpsGenieV2.CloseAlert.alertId | String | ID Of created Alert | 
-| OpsGenieV2.CloseAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.CloseAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.CloseAlert.isSuccess | Boolean | If the request was successful  | 
-| OpsGenieV2.CloseAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.CloseAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.CloseAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.CloseAlert.success | Boolean | Bool, whether the request was a success | 
-
+| OpsGenieV2.CloseAlert.action | String | Action of this Request |
+| OpsGenieV2.CloseAlert.alertId | String | ID Of created Alert |
+| OpsGenieV2.CloseAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.CloseAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.CloseAlert.isSuccess | Boolean | If the request was successful  |
+| OpsGenieV2.CloseAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.CloseAlert.requestId | String | The ID of the request |
+| OpsGenieV2.CloseAlert.status | String | The human readable result of the request |
+| OpsGenieV2.CloseAlert.success | Boolean | Bool, whether the request was a success |
 
 #### Command Example
+
 ```!close-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202```
 
 #### Context Example
+
 ```json
 {
     "OpsGenieV2": {
@@ -1424,8 +1434,8 @@ Close an OpsGenie Alert
 #### Human Readable Output
 
 >### OpsGenie Close Alert
+>
 >**No entries.**
-
 
 ### opsgenie-list-alerts
 
@@ -1440,40 +1450,41 @@ List the current alerts from OpsGenie.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum results to return. | Optional | 
-| sort | OpsGenie field to sort by. | Optional | 
+| limit | Maximum results to return. | Optional |
+| sort | OpsGenie field to sort by. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Alerts.acknowledged | Boolean | State of Acknoweledgement | 
-| OpsGenieV2.Alerts.alias | String | Alert Alias | 
-| OpsGenieV2.Alerts.count | Number | Count of Alert occurences | 
-| OpsGenieV2.Alerts.createdAt | Date | Time alert created | 
-| OpsGenieV2.Alerts.id | String | ID of alert | 
-| OpsGenieV2.Alerts.integration.id | String | ID of integration | 
-| OpsGenieV2.Alerts.integration.name | String | Integration name | 
-| OpsGenieV2.Alerts.integration.type | String | Type of integration | 
-| OpsGenieV2.Alerts.isSeen | Boolean | Whether alert has been seen | 
-| OpsGenieV2.Alerts.lastOccurredAt | Date | Time alert last occured | 
-| OpsGenieV2.Alerts.message | String | Alert Message | 
-| OpsGenieV2.Alerts.owner | String | Owner of Alert | 
-| OpsGenieV2.Alerts.ownerTeamId | String | Team ID of Owner | 
-| OpsGenieV2.Alerts.priority | String | Alert Priority | 
-| OpsGenieV2.Alerts.responders.id | String | ID of responders | 
-| OpsGenieV2.Alerts.responders.type | String | Type of Responders | 
-| OpsGenieV2.Alerts.seen | Boolean | Seen status of alert | 
-| OpsGenieV2.Alerts.snoozed | Boolean | Whether alert has been snoozed | 
-| OpsGenieV2.Alerts.source | String | Source of Alert | 
-| OpsGenieV2.Alerts.status | String | Status of Alert | 
-| OpsGenieV2.Alerts.teams.id | String | ID Of teams associated with Alert | 
-| OpsGenieV2.Alerts.tinyId | String | Shorter ID for alert | 
-| OpsGenieV2.Alerts.updatedAt | Date | Last Updated time for Alert | 
-| OpsGenieV2.Alerts.report.ackTime | Number | Acknoweledgement Time of Alert | 
-| OpsGenieV2.Alerts.report.acknowledgedBy | String | User that Acknolwedged the alert | 
-| OpsGenieV2.Alerts.report.closeTime | Number | Time Alarm closed | 
-| OpsGenieV2.Alerts.report.closedBy | String | Who Closed the alarm | 
+| OpsGenieV2.Alerts.acknowledged | Boolean | State of Acknoweledgement |
+| OpsGenieV2.Alerts.alias | String | Alert Alias |
+| OpsGenieV2.Alerts.count | Number | Count of Alert occurences |
+| OpsGenieV2.Alerts.createdAt | Date | Time alert created |
+| OpsGenieV2.Alerts.id | String | ID of alert |
+| OpsGenieV2.Alerts.integration.id | String | ID of integration |
+| OpsGenieV2.Alerts.integration.name | String | Integration name |
+| OpsGenieV2.Alerts.integration.type | String | Type of integration |
+| OpsGenieV2.Alerts.isSeen | Boolean | Whether alert has been seen |
+| OpsGenieV2.Alerts.lastOccurredAt | Date | Time alert last occured |
+| OpsGenieV2.Alerts.message | String | Alert Message |
+| OpsGenieV2.Alerts.owner | String | Owner of Alert |
+| OpsGenieV2.Alerts.ownerTeamId | String | Team ID of Owner |
+| OpsGenieV2.Alerts.priority | String | Alert Priority |
+| OpsGenieV2.Alerts.responders.id | String | ID of responders |
+| OpsGenieV2.Alerts.responders.type | String | Type of Responders |
+| OpsGenieV2.Alerts.seen | Boolean | Seen status of alert |
+| OpsGenieV2.Alerts.snoozed | Boolean | Whether alert has been snoozed |
+| OpsGenieV2.Alerts.source | String | Source of Alert |
+| OpsGenieV2.Alerts.status | String | Status of Alert |
+| OpsGenieV2.Alerts.teams.id | String | ID Of teams associated with Alert |
+| OpsGenieV2.Alerts.tinyId | String | Shorter ID for alert |
+| OpsGenieV2.Alerts.updatedAt | Date | Last Updated time for Alert |
+| OpsGenieV2.Alerts.report.ackTime | Number | Acknoweledgement Time of Alert |
+| OpsGenieV2.Alerts.report.acknowledgedBy | String | User that Acknolwedged the alert |
+| OpsGenieV2.Alerts.report.closeTime | Number | Time Alarm closed |
+| OpsGenieV2.Alerts.report.closedBy | String | Who Closed the alarm |
+
 ### opsgenie-create-alert
 
 ***
@@ -1487,25 +1498,26 @@ Create an Alert in opsgenie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | Alert message. | Required | 
-| alias | Client-defined identifier of the alert. | Optional | 
-| description | Description field of the alert that is generally used to provide a detailed information about the alert. | Optional | 
-| responders | Dictionary of team/user/escalation/schedule for notifications. Dictionary containing type and ID. | Optional | 
-| priority | Incident Priority. Possible values are: P1, P2, P3, P4, P5. | Optional | 
+| message | Alert message. | Required |
+| alias | Client-defined identifier of the alert. | Optional |
+| description | Description field of the alert that is generally used to provide a detailed information about the alert. | Optional |
+| responders | Dictionary of team/user/escalation/schedule for notifications. Dictionary containing type and ID. | Optional |
+| priority | Incident Priority. Possible values are: P1, P2, P3, P4, P5. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.CreatedAlert.action | String | Action of this Request | 
-| OpsGenieV2.CreatedAlert.alertId | String | ID Of created Alert | 
-| OpsGenieV2.CreatedAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.CreatedAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.CreatedAlert.isSuccess | Boolean | If the request was successful | 
-| OpsGenieV2.CreatedAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.CreatedAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.CreatedAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.CreatedAlert.success | Boolean | Bool, whether the request was a success | 
+| OpsGenieV2.CreatedAlert.action | String | Action of this Request |
+| OpsGenieV2.CreatedAlert.alertId | String | ID Of created Alert |
+| OpsGenieV2.CreatedAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.CreatedAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.CreatedAlert.isSuccess | Boolean | If the request was successful |
+| OpsGenieV2.CreatedAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.CreatedAlert.requestId | String | The ID of the request |
+| OpsGenieV2.CreatedAlert.status | String | The human readable result of the request |
+| OpsGenieV2.CreatedAlert.success | Boolean | Bool, whether the request was a success |
+
 ### opsgenie-delete-alert
 
 ***
@@ -1519,21 +1531,22 @@ Delete an Alert from OpsGenie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The ID of the alert from opsgenie. | Required | 
+| alert-id | The ID of the alert from opsgenie. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.DeletedAlert.action | String | Action of this Request | 
-| OpsGenieV2.DeletedAlert.alertId | String | ID Of Deleted Alert | 
-| OpsGenieV2.DeletedAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.DeletedAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.DeletedAlert.isSuccess | Boolean | If the request was successful | 
-| OpsGenieV2.DeletedAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.DeletedAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.DeletedAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.DeletedAlert.success | Boolean | Bool, whether the request was a success | 
+| OpsGenieV2.DeletedAlert.action | String | Action of this Request |
+| OpsGenieV2.DeletedAlert.alertId | String | ID Of Deleted Alert |
+| OpsGenieV2.DeletedAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.DeletedAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.DeletedAlert.isSuccess | Boolean | If the request was successful |
+| OpsGenieV2.DeletedAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.DeletedAlert.requestId | String | The ID of the request |
+| OpsGenieV2.DeletedAlert.status | String | The human readable result of the request |
+| OpsGenieV2.DeletedAlert.success | Boolean | Bool, whether the request was a success |
+
 ### opsgenie-get-alert
 
 ***
@@ -1547,39 +1560,40 @@ Delete an Alert from OpsGenie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The ID of the alert from opsgenie. | Required | 
+| alert-id | The ID of the alert from opsgenie. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Alert.acknowledged | Boolean | State of Acknoweledgement | 
-| OpsGenieV2.Alert.alias | String | Alert Alias | 
-| OpsGenieV2.Alert.count | Number | Count of Alert occurences | 
-| OpsGenieV2.Alert.createdAt | Date | Time alert created | 
-| OpsGenieV2.Alert.id | String | ID of alert | 
-| OpsGenieV2.Alert.integration.id | String | ID of integration | 
-| OpsGenieV2.Alert.integration.name | String | Integration name | 
-| OpsGenieV2.Alert.integration.type | String | Type of integration | 
-| OpsGenieV2.Alert.isSeen | Boolean | Whether alert has been seen | 
-| OpsGenieV2.Alert.lastOccurredAt | Date | Time alert last occured | 
-| OpsGenieV2.Alert.message | String | Alert Message | 
-| OpsGenieV2.Alert.owner | String | Owner of Alert | 
-| OpsGenieV2.Alert.ownerTeamId | String | Team ID of Owner | 
-| OpsGenieV2.Alert.priority | String | Alert Priority | 
-| OpsGenieV2.Alert.responders.id | String | ID of responders | 
-| OpsGenieV2.Alert.responders.type | String | Type of Responders | 
-| OpsGenieV2.Alert.seen | Boolean | Seen status of alert | 
-| OpsGenieV2.Alert.snoozed | Boolean | Whether alert has been snoozed | 
-| OpsGenieV2.Alert.source | String | Source of Alert | 
-| OpsGenieV2.Alert.status | String | Status of Alert | 
-| OpsGenieV2.Alert.teams.id | String | ID Of teams associated with Alert | 
-| OpsGenieV2.Alert.tinyId | String | Shorter ID for alert | 
-| OpsGenieV2.Alert.updatedAt | Date | Last Updated time for Alert | 
-| OpsGenieV2.Alert.report.ackTime | Number | Acknoweledgement Time of Alert | 
-| OpsGenieV2.Alert.report.acknowledgedBy | String | User that Acknolwedged the alert | 
-| OpsGenieV2.Alert.report.closeTime | Number | Time Alarm closed | 
-| OpsGenieV2.Alert.report.closedBy | String | Who Closed the alarm | 
+| OpsGenieV2.Alert.acknowledged | Boolean | State of Acknoweledgement |
+| OpsGenieV2.Alert.alias | String | Alert Alias |
+| OpsGenieV2.Alert.count | Number | Count of Alert occurences |
+| OpsGenieV2.Alert.createdAt | Date | Time alert created |
+| OpsGenieV2.Alert.id | String | ID of alert |
+| OpsGenieV2.Alert.integration.id | String | ID of integration |
+| OpsGenieV2.Alert.integration.name | String | Integration name |
+| OpsGenieV2.Alert.integration.type | String | Type of integration |
+| OpsGenieV2.Alert.isSeen | Boolean | Whether alert has been seen |
+| OpsGenieV2.Alert.lastOccurredAt | Date | Time alert last occured |
+| OpsGenieV2.Alert.message | String | Alert Message |
+| OpsGenieV2.Alert.owner | String | Owner of Alert |
+| OpsGenieV2.Alert.ownerTeamId | String | Team ID of Owner |
+| OpsGenieV2.Alert.priority | String | Alert Priority |
+| OpsGenieV2.Alert.responders.id | String | ID of responders |
+| OpsGenieV2.Alert.responders.type | String | Type of Responders |
+| OpsGenieV2.Alert.seen | Boolean | Seen status of alert |
+| OpsGenieV2.Alert.snoozed | Boolean | Whether alert has been snoozed |
+| OpsGenieV2.Alert.source | String | Source of Alert |
+| OpsGenieV2.Alert.status | String | Status of Alert |
+| OpsGenieV2.Alert.teams.id | String | ID Of teams associated with Alert |
+| OpsGenieV2.Alert.tinyId | String | Shorter ID for alert |
+| OpsGenieV2.Alert.updatedAt | Date | Last Updated time for Alert |
+| OpsGenieV2.Alert.report.ackTime | Number | Acknoweledgement Time of Alert |
+| OpsGenieV2.Alert.report.acknowledgedBy | String | User that Acknolwedged the alert |
+| OpsGenieV2.Alert.report.closeTime | Number | Time Alarm closed |
+| OpsGenieV2.Alert.report.closedBy | String | Who Closed the alarm |
+
 ### opsgenie-ack-alert
 
 ***
@@ -1593,21 +1607,22 @@ Acknowledge an alert in OpsGenie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | The ID of the alert from opsgenie. | Required | 
+| alert-id | The ID of the alert from opsgenie. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.AckedAlert.action | String | Action of this Request | 
-| OpsGenieV2.AckedAlert.alertId | String | ID Of created Alert | 
-| OpsGenieV2.AckedAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.AckedAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.AckedAlert.isSuccess | Boolean | If the request was successful | 
-| OpsGenieV2.AckedAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.AckedAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.AckedAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.AckedAlert.success | Boolean | Bool, whether the request was a success | 
+| OpsGenieV2.AckedAlert.action | String | Action of this Request |
+| OpsGenieV2.AckedAlert.alertId | String | ID Of created Alert |
+| OpsGenieV2.AckedAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.AckedAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.AckedAlert.isSuccess | Boolean | If the request was successful |
+| OpsGenieV2.AckedAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.AckedAlert.requestId | String | The ID of the request |
+| OpsGenieV2.AckedAlert.status | String | The human readable result of the request |
+| OpsGenieV2.AckedAlert.success | Boolean | Bool, whether the request was a success |
+
 ### opsgenie-get-schedule
 
 ***
@@ -1621,27 +1636,28 @@ Retrieve the provided Schedule (by ID) from LR
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule-id | Schedule to retrieve from LR. | Required | 
+| schedule-id | Schedule to retrieve from LR. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Schedule.description | String | Description of Schedule | 
-| OpsGenieV2.Schedule.enabled | Boolean | If this schedule is enabled | 
-| OpsGenieV2.Schedule.id | String | ID Of schedule | 
-| OpsGenieV2.Schedule.name | String | Name of Schedule | 
-| OpsGenieV2.Schedule.ownerTeam.id | String | ID Of the team owning this schedule | 
-| OpsGenieV2.Schedule.ownerTeam.name | String | Name of Team owning this Schedule | 
-| OpsGenieV2.Schedule.rotations.id | String | ID of rotations on this Schedule | 
-| OpsGenieV2.Schedule.rotations.length | Number | Length of Rotations on this Schedule | 
-| OpsGenieV2.Schedule.rotations.name | String | Name of Rotation on this Schedule | 
-| OpsGenieV2.Schedule.rotations.participants.id | String | ID Of Partipant attached to this schedule | 
-| OpsGenieV2.Schedule.rotations.participants.type | String | Type of Participant attached to this Schedule | 
-| OpsGenieV2.Schedule.rotations.participants.username | String | Username of Participant Attached to this Schedule | 
-| OpsGenieV2.Schedule.rotations.startDate | Date | Start Date of this Schedule | 
-| OpsGenieV2.Schedule.rotations.type | String | Type of this Rotation | 
-| OpsGenieV2.Schedule.timezone | String | Timezone of this Schedule | 
+| OpsGenieV2.Schedule.description | String | Description of Schedule |
+| OpsGenieV2.Schedule.enabled | Boolean | If this schedule is enabled |
+| OpsGenieV2.Schedule.id | String | ID Of schedule |
+| OpsGenieV2.Schedule.name | String | Name of Schedule |
+| OpsGenieV2.Schedule.ownerTeam.id | String | ID Of the team owning this schedule |
+| OpsGenieV2.Schedule.ownerTeam.name | String | Name of Team owning this Schedule |
+| OpsGenieV2.Schedule.rotations.id | String | ID of rotations on this Schedule |
+| OpsGenieV2.Schedule.rotations.length | Number | Length of Rotations on this Schedule |
+| OpsGenieV2.Schedule.rotations.name | String | Name of Rotation on this Schedule |
+| OpsGenieV2.Schedule.rotations.participants.id | String | ID Of Partipant attached to this schedule |
+| OpsGenieV2.Schedule.rotations.participants.type | String | Type of Participant attached to this Schedule |
+| OpsGenieV2.Schedule.rotations.participants.username | String | Username of Participant Attached to this Schedule |
+| OpsGenieV2.Schedule.rotations.startDate | Date | Start Date of this Schedule |
+| OpsGenieV2.Schedule.rotations.type | String | Type of this Rotation |
+| OpsGenieV2.Schedule.timezone | String | Timezone of this Schedule |
+
 ### opsgenie-list-schedules
 
 ***
@@ -1655,28 +1671,29 @@ List Schedules
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Max number of results to return. | Optional | 
-| sort | OpsGenie field to sort on. | Optional | 
+| limit | Max number of results to return. | Optional |
+| sort | OpsGenie field to sort on. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.Schedules.description | String | Description of Schedule | 
-| OpsGenieV2.Schedules.enabled | Boolean | If this schedule is enabled | 
-| OpsGenieV2.Schedules.id | String | ID Of schedule | 
-| OpsGenieV2.Schedules.name | String | Name of Schedule | 
-| OpsGenieV2.Schedules.ownerTeam.id | String | ID Of the team owning this schedule | 
-| OpsGenieV2.Schedules.ownerTeam.name | String | Name of Team owning this Schedule | 
-| OpsGenieV2.Schedules.rotations.id | String | ID of rotations on this Schedule | 
-| OpsGenieV2.Schedules.rotations.length | Number | Length of Rotations on this Schedule | 
-| OpsGenieV2.Schedules.rotations.name | String | Name of Rotation on this Schedule | 
-| OpsGenieV2.Schedules.rotations.participants.id | String | ID Of Partipant attached to this schedule | 
-| OpsGenieV2.Schedules.rotations.participants.type | String | Type of Participant attached to this Schedule | 
-| OpsGenieV2.Schedules.rotations.participants.username | String | Username of Participant Attached to this Schedule | 
-| OpsGenieV2.Schedules.rotations.startDate | Date | Start Date of this Schedule | 
-| OpsGenieV2.Schedules.rotations.type | String | Type of this Rotation | 
-| OpsGenieV2.Schedules.timezone | String | Timezone of this Schedule | 
+| OpsGenieV2.Schedules.description | String | Description of Schedule |
+| OpsGenieV2.Schedules.enabled | Boolean | If this schedule is enabled |
+| OpsGenieV2.Schedules.id | String | ID Of schedule |
+| OpsGenieV2.Schedules.name | String | Name of Schedule |
+| OpsGenieV2.Schedules.ownerTeam.id | String | ID Of the team owning this schedule |
+| OpsGenieV2.Schedules.ownerTeam.name | String | Name of Team owning this Schedule |
+| OpsGenieV2.Schedules.rotations.id | String | ID of rotations on this Schedule |
+| OpsGenieV2.Schedules.rotations.length | Number | Length of Rotations on this Schedule |
+| OpsGenieV2.Schedules.rotations.name | String | Name of Rotation on this Schedule |
+| OpsGenieV2.Schedules.rotations.participants.id | String | ID Of Partipant attached to this schedule |
+| OpsGenieV2.Schedules.rotations.participants.type | String | Type of Participant attached to this Schedule |
+| OpsGenieV2.Schedules.rotations.participants.username | String | Username of Participant Attached to this Schedule |
+| OpsGenieV2.Schedules.rotations.startDate | Date | Start Date of this Schedule |
+| OpsGenieV2.Schedules.rotations.type | String | Type of this Rotation |
+| OpsGenieV2.Schedules.timezone | String | Timezone of this Schedule |
+
 ### opsgenie-get-on-call
 
 ***
@@ -1690,18 +1707,19 @@ Get the on-call users for the provided schedule
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule-id | Schedule from which to return on-call users. | Optional | 
+| schedule-id | Schedule from which to return on-call users. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.OnCall._parent.enabled | Boolean | If this OnCall is Enabled | 
-| OpsGenieV2.OnCall._parent.id | String | ID Of parent schedule | 
-| OpsGenieV2.OnCall._parent.name | String | Name of parent Schedule | 
-| OpsGenieV2.OnCall.onCallParticipants.id | String | ID Of oncall participant | 
-| OpsGenieV2.OnCall.onCallParticipants.name | String | Name of oncall participant | 
-| OpsGenieV2.OnCall.onCallParticipants.type | String | Type of OnCall participant | 
+| OpsGenieV2.OnCall._parent.enabled | Boolean | If this OnCall is Enabled |
+| OpsGenieV2.OnCall._parent.id | String | ID Of parent schedule |
+| OpsGenieV2.OnCall._parent.name | String | Name of parent Schedule |
+| OpsGenieV2.OnCall.onCallParticipants.id | String | ID Of oncall participant |
+| OpsGenieV2.OnCall.onCallParticipants.name | String | Name of oncall participant |
+| OpsGenieV2.OnCall.onCallParticipants.type | String | Type of OnCall participant |
+
 ### opsgenie-close-alert
 
 ***
@@ -1715,18 +1733,18 @@ Close an OpsGenie Alert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | ID Of opsgenie alert. | Required | 
+| alert-id | ID Of opsgenie alert. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenieV2.CloseAlert.action | String | Action of this Request | 
-| OpsGenieV2.CloseAlert.alertId | String | ID Of created Alert | 
-| OpsGenieV2.CloseAlert.alias | String | Alais of created Alert | 
-| OpsGenieV2.CloseAlert.integrationId | String | Integration of created Alert | 
-| OpsGenieV2.CloseAlert.isSuccess | Boolean | If the request was successful | 
-| OpsGenieV2.CloseAlert.processedAt | Date | When the request was processed | 
-| OpsGenieV2.CloseAlert.requestId | String | The ID of the request | 
-| OpsGenieV2.CloseAlert.status | String | The human readable result of the request | 
-| OpsGenieV2.CloseAlert.success | Boolean | Bool, whether the request was a success | 
+| OpsGenieV2.CloseAlert.action | String | Action of this Request |
+| OpsGenieV2.CloseAlert.alertId | String | ID Of created Alert |
+| OpsGenieV2.CloseAlert.alias | String | Alais of created Alert |
+| OpsGenieV2.CloseAlert.integrationId | String | Integration of created Alert |
+| OpsGenieV2.CloseAlert.isSuccess | Boolean | If the request was successful |
+| OpsGenieV2.CloseAlert.processedAt | Date | When the request was processed |
+| OpsGenieV2.CloseAlert.requestId | String | The ID of the request |
+| OpsGenieV2.CloseAlert.status | String | The human readable result of the request |
+| OpsGenieV2.CloseAlert.success | Boolean | Bool, whether the request was a success |
