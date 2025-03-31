@@ -9,6 +9,8 @@ This section describes the configuration that needs to be done on the Kiteworks 
 
 Follow the steps below from your Kiteworks admin console web interface:
 
+1. Go to the **Locations** page ([https://\<your_kiteworks_instance_domain\>/admin/#/locations]()).  
+
 1. Go to the **Locations** page (https://\<your_kiteworks_instance_domain\>/admin/#/locations).  
    - If you are using the *legacy* admin user interface, navigate to **System** &rarr; **Locations**.
    - If you are using the *new* admin user interface, navigate to **System Setup** &rarr; **Locations**.
