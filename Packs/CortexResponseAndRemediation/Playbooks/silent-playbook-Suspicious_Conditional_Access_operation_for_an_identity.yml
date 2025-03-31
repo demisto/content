@@ -21,15 +21,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
+      - "93"
       - "1"
-      - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 420
+          "x": 430,
+          "y": 1047
         }
       }
     note: false
@@ -66,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 560
+          "x": 679,
+          "y": 1181
         }
       }
     note: false
@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 1050
+          "y": 1720
         }
       }
     note: false
@@ -135,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 1190
+          "y": 1860
         }
       }
     note: false
@@ -173,7 +173,7 @@ tasks:
       {
         "position": {
           "x": 1080,
-          "y": 1190
+          "y": 1860
         }
       }
     note: false
@@ -205,7 +205,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 1050
+          "y": 1720
         }
       }
     note: false
@@ -241,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 1190
+          "y": 1860
         }
       }
     note: false
@@ -278,7 +278,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 1360
+          "y": 2030
         }
       }
     note: false
@@ -360,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 1360
+          "y": 2030
         }
       }
     note: false
@@ -399,7 +399,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 1190
+          "y": 1860
         }
       }
     note: false
@@ -431,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 910
+          "y": 1580
         }
       }
     note: false
@@ -448,21 +448,21 @@ tasks:
     task:
       id: 9b93b016-3f0e-4f4a-8cae-f86be05c5ae1
       version: -1
-      name: Initial Response On Identity
+      name: CA Policy Investigation
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "61"
+      - "75"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 430,
-          "y": 1870
+          "y": 2540
         }
       }
     note: false
@@ -499,7 +499,7 @@ tasks:
       {
         "position": {
           "x": 665,
-          "y": 4304
+          "y": 4436
         }
       }
     note: false
@@ -527,7 +527,7 @@ tasks:
       {
         "position": {
           "x": 428,
-          "y": 4449
+          "y": 4581
         }
       }
     note: false
@@ -554,7 +554,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "78"
+      - "56"
     scriptarguments:
       user:
         complex:
@@ -572,8 +572,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 2365
+          "x": 1060,
+          "y": 3807
         }
       }
     note: false
@@ -610,7 +610,7 @@ tasks:
       {
         "position": {
           "x": 870,
-          "y": 1530
+          "y": 2200
         }
       }
     note: false
@@ -689,51 +689,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 560
+          "x": 81,
+          "y": 1323
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 8e8c606a-3b2f-4c8a-8747-26d061790375
-    type: condition
-    task:
-      id: 8e8c606a-3b2f-4c8a-8747-26d061790375
-      version: -1
-      name: Check if MSGraph Security integration is enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "78"
-      "yes":
-      - "38"
-    scriptarguments:
-      brandname:
-        simple: Microsoft Graph User
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 2185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -761,7 +724,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 3811
+          "y": 3943
         }
       }
     note: false
@@ -843,7 +806,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 3972
+          "y": 4104
         }
       }
     note: false
@@ -885,94 +848,13 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 4162
+          "y": 4294
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "61":
-    id: "61"
-    taskid: 27e62263-67a3-441b-81de-52b8c57f5c43
-    type: condition
-    task:
-      id: 27e62263-67a3-441b-81de-52b8c57f5c43
-      version: -1
-      name: Check if any suspicious evidence found
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "78"
-      "yes":
-      - "54"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: UserIsRisky
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ip
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "3"
-                accessor: Indicator
-            iscontext: true
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: Evidence
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 2000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -993,7 +875,7 @@ tasks:
       "no":
       - "83"
       "yes":
-      - "56"
+      - "38"
     scriptarguments:
       brandname:
         simple: Microsoft Graph User
@@ -1090,8 +972,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 720
+          "x": 81,
+          "y": 1443
         }
       }
     note: false
@@ -1173,7 +1055,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 1530
+          "y": 2200
         }
       }
     note: false
@@ -1224,7 +1106,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 1530
+          "y": 2200
         }
       }
     note: false
@@ -1308,7 +1190,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 1700
+          "y": 2370
         }
       }
     note: false
@@ -1354,7 +1236,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 1700
+          "y": 2370
         }
       }
     note: false
@@ -1392,37 +1274,6 @@ tasks:
         "position": {
           "x": 430,
           "y": 2673
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "78":
-    id: "78"
-    taskid: 96e9eed2-9581-466b-8817-95ad754b29ec
-    type: title
-    task:
-      id: 96e9eed2-9581-466b-8817-95ad754b29ec
-      version: -1
-      name: CA Policy Investigation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "75"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 2540
         }
       }
     note: false
@@ -1588,7 +1439,7 @@ tasks:
       {
         "position": {
           "x": 665,
-          "y": 3811
+          "y": 3943
         }
       }
     note: false
@@ -1967,7 +1818,6 @@ view: |-
     "linkLabelsPosition": {
       "19_29_#default#": 0.16,
       "19_39_yes": 0.4,
-      "54_78_no": 0.34,
       "57_33_#default#": 0.44,
       "84_66_#default#": 0.15,
       "85_66_#default#": 0.25,
@@ -1976,10 +1826,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4089,
+        "height": 3594,
         "width": 2398,
         "x": -210,
-        "y": 420
+        "y": 1047
       }
     }
   }

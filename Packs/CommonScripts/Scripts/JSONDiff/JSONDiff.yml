@@ -24,4 +24,4 @@ runonce: false
 dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - JSONtoCSV-Test
-fromversion: 5.0.0
+fromversion: 6.10.0
