@@ -760,35 +760,35 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >ntp server 1.1.1.3
 >!
 >end
->  * net_hostname: IOSv01
->  * net_image: flash0:/vios-adventerprisek9-m
->  * net_iostype: IOS
->  * net_memfree_mb: 244233.24609375
->  * net_memtotal_mb: 310087.16796875
->  * net_model: IOSv
->  * net_python_version: 3.9.5
->  * net_serialnum: XXXX
->  * net_system: ios
->  * net_version: 15.7(3)M3
->  * discovered_interpreter_python: /usr/local/bin/python
->  * ## Net_All_Ipv4_Addresses
+>   * net_hostname: IOSv01
+>   * net_image: flash0:/vios-adventerprisek9-m
+>   * net_iostype: IOS
+>   * net_memfree_mb: 244233.24609375
+>   * net_memtotal_mb: 310087.16796875
+>   * net_model: IOSv
+>   * net_python_version: 3.9.5
+>   * net_serialnum: XXXX
+>   * net_system: ios
+>   * net_version: 15.7(3)M3
+>   * discovered_interpreter_python: /usr/local/bin/python
+>   * ## Net_All_Ipv4_Addresses
 >    * 0: 123.123.123.123
 >    * 1: 192.168.0.2
->  * ## Net_All_Ipv6_Addresses
+>   * ## Net_All_Ipv6_Addresses
 >    * 0: 1:11:11:11
->  * ## Net_Filesystems
+>   * ## Net_Filesystems
 >    * 0: flash0:
->  * ## Net_Filesystems_Info
+>   * ## Net_Filesystems_Info
 >    * ### Flash0:
 >      * spacefree_kb: 1941968.0
 >      * spacetotal_kb: 2092496.0
->  * ## Net_Gather_Network_Resources
->  * ## Net_Gather_Subset
+>   * ## Net_Gather_Network_Resources
+>   * ## Net_Gather_Subset
 >    * 0: interfaces
 >    * 1: default
 >    * 2: hardware
 >    * 3: config
->  * ## Net_Interfaces
+>   * ## Net_Interfaces
 >    * ### Gigabitethernet0/0
 >      * bandwidth: 1000000
 >      * description: None
@@ -854,8 +854,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * operstatus: administratively down
 >      * type: iGbE
 >      * #### Ipv4
->  * ## Net_Neighbors
->  * ## Network_Resources
+>   * ## Net_Neighbors
+>   * ## Network_Resources
 
 
 ### ios-interfaces

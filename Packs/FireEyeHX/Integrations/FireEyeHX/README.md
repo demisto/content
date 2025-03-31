@@ -1365,13 +1365,13 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
  ### Acquisitions limitations
 
   * Acquisitions are stored for 14 days or until the aggregate size of all acquisitions exceeds the acquisition space limit, which is from 30 GB to 9 TB, depending on the HX Series appliance**.** 
- * When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
- * When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
+  * When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
+  * When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
   ### Containment Limitations
 
   * Some hosts cannot be contained.
- * The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
- * You can only contain a host if the agent package for that host is available on the HX Series appliance.
+  * The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
+  * You can only contain a host if the agent package for that host is available on the HX Series appliance.
    
 
  Command Timeout
@@ -1380,8 +1380,8 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
  The following commands have high potential to exceed the default time limit for a running command. To avoid command timeout, change the command timeout settings.
 
   * fireeye-hx-search
- * fireeye-hx-data-acquisition
- * fireeye-hx-file-acquisition
+  * fireeye-hx-data-acquisition
+  * fireeye-hx-file-acquisition
   ### Configure Command Timeout
 
 1. Navigate to **Settings** > **About** > **Troubleshooting**. 
