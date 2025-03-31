@@ -4027,7 +4027,7 @@ script:
       required: false
       isArray: false
       type: Boolean
-    - description: Link the response action to triggered incident.
+    - description: Link the response action to the triggered incident.
       name: incident_id
       required: false
       isArray: false
