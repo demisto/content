@@ -1,17 +1,17 @@
-from collections import defaultdict
 import http
+import inspect
+from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from functools import wraps
 from http import HTTPStatus
-from datetime import datetime, timedelta
-from dataclasses import dataclass, field
-from requests import Response
-from typing import get_type_hints, Union, Any, Optional, get_origin, get_args, Callable, TypeVar
-import inspect
+from typing import (Any, Callable, Optional, TypeVar, Union, get_args,
+                    get_origin, get_type_hints)
 
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import urllib3
+from CommonServerPython import *  # noqa: F401
+from requests import Response
 
 # Disable insecure warnings
 urllib3.disable_warnings()
