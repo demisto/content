@@ -98,10 +98,7 @@ class Client(BaseClient):
             demisto.debug("A ReadTimeout error was raised.")
             if self.should_error:
                 raise e
-            return_warning(f"A ReadTimeout was raised {str(e)}")
-            result = {}
-            if section == 'url':
-                result =  404
+            return_warning(f"A ReadTimeout was raised {str(e)}", exit=True)
         return result
 
 
