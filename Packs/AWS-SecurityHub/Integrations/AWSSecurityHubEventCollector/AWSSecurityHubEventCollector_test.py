@@ -40,7 +40,7 @@ class MockClient:
         """
         max_index = self.last_index + kwargs["MaxResults"]
 
-        return_events = self.findings_data[self.last_index: max_index]
+        return_events = self.findings_data[self.last_index : max_index]
         self.last_index += len(return_events)
         result = {"Findings": return_events}
 
