@@ -33,34 +33,29 @@ class DetectionRatio:
 class Client(BaseClient):
     """Class for GTI client."""
 
-    def get_api_indicators(self,
-                           filter_query: str = None,
-                           limit: int = 200) -> list:
+    def get_api_indicators(self, filter_query: str = None, limit: int = 200) -> list:
         """Get indicators from GTI API."""
         stop = False
         iocs = []
         cursor = None
         while not stop:
             response = self._http_request(
-                'GET',
-                'ioc_stream',
+                "GET",
+                "ioc_stream",
                 params=assign_params(
                     filter=filter_query,
                     limit=min(limit, 40),
                     cursor=cursor,
-                )
+                ),
             )
-            cursor = response.get('meta', {}).get('cursor')
-            current_iocs = response.get('data', [])
+            cursor = response.get("meta", {}).get("cursor")
+            current_iocs = response.get("data", [])
             limit -= len(current_iocs)
             iocs.extend(current_iocs)
             stop = not (limit and cursor)
         return iocs
 
-    def fetch_indicators(self,
-                         limit: int = 200,
-                         filter_query: str = None,
-                         fetch_command: bool = False) -> list:
+    def fetch_indicators(self, limit: int = 200, filter_query: str = None, fetch_command: bool = False) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -340,13 +335,15 @@ def _create_indicator(item: dict) -> dict:
     return indicator_obj
 
 
-def fetch_indicators_command(client: Client,
-                             tlp_color: str = None,
-                             feed_tags: list = [],
-                             limit: int = 200,
-                             filter_query: str = None,
-                             minimum_score: int = 0,
-                             fetch_command: bool = False) -> list[dict]:
+def fetch_indicators_command(
+    client: Client,
+    tlp_color: str = None,
+    feed_tags: list = [],
+    limit: int = 200,
+    filter_query: str = None,
+    minimum_score: int = 0,
+    fetch_command: bool = False,
+) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -398,11 +395,11 @@ def get_indicators_command(client: Client, params: dict[str, str], args: dict[st
     Returns:
         Outputs.
     """
-    tlp_color = params.get('tlp_color')
-    feed_tags = argToList(params.get('feedTags', ''))
-    limit = int(args.get('limit', 200))
-    filter_query = args.get('filter')
-    minimum_score = int(params.get('feedMinimumGTIScore', 80))
+    tlp_color = params.get("tlp_color")
+    feed_tags = argToList(params.get("feedTags", ""))
+    limit = int(args.get("limit", 200))
+    filter_query = args.get("filter")
+    minimum_score = int(params.get("feedMinimumGTIScore", 80))
 
     indicators = fetch_indicators_command(
         client,
@@ -446,11 +443,11 @@ def main():
     """
     params = demisto.params()
 
-    tlp_color = params.get('tlp_color')
-    feed_tags = argToList(params.get('feedTags', ''))
-    limit = int(params.get('limit', 200))
-    filter_query = params.get('filter')
-    minimum_score = int(params.get('feedMinimumGTIScore', 80))
+    tlp_color = params.get("tlp_color")
+    feed_tags = argToList(params.get("feedTags", ""))
+    limit = int(params.get("limit", 200))
+    filter_query = params.get("filter")
+    minimum_score = int(params.get("feedMinimumGTIScore", 80))
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to

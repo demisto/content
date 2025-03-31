@@ -51,7 +51,7 @@ def test_fetch_indicators_command(mocker):
     ]:
         mocker.patch.object(
             client,
-            'get_api_indicators',
+            "get_api_indicators",
             return_value=[
                 _mock_file(),
                 _mock_domain(),
@@ -183,7 +183,7 @@ def test_get_indicators_command(mocker):
     ]:
         mocker.patch.object(
             client,
-            'get_api_indicators',
+            "get_api_indicators",
             return_value=[
                 _mock_file(),
                 _mock_domain(),
@@ -222,7 +222,7 @@ def test_main_manual_command(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     get_api_indicators_mock = mocker.patch.object(
         Client,
-        'get_api_indicators',
+        "get_api_indicators",
         return_value=[
             _mock_file(),
             _mock_domain(),
@@ -253,7 +253,7 @@ def test_main_default_command(mocker):
     mocker.patch.object(demisto, "command", return_value="fetch-indicators")
     get_api_indicators_mock = mocker.patch.object(
         Client,
-        'get_api_indicators',
+        "get_api_indicators",
         return_value=[
             _mock_file(),
             _mock_domain(),
@@ -277,7 +277,7 @@ def test_main_test_command(mocker):
     mocker.patch.object(demisto, "command", return_value="test-module")
     get_api_indicators_mock = mocker.patch.object(
         Client,
-        'get_api_indicators',
+        "get_api_indicators",
         return_value=[_mock_file()],
     )
 
@@ -288,14 +288,18 @@ def test_main_test_command(mocker):
 
 def test_get_api_indicators(mocker):
     """Tests get_api_indicators."""
-    http_mock = mocker.patch.object(Client, '_http_request', return_value={
-        'data': list(range(10)),
-    })
+    http_mock = mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value={
+            "data": list(range(10)),
+        },
+    )
 
-    client = Client('https://fake')
+    client = Client("https://fake")
     iocs = client.get_api_indicators(limit=50)
     assert http_mock.call_count == 1
-    assert http_mock.call_args_list[0].kwargs['params']['limit'] == 40
+    assert http_mock.call_args_list[0].kwargs["params"]["limit"] == 40
     assert iocs == list(range(10))
 
 
@@ -308,20 +312,20 @@ def test_get_api_indicators_with_cursor(mocker):
         if first_execution:
             first_execution = False
             return {
-                'data': list(range(40)),
-                'meta': {
-                    'cursor': 'random',
-                }
+                "data": list(range(40)),
+                "meta": {
+                    "cursor": "random",
+                },
             }
         return {
-            'data': list(range(40, 50)),
+            "data": list(range(40, 50)),
         }
 
-    http_mock = mocker.patch.object(Client, '_http_request', side_effect=side_effect)
+    http_mock = mocker.patch.object(Client, "_http_request", side_effect=side_effect)
 
-    client = Client('https://fake')
+    client = Client("https://fake")
     iocs = client.get_api_indicators(limit=50)
     assert http_mock.call_count == 2
-    assert http_mock.call_args_list[0].kwargs['params']['limit'] == 40
-    assert http_mock.call_args_list[1].kwargs['params']['limit'] == 10
+    assert http_mock.call_args_list[0].kwargs["params"]["limit"] == 40
+    assert http_mock.call_args_list[1].kwargs["params"]["limit"] == 10
     assert iocs == list(range(50))
