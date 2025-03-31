@@ -1161,25 +1161,30 @@ def test_build_source_destination_payload(
     )
 
     assert len(result["rules"][0]["rule_destination"]["channels"]) == expected
+
     for rule in result["rules"]:
         if rule["rule_name"] != rule_name:
             continue
+
         for channel in rule["rule_destination"]["channels"]:
             if channel["channel_type"] != channel_type:
                 continue
+
             for resource in channel["resources"]:
                 if resource["resource_name"] == resource_name:
                     assert resource["type"] == resource_type
                     assert resource["include"] == resource_include
                     break
             else:
-                raise DemistoException("resource was not found")
+                assert False, "resource was not found"
+
             break
         else:
-            raise DemistoException("channel was not found")
+            assert False, "channel was not found"
+
         break
     else:
-        raise DemistoException("rule was not found")
+        assert False, "rule was not found"
 
 
 @pytest.mark.parametrize(
@@ -1300,6 +1305,7 @@ def test_build_exception_rule_payload(
     for rule in result["exception_rules"]:
         if rule["exception_rule_name"] != exception_rule_name:
             continue
+
         for classifier in rule["classifiers"]:
             if classifier["classifier_name"] == classifier_name:
                 assert classifier["predefined"] == classifier_predefined
@@ -1307,16 +1313,18 @@ def test_build_exception_rule_payload(
                 assert classifier["threshold_type"] == classifier_threshold_type
                 break
         else:
-            raise DemistoException("classifier was not found")
+            assert False, "classifier was not found"
+
         for classifier in rule["severity_action"]["classifier_details"]:
             if classifier["number_of_matches"] == severity_classifier_number_of_matches:
                 assert classifier["severity_type"] == severity_classifier_severity_type
                 break
         else:
-            raise DemistoException("severity classifier was not found")
+            assert False, "severity classifier was not found"
+
         break
     else:
-        raise DemistoException("rule was not found")
+        assert False, "rule was not found"
 
 
 def test_list_incidents_command(requests_mock, mock_client: Client):
