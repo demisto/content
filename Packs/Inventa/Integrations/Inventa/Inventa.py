@@ -51,7 +51,7 @@ class Client(BaseClient):
         for entity in pii_entities:
             if kwargs.get(entity.lower(), None):
                 query = f"{query}{entity}={kwargs[entity.lower()]}&"
-        query = query[0: len(query) - 1]
+        query = query[0 : len(query) - 1]
 
         found_piis = self._http_request(method="GET", url_suffix=f"/pii/api/piis{query}", return_empty_response=True, retries=5)
 

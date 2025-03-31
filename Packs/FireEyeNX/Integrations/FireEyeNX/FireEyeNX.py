@@ -582,7 +582,7 @@ def pascal_case(st) -> str:
     """
     if st.find("-") != -1 or st.find("_") != -1:
         st = "".join(a.capitalize() for a in re.split("-|_", st))
-    return st[:1].upper() + st[1: len(st)]
+    return st[:1].upper() + st[1 : len(st)]
 
 
 def remove_dash_and_underscore_from_key(d):  # type: ignore
