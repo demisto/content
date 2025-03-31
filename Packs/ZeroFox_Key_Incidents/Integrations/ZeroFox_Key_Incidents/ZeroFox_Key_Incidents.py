@@ -71,6 +71,22 @@ class KeyIncident:
         new_dict['updated_at'] = self.updated_at.isoformat()
         return new_dict
 
+@dataclass
+class XSOARIncident:
+    def __init__(self, name: str, create_time: datetime, rawJSON: str, dbotMirrorId: str):
+        self.name = name
+        self.create_time = create_time
+        self.rawJSON = rawJSON
+        self.dbotMirrorId = dbotMirrorId
+
+def map_key_incident_to_xsoar(ki: KeyIncident) -> XSOARIncident:
+    ki_as_dict = ki.to_dict()
+    return XSOARIncident(
+        name=ki.incident_id + " " + ki.headline,
+        create_time=ki_as_dict.get("created_at", ""),
+        rawJSON=json.dumps(ki_as_dict),
+        dbotMirrorId=ki.incident_id
+    )
 
 class ZeroFox(BaseClient):
     def __init__(

@@ -2,7 +2,7 @@ import json
 from urllib.parse import urlencode
 
 import pytest
-from ZeroFox_Key_Incidents import KeyIncident, ZeroFox
+from ZeroFox_Key_Incidents import KeyIncident, ZeroFox, map_key_incident_to_xsoar
 
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200,)
@@ -93,3 +93,19 @@ def test_get_key_incident_attachment(requests_mock, zerofox, mocker):
     attachment = zerofox.get_key_incident_attachment(ATTACHMENT_ID)
 
     assert expected == attachment.to_dict()
+
+def test_create_XSOARIncidents():
+    ki_list = [
+        KeyIncident.from_dict(ki)
+        for ki in load_json("test_data/key_incidents/parsed_key_incidents.json").get("key_incidents")
+    ]
+
+    xsoar_incidents = []
+    for ki in ki_list:
+        xsoar_incidents.append(map_key_incident_to_xsoar(ki))
+
+    expected_names = [ ki.incident_id + " " + ki.headline for ki in ki_list]
+    actual_names = [ incident.name for incident in xsoar_incidents ]
+
+    assert expected_names == actual_names
+    assert len(xsoar_incidents) == 8
