@@ -4032,7 +4032,7 @@ script:
       required: false
       isArray: false
       type: String
-    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands that are run independently.
       name: is_raw_command
       required: false
       isArray: false
