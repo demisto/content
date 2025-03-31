@@ -2789,7 +2789,7 @@ def main():  # pragma: no cover
             max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
             fetch_events(client, max_fetch)
         elif command == "fetch-incidents":
-            max_fetch=arg_to_number(params.get("max_fetch")) or 50
+            max_fetch=arg_to_number(params.get("max_fetch")) or DEFAULT_LIMIT
             first_fetch = (
                 arg_to_datetime(params.get("first_fetch", "1 day"), settings=DATEPARSER_SETTINGS)
             )
