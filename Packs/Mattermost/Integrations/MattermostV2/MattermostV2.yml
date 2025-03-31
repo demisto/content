@@ -619,7 +619,7 @@ script:
     description: 'Add group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
   - name: mattermost-remove-group-member
     arguments:
-    - name: group
+    - name: group_id
       required: true
       description: The group id of the group to remove the user from. Use the command
         'mattermost-list-groups' to fetch the group ID.
