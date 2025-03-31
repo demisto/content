@@ -1,9 +1,10 @@
 from CommonServerPython import DemistoException, demisto
 
-from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \
-    consume_message, produce_message, fetch_incidents
+from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, KSchemaRegistryClient, print_topics, \
+    fetch_partitions, consume_message, produce_message, fetch_incidents
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
 from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE, TIMESTAMP_CREATE_TIME
+from confluent_kafka.schema_registry.avro import AvroSerializer
 
 import pytest
 import KafkaV3
@@ -24,8 +25,10 @@ def test_passing_simple_test_module(mocker):
     """
     mocker.patch.object(KafkaV3, 'KConsumer')
     mocker.patch.object(KafkaV3, 'KProducer')
+    mocker.patch.object(KafkaV3, 'KSchemaRegistryClient')
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
+    mocker.patch.object(KSchemaRegistryClient, 'get_subjects', return_value=ClusterMetadata())
     assert command_test_module(KAFKA, {'isFetch': False}) == 'ok'
 
 
@@ -40,12 +43,15 @@ def test_failing_simple_test_module(mocker):
     """
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
 
     def raise_kafka_error():
         raise Exception('Some connection error')
 
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
+    mocker.patch.object(KSchemaRegistryClient, 'get_subjects', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
+
     with pytest.raises(DemistoException) as exception_info:
         command_test_module(KAFKA, {'isFetch': False})
     assert 'Error connecting to kafka' in str(exception_info.value)
@@ -92,9 +98,12 @@ def test_passing_test_module_with_fetch(mocker, demisto_params, cluster_tree):
     """
     mocker.patch.object(KConsumer, '__init__', return_value=None)
     mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KafkaV3, '__init__', return_value=None)
+
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(KSchemaRegistryClient, 'get_subjects', return_value=cluster_metadata)
     assert command_test_module(KAFKA, demisto_params) == 'ok'
 
 
@@ -459,6 +468,83 @@ def test_produce_message(mocker, partition_number):
                                                 f"partition {partition_number}")
 
 
+avro_schema_str = '{ "type": "record", "name": "Mensaje", "fields": [ {"name": "value", "type": "string"}] }'
+
+
+@pytest.mark.parametrize(
+    "value, value_schema_type, "
+    "value_schema_str, value_schema_subject_name",
+    [
+        ('{"value": "test"}', 'AVRO', avro_schema_str, None),
+        ('{"value": "test"}', 'AVRO', None, 'value_schema_subject_name'),
+    ]
+)
+def test_produce_message_with_Schema(
+    mocker,
+    value,
+    value_schema_type,
+    value_schema_str,
+    value_schema_subject_name
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+    When:
+        - running kafka-produce-msg command.
+    Then:
+        - Assert the relevant results are returned when everything works.
+    """
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
+    demisto_args = {
+        'topic': 'some-topic',
+        'partitioning_key': 0,
+        'value': value,
+        'value_schema_type': value_schema_type,
+        'value_schema_str': value_schema_str,
+        'value_schema_subject_name': value_schema_subject_name
+    }
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    get_kafka_schema_registry_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_schema_registry')
+
+    if value_schema_type == 'AVRO':
+        mocker.patch.object(AvroSerializer, '__call__', return_value=value)
+
+    if value_schema_subject_name:
+        mock_schema = mocker.Mock()
+        mock_schema.schema_type = value_schema_type
+        mock_schema.schema_str = avro_schema_str
+
+        mock_registered_schema = mocker.Mock()
+        mock_registered_schema.schema = mock_schema
+
+        get_kafka_schema_registry_mock.return_value.get_latest_version.return_value = mock_registered_schema
+
+    def run_delivery_report():
+        message = MessageMock(message=value, offset=0, topic='some-topic', partition=0)
+        KafkaCommunicator.delivery_report(None, message)
+
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=run_delivery_report)
+    return_results_mock = mocker.patch.object(KafkaV3, 'return_results')
+
+    produce_message(KAFKA, demisto_args)
+
+    produce_mock.assert_called_once_with(
+        topic='some-topic',
+        partition=0,
+        value=value,
+        on_delivery=KAFKA.delivery_report
+    )
+    get_kafka_schema_registry_mock.assert_called_once()
+    if value_schema_subject_name:
+        get_kafka_schema_registry_mock.return_value.get_latest_version.assert_called_once_with(
+            subject_name=value_schema_subject_name)
+    flush_mock.assert_called_once()
+    return_results_mock.assert_called_once_with("Message was successfully produced to topic 'some-topic', "
+                                                "partition 0")
+
+
 def test_produce_error_message(mocker):
     """
     Given:
@@ -469,6 +555,8 @@ def test_produce_error_message(mocker):
         - Assert the relevant exception is raised.
     """
     mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
     demisto_args = {'topic': 'some-topic', 'partitioning_key': 1, 'value': 'some-value'}
     produce_mock = mocker.patch.object(KProducer, 'produce')
     kafka_error = KafkaError(1)
@@ -488,6 +576,91 @@ def test_produce_error_message(mocker):
     produce_mock.assert_called_once_with(topic='some-topic', partition=1, value='some-value',
                                          on_delivery=KAFKA.delivery_report)
     flush_mock.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "value_schema_str, value_schema_subject_name, exception_message",
+    [
+        (None, None, "Schema is not provided. Please provide one."),
+        ("schema_str", "subject_name",
+         "Both value_schema_str and value_schema_subject_name are provided. Please provide only one."),
+    ]
+)
+def test_produce_schema_error(
+    mocker,
+    value_schema_str,
+    value_schema_subject_name,
+    exception_message
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+    When:
+        - running kafka-produce-msg command with bad schemas parametrization.
+    Then:
+        - Assert the relevant exception is raised.
+    """
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
+    demisto_args = {
+        'topic': 'some-topic',
+        'value': 'some-value',
+        'value_schema_type': 'AVRO',
+        'value_schema_str': value_schema_str,
+        'value_schema_subject_name': value_schema_subject_name
+    }
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    get_kafka_schema_registry_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_schema_registry')
+    get_latest_version_mock = mocker.patch.object(KSchemaRegistryClient, 'get_latest_version')
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=None)
+
+    with pytest.raises(DemistoException) as exception_info:
+        produce_message(KAFKA, demisto_args)
+
+    assert str(exception_message) in str(exception_info.value)
+
+    produce_mock.assert_not_called()
+    get_kafka_schema_registry_mock.assert_called_once()
+    get_latest_version_mock.assert_not_called()
+    flush_mock.assert_not_called()
+
+
+def test_produce_schema_registry_none_error(
+    mocker
+):
+    """
+    Given:
+        - initialized KafkaCommunicator
+    When:
+        - running kafka-produce-msg command with schema parametrization without schema registry.
+    Then:
+        - Assert the relevant exception is raised.
+    """
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KSchemaRegistryClient, '__init__', return_value=None)
+
+    demisto_args = {
+        'topic': 'some-topic',
+        'value': 'some-value',
+        'value_schema_type': 'AVRO',
+        'value_schema_str': 'Test'
+    }
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    get_kafka_schema_registry_mock = mocker.patch.object(KafkaCommunicator, 'get_kafka_schema_registry', return_value=None)
+    get_latest_version_mock = mocker.patch.object(KSchemaRegistryClient, 'get_latest_version')
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=None)
+
+    with pytest.raises(DemistoException) as exception_info:
+        produce_message(KAFKA, demisto_args)
+
+    assert "Kafka Schema Registry client is not configured. Please configure one to use schema validation." in str(
+        exception_info.value)
+
+    produce_mock.assert_not_called()
+    get_kafka_schema_registry_mock.assert_called_once()
+    get_latest_version_mock.assert_not_called()
+    flush_mock.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -805,6 +978,8 @@ def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_p
             id="first run, offset is 0,stop_consuming_upon_timeout is true",
         )
     ],
+
+
 )
 def test_fetch_incidents_stop_consuming_upon_timeout_is_true(
     mocker,
@@ -1026,24 +1201,30 @@ def test_sasl_ssl_configuration():
 valid_params_cases = [
     # Valid case with SSL only
     {
-        'use_ssl': True, 'use_sasl': False, 'brokers': 'broker1,broker2', 'plain_username': None, 'plain_password': None,
-        'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'
+        'use_ssl': True, 'use_sasl': False, 'trust_any_cert': False, 'brokers': 'broker1,broker2',
+        'plain_username': None, 'plain_password': None, 'ca_cert': 'cert', 'client_cert': 'client_cert',
+        'client_cert_key': 'client_key'
     },
     # Valid case with SSL and SASL
     {
-        'use_ssl': True, 'use_sasl': True, 'brokers': 'broker1,broker2',
-        'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None, 'plain_username': 'user', 'plain_password': 'pass'
+        'use_ssl': True, 'use_sasl': True, 'trust_any_cert': False, 'brokers': 'broker1,broker2',
+        'ca_cert': 'cert', 'client_cert': 'cert', 'client_cert_key': 'key', 'plain_username': 'user', 'plain_password': 'pass'
     },
     # Valid case with SASL
     {
-        'use_ssl': False, 'use_sasl': True, 'brokers': 'broker1,broker2',
+        'use_ssl': False, 'use_sasl': True, 'trust_any_cert': False, 'brokers': 'broker1,broker2',
         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None, 'plain_username': 'user', 'plain_password': 'pass'
     },
-    # Valid case trust_any_cert
+    # Valid case not auth
     {
-        'use_ssl': False, 'use_sasl': False, 'brokers': 'broker1,broker2', 'plain_username': None,
+        'use_ssl': False, 'use_sasl': False, 'trust_any_cert': False, 'brokers': 'broker1,broker2', 'plain_username': None,
+        'plain_password': None, 'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None
+    },
+    # Valid case trust any cert
+    {
+        'use_ssl': False, 'use_sasl': False, 'trust_any_cert': True, 'brokers': 'broker1,broker2', 'plain_username': None,
         'plain_password': None, 'ca_cert': None, 'client_cert': None, 'client_cert_key': None
-    }
+    },
 ]
 
 
@@ -1058,50 +1239,57 @@ def test_validate_params__valid(params):
 invalid_params_cases = [
     # Missing brokers
     (
-        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': None, 'ca_cert': 'cert',
-         'client_cert': 'client_cert', 'client_cert_key': 'client_key'},
+        {
+            'use_ssl': False, 'use_sasl': None, 'trust_any_cert': True, 'plain_username': None, 'plain_password': None,
+            'brokers': None, 'ca_cert': 'cert', 'client_cert': 'client_cert', 'client_cert_key': 'client_key'
+        },
         'Please specify a CSV list of Kafka brokers to connect to.'
     ),
     # SSL enabled but missing certificates
     (
-        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1,broker2',
-         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
+        {
+            'use_ssl': True, 'use_sasl': None, 'trust_any_cert': False, 'plain_username': None, 'plain_password': None,
+            'brokers': 'broker1,broker2', 'ca_cert': None, 'client_cert': None, 'client_cert_key': None
+        },
         'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer), \
-Client certificate key (.key). Please provide them.'),
-    (
-        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
-         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
-        'Missing required parameters: Client certificate (.cer), Client certificate key (.key). \
-Please provide them.'
+Client certificate key (.key). Please provide them.'
     ),
     (
-        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
-         'ca_cert': None, 'client_cert': 'client_cert', 'client_cert_key': None},
-        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate key (.key). \
-Please provide them.'
+        {
+            'use_ssl': True, 'use_sasl': None, 'trust_any_cert': False, 'plain_username': None, 'plain_password': None,
+            'brokers': 'broker1, broker2', 'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None
+        },
+        'Missing required parameters: Client certificate (.cer), Client certificate key (.key). Please provide them.'
     ),
     (
-        {'use_ssl': True, 'use_sasl': None, 'plain_username': None, 'plain_password': None, 'brokers': 'broker1, broker2',
-         'ca_cert': None, 'client_cert': None, 'client_cert_key': 'client_key'},
-        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer). \
-Please provide them.'
+        {
+            'use_ssl': True, 'use_sasl': None, 'trust_any_cert': False, 'plain_username': None, 'plain_password': None,
+            'brokers': 'broker1, broker2', 'ca_cert': None, 'client_cert': 'client_cert', 'client_cert_key': None
+        },
+        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate key (.key). Please provide them.'
+    ),
+    (
+        {
+            'use_ssl': True, 'use_sasl': None, 'trust_any_cert': False, 'plain_username': None, 'plain_password': None,
+            'brokers': 'broker1, broker2', 'ca_cert': None, 'client_cert': None, 'client_cert_key': 'client_key'
+        },
+        'Missing required parameters: CA certificate of Kafka server (.cer), Client certificate (.cer). Please provide them.'
     ),
     # SASL_SSL missing username/password/ca_cert
     (
-        {'use_ssl': True, 'use_sasl': True, 'plain_username': None, 'plain_password': 'pass', 'brokers': 'broker1, broker2',
-         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+        {
+            'use_ssl': False, 'use_sasl': True, 'trust_any_cert': True, 'plain_username': None, 'plain_password': 'pass',
+            'brokers': 'broker1, broker2', 'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None
+        },
         'Missing required parameters: SASL PLAIN Username. Please provide them.'
     ),
     (
-        {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': None, 'brokers': 'broker1, broker2',
-         'ca_cert': 'cert', 'client_cert': None, 'client_cert_key': None},
+        {
+            'use_ssl': False, 'use_sasl': True, 'trust_any_cert': True, 'plain_username': 'user', 'plain_password': None,
+            'brokers': 'broker1, broker2', 'ca_cert': None, 'client_cert': None, 'client_cert_key': None
+        },
         'Missing required parameters: SASL PLAIN Password. Please provide them.'
-    ),
-    (
-        {'use_ssl': True, 'use_sasl': True, 'plain_username': 'user', 'plain_password': 'pass', 'brokers': 'broker1, broker2',
-         'ca_cert': None, 'client_cert': None, 'client_cert_key': None},
-        'Missing required parameters: CA certificate of Kafka server (.cer). Please provide them.'
-    ),
+    )
 ]
 
 

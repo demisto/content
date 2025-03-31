@@ -2,7 +2,7 @@
     "name": "AWS - EC2",
     "description": "Amazon Web Services Elastic Compute Cloud (EC2)",
     "support": "xsoar",
-    "currentVersion": "1.4.17",
+    "currentVersion": "1.4.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,6 +16,13 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

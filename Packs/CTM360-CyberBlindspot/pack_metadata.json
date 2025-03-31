@@ -2,7 +2,7 @@
     "name": "CTM360",
     "description": "Take action on incidents derived from threat intelligence that is directly linked to your organization.",
     "support": "partner",
-    "currentVersion": "2.1.0",
+    "currentVersion": "2.1.2",
     "author": "CTM360",
     "url": "https://www.ctm360.com",
     "email": "xsoar@ctm360.com",
@@ -21,11 +21,18 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "xsoar@ctm360.com"
     ],
     "githubUser": [],
-    "defaultDataSource": "CTM360_CyberBlindspot"
+    "defaultDataSource": "CTM360_CyberBlindspot",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
