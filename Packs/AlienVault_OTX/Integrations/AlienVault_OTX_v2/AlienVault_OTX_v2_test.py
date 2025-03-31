@@ -818,7 +818,7 @@ def test_ip_function_return_demistoException_504():
     assert e.value.args[0] == 'Error in API call [504] - Gateway Time-out'
     
 
-def test_ip_function_return_demistoException_warning_504():
+def test_ip_function_return_demistoException_warning_504(mocker):
     """
     Given
     - A client configured with should_error=True.
@@ -830,14 +830,20 @@ def test_ip_function_return_demistoException_warning_504():
     Then
     - Ensure a ReadTimeout exception is raised.
     """
+    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     client._http_request = MagicMock()
     res = MagicMock()
     res.status_code = 504
+    res.text = 'Error in API call [504] - Gateway Time-out'
     client._http_request.side_effect = DemistoException("Error in API call [504] - Gateway Time-out", res=res)
-    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
-    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
+    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    with pytest.raises(SystemExit):
+        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    results_mock.assert_called_once_with({'Type': 11, 'ContentsFormat': 'text', 'IgnoreAutoExtract': False,
+                                          'Contents': 'Error in API call [504] - Gateway Time-out response received from server',
+                                          'EntryContext': None})
     
 
 def test_ip_function_return_demistoException_502():
@@ -886,7 +892,7 @@ def test_ip_function_return_demistoException_400():
     assert e.value.args[0] == 'The command could not be execute: 1.2.3.4 is invalid.'
     
 
-def test_ip_function_return_demistoException_warning_502():
+def test_ip_function_return_demistoException_warning_502(mocker):
     """
     Given
     - A client configured with should_error=True.
@@ -898,17 +904,19 @@ def test_ip_function_return_demistoException_warning_502():
     Then
     - Ensure a ReadTimeout exception is raised.
     """
+    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     res = MagicMock()
     res.status_code = 502
     client._http_request = MagicMock()
     client._http_request.side_effect = DemistoException("Error in API call [502] - Bad Gateway", res=res)
-    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
-    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
+    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    with pytest.raises(SystemExit):
+        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert "response received from server" in results_mock.call_args[0][0].get('Contents')
 
-
-def test_ip_function_return_timeout_warning():
+def test_ip_function_return_timeout_warning(mocker):
     """
     Given
     - A client configured with should_error=False.
@@ -921,12 +929,16 @@ def test_ip_function_return_timeout_warning():
     - Ensure the function does not raise an exception.
     - Ensure the returned result contains a readable output indicating "Not found".
     """
+    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     client._http_request = MagicMock()
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
-    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
+    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    with pytest.raises(SystemExit):
+        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    results_mock.called_args_with({'Type': 11, 'ContentsFormat': 'text', 'IgnoreAutoExtract': False,
+                                   'Contents': 'A ReadTimeout was raised Request timed out', 'EntryContext': None})
 
 
 def test_domain_function_return_timeout_error():
@@ -950,7 +962,7 @@ def test_domain_function_return_timeout_error():
     assert e.value.args[0] == 'Request timed out'
 
 
-def test_domain_function_return_timeout_warning():
+def test_domain_function_return_timeout_warning(mocker):
     """
     Given
     - A client configured with should_error=False.
@@ -963,12 +975,16 @@ def test_domain_function_return_timeout_warning():
     - Ensure the function does not raise an exception.
     - Ensure the returned result contains a readable output indicating "Not found".
     """
+    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     client._http_request = MagicMock()
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    result = domain_command(client, domain='aaaaaa')
-    assert result[0].readable_output == '### Results:\n|DOMAIN|Result|\n|---|---|\n| aaaaaa | Not found |\n'
+    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    with pytest.raises(SystemExit):
+        domain_command(client, domain='aaaaaa')
+    results_mock.assert_called_once_with({'Type': 11, 'ContentsFormat': 'text', 'IgnoreAutoExtract': False,
+                                   'Contents': 'A ReadTimeout was raised Request timed out', 'EntryContext': None})
 
 
 def test_file_function_return_timeout_error():
@@ -992,7 +1008,7 @@ def test_file_function_return_timeout_error():
     assert e.value.args[0] == 'Request timed out'
 
 
-def test_file_function_return_timeout_warning():
+def test_file_function_return_timeout_warning(mocker):
     """
     Given
     - A client configured with should_error=False.
@@ -1005,13 +1021,16 @@ def test_file_function_return_timeout_warning():
     - Ensure the function does not raise an exception.
     - Ensure the returned result contains a readable output indicating "Not found".
     """
+    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     client._http_request = MagicMock()
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    result = file_command(client, file="11111111111111111111111111111111")
-    assert result[0].readable_output == ('### Results:\n|MD5|Result|\n|---|---|\n| 11111111111111111111111111111111 | Not found '
-                                         '|\n')
+    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    with pytest.raises(SystemExit):
+        file_command(client, file="11111111111111111111111111111111")
+    results_mock.assert_called_once_with({'Type': 11, 'ContentsFormat': 'text', 'IgnoreAutoExtract': False,
+                                          'Contents': 'A ReadTimeout was raised Request timed out', 'EntryContext': None})
 
 
 def test_url_function_return_timeout_error():
@@ -1035,7 +1054,7 @@ def test_url_function_return_timeout_error():
     assert e.value.args[0] == 'Request timed out'
 
 
-def test_url_function_return_timeout_warning():
+def test_url_function_return_timeout_warning(mocker):
     """
     Given
     - A client configured with should_error=False.
@@ -1048,9 +1067,13 @@ def test_url_function_return_timeout_warning():
     - Ensure the function does not raise an exception.
     - Ensure the returned result contains a readable output indicating "Not found".
     """
+    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     client._http_request = MagicMock()
     client._http_request.side_effect = requests.exceptions.ReadTimeout("Request timed out")
-    result = url_command(client, url='aaaaaa')
-    assert result[0].readable_output == '### Results:\n|URL|Result|\n|---|---|\n| aaaaaa | Not found |\n'
+    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    with pytest.raises(SystemExit):
+        url_command(client, url='aaaaaa')
+    results_mock.assert_called_once_with({'Type': 11, 'ContentsFormat': 'text', 'IgnoreAutoExtract': False,
+                                          'Contents': 'A ReadTimeout was raised Request timed out', 'EntryContext': None})
