@@ -268,7 +268,6 @@ def test_extract_with_errors_in_stdout(mock_popen):
     # Run the extraction function and assert it raises the expected exception
 
     result = extract_using_tarfile(file_path, dir_path, file_name)
-    print(result)
     # Assert the stdout contains both filenames
     assert "Hello_World_Errors.yml" in result
     assert "Hello_World.yml" in result
