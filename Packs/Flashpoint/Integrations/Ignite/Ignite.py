@@ -13,7 +13,7 @@ from CommonServerUserPython import *  # noqa
 urllib3.disable_warnings()
 
 """ CONSTANTS """
-INTEGRATION_VERSION = get_pack_version()
+INTEGRATION_VERSION = "2.0.4"
 INTEGRATION_PLATFORM = "Cortex XSOAR"
 DEFAULT_API_PATH = "api.flashpoint.io"
 DEFAULT_PLATFORM_PATH = "https://app.flashpoint.io"

@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CTM360_CyberBlindspot
   version: -1
@@ -16,41 +19,68 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- defaultvalue: 7 days
-  display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
-  additionalinfo: The time the incidents should be fetched starting from.
+  section: Collect
+- defaultvalue: Incidents
+  display: Module To Use
+  additionalinfo: "Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, and Domain/Subdomain Infringements."
+  name: module_to_use
+  required: false
+  type: 15
+  options:
+  - Incidents
+  - Compromised Cards
+  - Breached Credentials
+  - Domain Infringement
+  - Subdomain Infringement
+  section: Collect
+  hidden:
+  - marketplacev2
+- additionalinfo: The time the incidents should be fetched starting from.
   name: first_fetch
   required: false
   type: 0
-- displaypassword: API Key
-  additionalinfo: The CTM360 CyberBlindspot API Key to use for fetching data.
-  name: api_key
-  required: true
-  hiddenusername: true
+  defaultvalue: 7 days
+  display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
+  section: Collect
+  advanced: true
+- name: api_key
   type: 9
-- name: max_fetch
-  display: Maximum Number of Incidents per Fetch
-  defaultvalue: "25"
+  required: true
+  additionalinfo: The CTM360 CyberBlindspot API Key to use for fetching data.
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
+- display: Maximum Number of Incidents per Fetch
+  name: max_fetch
   type: 0
   required: true
+  defaultvalue: "25"
   additionalinfo: Default is 25. Maximum is 200.
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Incident type
   defaultvalue: CyberBlindspot Incident
   name: incidentType
   type: 13
   required: false
+  section: Connect
 defaultmapperin: 'CTM360-CyberBlindspot - Incoming Mapper'
 description: 'Take action on incidents derived from CTM360 CBS threat intelligence that is directly linked to your organization.'
 display: CTM360 CyberBlindspot
@@ -116,11 +146,41 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.remarks
       description: Remarks about the incident.
     - contextPath: CyberBlindspot.RemoteIncident.created_date
-      description: The creation date of the incident.
+      description: The creation date of the incident (legacy).
     - contextPath: CyberBlindspot.RemoteIncident.updated_date
+      description: The date the incident last got updated (legacy).
+    - contextPath: CyberBlindspot.RemoteIncident.first_seen
+      description: The creation date of the incident.
+    - contextPath: CyberBlindspot.RemoteIncident.last_seen
       description: The date the incident last got updated.
     - contextPath: CyberBlindspot.RemoteIncident.timestamp
       description: The timestamp of when the record was created.
+    - contextPath: CyberBlindspot.RemoteIncident.card_number
+      description: The compromised card's number.
+    - contextPath: CyberBlindspot.RemoteIncident.cvv
+      description: The compromised card's Card Verification Value (CVV).
+    - contextPath: CyberBlindspot.RemoteIncident.expiry_month
+      description: The compromised card's expiration month.
+    - contextPath: CyberBlindspot.RemoteIncident.expiry_year
+      description: The compromised card's expiration year.
+    - contextPath: CyberBlindspot.RemoteIncident.breach_source
+      description: The source of the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.domain
+      description: The domain related to the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.email
+      description: Email found in the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.username
+      description: Username found in the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.password
+      description: Password found in the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.executive_name
+      description: Executive member's name related to the breached data.
+    - contextPath: CyberBlindspot.RemoteIncident.confirmation_time
+      description: The time of infringement confirmation.
+    - contextPath: CyberBlindspot.RemoteIncident.risks
+      description: The potential difficulties carried by the infringement.
+    - contextPath: CyberBlindspot.RemoteIncident.incident_status
+      description: The status of the infringement incident.
   - name: get-remote-data
     arguments:
     - description: The incident ID.

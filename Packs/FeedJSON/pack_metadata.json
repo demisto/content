@@ -2,7 +2,7 @@
     "name": "JSON Feed",
     "description": "Indicators feed from a JSON file",
     "support": "xsoar",
-    "currentVersion": "1.1.33",
+    "currentVersion": "1.1.35",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

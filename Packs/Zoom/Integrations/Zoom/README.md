@@ -106,7 +106,7 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
            2. **Basic Authentication option** - You can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration.
           ![enter image description here](../../doc_files/authentication_header.png)
 
-        ![enter image description here](../../doc_files/add-event.gif)
+        ![enter image description here](https://github.com/demisto/content-assets/raw/master/Assets/Zoom/add-event.gif)
 
 
 ## Commands

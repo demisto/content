@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SaaS Security Event Collector
   version: -1
@@ -9,32 +12,38 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The SaaS Security Client ID and Client Secret.
   display: Client ID
   displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: The maximum number of events per fetch.
   additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, will default to 5000.
   defaultvalue: 1000
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: The maximum number of iterations to retrieve events
   additionalinfo: In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events, Note - the default value is the recommended value to prevent timeouts. Increasing this value may cause timeouts.
   defaultvalue: 50
   name: max_iterations
   type: 0
   required: false
+  section: Collect
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
 display: SaaS Security Event Collector
 name: SaaS Security Event Collector
@@ -144,7 +153,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   script: '-'
   subtype: python3

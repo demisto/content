@@ -6,6 +6,7 @@ args:
   predefined:
   - list
   - raw
+  - base64
   required: true
 - description: The name of a template to choose it from 'templates'.
   name: template_name
@@ -54,7 +55,7 @@ args:
 - defaultValue: '60'
   description: The maximum duration (in seconds) allowed for an XQL query to complete after it has started. (Default = 60).
   name: query_timeout_duration
-- description: The custom context data used in place of the current context data.
+- description: The custom context data is merged with the current context data for use.
   name: context_data
 - description: The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results.
   name: xql_query_instance

@@ -1,17 +1,17 @@
 import json
-import io
 import os
 
 import pytest
-import unittest.mock as mock
+from unittest import mock
 from CommonServerPython import DemistoException
+from SolarWinds import BASE_URL
 
-BASE_URL = "https://{}:17778/SolarWinds/InformationService/v3/Json"
 SERVER_DOMAIN = "dummy.server"
+PORT_DOMAIN = "1111"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -19,20 +19,20 @@ def util_load_json(path):
 def client():
     """Fixture for client class"""
     from SolarWinds import Client
-    return Client(SERVER_DOMAIN, False, False, {"identifier": "dummy_username", "password": "dummy_password"})
+    return Client(SERVER_DOMAIN, PORT_DOMAIN, False, False, {"identifier": "dummy_username", "password": "dummy_password"})
 
 
 def test_test_module_success(client, requests_mock):
     """Test for successful execution of test_module function"""
     from SolarWinds import test_module
-    requests_mock.get(BASE_URL.format(SERVER_DOMAIN) + "/Query", json={"results": []}, status_code=200)
-    assert 'ok' == test_module(client, {})
+    requests_mock.get(BASE_URL.format(SERVER_DOMAIN, PORT_DOMAIN) + "/Query", json={"results": []}, status_code=200)
+    assert test_module(client, {}) == 'ok'
 
 
 def test_test_module_authentication_failure(client, requests_mock):
     """Test for authentication failure case of test_module function"""
     from SolarWinds import test_module
-    requests_mock.get(BASE_URL.format(SERVER_DOMAIN) + "/Query", json={"results": []}, status_code=403)
+    requests_mock.get(BASE_URL.format(SERVER_DOMAIN, PORT_DOMAIN) + "/Query", json={"results": []}, status_code=403)
     with pytest.raises(DemistoException):
         test_module(client, {})
 

@@ -912,7 +912,7 @@ script:
     - description: A comma-separated list of War Room entry IDs that contain the files to attach to the email.
       isArray: true
       name: attachIDs
-    - description: A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3).
+    - description: A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3.
       isArray: true
       name: attachNames
     - description: A comma-separated list of CIDs to embed attachments inside the email itself.
@@ -947,6 +947,13 @@ script:
       - High
       - Normal
       - Low
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML body and will be attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Sends an email.
     name: send-mail
   - name: reply-mail

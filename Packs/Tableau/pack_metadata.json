@@ -2,7 +2,7 @@
     "name": "Tableau",
     "description": "Tableau is a visual analytics platform transforming the way we use data to solve problems empowering people and organizations.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

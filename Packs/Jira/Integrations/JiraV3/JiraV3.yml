@@ -1,6 +1,9 @@
 commonfields:
   id: Jira V3
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
@@ -12,31 +15,45 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+  section: Connect
 - display: User name
   name: basic_credentials
   displaypassword: API key
   required: false
   type: 9
+  section: Connect
 - name: cloud_id
   display: Cloud ID
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
   required: false
+  section: Connect
 - name: callback_url
   display: Callback URL
   type: 0
   required: false
+  section: Connect
 - display: Client ID
   type: 9
   name: credentials
   displaypassword: Client Secret
   required: false
+  section: Connect
+- display: Personal Access Token
+  displaypassword: Personal Access Token
+  name: pat_credential
+  type: 9
+  required: false
+  hiddenusername: true
+  additionalinfo: Use the Personal Access Token for API Authentication.
+  section: Connect
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
-  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
+  additionalinfo: The field selected in the "Issue Field to fetch by" can't be used in the query.
   name: fetch_query
   type: 0
   required: false
+  section: Collect
 - defaultvalue: id
   display: Issue Field to fetch by
   name: issue_field_to_fetch_from
@@ -47,37 +64,46 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
   required: false
+  section: Collect
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
   defaultvalue: '0'
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: Time range for initial data fetch
   additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   defaultvalue: 'false'
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
@@ -86,6 +112,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
 - defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
@@ -98,6 +125,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
@@ -106,6 +134,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
@@ -114,6 +144,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
@@ -122,6 +154,8 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
@@ -130,24 +164,29 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
   required: false
+  section: Collect
 script:
   commands:
   - arguments:
@@ -316,6 +355,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's labels.
@@ -486,6 +528,9 @@ script:
     - contextPath: Ticket.Description
       description: The ticket's project description.
       type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
+      type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
       type: Array
@@ -542,6 +587,9 @@ script:
       type: String
     - contextPath: Ticket.Description
       description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's project raw description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
@@ -757,6 +805,12 @@ script:
       type: String
     - contextPath: InfoFile.Info
       description: Basic information about the file.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's description.
+      type: String
+    - contextPath: Ticket.RawDescription
+      description: The ticket's raw description.
       type: String
   - arguments:
     - description: The maximum number of results to return. Default is 50 and maximum is 5000.

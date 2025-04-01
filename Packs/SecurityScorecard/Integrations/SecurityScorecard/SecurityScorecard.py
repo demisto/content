@@ -184,6 +184,18 @@ class SecurityScorecardClient(BaseClient):
             return_empty_response=True
         )
 
+    def get_subscriptions(self) -> Dict[str, Any]:
+
+        query_params: Dict[str, Any] = assign_params(
+            username=self.username,
+        )
+
+        return self.http_request_wrapper(
+            method="GET",
+            url_suffix="subscriptions",
+            params=query_params
+        )
+
     def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
 
         query_params: Dict[str, Any] = assign_params(
@@ -1199,12 +1211,9 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     for entry in entries:  # type: ignore
         content: Dict[str, str] = {
-            # "Alert ID": entry.get("id"), this is execution id, not useful
             "company": entry.get("company_name"),
             "domain": entry.get("domain"),
             "datetime": entry.get("created_at"),
-            # "Score date": entry.get("platform_score_date"), #no need for this
-            # "portfolios": entry.get("portfolios"),
         }
 
         change_data = entry.get("change_data")
@@ -1221,6 +1230,16 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
                     # Handle additional optional fields
                     content["factors"] = change.get("score_change", {}).get("factors", "N/A")
                     content["issues"] = change.get("score_change", {}).get("issues", "N/A")
+            except (json.JSONDecodeError, TypeError, KeyError) as e:
+                demisto.error(f"Error processing change_data: {str(e)}")
+
+        # Old alerts system had the possibility of multiple portfolios, new rules system allows one
+        portfolios = entry.get("portfolios")
+
+        if portfolios:
+            try:
+                for portfolio in portfolios:
+                    content["target portfolio"] = portfolio.get("id")
             except (json.JSONDecodeError, TypeError, KeyError) as e:
                 demisto.error(f"Error processing change_data: {str(e)}")
 
@@ -1379,6 +1398,62 @@ def fetch_alerts(client: SecurityScorecardClient):
         demisto.incidents([])
 
 
+def alert_rules_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+    """Retrieve alert subscriptions for the user
+
+    See https://securityscorecard.readme.io/reference/subscriptions (not available right now)
+
+    Args:
+        client (SecurityScorecardClient): SecurityScorecard client
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    response = client.get_subscriptions()
+    demisto.debug(f"Response received: {response}")
+    entries = response.get("entries")
+
+    alert_rules: List[Dict[str, str]] = []
+
+    if entries:
+        for entry in entries:
+            target = entry.get("delivery", {}).get("workflow", {}).get("filters", {}).get("scorecards", {}).get("value", "N/A")
+            if target == "by_id":
+                target = "single scorecard"
+            elif target == "in_portfolio":
+                portfolio_id = entry.get("delivery", {}).get("workflow", {}).get(
+                    "filters", {}).get("scorecards", {}).get("portfolio_id", {}).get("value", "N/A")
+                target = f"portfolio with id {portfolio_id}"
+            elif target == "followed":
+                target = "all followed scorecards"
+            elif target == "my_scorecard":
+                target = "my scorecard"
+
+            content: Dict[str, str] = {
+                "Alert Rule ID": entry.get("id"),
+                "Target": target,
+                "Name": entry.get("delivery", {}).get("workflow", {}).get("name", "N/A"),
+                "Updated At": entry.get("updated_at", "N/A"),
+                "Paused At": entry.get("paused_at", "N/A"),
+            }
+
+            alert_rules.append(content)
+
+    markdown = tableToMarkdown("Alert Rules", alert_rules)
+
+    results = CommandResults(
+        outputs_prefix="SecurityScorecard.AlertRules.Rule",
+        outputs_key_field="id",
+        readable_output=markdown,
+        outputs=alert_rules,
+        raw_response=response
+    )
+
+    return results
+
+
 """ MAIN FUNCTION """
 
 
@@ -1458,6 +1533,8 @@ def main() -> None:
             return_results(company_services_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-issue-metadata':
             return_results(issue_metadata_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-alert-rules-list':
+            return_results(alert_rules_list_command(client=client, args=args))
 
     # Log exceptions and return errors
     except Exception as e:

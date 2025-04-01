@@ -171,33 +171,33 @@ script:
       - build.gradle
       - gradle.properties
       - build.gradle.kts
-      - pom.xml 
+      - pom.xml
       - requirements.txt
       - package-lock.json
       - package.json
-      - bower.json 
-      - go.sum 
+      - bower.json
+      - go.sum
       - go.mod
       - tf
-      - json 
-      - yml    
-      - yaml 
+      - json
+      - yml
+      - yaml
       - Template
-      - .checkov.baseline 
+      - .checkov.baseline
       - Hcl
       - Dockerfile
       - gradle-wrapper.properties
-      - METADATA 
+      - METADATA
       - Bicep
       - Pipfile.lock
-      - Pipfile   
+      - Pipfile
       - Yarn.lock
-      - Gemfile 
+      - Gemfile
       - Gemfile.lock
       - gemspec
       - env
       - settings.py
-      - main.py 
+      - main.py
       - application.py
       - config.py
       - app.js
@@ -210,20 +210,20 @@ script:
       - Index.php
       - config.php
       - config.xml
-      - strings.xml 
+      - strings.xml
       - app.module.ts
       - environment.ts
-      - tpl 
+      - tpl
       - tfvars
-      - unknown 
-      - csproj 
+      - unknown
+      - csproj
       - packages.config
       - Directory.Packages.props
       - paket.dependencies
       - paket.references
       - paket.lock
       - sln
-      - config      
+      - config
       - composer.json
       - composer.lock
     - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument (code_categories, file_types, iac_categories...)
@@ -2420,86 +2420,1432 @@ script:
     execution: false
     name: update-remote-system
   - arguments:
-      - description: Access key name.
-        name: name
-        required: true
-      - description: Timestamp in milliseconds when access key expires. Default:0.
-        name: expires-on
+    - description: Access key name.
+      name: name
+      required: true
+    - description: Timestamp in milliseconds when access key expires. Default:0.
+      name: expires-on
     deprecated: false
     description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
     execution: false
     name: prisma-cloud-access-key-create
     outputs:
-      - contextPath: PrismaCloud.AccessKeys.id
-        description: Access key ID.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.secretKey
-        description: Access key secret.
-        type: String
+    - contextPath: PrismaCloud.AccessKeys.id
+      description: Access key ID.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.secretKey
+      description: Access key secret.
+      type: String
   - arguments:
-      - description: Returns the metadata of the access key that has the specified ID.
-        name: access-key
-      - description: Maximum number of entries to return.
-        name: limit
+    - description: Returns the metadata of the access key that has the specified ID.
+      name: access-key
+    - description: Maximum number of entries to return.
+      name: limit
     deprecated: false
     description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
     execution: false
     name: prisma-cloud-access-keys-list
     outputs:
-      - contextPath: PrismaCloud.AccessKeys.id
-        description: Access key ID.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.createdBy
-        description: The user who created the access key.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.createdTs
-        description: Time access key was created.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.expiresOn
-        description: The time the access key expires.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.lastUsedTime
-        description: The last time the access key was used.
-        type: Number
-      - contextPath: PrismaCloud.AccessKeys.name
-        description: The name of the access key.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.role
-        description: Access key user role.
-        type: Object
-      - contextPath: PrismaCloud.AccessKeys.roleType
-        description: User role permission type.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.status
-        description: Access key status.
-        type: String
-      - contextPath: PrismaCloud.AccessKeys.username
-        description: Access key user name.
-        type: String
+    - contextPath: PrismaCloud.AccessKeys.id
+      description: Access key ID.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.createdBy
+      description: The user who created the access key.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.createdTs
+      description: Time access key was created.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.expiresOn
+      description: The time the access key expires.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.lastUsedTime
+      description: The last time the access key was used.
+      type: Number
+    - contextPath: PrismaCloud.AccessKeys.name
+      description: The name of the access key.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.role
+      description: Access key user role.
+      type: Object
+    - contextPath: PrismaCloud.AccessKeys.roleType
+      description: User role permission type.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.status
+      description: Access key status.
+      type: String
+    - contextPath: PrismaCloud.AccessKeys.username
+      description: Access key user name.
+      type: String
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Deactivates the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-disable
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Activates the access key that has the specified ID. You cannot activate an expired access key.
     execution: false
     name: prisma-cloud-access-key-enable
   - arguments:
-      - description: Access key ID.
-        name: access-key
-        required: true
+    - description: Access key ID.
+      name: access-key
+      required: true
     deprecated: false
     description: Deletes the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-delete
+  - arguments:
+    - description: Unified Asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, Package ID, or Layer ID. The value needs to be fetched from one of the groups by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset with the given ID.
+    name: prisma-cloud-asset-get
+    outputs:
+    - contextPath: PrismaCloud.Asset.problem.title
+      description: 'The title of the problem.'
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.status.statusCode
+      description: 'The status code of the problem.'
+      type: Number
+    - contextPath: PrismaCloud.Asset.problem.status.reasonPhrase
+      description: 'The reason for the problem.'
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.detail
+      description: 'The details of the problem.'
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.instance
+      description: 'The instance of the problem.'
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.type
+      description: 'The type of the problem.'
+      type: String
+    - contextPath: PrismaCloud.Asset.problem.parameters
+      description: 'The parameters of the problem.'
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.id
+      description: 'The ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.prismaId
+      description: 'The Prisma ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.appName
+      description: 'The app name of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.externalAssetId
+      description: 'The external asset ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.assetTypeId
+      description: 'The asset type ID of the asset.'
+      type: Number
+    - contextPath: PrismaCloud.Asset.cloudType
+      description: 'The cloud type of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.createdTs
+      description: 'The creation timestamp of the asset.'
+      type: Number
+    - contextPath: PrismaCloud.Asset.insertTs
+      description: 'The insertion timestamp of the asset.'
+      type: Number
+    - contextPath: PrismaCloud.Asset.data
+      description: 'The data of the asset.'
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.dynamicData
+      description: 'The dynamic data of the asset.'
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.riskGrade
+      description: 'The risk grade of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.stateId
+      description: 'The state ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.name
+      description: 'The name of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.regionId
+      description: 'The region ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.regionName
+      description: 'The region name of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.altAssetId
+      description: 'The alternative asset ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.url
+      description: 'The URL of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.vpcId
+      description: 'The VPC ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.vpcExternalAssetId
+      description: 'The VPC external asset ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.vpcName
+      description: 'The VPC name of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.tags
+      description: 'The tags of the asset.'
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.relationshipCounts
+      description: 'The relationship counts of the asset.'
+      type: Number
+    - contextPath: PrismaCloud.Asset.vulnerabilityCounts
+      description: 'The vulnerability counts of the asset.'
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.accountName
+      description: 'The account name of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.assetType
+      description: 'The account type of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.serviceName
+      description: 'The service name of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.resourceType
+      description: 'The resource type of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.deleted
+      description: 'The deletion state of the asset.'
+      type: Boolean
+    - contextPath: PrismaCloud.Asset.assetClassId
+      description: 'The asset class ID of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.assetClass
+      description: 'The asset class of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.attributes
+      description: 'The attributes of the asset.'
+      type: Unknown
+    - contextPath: PrismaCloud.Asset.alertsCount.severity
+      description: 'The severity of the alerts of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.alertsCount.count
+      description: 'The alert count of the asset.'
+      type: Number
+    - contextPath: PrismaCloud.Asset.ipAddresses
+      description: 'The IP addresses of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.trueInternetExposure
+      description: 'The internet exposure state of the asset.'
+      type: String
+    - contextPath: PrismaCloud.Asset.dataSecurity
+      description: 'The data security of the asset.'
+      type: Unknown
+  - arguments:
+    - description: Unified asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: asset
+      description: Asset domain service query type.
+      name: type
+      predefined:
+      - external_finding
+      - asset
+      - asset_lite
+      - alerts
+      - alerts_counts
+      - alert_summary
+      - finding_summary
+      - attack_path
+      - attack_path_summary
+      - raw_config
+      - network
+      - timeline
+      - external_integration
+      - asset_data_indicators
+      - relationships
+      - findings
+      - vulnerabilities
+      - permissions
+      - package_info
+      - labels
+      - vulnerability_aggregates
+      - process_info
+      - vulnerabilities_group_by_type
+      - asset_cwp_vulns
+      - app_contexts
+      - attributes
+      - data_security
+      - data_security_summary
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset with the given ID.
+    name: prisma-cloud-asset-generic-get
+  - arguments:
+    - description: Unified asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset findings with the given ID.
+    name: prisma-cloud-asset-findings-get
+    outputs:
+    - contextPath: PrismaCloud.AssetFindings.problem.title
+      description: 'The title of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.status.statusCode
+      description: 'The status code of the problem.'
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.problem.status.reasonPhrase
+      description: 'The reason for the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.detail
+      description: 'The details of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.instance
+      description: 'The instance of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.type
+      description: 'The type of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.problem.parameters
+      description: 'The parameters of the problem.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetFindings.accountId
+      description: 'The account ID of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.count
+      description: 'The count of asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.createdOn
+      description: 'The created on of the asset findings.'
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.customerId
+      description: 'The customer ID of the asset findings.'
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.cveId
+      description: 'The CVE ID of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.description
+      description: 'The description of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.externalId
+      description: 'The external ID of the asset findings.'
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.id
+      description: 'The ID of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.normalizedName
+      description: 'The normalized name of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.normalizedNames
+      description: 'The normalized names of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.nvdUrl
+      description: 'The nvd URL of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.link
+      description: 'The link of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.rawData
+      description: 'The raw data of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.regionId
+      description: 'The region ID of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.resourceCloudId
+      description: 'The resource cloud ID of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.resourceId
+      description: 'The resource ID of the asset findings.'
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.resourceUrl
+      description: 'The resource URL of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.riskFactors
+      description: 'The risk factors of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.rlUpdatedOn
+      description: 'The rl updated on of the asset findings.'
+      type: Number
+    - contextPath: PrismaCloud.AssetFindings.scanId
+      description: 'The scan ID of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.score
+      description: 'The score of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.severity
+      description: 'The severity of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.source
+      description: 'The source of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.sourceData
+      description: 'The source data of the asset findings.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetFindings.status
+      description: 'The status of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.title
+      description: 'The title of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.type
+      description: 'The type of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.packageName
+      description: 'The package name of the asset findings.'
+      type: String
+    - contextPath: PrismaCloud.AssetFindings.updatedOn
+      description: 'The updated on of the asset findings.'
+      type: Number
+  - arguments:
+    - description: Unified asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset vulnerabilities with the given ID.
+    name: prisma-cloud-asset-vulnerabilities-get
+    outputs:
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.title
+      description: 'The title of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.statusCode
+      description: 'The status code of the problem.'
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.status.reasonPhrase
+      description: 'The reason for the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.detail
+      description: 'The details of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.instance
+      description: 'The instance of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.type
+      description: 'The type of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.problem.parameters
+      description: 'The parameters of the problem.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetVulnerabilities.accountId
+      description: 'The account ID of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.count
+      description: 'The count of asset vulnerabilities.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.createdOn
+      description: 'The created on of the asset vulnerability.'
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.customerId
+      description: 'The customer ID of the asset vulnerability.'
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.cveId
+      description: 'The CVE ID of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.description
+      description: 'The description of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.externalId
+      description: 'The external ID of the asset vulnerability.'
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.id
+      description: 'The ID of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.normalizedName
+      description: 'The normalized name of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.normalizedNames
+      description: 'The normalized names of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.nvdUrl
+      description: 'The nvd URL of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.link
+      description: 'The link of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.rawData
+      description: 'The raw data of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.regionId
+      description: 'The region ID of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.resourceCloudId
+      description: 'The resource cloud ID of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.resourceId
+      description: 'The resource ID of the asset vulnerability.'
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.resourceUrl
+      description: 'The resource URL of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.riskFactors
+      description: 'The risk factors of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.rlUpdatedOn
+      description: 'The rl updated on of the asset vulnerability.'
+      type: Number
+    - contextPath: PrismaCloud.AssetVulnerabilities.scanId
+      description: 'The scan ID of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.score
+      description: 'The score of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.severity
+      description: 'The severity of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.source
+      description: 'The source of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.sourceData
+      description: 'The source data of the asset vulnerability.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetVulnerabilities.status
+      description: 'The status of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.title
+      description: 'The title of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.type
+      description: 'The type of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.packageName
+      description: 'The package name of the asset vulnerability.'
+      type: String
+    - contextPath: PrismaCloud.AssetVulnerabilities.updatedOn
+      description: 'The updated on of the asset vulnerability.'
+      type: Number
+  - arguments:
+    - description: Unified asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset alerts with the given ID.
+    name: prisma-cloud-asset-alerts-get
+    outputs:
+    - contextPath: PrismaCloud.AssetAlerts.problem.title
+      description: 'The title of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.status.statusCode
+      description: 'The status code of the problem.'
+      type: Number
+    - contextPath: PrismaCloud.AssetAlerts.problem.status.reasonPhrase
+      description: 'The reason for the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.detail
+      description: 'The details of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.instance
+      description: 'The instance of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.type
+      description: 'The type of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.problem.parameters
+      description: 'The parameters of the problem.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetAlerts.id
+      description: 'The ID of the asset alert.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.severity
+      description: 'The severity of the asset alert.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.policyId
+      description: 'The policy ID of the asset alert.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.isHyperionPolicy
+      description: 'The hyperion policy of the asset alert.'
+      type: Boolean
+    - contextPath: PrismaCloud.AssetAlerts.policyType
+      description: 'The policy type of the asset alert.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.policyName
+      description: 'The policy name of the asset alert.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.policyDescription
+      description: 'The policy description of the asset alert.'
+      type: String
+    - contextPath: PrismaCloud.AssetAlerts.alertTime
+      description: 'The alert time of the asset alert.'
+      type: Number
+  - arguments:
+    - description: Unified asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset relationships with the given ID.
+    name: prisma-cloud-asset-relationships-get
+    outputs:
+    - contextPath: PrismaCloud.AssetRelationships.assetId
+      description: 'The asset ID of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.relationshipType
+      description: 'The relationship type of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetTypeId
+      description: 'The asset type ID of the asset relationship.'
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.assetType
+      description: 'The asset type of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetName
+      description: 'The asset name of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.externalAssetId
+      description: 'The external asset ID of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.cloudId
+      description: 'The cloud ID of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.cloudName
+      description: 'The cloud name of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.pseudoAsset
+      description: 'The pseudo asset of the asset relationship.'
+      type: Boolean
+    - contextPath: PrismaCloud.AssetRelationships.region
+      description: 'The region of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.cloudAccountId
+      description: 'The cloud account ID of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetClassId
+      description: 'The asset class ID of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.assetClass
+      description: 'The asset class of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.alertsCount.severity
+      description: 'The severity of the alerts of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.alertsCount.count
+      description: 'The number of alerts of the asset relationships.'
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.severity
+      description: 'The severity of the alerts of the asset relationship.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.alertCountBySeverity.count
+      description: 'The number of alerts by severity of the asset relationship.'
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.vulnerabilityCounts
+      description: 'The number of vulnerabilities of the asset relationship.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetRelationships.problem.title
+      description: 'The title of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.status.statusCode
+      description: 'The status code of the problem.'
+      type: Number
+    - contextPath: PrismaCloud.AssetRelationships.problem.status.reasonPhrase
+      description: 'The reason for the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.detail
+      description: 'The details of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.instance
+      description: 'The instance of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.type
+      description: 'The type of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetRelationships.problem.parameters
+      description: 'The parameters of the problem.'
+      type: Unknown
+  - arguments:
+    - description: Unified asset ID or RRN (Restricted Resource Name).
+      name: asset_id
+      required: true
+    - auto: PREDEFINED
+      description: External finding types.
+      name: finding_type
+      predefined:
+      - COMPLIANCE_CIS
+      - GUARD_DUTY_HOST
+      - GUARD_DUTY_IAM
+      - INSPECTOR_RBA
+      - INSPECTOR_SBP
+      - NETWORK_REACHABILITY
+      - AZURE_SECURITY_CENTER_ALERTS
+      - UNCLASSIFIED
+      - COMMAND_AND_CONTROL
+      - CREDENTIAL_ACCESS
+      - CROSS_ACCOUNT_TRUST
+      - DATA_EXFILTRATION
+      - DEFENSE_EVASION
+      - DISCOVERY
+      - HIGH_PRIVILEGED_ROLE
+      - INITIAL_ACCESS
+      - INTERNET_EXPOSURE
+      - KEYS_AND_SECRETS
+      - LATERAL_MOVEMENT
+      - MALWARE
+      - MFA
+      - MISCONFIGURATION
+      - NETWORK_ANOMALY
+      - PRIVILEGE_ESCALATION
+      - RECONNAISSANCE
+      - RESOURCE_HIJACKING
+      - SSH_BRUTE_FORCE
+      - UNAUTHORIZED_ACCESS
+      - UNENCRYPTED_DATA
+      - UNUSED_PRIVILEGES
+      - USER_ANOMALY
+      - WEAK_PASSWORD
+      - SENSITIVE_DATA_EXPOSURE
+      - INJECTIONS
+      - VULNERABILITY_SCANNING
+      - SHELLSHOCK
+      - KNOWN_BOTS
+      - UNKNOWN_BOTS
+      - VIRTUAL_PATCHES
+      - WEB_ATTACK
+      - BOT_ACTIVITY
+      - WEB_SCRAPING
+      - CUSTOM
+      - VULNERABILITY
+      - HOST_VULNERABILITY_CVE
+      - CONTAINER_IMAGE_VULNERABILITY_CVE
+      - VIRTUAL_IMAGE_VULNERABILITY_CVE
+      - SERVERLESS_VULNERABILITY
+      - PACKAGE_VULNERABILITY
+    - auto: PREDEFINED
+      description: Comma-separated list of external finding risk factors.
+      isArray: true
+      name: risk_factors
+      predefined:
+      - CRITICAL_SEVERITY
+      - HIGH_SEVERITY
+      - MEDIUM_SEVERITY
+      - HAS_FIX
+      - REMOTE_EXECUTION
+      - DOS
+      - RECENT_VULNERABILITY
+      - EXPLOIT_EXISTS
+      - ATTACK_COMPLEXITY_LOW
+      - ATTACK_VECTOR_NETWORK
+      - REACHABLE_FROM_THE_INTERNET
+      - LISTENING_PORTS
+      - CONTAINER_IS_RUNNING_AS_ROOT
+      - NO_MANDATORY_SECURITY_PROFILE_APPLIED
+      - RUNNING_AS_PRIVILEGED_CONTAINER
+      - PACKAGE_IN_USE
+      - DOS_LOW
+      - DOS_HIGH
+      - EXPLOIT_EXISTS_IN_THE_WILD
+      - EXPLOIT_EXISTS_POC
+      - SENSITIVE_INFORMATION
+      - ROOT_MOUNT
+      - RUNTIME_SOCKET
+      - HOST_ACCESS
+    - description: Timeline item ID.
+      name: timeline_item_id
+    - description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+    - description: Limit number of records.
+      name: limit
+    - description: Permissions type.
+      name: permission_type
+    - description: Next page token.
+      name: page_token
+    - auto: PREDEFINED
+      description: Filter Hyperion findings.
+      name: prisma_cloud_findings_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CVE ID, package ID, or layer ID. The value needs to be fetched from one of the group by API calls.
+      name: vulnerability_info_type_id
+    - auto: PREDEFINED
+      description: Supported vulnerability types.
+      name: vulnerability_info_type
+      predefined:
+      - CVE
+      - PACKAGE
+      - LAYER
+    description: Returns detailed information for the asset network with the given ID.
+    name: prisma-cloud-asset-network-get
+    outputs:
+    - contextPath: PrismaCloud.AssetNetwork.problem.title
+      description: 'The title of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.status.statusCode
+      description: 'The status code of the problem.'
+      type: Number
+    - contextPath: PrismaCloud.AssetNetwork.problem.status.reasonPhrase
+      description: 'The reason for the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.detail
+      description: 'The details of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.instance
+      description: 'The instance of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.type
+      description: 'The type of the problem.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.problem.parameters
+      description: 'The parameters of the problem.'
+      type: Unknown
+    - contextPath: PrismaCloud.AssetNetwork.id
+      description: 'The ID of the asset network.'
+      type: Number
+    - contextPath: PrismaCloud.AssetNetwork.access
+      description: 'The access of the asset network.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.direction
+      description: 'The direction of the asset network.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.ips
+      description: 'The IPS of the asset network.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.ports
+      description: 'The ports of the asset network.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.protocol
+      description: 'The protocol of the asset network.'
+      type: String
+    - contextPath: PrismaCloud.AssetNetwork.priority
+      description: 'The priority of the asset network.'
+      type: Number
+  runonce: false
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper

@@ -1,0 +1,46 @@
+{
+    "name": "USTA Cyber Threat Intelligence Platform",
+    "description": "Since 2012, we have been pioneering one of the first cyberthreat intelligence platforms ever developed. Our CTI platformU.S.T.A. (Unified Security Threat Alliance) entails a unique synergy of five main modules: Deep Sight, Brand Protection, Fraud Intelligence, Security Intelligence, and Attack Surface Management.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "PRODAFT ",
+    "url": "https://wwww.prodaft.com/about-us",
+    "email": "integration@prodaft.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Breach",
+        "Threat Intelligence"
+    ],
+    "itemPrefix": [
+        "USTA",
+        "Usta",
+        "PRODAFT"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Malware",
+        "Ransomware",
+        "Breach Notification",
+        "Phishing"
+    ],
+    "keywords": [
+        "Threat Intelligence",
+        "CTI",
+        "Digital Risk Protection",
+        "USTA",
+        "PRODAFT",
+        "IOC",
+        "Intel"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "integration@prodaft.com"
+    ],
+    "githubUser": [],
+    "defaultDataSource": "USTA Account Takeover Prevention"
+}

@@ -14,7 +14,8 @@ from SecurityScorecard import \
     company_services_get_command, \
     issue_metadata_get_command, \
     company_events_get_command, \
-    company_event_findings_get_command
+    company_event_findings_get_command, \
+    alert_rules_list_command
 
 from unittest.mock import MagicMock
 
@@ -891,3 +892,25 @@ def test_company_event_findings_get_command_success(mocked_security_scorecard_cl
 
     # Assert that the mocked_security_scorecard_client's get_company_event_findings method was called with the expected arguments
     mocked_security_scorecard_client.get_company_event_findings.assert_called()
+
+
+def test_alert_rules_list_command(mocker):
+    """
+    Given:
+        - No specific arguments
+    When:
+        - Retrieving alert rules
+    Then:
+        - Ensure the alert rules are returned correctly
+    """
+
+    alert_rules_mock = test_data.get("alert_rules")
+    mocker.patch.object(client, "http_request_wrapper", return_value=alert_rules_mock)
+
+    response_cmd_res: CommandResults = alert_rules_list_command(client=client, args={})
+
+    alert_rules = response_cmd_res.raw_response.get("entries")
+
+    assert alert_rules == alert_rules_mock.get("entries")
+    assert response_cmd_res.outputs_prefix == "SecurityScorecard.AlertRules.Rule"
+    assert response_cmd_res.outputs_key_field == "id"

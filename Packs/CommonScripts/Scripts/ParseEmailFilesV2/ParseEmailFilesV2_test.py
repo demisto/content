@@ -1,3 +1,6 @@
+import tempfile
+from pathlib import Path
+
 import pytest
 
 import demistomock as demisto
@@ -381,14 +384,14 @@ def test_md_output_empty_body_text():
         'Text': None
     }
     expected = '### Results:\n' \
-               u'* From:\temail2@paloaltonetworks.com\n' \
-               u'* To:\temail1@paloaltonetworks.com\n' \
-               u'* CC:\t\n' \
-               u'* BCC:\t\n' \
-               u'* Subject:\t\n' \
-               u'* Attachments:\t\n\n\n' \
-               u'### HeadersMap\n' \
-               u'**No entries.**\n'
+               '* From:\temail2@paloaltonetworks.com\n' \
+               '* To:\temail1@paloaltonetworks.com\n' \
+               '* CC:\t\n' \
+               '* BCC:\t\n' \
+               '* Subject:\t\n' \
+               '* Attachments:\t\n\n\n' \
+               '### HeadersMap\n' \
+               '**No entries.**\n'
 
     md = data_to_md(email_data)
     assert expected == md
@@ -398,14 +401,14 @@ def test_md_output_empty_body_text():
         'From': 'email2@paloaltonetworks.com',
     }
     expected = '### Results:\n' \
-               u'* From:\temail2@paloaltonetworks.com\n' \
-               u'* To:\temail1@paloaltonetworks.com\n' \
-               u'* CC:\t\n' \
-               u'* BCC:\t\n' \
-               u'* Subject:\t\n' \
-               u'* Attachments:\t\n\n\n' \
-               u'### HeadersMap\n' \
-               u'**No entries.**\n'
+               '* From:\temail2@paloaltonetworks.com\n' \
+               '* To:\temail1@paloaltonetworks.com\n' \
+               '* CC:\t\n' \
+               '* BCC:\t\n' \
+               '* Subject:\t\n' \
+               '* Attachments:\t\n\n\n' \
+               '### HeadersMap\n' \
+               '**No entries.**\n'
 
     md = data_to_md(email_data)
     assert expected == md
@@ -428,15 +431,15 @@ def test_md_output_with_body_text():
         'Text': '<email text>'
     }
     expected = '### Results:\n' \
-               u'* From:\temail2@paloaltonetworks.com\n' \
-               u'* To:\temail1@paloaltonetworks.com\n' \
-               u'* CC:\t\n' \
-               u'* BCC:\t\n' \
-               u'* Subject:\t\n' \
-               u'* Body/Text:\t[email text]\n' \
-               u'* Attachments:\t\n\n\n' \
-               u'### HeadersMap\n' \
-               u'**No entries.**\n'
+               '* From:\temail2@paloaltonetworks.com\n' \
+               '* To:\temail1@paloaltonetworks.com\n' \
+               '* CC:\t\n' \
+               '* BCC:\t\n' \
+               '* Subject:\t\n' \
+               '* Body/Text:\t[email text]\n' \
+               '* Attachments:\t\n\n\n' \
+               '### HeadersMap\n' \
+               '**No entries.**\n'
 
     md = data_to_md(email_data)
     assert expected == md
@@ -584,3 +587,64 @@ def test_smime_without_to_from_subject(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'
+
+
+def test_remove_bom():
+    """
+    Given:
+        an eml file which contains BOM
+    When:
+        executing the remove_bom function
+    Then:
+        - Ensure the new file does not contain BOM
+        - Ensure the new file content is as expected
+    """
+    from ParseEmailFilesV2 import remove_bom
+
+    # Create a temporary file with BOM
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(b'\xef\xbb\xbfThis is a test file with BOM.')
+        temp_file_path = temp_file.name
+
+    # Call the remove_bom function
+    cleaned_file_path, file_type, file_name = remove_bom(temp_file_path, "message/rfc822", temp_file_path)
+
+    # Read the content of the cleaned file
+    with open(cleaned_file_path, 'rb') as cleaned_file:
+        cleaned_content = cleaned_file.read()
+
+    # Assert that the BOM has been removed
+    assert not cleaned_content.startswith(b'\xef\xbb\xbf')
+    assert cleaned_content == b'This is a test file with BOM.'
+
+    # Clean up temporary files
+    Path(temp_file_path).unlink()
+    Path(cleaned_file_path).unlink()
+
+
+def test_remove_bom_no_bom():
+    """
+    Given:
+        an eml file which does not contain BOM
+    When:
+        executing the remove_bom function
+    Then:
+        - Ensure the all arguments were sent to remove_bom, remained as they are (file_path, file_type, file_name)
+    """
+    from ParseEmailFilesV2 import remove_bom
+
+    # Create a temporary file with BOM
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(b'This is a test file with BOM.')
+        temp_file_path = temp_file.name
+
+    # Call the remove_bom function
+    cleaned_file_path, file_type, file_name = remove_bom(temp_file_path, "message/rfc822", temp_file_path)
+
+    # Assert all arguments remained as they are
+    assert cleaned_file_path == temp_file_path
+    assert file_type == "message/rfc822"
+    assert temp_file_path == file_name
+
+    # Clean up temporary files
+    Path(temp_file_path).unlink()

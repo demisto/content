@@ -1,0 +1,251 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: FeedUstaThreatStream
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: https://usta.prodaft.com/
+  display: Server's URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: api_key
+  required: true
+  type: 4
+  section: Connect
+- display: IOC Feed Type
+  name: ioc_feed_type
+  options:
+  - ALL
+  - malicious-urls
+  - malware-hashes
+  - phishing-sites
+  required: true
+  type: 16
+  section: Collect
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+  section: Collect
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+  section: Collect
+- defaultvalue: '30'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+  section: Collect
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'true'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  defaultvalue: interval
+  section: Collect
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+  defaultvalue: '20160'
+  section: Collect
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+  section: Collect
+display: USTA Threat Stream IOC Feed
+name: FeedUstaThreatStream
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - name: hash
+      required: true
+      secret: false
+      description: The hash to search for. It can be a SHA-1, SHA-256, or MD5 hash.
+    deprecated: false
+    description: Search malware hash indicators from the feed.
+    execution: false
+    name: usta-tsa-search-malware-hash
+    outputs:
+    - contextPath: USTA.ThreatStreamMalwareHashes.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: USTA.ThreatStreamMalwareHashes.hashes[0].sha256
+      description: The SHA-256 hash of the malware.
+      type: String
+    - contextPath: USTA.ThreatStreamMalwareHashes.hashes[0].md5
+      description: The MD5 hash of the malware.
+      type: String
+    - contextPath: USTA.ThreatStreamMalwareHashes.hashes[0].sha1
+      description: The SHA-1 hash of the malware.
+      type: String
+    - contextPath: USTA.ThreatStreamMalwareHashes.tags
+      description: The tags of the malware.
+      type: Array
+    - contextPath: USTA.ThreatStreamMalwareHashes.created
+      description: The creation date of the malware.
+      type: Date
+    - contextPath: USTA.ThreatStreamMalwareHashes.valid_from
+      description: The valid from date of the malware.
+      type: Date
+    - contextPath: USTA.ThreatStreamMalwareHashes.valid_until
+      description: The valid until date of the malware.
+      type: Date
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    - name: url
+      required: true
+      secret: false
+      description: The URL to search for.
+    deprecated: false
+    description: Search malicious URL indicators from the feed.
+    execution: false
+    name: usta-tsa-search-malicious-url
+    outputs:
+    - contextPath: USTA.ThreatStreamMaliciousUrls.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: USTA.ThreatStreamMaliciousUrls.url
+      description: The URL of the malicious site.
+      type: String
+    - contextPath: USTA.ThreatStreamMaliciousUrls.is_domain
+      description: Whether the malicious site is a domain.
+      type: Boolean
+    - contextPath: USTA.ThreatStreamMaliciousUrls.ip_addresses
+      description: The IP addresses of the malicious site.
+      type: Array
+    - contextPath: USTA.ThreatStreamMaliciousUrls.tags
+      description: The tags of the malicious site.
+      type: Array
+    - contextPath: USTA.ThreatStreamMaliciousUrls.created
+      description: The creation date of the malicious site.
+      type: Date
+    - contextPath: USTA.ThreatStreamMaliciousUrls.valid_from
+      description: The valid from date of the malicious site.
+      type: Date
+    - contextPath: USTA.ThreatStreamMaliciousUrls.valid_until
+      description: The valid until date of the malicious site.
+      type: Date
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    - name: url
+      required: true
+      secret: false
+      description: The URL to search for.
+    deprecated: false
+    description: Search malicious URL indicators from the feed.
+    execution: false
+    name: usta-tsa-search-phishing-site
+    outputs:
+    - contextPath: USTA.ThreatStreamPhishingSites.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: USTA.ThreatStreamPhishingSites.url
+      description: The URL of the phishing site.
+      type: String
+    - contextPath: USTA.ThreatStreamPhishingSites.is_domain
+      description: Whether the phishing site is a domain.
+      type: Boolean
+    - contextPath: USTA.ThreatStreamPhishingSites.ip_addresses
+      description: The IP addresses of the phishing site.
+      type: Array
+    - contextPath: USTA.ThreatStreamPhishingSites.created
+      description: The creation date of the phishing site.
+      type: Date
+  dockerimage: demisto/python3:3.12.8.1983910
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+description: This integration fetches indicators from the USTA Threat Stream feed. The indicators can be of type malicious URLs or malware hashes.
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)

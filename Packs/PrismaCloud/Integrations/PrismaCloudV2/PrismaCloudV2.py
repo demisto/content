@@ -462,6 +462,13 @@ class Client(BaseClient):
             resp_type='content'
         )
 
+    def get_asset_by_id(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix="/uai/v1/asset",
+            json_data=params
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2588,6 +2595,373 @@ def code_issues_list_command(client, args):
                           )
 
 
+def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type="asset",
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {})
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.Asset',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_generic_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Retrieve specific information about an asset using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - Dict[str, Any]: A dictionary containing the specific information about the asset.
+    """
+    asset_id = args.get('asset_id')
+    asset_type = args.get('type')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type=asset_type,
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+
+    return response
+
+
+def get_asset_findings_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset findings using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset findings.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='findings',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('findings')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetFindings',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Findings',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_vulnerabilities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset vulnerabilities using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset vulnerabilities.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='vulnerabilities',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('vulnerabilities')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetVulnerabilities',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Vulnerabilities',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset alerts using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset alerts.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='alerts',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('alerts')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetAlerts',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Alerts',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_relationships_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset relationships using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset relationships.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='relationships',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('relationships')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetRelationships',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Relationships',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
+def get_asset_network_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about an asset network using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'asset-id' ID for retrieving the asset information.
+
+    Returns:
+    - CommandResults: An object containing the information about the asset network.
+    """
+    asset_id = args.get('asset_id')
+    finding_type = args.get('finding_type')
+    risk_factors = argToList(args.get('risk_factors'))
+    timeline_item_id = args.get('timeline_item_id')
+    alert_ids = argToList(args.get('alert_ids'))
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    permission_type = args.get('permission_type')
+    page_token = args.get('page_token')
+    findings_only = argToBoolean(args.get('prisma_cloud_findings_only', False))
+    vulnerability_info_type_id = args.get('vulnerability_info_type_id')
+    vulnerability_info_type = args.get('vulnerability_info_type')
+
+    data = assign_params(
+        assetId=asset_id,
+        type='network',
+        findingType=finding_type,
+        riskFactors=risk_factors,
+        timelineItemId=timeline_item_id,
+        alertIds=alert_ids,
+        limit=limit,
+        permissionType=permission_type,
+        pageToken=page_token,
+        prismaCloudFindingsOnly=findings_only,
+        vulnerabilityInfoTypeId=vulnerability_info_type_id,
+        vulnerabilityInfoType=vulnerability_info_type
+    )
+    response = client.get_asset_by_id(data)
+    outputs = response.get('data', {}).get('asset', {}).get('network')
+
+    return CommandResults(
+        outputs_prefix='PrismaCloud.AssetNetwork',
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            'Asset Network',
+            outputs,
+            headerTransform=pascalToSpace,
+            sort_headers=False,
+        ),
+        raw_response=response
+    )
+
+
 ''' TEST MODULE '''
 
 
@@ -2689,6 +3063,13 @@ def main() -> None:
             'prisma-cloud-access-key-disable': access_key_disable_command,
             'prisma-cloud-access-key-enable': access_key_enable_command,
             'prisma-cloud-access-key-delete': access_key_delete_command,
+            'prisma-cloud-asset-get': get_asset_command,
+            'prisma-cloud-asset-generic-get': get_asset_generic_command,
+            'prisma-cloud-asset-findings-get': get_asset_findings_command,
+            'prisma-cloud-asset-alerts-get': get_asset_alerts_command,
+            'prisma-cloud-asset-vulnerabilities-get': get_asset_vulnerabilities_command,
+            'prisma-cloud-asset-relationships-get': get_asset_relationships_command,
+            'prisma-cloud-asset-network-get': get_asset_network_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,
