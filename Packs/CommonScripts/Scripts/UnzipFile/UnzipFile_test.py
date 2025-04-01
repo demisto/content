@@ -247,7 +247,17 @@ def mock_popen():
 
 def test_extract_with_errors_in_stdout(mock_popen):
     """
-    Test the case where 'stdout' contains 'Errors' to trigger the error condition.
+    Given:
+    - A valid tar.gz file with a file name that contains the word "Errors".
+    - A temporary directory for extraction.
+
+    When:
+    - Extracting the tar file into the directory.
+
+    Then:
+    - Ensure extraction completes successfully.
+    - Ensure extracted files exist in the directory.
+    - Ensure no unexpected errors occur.
     """
 
     # Prepare the mock to simulate the command's output
