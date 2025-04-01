@@ -34,8 +34,9 @@ Azure WAF integrates with Azure services like Azure Application Gateway, Azure F
 
 ### Supported Timestamp Formats:
 
-1. yyyy-MM-ddThh:mm:ssZ 
-2. MMM dd yyyy HH:mm:ss
+1. yyyy-MM-ddThh:mm:ssZ
+2. yyyy-MM-ddThh:mm:ssEz 
+3. MMM dd yyyy HH:mm:ss
 
 For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. 
 
