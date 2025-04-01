@@ -1,6 +1,7 @@
+import difflib
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import difflib
 
 
 def stringSimilarity(first_array: str, second_array: str, similarity_threshold: float):
@@ -31,26 +32,22 @@ def stringSimilarity(first_array: str, second_array: str, similarity_threshold: 
         for string_b in second_array:
             similarity_ratio = difflib.SequenceMatcher(None, string_a, string_b).ratio()
             if similarity_ratio >= float(similarity_threshold):
-                results.append({
-                    "StringA": string_a,
-                    "StringB": string_b,
-                    "SimilarityScore": similarity_ratio
-                })
+                results.append({"StringA": string_a, "StringB": string_b, "SimilarityScore": similarity_ratio})
     if not results:
         return None
     return CommandResults("StringSimilarity", ["StringA", "StringB"], results)
 
 
 def main():
-    similarity_threshold = demisto.getArg('similarity_threshold')
-    first_array = argToList(demisto.getArg('string_A'))
-    second_array = argToList(demisto.getArg('string_B'))
+    similarity_threshold = demisto.getArg("similarity_threshold")
+    first_array = argToList(demisto.getArg("string_A"))
+    second_array = argToList(demisto.getArg("string_B"))
     try:
         results = stringSimilarity(first_array, second_array, similarity_threshold)
         return_results(results)
     except Exception as e:
-        return_error(f'Failed to check string similarity. Problem: {str(e)}')
+        return_error(f"Failed to check string similarity. Problem: {e!s}")
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()

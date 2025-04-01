@@ -13,8 +13,8 @@ def algosec_create_ticket():
             data = data if isinstance(data, list) else [data]
             for item in data:
                 for row in item:
-                    if '#text' in item[row]:
-                        item[row] = item[row]['#text']
+                    if "#text" in item[row]:
+                        item[row] = item[row]["#text"]
 
             data = flattenTable(data)
             result = {"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data}
@@ -27,9 +27,9 @@ def main():  # pragma: no cover
     try:
         algosec_create_ticket()
     except Exception as e:
-        err_msg = f'Encountered an error while running the script: [{e}]'
+        err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

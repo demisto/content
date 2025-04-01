@@ -1,10 +1,7 @@
 import pytest
 
 
-@pytest.mark.parametrize('expected, brand_name', [
-    ('yes', 'Integration1'),
-    ('no', 'Integration2')
-])
+@pytest.mark.parametrize("expected, brand_name", [("yes", "Integration1"), ("no", "Integration2")])
 def test_is_integration_available(expected, brand_name):
     """
     Given:
@@ -17,8 +14,8 @@ def test_is_integration_available(expected, brand_name):
     from IsIntegrationAvailable import is_integration_available
 
     all_instances = {
-        'Integration1_instanse': {'brand': 'Integration1', 'state': 'active'},
-        'Integration2_instanse': {'brand': 'Integration2', 'state': 'not active'}
+        "Integration1_instanse": {"brand": "Integration1", "state": "active"},
+        "Integration2_instanse": {"brand": "Integration2", "state": "not active"},
     }
 
     result = is_integration_available(brand_name, all_instances)
