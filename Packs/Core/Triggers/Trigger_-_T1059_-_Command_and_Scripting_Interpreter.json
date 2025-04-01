@@ -11,52 +11,52 @@
           "OR": [
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059 - Command and Scripting Interpreter"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059 - Command-Line Interface"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.001 - Command and Scripting Interpreter: PowerShell"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.002 - Command and Scripting Interpreter: AppleScript"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.003 - Command and Scripting Interpreter: Windows Command Shell"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.004 - Command and Scripting Interpreter: Unix Shell"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.005 - Command and Scripting Interpreter: Visual Basic"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.006 - Command and Scripting Interpreter: Python"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.007 - Command and Scripting Interpreter: JavaScript"
             },
             {
                 "SEARCH_FIELD": "mitre_technique_id_and_name",
-                "SEARCH_TYPE": "EQ",
+                "SEARCH_TYPE": "CONTAINS",
                 "SEARCH_VALUE": "T1059.008 - Command and Scripting Interpreter: Network Device CLI"
             }
           ]
