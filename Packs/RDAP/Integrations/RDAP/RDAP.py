@@ -14,7 +14,7 @@ VCARD_MAPPING = {
 
 class RDAPClient(BaseClient):
     def __init__(self, base_url):
-        super().__init__(base_url=base_url)
+        super().__init__(base_url=base_url, verify=False)
         demisto.debug(f"RDAPClient initialized with base_url: {base_url}")
 
     def rdap_query(self, indicator_type, value):
@@ -71,7 +71,12 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
             reliability=DBotScoreReliability.A
         )
     )
-
+    
+    if "Error" in response:
+        context = {'Value': indicator, 'IndicatorType': 'Domain'}
+        human_readable = response["Error"]
+        return domain, context, human_readable
+    
     events = response.get('events', []) if isinstance(response, dict) else []
 
     for event in events:
@@ -137,6 +142,12 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
     )
 
     ip.ip_type = "IP" if response.get("ipVersion", "") == "v4" else "IPv6"
+    
+    if "error" in response:
+        context = {'Value': indicator, 'IndicatorType': 'IP'}
+        human_readable = response["Error"]
+        return ip, context, human_readable
+    
     ip.geo_country = response.get('country', '')
 
     for remark in response.get('remarks', []):
@@ -235,11 +246,21 @@ def main():
 
         case _:
             return_error(f"Unknown command '{demisto.command()}'")
-
+    
     for value in indicators:
         demisto.debug(f"Executing {demisto.command()} command for value: {value}")
-        response = client.rdap_query(indicator_type=command, value=value)
-        indicator, context, readable_output = parse_command(value, response)
+        try:
+            response = client.rdap_query(indicator_type=command, value=value)
+            indicator, context, readable_output = parse_command(value, response)
+        
+        except Exception as e:
+            if hasattr(e, 'res') and e.res.status_code == 404:
+                response = {"Error": "Indicator Not Found"}
+                indicator, context, readable_output = parse_command(value, response)
+            
+            else:
+                raise e
+        
         results.append(
             CommandResults(
                 outputs_prefix=f'{INTEGRATION_NAME}.{outputs_prefix}',
@@ -252,7 +273,6 @@ def main():
         )
 
     return_results(results)
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
