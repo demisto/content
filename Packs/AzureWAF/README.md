@@ -6,7 +6,7 @@
 
 ## Overview
 
-Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting. 
+Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting. </br>
 It operates as an application-level firewall, focusing on web application traffic. 
 
 Azure WAF integrates with Azure services like Azure Application Gateway, Azure Front Door, and Azure CDN.
