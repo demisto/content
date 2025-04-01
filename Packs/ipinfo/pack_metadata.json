@@ -2,7 +2,7 @@
     "name": "Ipinfo",
     "description": "Use the ipinfo.io API to get data about an IP address",
     "support": "xsoar",
-    "currentVersion": "2.1.23",
+    "currentVersion": "2.1.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
