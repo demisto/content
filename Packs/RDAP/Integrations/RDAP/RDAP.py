@@ -74,7 +74,7 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
     
     if "Error" in response:
         context = {'Value': indicator, 'IndicatorType': 'Domain'}
-        human_readable = response["Error"]
+        human_readable = f'### RDAP Information for {indicator}\n{response["Error"]}'
         return domain, context, human_readable
     
     events = response.get('events', []) if isinstance(response, dict) else []
@@ -145,7 +145,7 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
     
     if "error" in response:
         context = {'Value': indicator, 'IndicatorType': 'IP'}
-        human_readable = response["Error"]
+        human_readable = f'### RDAP Information for {indicator}\n{response["Error"]}'
         return ip, context, human_readable
     
     ip.geo_country = response.get('country', '')
