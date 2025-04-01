@@ -10,6 +10,7 @@ yyyy-MM-ddThh:mm:ssEz - 2024-11-19T10:50:39+00:00 (%Ez is RFC 3339-compatible nu
 MMM dd yyyy hh:mm:ss - Nov 19 2024 12:50:39
 */
 | alter 
+    TimeGenerated = to_string(TimeGenerated),
     timeStamp_t = to_string(timeStamp_t),
     timeStamp = to_string(timeStamp),
     time = to_string(time)
@@ -24,5 +25,7 @@ MMM dd yyyy hh:mm:ss - Nov 19 2024 12:50:39
 Filter FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog events
 */
 filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
+| alter 
+    TimeGenerated = to_string(TimeGenerated)
 | alter
     _time = TimeGenerated;
