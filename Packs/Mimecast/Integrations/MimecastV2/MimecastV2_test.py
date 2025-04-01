@@ -1,5 +1,8 @@
-import MimecastV2
+from freezegun import freeze_time
 import pytest
+
+import MimecastV2
+
 from CommonServerPython import *
 
 QUERY_XML = """<?xml version=\"1.0\"?>
@@ -1012,3 +1015,304 @@ def test_create_block_sender_policy_command(mocker):
     assert result.readable_output == result_readable_output
     assert result.outputs_prefix == "Mimecast.BlockedSendersPolicy"
     assert result.outputs_key_field == "id"
+
+
+def test_fetch_held_messages_next_token(mocker):
+    """
+    Given:
+    - response from mime cast api indicates there is more results then limit (a next token is returned)
+
+    When:
+    - The fetch_held_messages method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned
+    - next fetch time is returned
+    """
+    last_fetch_held_messages_date_time = '2025-03-13T15:30:00+0000'
+    time_held_messages_for_next_page = '2025-03-13T15:30:00+0000'
+    last_fetch_held_messages = datetime(2025, 3, 13, 15, 30, second=00)
+    current_fetch_held_message = last_fetch_held_messages
+    dedup_held_messages = []
+    current_next_page = ''
+    incidents = []
+    mock_response = {'data': [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-13T15:31:00+0000'}],
+                     'meta': {'pagination': {'next': 'test_next_token'}}}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
+                                            time_held_messages_for_next_page,
+                                            last_fetch_held_messages,
+                                            current_fetch_held_message,
+                                            dedup_held_messages,
+                                            current_next_page,
+                                            incidents)
+    assert result == ('test_next_token', ['123456'], datetime(2025, 3, 13, 15, 31))
+
+
+def test_fetch_held_messages_prev_dedup(mocker):
+    """
+    Given:
+    - dedup incidents exists
+    - response from mime cast api indicates there is more results then limit (a next token is returned)
+
+    When:
+    - The fetch_held_messages method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_held_messages_date_time = '2025-03-13T15:30:00+0000'
+    time_held_messages_for_next_page = '2025-03-11T15:30:00+0000'
+    last_fetch_held_messages = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_held_message = last_fetch_held_messages
+    dedup_held_messages = ['prev_dedup']
+    current_next_page = ''
+    incidents = []
+    mock_response = {'data': [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-11T15:30:00+0000'}],
+                     'meta': {'pagination': {'next': 'test_next'}}}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
+                                            time_held_messages_for_next_page,
+                                            last_fetch_held_messages,
+                                            current_fetch_held_message,
+                                            dedup_held_messages,
+                                            current_next_page,
+                                            incidents)
+    assert result == ('test_next', ['prev_dedup', '123456'], datetime(2025, 3, 11, 15, 30))
+
+
+def test_fetch_held_messages_no_next_token(mocker):
+    """
+    Given:
+    - response from mime cast api indicates there is no more results then limit (a next token is not returned)
+
+    When:
+    - The fetch_held_messages method is called.
+
+    Then:
+    - Next token is not returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    last_fetch_held_messages_date_time = '2025-03-13T15:30:00+0000'
+    time_held_messages_for_next_page = '2025-03-11T15:30:00+0000'
+    last_fetch_held_messages = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_held_message = last_fetch_held_messages
+    dedup_held_messages = ['prev_dedup']
+    current_next_page = ''
+    incidents = []
+    mock_response = {'data': [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-11T15:31:00+0000'}]}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
+                                            time_held_messages_for_next_page,
+                                            last_fetch_held_messages,
+                                            current_fetch_held_message,
+                                            dedup_held_messages,
+                                            current_next_page,
+                                            incidents)
+    assert result == ('', ['123456'], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_held_messages_has_prev_next_token(mocker):
+    """
+    Given:
+    - next token is provided to keep on fetching from prev state
+    - dedup incidents exists
+    - response from mime cast api indicates there is more results then limit (a next token is returned)
+
+    When:
+    - The fetch_held_messages method is called.
+
+    Then:
+    - Next token is returned.
+    - Dedup for next run is returned (added to the prev dedup array)
+    - next fetch time is returned
+    """
+    held_messages = [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-11T15:31:00+0000'}]
+    fetch_held_messages_with_pagination = mocker.patch.object(MimecastV2, "fetch_held_messages_with_pagination",
+                                                              return_value=(held_messages, 1, ''))
+    last_fetch_held_messages_date_time = '2025-03-13T15:31:00+0000'
+    time_held_messages_for_next_page = '2025-03-11T15:30:00+0000'
+    last_fetch_held_messages = datetime(2025, 3, 11, 15, 30, second=00)
+    current_fetch_held_message = last_fetch_held_messages
+    dedup_held_messages = []
+    current_next_page = ['current_next_page']
+    incidents = []
+    MimecastV2.MAX_FETCH = 1
+    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
+                                            time_held_messages_for_next_page,
+                                            last_fetch_held_messages,
+                                            current_fetch_held_message,
+                                            dedup_held_messages,
+                                            current_next_page,
+                                            incidents)
+    fetch_held_messages_with_pagination.assert_called_with(api_endpoint='/api/gateway/get-hold-message-list',
+                                                           data=[{'start': '2025-03-11T15:30:00+0000', 'admin': True}],
+                                                           limit=1,
+                                                           dedup_messages=[],
+                                                           current_next_page=['current_next_page'])
+    assert result == ('', ['123456'], datetime(2025, 3, 11, 15, 31))
+
+
+def test_fetch_incidents_no_held_message(mocker):
+    """
+    Given:
+    - Last run contains a timestamp '2025-03-16T05:45:02Z'.
+    - FETCH_ATTACHMENTS and FETCH_HELD_MESSAGES are enabled.
+    - request_with_pagination returns a malicious attachment.
+    - fetch_held_messages_with_pagination returns a held message.
+
+    When:
+    - fetch_incidents is executed.
+
+    Then:
+    - setLastRun should be updated with the latest timestamps and deduplication list.
+    - incidents should contain both the malicious attachment and the held message.
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2025-03-16T05:45:02Z'})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    MimecastV2.FETCH_URL = False
+    MimecastV2.FETCH_ATTACHMENTS = True
+    MimecastV2.FETCH_IMPERSONATIONS = False
+    MimecastV2.FETCH_HELD_MESSAGES = True
+    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=([{'fileName': 'file_test',
+                                                                              'date': '2025-03-16T05:50:00+0000'}], 1))
+    mocker.patch.object(MimecastV2, 'fetch_held_messages_with_pagination', return_value=([
+        {'id': '123456',
+         'subject': 'test_subject',
+         'dateReceived': '2025-03-16T16:31:00+0000'}], 1, ''))
+    MimecastV2.fetch_incidents()
+    set_last_run.assert_called_with({'time': '2025-03-16T05:50:01Z',
+                                     'dedup_held_messages': ['123456'],
+                                     'time_held_messages': '2025-03-16T16:31:00Z'})
+    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test', 'occurred': '2025-03-16T05:50:00Z',
+                                           'rawJSON': '{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}'},
+                                          {'name': 'Mimecast held message: test_subject',
+                                           'occurred': '2025-03-16T16:31:00Z',
+                                           'rawJSON': ('{"id": "123456", "subject": "test_subject", "dateReceived": '
+                                                       '"2025-03-16T16:31:00+0000"}'),
+                                           'dbotMirrorId': '123456'}])
+
+
+@freeze_time("2025-01-15 17:00:00 UTC")
+def test_fetch_incidents_first_fetch(mocker):
+    """
+    Given:
+    - No last run data is available.
+    - FETCH_ATTACHMENTS and FETCH_HELD_MESSAGES are enabled.
+    - request_with_pagination returns a malicious attachment.
+    - fetch_held_messages_with_pagination returns a held message.
+
+    When:
+    - fetch_incidents is executed for the first time.
+
+    Then:
+    - The same timestamps should be used for fetching incidents and held messages.
+    - setLastRun should store the latest timestamps and deduplication list.
+    - incidents should contain the fetched malicious attachment and held message.
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    MimecastV2.FETCH_URL = False
+    MimecastV2.FETCH_ATTACHMENTS = True
+    MimecastV2.FETCH_IMPERSONATIONS = False
+    MimecastV2.FETCH_HELD_MESSAGES = True
+    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination',
+                                                  return_value=([{'fileName': 'file_test',
+                                                                  'date': '2025-01-14T17:01:00+0000'}], 1))
+    fetch_held_messages_with_pagination = mocker.patch.object(MimecastV2, 'fetch_held_messages_with_pagination', return_value=([
+        {'id': '123456',
+         'subject': 'test_subject',
+         'dateReceived': '2025-01-14T17:01:00+0000'}], 1, ''))
+    MimecastV2.fetch_incidents()
+    time_for_incidents = request_with_pagination.call_args[1].get('data')[0].get('from')
+    time_for_held_messages = fetch_held_messages_with_pagination.call_args[1].get('data')[0].get('start')
+    assert time_for_incidents == time_for_held_messages
+    set_last_run.assert_called_with({'time': '2025-01-14T17:01:01Z',
+                                     'dedup_held_messages': ['123456'],
+                                     'time_held_messages': '2025-01-14T17:01:00Z'})
+    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test',
+                                           'occurred': '2025-01-14T17:01:00Z',
+                                           'rawJSON': '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}'},
+                                          {'name': 'Mimecast held message: test_subject',
+                                           'occurred': '2025-01-14T17:01:00Z',
+                                           'rawJSON': ('{"id": "123456", "subject": "test_subject", '
+                                                       '"dateReceived": "2025-01-14T17:01:00+0000"}'),
+                                           'dbotMirrorId': '123456'}])
+
+
+def test_fetch_incidents_dedup_held_messages(mocker):
+    """
+    Given:
+    - The last run contains deduplicated held messages.
+    - Fetch settings are configured to only fetch held messages.
+    - The API returns a held message that has already been processed.
+
+    When:
+    - The fetch_incidents function is called.
+
+    Then:
+    - The last run should remain unchanged.
+    - No new incidents should be set.
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2025-03-16T05:50:01Z',
+                                                             'dedup_held_messages': ['123456'],
+                                                             'time_held_messages': '2025-03-16T16:31:00Z'})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    MimecastV2.FETCH_URL = False
+    MimecastV2.FETCH_ATTACHMENTS = False
+    MimecastV2.FETCH_IMPERSONATIONS = False
+    MimecastV2.FETCH_HELD_MESSAGES = True
+    mocker.patch.object(MimecastV2, 'http_request',
+                        return_value=({'data': [{'id': '123456',
+                                                 'subject': 'test_subject',
+                                                 'dateReceived': '2025-03-11T15:31:00+0000'}]}))
+    MimecastV2.fetch_incidents()
+    set_last_run.assert_called_with({'time': '2025-03-16T05:50:01Z',
+                                    'dedup_held_messages': ['123456'],
+                                     'time_held_messages': '2025-03-16T16:31:00Z'})
+    set_new_incidents.assert_called_with([])
+
+
+@freeze_time("2025-01-15 17:00:00 UTC")
+def test_fetch_incidents_not_fetching_held_messages(mocker):
+    """
+    Given:
+    - No last run data is available.
+    - FETCH_ATTACHMENTS is enabled.
+    - request_with_pagination returns a malicious attachment.
+
+    When:
+    - fetch_incidents is executed for the first time.
+
+    Then:
+    - The same timestamps should be used for fetching incidents and held messages.
+    - setLastRun should store the latest timestamps and deduplication list.
+    - incidents should contain the fetched malicious attachment.
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    MimecastV2.FETCH_URL = False
+    MimecastV2.FETCH_ATTACHMENTS = True
+    MimecastV2.FETCH_IMPERSONATIONS = False
+    MimecastV2.FETCH_HELD_MESSAGES = False
+    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination',
+                                                  return_value=([{'fileName': 'file_test',
+                                                                  'date': '2025-01-14T17:01:00+0000'}], 1))
+    MimecastV2.fetch_incidents()
+    time_for_incidents = request_with_pagination.call_args[1].get('data')[0].get('from')
+    assert time_for_incidents == '2025-01-14T17:00:00+0000'
+    set_last_run.assert_called_with({'time': '2025-01-14T17:01:01Z'})
+    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test',
+                                           'occurred': '2025-01-14T17:01:00Z',
+                                           'rawJSON': '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}'}])

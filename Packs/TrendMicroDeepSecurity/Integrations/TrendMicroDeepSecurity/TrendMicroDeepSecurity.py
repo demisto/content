@@ -1,12 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-from typing import Any, get_type_hints, get_origin, get_args, no_type_check
 from collections.abc import Callable
+from typing import Any, get_args, get_origin, get_type_hints, no_type_check
 
+import demistomock as demisto
 import urllib3
-from requests.exceptions import ConnectionError, InvalidURL, InvalidSchema, HTTPError
+from CommonServerPython import *
+from requests.exceptions import ConnectionError, HTTPError, InvalidSchema, InvalidURL
+
+from CommonServerUserPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -85,8 +85,7 @@ class Client(BaseClient):
         params = {"expand": expand, "overrides": overrides}
         return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}", params=params)
 
-    def modify_computer(self, computer_id: int, expand: list[str], overrides: bool,
-                        **computer_properties) -> dict[str, Any]:
+    def modify_computer(self, computer_id: int, expand: list[str], overrides: bool, **computer_properties) -> dict[str, Any]:
         """
         Modify properties of an existing computer inside Trend Micro.
 
@@ -101,8 +100,9 @@ class Client(BaseClient):
         """
 
         params = {"expand": expand, "overrides": overrides}
-        return self._http_request(method="POST", url_suffix=f"/computers/{computer_id}", params=params,
-                                  json_data=computer_properties)
+        return self._http_request(
+            method="POST", url_suffix=f"/computers/{computer_id}", params=params, json_data=computer_properties
+        )
 
     def delete_computer(self, computer_id: int):
         """
@@ -128,11 +128,9 @@ class Client(BaseClient):
         """
 
         params = {"overrides": overrides}
-        return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}/settings/{setting_name}",
-                                  params=params)
+        return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}/settings/{setting_name}", params=params)
 
-    def modify_computer_setting(self, computer_id: int, setting_name: str, overrides: bool,
-                                value: str) -> dict[str, Any]:
+    def modify_computer_setting(self, computer_id: int, setting_name: str, overrides: bool, value: str) -> dict[str, Any]:
         """
         Modify the setting of an existing computer inside Trend Micro.
 
@@ -145,8 +143,12 @@ class Client(BaseClient):
             Dict[str, Any]: The information about computer's setting.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/computers/{computer_id}/settings/{setting_name}",
-                                  params={"overrides": overrides}, json_data={"value": value})
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/computers/{computer_id}/settings/{setting_name}",
+            params={"overrides": overrides},
+            json_data={"value": value},
+        )
 
     def reset_computer_setting(self, computer_id: int, setting_name: str, overrides: bool) -> dict[str, Any]:
         """
@@ -160,8 +162,9 @@ class Client(BaseClient):
             Dict[str, Any]: The information about computer's setting.
         """
 
-        return self._http_request(method="DELETE", url_suffix=f"/computers/{computer_id}/settings/{setting_name}",
-                                  params={"overrides": overrides})
+        return self._http_request(
+            method="DELETE", url_suffix=f"/computers/{computer_id}/settings/{setting_name}", params={"overrides": overrides}
+        )
 
     def list_firewall_rule_ids_of_computer(self, computer_id: int, overrides: bool) -> list[int]:
         """
@@ -175,8 +178,9 @@ class Client(BaseClient):
             List[int]: The rule IDs.
         """
 
-        return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides}).get("assignedRuleIDs", [])
+        return self._http_request(
+            method="GET", url_suffix=f"/computers/{computer_id}/firewall/assignments", params={"overrides": overrides}
+        ).get("assignedRuleIDs", [])
 
     def add_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: list[int], overrides: bool) -> list[int]:
         """
@@ -191,9 +195,12 @@ class Client(BaseClient):
             List[int]: All rule IDs that are assigned to the computer.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides},
-                                  json_data={"rule_ids": rule_ids}).get("assignedRuleIDs", [])
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/computers/{computer_id}/firewall/assignments",
+            params={"overrides": overrides},
+            json_data={"rule_ids": rule_ids},
+        ).get("assignedRuleIDs", [])
 
     def set_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: list[int], overrides: bool) -> list[int]:
         """
@@ -208,9 +215,12 @@ class Client(BaseClient):
             List[int]: All rule IDs that are assigned to the computer.
         """
 
-        return self._http_request(method="PUT", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides},
-                                  json_data={"rule_ids": rule_ids}).get("assignedRuleIDs", [])
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"/computers/{computer_id}/firewall/assignments",
+            params={"overrides": overrides},
+            json_data={"rule_ids": rule_ids},
+        ).get("assignedRuleIDs", [])
 
     def remove_firewall_rule_id_from_computer(self, computer_id: int, firewall_rule_id: int):
         """
@@ -221,8 +231,7 @@ class Client(BaseClient):
             firewall_rule_id (int): The firewall rule ID to remove from the computer.
         """
 
-        self._http_request(method="DELETE",
-                           url_suffix=f"/computers/{computer_id}/firewall/assignments/{firewall_rule_id}")
+        self._http_request(method="DELETE", url_suffix=f"/computers/{computer_id}/firewall/assignments/{firewall_rule_id}")
 
     def list_computer_groups(self) -> list[dict[str, Any]]:
         """
@@ -272,8 +281,9 @@ class Client(BaseClient):
             Dict[str, Any]: The information about the computer group.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/computergroups/{computer_group_id}",
-                                  json_data=computer_group_properties)
+        return self._http_request(
+            method="POST", url_suffix=f"/computergroups/{computer_group_id}", json_data=computer_group_properties
+        )
 
     def delete_computer_group(self, computer_group_id: int):
         """
@@ -333,8 +343,9 @@ class Client(BaseClient):
             Dict[str, Any]: The modified firewall rule.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/firewallrules/{firewall_rule_id}",
-                                  json_data=firewall_rule_properties)
+        return self._http_request(
+            method="POST", url_suffix=f"/firewallrules/{firewall_rule_id}", json_data=firewall_rule_properties
+        )
 
     def delete_firewall_rule(self, firewall_rule_id: int):
         """
@@ -346,8 +357,16 @@ class Client(BaseClient):
 
         self._http_request(method="DELETE", url_suffix=f"/firewallrules/{firewall_rule_id}", resp_type="response")
 
-    def search(self, resource: str, max_items: int, field_name: str, field_type: str, operation: str, value: str,
-               sort_by_object_id: Optional[bool]) -> list[dict[str, Any]]:
+    def search(
+        self,
+        resource: str,
+        max_items: int,
+        field_name: str,
+        field_type: str,
+        operation: str,
+        value: str,
+        sort_by_object_id: Optional[bool],
+    ) -> list[dict[str, Any]]:
         """
         Search a resource, such as computers, by a query on a certain field.
 
@@ -370,8 +389,7 @@ class Client(BaseClient):
         search_criteria = [{"fieldName": field_name, f"{field_type}Test": operation, f"{field_type}Value": value}]
         body = {"max_items": max_items, "search_criteria": search_criteria, "sort_by_object_id": sort_by_object_id}
 
-        return self._http_request(method="POST", url_suffix=f"/{resource.lower()}/search",
-                                  json_data=body).get(resource, [])
+        return self._http_request(method="POST", url_suffix=f"/{resource.lower()}/search", json_data=body).get(resource, [])
 
     def get_policy(self, policy_id: int, overrides: bool) -> dict[str, Any]:
         """
@@ -400,8 +418,9 @@ class Client(BaseClient):
             Dict[str, Any]: The modified policy.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/policies/{policy_id}", params={"overrides": overrides},
-                                  json_data=policy_properties)
+        return self._http_request(
+            method="POST", url_suffix=f"/policies/{policy_id}", params={"overrides": overrides}, json_data=policy_properties
+        )
 
     def delete_policy(self, policy_id: int):
         """
@@ -438,8 +457,7 @@ class Client(BaseClient):
             Dict[str, Any]: The new modified value.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/policies/default/settings/{name}",
-                                  json_data={"value": value})
+        return self._http_request(method="POST", url_suffix=f"/policies/default/settings/{name}", json_data={"value": value})
 
     def reset_default_policy_setting(self, name: str) -> dict[str, Any]:
         """
@@ -477,8 +495,9 @@ class Client(BaseClient):
             Dict[str, Any]: The setting information of the desired policy.
         """
 
-        return self._http_request(method="GET", url_suffix=f"/policies/{policy_id}/settings/{name}",
-                                  params={"overrides": overrides})
+        return self._http_request(
+            method="GET", url_suffix=f"/policies/{policy_id}/settings/{name}", params={"overrides": overrides}
+        )
 
     def modify_policy_setting(self, policy_id: int, name: str, overrides: bool, value: str) -> dict[str, Any]:
         """
@@ -494,8 +513,12 @@ class Client(BaseClient):
             Dict[str, Any]: The setting information of the desired policy.
         """
 
-        return self._http_request(method="POST", url_suffix=f"/policies/{policy_id}/settings/{name}",
-                                  params={"overrides": overrides}, json_data={"value": value})
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/policies/{policy_id}/settings/{name}",
+            params={"overrides": overrides},
+            json_data={"value": value},
+        )
 
     def reset_policy_setting(self, policy_id: int, name: str, overrides: bool) -> dict[str, Any]:
         """
@@ -510,8 +533,9 @@ class Client(BaseClient):
             Dict[str, Any]: The setting information of the desired policy after reset.
         """
 
-        return self._http_request(method="DELETE", url_suffix=f"/policies/{policy_id}/settings/{name}",
-                                  params={"overrides": overrides})
+        return self._http_request(
+            method="DELETE", url_suffix=f"/policies/{policy_id}/settings/{name}", params={"overrides": overrides}
+        )
 
     def list_policies(self, overrides: bool) -> list[dict[str, Any]]:
         """
@@ -524,8 +548,7 @@ class Client(BaseClient):
             List[Dict[str, Any]]: All policies.
         """
 
-        return self._http_request(method="GET", url_suffix="/policies",
-                                  params={"overrides": overrides}).get("policies", [])
+        return self._http_request(method="GET", url_suffix="/policies", params={"overrides": overrides}).get("policies", [])
 
     def create_policy(self, overrides: bool, **policy_properties) -> dict[str, Any]:
         """
@@ -539,8 +562,9 @@ class Client(BaseClient):
             Dict[str, Any]: The new policy.
         """
 
-        return self._http_request(method="POST", url_suffix="/policies", params={"overrides": overrides},
-                                  json_data=policy_properties)
+        return self._http_request(
+            method="POST", url_suffix="/policies", params={"overrides": overrides}, json_data=policy_properties
+        )
 
     def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> dict:
         _type_to_parameter = {
@@ -553,42 +577,24 @@ class Client(BaseClient):
         body = {
             "name": name,
             "type": _type,
-            "scheduleDetails": {
-                "recurrenceType": "none",
-                "onceOnlyScheduleParameters": {
-                    "startTime": 0
-                }
-            },
+            "scheduleDetails": {"recurrenceType": "none", "onceOnlyScheduleParameters": {"startTime": 0}},
             "runNow": True,
             "enabled": True,
-            _type_to_parameter[_type]: {
-                "computerFilter": {
-                    "type": "computer",
-                    "computerID": computer_id
-                },
-                "timeout": "never"
-            }
+            _type_to_parameter[_type]: {"computerFilter": {"type": "computer", "computerID": computer_id}, "timeout": "never"},
         }
 
-        return super()._http_request(
-            method="POST", url_suffix="/scheduledtasks", json_data=body
-        )
+        return super()._http_request(method="POST", url_suffix="/scheduledtasks", json_data=body)
 
     def delete_scheduled_task(self, task_id: int):
-
-        response = super()._http_request(
-            method="DELETE", url_suffix=f"/scheduledtasks/{task_id}", resp_type="response"
-        )
+        response = super()._http_request(method="DELETE", url_suffix=f"/scheduledtasks/{task_id}", resp_type="response")
         response.raise_for_status()
         return response
 
     def list_scheduled_tasks(self, task_id: Optional[int] = None) -> requests.Response:
-        url_suffix = '/scheduledtasks'
+        url_suffix = "/scheduledtasks"
         if task_id:
-            url_suffix = f'{url_suffix}/{task_id}'
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, resp_type="response", ok_codes=(200, 404)
-        )
+            url_suffix = f"{url_suffix}/{task_id}"
+        return self._http_request(method="GET", url_suffix=url_suffix, resp_type="response", ok_codes=(200, 404))
 
     @no_type_check
     def _http_request(self, method: str, url_suffix: str = "", params: dict = None, json_data: dict = None, **kwargs):
@@ -696,15 +702,28 @@ def list_computers_command(client: Client, expand: list[str], overrides: bool) -
     """
 
     response = client.list_computers(expand=expand, overrides=overrides)
-    markdown = tableToMarkdown("All computers list", response, headerTransform=pascalToSpace, removeNull=True,
-                               headers=COMPUTER_TABLE_HEADERS)
+    markdown = tableToMarkdown(
+        "All computers list", response, headerTransform=pascalToSpace, removeNull=True, headers=COMPUTER_TABLE_HEADERS
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.Computers",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def search_computers_command(client: Client, max_items: int, field_name: str, field_type: str, operation: str,
-                             value: str, sort_by_object_id: Optional[bool]) -> CommandResults:
+def search_computers_command(
+    client: Client,
+    max_items: int,
+    field_name: str,
+    field_type: str,
+    operation: str,
+    value: str,
+    sort_by_object_id: Optional[bool],
+) -> CommandResults:
     """
     Search computers by a query on a certain field.
 
@@ -721,20 +740,41 @@ def search_computers_command(client: Client, max_items: int, field_name: str, fi
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.search("computers", max_items=max_items, field_name=field_name, field_type=field_type,
-                             operation=operation, value=value, sort_by_object_id=sort_by_object_id)
+    response = client.search(
+        "computers",
+        max_items=max_items,
+        field_name=field_name,
+        field_type=field_type,
+        operation=operation,
+        value=value,
+        sort_by_object_id=sort_by_object_id,
+    )
 
-    markdown = tableToMarkdown("Matched Computers", response, removeNull=True, headers=COMPUTER_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        "Matched Computers", response, removeNull=True, headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.Computers",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def create_computer_command(client: Client, expand: list[str], overrides: bool, host_name: str,
-                            display_name: Optional[str], description: Optional[str], group_id: Optional[int],
-                            policy_id: Optional[int], asset_importance_id: Optional[int],
-                            relay_list_id: Optional[int]) -> CommandResults:
+def create_computer_command(
+    client: Client,
+    expand: list[str],
+    overrides: bool,
+    host_name: str,
+    display_name: Optional[str],
+    description: Optional[str],
+    group_id: Optional[int],
+    policy_id: Optional[int],
+    asset_importance_id: Optional[int],
+    relay_list_id: Optional[int],
+) -> CommandResults:
     """
     Create a new computer inside Trend Micro.
 
@@ -754,16 +794,33 @@ def create_computer_command(client: Client, expand: list[str], overrides: bool, 
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.create_computer(expand=expand, overrides=overrides, host_name=host_name,
-                                      display_name=display_name, description=description, group_id=group_id,
-                                      policy_id=policy_id, asset_importance_id=asset_importance_id,
-                                      relay_list_id=relay_list_id)
+    response = client.create_computer(
+        expand=expand,
+        overrides=overrides,
+        host_name=host_name,
+        display_name=display_name,
+        description=description,
+        group_id=group_id,
+        policy_id=policy_id,
+        asset_importance_id=asset_importance_id,
+        relay_list_id=relay_list_id,
+    )
 
-    markdown = tableToMarkdown(f"Details for the new computer {response.get('hostName', '')}", response,
-                               removeNull=True, headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        f"Details for the new computer {response.get('hostName', '')}",
+        response,
+        removeNull=True,
+        headers=COMPUTER_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.Computers",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def get_computer_command(client: Client, computer_id: int, expand: list[str], overrides: bool) -> CommandResults:
@@ -782,17 +839,36 @@ def get_computer_command(client: Client, computer_id: int, expand: list[str], ov
 
     response = client.get_computer(computer_id=computer_id, expand=expand, overrides=overrides)
 
-    markdown = tableToMarkdown(f"Details for the computer {response.get('hostName', '')}", response, removeNull=True,
-                               headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        f"Details for the computer {response.get('hostName', '')}",
+        response,
+        removeNull=True,
+        headers=COMPUTER_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.Computers",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def modify_computer_command(client: Client, computer_id: int, expand: list[str], overrides: bool,
-                            host_name: Optional[str], display_name: Optional[str], description: Optional[str],
-                            group_id: Optional[int], policy_id: Optional[int], asset_importance_id: Optional[int],
-                            relay_list_id: Optional[int]) -> CommandResults:
+def modify_computer_command(
+    client: Client,
+    computer_id: int,
+    expand: list[str],
+    overrides: bool,
+    host_name: Optional[str],
+    display_name: Optional[str],
+    description: Optional[str],
+    group_id: Optional[int],
+    policy_id: Optional[int],
+    asset_importance_id: Optional[int],
+    relay_list_id: Optional[int],
+) -> CommandResults:
     """
     Modify an existing computer inside Trend Micro.
 
@@ -813,16 +889,34 @@ def modify_computer_command(client: Client, computer_id: int, expand: list[str],
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.modify_computer(computer_id=computer_id, expand=expand, overrides=overrides, host_name=host_name,
-                                      display_name=display_name, description=description, group_id=group_id,
-                                      policy_id=policy_id, asset_importance_id=asset_importance_id,
-                                      relay_list_id=relay_list_id)
+    response = client.modify_computer(
+        computer_id=computer_id,
+        expand=expand,
+        overrides=overrides,
+        host_name=host_name,
+        display_name=display_name,
+        description=description,
+        group_id=group_id,
+        policy_id=policy_id,
+        asset_importance_id=asset_importance_id,
+        relay_list_id=relay_list_id,
+    )
 
-    markdown = tableToMarkdown(f"Details for the computer {response.get('hostName', '')}", response, removeNull=True,
-                               headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        f"Details for the computer {response.get('hostName', '')}",
+        response,
+        removeNull=True,
+        headers=COMPUTER_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="TrendMicro", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.Computers",
+        outputs_key_field="TrendMicro",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def delete_computer_command(client: Client, computer_id: int) -> CommandResults:
@@ -859,15 +953,20 @@ def get_computer_setting_command(client: Client, computer_id: int, name: str, ov
     response["computerId"] = computer_id
     response["name"] = name
 
-    markdown = tableToMarkdown(f"Settings for computer {computer_id}", response,
-                               headers=COMPUTER_SETTINGS_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        f"Settings for computer {computer_id}", response, headers=COMPUTER_SETTINGS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.ComputersSettings", outputs_key_field=["computerId", "name"],
-                          outputs=response, readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputersSettings",
+        outputs_key_field=["computerId", "name"],
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def modify_computer_setting_command(client: Client, computer_id: int, name: str, overrides: bool,
-                                    value: str) -> CommandResults:
+def modify_computer_setting_command(client: Client, computer_id: int, name: str, overrides: bool, value: str) -> CommandResults:
     """
     Modify a certain setting of an existing computer inside Trend Micro.
 
@@ -882,16 +981,21 @@ def modify_computer_setting_command(client: Client, computer_id: int, name: str,
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.modify_computer_setting(computer_id=computer_id, setting_name=name, overrides=overrides,
-                                              value=value)
+    response = client.modify_computer_setting(computer_id=computer_id, setting_name=name, overrides=overrides, value=value)
     response["computerId"] = computer_id
     response["name"] = name
 
-    markdown = tableToMarkdown(f"Settings for computer {computer_id}", response,
-                               headers=COMPUTER_SETTINGS_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        f"Settings for computer {computer_id}", response, headers=COMPUTER_SETTINGS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.ComputersSettings", outputs_key_field=["computerId", "name"],
-                          outputs=response, readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputersSettings",
+        outputs_key_field=["computerId", "name"],
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def reset_computer_setting_command(client: Client, computer_id: int, name: str, overrides: bool) -> CommandResults:
@@ -912,10 +1016,16 @@ def reset_computer_setting_command(client: Client, computer_id: int, name: str, 
     response["computerId"] = computer_id
     response["name"] = name
 
-    markdown = tableToMarkdown(f"Settings for computer {computer_id}", response,
-                               headers=COMPUTER_SETTINGS_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.ComputersSettings", outputs_key_field=["computerId", "name"],
-                          outputs=response, readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        f"Settings for computer {computer_id}", response, headers=COMPUTER_SETTINGS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputersSettings",
+        outputs_key_field=["computerId", "name"],
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def list_firewall_rule_ids_of_computer_command(client: Client, computer_id: int, overrides: bool) -> CommandResults:
@@ -935,12 +1045,17 @@ def list_firewall_rule_ids_of_computer_command(client: Client, computer_id: int,
 
     markdown = f"The firewall rules IDs that are assigned to {computer_id}: {', '.join(map(str, response))}"
 
-    return CommandResults(outputs_prefix="TrendMicro.FirewallAssignments", outputs={"assignedRuleIDs": response},
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallAssignments",
+        outputs={"assignedRuleIDs": response},
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def add_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, rule_ids: list[int],
-                                              overrides: bool) -> CommandResults:
+def add_firewall_rule_ids_to_computer_command(
+    client: Client, computer_id: int, rule_ids: list[int], overrides: bool
+) -> CommandResults:
     """
     Assign more rule IDs to a certain computer.
 
@@ -958,12 +1073,17 @@ def add_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, 
 
     markdown = f"The firewall rules IDs that are assigned to computer {computer_id}: {', '.join(map(str, response))}"
 
-    return CommandResults(outputs_prefix="TrendMicro.FirewallAssignments", outputs={"assignedRuleIDs": response},
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallAssignments",
+        outputs={"assignedRuleIDs": response},
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def set_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, rule_ids: list[int],
-                                              overrides: bool) -> CommandResults:
+def set_firewall_rule_ids_to_computer_command(
+    client: Client, computer_id: int, rule_ids: list[int], overrides: bool
+) -> CommandResults:
     """
     Assign rule IDs to a certain computer.
 
@@ -981,12 +1101,15 @@ def set_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, 
 
     markdown = f"The firewall rules IDs that are assigned to computer {computer_id}: {', '.join(map(str, response))}"
 
-    return CommandResults(outputs_prefix="TrendMicro.FirewallAssignments", outputs={"assignedRuleIDs": response},
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallAssignments",
+        outputs={"assignedRuleIDs": response},
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def remove_firewall_rule_id_from_computer_command(client: Client, computer_id: int,
-                                                  firewall_rule_id: int) -> CommandResults:
+def remove_firewall_rule_id_from_computer_command(client: Client, computer_id: int, firewall_rule_id: int) -> CommandResults:
     """
     Remove a firewall rule ID from a certain computer.
 
@@ -1017,10 +1140,16 @@ def list_computer_groups_command(client: Client) -> CommandResults:
 
     response = client.list_computer_groups()
 
-    markdown = tableToMarkdown("Computer Groups", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.ComputerGroups", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Computer Groups", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputerGroups",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def create_computer_group_command(client: Client, name: str, description: str, parent_group_id: int) -> CommandResults:
@@ -1039,14 +1168,27 @@ def create_computer_group_command(client: Client, name: str, description: str, p
 
     response = client.create_computer_group(name=name, description=description, parent_group_id=parent_group_id)
 
-    markdown = tableToMarkdown("Computer Groups", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.ComputerGroups", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Computer Groups", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputerGroups",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def search_computer_groups_command(client: Client, max_items: int, field_name: str, field_type: str, operation: str,
-                                   value: str, sort_by_object_id: Optional[bool]) -> CommandResults:
+def search_computer_groups_command(
+    client: Client,
+    max_items: int,
+    field_name: str,
+    field_type: str,
+    operation: str,
+    value: str,
+    sort_by_object_id: Optional[bool],
+) -> CommandResults:
     """
     Search computer groups by a query on a certain field.
 
@@ -1063,13 +1205,26 @@ def search_computer_groups_command(client: Client, max_items: int, field_name: s
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.search("computerGroups", max_items=max_items, field_name=field_name, field_type=field_type,
-                             operation=operation, value=value, sort_by_object_id=sort_by_object_id)
+    response = client.search(
+        "computerGroups",
+        max_items=max_items,
+        field_name=field_name,
+        field_type=field_type,
+        operation=operation,
+        value=value,
+        sort_by_object_id=sort_by_object_id,
+    )
 
-    markdown = tableToMarkdown("Matched Computer Groups", response, removeNull=True,
-                               headers=COMPUTER_GROUPS_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.ComputerGroups", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Matched Computer Groups", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputerGroups",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def get_computer_group_command(client: Client, computer_group_id: int) -> CommandResults:
@@ -1086,14 +1241,25 @@ def get_computer_group_command(client: Client, computer_group_id: int) -> Comman
 
     response = client.get_computer_group(computer_group_id=computer_group_id)
 
-    markdown = tableToMarkdown(f"Computer Group {computer_group_id} Details", response, removeNull=True,
-                               headers=COMPUTER_GROUPS_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.ComputerGroups", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        f"Computer Group {computer_group_id} Details",
+        response,
+        removeNull=True,
+        headers=COMPUTER_GROUPS_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputerGroups",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def modify_computer_group_command(client: Client, computer_group_id: int, name: Optional[str],
-                                  description: Optional[str], parent_group_id: Optional[int]) -> CommandResults:
+def modify_computer_group_command(
+    client: Client, computer_group_id: int, name: Optional[str], description: Optional[str], parent_group_id: Optional[int]
+) -> CommandResults:
     """
     Modify an existing computer group inside Trend Micro.
 
@@ -1108,13 +1274,20 @@ def modify_computer_group_command(client: Client, computer_group_id: int, name: 
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.modify_computer_group(computer_group_id=computer_group_id, name=name, description=description,
-                                            parent_group_id=parent_group_id)
+    response = client.modify_computer_group(
+        computer_group_id=computer_group_id, name=name, description=description, parent_group_id=parent_group_id
+    )
 
-    markdown = tableToMarkdown("Computer Group", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.ComputerGroups", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Computer Group", response, removeNull=True, headers=COMPUTER_GROUPS_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.ComputerGroups",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def delete_computer_group_command(client: Client, computer_group_id: int) -> CommandResults:
@@ -1133,8 +1306,15 @@ def delete_computer_group_command(client: Client, computer_group_id: int) -> Com
     return CommandResults(readable_output="The computer group was successfully deleted!")
 
 
-def search_firewall_rules_command(client: Client, max_items: int, field_name: str, field_type: str, operation: str,
-                                  value: str, sort_by_object_id: Optional[bool]) -> CommandResults:
+def search_firewall_rules_command(
+    client: Client,
+    max_items: int,
+    field_name: str,
+    field_type: str,
+    operation: str,
+    value: str,
+    sort_by_object_id: Optional[bool],
+) -> CommandResults:
     """
     Search firewall rules by a query on a certain field.
 
@@ -1151,14 +1331,27 @@ def search_firewall_rules_command(client: Client, max_items: int, field_name: st
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.search("firewallRules", max_items=max_items, field_name=field_name, field_type=field_type,
-                             operation=operation, value=value, sort_by_object_id=sort_by_object_id)
+    response = client.search(
+        "firewallRules",
+        max_items=max_items,
+        field_name=field_name,
+        field_type=field_type,
+        operation=operation,
+        value=value,
+        sort_by_object_id=sort_by_object_id,
+    )
 
-    markdown = tableToMarkdown("Matched Firewall Rules", response, removeNull=True,
-                               headers=FIREWALL_RULES_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        "Matched Firewall Rules", response, removeNull=True, headers=FIREWALL_RULES_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.FirewallRules", outputs_key_field="id", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallRules",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def list_firewall_rules_command(client: Client) -> CommandResults:
@@ -1174,38 +1367,77 @@ def list_firewall_rules_command(client: Client) -> CommandResults:
 
     response = client.list_firewall_rules()
 
-    markdown = tableToMarkdown("Firewall Rules", response, removeNull=True, headers=FIREWALL_RULES_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.FirewallRules", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Firewall Rules", response, removeNull=True, headers=FIREWALL_RULES_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallRules",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def create_firewall_rule_command(client: Client, name: str, description: Optional[str], action: Optional[str],
-                                 priority: Optional[str], direction: Optional[str], frame_type: Optional[str],
-                                 frame_number: Optional[int], frame_not: Optional[bool], protocol: Optional[str],
-                                 protocol_number: Optional[int], protocol_not: Optional[bool],
-                                 source_ip_type: Optional[str], source_ip_value: Optional[str],
-                                 source_ip_mask: Optional[str], source_ip_range_from: Optional[str],
-                                 source_ip_range_to: Optional[str], source_ip_multiple: Optional[list[str]],
-                                 source_ip_list_id: Optional[int], source_ip_not: Optional[bool],
-                                 source_mac_type: Optional[str], source_mac_value: Optional[str],
-                                 source_mac_multiple: Optional[list], source_mac_list_id: Optional[int],
-                                 source_mac_not: Optional[bool], source_port_type: Optional[str],
-                                 source_port_multiple: Optional[list[str]], source_port_list_id: Optional[int],
-                                 source_port_not: Optional[bool], destination_ip_type: Optional[str],
-                                 destination_ip_value: Optional[str], destination_ip_mask: Optional[str],
-                                 destination_ip_range_from: Optional[str], destination_ip_range_to: Optional[str],
-                                 destination_ip_multiple: Optional[list], destination_ip_list_id: Optional[int],
-                                 destination_ip_not: Optional[bool], destination_mac_type: Optional[str],
-                                 destination_mac_value: Optional[str], destination_mac_multiple: Optional[list[str]],
-                                 destination_mac_list_id: Optional[int], destination_mac_not: Optional[bool],
-                                 destination_port_type: Optional[str], destination_port_multiple: Optional[list[str]],
-                                 destination_port_list_id: Optional[int], destination_port_not: Optional[bool],
-                                 any_flags: Optional[bool], log_disabled: Optional[bool],
-                                 include_packet_data: Optional[bool], alert_enabled: Optional[bool],
-                                 schedule_id: Optional[int], context_id: Optional[int], tcp_flags: Optional[list[str]],
-                                 tcp_not: Optional[bool], icmp_type: Optional[int], icmp_code: Optional[int],
-                                 icmp_not: Optional[bool]) -> CommandResults:
+def create_firewall_rule_command(
+    client: Client,
+    name: str,
+    description: Optional[str],
+    action: Optional[str],
+    priority: Optional[str],
+    direction: Optional[str],
+    frame_type: Optional[str],
+    frame_number: Optional[int],
+    frame_not: Optional[bool],
+    protocol: Optional[str],
+    protocol_number: Optional[int],
+    protocol_not: Optional[bool],
+    source_ip_type: Optional[str],
+    source_ip_value: Optional[str],
+    source_ip_mask: Optional[str],
+    source_ip_range_from: Optional[str],
+    source_ip_range_to: Optional[str],
+    source_ip_multiple: Optional[list[str]],
+    source_ip_list_id: Optional[int],
+    source_ip_not: Optional[bool],
+    source_mac_type: Optional[str],
+    source_mac_value: Optional[str],
+    source_mac_multiple: Optional[list],
+    source_mac_list_id: Optional[int],
+    source_mac_not: Optional[bool],
+    source_port_type: Optional[str],
+    source_port_multiple: Optional[list[str]],
+    source_port_list_id: Optional[int],
+    source_port_not: Optional[bool],
+    destination_ip_type: Optional[str],
+    destination_ip_value: Optional[str],
+    destination_ip_mask: Optional[str],
+    destination_ip_range_from: Optional[str],
+    destination_ip_range_to: Optional[str],
+    destination_ip_multiple: Optional[list],
+    destination_ip_list_id: Optional[int],
+    destination_ip_not: Optional[bool],
+    destination_mac_type: Optional[str],
+    destination_mac_value: Optional[str],
+    destination_mac_multiple: Optional[list[str]],
+    destination_mac_list_id: Optional[int],
+    destination_mac_not: Optional[bool],
+    destination_port_type: Optional[str],
+    destination_port_multiple: Optional[list[str]],
+    destination_port_list_id: Optional[int],
+    destination_port_not: Optional[bool],
+    any_flags: Optional[bool],
+    log_disabled: Optional[bool],
+    include_packet_data: Optional[bool],
+    alert_enabled: Optional[bool],
+    schedule_id: Optional[int],
+    context_id: Optional[int],
+    tcp_flags: Optional[list[str]],
+    tcp_not: Optional[bool],
+    icmp_type: Optional[int],
+    icmp_code: Optional[int],
+    icmp_not: Optional[bool],
+) -> CommandResults:
     """
     Args:
         client (Client): The Trend Micro API client.
@@ -1270,45 +1502,75 @@ def create_firewall_rule_command(client: Client, name: str, description: Optiona
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.create_firewall_rule(name=name, description=description, action=action, priority=priority,
-                                           direction=direction, frame_type=frame_type, frame_number=frame_number,
-                                           frame_not=frame_not, protocol=protocol, protocol_number=protocol_number,
-                                           protocol_not=protocol_not, source_ip_type=source_ip_type,
-                                           source_ip_value=source_ip_value, source_ip_mask=source_ip_mask,
-                                           source_ip_range_from=source_ip_range_from,
-                                           source_ip_range_to=source_ip_range_to, source_ip_multiple=source_ip_multiple,
-                                           source_ip_list_id=source_ip_list_id, source_ip_not=source_ip_not,
-                                           source_mac_type=source_mac_type, source_mac_value=source_mac_value,
-                                           source_mac_multiple=source_mac_multiple,
-                                           source_maclist_id=source_mac_list_id, source_mac_not=source_mac_not,
-                                           source_port_type=source_port_type, source_port_multiple=source_port_multiple,
-                                           source_port_list_id=source_port_list_id, source_port_not=source_port_not,
-                                           destination_ip_type=destination_ip_type,
-                                           destination_ip_value=destination_ip_value,
-                                           destination_ip_mask=destination_ip_mask,
-                                           destination_ip_range_from=destination_ip_range_from,
-                                           destination_ip_range_to=destination_ip_range_to,
-                                           destination_ip_multiple=destination_ip_multiple,
-                                           destination_ip_list_id=destination_ip_list_id,
-                                           destination_ip_not=destination_ip_not,
-                                           destination_mac_type=destination_mac_type,
-                                           destination_mac_value=destination_mac_value,
-                                           destination_mac_multiple=destination_mac_multiple,
-                                           destination_mac_list_id=destination_mac_list_id,
-                                           destination_mac_not=destination_mac_not,
-                                           destination_port_type=destination_port_type,
-                                           destination_port_multiple=destination_port_multiple,
-                                           destination_port_list_id=destination_port_list_id,
-                                           destination_port_not=destination_port_not, any_flags=any_flags,
-                                           log_disabled=log_disabled, include_packet_data=include_packet_data,
-                                           alert_enabled=alert_enabled, schedule_id=schedule_id, context_id=context_id,
-                                           tcp_flags=tcp_flags, tcp_not=tcp_not, icmp_type=icmp_type,
-                                           icmp_code=icmp_code, icmp_not=icmp_not)
+    response = client.create_firewall_rule(
+        name=name,
+        description=description,
+        action=action,
+        priority=priority,
+        direction=direction,
+        frame_type=frame_type,
+        frame_number=frame_number,
+        frame_not=frame_not,
+        protocol=protocol,
+        protocol_number=protocol_number,
+        protocol_not=protocol_not,
+        source_ip_type=source_ip_type,
+        source_ip_value=source_ip_value,
+        source_ip_mask=source_ip_mask,
+        source_ip_range_from=source_ip_range_from,
+        source_ip_range_to=source_ip_range_to,
+        source_ip_multiple=source_ip_multiple,
+        source_ip_list_id=source_ip_list_id,
+        source_ip_not=source_ip_not,
+        source_mac_type=source_mac_type,
+        source_mac_value=source_mac_value,
+        source_mac_multiple=source_mac_multiple,
+        source_maclist_id=source_mac_list_id,
+        source_mac_not=source_mac_not,
+        source_port_type=source_port_type,
+        source_port_multiple=source_port_multiple,
+        source_port_list_id=source_port_list_id,
+        source_port_not=source_port_not,
+        destination_ip_type=destination_ip_type,
+        destination_ip_value=destination_ip_value,
+        destination_ip_mask=destination_ip_mask,
+        destination_ip_range_from=destination_ip_range_from,
+        destination_ip_range_to=destination_ip_range_to,
+        destination_ip_multiple=destination_ip_multiple,
+        destination_ip_list_id=destination_ip_list_id,
+        destination_ip_not=destination_ip_not,
+        destination_mac_type=destination_mac_type,
+        destination_mac_value=destination_mac_value,
+        destination_mac_multiple=destination_mac_multiple,
+        destination_mac_list_id=destination_mac_list_id,
+        destination_mac_not=destination_mac_not,
+        destination_port_type=destination_port_type,
+        destination_port_multiple=destination_port_multiple,
+        destination_port_list_id=destination_port_list_id,
+        destination_port_not=destination_port_not,
+        any_flags=any_flags,
+        log_disabled=log_disabled,
+        include_packet_data=include_packet_data,
+        alert_enabled=alert_enabled,
+        schedule_id=schedule_id,
+        context_id=context_id,
+        tcp_flags=tcp_flags,
+        tcp_not=tcp_not,
+        icmp_type=icmp_type,
+        icmp_code=icmp_code,
+        icmp_not=icmp_not,
+    )
 
-    markdown = tableToMarkdown("Firewall Rules", response, removeNull=True, headers=FIREWALL_RULES_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.FirewallRules", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Firewall Rules", response, removeNull=True, headers=FIREWALL_RULES_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallRules",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def get_firewall_rule_command(client: Client, firewall_rule_id: int) -> CommandResults:
@@ -1325,38 +1587,82 @@ def get_firewall_rule_command(client: Client, firewall_rule_id: int) -> CommandR
 
     response = client.get_firewall_rule(firewall_rule_id=firewall_rule_id)
 
-    markdown = tableToMarkdown(f"Details of The Firewall Rule {firewall_rule_id}", response, removeNull=True,
-                               headers=FIREWALL_RULES_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.FirewallRules", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        f"Details of The Firewall Rule {firewall_rule_id}",
+        response,
+        removeNull=True,
+        headers=FIREWALL_RULES_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallRules",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def modify_firewall_rule_command(client: Client, firewall_rule_id: int, name: Optional[str], description: Optional[str],
-                                 action: Optional[str], priority: Optional[str], direction: Optional[str],
-                                 frame_type: Optional[str], frame_number: Optional[int], frame_not: Optional[bool],
-                                 protocol: Optional[str], protocol_number: Optional[int], protocol_not: Optional[bool],
-                                 source_ip_type: Optional[str], source_ip_value: Optional[str],
-                                 source_ip_mask: Optional[str], source_ip_range_from: Optional[str],
-                                 source_ip_range_to: Optional[str], source_ip_multiple: Optional[list[str]],
-                                 source_ip_list_id: Optional[int], source_ip_not: Optional[bool],
-                                 source_mac_type: Optional[str], source_mac_value: Optional[str],
-                                 source_mac_multiple: Optional[list], source_mac_list_id: Optional[int],
-                                 source_mac_not: Optional[bool], source_port_type: Optional[str],
-                                 source_port_multiple: Optional[list[str]], source_port_list_id: Optional[int],
-                                 source_port_not: Optional[bool], destination_ip_type: Optional[str],
-                                 destination_ip_value: Optional[str], destination_ip_mask: Optional[str],
-                                 destination_ip_range_from: Optional[str], destination_ip_range_to: Optional[str],
-                                 destination_ip_multiple: Optional[list], destination_ip_list_id: Optional[int],
-                                 destination_ip_not: Optional[bool], destination_mac_type: Optional[str],
-                                 destination_mac_value: Optional[str], destination_mac_multiple: Optional[list[str]],
-                                 destination_mac_list_id: Optional[int], destination_mac_not: Optional[bool],
-                                 destination_port_type: Optional[str], destination_port_multiple: Optional[list[str]],
-                                 destination_port_list_id: Optional[int], destination_port_not: Optional[bool],
-                                 any_flags: Optional[bool], log_disabled: Optional[bool],
-                                 include_packet_data: Optional[bool], alert_enabled: Optional[bool],
-                                 schedule_id: Optional[int], context_id: Optional[int], tcp_flags: Optional[list[str]],
-                                 tcp_not: Optional[bool], icmp_type: Optional[int], icmp_code: Optional[int],
-                                 icmp_not: Optional[bool]) -> CommandResults:
+def modify_firewall_rule_command(
+    client: Client,
+    firewall_rule_id: int,
+    name: Optional[str],
+    description: Optional[str],
+    action: Optional[str],
+    priority: Optional[str],
+    direction: Optional[str],
+    frame_type: Optional[str],
+    frame_number: Optional[int],
+    frame_not: Optional[bool],
+    protocol: Optional[str],
+    protocol_number: Optional[int],
+    protocol_not: Optional[bool],
+    source_ip_type: Optional[str],
+    source_ip_value: Optional[str],
+    source_ip_mask: Optional[str],
+    source_ip_range_from: Optional[str],
+    source_ip_range_to: Optional[str],
+    source_ip_multiple: Optional[list[str]],
+    source_ip_list_id: Optional[int],
+    source_ip_not: Optional[bool],
+    source_mac_type: Optional[str],
+    source_mac_value: Optional[str],
+    source_mac_multiple: Optional[list],
+    source_mac_list_id: Optional[int],
+    source_mac_not: Optional[bool],
+    source_port_type: Optional[str],
+    source_port_multiple: Optional[list[str]],
+    source_port_list_id: Optional[int],
+    source_port_not: Optional[bool],
+    destination_ip_type: Optional[str],
+    destination_ip_value: Optional[str],
+    destination_ip_mask: Optional[str],
+    destination_ip_range_from: Optional[str],
+    destination_ip_range_to: Optional[str],
+    destination_ip_multiple: Optional[list],
+    destination_ip_list_id: Optional[int],
+    destination_ip_not: Optional[bool],
+    destination_mac_type: Optional[str],
+    destination_mac_value: Optional[str],
+    destination_mac_multiple: Optional[list[str]],
+    destination_mac_list_id: Optional[int],
+    destination_mac_not: Optional[bool],
+    destination_port_type: Optional[str],
+    destination_port_multiple: Optional[list[str]],
+    destination_port_list_id: Optional[int],
+    destination_port_not: Optional[bool],
+    any_flags: Optional[bool],
+    log_disabled: Optional[bool],
+    include_packet_data: Optional[bool],
+    alert_enabled: Optional[bool],
+    schedule_id: Optional[int],
+    context_id: Optional[int],
+    tcp_flags: Optional[list[str]],
+    tcp_not: Optional[bool],
+    icmp_type: Optional[int],
+    icmp_code: Optional[int],
+    icmp_not: Optional[bool],
+) -> CommandResults:
     """
     Modify a certain firewall rule.
 
@@ -1424,45 +1730,80 @@ def modify_firewall_rule_command(client: Client, firewall_rule_id: int, name: Op
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.modify_firewall_rule(firewall_rule_id, name=name, description=description, action=action,
-                                           priority=priority, direction=direction, frame_type=frame_type,
-                                           frame_number=frame_number, frame_not=frame_not, protocol=protocol,
-                                           protocol_number=protocol_number, protocol_not=protocol_not,
-                                           source_ip_type=source_ip_type, source_ip_value=source_ip_value,
-                                           source_ip_mask=source_ip_mask, source_ip_range_from=source_ip_range_from,
-                                           source_ip_range_to=source_ip_range_to, source_ip_multiple=source_ip_multiple,
-                                           source_ip_list_id=source_ip_list_id, source_ip_not=source_ip_not,
-                                           source_mac_type=source_mac_type, source_mac_value=source_mac_value,
-                                           source_mac_multiple=source_mac_multiple,
-                                           source_maclist_id=source_mac_list_id, source_mac_not=source_mac_not,
-                                           source_port_type=source_port_type, source_port_multiple=source_port_multiple,
-                                           source_port_list_id=source_port_list_id, source_port_not=source_port_not,
-                                           destination_ip_type=destination_ip_type,
-                                           destination_ip_value=destination_ip_value,
-                                           destination_ip_mask=destination_ip_mask,
-                                           destination_ip_range_from=destination_ip_range_from,
-                                           destination_ip_range_to=destination_ip_range_to,
-                                           destination_ip_multiple=destination_ip_multiple,
-                                           destination_ip_list_id=destination_ip_list_id,
-                                           destination_ip_not=destination_ip_not,
-                                           destination_mac_type=destination_mac_type,
-                                           destination_mac_value=destination_mac_value,
-                                           destination_mac_multiple=destination_mac_multiple,
-                                           destination_mac_list_id=destination_mac_list_id,
-                                           destination_mac_not=destination_mac_not,
-                                           destination_port_type=destination_port_type,
-                                           destination_port_multiple=destination_port_multiple,
-                                           destination_port_list_id=destination_port_list_id,
-                                           destination_port_not=destination_port_not, any_flags=any_flags,
-                                           log_disabled=log_disabled, include_packet_data=include_packet_data,
-                                           alert_enabled=alert_enabled, schedule_id=schedule_id, context_id=context_id,
-                                           tcp_flags=tcp_flags, tcp_not=tcp_not, icmp_type=icmp_type,
-                                           icmp_code=icmp_code, icmp_not=icmp_not)
+    response = client.modify_firewall_rule(
+        firewall_rule_id,
+        name=name,
+        description=description,
+        action=action,
+        priority=priority,
+        direction=direction,
+        frame_type=frame_type,
+        frame_number=frame_number,
+        frame_not=frame_not,
+        protocol=protocol,
+        protocol_number=protocol_number,
+        protocol_not=protocol_not,
+        source_ip_type=source_ip_type,
+        source_ip_value=source_ip_value,
+        source_ip_mask=source_ip_mask,
+        source_ip_range_from=source_ip_range_from,
+        source_ip_range_to=source_ip_range_to,
+        source_ip_multiple=source_ip_multiple,
+        source_ip_list_id=source_ip_list_id,
+        source_ip_not=source_ip_not,
+        source_mac_type=source_mac_type,
+        source_mac_value=source_mac_value,
+        source_mac_multiple=source_mac_multiple,
+        source_maclist_id=source_mac_list_id,
+        source_mac_not=source_mac_not,
+        source_port_type=source_port_type,
+        source_port_multiple=source_port_multiple,
+        source_port_list_id=source_port_list_id,
+        source_port_not=source_port_not,
+        destination_ip_type=destination_ip_type,
+        destination_ip_value=destination_ip_value,
+        destination_ip_mask=destination_ip_mask,
+        destination_ip_range_from=destination_ip_range_from,
+        destination_ip_range_to=destination_ip_range_to,
+        destination_ip_multiple=destination_ip_multiple,
+        destination_ip_list_id=destination_ip_list_id,
+        destination_ip_not=destination_ip_not,
+        destination_mac_type=destination_mac_type,
+        destination_mac_value=destination_mac_value,
+        destination_mac_multiple=destination_mac_multiple,
+        destination_mac_list_id=destination_mac_list_id,
+        destination_mac_not=destination_mac_not,
+        destination_port_type=destination_port_type,
+        destination_port_multiple=destination_port_multiple,
+        destination_port_list_id=destination_port_list_id,
+        destination_port_not=destination_port_not,
+        any_flags=any_flags,
+        log_disabled=log_disabled,
+        include_packet_data=include_packet_data,
+        alert_enabled=alert_enabled,
+        schedule_id=schedule_id,
+        context_id=context_id,
+        tcp_flags=tcp_flags,
+        tcp_not=tcp_not,
+        icmp_type=icmp_type,
+        icmp_code=icmp_code,
+        icmp_not=icmp_not,
+    )
 
-    markdown = tableToMarkdown(f"Details About The Modified Firewall Rule {firewall_rule_id}", response,
-                               removeNull=True, headers=FIREWALL_RULES_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.FirewallRules", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        f"Details About The Modified Firewall Rule {firewall_rule_id}",
+        response,
+        removeNull=True,
+        headers=FIREWALL_RULES_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.FirewallRules",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def delete_firewall_rule_command(client: Client, firewall_rule_id: int) -> CommandResults:
@@ -1481,8 +1822,15 @@ def delete_firewall_rule_command(client: Client, firewall_rule_id: int) -> Comma
     return CommandResults(readable_output="The firewall rule was successfully deleted!")
 
 
-def search_policies_command(client: Client, max_items: int, field_name: str, field_type: str, operation: str,
-                            value: str, sort_by_object_id: Optional[bool]) -> CommandResults:
+def search_policies_command(
+    client: Client,
+    max_items: int,
+    field_name: str,
+    field_type: str,
+    operation: str,
+    value: str,
+    sort_by_object_id: Optional[bool],
+) -> CommandResults:
     """
     Search firewall rules by a query on a certain field.
 
@@ -1499,14 +1847,27 @@ def search_policies_command(client: Client, max_items: int, field_name: str, fie
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.search("policies", max_items=max_items, field_name=field_name, field_type=field_type,
-                             operation=operation, value=value, sort_by_object_id=sort_by_object_id)
+    response = client.search(
+        "policies",
+        max_items=max_items,
+        field_name=field_name,
+        field_type=field_type,
+        operation=operation,
+        value=value,
+        sort_by_object_id=sort_by_object_id,
+    )
 
-    markdown = tableToMarkdown("Matched Policies", response, removeNull=True, headers=POLICIES_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        "Matched Policies", response, removeNull=True, headers=POLICIES_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.Policies", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.Policies",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def get_policy_command(client: Client, policy_id: int, overrides: bool) -> CommandResults:
@@ -1524,15 +1885,32 @@ def get_policy_command(client: Client, policy_id: int, overrides: bool) -> Comma
 
     response = client.get_policy(policy_id=policy_id, overrides=overrides)
 
-    markdown = tableToMarkdown(f"Details About The Policy {policy_id}", response, removeNull=True,
-                               headers=POLICIES_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.Policies", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        f"Details About The Policy {policy_id}",
+        response,
+        removeNull=True,
+        headers=POLICIES_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.Policies",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def modify_policy_command(client: Client, policy_id: int, overrides: bool, name: Optional[str],
-                          parent_id: Optional[int], description: Optional[str], recommendation_scan_mode: Optional[str],
-                          auto_requires_update: Optional[str]) -> CommandResults:
+def modify_policy_command(
+    client: Client,
+    policy_id: int,
+    overrides: bool,
+    name: Optional[str],
+    parent_id: Optional[int],
+    description: Optional[str],
+    recommendation_scan_mode: Optional[str],
+    auto_requires_update: Optional[str],
+) -> CommandResults:
     """
     Modify a certain policy.
 
@@ -1550,14 +1928,30 @@ def modify_policy_command(client: Client, policy_id: int, overrides: bool, name:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.modify_policy(policy_id=policy_id, overrides=overrides, parent_id=parent_id, name=name,
-                                    description=description, recommendation_scan_mode=recommendation_scan_mode,
-                                    auto_requires_update=auto_requires_update)
+    response = client.modify_policy(
+        policy_id=policy_id,
+        overrides=overrides,
+        parent_id=parent_id,
+        name=name,
+        description=description,
+        recommendation_scan_mode=recommendation_scan_mode,
+        auto_requires_update=auto_requires_update,
+    )
 
-    markdown = tableToMarkdown("Details About The Modified Policy", response, removeNull=True,
-                               headers=POLICIES_TABLE_HEADERS, headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.Policies", outputs_key_field="ID", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Details About The Modified Policy",
+        response,
+        removeNull=True,
+        headers=POLICIES_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.Policies",
+        outputs_key_field="ID",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def delete_policy_command(client: Client, policy_id: int) -> CommandResults:
@@ -1591,10 +1985,16 @@ def get_default_policy_setting_command(client: Client, name: str) -> CommandResu
     response = client.get_default_policy_setting(name=name)
     response["name"] = name
 
-    markdown = tableToMarkdown("Default Policy Setting", response, removeNull=True, headers=["name", "value"],
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.DefaultPolicySettings", outputs_key_field="name", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Default Policy Setting", response, removeNull=True, headers=["name", "value"], headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.DefaultPolicySettings",
+        outputs_key_field="name",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def modify_default_policy_setting_command(client: Client, name: str, value: str) -> CommandResults:
@@ -1613,10 +2013,16 @@ def modify_default_policy_setting_command(client: Client, name: str, value: str)
     response = client.modify_default_policy_setting(name=name, value=value)
     response["name"] = name
 
-    markdown = tableToMarkdown("Default Policy Setting", response, removeNull=True, headers=["name", "value"],
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.DefaultPolicySettings", outputs_key_field="name", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Default Policy Setting", response, removeNull=True, headers=["name", "value"], headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.DefaultPolicySettings",
+        outputs_key_field="name",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def reset_default_policy_setting_command(client: Client, name: str) -> CommandResults:
@@ -1634,10 +2040,16 @@ def reset_default_policy_setting_command(client: Client, name: str) -> CommandRe
     response = client.reset_default_policy_setting(name=name)
     response["name"] = name
 
-    markdown = tableToMarkdown("Default Policy Setting", response, removeNull=True, headers=["name", "value"],
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.DefaultPolicySettings", outputs_key_field="name", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Default Policy Setting", response, removeNull=True, headers=["name", "value"], headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.DefaultPolicySettings",
+        outputs_key_field="name",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def list_default_policy_settings_command(client: Client) -> CommandResults:
@@ -1655,8 +2067,13 @@ def list_default_policy_settings_command(client: Client) -> CommandResults:
     markdown = tableToMarkdown("The Default Policy Settings", response, removeNull=True, headerTransform=pascalToSpace)
     outputs = [{"name": k, "value": v} for k, v in response.items()]
 
-    return CommandResults(outputs_prefix="TrendMicro.DefaultPolicySettings", outputs_key_field="name", outputs=outputs,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.DefaultPolicySettings",
+        outputs_key_field="name",
+        outputs=outputs,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def get_policy_setting_command(client: Client, policy_id: int, name: str, overrides: bool) -> CommandResults:
@@ -1677,15 +2094,20 @@ def get_policy_setting_command(client: Client, policy_id: int, name: str, overri
     response["policyId"] = policy_id
     response["name"] = name
 
-    markdown = tableToMarkdown("The Policy Setting", response, removeNull=True, headers=["policyId", "name", "value"],
-                               headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        "The Policy Setting", response, removeNull=True, headers=["policyId", "name", "value"], headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.PolicySettings", outputs_key_field="policyId", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.PolicySettings",
+        outputs_key_field="policyId",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def modify_policy_setting_command(client: Client, policy_id: int, name: str, overrides: bool,
-                                  value: str) -> CommandResults:
+def modify_policy_setting_command(client: Client, policy_id: int, name: str, overrides: bool, value: str) -> CommandResults:
     """
     Modify a setting of a certain policy.
 
@@ -1704,11 +2126,17 @@ def modify_policy_setting_command(client: Client, policy_id: int, name: str, ove
     response["policyId"] = policy_id
     response["name"] = name
 
-    markdown = tableToMarkdown("The Policy Setting: ", response, removeNull=True, headers=["policyId", "name", "value"],
-                               headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(
+        "The Policy Setting: ", response, removeNull=True, headers=["policyId", "name", "value"], headerTransform=pascalToSpace
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.PolicySettings", outputs_key_field="policyId", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.PolicySettings",
+        outputs_key_field="policyId",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def reset_policy_setting_command(client: Client, policy_id: int, name: str, overrides: bool) -> CommandResults:
@@ -1729,11 +2157,17 @@ def reset_policy_setting_command(client: Client, policy_id: int, name: str, over
     response["policyId"] = policy_id
     response["name"] = name
 
-    markdown = tableToMarkdown("The Policy Setting", response, removeNull=True, headerTransform=pascalToSpace,
-                               headers=["policyId", "name", "value"])
+    markdown = tableToMarkdown(
+        "The Policy Setting", response, removeNull=True, headerTransform=pascalToSpace, headers=["policyId", "name", "value"]
+    )
 
-    return CommandResults(outputs_prefix="TrendMicro.PolicySettings", outputs_key_field="policyId", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    return CommandResults(
+        outputs_prefix="TrendMicro.PolicySettings",
+        outputs_key_field="policyId",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def list_policies_command(client: Client, overrides: bool) -> CommandResults:
@@ -1750,15 +2184,27 @@ def list_policies_command(client: Client, overrides: bool) -> CommandResults:
 
     response = client.list_policies(overrides=overrides)
 
-    markdown = tableToMarkdown("Policies list", response, removeNull=True, headers=POLICIES_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.Policies", outputs_key_field="id", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "Policies list", response, removeNull=True, headers=POLICIES_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.Policies",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
-def create_policy_command(client: Client, name: str, overrides: bool, parent_id: Optional[int],
-                          description: Optional[str], recommendation_scan_mode: Optional[str],
-                          auto_requires_update: Optional[str]) -> CommandResults:
+def create_policy_command(
+    client: Client,
+    name: str,
+    overrides: bool,
+    parent_id: Optional[int],
+    description: Optional[str],
+    recommendation_scan_mode: Optional[str],
+    auto_requires_update: Optional[str],
+) -> CommandResults:
     """
     Create a new policy.
 
@@ -1775,14 +2221,25 @@ def create_policy_command(client: Client, name: str, overrides: bool, parent_id:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.create_policy(overrides=overrides, parent_id=parent_id, name=name, description=description,
-                                    recommendation_scan_mode=recommendation_scan_mode,
-                                    auto_requires_update=auto_requires_update)
+    response = client.create_policy(
+        overrides=overrides,
+        parent_id=parent_id,
+        name=name,
+        description=description,
+        recommendation_scan_mode=recommendation_scan_mode,
+        auto_requires_update=auto_requires_update,
+    )
 
-    markdown = tableToMarkdown("The New Policy", response, removeNull=True, headers=POLICIES_TABLE_HEADERS,
-                               headerTransform=pascalToSpace)
-    return CommandResults(outputs_prefix="TrendMicro.Policies", outputs_key_field="id", outputs=response,
-                          readable_output=markdown, raw_response=response)
+    markdown = tableToMarkdown(
+        "The New Policy", response, removeNull=True, headers=POLICIES_TABLE_HEADERS, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        outputs_prefix="TrendMicro.Policies",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
 
 
 def create_once_only_scan_scheduled_task_command(client: Client, name: str, type: str, computer_id: int):
@@ -1801,7 +2258,7 @@ def create_once_only_scan_scheduled_task_command(client: Client, name: str, type
         raw_response=response,
         outputs=response,
         readable_output=f"Once-only scheduled task, named {name} for the "
-                        f"computer ID {computer_id} has been successfully created and run."
+        f"computer ID {computer_id} has been successfully created and run.",
     )
 
 
@@ -1822,22 +2279,16 @@ def delete_scheduled_task_command(client: Client, task_ids: List[int]):
         except ValueError:
             results.append(
                 CommandResults(
-                    entry_type=EntryType.ERROR, readable_output=f'task-ID {task_id} provided is invalid, must be integer'
+                    entry_type=EntryType.ERROR, readable_output=f"task-ID {task_id} provided is invalid, must be integer"
                 )
             )
         else:
             try:
                 client.delete_scheduled_task(_task_id)
-                results.append(
-                    CommandResults(
-                        readable_output=f"Scheduled task with ID {task_id} has been successfully deleted."
-                    )
-                )
+                results.append(CommandResults(readable_output=f"Scheduled task with ID {task_id} has been successfully deleted."))
             except Exception as error:
-                demisto.error(f'Failed to delete task-ID {task_id}, {error=}')
-                results.append(
-                    CommandResults(entry_type=EntryType.ERROR, readable_output=f'Failed to delete {task_id}')
-                )
+                demisto.error(f"Failed to delete task-ID {task_id}, {error=}")
+                results.append(CommandResults(entry_type=EntryType.ERROR, readable_output=f"Failed to delete {task_id}"))
 
     return results
 
@@ -1851,9 +2302,7 @@ def list_scheduled_task_command(client: Client, task_id: Optional[int]):
     """
     response = client.list_scheduled_tasks(task_id)
     if response.status_code == 404:
-        return CommandResults(
-            readable_output=f"Could not find scheduled task with ID {task_id}"
-        )
+        return CommandResults(readable_output=f"Could not find scheduled task with ID {task_id}")
 
     raw_response = response.json()
     context_output = raw_response.get("scheduledTasks") or raw_response
@@ -1873,13 +2322,11 @@ def list_scheduled_task_command(client: Client, task_id: Optional[int]):
                 headers=["ID", "name", "type", "enabled", "lastRunTime"],
                 headerTransform=pascalToSpace,
                 date_fields=["lastRunTime", "nextRunTime"],
-                removeNull=True
-            )
+                removeNull=True,
+            ),
         )
 
-    return CommandResults(
-        readable_output="There are no existing scheduled tasks."
-    )
+    return CommandResults(readable_output="There are no existing scheduled tasks.")
 
 
 def test_module(client: Client, **_) -> str:
@@ -1905,53 +2352,55 @@ def main():
 
     use_ssl = not params.get("insecure", False)
     use_proxy = params.get("proxy", False)
-    api_secret = params.get('credentials_api_secret', {}).get('password') or params.get("api_secret")
+    api_secret = params.get("credentials_api_secret", {}).get("password") or params.get("api_secret")
     if not api_secret:
-        return_error('API secret must be provided.')
+        return_error("API secret must be provided.")
     client = Client(params.get("server_url"), api_secret, use_ssl, use_proxy)
 
-    commands: dict[str, Callable] = {"trendmicro-list-computers": list_computers_command,
-                                     "trendmicro-create-computer": create_computer_command,
-                                     "trendmicro-search-computers": search_computers_command,
-                                     "trendmicro-get-computer": get_computer_command,
-                                     "trendmicro-modify-computer": modify_computer_command,
-                                     "trendmicro-delete-computer": delete_computer_command,
-                                     "trendmicro-get-computer-setting": get_computer_setting_command,
-                                     "trendmicro-modify-computer-setting": modify_computer_setting_command,
-                                     "trendmicro-reset-computer-setting": reset_computer_setting_command,
-                                     "trendmicro-list-firewall-rule-ids-of-computer": list_firewall_rule_ids_of_computer_command,
-                                     "trendmicro-add-firewall-rule-ids-to-computer": add_firewall_rule_ids_to_computer_command,
-                                     "trendmicro-set-firewall-rule-ids-to-computer": set_firewall_rule_ids_to_computer_command,
-                                     "trendmicro-remove-firewall-rule-id-from-computer": remove_firewall_rule_id_from_computer_command,  # noqa: E501
-                                     "trendmicro-list-computer-groups": list_computer_groups_command,
-                                     "trendmicro-create-computer-group": create_computer_group_command,
-                                     "trendmicro-search-computer-groups": search_computer_groups_command,
-                                     "trendmicro-get-computer-group": get_computer_group_command,
-                                     "trendmicro-modify-computer-group": modify_computer_group_command,
-                                     "trendmicro-delete-computer-group": delete_computer_group_command,
-                                     "trendmicro-search-firewall-rules": search_firewall_rules_command,
-                                     "trendmicro-list-firewall-rules": list_firewall_rules_command,
-                                     "trendmicro-create-firewall-rule": create_firewall_rule_command,
-                                     "trendmicro-get-firewall-rule": get_firewall_rule_command,
-                                     "trendmicro-modify-firewall-rule": modify_firewall_rule_command,
-                                     "trendmicro-delete-firewall-rule": delete_firewall_rule_command,
-                                     "trendmicro-search-policies": search_policies_command,
-                                     "trendmicro-get-policy": get_policy_command,
-                                     "trendmicro-modify-policy": modify_policy_command,
-                                     "trendmicro-delete-policy": delete_policy_command,
-                                     "trendmicro-get-default-policy-setting": get_default_policy_setting_command,
-                                     "trendmicro-modify-default-policy-setting": modify_default_policy_setting_command,
-                                     "trendmicro-reset-default-policy-setting": reset_default_policy_setting_command,
-                                     "trendmicro-list-default-policy-settings": list_default_policy_settings_command,
-                                     "trendmicro-get-policy-setting": get_policy_setting_command,
-                                     "trendmicro-modify-policy-setting": modify_policy_setting_command,
-                                     "trendmicro-reset-policy-setting": reset_policy_setting_command,
-                                     "trendmicro-list-policies": list_policies_command,
-                                     "trendmicro-create-policy": create_policy_command,
-                                     "trendmicro-create-onceonly-scan-scheduled-task": create_once_only_scan_scheduled_task_command,  # noqa: E501
-                                     "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
-                                     "trendmicro-list-scheduled-task": list_scheduled_task_command,
-                                     "test-module": test_module}
+    commands: dict[str, Callable] = {
+        "trendmicro-list-computers": list_computers_command,
+        "trendmicro-create-computer": create_computer_command,
+        "trendmicro-search-computers": search_computers_command,
+        "trendmicro-get-computer": get_computer_command,
+        "trendmicro-modify-computer": modify_computer_command,
+        "trendmicro-delete-computer": delete_computer_command,
+        "trendmicro-get-computer-setting": get_computer_setting_command,
+        "trendmicro-modify-computer-setting": modify_computer_setting_command,
+        "trendmicro-reset-computer-setting": reset_computer_setting_command,
+        "trendmicro-list-firewall-rule-ids-of-computer": list_firewall_rule_ids_of_computer_command,
+        "trendmicro-add-firewall-rule-ids-to-computer": add_firewall_rule_ids_to_computer_command,
+        "trendmicro-set-firewall-rule-ids-to-computer": set_firewall_rule_ids_to_computer_command,
+        "trendmicro-remove-firewall-rule-id-from-computer": remove_firewall_rule_id_from_computer_command,  # noqa: E501
+        "trendmicro-list-computer-groups": list_computer_groups_command,
+        "trendmicro-create-computer-group": create_computer_group_command,
+        "trendmicro-search-computer-groups": search_computer_groups_command,
+        "trendmicro-get-computer-group": get_computer_group_command,
+        "trendmicro-modify-computer-group": modify_computer_group_command,
+        "trendmicro-delete-computer-group": delete_computer_group_command,
+        "trendmicro-search-firewall-rules": search_firewall_rules_command,
+        "trendmicro-list-firewall-rules": list_firewall_rules_command,
+        "trendmicro-create-firewall-rule": create_firewall_rule_command,
+        "trendmicro-get-firewall-rule": get_firewall_rule_command,
+        "trendmicro-modify-firewall-rule": modify_firewall_rule_command,
+        "trendmicro-delete-firewall-rule": delete_firewall_rule_command,
+        "trendmicro-search-policies": search_policies_command,
+        "trendmicro-get-policy": get_policy_command,
+        "trendmicro-modify-policy": modify_policy_command,
+        "trendmicro-delete-policy": delete_policy_command,
+        "trendmicro-get-default-policy-setting": get_default_policy_setting_command,
+        "trendmicro-modify-default-policy-setting": modify_default_policy_setting_command,
+        "trendmicro-reset-default-policy-setting": reset_default_policy_setting_command,
+        "trendmicro-list-default-policy-settings": list_default_policy_settings_command,
+        "trendmicro-get-policy-setting": get_policy_setting_command,
+        "trendmicro-modify-policy-setting": modify_policy_setting_command,
+        "trendmicro-reset-policy-setting": reset_policy_setting_command,
+        "trendmicro-list-policies": list_policies_command,
+        "trendmicro-create-policy": create_policy_command,
+        "trendmicro-create-onceonly-scan-scheduled-task": create_once_only_scan_scheduled_task_command,  # noqa: E501
+        "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
+        "trendmicro-list-scheduled-task": list_scheduled_task_command,
+        "test-module": test_module,
+    }
 
     try:
         command = demisto.command()
