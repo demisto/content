@@ -147,7 +147,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, limit: in
     Creates paging response for fetching held_messages.
     """
     demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
-    payload: dict[str, Any] = {'meta': {},
+    payload: dict[str, Any] = {'meta': {}, 
                                'data': data}
     len_of_results = 0
     results = []
