@@ -74,8 +74,8 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 1. Sign in to the **Microsoft Entra admin center**.
 2. Navigate to **Identity** &rarr; **Monitoring & health** &rarr; **Diagnostic settings**.
-    - If you wish to stream Front Door logs, select the relevant Front Door profile 
-    - Within the profile, navigate to Monitoring, select Diagnostic Setting.
+    - To stream Front Door logs, select the relevant Front Door profile 
+    - Within the profile, navigate to **Monitoring**, and select **Diagnostic Setting**.
 3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
 4. Enter a **Diagnostic setting name**. If you're editing an existing integration, you can't change the name.
 5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
