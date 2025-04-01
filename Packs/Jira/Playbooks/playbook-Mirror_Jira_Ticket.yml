@@ -3,8 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Mirror Jira Ticket
-description: Mirror Jira Ticket is designed to serve as a sub-playbook, which enables
-  ticket mirroring with Jira.
+description: Mirror Jira Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with Jira.
 starttaskid: "0"
 tasks:
   "0":
@@ -218,8 +217,7 @@ inputs:
 - key: MirrorDirection
   value: {}
   required: false
-  description: "Set the mirror direction to one of the following values: \n1. In\n\
-    2. Out\n3. Both"
+  description: "Set the mirror direction to one of the following values: \n1. In\n2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorTags
   value: {}
@@ -252,3 +250,8 @@ outputs: []
 tests:
 - No test.
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

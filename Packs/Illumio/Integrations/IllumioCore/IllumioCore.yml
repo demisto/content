@@ -1410,4 +1410,5 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 fromversion: 6.2.0
