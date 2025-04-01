@@ -6035,8 +6035,6 @@
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
-        "Mail Sender (New) Test": "Creds not working CRTX-160174",
-        "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
         "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
         "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
 
