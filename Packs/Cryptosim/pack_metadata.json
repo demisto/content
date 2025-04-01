@@ -2,7 +2,7 @@
     "name": "Cryptosim",
     "description": "CRYPTOSIM meets the SIEM needs of corporations by its unique correlation engine works, capable of hierarchical correlation.",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "itemPrefix": [
         "CRYPTOSIM"
     ],

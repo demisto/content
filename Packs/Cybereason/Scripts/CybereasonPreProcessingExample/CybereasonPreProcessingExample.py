@@ -3,10 +3,10 @@ from CommonServerPython import *  # noqa: F401
 
 
 def get_guid_from_system_incident(incident: dict[str, Any]) -> str:
-    malop_guid = ''
-    for label in incident['labels']:
-        if label['type'] == 'GUID':
-            malop_guid = label['value']
+    malop_guid = ""
+    for label in incident["labels"]:
+        if label["type"] == "GUID":
+            malop_guid = label["value"]
             break
     return malop_guid
 
@@ -26,11 +26,11 @@ for inc in incident:
         res = False
         malop_incident = malop_incident[0]
         entries: list[dict[str, Any]] = []
-        entries.append({'Contents': f'Duplicate incident from cybereason: {inc.get("name")}'})
-        entries.append({'Type': EntryType.NOTE, 'ContentsFormat': 'json', 'Contents': json.dumps(inc)})
+        entries.append({"Contents": f'Duplicate incident from cybereason: {inc.get("name")}'})
+        entries.append({"Type": EntryType.NOTE, "ContentsFormat": "json", "Contents": json.dumps(inc)})
         entries_str = json.dumps(entries)
         execute_command('addEntries', {'id': malop_incident['id'], 'entries': entries_str})
         malop_incident_id = malop_incident.get('id', '')
         malop_incident_status = inc.get('status', '')
         demisto.debug(f"Updating incident status to : {malop_incident_status}")
-        execute_command('setIncident', {'id': malop_incident_id, 'status': malop_incident_status})
+        execute_command("setIncident", {"id": malop_incident_id, "status": malop_incident_status})

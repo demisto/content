@@ -17,6 +17,7 @@ from RankServiceOwners import (
     main,
     normalize_scores,
     score,
+    write_output_to_context_key,
 )
 
 
@@ -838,3 +839,35 @@ def test_featurize_similarity_error(mocker):
     idx_name_similarity_person_asset = 0
     output = featurize(asm_system_ids, owners)
     assert output[0][idx_name_similarity_person_asset] == 0
+
+
+@pytest.mark.parametrize('platform_tenant', [
+    (
+        "False"
+    ),
+    (
+        "True"
+    ),
+])
+def test_write_output_to_context_key(mocker, platform_tenant):
+    """
+    Test the write_output_to_context_key function
+    """
+    final_owners = [
+        {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
+        {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
+    ]
+    owner_related_field = "asmserviceowner"
+
+    mocker.patch.object(demisto, "executeCommand", return_value=[{'Type': 1}])
+    args = {"final_owners": final_owners, "owner_related_field": owner_related_field, "platform_tenant": platform_tenant}
+    demisto_execution_mock = mocker.patch.object(demisto, 'executeCommand')
+    write_output_to_context_key(**args)
+    expected_non_platform = [{'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'},
+                             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1'}]
+    expected_platform = ['email1@gmail.com', 'email1@gmail.com']
+    if platform_tenant == "True":
+        expected_calls_to_mock_object = [unittest.mock.call('setIssue', {'asmserviceowner': expected_platform})]
+    else:
+        expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceowner': expected_non_platform})]
+    assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object

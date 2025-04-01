@@ -2,7 +2,7 @@
     "name": "OTRS Service Management XSOAR Pack",
     "description": "An Integration Pack to Create, Update, and Delete OTRS Tickets",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "OTRS AG",
     "url": "https://otrs.com/",
     "email": "sales@otrs.com",

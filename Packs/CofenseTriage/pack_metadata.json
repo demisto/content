@@ -2,7 +2,7 @@
     "name": "Cofense Triage",
     "description": "Cofense Triage allows users to fetch reports by using the fetch incidents capability. It also provides commands to get entities like reporters, rules, categories, and more.",
     "support": "partner",
-    "currentVersion": "2.1.32",
+    "currentVersion": "2.1.33",
     "author": "Cofense",
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",
