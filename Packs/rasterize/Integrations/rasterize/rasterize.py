@@ -235,10 +235,12 @@ class PychromeEventHandler:
 
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}")
+        # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
             demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
 
+            # Check if the loaded page is a Chrome error page, which indicates a failed load
             if frame_url.lower().startswith(CHROME_ERROR_URL):
                 demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
                 self.retry_loading()
