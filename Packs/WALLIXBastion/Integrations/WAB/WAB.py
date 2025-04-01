@@ -1,9 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
 import time
-from requests import Response
 
+import demistomock as demisto
 import urllib3
+from CommonServerPython import *
+from requests import Response
 from urllib3 import exceptions as urllib3_exceptions
 
 
@@ -68,7 +68,7 @@ def to_markdown(name: str, t):
     try:
         return tableToMarkdown(name, t)
     except Exception as e:
-        return "Success (failed to format output: %s)" % str(e)
+        return f"Success (failed to format output: {str(e)})"
 
 
 class Client(BaseClient):
@@ -115,7 +115,10 @@ class Client(BaseClient):
 
         try:
             resp: Response = super()._http_request(
-                *args, **kwargs, resp_type="response", error_handler=client_err_handler  # type: ignore
+                *args,
+                **kwargs,
+                resp_type="response",
+                error_handler=client_err_handler,  # type: ignore
             )
         except AuthError:  # AuthError is only raised when first_auth is False
             update_session_token(None)
@@ -1379,7 +1382,6 @@ class Client(BaseClient):
         )
 
     def getx509_configuration_infos(self, args: Dict[str, Any]):
-
         response = self._http_request("get", "/config/x509")
 
         return CommandResults(
@@ -1430,13 +1432,11 @@ class Client(BaseClient):
         return CommandResults(readable_output="Success!", raw_response=response)
 
     def resetx509_configuration(self, args: Dict[str, Any]):
-
         response = self._http_request("delete", "/config/x509")
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_current_serial_configuration_number_of_bastion(self, args: Dict[str, Any]):
-
         response = self._http_request("get", "/confignumber")
 
         return CommandResults(
@@ -2401,7 +2401,6 @@ class Client(BaseClient):
         )
 
     def get_information_about_wallix_bastion_license(self, args: Dict[str, Any]):
-
         response = self._http_request("get", "/licenseinfo")
 
         return CommandResults(
@@ -3746,7 +3745,6 @@ class Client(BaseClient):
         return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_version(self, args: Dict[str, Any]):
-
         response = self._http_request("get", "/version")
 
         return CommandResults(
@@ -3817,7 +3815,6 @@ def raise_deprecated(old_command, new_command):
 
 
 def main() -> None:
-
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get("url")
