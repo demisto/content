@@ -3,7 +3,7 @@
     "prevName": "Recorded Future ASI",
     "description": "Helps you take risk prioritization to the next level by helping you identify the biggest weaknesses within your attack surface.",
     "support": "partner",
-    "currentVersion": "2.0.17",
+    "currentVersion": "2.0.18",
     "author": "Recorded Future",
     "url": "",
     "email": "support@recordedfuture.com",
@@ -15,7 +15,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

@@ -1,5 +1,6 @@
 # ruff: noqa: RUF001
 
+
 def test_text_from_html_success_english():
     """
     Given
@@ -28,10 +29,10 @@ def test_text_from_html_success_english():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, html_tag='body')
+    body = TextFromHTML.get_body(html, html_tag="body")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == '\nThis is heading 1\n'
+    assert res == "\nThis is heading 1\n"
 
 
 def test_text_from_html_success_hebrew():
@@ -62,10 +63,10 @@ def test_text_from_html_success_hebrew():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, html_tag='body')
+    body = TextFromHTML.get_body(html, html_tag="body")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == '\nמשפט בעברית לבדיקה\n'
+    assert res == "\nמשפט בעברית לבדיקה\n"
 
 
 def test_text_from_html_success_spanish():
@@ -96,10 +97,10 @@ def test_text_from_html_success_spanish():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, html_tag='body')
+    body = TextFromHTML.get_body(html, html_tag="body")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == '\nFrase en español para revisión\n'
+    assert res == "\nFrase en español para revisión\n"
 
 
 def test_extract_text_from_complex_html():
@@ -140,10 +141,10 @@ def test_extract_text_from_complex_html():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, html_tag='body')
+    body = TextFromHTML.get_body(html, html_tag="body")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == '\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link\n\n'
+    assert res == "\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link\n\n"
 
 
 def test_extract_text_from_html_with_breaks():
@@ -180,9 +181,9 @@ def test_extract_text_from_html_with_breaks():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, html_tag='body')
+    body = TextFromHTML.get_body(html, html_tag="body")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=True, trim_result=False)
-    assert res == '\nHTML Breaks\nHTML can contain break tags\n\n\nWhich should lead to a proper linebreak\n'
+    assert res == "\nHTML Breaks\nHTML can contain break tags\n\n\nWhich should lead to a proper linebreak\n"
 
 
 def test_extract_text_from_html_with_breaks_trimed():
@@ -218,9 +219,9 @@ def test_extract_text_from_html_with_breaks_trimed():
 </body>
 </html>
 """
-    body = TextFromHTML.get_body(html, html_tag='body')
+    body = TextFromHTML.get_body(html, html_tag="body")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=True, trim_result=True)
-    assert res == 'HTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak'
+    assert res == "HTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak"
 
 
 def test_extract_text_from_specific_tag():
@@ -237,10 +238,10 @@ def test_extract_text_from_specific_tag():
 
     html = """<p>HTML links are defined with the a tag:</p>"""
 
-    body = TextFromHTML.get_body(html, html_tag='p')
+    body = TextFromHTML.get_body(html, html_tag="p")
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == 'HTML links are defined with the a tag:'
+    assert res == "HTML links are defined with the a tag:"
 
 
 def test_extract_with_fallback():
@@ -257,10 +258,10 @@ def test_extract_with_fallback():
 
     html = """<div>Some HTML does not have a body Tag</div>"""
 
-    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=True)
+    body = TextFromHTML.get_body(html, html_tag="body", allow_fallback=True)
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == 'Some HTML does not have a body Tag'
+    assert res == "Some HTML does not have a body Tag"
 
 
 def test_extract_without_fallback():
@@ -277,28 +278,29 @@ def test_extract_without_fallback():
 
     html = """<div>Some HTML does not have a body Tag</div>"""
 
-    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=False)
+    body = TextFromHTML.get_body(html, html_tag="body", allow_fallback=False)
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
-    assert res == ''
+    assert res == ""
 
 
 def test_get_body():
     """
-    Given
-    - html string:
-        <!DOCTYPE html>
-<html>
-<body>
-<h1>This is heading 1</h1>
-</body>
-</html>
-    When
-    - extracting body from html
-    Then
-    - ensure we return "<body>\n<h1>This is heading 1</h1>\n</body>"
+        Given
+        - html string:
+            <!DOCTYPE html>
+    <html>
+    <body>
+    <h1>This is heading 1</h1>
+    </body>
+    </html>
+        When
+        - extracting body from html
+        Then
+        - ensure we return "<body>\n<h1>This is heading 1</h1>\n</body>"
     """
     import TextFromHTML
+
     html = """
 <!DOCTYPE html>
 <html>
@@ -307,9 +309,9 @@ def test_get_body():
 </body>
 </html>
 """
-    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=False)
+    body = TextFromHTML.get_body(html, html_tag="body", allow_fallback=False)
 
-    assert body == '<body>\n<h1>This is heading 1</h1>\n</body>'
+    assert body == "<body>\n<h1>This is heading 1</h1>\n</body>"
 
 
 def test_get_body_without_fallback():
@@ -325,9 +327,9 @@ def test_get_body_without_fallback():
     import TextFromHTML
 
     html = """<div>Some HTML does not have a body Tag</div>"""
-    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=False)
+    body = TextFromHTML.get_body(html, html_tag="body", allow_fallback=False)
 
-    assert body == ''
+    assert body == ""
 
 
 def test_get_body_with_fallback():
@@ -343,6 +345,6 @@ def test_get_body_with_fallback():
     import TextFromHTML
 
     html = """<div>Some HTML does not have a body Tag</div>"""
-    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=True)
+    body = TextFromHTML.get_body(html, html_tag="body", allow_fallback=True)
 
-    assert body == '<div>Some HTML does not have a body Tag</div>'
+    assert body == "<div>Some HTML does not have a body Tag</div>"

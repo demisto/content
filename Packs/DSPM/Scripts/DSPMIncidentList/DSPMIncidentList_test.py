@@ -37,11 +37,13 @@ def test_delete_incident_list():
     args = {
         "rerun_time": "48",
         "incident_data": {"id": 1},
-        "incident_list": '{"incident_id": 1, "incident_created": "2024-01-01T00:00:00Z"}'
+        "incident_list": '{"incident_id": 1, "incident_created": "2024-01-01T00:00:00Z"}',
     }
 
-    with patch("DSPMIncidentList.get_incident_time", return_value="2024-01-01T00:00:00Z"), \
-            patch("DSPMIncidentList.timeDifferenceInHours", return_value=True):
+    with (
+        patch("DSPMIncidentList.get_incident_time", return_value="2024-01-01T00:00:00Z"),
+        patch("DSPMIncidentList.timeDifferenceInHours", return_value=True),
+    ):
         result = delete_incident_list(args)
 
         # Assert
@@ -51,7 +53,7 @@ def test_delete_incident_list():
 def test_add_incident_list():
     args = {
         "incident_data": {"id": "1", "incidentCreated": "2024-11-01T00:00:00Z"},
-        "incident_list": '{"incident_id": "2", "incident_created": "2024-11-02T00:00:00Z"}'
+        "incident_list": '{"incident_id": "2", "incident_created": "2024-11-02T00:00:00Z"}',
     }
     result = add_incident_list(args)
 
