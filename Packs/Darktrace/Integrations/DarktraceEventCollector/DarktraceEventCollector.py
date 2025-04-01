@@ -147,7 +147,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: Dict
     return hmac.new(
         private_token.encode("ASCII"),
         f"{query_uri}{query_string}\n{public_token}\n{date}".encode("ASCII"),
-        hashlib.sha256,
+        hashlib.sha1,   # noqa: S324
     ).hexdigest()
 
 
@@ -155,7 +155,7 @@ def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch
     """Filters events by ascending pbid and max_fetch"""
     for index, event in enumerate(events):
         if event.get("pbid", 0) > last_fetched_pid:
-            return events[index: index + max_fetch]
+            return events[index : index + max_fetch]
     return []
 
 
