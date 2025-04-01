@@ -673,15 +673,15 @@ class EntryBuilder:
     def __enum_fields_by_group(
         recordset: Iterable[dict[Hashable, Any]],
         group_by: str,
+        sort_by: str | None,
         asc: bool,
-        sort_by: str | None = None
     ) -> Iterable[tuple[Hashable, Iterable[dict[Hashable, Any]]]]:
         """Enumerate fields with a group value by group
 
         :param recordset: The list of fields.
         :param group_by: The name of the field to make groups.
+        :param sort_by: The field name by which to sort records within each group.
         :param asc: Set to True to sort the recordset in ascent order, Set to False for descent order.
-        :param sort_by: The field name to sort groups.
         :return: Each group value with fields.
         """
         groups = itertools.groupby(
@@ -1165,8 +1165,8 @@ class EntryBuilder:
             for x_val, x_records in EntryBuilder.__enum_fields_by_group(
                 recordset=recordset,
                 group_by=template.x.by,
-                asc=template.x.asc,
                 sort_by=template.x.sort_by,
+                asc=template.x.asc,
             ):
                 groups = {k: None for k in ynames}
                 xlabel = ""
@@ -1213,8 +1213,8 @@ class EntryBuilder:
                 for x_val, x_records in EntryBuilder.__enum_fields_by_group(
                     recordset=recordset,
                     group_by=template.x.by,
-                    asc=template.x.asc,
                     sort_by=template.x.sort_by,
+                    asc=template.x.asc,
                 )
                 for y_fields in x_records
             ]
