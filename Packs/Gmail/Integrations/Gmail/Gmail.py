@@ -1,39 +1,40 @@
+from googleapiclient.errors import HttpError
+from google.oauth2 import service_account
+from apiclient import discovery
+import httplib2
+import google_auth_httplib2
+from urllib.parse import urlparse
+from typing import *
+from html.parser import HTMLParser
+from html.entities import name2codepoint
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.base import MIMEBase
+from email.mime.audio import MIMEAudio
+from email.mime.application import MIMEApplication
+from email.header import Header
+from distutils.util import strtobool
+from email.utils import parsedate_to_datetime, format_datetime
+from datetime import datetime, timedelta
+import copy
+import sys
+import string
+import re
+import random
+import mimetypes
+import json
+import itertools as it
+import concurrent.futures
+import base64
 import uuid
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Gmail, pack version = 1.3.31')
+
 
 ''' IMPORTS '''
-import base64
-import concurrent.futures
-import itertools as it
-import json
-import mimetypes
-import random
-import re
-import string
-import sys
-import copy
-from datetime import datetime, timedelta
-from email.utils import parsedate_to_datetime, format_datetime
-from distutils.util import strtobool
-from email.header import Header
-from email.mime.application import MIMEApplication
-from email.mime.audio import MIMEAudio
-from email.mime.base import MIMEBase
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from html.entities import name2codepoint
-from html.parser import HTMLParser
-from typing import *
-from urllib.parse import urlparse
 
-import google_auth_httplib2
-import httplib2
-from apiclient import discovery
-from google.oauth2 import service_account
-from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
 
@@ -372,7 +373,7 @@ def get_email_context(email_data, mailbox):
         'ThreadId': email_data.get('threadId'),
         'Labels': ', '.join(email_data.get('labelIds', [])),
         'Headers': context_headers,
-        'Attachments': email_data.get('payload', {}).get('filename', ''),
+        'Attachments': [{"Name": email_data.get('payload', {}).get('filename', ''), "ID": email_data.get('payload', {}).get('body', {}).get("attachmentId", 0)}],
         # only for format 'raw'
         'RawData': email_data.get('raw'),
         # only for format 'full' and 'metadata'
