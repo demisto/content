@@ -212,6 +212,9 @@ script:
     - contextPath: Cyberint.file_sha256.risk.malicious_score
       description: Malicious score.
       type: String
+    - contextPath: Cyberint.file_sha256.risk.occurrences_count
+      description: Occurences count.
+      type: String
     - contextPath: Cyberint.file_sha256.enrichment.filenames
       description: Filenames.
       type: String
