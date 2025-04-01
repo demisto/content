@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 import time
 import urllib.parse
-from distutils.util import strtobool
 from enum import Enum
 from re import Match
 from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
@@ -191,9 +190,9 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, list[GraphPermissions]] = {
         Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT,
     ],
     "microsoft-teams-chat-add-user": [Perms.CHAT_READBASIC, Perms.CHATMEMBER_READWRITE],
-    "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
-    "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC, Perms.CHAT_CREATE],
-    "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ, Perms.CHAT_CREATE],
+    "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
+    "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
+    "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ],
     "microsoft-teams-chat-update": [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
     "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
     "microsoft-teams-integration-health": [],
@@ -1109,9 +1108,10 @@ def get_team_aad_id(team_name: str) -> str:
     raise ValueError("Could not find requested team.")
 
 
-def get_chat_id_and_type(chat: str) -> tuple[str, str]:
+def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, str]:
     """
     :param chat: Represents the identity of the chat - chat_name, chat_id or member in case of "oneOnOne" chat_type.
+    :param create_dm_chat: Create a new one on one chat if the one requested does not exist already.
     :return: chat_id, chat_type
     """
     demisto.debug(f"Given chat: {chat}")
@@ -1134,21 +1134,24 @@ def get_chat_id_and_type(chat: str) -> tuple[str, str]:
     # case3 - chat = member in case of "oneOnOne" chat_type.
     # Check if the given "chat" argument is representing an existing member
     user_data: list = get_user(chat)
-    if not (user_data and user_data[0].get("id")):
-        raise ValueError(f"Could not find chat: {chat}")
+    if not (user_data and user_data[0].get('id')):
+        raise ValueError(f'Could not find chat: {chat}')
+
     demisto.debug(f"Received member as chat: {chat=}")
-    # Find the chat_id in case of 'oneOnOne' chat by calling "create_chat"
-    # If a one-on-one chat already exists, this operation will return the existing chat and not create a new one
-    chat_data: dict = create_chat("oneOnOne", [(user_data[0].get("id"), user_data[0].get("userType"))])
-    return chat_data.get("id", ""), chat_data.get("chatType", "")
+    if create_dm_chat:
+        # Find the chat_id in case of 'oneOnOne' chat by calling "create_chat"
+        # If a one-on-one chat already exists, this operation will return the existing chat and not create a new one
+        chat_data: dict = create_chat("oneOnOne", [(user_data[0].get('id'), user_data[0].get('userType'))])
+        chat_id = chat_data.get('id', '')
+        chat_type = chat_data.get('chatType', '')
+    else:
+        # Find the chat_id without trying to create a chat, raise an error if the one-on-one chat doesn't already exist
+        chat_id = get_one_on_one_chat_id(user_data[0].get('id'))
+        if not chat_id:
+            raise ValueError(f'Could not find chat: {chat}')
+        chat_type = 'oneOnOne'
 
-
-# def add_member_to_team(user_principal_name: str, team_id: str):
-#     url: str = f'{GRAPH_BASE_URL}/v1.0/groups/{team_id}/members/$ref'
-#     requestjson_: dict = {
-#          '@odata.id': f'{GRAPH_BASE_URL}/v1.0/directoryObjects/{user_principal_name}'
-#     }
-#     http_request('POST', url, json_=requestjson_)
+    return chat_id, chat_type
 
 
 def get_user(user: str) -> list:
@@ -1202,90 +1205,6 @@ def add_user_to_channel_command():
     add_user_to_channel(team_aad_id, channel_id, user[0].get("id"), is_owner)
 
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
-
-
-# def create_group_request(
-#         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
-#         owners_ids: list, members_ids: list = None
-# ) -> str:
-#     url = f'{GRAPH_BASE_URL}/v1.0/groups'
-#     data: dict = {
-#         'displayName': display_name,
-#         'groupTypes': ['Unified'],
-#         'mailEnabled': mail_enabled,
-#         'mailNickname': mail_nickname,
-#         'securityEnabled': security_enabled,
-#         'owners@odata.bind': owners_ids,
-#         'members@odata.bind': members_ids or owners_ids
-#     }
-#     group_creation_response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=data))
-#     group_id: str = group_creation_response.get('id', '')
-#     return group_id
-#
-#
-# def create_team_request(group_id: str) -> str:
-#     url = f'{GRAPH_BASE_URL}/v1.0/groups/{group_id}/team'
-#     team_creation_response: dict = cast(Dict[Any, Any], http_request('PUT', url, json_={}))
-#     team_id: str = team_creation_response.get('id', '')
-#     return team_id
-#
-#
-# def add_bot_to_team(team_id: str):
-#     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/installedApps'
-#     bot_app_id: str = ''
-#     data: dict = {
-#         'teamsApp@odata.bind': f'https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_app_id}'
-#     }
-#     print(http_request('POST', url, json_=data))
-#
-#
-# def create_team():
-#     display_name: str = demisto.args().get('display_name', '')
-#     mail_enabled: bool = bool(strtobool(demisto.args().get('mail_enabled', True)))
-#     mail_nickname: str = demisto.args().get('mail_nickname', '')
-#     security_enabled: bool = bool(strtobool(demisto.args().get('security_enabled', True)))
-#     owners = argToList(demisto.args().get('owner', ''))
-#     members = argToList(demisto.args().get('members', ''))
-#     owners_ids: list = list()
-#     members_ids: list = list()
-#     users: list = get_users()
-#     user_id: str = str()
-#     for member in members:
-#         found_member: bool = False
-#         for user in users:
-#             if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-#                 found_member = True
-#                 user_id = user.get('id', '')
-#                 members_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-#                 break
-#         if not found_member:
-#             demisto.results({
-#                 'Type': entryTypes['warning'],
-#                 'Contents': f'User {member} was not found',
-#                 'ContentsFormat': formats['text']
-#             })
-#     for owner in owners:
-#         found_owner: bool = False
-#         for user in users:
-#             if owner in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-#                 found_owner = True
-#                 user_id = user.get('id', '')
-#                 owners_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-#                 break
-#         if not found_owner:
-#             demisto.results({
-#                 'Type': entryTypes['warning'],
-#                 'Contents': f'User {owner} was not found',
-#                 'ContentsFormat': formats['text']
-#             })
-#     if not owners_ids:
-#         raise ValueError('Could not find given users to be Team owners.')
-#     group_id: str = create_group_request(
-#         display_name, mail_enabled, mail_nickname, security_enabled, owners_ids, members_ids
-#     )
-#     team_id: str = create_team_request(group_id)
-#     add_bot_to_team(team_id)
-#     demisto.results(f'Team {display_name} was created successfully')
 
 
 def create_conversation_member(user_id: str, user_role: list) -> dict:
@@ -1452,6 +1371,27 @@ def get_signed_in_user() -> dict[str, str]:
     """
     url = f"{GRAPH_BASE_URL}/v1.0/me"
     return cast(dict[str, str], http_request("GET", url))
+
+
+def get_one_on_one_chat_id(user_id: str) -> str:
+    """
+    Retrieves the chat id for the one on one chat between the given user_id and the signed-in user.
+    :param user_id: ID of the other user in the one on one chat
+
+    :return: ID of the one on one chat
+    """
+    caller_id: str = get_signed_in_user().get('id', '')
+    if caller_id == user_id:  # No 'one on one' between the user and himself
+        return ''
+    url = f'{GRAPH_BASE_URL}/v1.0/me/chats'
+    params = {
+        '$expand': 'members',
+        '$filter': ("chatType eq 'oneOnOne' and "
+                    f"members/any(m:m/microsoft.graph.aadUserConversationMember/userId eq '{user_id}')")
+    }
+    chats_response = cast(dict[Any, Any], http_request('GET', url, params=params))
+    chats, _ = pages_puller(chats_response)
+    return chats[0].get('id', '') if chats else ''
 
 
 def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
@@ -1753,9 +1693,9 @@ def chat_message_list_command():
     Retrieve the list of messages in a chat.
     """
     args = demisto.args()
-    chat = args.get("chat")
-    chat_id, _ = get_chat_id_and_type(chat)
-    next_link = args.get("next_link", "")
+    chat = args.get('chat')
+    chat_id, _ = get_chat_id_and_type(chat, create_dm_chat=False)
+    next_link = args.get('next_link', '')
 
     limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
     page_size = arg_to_number(args.get("page_size")) or MAX_ITEMS_PER_RESPONSE
@@ -1804,9 +1744,10 @@ def chat_list_command():
     if chat:
         if filter_query:
             raise ValueError("Retrieve a single chat does not support the 'filter' ODate query parameter.")
-        chat_id = chat if chat.endswith((GROUP_CHAT_ID_SUFFIX, ONEONONE_CHAT_ID_SUFFIX)) else get_chat_id_and_type(chat)[0]
-        chats_list_response: dict = get_chats_list(odata_params={"$expand": args.get("expand")}, chat_id=chat_id)
-        chats_list_response.pop("@odata.context", "")
+        chat_id = chat if chat.endswith((GROUP_CHAT_ID_SUFFIX, ONEONONE_CHAT_ID_SUFFIX)) else \
+            get_chat_id_and_type(chat, create_dm_chat=False)[0]
+        chats_list_response: dict = get_chats_list(odata_params={'$expand': args.get('expand')}, chat_id=chat_id)
+        chats_list_response.pop('@odata.context', '')
         chats_data = [chats_list_response]
     else:
         if next_link and page_size:
@@ -1867,8 +1808,8 @@ def chat_member_list_command():
     List all conversation members in a chat.
     """
 
-    chat: str = demisto.args().get("chat", "")
-    chat_id, _ = get_chat_id_and_type(chat)
+    chat: str = demisto.args().get('chat', '')
+    chat_id, _ = get_chat_id_and_type(chat, create_dm_chat=False)
 
     chat_members: list = get_chat_members(chat_id)
     [member.pop("@odata.type", None) for member in chat_members]
@@ -2485,9 +2426,9 @@ def channel_mirror_loop():
                         channel_to_update: dict = channel
                         if channel_to_update["mirror_direction"] and channel_to_update["mirror_type"]:
                             demisto.mirrorInvestigation(
-                                channel_to_update["investigation_id"],
-                                channel_to_update["mirror_type"],
-                                bool(strtobool(channel_to_update["auto_close"])),
+                                channel_to_update['investigation_id'],
+                                channel_to_update['mirror_type'],
+                                bool(argToBoolean(channel_to_update['auto_close']))
                             )
                             channel_to_update["mirrored"] = True
                             demisto.info(f"Mirrored incident: {investigation_id} to Microsoft Teams successfully")
