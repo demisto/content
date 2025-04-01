@@ -1,7 +1,7 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
-
-import json
 
 """
 This script is used to simplify the process of creating or updating a record in Keylight (v2).
@@ -21,51 +21,43 @@ def main():
     ##############################################################
     args = {
         # 'field_name': 'field_value',
-        'Task ID': demisto.args().get('task_id'),            # Example
-        'Audit Project': demisto.args().get('project')       # Example
+        "Task ID": demisto.args().get("task_id"),  # Example
+        "Audit Project": demisto.args().get("project"),  # Example
     }
 
     lookup_fields = {
         # 'argName': 'componentName',
-        'Audit Project': 'Audit Projects'       # Example
+        "Audit Project": "Audit Projects"  # Example
     }
 
     ##############################################################
-    components = demisto.executeCommand("kl-get-component", {})[0].get('Contents', {})
+    components = demisto.executeCommand("kl-get-component", {})[0].get("Contents", {})
 
     final_json = []
-    for field_name in args.keys():
-        if field_name in lookup_fields.keys():
+    for field_name in args:
+        if field_name in lookup_fields:
             component_id = get_component_id_by_name(lookup_fields.get(field_name), components)
-            records = demisto.executeCommand("kl-get-records", {'component_id': component_id})[0].get('Contents', {})
+            records = demisto.executeCommand("kl-get-records", {"component_id": component_id})[0].get("Contents", {})
             lookup_field_id = get_lookup_id(args[field_name], records)
-            field = {
-                'fieldName': field_name,
-                'value': lookup_field_id,
-                'isLookup': True
-            }
+            field = {"fieldName": field_name, "value": lookup_field_id, "isLookup": True}
             final_json.append(field)
         else:
-            field = {
-                'fieldName': field_name,
-                'value': args[field_name],
-                'isLookup': False
-            }
+            field = {"fieldName": field_name, "value": args[field_name], "isLookup": False}
             final_json.append(field)
 
-    return_outputs(json.dumps(final_json, indent=4), {'Keylight.JSON': json.dumps(final_json)}, final_json)
+    return_outputs(json.dumps(final_json, indent=4), {"Keylight.JSON": json.dumps(final_json)}, final_json)
 
 
 def get_lookup_id(lookup_value, records):
     for record in records:
-        if record.get('DisplayName', '') == lookup_value:
-            return record.get('ID', -1)
+        if record.get("DisplayName", "") == lookup_value:
+            return record.get("ID", -1)
     raise ValueError(f"Could not find {lookup_value} in the specified component.")
 
 
 def get_component_id_by_name(component_name, components):
     for component in components:
-        if component.get('Name') == component_name:
+        if component.get("Name") == component_name:
             return component.get("ID", -1)
     raise ValueError("Could not find component.")
 

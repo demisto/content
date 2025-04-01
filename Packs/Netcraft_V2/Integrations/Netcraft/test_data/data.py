@@ -692,9 +692,7 @@ class submission_list:
                     "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 },
             ],
-            "Netcraft(true)": {
-                "SubmissionNextToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-            },
+            "Netcraft(true)": {"SubmissionNextToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
         },
         outputs_key_field="uuid",
         outputs_prefix="Netcraft.Submission",
@@ -718,9 +716,7 @@ class submission_list_with_uuid:
         "ignore_404": True,
     }
     api_response = {
-        "classification_log": [
-            {"date": 1000000000, "from_state": "no threats", "to_state": "malicious"}
-        ],
+        "classification_log": [{"date": 1000000000, "from_state": "no threats", "to_state": "malicious"}],
         "date": 1000000000,
         "files": "https://report.netcraft.com/api/v3/submission/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/files",
         "has_cryptocurrency_addresses": "1",
@@ -887,9 +883,7 @@ class mail_screenshot_get_404(mail_screenshot_get):
 class submission_mail_get:
     args = {"submission_uuid": "submission_uuid"}
     api_response = {
-        "classification_log": [
-            {"date": 1000000000, "from_state": "processing", "to_state": "no threats"}
-        ],
+        "classification_log": [{"date": 1000000000, "from_state": "processing", "to_state": "no threats"}],
         "from": ["user@example.com"],
         "hash": "string",
         "reply_to": ["user@example.com"],
@@ -1081,9 +1075,7 @@ class submission_url_list:
                 "incident_report_url": "https://incident.netcraft.com/aaaaaaaaaaaa/",
                 "ip": "127.0.0.1",
                 "reason": "This site impersonates an official brand website.",
-                "screenshots": [
-                    {"hash": "XswLgTyECQur1DxIisHiwmk6pScJ6rDl", "type": "gif"}
-                ],
+                "screenshots": [{"hash": "XswLgTyECQur1DxIisHiwmk6pScJ6rDl", "type": "gif"}],
                 "source": "mail",
                 "sources": [
                     {
@@ -1137,9 +1129,7 @@ class submission_url_list:
                 "incident_report_url": "https://incident.netcraft.com/aaaaaaaaaaaa/",
                 "ip": "127.0.0.1",
                 "reason": "This site impersonates an official brand website.",
-                "screenshots": [
-                    {"hash": "XswLgTyECQur1DxIisHiwmk6pScJ6rDl", "type": "gif"}
-                ],
+                "screenshots": [{"hash": "XswLgTyECQur1DxIisHiwmk6pScJ6rDl", "type": "gif"}],
                 "source": "mail",
                 "sources": [
                     {

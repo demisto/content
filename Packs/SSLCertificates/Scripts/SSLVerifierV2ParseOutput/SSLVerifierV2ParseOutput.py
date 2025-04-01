@@ -17,12 +17,12 @@ def create_md_table(headers, certList):
     md += "|\n"
 
     # Close out markdown header
-    for arg in headers:
+    for _arg in headers:
         md += "|--------------"
     md += "|\n"
 
     # Fill in tabular data
-    for cert in certList:
+    for _cert in certList:
         md += "|" + certList[counter]["Domain"]
         md += "|" + certList[counter]["ExpirationDate"]
         md += "|" + str(certList[counter]["TimeToExpiration"]) + " days"
@@ -36,8 +36,8 @@ def main():
     try:
         md = ""
         results = {}
-        keyName = demisto.getArg('SSLVerifierKey')
-        statusCode = demisto.getArg('StatusType')
+        keyName = demisto.getArg("SSLVerifierKey")
+        statusCode = demisto.getArg("StatusType")
 
         SSLVerifier_json = demisto.get(demisto.context(), keyName)
 
@@ -61,41 +61,36 @@ def main():
 
         # Update Context and create markdown table for good, warning, expiring, and expired certificates
 
-        if ((statusCode == "expired" or statusCode == "all") and expired):
+        if (statusCode == "expired" or statusCode == "all") and expired:
             tblExpired = create_md_table(("Site", "Expiration Date", "Days Expired"), expired)
             md += "# {{color:red}}(** EXPIRED SSL CERTIFICATES **) #\n\n" + tblExpired
-            results['Expired'] = expired
-            results['ExpiredTable'] = tblExpired
+            results["Expired"] = expired
+            results["ExpiredTable"] = tblExpired
 
-        if ((statusCode == "expiring" or statusCode == "all") and expiring):
+        if (statusCode == "expiring" or statusCode == "all") and expiring:
             tblExpiring = create_md_table(("Site", "Expiration Date", "Days to Expiration"), expiring)
             md += "### {{color:red}}(** SSL Certificates expiring in 90 days or less **) ###\n\n" + tblExpiring
-            results['Expiring'] = expiring
-            results['ExpiringTable'] = tblExpiring
+            results["Expiring"] = expiring
+            results["ExpiringTable"] = tblExpiring
 
-        if ((statusCode == "warning" or statusCode == "all") and warning):
+        if (statusCode == "warning" or statusCode == "all") and warning:
             tblWarn = create_md_table(("Site", "Expiration Date", "Days to Expiration"), warning)
             md += "### {{color:yellow}}(** SSL Certificates expiring between 91 and 180 days from now **) ###\n\n" + tblWarn
-            results['Warning'] = warning
-            results['WarningTable'] = tblWarn
+            results["Warning"] = warning
+            results["WarningTable"] = tblWarn
 
-        if ((statusCode == "good" or statusCode == "all") and good):
+        if (statusCode == "good" or statusCode == "all") and good:
             tblGood = create_md_table(("Site", "Expiration Date", "Days to Expiration"), good)
             md += "### {{color:green}}(** SSL Certificates expiring in greater than 180 days **) ###\n\n" + tblGood
-            results['Good'] = good
-            results['GoodTable'] = tblGood
+            results["Good"] = good
+            results["GoodTable"] = tblGood
 
-        results['md'] = md  # type: ignore
+        results["md"] = md  # type: ignore
 
-        return_results(CommandResults(
-            outputs_prefix="SSLReport",
-            outputs=results,
-            readable_output=md
-        )
-        )
+        return_results(CommandResults(outputs_prefix="SSLReport", outputs=results, readable_output=md))
     except Exception as ex:
-        return_error(f'An Error occured: {ex}', error=ex)
+        return_error(f"An Error occured: {ex}", error=ex)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
