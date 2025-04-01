@@ -30,7 +30,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "971",
         "Alert.IngestTime": "2023-12-12T03:23:36",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/6769D061-A714-4C95-A8AE-121E5379BF3C"
+        "Url": "https://test.com/analytics/entity/Alert/6769D061-A714-4C95-A8AE-121E5379BF3C"
       },
       {
         "Alert.Rule.Name": "Deletion: Active Directory containers, Foreign Security Principal, or GPO",
@@ -62,7 +62,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "971",
         "Alert.IngestTime": "2023-12-12T03:23:33",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/77230F1D-BFA6-4B0B-BE0D-323B503A67D1"
+        "Url": "https://test.com/analytics/entity/Alert/77230F1D-BFA6-4B0B-BE0D-323B503A67D1"
       },
       {
         "Alert.Rule.Name": "Deletion: Active Directory containers, Foreign Security Principal, or GPO",
@@ -94,7 +94,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "971",
         "Alert.IngestTime": "2023-12-12T03:23:30",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/60F667E1-41E6-4807-8DDF-57DAB867772E"
+        "Url": "https://test.com/analytics/entity/Alert/60F667E1-41E6-4807-8DDF-57DAB867772E"
       },
       {
         "Alert.Rule.Name": "Health check #1: Any Event On Single Day",
@@ -126,7 +126,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "971",
         "Alert.IngestTime": "2023-12-12T00:07:13",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/B316F1CE-52BE-4264-92AC-8A2BDB42EDCA"
+        "Url": "https://test.com/analytics/entity/Alert/B316F1CE-52BE-4264-92AC-8A2BDB42EDCA"
       },
       {
         "Alert.Rule.Name": "Health check #1: Any Event On Single Day",
@@ -158,7 +158,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "971",
         "Alert.IngestTime": "2023-12-12T00:02:35",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/166AB86E-ABFB-47E1-B1BB-C90853FD8C61"
+        "Url": "https://test.com/analytics/entity/Alert/166AB86E-ABFB-47E1-B1BB-C90853FD8C61"
       },
       {
         "Alert.Rule.Name": "Activity from blocklisted geolocation",
@@ -190,7 +190,7 @@
         "Alert.Location.AbnormalLocation": "Not new/abnormal",
         "Alert.User.SidID": "4357",
         "Alert.IngestTime": "2023-12-12T00:02:30",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/76A03D61-A1BF-4C64-AFCF-995FBCE20079"
+        "Url": "https://test.com/analytics/entity/Alert/76A03D61-A1BF-4C64-AFCF-995FBCE20079"
       },
       {
         "Alert.Rule.Name": "Permissions granted directly to user in directory services",
@@ -222,7 +222,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "4336",
         "Alert.IngestTime": "2023-12-11T23:32:23",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/EB18954F-5AE7-4384-999A-79172FEED6FA"
+        "Url": "https://test.com/analytics/entity/Alert/EB18954F-5AE7-4384-999A-79172FEED6FA"
       },
       {
         "Alert.Rule.Name": "ATP_NonATP_Threshold_RTA_Rule_12/11/2023 10:45:06 PM",
@@ -254,7 +254,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "4209",
         "Alert.IngestTime": "2023-12-11T22:51:14",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/87586397-8905-4705-ABDA-584197586A70"
+        "Url": "https://test.com/analytics/entity/Alert/87586397-8905-4705-ABDA-584197586A70"
       },
       {
         "Alert.Rule.Name": "ATP_Threshold_RTA_Rule_12/11/2023 10:45:06 PM",
@@ -286,7 +286,7 @@
         "Alert.Location.AbnormalLocation": "",
         "Alert.User.SidID": "4209",
         "Alert.IngestTime": "2023-12-11T22:51:11",
-        "Url": "https://test.com/#/app/analytics/entity/Alert/7B752108-FB89-4CF9-A28C-06178ECA6E9C"
+        "Url": "https://test.com/analytics/entity/Alert/7B752108-FB89-4CF9-A28C-06178ECA6E9C"
       }
     ]
  }

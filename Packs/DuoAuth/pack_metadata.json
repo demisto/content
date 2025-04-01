@@ -1,0 +1,28 @@
+{
+    "name": "DuoAuth",
+    "description": "The Duo Auth API lets developers integrate with Duo Security's platform at a low level. Must have access to the auth api in order to use this",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mihovil Magdic",
+    "url": "",
+    "email": "",
+    "created": "2025-02-18T10:10:20Z",
+    "categories": ["Identity and Access Management"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar_saas",
+        "marketplacev2",
+        "platform"
+    ],
+    "githubUser": [
+        "cheersmann"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}

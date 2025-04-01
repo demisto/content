@@ -508,13 +508,15 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="PUT", url_suffix="trust/data", json_data=data, resp_type="response", ok_codes=(200,))
 
-    def get_container_scan_results(self, params: Optional[dict] = None) -> List[dict]:
+    def get_container_scan_results(self, params: Optional[dict] = None, all_results: bool = False) -> List[dict]:
         """
         Sends a request to get container scan results information.
 
         Returns:
             list[dict]: container scan results information.
         """
+        if all_results:
+            return self._get_all_results(url_suffix="/containers", params=params)
         return self._http_request(method="GET", url_suffix="containers", params=params)
 
     def get_hosts_info(self, params: Optional[dict] = None) -> List[dict]:
@@ -2393,16 +2395,13 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
     search = args.get("search")
     all_results = argToBoolean(args.get("all_results", "false"))
 
-    if all_results:
-        limit = 0
-
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id,
         hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
     )
 
-    if container_scan_results := client.get_container_scan_results(params=params):
+    if container_scan_results := client.get_container_scan_results(params=params, all_results=all_results):
         table = tableToMarkdown(
             name="Container Scan Information",
             t=[

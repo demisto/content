@@ -17,3 +17,9 @@ This integration was integrated and tested Proofpoint Email Security.
 
 4. Select **Long running instance**.
 5. Click **Test** to validate the URLs, token, and connection.
+
+
+## Commands
+### proofpoint-es-get-last-run-results
+***
+Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.

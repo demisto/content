@@ -1,39 +1,36 @@
+import demistomock as demisto
 import pytest
 import requests
 from CommonServerPython import DemistoException
-import demistomock as demisto
 
 
 class DotDict(dict):
     """dot.notation access to dictionary attributes"""
+
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__  # noqa: type: ignore[assignment]
     __delattr__ = dict.__delitem__  # noqa: type: ignore[assignment]
 
 
 def test_query_formatting(mocker):
-    args = {
-        'ticket-id': 1111
-    }
+    args = {"ticket-id": 1111}
     params = {
-        'server': 'test',
-        'credentials': {
-            'identifier': 'test',
-            'password': 'test'
-        },
-        'fetch_priority': 1,
-        'fetch_status': 'test',
-        'fetch_queue': 'test',
-        'proxy': True
+        "server": "test",
+        "credentials": {"identifier": "test", "password": "test"},
+        "fetch_priority": 1,
+        "fetch_status": "test",
+        "fetch_queue": "test",
+        "proxy": True,
     }
 
-    mocker.patch.object(requests, 'session', return_value=DotDict({}))
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(requests, "session", return_value=DotDict({}))
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value=params)
 
     from RTIR import build_search_query
+
     query = build_search_query()
-    assert not query.endswith(('+OR+', '+AND+'))
+    assert not query.endswith(("+OR+", "+AND+"))
 
 
 RAW_HISTORY = """
@@ -62,20 +59,23 @@ Attachments:
 
 def test_parse_history_response():
     from RTIR import parse_history_response
+
     parsed_history = parse_history_response(RAW_HISTORY)
-    assert parsed_history == {'ID': '80',
-                              'Ticket': '5',
-                              'TimeTaken': '0',
-                              'Type': 'Create',
-                              'Field': '',
-                              'OldValue': '',
-                              'NewValue': 'some new value',
-                              'Data': '',
-                              'Description': 'Ticket created by root',
-                              'Content': 'Some\nMulti line\nContent',
-                              'Creator': 'root',
-                              'Created': '2018-07-09 11:25:59',
-                              'Attachments': ''}
+    assert parsed_history == {
+        "ID": "80",
+        "Ticket": "5",
+        "TimeTaken": "0",
+        "Type": "Create",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "some new value",
+        "Data": "",
+        "Description": "Ticket created by root",
+        "Content": "Some\nMulti line\nContent",
+        "Creator": "root",
+        "Created": "2018-07-09 11:25:59",
+        "Attachments": "",
+    }
 
 
 RAW_LINKS = """RT/4.4.4 200 Ok
@@ -89,8 +89,9 @@ Members: some-url.com/ticket/65461,
 
 def test_parse_ticket_links():
     from RTIR import parse_ticket_links
+
     response = parse_ticket_links(RAW_LINKS)
-    expected = [{'ID': '65461'}, {'ID': '65462'}, {'ID': '65463'}]
+    expected = [{"ID": "65461"}, {"ID": "65462"}, {"ID": "65463"}]
     assert response == expected
 
 
@@ -108,8 +109,9 @@ def test_build_ticket_id_in_headers():
 
     """
     from RTIR import build_ticket
-    ticket = build_ticket(['ID: ticket/1'])
-    expected = {'ID': 1}
+
+    ticket = build_ticket(["ID: ticket/1"])
+    expected = {"ID": 1}
     assert expected == ticket
 
 
@@ -127,7 +129,8 @@ def test_build_ticket_contains_id_in_headers():
 
     """
     from RTIR import build_ticket
-    ticket = build_ticket(['ThisIsAID: ofNotID'])
+
+    ticket = build_ticket(["ThisIsAID: ofNotID"])
     assert ticket == {}
 
 
@@ -141,18 +144,21 @@ Attachments: 504: mimecast-get-remediation-incident.log (text/plain / 3.5k)
 
 def test_parse_attachments_list():
     """
-        Test attachment list parsing
-        Given:
-            - Attachment list raw response
-        When:
-            - Trying to parse that response
-        Then:
-            - Ensure response is parsed into a list of tuples with id, name, type, size
+    Test attachment list parsing
+    Given:
+        - Attachment list raw response
+    When:
+        - Trying to parse that response
+    Then:
+        - Ensure response is parsed into a list of tuples with id, name, type, size
     """
     from RTIR import parse_attachments_list
+
     response = parse_attachments_list(RAW_ATTACHMENTS_LIST)
-    expected = [('504', 'mimecast-get-remediation-incident.log', 'text/plain', '3.5k'),
-                ('505', 'mimecast-get-remediation-incident2.log', 'text/plain', '3.6k')]
+    expected = [
+        ("504", "mimecast-get-remediation-incident.log", "text/plain", "3.5k"),
+        ("505", "mimecast-get-remediation-incident2.log", "text/plain", "3.6k"),
+    ]
     assert response == expected
 
 
@@ -173,17 +179,18 @@ attachment content"""
 
 def test_parse_attachment_content():
     """
-        Test attachment content
-        Given:
-            - Attachment content raw response
-        When:
-            - Trying to parse that response
-        Then:
-            - Ensure response is parsed into a string with all that comes after the "Content: "
+    Test attachment content
+    Given:
+        - Attachment content raw response
+    When:
+        - Trying to parse that response
+    Then:
+        - Ensure response is parsed into a string with all that comes after the "Content: "
     """
     from RTIR import parse_attachment_content
-    response = parse_attachment_content('1234', RAW_ATTACHMENT_CONTENT)
-    expected = 'some multiline\nattachment content'
+
+    response = parse_attachment_content("1234", RAW_ATTACHMENT_CONTENT)
+    expected = "some multiline\nattachment content"
     assert response == expected
 
 
@@ -202,14 +209,15 @@ def test_add_reply(mocker):
     - Ensure the reply is sent successfully
     """
     from RTIR import add_reply
-    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234', 'text': 'some text'})
+
+    mocker.patch.object(demisto, "args", return_value={"ticket-id": "1234", "text": "some text"})
     mocked_response = requests.Response()
-    mocked_response._content = b'200'
+    mocked_response._content = b"200"
     mocked_response.status_code = 200
-    mocker.patch('RTIR.add_reply_request', return_value=mocked_response)
-    mocked_demisto_results = mocker.patch.object(demisto, 'results')
+    mocker.patch("RTIR.add_reply_request", return_value=mocked_response)
+    mocked_demisto_results = mocker.patch.object(demisto, "results")
     add_reply()
-    mocked_demisto_results.assert_called_with('Replied successfully to ticket 1234.')
+    mocked_demisto_results.assert_called_with("Replied successfully to ticket 1234.")
 
 
 def test_add_reply_fail(mocker):
@@ -226,15 +234,16 @@ def test_add_reply_fail(mocker):
     - Ensure the reply fails with an error message.
     """
     from RTIR import add_reply
-    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234', 'text': 'some text'})
+
+    mocker.patch.object(demisto, "args", return_value={"ticket-id": "1234", "text": "some text"})
     mocked_response = requests.Response()
-    mocked_response._content = b'400'
+    mocked_response._content = b"400"
     mocked_response.status_code = 400
-    mocker.patch('RTIR.add_reply_request', return_value=mocked_response)
-    mocker.patch('RTIR.demisto.error')
+    mocker.patch("RTIR.add_reply_request", return_value=mocked_response)
+    mocker.patch("RTIR.demisto.error")
     with pytest.raises(DemistoException) as e:
         add_reply()
-    assert str(e.value) == 'Failed to reply'
+    assert str(e.value) == "Failed to reply"
 
 
 def test_add_comment(mocker):
@@ -252,14 +261,15 @@ def test_add_comment(mocker):
     - Ensure the comment is added sent successfully
     """
     from RTIR import add_comment
-    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234', 'text': 'some text'})
+
+    mocker.patch.object(demisto, "args", return_value={"ticket-id": "1234", "text": "some text"})
     mocked_response = requests.Response()
-    mocked_response._content = b'200'
+    mocked_response._content = b"200"
     mocked_response.status_code = 200
-    mocker.patch('RTIR.add_comment_request', return_value=mocked_response)
-    mocked_demisto_results = mocker.patch.object(demisto, 'results')
+    mocker.patch("RTIR.add_comment_request", return_value=mocked_response)
+    mocked_demisto_results = mocker.patch.object(demisto, "results")
     add_comment()
-    mocked_demisto_results.assert_called_with('Added comment to ticket 1234 successfully.')
+    mocked_demisto_results.assert_called_with("Added comment to ticket 1234 successfully.")
 
 
 def test_add_comment_fail(mocker):
@@ -276,14 +286,15 @@ def test_add_comment_fail(mocker):
     - Ensure the command fails with an error message.
     """
     from RTIR import add_comment
-    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234', 'text': 'some text'})
+
+    mocker.patch.object(demisto, "args", return_value={"ticket-id": "1234", "text": "some text"})
     mocked_response = requests.Response()
-    mocked_response._content = b'400'
+    mocked_response._content = b"400"
     mocked_response.status_code = 400
-    mocker.patch('RTIR.add_comment_request', return_value=mocked_response)
+    mocker.patch("RTIR.add_comment_request", return_value=mocked_response)
     with pytest.raises(DemistoException) as e:
         add_comment()
-    assert str(e.value) == 'Failed to add comment'
+    assert str(e.value) == "Failed to add comment"
 
 
 def test_edit_ticket(mocker):
@@ -300,8 +311,32 @@ def test_edit_ticket(mocker):
     - Ensure the command fails with an error message.
     """
     from RTIR import edit_ticket
-    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234'})
+
+    mocker.patch.object(demisto, "args", return_value={"ticket-id": "1234"})
     try:
         edit_ticket()
     except Exception as ex:
-        assert ex.message == 'No arguments were given to edit the ticket.'
+        assert ex.message == "No arguments were given to edit the ticket."
+
+
+def test_create_ticket_409_failure(mocker):
+    args = {
+        "queue": "test",
+        "subject": "Test Ticket",
+        "requestor": "test@example.com",
+        "priority": "High",
+        "text": "This is a test ticket",
+    }
+
+    mock_response = DotDict({"status_code": 200, "text": "RT/5.0.3 409 Syntax Error\nTicket creation failed"})
+
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("RTIR.create_ticket_request", return_value=mock_response)
+
+    from RTIR import create_ticket
+
+    with pytest.raises(DemistoException) as e:
+        create_ticket()
+
+    assert "Ticket creation failed" in str(e.value)
+    assert "RT/5.0.3 409 Syntax Error" in str(e.value)

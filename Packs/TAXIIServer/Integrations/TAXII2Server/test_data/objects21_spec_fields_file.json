@@ -3,7 +3,7 @@
     "next": "7",
     "objects": [
         {
-            "created": "2021-12-28T14:58:19.712448Z",
+            "created": "2021-12-28T12:58:19.712448Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -14,12 +14,12 @@
                 "SHA-1": "1111111111111111111111111111111111111111"
             },
             "id": "file--a8b26730-1daf-57e7-9c48-02c6481f82a0",
-            "modified": "2021-12-28T14:58:19.712449Z",
+            "modified": "2021-12-28T12:58:19.712449Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-28T14:58:19.711496Z",
+            "created": "2021-12-28T12:58:19.711496Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -30,12 +30,12 @@
                 "SHA-1": "2222222222222222222222222222222222222222"
             },
             "id": "file--e285df9f-115e-502e-b443-58942d11c74b",
-            "modified": "2021-12-28T14:58:19.711497Z",
+            "modified": "2021-12-28T12:58:19.711497Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-28T14:58:19.711459Z",
+            "created": "2021-12-28T12:58:19.711459Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -46,12 +46,12 @@
                 "SHA-1": "3333333333333333333333333333333333333333"
             },
             "id": "file--427204f1-558f-5703-b72a-a769445c4281",
-            "modified": "2021-12-28T14:58:19.711461Z",
+            "modified": "2021-12-28T12:58:19.711461Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-28T14:58:19.711239Z",
+            "created": "2021-12-28T12:58:19.711239Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -62,12 +62,12 @@
                 "SHA-1": "4444444444444444444444444444444444444444"
             },
             "id": "file--1862af80-9e6f-5bf0-a0d5-6b064bb7c64a",
-            "modified": "2021-12-28T14:58:19.711240Z",
+            "modified": "2021-12-28T12:58:19.711240Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-14T17:45:38.402950Z",
+            "created": "2021-12-14T15:45:38.402950Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -78,12 +78,12 @@
                 "SHA-1": "5555555555555555555555555555555555555555"
             },
             "id": "file--225c65f1-5912-567f-ab8d-fc81ee3267ba",
-            "modified": "2021-12-27T16:11:40.513923Z",
+            "modified": "2021-12-27T14:11:40.513923Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-14T17:45:34.792287Z",
+            "created": "2021-12-14T15:45:34.792287Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -94,12 +94,12 @@
                 "SHA-1": "6666666666666666666666666666666666666666"
             },
             "id": "file--9413764e-8054-56d5-8d9e-89facc4fecdb",
-            "modified": "2021-12-27T16:11:35.339540Z",
+            "modified": "2021-12-27T14:11:35.339540Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-14T17:45:38.397583Z",
+            "created": "2021-12-14T15:45:38.397583Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "extension_type": "property_extension",
@@ -110,19 +110,19 @@
                 "SHA-1": "7777777777777777777777777777777777777777"
             },
             "id": "file--756c3d21-72f7-5c9f-ae21-069f81994c4b",
-            "modified": "2021-12-27T16:11:40.503074Z",
+            "modified": "2021-12-27T14:11:40.503074Z",
             "spec_version": "2.1",
             "type": "file"
         },
         {
-            "created": "2021-12-28T14:58:19.712448Z",
+            "created": "2021-12-28T12:58:19.712448Z",
             "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
             "description": "This schema adds TIM data to the object",
             "extension_types": [
                 "property-extension"
             ],
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
-            "modified": "2021-12-28T14:58:19.712449Z",
+            "modified": "2021-12-28T12:58:19.712449Z",
             "name": "Cortex XSOAR TIM File",
             "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",

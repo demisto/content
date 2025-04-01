@@ -1,19 +1,19 @@
 id: MSG-ediscovery-tpb
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: MSG-ediscovery-tpb
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0b114d81-f367-49cd-8bf9-b5d597025902
+    taskid: 324e9819-98d6-4b23-81ca-763956c19357
     type: start
     task:
-      id: 0b114d81-f367-49cd-8bf9-b5d597025902
+      id: 324e9819-98d6-4b23-81ca-763956c19357
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4b3f0f3e-b338-4ab4-8d06-110b40000b9c
+    taskid: 8607a320-1114-4197-86e3-034a29c2cdcd
     type: regular
     task:
-      id: 4b3f0f3e-b338-4ab4-8d06-110b40000b9c
+      id: 8607a320-1114-4197-86e3-034a29c2cdcd
       version: -1
       name: GetRandomString
       description: Generates a random UUID (UUID 4).
@@ -67,17 +67,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5c854d13-d4e4-4c1d-8f95-5de944449e00
+    taskid: cdf6b9b4-5aa0-4e4d-8fd3-b8ab848dca5d
     type: regular
     task:
-      id: 5c854d13-d4e4-4c1d-8f95-5de944449e00
+      id: cdf6b9b4-5aa0-4e4d-8fd3-b8ab848dca5d
       version: -1
       name: Create Case
-      description: Create a new eDiscovery case. This command only creates an eDiscovery
-        (Premium) case using the new case format. To learn more about the new case
-        format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format.
-        After the custodian object is created, the custodian's userSource needs to
-        be created to reference their mailbox and OneDrive for Business site.
+      description: Create a new eDiscovery case. This command only creates an eDiscovery (Premium) case using the new case format. To learn more about the new case format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format. After the custodian object is created, the custodian's userSource needs to be created to reference their mailbox and OneDrive for Business site.
       script: '|||msg-create-ediscovery-case'
       type: regular
       iscommand: true
@@ -118,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d769d18b-1667-44c1-8f57-818a2a06c2c7
+    taskid: db86a2c3-572b-4490-84bc-65c28f31109f
     type: condition
     task:
-      id: d769d18b-1667-44c1-8f57-818a2a06c2c7
+      id: db86a2c3-572b-4490-84bc-65c28f31109f
       version: -1
       name: Check Outputs
       type: condition
@@ -183,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ab50ec56-2310-4ab0-8c02-e4f823c1d8f5
+    taskid: 256f55a8-757d-4f29-846b-3415905490a0
     type: regular
     task:
-      id: ab50ec56-2310-4ab0-8c02-e4f823c1d8f5
+      id: 256f55a8-757d-4f29-846b-3415905490a0
       version: -1
       name: SetIDToContext
       description: Set a value in context under the key you entered.
@@ -220,10 +216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 38ed1c36-f002-4058-8590-cc3936f3a56b
+    taskid: 5063b0fc-b19d-4f00-821e-87f7e1beb949
     type: regular
     task:
-      id: 38ed1c36-f002-4058-8590-cc3936f3a56b
+      id: 5063b0fc-b19d-4f00-821e-87f7e1beb949
       version: -1
       name: DeleteContext
       description: |-
@@ -240,7 +236,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "41"
     scriptarguments:
       key:
         simple: MsGraph
@@ -262,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: afd3542f-7afa-4e75-860c-7813555dbec8
+    taskid: 286ec36c-1d1a-4f9d-8b7a-57d322c40c80
     type: regular
     task:
-      id: afd3542f-7afa-4e75-860c-7813555dbec8
+      id: 286ec36c-1d1a-4f9d-8b7a-57d322c40c80
       version: -1
       name: Update case
       description: Update an eDiscovery case.
@@ -275,7 +271,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "40"
     scriptarguments:
       case_id:
         simple: ${CaseID}
@@ -297,7 +293,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -309,25 +305,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0dc85033-c840-4b97-81c0-f2e68ab6004d
+    taskid: 1570a87e-d9e5-4a90-8525-794ff79e503b
     type: regular
     task:
-      id: 0dc85033-c840-4b97-81c0-f2e68ab6004d
+      id: 1570a87e-d9e5-4a90-8525-794ff79e503b
       version: -1
       name: Close case
-      description: Close an eDiscovery case. Before you can delete a case, you must
-        first delete all holds listed on the holds page of the case. That includes
-        deleting holds with a status of Off. Default hold policies can only be deleted
-        when the hold is turned off. You must close an active case to turn off any
-        default hold policies in the case. Once the holds are turned off for default
-        hold policies, they can be deleted.
+      description: Close an eDiscovery case. Before you can delete a case, you must first delete all holds listed on the holds page of the case. That includes deleting holds with a status of Off. Default hold policies can only be deleted when the hold is turned off. You must close an active case to turn off any default hold policies in the case. Once the holds are turned off for default hold policies, they can be deleted.
       script: '|||msg-close-ediscovery-case'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "39"
     scriptarguments:
       case_id:
         simple: ${CaseID}
@@ -337,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -349,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d5c12a32-b7a1-40c7-86a4-c0618df9abbe
+    taskid: 6b9a9ea0-0c65-4780-8d2f-2298f472e94b
     type: regular
     task:
-      id: d5c12a32-b7a1-40c7-86a4-c0618df9abbe
+      id: 6b9a9ea0-0c65-4780-8d2f-2298f472e94b
       version: -1
       name: List cases
       description: Lists edicovery cases.
@@ -362,7 +353,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "42"
     scriptarguments:
       case_id:
         simple: ${CaseID}
@@ -374,7 +365,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -386,10 +377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 566bf00a-1e43-4f37-84fa-166f59285d59
+    taskid: af23c202-d6ba-42f4-88c5-aa4f40093d47
     type: condition
     task:
-      id: 566bf00a-1e43-4f37-84fa-166f59285d59
+      id: af23c202-d6ba-42f4-88c5-aa4f40093d47
       version: -1
       name: Check updated and closed
       type: condition
@@ -437,7 +428,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2645
         }
       }
     note: false
@@ -449,17 +440,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3ea947a5-805e-4e33-80ba-8b6c1f3d8130
+    taskid: c44f9072-8d57-4aac-8e8d-f961b3913ea1
     type: regular
     task:
-      id: 3ea947a5-805e-4e33-80ba-8b6c1f3d8130
+      id: c44f9072-8d57-4aac-8e8d-f961b3913ea1
       version: -1
       name: Reopen case
-      description: Reopen an eDiscovery case. When you reopen an eDiscovery (Premium)
-        case, any holds that were in place when the case was closed won't be automatically
-        reinstated. After the case is reopened, you'll have to go to the Holds tab
-        and turn on the previous holds. To turn on a hold, select it to display the
-        flyout page, and then set the Status toggle to On.
+      description: Reopen an eDiscovery case. When you reopen an eDiscovery (Premium) case, any holds that were in place when the case was closed won't be automatically reinstated. After the case is reopened, you'll have to go to the Holds tab and turn on the previous holds. To turn on a hold, select it to display the flyout page, and then set the Status toggle to On.
       script: '|||msg-reopen-ediscovery-case'
       type: regular
       iscommand: true
@@ -476,7 +463,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2820
         }
       }
     note: false
@@ -488,15 +475,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 374c69a8-cb99-4477-88c8-615bb31f7308
+    taskid: b3886818-1fbf-4ccf-8809-35accddfd176
     type: regular
     task:
-      id: 374c69a8-cb99-4477-88c8-615bb31f7308
+      id: b3886818-1fbf-4ccf-8809-35accddfd176
       version: -1
       name: Create Custodian
-      description: Create a new ediscoveryCustodian object. After the custodian object
-        is created, you will need to create the custodian's userSource to reference
-        their mailbox and OneDrive for Business site.
+      description: Create a new ediscoveryCustodian object. After the custodian object is created, you will need to create the custodian's userSource to reference their mailbox and OneDrive for Business site.
       script: '|||msg-create-ediscovery-custodian'
       type: regular
       iscommand: true
@@ -515,7 +500,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2995
         }
       }
     note: false
@@ -527,18 +512,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 71036db2-f8de-4fa4-8cc6-656d1103aed3
+    taskid: a3474653-ff46-439c-87da-70e4140c4eb2
     type: regular
     task:
-      id: 71036db2-f8de-4fa4-8cc6-656d1103aed3
+      id: a3474653-ff46-439c-87da-70e4140c4eb2
       version: -1
       name: DeleteCase
-      description: Delete an eDiscovery case. Before you can delete a case, you must
-        first delete all holds listed on the holds page of the case. That includes
-        deleting holds with a status of Off. Default hold policies can only be deleted
-        when the hold is turned off. You must close an active case to turn off any
-        default hold policies in the case. Once the holds are turned off for default
-        hold policies, they can be deleted.
+      description: Delete an eDiscovery case. Before you can delete a case, you must first delete all holds listed on the holds page of the case. That includes deleting holds with a status of Off. Default hold policies can only be deleted when the hold is turned off. You must close an active case to turn off any default hold policies in the case. Once the holds are turned off for default hold policies, they can be deleted.
       script: '|||msg-delete-ediscovery-case'
       type: regular
       iscommand: true
@@ -556,7 +536,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 7195
         }
       }
     note: false
@@ -568,22 +548,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: de3a9692-06a0-45f1-86b7-6cdc00d679b7
+    taskid: b5b193c7-9f2f-401a-8f60-6afef383a223
     type: title
     task:
-      id: de3a9692-06a0-45f1-86b7-6cdc00d679b7
+      id: b5b193c7-9f2f-401a-8f60-6afef383a223
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 7370
         }
       }
     note: false
@@ -595,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 93950fdf-e81b-4c56-86bf-add286c2155a
+    taskid: 12010808-b310-420f-8d57-79c7234717fb
     type: condition
     task:
-      id: 93950fdf-e81b-4c56-86bf-add286c2155a
+      id: 12010808-b310-420f-8d57-79c7234717fb
       version: -1
       name: Check Custodian Outputs
       type: condition
@@ -646,7 +627,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3170
         }
       }
     note: false
@@ -658,15 +639,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 0e4ab759-e5bf-4837-8ccd-9262d071ec9e
+    taskid: 6f78702c-6d41-419c-8041-e5eb710de6a0
     type: regular
     task:
-      id: 0e4ab759-e5bf-4837-8ccd-9262d071ec9e
+      id: 6f78702c-6d41-419c-8041-e5eb710de6a0
       version: -1
       name: Add User Source
-      description: Create a new userSource object associated with an eDiscovery custodian.
-        Use the msg-list-ediscovery-custodians command in order to get all available
-        custodians.
+      description: Create a new userSource object associated with an eDiscovery custodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
       script: '|||msg-create-ediscovery-custodian-user-source'
       type: regular
       iscommand: true
@@ -689,7 +668,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3345
         }
       }
     note: false
@@ -701,15 +680,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 19b6d837-9067-43df-8450-a6ded491fd72
+    taskid: dbd0ea80-502a-4c5b-8034-7da79de1bc1e
     type: regular
     task:
-      id: 19b6d837-9067-43df-8450-a6ded491fd72
+      id: dbd0ea80-502a-4c5b-8034-7da79de1bc1e
       version: -1
       name: List user sources
-      description: Get a list of the userSource objects associated with an eDiscoveryCustodian.
-        Use the msg-list-ediscovery-custodians command in order to get all available
-        custodians.
+      description: Get a list of the userSource objects associated with an eDiscoveryCustodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
       script: '|||msg-list-ediscovery-custodian-user-sources'
       type: regular
       iscommand: true
@@ -730,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3520
         }
       }
     note: false
@@ -742,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e9c5ed4e-67d6-4cf5-863a-93997c190011
+    taskid: afa9225c-b2b2-4dfc-8eb8-15f95ca33ac9
     type: condition
     task:
-      id: e9c5ed4e-67d6-4cf5-863a-93997c190011
+      id: afa9225c-b2b2-4dfc-8eb8-15f95ca33ac9
       version: -1
       name: Check Outputs
       type: condition
@@ -788,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3695
         }
       }
     note: false
@@ -800,15 +777,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e356aaaf-db8c-438c-8968-30e24bdc8f79
+    taskid: ba99af86-64d6-4662-8a51-0bf7a007baeb
     type: regular
     task:
-      id: e356aaaf-db8c-438c-8968-30e24bdc8f79
+      id: ba99af86-64d6-4662-8a51-0bf7a007baeb
       version: -1
       name: Create Site Source
-      description: Create a new siteSource object associated with an eDiscovery custodian.
-        Use the msg-list-ediscovery-custodians command in order to get all available
-        custodians.
+      description: Create a new siteSource object associated with an eDiscovery custodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
       script: '|||msg-create-ediscovery-custodian-site-source'
       type: regular
       iscommand: true
@@ -829,7 +804,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3870
         }
       }
     note: false
@@ -841,15 +816,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: cbf9119d-e2a4-48dd-8a4e-5f69b468dde8
+    taskid: 06f4083a-baf4-438e-8877-f46f914f9247
     type: regular
     task:
-      id: cbf9119d-e2a4-48dd-8a4e-5f69b468dde8
+      id: 06f4083a-baf4-438e-8877-f46f914f9247
       version: -1
       name: List Site Source
-      description: Get a list of the siteSource objects associated with an eDiscoveryCustodian.
-        Use the msg-list-ediscovery-custodians command in order to get all available
-        custodians.
+      description: Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
       script: '|||msg-list-ediscovery-custodian-site-sources'
       type: regular
       iscommand: true
@@ -870,7 +843,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 4045
         }
       }
     note: false
@@ -882,10 +855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 66cae361-e419-42f6-8e01-39526a502b63
+    taskid: c7d7d701-a718-4840-84a9-2f995d089ded
     type: condition
     task:
-      id: 66cae361-e419-42f6-8e01-39526a502b63
+      id: c7d7d701-a718-4840-84a9-2f995d089ded
       version: -1
       name: Check outputs
       type: condition
@@ -933,7 +906,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 4220
         }
       }
     note: false
@@ -945,10 +918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 9fdd9d32-3e98-43fb-832d-0edb0aa5d04d
+    taskid: 8e3b9618-ec95-478a-88f6-c2b487fb58ff
     type: regular
     task:
-      id: 9fdd9d32-3e98-43fb-832d-0edb0aa5d04d
+      id: 8e3b9618-ec95-478a-88f6-c2b487fb58ff
       version: -1
       name: release custodian
       description: Release a custodian from a case. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/manage-new-custodians#release-a-custodian-from-a-case.
@@ -970,7 +943,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4395
         }
       }
     note: false
@@ -982,14 +955,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f3cc2549-7742-4041-821c-5693d4e43642
+    taskid: 72384291-22db-4d77-8a22-1f46a17e8867
     type: regular
     task:
-      id: f3cc2549-7742-4041-821c-5693d4e43642
+      id: 72384291-22db-4d77-8a22-1f46a17e8867
       version: -1
       name: activate custodian
-      description: Activate a custodian that has been released from a case to make
-        them part of the case again. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/ediscovery-manage-new-custodians?view=o365-worldwide#re-activate-custodian.
+      description: Activate a custodian that has been released from a case to make them part of the case again. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/ediscovery-manage-new-custodians?view=o365-worldwide#re-activate-custodian.
       script: '|||msg-activate-ediscovery-custodian'
       type: regular
       iscommand: true
@@ -1008,7 +980,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4570
         }
       }
     note: false
@@ -1020,19 +992,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: f46ab915-6748-45a0-88da-0f660b99815f
+    taskid: 5d875801-9da7-49da-8ddd-59edc2f7671f
     type: regular
     task:
-      id: f46ab915-6748-45a0-88da-0f660b99815f
+      id: 5d875801-9da7-49da-8ddd-59edc2f7671f
       version: -1
       name: apply hold
-      description: "Start the process of applying hold on eDiscovery custodians.\nAvailable
-        return statuses: \nnotApplied - The custodian is not on Hold (all sources
-        in it are not on hold).\napplied - The custodian is on Hold (all sources are
-        on hold).\napplying - The custodian is in applying hold state (applyHold operation
-        triggered).\nremoving - The custodian is in removing the hold state(removeHold
-        operation triggered).\npartial - The custodian is in mixed state where some
-        sources are on hold and some not on hold or error state."
+      description: "Start the process of applying hold on eDiscovery custodians.\nAvailable return statuses: \nnotApplied - The custodian is not on Hold (all sources in it are not on hold).\napplied - The custodian is on Hold (all sources are on hold).\napplying - The custodian is in applying hold state (applyHold operation triggered).\nremoving - The custodian is in removing the hold state(removeHold operation triggered).\npartial - The custodian is in mixed state where some sources are on hold and some not on hold or error state."
       script: '|||msg-apply-hold-ediscovery-custodian'
       type: regular
       iscommand: true
@@ -1051,7 +1017,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4745
         }
       }
     note: false
@@ -1063,10 +1029,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 0f37abda-210f-4dfb-890c-1c75f45bcc93
+    taskid: 0e218079-4ad6-401c-8841-19f831eee43c
     type: regular
     task:
-      id: 0f37abda-210f-4dfb-890c-1c75f45bcc93
+      id: 0e218079-4ad6-401c-8841-19f831eee43c
       version: -1
       name: remove hold
       description: Start the process of removing hold from eDiscovery custodians.
@@ -1088,7 +1054,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4920
         }
       }
     note: false
@@ -1100,10 +1066,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 21fbd6e9-8a06-4e28-8218-723650cd85fb
+    taskid: 1907e6f3-06bb-4261-8294-402a26a8f9b8
     type: regular
     task:
-      id: 21fbd6e9-8a06-4e28-8218-723650cd85fb
+      id: 1907e6f3-06bb-4261-8294-402a26a8f9b8
       version: -1
       name: create non-custodial datasource
       description: Create a new eDiscoveryNoncustodialDataSource object.
@@ -1125,7 +1091,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 5095
         }
       }
     note: false
@@ -1137,10 +1103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: f1da33cb-5621-44da-823c-9b62624279d9
+    taskid: bd57baab-4a25-4ffe-8ef2-6237c5e90a8c
     type: regular
     task:
-      id: f1da33cb-5621-44da-823c-9b62624279d9
+      id: bd57baab-4a25-4ffe-8ef2-6237c5e90a8c
       version: -1
       name: list non cust data source
       description: Get a list of the non-custodial data sources and their properties.
@@ -1162,7 +1128,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 5270
         }
       }
     note: false
@@ -1174,10 +1140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 45bff4c7-3cb8-4c90-8a69-a9b732f001fe
+    taskid: 2c65931e-0c33-44a6-8bc4-7ea790099f50
     type: condition
     task:
-      id: 45bff4c7-3cb8-4c90-8a69-a9b732f001fe
+      id: 2c65931e-0c33-44a6-8bc4-7ea790099f50
       version: -1
       name: Check output
       type: condition
@@ -1220,7 +1186,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 5445
         }
       }
     note: false
@@ -1232,10 +1198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: cc147629-3474-4c53-8140-ad30a0beadae
+    taskid: 3b1e80ad-dfe2-4f1f-8ba9-681fd1135a07
     type: regular
     task:
-      id: cc147629-3474-4c53-8140-ad30a0beadae
+      id: 3b1e80ad-dfe2-4f1f-8ba9-681fd1135a07
       version: -1
       name: Create search
       description: Create a new eDiscoverySearch object.
@@ -1263,7 +1229,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 5620
         }
       }
     note: false
@@ -1275,10 +1241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9df582ec-80ce-4feb-861d-3bc7e347524e
+    taskid: 4ccc6566-4e18-423d-8b28-44b80c72e5a8
     type: regular
     task:
-      id: 9df582ec-80ce-4feb-861d-3bc7e347524e
+      id: 4ccc6566-4e18-423d-8b28-44b80c72e5a8
       version: -1
       name: Set search id to context
       description: Set a value in context under the key you entered.
@@ -1300,7 +1266,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 5970
         }
       }
     note: false
@@ -1312,10 +1278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 0001a357-146e-4251-8227-540cc776dd01
+    taskid: 825554b8-da11-4a28-81c9-8373afdfd455
     type: condition
     task:
-      id: 0001a357-146e-4251-8227-540cc776dd01
+      id: 825554b8-da11-4a28-81c9-8373afdfd455
       version: -1
       name: Check outputs
       type: condition
@@ -1368,7 +1334,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 5795
         }
       }
     note: false
@@ -1380,10 +1346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d4219cc2-3081-4f54-838b-27dc49d21238
+    taskid: f728f572-1d7b-4123-8b4a-b3a65fb8038f
     type: regular
     task:
-      id: d4219cc2-3081-4f54-838b-27dc49d21238
+      id: f728f572-1d7b-4123-8b4a-b3a65fb8038f
       version: -1
       name: DeleteContext
       description: |-
@@ -1410,7 +1376,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 6145
         }
       }
     note: false
@@ -1422,10 +1388,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 2cabb15b-9a02-4032-8935-39121f927350
+    taskid: f33e9d8b-dcdb-4c08-8936-5c8bbfcc434e
     type: regular
     task:
-      id: 2cabb15b-9a02-4032-8935-39121f927350
+      id: f33e9d8b-dcdb-4c08-8936-5c8bbfcc434e
       version: -1
       name: Update Search
       description: Update an eDiscoverySearch object.
@@ -1455,7 +1421,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 6320
         }
       }
     note: false
@@ -1467,10 +1433,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: e5ebc2de-e6f0-4e97-86f5-c3f66ff69904
+    taskid: 054a57c0-6e5f-47af-8954-548a1ea059e9
     type: regular
     task:
-      id: e5ebc2de-e6f0-4e97-86f5-c3f66ff69904
+      id: 054a57c0-6e5f-47af-8954-548a1ea059e9
       version: -1
       name: List search
       description: Get the list of eDiscoverySearch resources from an eDiscovery case.
@@ -1492,7 +1458,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 6495
         }
       }
     note: false
@@ -1504,10 +1470,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 98683911-e3a6-4236-88ce-cc21469f3230
+    taskid: 1ccb32bf-54ce-43c7-84c4-43d4375b0794
     type: condition
     task:
-      id: 98683911-e3a6-4236-88ce-cc21469f3230
+      id: 1ccb32bf-54ce-43c7-84c4-43d4375b0794
       version: -1
       name: Check outputs
       type: condition
@@ -1560,7 +1526,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 6670
         }
       }
     note: false
@@ -1572,10 +1538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e3c0ab70-373f-4f76-82ba-7e31200f0f09
+    taskid: 41076824-35a8-4eb0-8445-6ceb89fff553
     type: regular
     task:
-      id: e3c0ab70-373f-4f76-82ba-7e31200f0f09
+      id: 41076824-35a8-4eb0-8445-6ceb89fff553
       version: -1
       name: purge
       description: |-
@@ -1602,7 +1568,7 @@ tasks:
       purge_areas:
         simple: teamsMessages
       purge_type:
-        simple: permanentlydeleted
+        simple: permanentlyDelete
       search_id:
         simple: ${SearchID}
     separatecontext: false
@@ -1611,7 +1577,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 6845
         }
       }
     note: false
@@ -1623,10 +1589,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: f35f163c-001b-4237-8abc-f3ea19836b8e
+    taskid: 313936a4-250c-4f9d-8910-cbe79cddca5e
     type: regular
     task:
-      id: f35f163c-001b-4237-8abc-f3ea19836b8e
+      id: 313936a4-250c-4f9d-8910-cbe79cddca5e
       version: -1
       name: delete search
       description: Delete an eDiscoverySearch object.
@@ -1648,7 +1614,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 7020
         }
       }
     note: false
@@ -1660,10 +1626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 3ff9dd49-9193-4d22-8573-b4a55c065ec4
+    taskid: 9cb910dd-b555-4f39-8174-35e3b6a2b7ca
     type: regular
     task:
-      id: 3ff9dd49-9193-4d22-8573-b4a55c065ec4
+      id: 9cb910dd-b555-4f39-8174-35e3b6a2b7ca
       version: -1
       name: Auth test
       description: Tests connectivity to Microsoft Graph Security.
@@ -1695,10 +1661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 367792e9-991b-4806-8ed1-f9bcbeeb6e7c
+    taskid: d222e8a2-2318-45df-8f3c-318f67c5fced
     type: regular
     task:
-      id: 367792e9-991b-4806-8ed1-f9bcbeeb6e7c
+      id: d222e8a2-2318-45df-8f3c-318f67c5fced
       version: -1
       name: generate url
       description: Generate the login url used for Authorization code flow.
@@ -1725,12 +1691,152 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: d6fe4eb4-3a7d-4fbf-8166-977f95263382
+    type: regular
+    task:
+      id: d6fe4eb4-3a7d-4fbf-8166-977f95263382
+      version: -1
+      name: Sleep 5 sec
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: e3f77b93-60e1-4a05-8315-d8d8ed22e326
+    type: regular
+    task:
+      id: e3f77b93-60e1-4a05-8315-d8d8ed22e326
+      version: -1
+      name: Sleep 5 sec
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: dec5fb20-4116-4e02-84a6-070f1f68a2fc
+    type: regular
+    task:
+      id: dec5fb20-4116-4e02-84a6-070f1f68a2fc
+      version: -1
+      name: Sleep 5 sec
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 1fea9df5-dbaa-4c84-81b7-53ace314e268
+    type: regular
+    task:
+      id: 1fea9df5-dbaa-4c84-81b7-53ace314e268
+      version: -1
+      name: Sleep 5 sec
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6685,
+        "height": 7385,
         "width": 380,
         "x": 50,
         "y": 50
