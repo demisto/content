@@ -1,4 +1,4 @@
-[INGEST:vendor = "msft", product = "azure", target_dataset = "msft_azure_waf_raw", no_hit = keep]
+[INGEST:vendor = "msft", product = "azure_waf", target_dataset = "msft_azure_waf_raw", no_hit = keep]
 /*
 Filter ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog events
 */
