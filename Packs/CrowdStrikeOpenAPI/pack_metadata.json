@@ -2,7 +2,7 @@
     "name": "CrowdStrike OpenAPI",
     "description": "Use the CrowdStrike OpenAPI integration to interact with CrowdStrike APIs that do not have dedicated integrations in Cortex XSOAR, for example, CrowdStrike FalconX, etc.",
     "support": "xsoar",
-    "currentVersion": "1.0.19",
+    "currentVersion": "1.0.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
