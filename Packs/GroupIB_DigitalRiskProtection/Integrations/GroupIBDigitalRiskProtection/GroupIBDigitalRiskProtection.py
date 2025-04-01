@@ -574,6 +574,8 @@ class CommonHelpers:
     def set_tag_downloaded_by_typoSquatting(violation: dict[str, Any], only_typosquatting: bool) -> dict[str, Any]:
         if violation.get("typosquatting_status", None) and only_typosquatting:
             violation["typosquatting_status"] = True
+        else:
+            violation["typosquatting_status"] = False
         return violation
 
 

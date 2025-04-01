@@ -1,11 +1,96 @@
-Pack helps to integrate Group-IB Digital Risk Protection and get violations directly into Cortex XSOAR. 
+# Group-IB Digital Risk Protection Pack for Cortex XSOAR
 
-## Configure Group-IB Threat Intelligence in Cortex
+This pack helps integrate **Group-IB Digital Risk Protection** with **Cortex XSOAR**, allowing you to receive and manage violations directly.
 
-| Name                  | Required | Description |
-|-----------------------|----------|-------------|
-| **GIB DRP URL**       | true     | The FQDN/IP the integration should connect to. |
-| **Fetch incidents**   | true     | Whether to start the integration for collecting incident violations. |
-| **Classifier**        | true     | Specifies which collections and received data should be linked to which incidents. |
-| **Incident type**     | false    | Specifies the type of incident to collect the received data into. This field should be ignored as our Classifier and Mapper handle this. |
-| **Mapper**           | true     | Specifies which data should be linked to which incident types. |
+## Configuration
+
+| Name                                      | Required | Description |
+|-------------------------------------------|----------|-------------|
+| **GIB DRP URL**                           | True     | The FQDN/IP address the integration should connect to. |
+| **Fetch incidents**                       | True     | Determines whether the integration should start collecting incident violations. |
+| **Classifier**                            | True     | Defines which collections and received data should be linked to which incidents. |
+| **Incident type**                         | False    | Specifies the incident type to collect the received data into. This field should be ignored as our Classifier and Mapper handle this. |
+| **Mapper**                                | True     | Determines which data should be linked to which incident types. |
+| **Username**                              | True     | The API Key and Username required for authentication. |
+| **Password**                              | True     | The API Key and Username required for authentication. |
+| **Trust any certificate (not secure)**    | False    | Whether to allow connections without verifying SSL certificate validity. |
+| **Use system proxy settings**             | False    | Whether to use the XSOAR system proxy settings to connect to the API. |
+| **Violation Section to filter received violations** | False    | Allows filtering retrieved violations by section. |
+| **Brands to filter received violations**  | False    | Allows filtering violations by brand. You must use a **BrandID**, which can be obtained via the `gibdrp-get-brands` command. Currently, filtering is available for only one brand per instance. |
+| **Incidents first fetch**                 | True     | Specifies the start date for retrieving violations. |
+| **Download images**                       | False    | If set to **True**, images for each violation will be downloaded and displayed in the violation layout. |
+| **Getting Typosquatting only**            | False    | Whether to retrieve only violations matching the **TypoSquatting** filter. |
+| **Number of requests per collection**     | True     | The number of requests per collection the integration sends in one fetch iteration. |
+| **Log Level**                             | True     | Sets the log collection level; we recommend **Debug**. |
+
+---
+
+## Available Commands
+
+These commands can be executed from the CLI, as part of an automation, or within a playbook.
+
+### 1. `gibdrp-get-brands`
+Retrieves a list of all available brands.
+
+#### Command Example:
+```!gibdrp-get-brands```
+
+#### Context Output:
+
+| Brand Name  | Brand ID |
+|------------|---------|
+| ExampleBrand | BrandID |
+
+---
+
+### 2. `gibdrp-get-subscriptions`
+Retrieves a list of all available subscriptions.
+
+#### Command Example:
+```!gibdrp-get-subscriptions```
+
+#### Context Output:
+
+| Subscriptions |
+|--------------|
+| scam         |
+
+---
+
+### 3. `gibdrp-get-violation-by-id`
+Retrieves violation details by ID.
+
+#### Input Parameters:
+
+| Argument Name | Description  | Required |
+|--------------|-------------|----------|
+| **id**       | GIB DRP ID  | True     |
+
+#### Command Example:
+```!gibdrp-get-violation-by-id id=violationID```
+
+#### Context Output:
+
+| approve_state | brand          | company         | dates_approved_date     | dates_created_date     | dates_found_date       | detected               | first_detected         | id           | images        | link  | source         | typosquatting_status | violation_status | violation_type | violation_uri                        |
+|--------------|---------------|----------------|------------------------|------------------------|------------------------|------------------------|------------------------|--------------|--------------|------|---------------|---------------------|-----------------|----------------|--------------------------------------|
+| approved     | Brand Example | Company Example | 2025-03-24T10:33:57+00:00 | 2025-02-15T00:14:08+00:00 | 2025-02-15T00:14:08+00:00 | 2025-02-15T00:14:08+00:00 | 2025-02-18T16:54:04+00:00 | ViolationID | image_sha256 | [View Violation](https://drp.group-ib.com/p/violation/?id=ViolationID&search={%22id%22:%22ViolationID%22}&dateFrom=15/02/2025&dateTo=15/02/2025) | SOCIAL_NETWORKS | true | detected | trademark | [https://example.com/exampleviolation/](https://example.com/exampleviolation/) |
+
+
+---
+
+### 4. `gibdrp-change-violation-status`
+Changes the status of a violation.
+
+#### Input Parameters:
+
+| Argument Name | Description  | Required | Possible Values |
+|--------------|-------------|----------|----------------|
+| **id**       | GIB DRP ID  | True     | -              |
+| **status**   | Violation Status | True     | approve, reject |
+
+#### Command Example:
+```!gibdrp-change-violation-status id=exampleId status=approve```
+
+#### Possible DBOT Messages:
+- **"Can not change the status of the selected feed"** – The status of the selected violation cannot be changed.  
+- **"Request to change violation status sent"** – The request to change the violation status was sent successfully.  
