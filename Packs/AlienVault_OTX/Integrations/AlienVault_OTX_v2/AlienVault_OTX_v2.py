@@ -76,30 +76,30 @@ class Client(BaseClient):
         elif argument and sub_section:
             suffix = f"indicators/{section}/{argument}/{sub_section}"
         else:
-            suffix = f'{section}/{sub_section}'
+            suffix = f"{section}/{sub_section}"
         demisto.debug(f"The url is {suffix=}")
         # Send a request using our http_request wrapper
         try:
-            if sub_section == 'passive_dns':
-                return self._http_request('GET',
+            if sub_section == "passive_dns":
+                return self._http_request("GET",
                                         url_suffix=suffix,
                                         params=params,
                                         timeout=30)
-            result = self._http_request('GET',
+            result = self._http_request("GET",
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
             demisto.debug("DemistoException was raised")
-            if hasattr(e.res, 'status_code'):
+            if hasattr(e.res, "status_code"):
                 if e.res.status_code == 404:
                     demisto.debug("The status code is 404")
                     result = 404
                 elif e.res.status_code == 400:
                     demisto.debug("The status code is 400")
-                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    demisto.debug(f"{e.res.text} response received from server when trying to get api:{e.res.url}")
                     if not self.should_error:
-                        return_warning(f'The command could not be execute: {argument} is invalid.', exit=True)
-                    raise Exception(f'The command could not be execute: {argument} is invalid.')
+                        return_warning(f"The command could not be execute: {argument} is invalid.", exit=True)
+                    raise Exception(f"The command could not be execute: {argument} is invalid.")
                 elif e.res.status_code in (504, 502):
                     demisto.debug(f"The status code is {e.res.status_code}")
                     if self.should_error:
@@ -470,7 +470,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for domain in domains_list:
-        raw_response = client.query(section='domain', argument=domain)
+        raw_response = client.query(section="domain", argument=domain)
 
         if raw_response and raw_response != 404:
             relationships = relationships_manager(
@@ -541,8 +541,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for hash_ in hashes_list:
-        raw_response_analysis = client.query(section='file', argument=hash_, sub_section='analysis')
-        raw_response_general = client.query(section='file',argument=hash_)
+        raw_response_analysis = client.query(section="file", argument=hash_, sub_section="analysis")
+        raw_response_general = client.query(section="file",argument=hash_)
 
         if (
             raw_response_analysis
@@ -631,8 +631,8 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for url in urls_list:
-        url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
-        raw_response = client.query(section='url', argument=url)
+        url = re.sub(r"(\w+)://", lowercase_protocol_callback, url)
+        raw_response = client.query(section="url", argument=url)
 
         if raw_response:
             if raw_response == 404:
