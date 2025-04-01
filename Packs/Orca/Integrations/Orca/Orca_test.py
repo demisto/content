@@ -1,11 +1,20 @@
+import json
 from datetime import datetime
 
 import pytest
-import json
-from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH, \
-    set_alert_severity, get_alert_event_log, set_alert_status, verify_alert
-
 from CommonServerPython import DemistoException
+from Orca import (
+    DEMISTO_OCCURRED_FORMAT,
+    STEP_FETCH,
+    STEP_INIT,
+    BaseClient,
+    OrcaClient,
+    fetch_incidents,
+    get_alert_event_log,
+    set_alert_severity,
+    set_alert_status,
+    verify_alert,
+)
 
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
@@ -24,11 +33,8 @@ mock_alerts_response = {
             "category": "Malware",
             "description": "Malware EICAR-Test-File found on asset",
             "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-            "recommendation": "Remediate the host and attend additional "
-                              "alerts on the host to close the infection path.",
-            "alert_labels": [
-                "malware_found"
-            ],
+            "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+            "alert_labels": ["malware_found"],
             "asset_category": "Storage",
             "cloud_provider_id": "111111111111",
             "cloud_provider": "aws",
@@ -49,41 +55,30 @@ mock_alerts_response = {
             "cluster_type": "storage",
             "level": 0,
             "asset_state": "enabled",
-            "asset_labels": [
-                "internet_facing",
-                "pii"
-            ],
+            "asset_labels": ["internet_facing", "pii"],
             "asset_vendor_id": "scan-me-s3-bucket-s8rrr",
-            "asset_regions": [
-                "us-east-1"
-            ],
-            "asset_regions_names": [
-                "N. Virginia"
-            ],
+            "asset_regions": ["us-east-1"],
+            "asset_regions_names": ["N. Virginia"],
             "source": "test_eicar_file",
             "findings": {
                 "malware": [
                     {
                         "type": "malware",
-                        "labels": [
-                            "malware_found"
-                        ],
-                        "virus_names": [
-                            "EICAR-Test-File"
-                        ],
+                        "labels": ["malware_found"],
+                        "virus_names": ["EICAR-Test-File"],
                         "modification_time": "2020-04-26T14:26:11+00:00",
                         "file": "/test_eicar_file",
                         "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
                         "sha1": "3395856ce81f2b7382dee72602f798b642f14140",
                         "md5": "44d88612fea8a8f36de82e1278abb02f",
-                        "has_macro": False
+                        "has_macro": False,
                     }
                 ]
             },
             "configuration": {
                 "user_status": "closed",
                 "jira_issue_link": "https://www.jira.com/myproject",
-                "jira_issue": "TP-41"
+                "jira_issue": "TP-41",
             },
             "state": {
                 "alert_id": "orca-59",
@@ -107,13 +102,9 @@ mock_alerts_response = {
                 "organization_id": "11111111-1111-1111-1111-c111881c1111",
                 "organization_name": "Orca Security",
                 "context": "data",
-                "account_action_id_ctx": {
-                    "data": "11111111-1111-1111-1111-8a529a011111"
-                },
-                "scan_id_ctx": {
-                    "data": "11111111-1111-1111-1111-8a529a011111_111111111111_bucket-111111e11111-us-east-1"
-                },
-                "first_seen": "2020-11-08T13:03:37+00:00"
+                "account_action_id_ctx": {"data": "11111111-1111-1111-1111-8a529a011111"},
+                "scan_id_ctx": {"data": "11111111-1111-1111-1111-8a529a011111_111111111111_bucket-111111e11111-us-east-1"},
+                "first_seen": "2020-11-08T13:03:37+00:00",
             },
             "hdr": {
                 "asset_category": "Storage",
@@ -140,11 +131,9 @@ mock_alerts_response = {
                 "cloud_vendor_id": "111111111111",
                 "asset_state": "enabled",
                 "account_name": "111111111111",
-                "asset_labels": [
-                    "internet_facing"
-                ]
+                "asset_labels": ["internet_facing"],
             },
-            "insert_time": "2020-12-30T10:45:21+00:00"
+            "insert_time": "2020-12-30T10:45:21+00:00",
         },
         {
             "type": "malware",
@@ -154,11 +143,8 @@ mock_alerts_response = {
             "category": "Malware",
             "description": "Malware EICAR-Test-File found on asset",
             "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-            "recommendation": "Remediate the host and attend additional "
-                              "alerts on the host to close the infection path.",
-            "alert_labels": [
-                "malware_found"
-            ],
+            "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+            "alert_labels": ["malware_found"],
             "asset_category": "Image",
             "cloud_provider_id": "111111111111",
             "cloud_provider": "aws",
@@ -181,29 +167,20 @@ mock_alerts_response = {
             "asset_vendor_id": "ami-11111c111111d7911",
             "asset_distribution_name": "Ubuntu",
             "asset_distribution_version": "18.04",
-            "asset_role_names": [
-                "mysql",
-                "ssh",
-                "haproxy",
-                "postgresql"
-            ],
+            "asset_role_names": ["mysql", "ssh", "haproxy", "postgresql"],
             "source": "eicarcom2.zip",
             "findings": {
                 "malware": [
                     {
                         "type": "malware",
-                        "labels": [
-                            "malware_found"
-                        ],
-                        "virus_names": [
-                            "EICAR-Test-File"
-                        ],
+                        "labels": ["malware_found"],
+                        "virus_names": ["EICAR-Test-File"],
                         "modification_time": "2019-07-09T21:16:26+00:00",
                         "file": "/usr/local/bin/eicarcom2.zip",
                         "sha256": "e1105070ba828007508566e28a2b8d4c65d192e9eaf3b7868382b7cae747b397",
                         "sha1": "bec1b52d350d721c7e22a6d4bb0a92909893a3ae",
                         "md5": "e4968ef99266df7c9a1f0637d2389dab",
-                        "has_macro": False
+                        "has_macro": False,
                     }
                 ]
             },
@@ -230,13 +207,9 @@ mock_alerts_response = {
                 "organization_id": "11111111-1111-1111-1111-c111881c1111",
                 "organization_name": "Orca Security",
                 "context": "data",
-                "account_action_id_ctx": {
-                    "data": "11111111-1111-1111-1111-8a529a011111"
-                },
-                "scan_id_ctx": {
-                    "data": "11111111-1111-1111-1111-8a529a011111_111111111111_ami-11111c111111d7911"
-                },
-                "first_seen": "2020-11-08T13:04:32+00:00"
+                "account_action_id_ctx": {"data": "11111111-1111-1111-1111-8a529a011111"},
+                "scan_id_ctx": {"data": "11111111-1111-1111-1111-8a529a011111_111111111111_ami-11111c111111d7911"},
+                "first_seen": "2020-11-08T13:04:32+00:00",
             },
             "hdr": {
                 "asset_category": "Image",
@@ -261,11 +234,11 @@ mock_alerts_response = {
                 "group_val": "nongroup",
                 "asset_vendor_id": "ami-11111c111111d7911",
                 "cloud_vendor_id": "111111111111",
-                "account_name": "111111111111"
+                "account_name": "111111111111",
             },
-            "insert_time": "2020-12-30T10:44:11+00:00"
-        }
-    ]
+            "insert_time": "2020-12-30T10:44:11+00:00",
+        },
+    ],
 }
 
 
@@ -273,12 +246,8 @@ mock_alerts_response = {
 def orca_client() -> OrcaClient:
     api_token = "dummy api key"
     client = BaseClient(
-        base_url=DUMMY_ORCA_API_DNS_NAME,
-        verify=True,
-        headers={
-            'Authorization': f'Token {api_token}'
-        },
-        proxy=True)
+        base_url=DUMMY_ORCA_API_DNS_NAME, verify=True, headers={"Authorization": f"Token {api_token}"}, proxy=True
+    )
     return OrcaClient(client=client)
 
 
@@ -298,11 +267,8 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                 "category": "Malware",
                 "description": "Malware EICAR-Test-File found on asset",
                 "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-                "recommendation": "Remediate the host and attend additional "
-                                  "alerts on the host to close the infection path.",
-                "alert_labels": [
-                    "malware_found"
-                ],
+                "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+                "alert_labels": ["malware_found"],
                 "asset_category": "Storage",
                 "cloud_provider_id": "111111111111",
                 "cloud_provider": "aws",
@@ -323,41 +289,30 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                 "cluster_type": "storage",
                 "level": 0,
                 "asset_state": "enabled",
-                "asset_labels": [
-                    "internet_facing",
-                    "pii"
-                ],
+                "asset_labels": ["internet_facing", "pii"],
                 "asset_vendor_id": "scan-me-s3-bucket-s8rrr",
-                "asset_regions": [
-                    "us-east-1"
-                ],
-                "asset_regions_names": [
-                    "N. Virginia"
-                ],
+                "asset_regions": ["us-east-1"],
+                "asset_regions_names": ["N. Virginia"],
                 "source": "test_eicar_file",
                 "findings": {
                     "malware": [
                         {
                             "type": "malware",
-                            "labels": [
-                                "malware_found"
-                            ],
-                            "virus_names": [
-                                "EICAR-Test-File"
-                            ],
+                            "labels": ["malware_found"],
+                            "virus_names": ["EICAR-Test-File"],
                             "modification_time": "2020-04-26T14:26:11+00:00",
                             "file": "/test_eicar_file",
                             "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
                             "sha1": "3395856ce81f2b7382dee72602f798b642f14140",
                             "md5": "44d88612fea8a8f36de82e1278abb02f",
-                            "has_macro": False
+                            "has_macro": False,
                         }
                     ]
                 },
                 "configuration": {
                     "user_status": "closed",
                     "jira_issue_link": "https://www.jira.com/myproject",
-                    "jira_issue": "TP-41"
+                    "jira_issue": "TP-41",
                 },
                 "state": {
                     "alert_id": "orca-59",
@@ -369,7 +324,7 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                     "severity": "compromised",
                     "low_since": None,
                     "high_since": "2020-12-15T15:33:49+00:00",
-                    "in_verification": None
+                    "in_verification": None,
                 },
                 "priv": {
                     "key": "3ea22222274111114b011111bb311111",
@@ -380,13 +335,9 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                     "organization_id": "11111111-1111-1111-1111-c111881c1111",
                     "organization_name": "Orca Security",
                     "context": "data",
-                    "account_action_id_ctx": {
-                        "data": "11111111-1111-1111-1111-8a529a011111"
-                    },
-                    "scan_id_ctx": {
-                        "data": "11111111-1111-1111-1111-8a529a011111_111111111111_bucket-111111e11111-us-east-1"
-                    },
-                    "first_seen": "2020-11-08T13:03:37+00:00"
+                    "account_action_id_ctx": {"data": "11111111-1111-1111-1111-8a529a011111"},
+                    "scan_id_ctx": {"data": "11111111-1111-1111-1111-8a529a011111_111111111111_bucket-111111e11111-us-east-1"},
+                    "first_seen": "2020-11-08T13:03:37+00:00",
                 },
                 "hdr": {
                     "asset_category": "Storage",
@@ -413,17 +364,15 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                     "cloud_vendor_id": "111111111111",
                     "asset_state": "enabled",
                     "account_name": "111111111111",
-                    "asset_labels": [
-                        "internet_facing"
-                    ]
+                    "asset_labels": ["internet_facing"],
                 },
-                "insert_time": "2020-12-30T10:45:21+00:00"
+                "insert_time": "2020-12-30T10:45:21+00:00",
             }
-        ]
+        ],
     }
     requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/alerts?type=malware", json=mock_response)
     res = orca_client.get_alerts_by_filter(alert_type="malware")
-    assert res[0] == mock_response['data'][0]
+    assert res[0] == mock_response["data"][0]
 
 
 def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock, orca_client: OrcaClient) -> None:
@@ -434,7 +383,8 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
         "total_items": 0,
         "total_ungrouped_items": 0,
         "total_supported_items": 10000,
-        "data": []}
+        "data": [],
+    }
 
     requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/alerts?type={NON_EXISTENT_ALERT_TYPE}", json=mock_response)
     res = orca_client.get_alerts_by_filter(alert_type=NON_EXISTENT_ALERT_TYPE)
@@ -444,18 +394,14 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
 def test_fetch_incidents_first_run_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
-        orca_client,
-        last_run={'lastRun': None},
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run={"lastRun": None}, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
-    assert fetched_incidents[0]['name'] == 'orca-59'
-    loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 1
-    assert fetched_incidents[1]['name'] == 'orca-242'
-    loaded_raw_alert = json.loads(fetched_incidents[1]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 4
+    assert fetched_incidents[0]["name"] == "orca-59"
+    loaded_raw_alert = json.loads(fetched_incidents[0]["rawJSON"])
+    assert loaded_raw_alert["demisto_score"] == 1
+    assert fetched_incidents[1]["name"] == "orca-242"
+    loaded_raw_alert = json.loads(fetched_incidents[1]["rawJSON"])
+    assert loaded_raw_alert["demisto_score"] == 4
     assert last_run["lastRun"] is not None
 
 
@@ -463,10 +409,10 @@ def test_fetch_incidents_not_first_run_return_empty(orca_client: OrcaClient) -> 
     # validates that fetch-incidents is returning an a empty list when it is not the first run
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
-        last_run={'step': "fetch", 'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
+        last_run={"step": "fetch", "lastRun": datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
         max_fetch=20,
         pull_existing_alerts=True,
-        first_fetch_time=None
+        first_fetch_time=None,
     )
     assert fetched_incidents == []
 
@@ -501,33 +447,17 @@ def test_get_asset_should_succeed(requests_mock, orca_client: OrcaClient) -> Non
         "compute": {
             "distribution_name": "Ubuntu",
             "distribution_version": "18.04",
-            "disks": [
-                {
-                    "size": "7.75 GB",
-                    "used": "2.06 GB"
-                }
-            ],
+            "disks": [{"size": "7.75 GB", "used": "2.06 GB"}],
             "total_disks_bytes": 8326123520,
             "roles": [
                 {
                     "type": "database",
                     "name": "mysql",
                     "is_public": False,
-                    "detected_evidence": [
-                        "/var/lib/mysql/mysqldb2",
-                        "/var/lib/mysql/mysqldb1"
-                    ]
+                    "detected_evidence": ["/var/lib/mysql/mysqldb2", "/var/lib/mysql/mysqldb1"],
                 },
-                {
-                    "type": "ssh",
-                    "name": "ssh",
-                    "is_public": False
-                },
-                {
-                    "type": "web",
-                    "name": "haproxy",
-                    "is_public": False
-                },
+                {"type": "ssh", "name": "ssh", "is_public": False},
+                {"type": "web", "name": "haproxy", "is_public": False},
                 {
                     "type": "database",
                     "name": "postgresql",
@@ -537,16 +467,16 @@ def test_get_asset_should_succeed(requests_mock, orca_client: OrcaClient) -> Non
                         "/var/lib/postgresql/10/main",
                         "/var/lib/postgresql/10/main/base/13017",
                         "/var/lib/postgresql/10/main/base/16384",
-                        "/var/lib/postgresql/10/main/base/13018"
-                    ]
-                }
-            ]
+                        "/var/lib/postgresql/10/main/base/13018",
+                    ],
+                },
+            ],
         },
         "vmimage": {
             "image_id": "ami-11111c111111d7911",
             "image_owner_id": "111111111111",
             "image_name": "my_test_image-1231asdasjdn",
-            "image_description": ""
+            "image_description": "",
         },
         "configuration": {},
         "state": {
@@ -557,11 +487,10 @@ def test_get_asset_should_succeed(requests_mock, orca_client: OrcaClient) -> Non
             "score": 1,
             "severity": "compromised",
             "safe_since": None,
-            "unsafe_since": "2020-11-08T13:04:34+00:00"
-        }
+            "unsafe_since": "2020-11-08T13:04:34+00:00",
+        },
     }
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/assets/vmimage_111111e11111_ami-11111c111111d7911",
-                      json=mock_response)
+    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/assets/vmimage_111111e11111_ami-11111c111111d7911", json=mock_response)
     res = orca_client.get_asset(asset_unique_id="vmimage_111111e11111_ami-11111c111111d7911")
     assert res == mock_response
 
@@ -574,10 +503,7 @@ def test_get_asset_nonexistent(requests_mock, orca_client: OrcaClient) -> None:
 
 
 def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
-    mock_response = {
-        "status": "success",
-        "data": []
-    }
+    mock_response = {"status": "success", "data": []}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "ok"
@@ -607,56 +533,44 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
 
     # Get first page
     last_run, fetched_incidents = fetch_incidents(
-        orca_client, {'lastRun': None},
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, {"lastRun": None}, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
     assert len(fetched_incidents) == 2
-    assert last_run['next_page_token'] == 'NEXT_PAGE'
-    assert last_run['step'] == STEP_INIT
+    assert last_run["next_page_token"] == "NEXT_PAGE"
+    assert last_run["step"] == STEP_INIT
     mock_response["next_page_token"] = None  # type: ignore
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
 
     # Get next page
     last_run, fetched_incidents = fetch_incidents(
-        orca_client, last_run,
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
     assert len(fetched_incidents) == 2
-    assert last_run['step'] == STEP_FETCH
-    assert 'next_page_token' not in last_run
+    assert last_run["step"] == STEP_FETCH
+    assert "next_page_token" not in last_run
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json={"status": "success", "data": []})
     # No pages and no updates
     last_run, fetched_incidents = fetch_incidents(
-        orca_client, last_run,
-        max_fetch=20,
-        pull_existing_alerts=True,
-        first_fetch_time=None
+        orca_client, last_run, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
     )
-    assert last_run['step'] == STEP_FETCH
+    assert last_run["step"] == STEP_FETCH
     assert len(fetched_incidents) == 0
 
 
 def test_orca_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
     alert_id = "orca-52"
 
-    requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity", json={
-        "user_email": "test@test.com",
-        "alert_id": alert_id,
-        "details": {
-            "description": "Alert risk level changed",
-            "severity": "Hazardous"
-        }
-    })
+    requests_mock.put(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity",
+        json={
+            "user_email": "test@test.com",
+            "alert_id": alert_id,
+            "details": {"description": "Alert risk level changed", "severity": "Hazardous"},
+        },
+    )
 
-    response = set_alert_severity(orca_client=orca_client, args={
-        "alert_id": alert_id,
-        "score": 6
-    })
+    response = set_alert_severity(orca_client=orca_client, args={"alert_id": alert_id, "score": 6})
     assert response.to_context()["Contents"]["details"]["severity"] == "Hazardous"
 
 
@@ -675,23 +589,14 @@ def test_orca_get_alert_event_log(requests_mock, orca_client: OrcaClient) -> Non
                     "create_time": "2020-01-01T01:01:01+00:00",
                     "type": "set_status",
                     "sub_type": "open",
-                    "details": {
-                        "description": "Alert status changed",
-                        "from": None,
-                        "to": "open"
-                    }
+                    "details": {"description": "Alert status changed", "from": None, "to": "open"},
                 }
             ],
-            "total_count": 1
-        }
+            "total_count": 1,
+        },
     )
 
-    args = {
-        "alert_id": "orca-1",
-        "limit": 20,
-        "start_at_index": 0,
-        "type": "dismiss"
-    }
+    args = {"alert_id": "orca-1", "limit": 20, "start_at_index": 0, "type": "dismiss"}
     result = get_alert_event_log(orca_client, args)
 
     content = result.to_context()["Contents"]
@@ -714,33 +619,19 @@ def test_orca_set_alert_status(requests_mock, orca_client: OrcaClient) -> None:
                 "create_time": "2020-01-01T01:01:01+00:00",
                 "type": "set_status",
                 "sub_type": "open",
-                "details": {
-                    "description": "Alert status changed",
-                    "from": "snoozed",
-                    "to": "open"
-                }
-            }
-        }
+                "details": {"description": "Alert status changed", "from": "snoozed", "to": "open"},
+            },
+        },
     )
-    args = {
-        "alert_id": "orca-1",
-        "status": "open"
-    }
+    args = {"alert_id": "orca-1", "status": "open"}
     result = set_alert_status(orca_client, args)
     content = result.to_context()["Contents"]
     assert content["status"] == "open"
 
 
 def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:
-    requests_mock.put(
-        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/verify",
-        json={
-            "status": "scanning"
-        }
-    )
-    args = {
-        "alert_id": "orca-1"
-    }
+    requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/verify", json={"status": "scanning"})
+    args = {"alert_id": "orca-1"}
     result = verify_alert(orca_client, args)
     content = result.to_context()["Contents"]
     assert content["status"] == "scanning"
@@ -750,30 +641,26 @@ def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
     requests_mock.get(
         f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
         json={
-            "status": "success", "malicious_file.png": "malicious_file.png",
-            "link": "https://aws.com/download/malicious_file.png"
-        }
+            "status": "success",
+            "malicious_file.png": "malicious_file.png",
+            "link": "https://aws.com/download/malicious_file.png",
+        },
     )
 
-    requests_mock.get(
-        "https://aws.com/download/malicious_file.png",
-        text="Hello World"
-    )
+    requests_mock.get("https://aws.com/download/malicious_file.png", text="Hello World")
     response = orca_client.download_malicious_file(alert_id="orca-1")
-    assert response == {'filename': 'malicious_file.png', 'file': b'Hello World'}
+    assert response == {"filename": "malicious_file.png", "file": b"Hello World"}
 
 
 def test_orca_download_malicious_file__error(requests_mock, orca_client):
     requests_mock.get(
         f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
         json={
-            "status": "success", "malicious_file.png": "malicious_file.png",
-            "link": "https://aws.com/download/malicious_file.png"
-        }
+            "status": "success",
+            "malicious_file.png": "malicious_file.png",
+            "link": "https://aws.com/download/malicious_file.png",
+        },
     )
-    requests_mock.get(
-        "https://aws.com/download/malicious_file.png",
-        status_code=404
-    )
+    requests_mock.get("https://aws.com/download/malicious_file.png", status_code=404)
     with pytest.raises(DemistoException):
         orca_client.download_malicious_file("orca-1")
