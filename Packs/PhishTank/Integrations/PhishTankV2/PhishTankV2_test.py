@@ -1,23 +1,43 @@
 from datetime import datetime
-import pytest
+
 import demistomock as demisto
-from freezegun import freeze_time
-from PhishTankV2 import is_number, Client
-from PhishTankV2 import remove_last_slash, is_reload_needed, reload
-from PhishTankV2 import phishtank_status_command, url_command
-
+import pytest
 from CommonServerPython import DBotScoreReliability
+from freezegun import freeze_time
+from PhishTankV2 import Client, is_number, is_reload_needed, phishtank_status_command, reload, remove_last_slash, url_command
 
 
-def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1",
-                  reliability: str = DBotScoreReliability.A_PLUS, username: str = ''):
-    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours, use_https=False,
-                  reliability=reliability, username=username)
+def create_client(
+    proxy: bool = False,
+    verify: bool = False,
+    fetch_interval_hours: str = "1",
+    reliability: str = DBotScoreReliability.A_PLUS,
+    username: str = "",
+):
+    return Client(
+        proxy=proxy,
+        verify=verify,
+        fetch_interval_hours=fetch_interval_hours,
+        use_https=False,
+        reliability=reliability,
+        username=username,
+    )
 
 
-@pytest.mark.parametrize('number, output', [("True", False), ('432', True), ("str", False),
-                                            ("455.55", True), ("-1", False),
-                                            ("0", False), ("fd.f", False), ("1", True), ("", False)])
+@pytest.mark.parametrize(
+    "number, output",
+    [
+        ("True", False),
+        ("432", True),
+        ("str", False),
+        ("455.55", True),
+        ("-1", False),
+        ("0", False),
+        ("fd.f", False),
+        ("1", True),
+        ("", False),
+    ],
+)
 def test_is_number(number, output):
     """
     Given:
@@ -32,9 +52,9 @@ def test_is_number(number, output):
     assert is_number(number) == output
 
 
-@pytest.mark.parametrize('url, output',
-                         [(r"hxxp://www.com/", r"hxxp://www.com"), (r"hxxp://www.com", r"hxxp://www.com"),
-                          ("", "")])
+@pytest.mark.parametrize(
+    "url, output", [(r"hxxp://www.com/", r"hxxp://www.com"), (r"hxxp://www.com", r"hxxp://www.com"), ("", "")]
+)
 def test_remove_last_slash(url, output):
     """
     Given:
@@ -49,15 +69,15 @@ def test_remove_last_slash(url, output):
     assert remove_last_slash(url) == output
 
 
-@pytest.mark.parametrize('client,data,output', [
-    (Client(False, False, "2", False, DBotScoreReliability.B), {}, True),
-    (Client(False, False, "1", False, DBotScoreReliability.A),
-     {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "2", False, DBotScoreReliability.C),
-     {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "0.5", False, DBotScoreReliability.B),
-     {"list": {"id": 200}, "timestamp": 1601542800000}, True),
-])
+@pytest.mark.parametrize(
+    "client,data,output",
+    [
+        (Client(False, False, "2", False, DBotScoreReliability.B), {}, True),
+        (Client(False, False, "1", False, DBotScoreReliability.A), {"list": {"id": 200}, "timestamp": 1601542800000}, False),
+        (Client(False, False, "2", False, DBotScoreReliability.C), {"list": {"id": 200}, "timestamp": 1601542800000}, False),
+        (Client(False, False, "0.5", False, DBotScoreReliability.B), {"list": {"id": 200}, "timestamp": 1601542800000}, True),
+    ],
+)
 def test_is_reloaded_needed(client, data, output):
     """
     Given:
@@ -76,44 +96,61 @@ def test_is_reloaded_needed(client, data, output):
 
 FETCH_INDICATORS_PACKAGE = [
     (
-        'http://url.example',
+        "http://url.example",
         200,
         "phish_id,url,phish_detail_url,submission_time,verified,verification_time,online,target\n"
         "1,http://url.example1,http://url.example1,2019-10-20T23:54:13+00:00,yes,2019-10-20T23:54:13+00:00,yes,Other\n"
         "2,http://url.example2,http://url.example2,2019-10-20T23:54:14+00:00,yes,2019-10-20T23:54:14+00:00,yes,Target"
         "\n",
-        {'http://url.example1': {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
-                                 "verified": "yes", "verification_time": "2019-10-20T23:54:13+00:00",
-                                 "online": "yes", "target": "Other"},
-         'http://url.example2': {"phish_id": "2", "submission_time": "2019-10-20T23:54:14+00:00",
-                                 "verified": "yes", "verification_time": "2019-10-20T23:54:14+00:00",
-                                 "online": "yes", "target": "Target"}
-         }
+        {
+            "http://url.example1": {
+                "phish_id": "1",
+                "submission_time": "2019-10-20T23:54:13+00:00",
+                "verified": "yes",
+                "verification_time": "2019-10-20T23:54:13+00:00",
+                "online": "yes",
+                "target": "Other",
+            },
+            "http://url.example2": {
+                "phish_id": "2",
+                "submission_time": "2019-10-20T23:54:14+00:00",
+                "verified": "yes",
+                "verification_time": "2019-10-20T23:54:14+00:00",
+                "online": "yes",
+                "target": "Target",
+            },
+        },
     ),
     (
-        'http://url.example/',
+        "http://url.example/",
         200,
         "phish_id,url,phish_detail_url,submission_time,verified,verification_time,online,target\n"
         "1,http://url.example1,2019-10-20T23:54:13+00:00,yes,2019-10-20T23:54:13+00:00,yes,Other\n"
         "2,http://url.example2,"
         "http://url.example2,2019-10-20T23:54:14+00:00,yes,2019-10-20T23:54:14+00:00,yes,Target\n",
-        {'http://url.example2': {"phish_id": "2", "submission_time": "2019-10-20T23:54:14+00:00",
-                                 "verified": "yes", "verification_time": "2019-10-20T23:54:14+00:00",
-                                 "online": "yes", "target": "Target"}
-         }
+        {
+            "http://url.example2": {
+                "phish_id": "2",
+                "submission_time": "2019-10-20T23:54:14+00:00",
+                "verified": "yes",
+                "verification_time": "2019-10-20T23:54:14+00:00",
+                "online": "yes",
+                "target": "Target",
+            }
+        },
     ),
     (
-        'http://url.example/',
+        "http://url.example/",
         509,
         "['You have exceeded the request rate limit for this method. Please see the response headers for usage stats."
         " For more information about rate limiting on Phishtank, please see our developer site: "
         "http://www.phishtank.com/developer_info.php']",
-        {}
+        {},
     ),
 ]
 
 
-@pytest.mark.parametrize('url, status_code, data, expected_result', FETCH_INDICATORS_PACKAGE)
+@pytest.mark.parametrize("url, status_code, data, expected_result", FETCH_INDICATORS_PACKAGE)
 def test_reload(mocker, url, status_code, data, expected_result):
     """
     Given:
@@ -133,33 +170,40 @@ def test_reload(mocker, url, status_code, data, expected_result):
         got_data = reload(client)
         assert got_data == expected_result
     else:
-        assert False
+        pytest.fail()
 
 
 CONTEXT_LIST = [
+    ({}, "PhishTankV2 Database Status\nDatabase not loaded.\n"),
+    ({}, "PhishTankV2 Database Status\nDatabase not loaded.\n"),
     (
         {
-        }, "PhishTankV2 Database Status\nDatabase not loaded.\n"
+            "list": {
+                "http://url.example1": {
+                    "phish_id": "1",
+                    "submission_time": "2019-10-20T23:54:13+00:00",
+                    "verified": "yes",
+                    "verification_time": "2019-10-20T23:54:13+00:00",
+                    "online": "yes",
+                    "target": "Other",
+                },
+                "http://url.example2": {
+                    "phish_id": "2",
+                    "submission_time": "2019-10-20T23:54:14+00:00",
+                    "verified": "yes",
+                    "verification_time": "2019-10-20T23:54:14+00:00",
+                    "online": "yes",
+                    "target": "Target",
+                },
+            },
+            "timestamp": 1601969897 * 1000,
+        },
+        "PhishTankV2 Database Status\nTotal **2** URLs loaded.\nLast Load time **Tue Oct 06 2020 07:38:17 (UTC)**\n",
     ),
-    (
-        {}, "PhishTankV2 Database Status\nDatabase not loaded.\n"
-    ),
-    (
-        {
-            'list': {'http://url.example1': {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
-                                             "verified": "yes", "verification_time": "2019-10-20T23:54:13+00:00",
-                                             "online": "yes", "target": "Other"},
-                     'http://url.example2': {"phish_id": "2", "submission_time": "2019-10-20T23:54:14+00:00",
-                                             "verified": "yes", "verification_time": "2019-10-20T23:54:14+00:00",
-                                             "online": "yes", "target": "Target"}
-                     },
-            'timestamp': 1601969897 * 1000
-        }, "PhishTankV2 Database Status\nTotal **2** URLs loaded.\nLast Load time **Tue Oct 06 2020 07:38:17 (UTC)**\n"
-    )
 ]
 
 
-@pytest.mark.parametrize('data,expected_result', CONTEXT_LIST)
+@pytest.mark.parametrize("data,expected_result", CONTEXT_LIST)
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_phishtank_status_command(mocker, data, expected_result):
     """
@@ -180,42 +224,59 @@ def test_phishtank_status_command(mocker, data, expected_result):
 
 URL_COMMAND_LIST = [
     (  # valid data , verified = yes
-        {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
-         "verified": "yes", "verification_time": "2019-10-20T23:54:13+00:00",
-         "online": "yes", "target": "Other"
-         }, ['http://url.example1'], 3,
+        {
+            "phish_id": "1",
+            "submission_time": "2019-10-20T23:54:13+00:00",
+            "verified": "yes",
+            "verification_time": "2019-10-20T23:54:13+00:00",
+            "online": "yes",
+            "target": "Other",
+        },
+        ["http://url.example1"],
+        3,
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | yes |\nAdditional details at "
-        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n"
+        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n",
     ),
     (  # no exists key verified
-        {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
-         "verification_time": "2019-10-20T23:54:13+00:00",
-         "online": "yes", "target": "Other"
-         }, ['http://url.example1'], 0,
-        "### PhishTankV2 Database - URL Query \n#### No matches for URL http://url.example1 \n"
+        {
+            "phish_id": "1",
+            "submission_time": "2019-10-20T23:54:13+00:00",
+            "verification_time": "2019-10-20T23:54:13+00:00",
+            "online": "yes",
+            "target": "Other",
+        },
+        ["http://url.example1"],
+        0,
+        "### PhishTankV2 Database - URL Query \n#### No matches for URL http://url.example1 \n",
     ),
     (  # valid data , verified = no
-        {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
-         "verified": "no", "verification_time": "2019-10-20T23:54:13+00:00",
-         "online": "yes", "target": "Other"
-         }, ['http://url.example1'],
+        {
+            "phish_id": "1",
+            "submission_time": "2019-10-20T23:54:13+00:00",
+            "verified": "no",
+            "verification_time": "2019-10-20T23:54:13+00:00",
+            "online": "yes",
+            "target": "Other",
+        },
+        ["http://url.example1"],
         2,
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | no |\nAdditional details at "
-        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n"
+        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n",
     ),
     (  # no data
-        {}, ['http://url.example1'],
+        {},
+        ["http://url.example1"],
         0,
-        "### PhishTankV2 Database - URL Query \n#### No matches for URL http://url.example1 \n"
+        "### PhishTankV2 Database - URL Query \n#### No matches for URL http://url.example1 \n",
     ),
 ]
 
 
-@pytest.mark.parametrize('data,url,expected_score,expected_table', URL_COMMAND_LIST)
+@pytest.mark.parametrize("data,url,expected_score,expected_table", URL_COMMAND_LIST)
 def test_url_command(mocker, data, url, expected_score, expected_table):
     """
     Given:
@@ -230,24 +291,21 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
     """
     client = create_client(False, False, "1", DBotScoreReliability.C)
     mocker.patch.object(demisto, "results")
-    mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
+    mocker.patch("PhishTankV2.get_url_data", return_value=(data, url[0]))
     command_results = url_command(client, url)
 
     # validate score
-    output = command_results[0].to_context().get('EntryContext', {})
-    dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
-               ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
-    assert output.get(dbot_key, [])[0].get('Score') == expected_score
-    assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.C
+    output = command_results[0].to_context().get("EntryContext", {})
+    dbot_key = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    assert output.get(dbot_key, [])[0].get("Score") == expected_score
+    assert output.get(dbot_key, [])[0].get("Reliability") == DBotScoreReliability.C
 
     # validate human readable
-    hr_ = command_results[0].to_context().get('HumanReadable', {})
+    hr_ = command_results[0].to_context().get("HumanReadable", {})
     assert hr_ == expected_table
 
 
-@pytest.mark.parametrize('username, expected_headers', [
-    ('test', {'User-Agent': 'phishtank/test'}),
-    ('', {})])
+@pytest.mark.parametrize("username, expected_headers", [("test", {"User-Agent": "phishtank/test"}), ("", {})])
 def test_user_agent_header(mocker, username, expected_headers):
     """
     Given:
@@ -259,7 +317,7 @@ def test_user_agent_header(mocker, username, expected_headers):
     Then:
         - validating that the User-Agent header is populated as expected
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value='')
+    http_request = mocker.patch.object(Client, "_http_request", return_value="")
     client = create_client(False, False, "1", DBotScoreReliability.B, username)
     reload(client)
-    assert http_request.call_args.kwargs['headers'] == expected_headers
+    assert http_request.call_args.kwargs["headers"] == expected_headers

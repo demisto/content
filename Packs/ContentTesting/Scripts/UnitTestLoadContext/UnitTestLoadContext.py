@@ -4,15 +4,15 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        incid = demisto.args()['id']
+        incid = demisto.args()["id"]
         context = demisto.executeCommand("getContext", {"id": incid})[0]["Contents"]["context"]
         # Set each context value
-        for key in context.keys():
+        for key in context:
             demisto.executeCommand("Set", {"key": key, "value": context[key]})
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"UnitTestLoadContext: Exception failed to execute. Error: {str(ex)}")
+        return_error(f"UnitTestLoadContext: Exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
