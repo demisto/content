@@ -217,7 +217,7 @@ def main() -> None:
             send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
             demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
-        elif command == "RadwareCloudDDoSProtectionServices-get-events":
+        elif command == "radware-cloud-ddos-protection-services-get-events":
             if 'Events' in event_types:
                 events, _ = fetch_events(client, last_run=last_run)
             if 'Alerts' in event_types:

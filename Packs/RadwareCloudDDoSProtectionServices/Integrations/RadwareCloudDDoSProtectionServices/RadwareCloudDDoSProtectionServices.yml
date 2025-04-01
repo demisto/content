@@ -46,9 +46,10 @@ display: Radware Cloud DDoS Protection Services
 name: Radware Cloud DDoS Protection Services
 script:
   commands:
-    description: 'Send events from Radware Cloud DDoS Protection Services to XSIAM. Used mainly for debugging.'
-    name: RadwareCloudDDoSProtectionServices-get-events
-    outputs: []
+    - description: 'Send events from Radware Cloud DDoS Protection Services to XSIAM. Used mainly for debugging.'
+      name: radware-cloud-ddos-protection-services-get-events
+      arguments:
+      outputs: []
   runonce: false
   script: '-'
   type: python
