@@ -147,7 +147,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: Dict
     return hmac.new(
         private_token.encode("ASCII"),
         f"{query_uri}{query_string}\n{public_token}\n{date}".encode("ASCII"),
-        hashlib.sha1,
+        hashlib.sha1,   # noqa: S324
     ).hexdigest()
 
 
