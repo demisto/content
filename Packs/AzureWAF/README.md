@@ -1,5 +1,16 @@
 <~XSIAM>
 
+# Azure Web Application Firewall </br>
+
+<~XSOAR> [Azure WAF Integration](https://xsoar.pan.dev/docs/reference/integrations/azure-waf) </~XSOAR>
+
+## Overview
+
+Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting. 
+It operates as an application-level firewall, focusing on web application traffic. 
+
+Azure WAF integrates with Azure services like Azure Application Gateway, Azure Front Door, and Azure CDN.
+
 
 ### This pack includes:
 
