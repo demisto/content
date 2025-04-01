@@ -1,0 +1,503 @@
+id: d9fbeca9-89bf-4a26-80b7-98fa951901de
+version: 19
+vcShouldKeepItemLegacyProdMachine: false
+name: Sysdig Response Action
+description: Manage different response actions based on incident fields
+tags:
+- Runtime
+- Sysdig
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 027a70e3-b5c8-4b22-83ac-24b94eb94e82
+    type: start
+    task:
+      id: 027a70e3-b5c8-4b22-83ac-24b94eb94e82
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 718,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 10bdcf69-1951-4be3-b92e-4239903c6f99
+    type: regular
+    task:
+      id: 10bdcf69-1951-4be3-b92e-4239903c6f99
+      version: -1
+      name: Kill Container
+      description: Calling the Sysdig response-actions API
+      script: '|||call-response-api'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      actionType:
+        simple: KILL_CONTAINER
+      callerId:
+        simple: ${incident.eventid}
+      container_id:
+        simple: ${incident.containerid}
+      host_id:
+        simple: ${incident.hostid}
+      json_data:
+        keyvalue:
+        - key: actionType
+          value:
+            simple: KILL_CONTAINER
+        - key: callerId
+          value:
+            simple: ${inputs.callerId}
+        - key: parameters
+          value:
+            simple: |2-
+               {
+                  "container.id": "${inputs.container_ID}"
+                }
+      method:
+        simple: POST
+      path_absolute:
+        simple: ${incident.filepath}
+      process_id:
+        simple: ${incident.processid}
+      url_suffix:
+        simple: /secure/response-actions/v1alpha1/action-executions
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 455,
+          "y": 423
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d0590e40-050f-413d-9746-dec2bdaf0d93
+    type: condition
+    task:
+      id: d0590e40-050f-413d-9746-dec2bdaf0d93
+      version: -1
+      name: Validate Container ID
+      description: commands.local.cmd.extract.indicators
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.containerid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 337,
+          "y": 144
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6f999804-a2b7-4e21-a5fb-56882f266f1b
+    type: condition
+    task:
+      id: 6f999804-a2b7-4e21-a5fb-56882f266f1b
+      version: -1
+      name: Check Process an Host ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 0
+      days: 0
+      weeks: 1
+    defaultassigneecomplex:
+      simple: sebastian.zumbado@sysdig.com
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.processid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.hostid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 975,
+          "y": 272
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c4f2f433-b718-4883-95b5-f980178c4fe9
+    type: condition
+    task:
+      id: c4f2f433-b718-4883-95b5-f980178c4fe9
+      version: -1
+      name: Check file path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.filepath
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 188,
+          "y": 288
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6a0cd534-c6c1-4c9a-8955-53aeefc46ec9
+    type: regular
+    task:
+      id: 6a0cd534-c6c1-4c9a-8955-53aeefc46ec9
+      version: -1
+      name: File quarantine
+      description: Calling the Sysdig response-actions API
+      script: '|||call-response-api'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      actionType:
+        simple: FILE_QUARANTINE
+      callerId:
+        simple: ${incident.eventid}
+      container_id:
+        simple: ${incident.containerid}
+      host_id:
+        simple: ${incident.hostid}
+      json_data:
+        keyvalue:
+        - key: actionType
+          value:
+            simple: KILL_CONTAINER
+        - key: callerId
+          value:
+            simple: ${inputs.callerId}
+        - key: parameters
+          value:
+            simple: |2-
+               {
+                  "container.id": "${inputs.container_ID}"
+                }
+      method:
+        simple: POST
+      path_absolute:
+        simple: ${incident.filepath}
+      process_id:
+        simple: ${incident.processid}
+      url_suffix:
+        simple: /secure/response-actions/v1alpha1/action-executions
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -158,
+          "y": 423
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9368dba6-9e62-458c-82dc-2594351ef446
+    type: regular
+    task:
+      id: 9368dba6-9e62-458c-82dc-2594351ef446
+      version: -1
+      name: Kill Process
+      description: Calling the Sysdig response-actions API
+      script: '|||call-response-api'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      actionType:
+        simple: KILL_PROCESS
+      callerId:
+        simple: ${incident.eventid}
+      container_id:
+        simple: ${incident.containerid}
+      host_id:
+        simple: ${incident.hostid}
+      json_data:
+        keyvalue:
+        - key: actionType
+          value:
+            simple: KILL_CONTAINER
+        - key: callerId
+          value:
+            simple: ${inputs.callerId}
+        - key: parameters
+          value:
+            simple: |2-
+               {
+                  "container.id": "${inputs.container_ID}"
+                }
+      method:
+        simple: POST
+      path_absolute:
+        simple: ${incident.filepath}
+      process_id:
+        simple: ${incident.processid}
+      url_suffix:
+        simple: /secure/response-actions/v1alpha1/action-executions
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 975,
+          "y": 423
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4fdded1a-1575-4855-85b2-827fa3fa454e
+    type: condition
+    task:
+      id: 4fdded1a-1575-4855-85b2-827fa3fa454e
+      version: -1
+      name: Check trigger system capture
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: incident.triggercapture
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 718,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3806f72d-25db-420b-8c7f-4d1367212791
+    type: regular
+    task:
+      id: 3806f72d-25db-420b-8c7f-4d1367212791
+      version: -1
+      name: Create system capture
+      description: Command to trigger a system capture, it will record all system
+        calls at the host level.
+      script: '|||create-system-capture'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      agent_id:
+        simple: ${incident.agentid}
+      capture_name:
+        simple: xsoar-capture-${incident.eventid}
+      container_id:
+        simple: ${incident.containerid}
+      customer_id:
+        simple: ${incident.sysdigcustomerid}
+      host_name:
+        simple: ${incident.sourcehostname}
+      machine_id:
+        simple: ${incident.macaddress}
+      method:
+        simple: POST
+      url_suffix:
+        simple: /api/v1/captures
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1521,
+          "y": 154
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fdead3f6-07d5-4888-b57f-f92e6f132c1d
+    type: regular
+    task:
+      id: fdead3f6-07d5-4888-b57f-f92e6f132c1d
+      version: -1
+      name: Save Capture
+      description: Command to download a system capture based on the capture ID.
+      script: Sysdig-Response-Actions|||download-capture-file
+      type: regular
+      iscommand: true
+      brand: Sysdig-Response-Actions
+    scriptarguments:
+      capture_id:
+        simple: ${create_system_capture.Output.capture.id}
+      retry-count:
+        simple: "2"
+      retry-interval:
+        simple: "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1519,
+          "y": 345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_8_yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 743,
+        "width": 2060,
+        "x": -158,
+        "y": -250
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true

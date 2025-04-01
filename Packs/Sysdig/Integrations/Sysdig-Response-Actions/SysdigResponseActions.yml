@@ -1,0 +1,131 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SysdigResponseActions
+  version: -1
+configuration:
+- defaultvalue: https://us2.app.sysdig.com
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for the connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture'
+display: Sysdig Response Actions
+name: SysdigResponseActions
+script:
+  commands:
+  - arguments:
+    - defaultValue: GET
+      description: API metthod to perform i.e POST, GET
+      name: method
+      type: String
+      required: true
+    - defaultValue: /secure/response-actions/v1alpha1/action-executions
+      description: The API suffix
+      name: url_suffix
+      required: true
+    - auto: PREDEFINED
+      description: Action type to perform
+      name: actionType
+      required: false
+      predefined:
+      - KILL_PROCESS
+      - KILL_CONTAINER
+      - STOP_CONTAINER
+      - PAUSE_CONTAINER
+      - FILE_QUARANTINE
+    - description: The caller ID, it must be unique every time
+      name: callerId
+      required: false
+    - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
+      name: container_id
+      type: String
+    - description: 'The path of the file to quarantine. Example "/etc/sensitive"'
+      name: path_absolute
+      type: String
+    - description: 'The host ID. Example "laksjdf1923u90snca893"'
+      name: host_id
+      type: String
+    - description: 'The process ID. Example "1234"'
+      name: process_id
+      type: Number
+    description: Calling the Sysdig response-actions API
+    name: call-response-api
+    outputs:
+    - contextPath: call_response_api.Output
+      description: Output of the response-actions API
+      type: String
+  - arguments:
+    - defaultValue: GET
+      description: API metthod to perform i.e POST, GET
+      name: method
+      type: String
+      required: true
+    - defaultValue: /api/v1/captures
+      description: The API suffix
+      name: url_suffix
+      required: true
+    - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
+      name: container_id
+      type: String
+      required: true
+    - description: 'The host name. Example "ip-1-1-1-1.us-west-1.compute.internal"'
+      name: host_name
+      type: String
+      required: true
+    - description: 'The capture name'
+      name: capture_name
+      type: String
+      required: true
+    - description: 'The agent ID'
+      name: agent_id
+      type: String
+      required: true
+    - description: 'The customer ID'
+      name: customer_id
+      type: String
+      required: true
+    - description: 'The machine ID/MAC. Example "01:aa:02:bb:03:cc"'
+      name: machine_id
+      type: String
+      required: true
+    description: Command to trigger a system capture, it will record all system calls at the host level.
+    name: create-system-capture
+    outputs:
+    - contextPath: create_system_capture.Output
+      description: Output of the system capture created
+      type: String
+  - arguments:
+    - description: System Capture ID
+      name: capture_id
+      type: String
+      required: true
+    description: Command to download a system capture based on the capture ID.
+    name: download-capture-file
+    outputs:
+    - contextPath: download_capture_file.Output
+      description: Output of the system capture downloaded
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
