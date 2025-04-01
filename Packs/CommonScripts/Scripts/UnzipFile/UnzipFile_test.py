@@ -1,5 +1,4 @@
 import os
-import tempfile
 from tempfile import mkdtemp
 from unittest.mock import patch, MagicMock
 

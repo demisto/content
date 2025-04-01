@@ -137,3 +137,4 @@ runonce: false
 dockerimage: demisto/python:2.7.17.5734
 tests:
   - ZipFile-Test
+fromversion: 5.0.0
