@@ -122,7 +122,7 @@ def fetch_events(client, last_run):
         latest_timestamp_events = documents[0]["endTimestamp"]
         demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_events=}')
         if len(documents) == 700:
-            demisto.debug(f'RadwareCloudDDoS: found next page')
+            demisto.debug('RadwareCloudDDoS: found next page')
             new_continue_fetch_events = {'end_time': end_time, 'start_time': start_time, 'fetched_events': len(documents)+skip}
 
         if not continue_fetch_events:
@@ -160,7 +160,7 @@ def fetch_alerts(client, last_run):
         latest_timestamp_alerts = documents[0].get('context', {}).get("_timestamp")
         demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_alerts=}')
         if len(documents) == 700:
-            demisto.debug(f'RadwareCloudDDoS: found next page')
+            demisto.debug('RadwareCloudDDoS: found next page')
             new_continue_fetch_alerts = {'end_time': end_time, 'start_time': start_time, 'fetched_alerts': len(documents)+skip}
 
         if not continue_fetch_alerts:
