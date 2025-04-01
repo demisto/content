@@ -673,15 +673,15 @@ class EntryBuilder:
     def __enum_fields_by_group(
         recordset: Iterable[dict[Hashable, Any]],
         group_by: str,
-        sort_by: str,
         asc: bool,
+        sort_by: str | None = None
     ) -> Iterable[tuple[Hashable, Iterable[dict[Hashable, Any]]]]:
         """Enumerate fields with a group value by group
 
         :param recordset: The list of fields.
         :param group_by: The name of the field to make groups.
-        :param sort_by: The field name to sort groups.
         :param asc: Set to True to sort the recordset in ascent order, Set to False for descent order.
+        :param sort_by: The field name to sort groups.
         :return: Each group value with fields.
         """
         groups = itertools.groupby(
@@ -692,7 +692,7 @@ class EntryBuilder:
             ),
             key=lambda v: v.get(group_by),
         )
-        if sort_by == group_by:
+        if not sort_by:
             return groups
         else:
             return sorted(
@@ -984,7 +984,7 @@ class EntryBuilder:
                     assert isinstance(sort_by, str) or sort_by is None, (
                         f'x.sort-by must be of type str or null - {type(sort_by)}'
                     )
-                    self.__sort_by = sort_by or by
+                    self.__sort_by = sort_by
 
                     self.__asc = EntryBuilder.to_sort_order(x.get("order") or "asc")
                     self.__field = x.get("field")
@@ -1001,7 +1001,7 @@ class EntryBuilder:
                 @property
                 def sort_by(
                     self,
-                ) -> str:
+                ) -> str | None:
                     return self.__sort_by
 
                 @property
@@ -1165,8 +1165,8 @@ class EntryBuilder:
             for x_val, x_records in EntryBuilder.__enum_fields_by_group(
                 recordset=recordset,
                 group_by=template.x.by,
+                asc=template.x.asc,
                 sort_by=template.x.sort_by,
-                asc=template.x.asc
             ):
                 groups = {k: None for k in ynames}
                 xlabel = ""
@@ -1213,8 +1213,8 @@ class EntryBuilder:
                 for x_val, x_records in EntryBuilder.__enum_fields_by_group(
                     recordset=recordset,
                     group_by=template.x.by,
-                    sort_by=template.x.sort_by,
                     asc=template.x.asc,
+                    sort_by=template.x.sort_by,
                 )
                 for y_fields in x_records
             ]
@@ -1684,7 +1684,7 @@ class Main:
             for path in paths:
                 pit = iter(path)
                 nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
-                if parent == ''.join(iter(lambda: next(nit), '')):  # noqa: B023
+                if parent == ''.join(iter(lambda: next(nit), '')):
                     cpaths.append(''.join(list(pit)))
             return cpaths
 
