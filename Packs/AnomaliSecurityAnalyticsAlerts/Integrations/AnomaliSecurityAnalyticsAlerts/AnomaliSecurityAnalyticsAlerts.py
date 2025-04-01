@@ -5,8 +5,8 @@ Anomali Security Analytics Alerts Integration
 from datetime import datetime, timezone
 import urllib3
 import demistomock as demisto
-from CommonServerPython import * 
-from CommonServerUserPython import * 
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -92,6 +92,13 @@ class Client(BaseClient):
                                   url_suffix='/api/v1/xdr/event/lookup/iceberg/update/',
                                   json_data=data)
 
+    def check_connection(self) -> dict:
+        """
+        Test connection by retrieving version info from the API.
+        """
+        return self._http_request(method='GET',
+                                  url_suffix='/api/v1/xdr/get_version/')
+
 
 """ COMMAND FUNCTIONS """
 
@@ -109,16 +116,20 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     query = str(args.get('query', ''))
     source = str(args.get('source', ''))
     tz_str = str(args.get('timezone', 'UTC'))
-    from_datetime = arg_to_datetime(args.get('from', '1 day'), 
-                                    arg_name='from', 
-                                    is_utc=True, 
+    from_datetime = arg_to_datetime(args.get('from', '1 day'),
+                                    arg_name='from',
+                                    is_utc=True,
                                     required=False)
+    if from_datetime is None:
+        raise ValueError("Failed to parse 'from' argument. Please provide correct value")
 
     if args.get('to'):
-        to_datetime = arg_to_datetime(args.get('to'), 
-                                    arg_name='to', 
-                                    is_utc=True, 
-                                    required=False)
+        to_datetime = arg_to_datetime(args.get('to'),
+                                      arg_name='to',
+                                      is_utc=True,
+                                      required=False)
+        if to_datetime is None:
+            raise ValueError("Failed to parse 'to' argument. Please provide correct value")
     else:
         to_datetime = datetime.now(tz=UTC)
 
@@ -133,8 +144,7 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
 
     response = client.create_search_job(query, source, time_range)
     outputs = {
-        'job_id': response.get('job_id', ''),
-        'status': 'in progress'
+        'job_id': response.get('job_id', '')
     }
 
     return CommandResults(
@@ -146,86 +156,70 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     )
 
 
-def command_get_search_job_status(client: Client, args: dict) -> list[CommandResults]:
-    """Get the search job status.
-
-    Args:
-        client (Client): Client object with request
-        args (dict): Usually demisto.args()
-
-    Returns:
-        list[CommandResults]: A list of command results containing the job status.
-    """
-    job_ids = ArgToList(str(args.get('job_id')))
-    command_results: list[CommandResults] = []
-    for job_id in job_ids:
-        response = client.get_search_job_status(job_id)
-        if 'error' in response:
-            human_readable = (
-                f"No results found for Job ID: {job_id}. "
-                f"Error message: {response.get('error')}. "
-                f"Please verify the Job ID and try again."
-            )
-            command_result = CommandResults(
-                outputs_prefix='ThreatstreamAlerts.SearchJobStatus',
-                outputs={},
-                readable_output=human_readable,
-                raw_response=response
-            )
-            command_results.append(command_result)
-            continue
-
-        status_value = response.get('status')
-        outputs = {"job_id": job_id, "status": status_value}
-        human_readable = tableToMarkdown(name="Search Job Status", t=outputs, removeNull=True)
-
-        command_result = CommandResults(
-            outputs_prefix='ThreatstreamAlerts.SearchJobStatus',
-            outputs_key_field='job_id',
-            outputs=outputs,
-            readable_output=human_readable,
-            raw_response=response
-        )
-        command_results.append(command_result)
-    return command_results
-
-
 def command_get_search_job_results(client: Client, args: dict) -> list[CommandResults]:
-    """Get the search job results.
+    """
+    Get the search job results if the job status is 'completed'.
+    Otherwise, return a message indicating that the job is still running.
 
     Args:
-        client (Client): Client object with request
-        args (dict): Usually demisto.args()
+        client (Client): Client object with request.
+        args (dict): Usually demisto.args().
 
     Returns:
         list[CommandResults]: A list of command results for each job id.
     """
-    job_ids = ArgToList(str(args.get('job_id')))
+    job_ids = argToList(str(args.get('job_id')))
     command_results: list[CommandResults] = []
+
     for job_id in job_ids:
-        response = client.get_search_job_results(job_id)
+        status_response = client.get_search_job_status(job_id)
+        if 'error' in status_response:
+            human_readable = (
+                f"No results found for Job ID: {job_id}. "
+                f"Error message: {status_response.get('error')}. "
+                f"Please verify the Job ID and try again."
+            )
+            command_result = CommandResults(
+                outputs_prefix='ThreatstreamAlerts.SearchJobResults',
+                outputs={},
+                readable_output=human_readable,
+                raw_response=status_response
+            )
+            command_results.append(command_result)
+            continue
 
-        if 'fields' in response and 'records' in response:
-            headers = response['fields']
-            records = response['records']
-            table_data = [dict(zip(headers, record)) for record in records]
-            human_readable = tableToMarkdown(name="Search Job Results",
-                                             t=table_data,
-                                             headers=headers,
-                                             removeNull=True)
+        status_value = status_response.get('status')
+        if status_value is None or status_value.upper() != 'DONE':
+            human_readable = f"Job ID: {job_id} is still running. Current status: {status_value}."
+            command_result = CommandResults(
+                outputs_prefix='ThreatstreamAlerts.SearchJobResults',
+                outputs={"job_id": job_id, "status": status_value},
+                readable_output=human_readable,
+                raw_response=status_response
+            )
+            command_results.append(command_result)
         else:
-            human_readable = tableToMarkdown(name="Search Job Results",
-                                             t=response,
-                                             removeNull=True)
-
-        command_result = CommandResults(
-            outputs_prefix='ThreatstreamAlerts.SearchJobResults',
-            outputs_key_field='job_id',
-            outputs=response,
-            readable_output=human_readable,
-            raw_response=response
-        )
-        command_results.append(command_result)
+            results_response = client.get_search_job_results(job_id)
+            if 'fields' in results_response and 'records' in results_response:
+                headers = results_response['fields']
+                records = results_response['records']
+                table_data = [dict(zip(headers, record)) for record in records]
+                human_readable = tableToMarkdown(name="Search Job Results",
+                                                 t=table_data,
+                                                 headers=headers,
+                                                 removeNull=True)
+            else:
+                human_readable = tableToMarkdown(name="Search Job Results",
+                                                 t=results_response,
+                                                 removeNull=True)
+            command_result = CommandResults(
+                outputs_prefix='ThreatstreamAlerts.SearchJobResults',
+                outputs_key_field='job_id',
+                outputs=results_response,
+                readable_output=human_readable,
+                raw_response=results_response
+            )
+            command_results.append(command_result)
     return command_results
 
 
@@ -242,7 +236,7 @@ def command_update_alert_status(client: Client, args: dict) -> CommandResults:
     status = str(args.get('status'))
     uuid_val = str(args.get('uuid'))
     if not status or not uuid_val:
-        raise Exception("Please provide both 'status' and 'uuid' parameters.")
+        raise DemistoException("Please provide both 'status' and 'uuid' parameters.")
     data = {
         "table_name": "alert",
         "columns": {
@@ -273,7 +267,7 @@ def command_update_alert_comment(client: Client, args: dict) -> CommandResults:
     comment = str(args.get('comment'))
     uuid_val = str(args.get('uuid'))
     if not comment or not uuid_val:
-        raise Exception("Please provide both 'comment' and 'uuid' parameters.")
+        raise DemistoException("Please provide both 'comment' and 'uuid' parameters.")
     data = {
         "table_name": "alert",
         "columns": {
@@ -291,37 +285,23 @@ def command_update_alert_comment(client: Client, args: dict) -> CommandResults:
     )
 
 
-def module(client: Client) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
+    Perform basic request to check if the connection to service was successful.
     Raises:
-     exceptions if something goes wrong.
+        exceptions if something goes wrong.
 
     Args:
         Client: client to use
 
     Returns:
-        'ok' if test passed, anything else will fail the test.
+        'ok' if the response is ok, else will raise an error
     """
-
     try:
-        now_dt = datetime.now(tz=UTC)
-        now_ts = int(now_dt.timestamp() * 1000)
-        one_day_ago_ts = now_ts - 24 * 3600 * 1000
-
-        client.create_search_job(
-            query="alert",
-            source="third_party_mynewapp",
-            time_range={
-                "from": one_day_ago_ts,
-                "to": now_ts
-            }
-        )
+        client.check_connection()
         return "ok"
     except Exception as e:
-        raise Exception(f"Test failed: {str(e)}")
+        raise DemistoException(f"Error in API call - check the username and the API Key. Error: {e}.")
 
 
 ''' MAIN FUNCTION '''
@@ -350,13 +330,12 @@ def main():
         args = demisto.args()
         commands = {
             'anomali-security-analytics-search-job-create': command_create_search_job,
-            'anomali-security-analytics-search-job-status': command_get_search_job_status,
             'anomali-security-analytics-search-job-results': command_get_search_job_results,
             'anomali-security-analytics-update-alert-status': command_update_alert_status,
             'anomali-security-analytics-update-alert-comment': command_update_alert_comment,
         }
         if command == 'test-module':
-            return_results(module(client))
+            return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
         else:

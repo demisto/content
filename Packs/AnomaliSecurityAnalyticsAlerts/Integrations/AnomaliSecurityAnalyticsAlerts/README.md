@@ -41,27 +41,6 @@ create a new search job
 |job_id|status|
 |---|---|
 | 7af7bc62c807446fa4bf7ad12dfbe64b | in progress |
-### anomali-security-analytics-search-job-status
-
-***
-query a search job status
-
-#### Base Command
-
-`anomali-security-analytics-search-job-status`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| job_id | job id | Optional | 
-
-#### Context Output
-
-### Search Job Status
-|job_id|status|
-|---|---|
-| 7af7bc62c807446fa4bf7ad12dfbe64b | DONE |
 ### anomali-security-analytics-search-job-results
 
 ***

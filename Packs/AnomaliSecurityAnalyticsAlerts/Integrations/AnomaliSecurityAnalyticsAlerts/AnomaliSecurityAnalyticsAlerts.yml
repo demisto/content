@@ -57,16 +57,10 @@ script:
       description: The desired timezone for the log source from the dropdown list. The default is Universal Link System Time Zone, which is the timezone where Universal Link is installed. Default value is UTC.
       required: false
     execution: false
-    outputs: []
-  - name: anomali-security-analytics-search-job-status
-    description: "Query a search job status"
-    arguments:
-    - name: job_id
-      description: Unique identifier assigned to a background process or job. You will get a job id when creating a new search job.
-      required: true
-      isArray: true
-    execution: false
-    outputs: []
+    outputs:
+      - contextPath: ThreatstreamAlerts.SearchJob.job_id
+        description: Job ID of the search job.
+        type: String
   - name: anomali-security-analytics-search-job-results
     description: "Get search job results"
     arguments:
@@ -75,7 +69,43 @@ script:
       required: true
       isArray: true
     execution: false
-    outputs: []
+    outputs:
+      - contextPath: ThreatstreamAlerts.SearchJobResults.job_id
+        description: "Job ID of the search job."
+        type: String
+      - contextPath: ThreatstreamAlerts.SearchJobResults.status
+        description: "Status of the search."
+        type: String
+      - contextPath: ThreatstreamAlerts.SearchJobResults.count
+        description: "Number of records returned."
+        type: Number
+      - contextPath: ThreatstreamAlerts.SearchJobResults.fields
+        description: "List of search fields returned."
+        type: String
+      - contextPath: ThreatstreamAlerts.SearchJobResults.has_next
+        description: "Indicates if more pages are available."
+        type: Boolean
+      - contextPath: ThreatstreamAlerts.SearchJobResults.is_aggregated
+        description: "Indicates if the search is aggregated."
+        type: Boolean
+      - contextPath: ThreatstreamAlerts.SearchJobResults.records
+        description: "List of records containing the fields included in the fields response attribute."
+        type: Array
+      - contextPath: ThreatstreamAlerts.SearchJobResults.result_row_count
+        description: "Total number of records retrieved by the search."
+        type: Number
+      - contextPath: ThreatstreamAlerts.SearchJobResults.search_end_time
+        description: "End timestamp of the search (UNIX timestamp in milliseconds)."
+        type: Number
+      - contextPath: ThreatstreamAlerts.SearchJobResults.search_start_time
+        description: "Start timestamp of the search (UNIX timestamp in milliseconds)."
+        type: Number
+      - contextPath: ThreatstreamAlerts.SearchJobResults.status
+        description: "Status of the search job."
+        type: String
+      - contextPath: ThreatstreamAlerts.SearchJobResults.types
+        description: "Data types of the search record attributes."
+        type: Array
   - name: anomali-security-analytics-update-alert-status
     description: "Update alert status"
     arguments:
@@ -86,7 +116,10 @@ script:
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
     execution: false
-    outputs: []
+    outputs:
+      - contextPath: ThreatstreamAlerts.UpdateAlertStatus.message
+        description: "."
+        type: String
   - name: anomali-security-analytics-update-alert-comment
     description: "Update alert comment"
     arguments:
@@ -97,7 +130,10 @@ script:
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
     execution: false
-    outputs: []
+    outputs:
+      - contextPath: ThreatstreamAlerts.UpdateAlertComment.message
+        description: "."
+        type: String
   isfetch: false
   runonce: false
   script: '-'
