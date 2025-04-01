@@ -27,8 +27,8 @@ AUTO_TRAINING_ALGO = 'auto'
 
 # the following mapping need to correspond to predict_phishing_words func at DBotPredictPhishingWords
 ALGO_TO_MODEL_TYPE = {
-    FASTTEXT_TRAINING_ALGO: demisto_ml.ModelType.FastText.value,
-    FINETUNE_TRAINING_ALGO: demisto_ml.ModelType.Torch.value
+    FASTTEXT_TRAINING_ALGO: 'fasttext_phishing',
+    FINETUNE_TRAINING_ALGO: 'torch_phishing'
 }
 FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
 
