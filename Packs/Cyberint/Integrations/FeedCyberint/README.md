@@ -294,15 +294,16 @@ Gets File SHA256 from the feed.
 
 #### Context Output
 
-| **Path**                   | **Type** | **Description**      |
-|----------------------------| --- |----------------------|
-| Cyberint.file_sha256.type         | String | The indicator type.  |
-| Cyberint.file_sha256.value          | String | The indicator value. |
-| Cyberint.file_sha256.malicious_score       | String | Malicious score.     |
-| Cyberint.file_sha256.filenames | String | Filenames.           |
-| Cyberint.file_sha256.first_seen  | String | First seen.          |
-| Cyberint.file_sha256.download_urls    | String | Download URLs.       |
-| Cyberint.file_sha256.benign        | String | Benign.              |
+| **Path**                                      | **Type** | **Description**          |
+|-----------------------------------------------| --- |--------------------------|
+| Cyberint.file_sha256.entity.type              | String | The indicator type.      |
+| Cyberint.file_sha256.entity.value             | String | The indicator value.     |
+| Cyberint.file_sha256.enrichment.first_seen    | String | First seen.              |
+| Cyberint.file_sha256.enrichment.download_urls | String | Download URLs.           |
+| Cyberint.file_sha256.enrichment.filenames     | String | Filenames.               |
+| Cyberint.file_sha256.benign                   | String | Benign.                  |
+| Cyberint.file_sha256.risk.malicious_score     | String | Malicious score.         |
+| Cyberint.file_sha256.risk.occurrences_count     | String | Occurrences count. |
 
 #### Command example
 ```!cyberint-get-file-sha256 value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789```
@@ -390,29 +391,29 @@ Gets Domain from the feed.
 
 #### Context Output
 
-| **Path**                                      | **Type**  | **Description** |
-|-----------------------------------------------|----------|----------------|
-| Cyberint.domain.type                          | String   | The indicator type. |
-| Cyberint.domain.value                         | String   | The indicator value. |
-| Cyberint.domain.malicious_score               | String   | Malicious score. |
-| Cyberint.domain.occurrences_count             | String   | Occurrences count. |
-| Cyberint.domain.created_date                  | String   | Created date. |
-| Cyberint.domain.updated_date                  | String   | Updated date. |
-| Cyberint.domain.expiration_date               | String   | Expiration date. |
-| Cyberint.domain.ips                           | String   | IPs. |
-| Cyberint.domain.registrant_name               | String   | Registrant name. |
-| Cyberint.domain.registrant_email              | String   | Registrant email. |
-| Cyberint.domain.registrant_organization       | String   | Registrant organization. |
-| Cyberint.domain.registrant_country            | String   | Registrant country. |
-| Cyberint.domain.registrant_telephone          | String   | Registrant telephone. |
-| Cyberint.domain.technical_contact_email       | String   | Technical contact email. |
-| Cyberint.domain.technical_contact_name        | String   | Technical contact name. |
-| Cyberint.domain.technical_contact_organization| String   | Technical contact organization. |
-| Cyberint.domain.registrar_name                | String   | Registrar name. |
-| Cyberint.domain.admin_contact_name            | String   | Admin contact name. |
-| Cyberint.domain.admin_contact_organization    | String   | Admin contact organization. |
-| Cyberint.domain.admin_contact_email           | String   | Admin contact email. |
-| Cyberint.domain.benign                        | String   | Benign. |
+| **Path**                                       | **Type**  | **Description** |
+|------------------------------------------------|----------|----------------|
+| Cyberint.domain.entity.type                    | String   | The indicator type. |
+| Cyberint.domain.entity.value                   | String   | The indicator value. |
+| Cyberint.domain.risk.malicious_score           | String   | Malicious score. |
+| Cyberint.domain.risk.occurrences_count         | String   | Occurrences count. |
+| Cyberint.domain.enrichment.ips                            | String   | IPs. |
+| Cyberint.domain.enrichment.whois.created_date  | String   | Created date. |
+| Cyberint.domain.enrichment.whois.updated_date                   | String   | Updated date. |
+| Cyberint.domain.enrichment.whois.expiration_date                | String   | Expiration date. |
+| Cyberint.domain.enrichment.whois.registrant_name                | String   | Registrant name. |
+| Cyberint.domain.enrichment.whois.registrant_email               | String   | Registrant email. |
+| Cyberint.domain.enrichment.whois.registrant_organization        | String   | Registrant organization. |
+| Cyberint.domain.enrichment.whois.registrant_country             | String   | Registrant country. |
+| Cyberint.domain.enrichment.whois.registrant_telephone           | String   | Registrant telephone. |
+| Cyberint.domain.enrichment.whois.technical_contact_email        | String   | Technical contact email. |
+| Cyberint.domain.enrichment.whois.technical_contact_name         | String   | Technical contact name. |
+| Cyberint.domain.enrichment.whois.technical_contact_organization | String   | Technical contact organization. |
+| Cyberint.domain.enrichment.whois.registrar_name                 | String   | Registrar name. |
+| Cyberint.domain.enrichment.whois.admin_contact_name             | String   | Admin contact name. |
+| Cyberint.domain.enrichment.whois.admin_contact_organization     | String   | Admin contact organization. |
+| Cyberint.domain.enrichment.whois.admin_contact_email            | String   | Admin contact email. |
+| Cyberint.domain.benign                         | String   | Benign. |
 
 #### Command example
 ```!cyberint-get-domain value=dummy.com```
@@ -530,19 +531,19 @@ Gets Domain from the feed.
 
 #### Context Output
 
-| **Path**                         | **Type**  | **Description** |
-|----------------------------------|----------|----------------|
-| Cyberint.ipv4.type               | String   | The indicator type. |
-| Cyberint.ipv4.value              | String   | The indicator value. |
-| Cyberint.ipv4.malicious_score    | String   | Malicious score. |
-| Cyberint.ipv4.occurrences_count  | String   | Occurrences count. |
-| Cyberint.ipv4.country            | String   | Country. |
-| Cyberint.ipv4.city               | String   | City. |
-| Cyberint.ipv4.asn_number         | String   | ASN number. |
-| Cyberint.ipv4.asn_organization   | String   | ASN organization. |
-| Cyberint.ipv4.suspicious_urls    | String   | Suspicious URLs. |
-| Cyberint.ipv4.suspicious_domains | String   | Suspicious domains. |
-| Cyberint.ipv4.benign               | String   | Benign. |
+| **Path**                                    | **Type**  | **Description** |
+|---------------------------------------------|----------|----------------|
+| Cyberint.ipv4.entity.type                   | String   | The indicator type. |
+| Cyberint.ipv4.entity.value                  | String   | The indicator value. |
+| Cyberint.ipv4.risk.malicious_score          | String   | Malicious score. |
+| Cyberint.ipv4.risk.occurrences_count        | String   | Occurrences count. |
+| Cyberint.ipv4.enrichment.geo.country        | String   | Country. |
+| Cyberint.ipv4.enrichment.geo.city           | String   | City. |
+| Cyberint.ipv4.enrichment.asn.number         | String   | ASN number. |
+| Cyberint.ipv4.enrichment.asn.organization   | String   | ASN organization. |
+| Cyberint.ipv4.enrichment.suspicious_urls    | String   | Suspicious URLs. |
+| Cyberint.ipv4.enrichment.suspicious_domains | String   | Suspicious domains. |
+| Cyberint.ipv4.benign                        | String   | Benign. |
 
 #### Command example
 ```!cyberint-get-ipv4 value=1.1.1.1```
@@ -688,13 +689,13 @@ Gets Domain from the feed.
 
 | **Path**                            | **Type**  | **Description** |
 |-------------------------------------|----------|----------------|
-| Cyberint.url.type                   | String   | The indicator type. |
-| Cyberint.url.value                  | String   | The indicator value. |
-| Cyberint.url.malicious_score        | String   | Malicious score. |
-| Cyberint.url.occurrences_count      | String   | Occurrences count. |
-| Cyberint.url.ips                    | String   | IPs. |
-| Cyberint.url.hostname               | String   | Hostname. |
-| Cyberint.url.domain                 | String   | Domain. |
+| Cyberint.url.entity.type            | String   | The indicator type. |
+| Cyberint.url.entity.value           | String   | The indicator value. |
+| Cyberint.url.risk.malicious_score   | String   | Malicious score. |
+| Cyberint.url.risk.occurrences_count | String   | Occurrences count. |
+| Cyberint.url.enrichment.ips         | String   | IPs. |
+| Cyberint.url.enrichment.hostname    | String   | Hostname. |
+| Cyberint.url.enrichment.domain      | String   | Domain. |
 | Cyberint.url.benign                 | String   | Benign. |
 
 #### Command example
