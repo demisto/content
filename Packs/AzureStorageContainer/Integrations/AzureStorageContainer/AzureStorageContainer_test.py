@@ -599,7 +599,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
-    requests_mock.get(re.compile(r"blob\.core\.windows\.net/.*"))
+    requests_mock.get(re.compile("blob.core.windows.net/.*"))
 
     params = {
         "managed_identities_client_id": {"password": client_id},
