@@ -1,9 +1,11 @@
 [MODEL: dataset="lenels2_netbox_raw"]
-alter reason = if(reason = "", null), reasoncode = if(reasoncode = "", null)
+alter reasoncode = to_string(reasoncode)
+| alter reason = if(reason = "", null, reason), reasoncode = if(reasoncode = "", null, reasoncode)
 | alter
     xdm.event.type = type,
     xdm.event.id = to_string(typecode),
     xdm.alert.original_alert_id = to_string(logkey),
+    xdm.event.outcome = if(type in ("Relocked", "Network node timeout", "Portal forced open", "Event acknowledged", "Event normal", "Logged out", "Logged in", "Network node connected", "Request momentary unlock", "Portal restored", "Portal held open", "Access granted", "Event activated", "Network node restored", "Duty log entry", "Momentary unlock"), XDM_CONST.OUTCOME_SUCCESS, type in ("Access not completed", "Failed", "Network node IDENT", "Access denied"), XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = if(reason != null and reasoncode != null, concat(reasoncode , " - " , reason),
                                   reason != null and reasoncode = null, reason,
                                   reason = null and reasoncode != null, reasoncode),
