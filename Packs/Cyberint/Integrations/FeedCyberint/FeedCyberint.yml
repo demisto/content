@@ -242,6 +242,9 @@ script:
     - contextPath: Cyberint.domain.risk.occurrences_count
       description: Occurences count.
       type: String
+    - contextPath: Cyberint.domain.enrichment.ips
+      description: IPs.
+      type: String
     - contextPath: Cyberint.domain.enrichment.whois.created_date
       description: Created date.
       type: String
@@ -250,9 +253,6 @@ script:
       type: String
     - contextPath: Cyberint.domain.enrichment.whois.expiration_date
       description: Expiration date.
-      type: String
-    - contextPath: Cyberint.domain.enrichment.ips
-      description: IPs.
       type: String
     - contextPath: Cyberint.domain.enrichment.whois.registrant_name
       description: Registrant name.
@@ -317,10 +317,10 @@ script:
     - contextPath: Cyberint.ipv4.enrichment.geo.city
       description: City.
       type: String
-    - contextPath: Cyberint.ipv4.enrichment.asn.asn_number
+    - contextPath: Cyberint.ipv4.enrichment.asn.number
       description: ASN number.
       type: String
-    - contextPath: Cyberint.ipv4.enrichment.asn.asn_organization
+    - contextPath: Cyberint.ipv4.enrichment.asn.organization
       description: ASN organization.
       type: String
     - contextPath: Cyberint.ipv4.enrichment.suspicious_urls
