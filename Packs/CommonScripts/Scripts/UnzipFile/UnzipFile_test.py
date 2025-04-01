@@ -1,5 +1,7 @@
 import os
+import tempfile
 from tempfile import mkdtemp
+from unittest.mock import patch, MagicMock
 
 import pytest
 from UnzipFile import *
@@ -235,3 +237,40 @@ def test_archive_with_slash_in_path():
     excluded_dirs, excluded_files = extract(zipped_file_object, _dir)
     # Then
     assert excluded_dirs
+
+
+@pytest.fixture
+def mock_popen():
+    with patch('UnzipFile.Popen') as mock:
+        yield mock
+
+
+def test_extract_with_errors_in_stdout(mock_popen):
+    """
+    Test the case where 'stdout' contains 'Errors' to trigger the error condition.
+    """
+
+    # Prepare the mock to simulate the command's output
+    mock_process = MagicMock()
+    mock_process.communicate.return_value = (
+        b"Hello_World_Errors.yml\nHello_World.yml",  # stdout
+        b""  # stderr (no error)
+    )
+
+    # Mock the Popen constructor to return our mock process
+    mock_popen.return_value = mock_process
+
+    # Setup test inputs
+    file_path = "/data_test/Archive_with_Errors.tar.gz"
+    dir_path = "/tmp/extracted_files"
+    file_name = "Archive_with_Errors.tar.gz"
+
+    # Run the extraction function and assert it raises the expected exception
+
+    result = extract_using_tarfile(file_path, dir_path, file_name)
+    print(result)
+    # Assert the stdout contains both filenames
+    assert "Hello_World_Errors.yml" in result
+    assert "Hello_World.yml" in result
+
+
