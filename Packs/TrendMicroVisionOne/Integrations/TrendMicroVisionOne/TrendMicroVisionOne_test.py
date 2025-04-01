@@ -1,25 +1,25 @@
+import demistomock as demisto
 from TrendMicroVisionOne import (
     Client,
-    add_or_remove_from_block_list,
-    quarantine_or_delete_email_message,
-    isolate_or_restore_connection,
-    terminate_process,
+    add_note,
     add_or_delete_from_exception_list,
+    add_or_remove_from_block_list,
     add_to_suspicious_list,
-    delete_from_suspicious_list,
-    get_file_analysis_status,
-    get_file_analysis_report,
     collect_file,
+    delete_from_suspicious_list,
     download_information_collected_file,
-    submit_file_to_sandbox,
-    submit_file_entry_to_sandbox,
+    get_endpoint_info,
+    get_file_analysis_report,
+    get_file_analysis_status,
     get_sandbox_submission_status,
     get_task_status,
-    get_endpoint_info,
-    add_note,
+    isolate_or_restore_connection,
+    quarantine_or_delete_email_message,
+    submit_file_entry_to_sandbox,
+    submit_file_to_sandbox,
+    terminate_process,
     update_status,
 )
-import demistomock as demisto
 
 # Provide valid API KEY
 api_key = "test api key"
@@ -46,9 +46,7 @@ def add_remove_blocklist_mock_response(*args, **kwargs):
 # Test cases for add to block list
 def test_add_blocklist(mocker):
     """Test add to block list with positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", add_remove_blocklist_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", add_remove_blocklist_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "valueType": "file_sha1",
@@ -56,9 +54,7 @@ def test_add_blocklist(mocker):
         "productId": "sao",
         "description": "block info",
     }
-    result = add_or_remove_from_block_list(
-        client, "trendmicro-visionone-add-to-block-list", args
-    )
+    result = add_or_remove_from_block_list(client, "trendmicro-visionone-add-to-block-list", args)
     assert result.outputs["taskStatus"] == "pending"
     assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.BlockList"
@@ -68,9 +64,7 @@ def test_add_blocklist(mocker):
 # Test cases for remove from block list
 def test_remove_block_list(mocker):
     """Test remove block list positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", add_remove_blocklist_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", add_remove_blocklist_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "valueType": "file_sha1",
@@ -78,9 +72,7 @@ def test_remove_block_list(mocker):
         "productId": "sao",
         "description": "block info",
     }
-    result = add_or_remove_from_block_list(
-        client, "trendmicro-visionone-remove-from-block-list", args
-    )
+    result = add_or_remove_from_block_list(client, "trendmicro-visionone-remove-from-block-list", args)
     assert result.outputs["taskStatus"] == "pending"
     assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.BlockList"
@@ -106,22 +98,16 @@ def quarantine_delete_email_mock_response(*args, **kwargs):
 # Test cases for quarantine email message
 def test_quarantine_email_message(mocker):
     """Test quarantine email message positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", quarantine_delete_email_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", quarantine_delete_email_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
-        "messageId": (
-            "<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" + "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
-        ),
+        "messageId": ("<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=" + "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
         "mailBox": "kjshdfjksahd@trendenablement.com",
         "messageDeliveryTime": "2021-12-09T14:00:12.000Z",
         "productId": "sca",
         "description": "quarantine info",
     }
-    result = quarantine_or_delete_email_message(
-        client, "trendmicro-visionone-quarantine-email-message", args
-    )
+    result = quarantine_or_delete_email_message(client, "trendmicro-visionone-quarantine-email-message", args)
     assert result.outputs["taskStatus"] == "pending"
     assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.Email"
@@ -131,22 +117,16 @@ def test_quarantine_email_message(mocker):
 # Test cases for delete email message
 def test_delete_email_message(mocker):
     """Test delete email message with positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", quarantine_delete_email_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", quarantine_delete_email_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
-        "messageId": (
-            "<CANUJTKTqmuCT12v7mpbxZih_crrP" + "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
-        ),
+        "messageId": ("<CANUJTKTqmuCT12v7mpbxZih_crrP" + "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
         "mailBox": "kjshdfjksahd@trendenablement.com",
         "messageDeliveryTime": "2021-12-09T14:00:55.000Z",
         "productId": "sca",
         "description": "quarantine info",
     }
-    result = quarantine_or_delete_email_message(
-        client, "trendmicro-visionone-delete-email-message", args
-    )
+    result = quarantine_or_delete_email_message(client, "trendmicro-visionone-delete-email-message", args)
     assert result.outputs["taskStatus"] == "pending"
     assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.Email"
@@ -176,18 +156,14 @@ def isolate_restore_mock_response(*args, **kwargs):
 # Test cases for isolate endpoint
 def test_isolate_endpoint(mocker):
     """Test isolate endpoint postive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", isolate_restore_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", isolate_restore_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "hostname",
         "productId": "sao",
         "description": "isolate endpoint info",
     }
-    result = isolate_or_restore_connection(
-        client, "trendmicro-visionone-isolate-endpoint", args
-    )
+    result = isolate_or_restore_connection(client, "trendmicro-visionone-isolate-endpoint", args)
     assert result.outputs["taskStatus"] == "pending"
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
     assert result.outputs_key_field == "actionId"
@@ -196,18 +172,14 @@ def test_isolate_endpoint(mocker):
 # Test cases for restore endpoint
 def test_restore_endpoint(mocker):
     """Test restore endpoint positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", isolate_restore_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", isolate_restore_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "hostname",
         "productId": "sao",
         "description": "restore endpoint info",
     }
-    result = isolate_or_restore_connection(
-        client, "trendmicro-visionone-restore-endpoint-connection", args
-    )
+    result = isolate_or_restore_connection(client, "trendmicro-visionone-restore-endpoint-connection", args)
     assert result.outputs["taskStatus"] == "pending"
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
     assert result.outputs_key_field == "actionId"
@@ -216,9 +188,7 @@ def test_restore_endpoint(mocker):
 # Test cases for terminate process endpoint
 def test_terminate_process_endpoint(mocker):
     """Test terminate process positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", isolate_restore_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", isolate_restore_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {
         "endpoint": "00:50:56:81:87:A8",
@@ -243,18 +213,14 @@ def add_delete_exception_mock_response(*args, **kwargs):
 # Test cases for add exception list endpoint.
 def test_add_object_to_exception_list(mocker):
     """Test add to exception list with positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", add_delete_exception_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", add_delete_exception_mock_response)
     mocker.patch(
         "TrendMicroVisionOne.Client.exception_list_count",
         add_delete_exception_mock_response,
     )
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {"type": "domain", "value": "1.alisiosanguera.com", "description": "new key"}
-    result = add_or_delete_from_exception_list(
-        client, "trendmicro-visionone-add-objects-to-exception-list", args
-    )
+    result = add_or_delete_from_exception_list(client, "trendmicro-visionone-add-objects-to-exception-list", args)
     assert result.outputs["status_code"] is None
     assert result.outputs_prefix == "VisionOne.Exception_List"
     assert isinstance(result.outputs["total_items"], int)
@@ -264,9 +230,7 @@ def test_add_object_to_exception_list(mocker):
 # Test cases for delete exception list.
 def test_delete_object_to_exception_list(mocker):
     """Test delete exception list positive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", add_delete_exception_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", add_delete_exception_mock_response)
     mocker.patch(
         "TrendMicroVisionOne.Client.exception_list_count",
         add_delete_exception_mock_response,
@@ -277,9 +241,7 @@ def test_delete_object_to_exception_list(mocker):
         "value": "1.alisiosanguera.com.cn",
         "description": "testing exception",
     }
-    result = add_or_delete_from_exception_list(
-        client, "trendmicro-visionone-delete-objects-from-exception-list", args
-    )
+    result = add_or_delete_from_exception_list(client, "trendmicro-visionone-delete-objects-from-exception-list", args)
     assert result.outputs["status_code"] is None
     assert isinstance(result.outputs["total_items"], int)
     assert result.outputs_prefix == "VisionOne.Exception_List"
@@ -295,9 +257,7 @@ def add_delete_suspicious_mock_response(*args, **kwargs):
 # Test cases for add suspicious object list
 def test_add_object_to_suspicious_list(mocker):
     """Test add to suspicious list with poistive scenario."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", add_delete_suspicious_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", add_delete_suspicious_mock_response)
     mocker.patch(
         "TrendMicroVisionOne.Client.suspicious_list_count",
         add_delete_suspicious_mock_response,
@@ -321,9 +281,7 @@ def test_add_object_to_suspicious_list(mocker):
 # Test cases for delete suspicious object list
 def test_delete_object_from_suspicious_list(mocker):
     """Test delete object from suspicious list."""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", add_delete_suspicious_mock_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", add_delete_suspicious_mock_response)
     mocker.patch(
         "TrendMicroVisionOne.Client.suspicious_list_count",
         add_delete_suspicious_mock_response,
@@ -348,10 +306,7 @@ def mock_file_status_response(*args, **kwargs):
             "digest": {
                 "md5": "4ac174730d4143a119037d9fda81c7a9",
                 "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
-                "sha256": (
-                    "65b0f656e79ab84ca17807158e3ea"
-                    "c206bd58be6689ddeb95956a48748d138f9"
-                ),
+                "sha256": ("65b0f656e79ab84ca17807158e3eac206bd58be6689ddeb95956a48748d138f9"),
             },
             "analysisSummary": {
                 "analysisCompletionTime": "2021-05-07T03:08:40Z",
@@ -527,10 +482,7 @@ def mock_submit_file_to_sandbox_reponse(*args, **kwargs):
             "digest": {
                 "md5": "4ac174730d4143a119037d9fda81c7a9",
                 "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
-                "sha256": (
-                    "65b0f656e79ab84ca17807158e3ea"
-                    "c206bd58be6689ddeb95956a48748d138f9"
-                ),
+                "sha256": ("65b0f656e79ab84ca17807158e3eac206bd58be6689ddeb95956a48748d138f9"),
             },
         },
     }
@@ -633,7 +585,7 @@ def test_sandbox_submission_polling(mocker):
     mocker.patch.object(
         demisto,
         "demistoVersion",
-        return_value={'version': '6.2.0', 'buildNumber': '12345'},
+        return_value={"version": "6.2.0", "buildNumber": "12345"},
     )
     mocker.patch("TrendMicroVisionOne.Client.http_request", mock_file_status_response)
     args = {"task_id": "921674d0-9735-4f79-b7de-c852e00a003d"}
@@ -663,12 +615,8 @@ def check_task_status_mock_response(*args, **kwargs):
 
 
 def test_check_task_status(mocker):
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", check_task_status_mock_response
-    )
-    mocker.patch(
-        "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", check_task_status_mock_response)
+    mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {"actionId": "00001108"}
     result = get_task_status(args, client)
@@ -698,9 +646,7 @@ def mock_get_endpoint_info_response(*args, **kwargs):
 # Test case for get endpoint information.
 def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on computerid"""
-    mocker.patch(
-        "TrendMicroVisionOne.Client.http_request", mock_get_endpoint_info_response
-    )
+    mocker.patch("TrendMicroVisionOne.Client.http_request", mock_get_endpoint_info_response)
     args = {"endpoint": "hostname"}
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = get_endpoint_info(client, args)
