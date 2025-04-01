@@ -7252,7 +7252,7 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         request_domain = domain
     # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
     # If the request fails due to other cause - there will not be another try
-    attempts = 3
+    attempts = 1 if is_time_sensitive() else 3
     for attempt in range(attempts):
         demisto.debug(f"Attempt {attempt}/{attempts} to get response for whois '{domain}' from '{target_server}'...")
         response = whois_request_get_response(request_domain, target_server)

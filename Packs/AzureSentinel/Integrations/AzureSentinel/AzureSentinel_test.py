@@ -21,7 +21,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
     list_alert_rule_template_command, delete_alert_rule_command, validate_required_arguments_for_alert_rule, \
     create_data_for_alert_rule, create_and_update_alert_rule_command, COMMENT_HEADERS, update_incident_command, \
-    extract_classification_reason
+    extract_classification_reason, create_incident_command
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1273,12 +1273,11 @@ class TestHappyPath:
         """
         # prepare
         raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
-        min_severity = args.get('min_severity')
         last_incident_number = args.get('last_incident_number')
         latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
 
         # run
-        next_run, _ = process_incidents(raw_incidents, min_severity, latest_created_time,
+        next_run, _ = process_incidents(raw_incidents, latest_created_time,
                                         last_incident_number)
 
         # validate
@@ -1307,7 +1306,7 @@ class TestHappyPath:
         last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
                     'last_fetch_ids': []}
         first_fetch_time = '3 days'
-        minimum_severity = 0
+        minimum_severity = 'Informational'
 
         mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -1340,7 +1339,7 @@ class TestHappyPath:
         last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
                     'last_fetch_ids': ['inc_name']}
         first_fetch_time = '3 days'
-        minimum_severity = 0
+        minimum_severity = 'Informational'
 
         process_mock = mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -1351,7 +1350,7 @@ class TestHappyPath:
         # validate
         assert not process_mock.call_args[0][0]
 
-    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
+    @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 2)])
     def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
         """
         Given:
@@ -1370,7 +1369,6 @@ class TestHappyPath:
 
         # run
         next_run, incidents = process_incidents(raw_incidents=raw_incidents,
-                                                min_severity=min_severity,
                                                 latest_created_time=latest_created_time,
                                                 last_incident_number=1)
 
@@ -2094,6 +2092,28 @@ def test_update_incident_command_table_to_markdown(mocker):
     result = update_incident_command(client, args)
     expected_output = '### Updated incidents 123 details\n**No entries.**'
     assert result.readable_output.strip() == expected_output
+
+
+def test_create_incident_command(mocker):
+    """
+    Given:
+    - Valid incident data.
+
+    When:
+    - Calling create_incident_command function.
+
+    Then:
+    - The command function returns the expected raw response from the API.
+    """
+    test_data = {'id': '123', 'title': 'test', 'severity': 'High',
+                 'description': 'test description', 'labels': [{'LabelName': 'value'}]}
+
+    client = mock_client()
+    mocker.patch.object(client, 'http_request', return_value=test_data)
+
+    result = create_incident_command(client, test_data)
+
+    assert result.raw_response == test_data
 
 
 def test_update_incident_with_client_changed_etag(mocker):

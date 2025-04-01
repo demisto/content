@@ -1683,7 +1683,209 @@ script:
       required: true
     description: Retrieves attachments from a ticket.
     name: servicenow-get-ticket-attachments
-  dockerimage: demisto/python3:3.11.10.116949
+  - arguments:
+    - description: 'Short description of the ticket. Use issue fields as variables to enrich the text. Example: “${issue.name}”.'
+      name: short_description
+      prettyname: Short Description
+      required: true
+    - auto: PREDEFINED
+      name: ticket_type
+      description: Ticket type.
+      prettyname: Ticket Type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+      - sn_si_incident
+      - std_change_template
+      required: true
+    - auto: PREDEFINED
+      description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
+      name: urgency
+      predefined:
+      - 1 - High
+      - 2 - Medium
+      - 3 - Low
+    - auto: PREDEFINED
+      description: Ticket severity. You can select from the predefined options.
+      name: severity
+      prettyname: Severity
+      required: true
+      predefined:
+      - 1 - High
+      - 2 - Medium
+      - 3 - Low
+    - auto: PREDEFINED
+      description: Ticket impact.
+      name: impact
+      predefined:
+      - 1 - High
+      - 2 - Medium
+      - 3 - Low
+    - auto: PREDEFINED
+      description: Whether to set the ticket as Active.
+      name: active
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The ticket activity due date, in the format "2016-07-02 21:51:11".
+      name: activity_due
+    - description: List of users assigned to the ticket.
+      name: additional_assignee_list
+    - description: User assigned to the ticket.
+      name: assigned_to
+    - description: Category of the ticket.
+      name: category
+    - description: UID format.
+      name: caused_by
+    - description: Format type journal input.
+      name: comments
+    - description: Format type journal input.
+      name: comments_and_work_notes
+    - description: Company (UID format).
+      name: company
+    - description: Contact type.
+      name: contact_type
+    - description: Delivery plan (UID format).
+      name: delivery_plan
+    - description: 'Ticket description. Use issue fields as variables to enrich the text. Example: “${issue.details}”.'
+      name: description
+      prettyname: Description
+      required: true
+    - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: due_date
+    - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: expected_start
+    - description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: follow_up
+    - description: UID format list (group).
+      name: group_list
+    - description: Location of the ticket.
+      name: location
+    - description: SLA of the ticket.
+      name: made_sla
+    - auto: PREDEFINED
+      description: Whether to be notified about this ticket.
+      name: notify
+      predefined:
+      - '1'
+      - '0'
+    - description: Order number.
+      name: order
+    - description: UID Format.
+      name: parent
+    - description: UID Format.
+      name: parent_incident
+    - description: UID Format.
+      name: problem_id
+    - description: UID.
+      name: rfc
+    - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: sla_due
+    - description: Ticket subcategory.
+      name: subcategory
+    - description: The sys_id of the group to assign.
+      name: assignment_group
+    - description: The number that represents the incident state.
+      name: incident_state
+    - description: Ticket number.
+      name: number
+    - auto: PREDEFINED
+      description: Priority of the ticket.
+      name: priority
+      predefined:
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
+    - description: Template name to use as the basis to create new tickets.
+      name: template
+    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_".'
+      name: custom_fields
+    - auto: PREDEFINED
+      defaultValue: normal
+      description: Type of Change Request ticket.
+      name: change_type
+      predefined:
+      - normal
+      - standard
+      - emergency
+    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      name: state
+    - description: 'Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: opened_at
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
+      name: additional_fields
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input values as the display value. 'false' treats input values as actual values.
+      name: input_display_value
+      predefined:
+      - 'false'
+      - 'true'
+    - defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command.
+      name: fields_delimiter
+    - auto: PREDEFINED
+      description: Business criticality of the ticket.
+      name: business_criticality
+      predefined:
+      - 3 - Non-Critical
+      - 2 - High
+      - 1 - Critical
+    - description: Incident risk score.
+      name: risk_score
+    description: Creates new ServiceNow ticket.
+    name: servicenow-create-ticket-quick-action
+    prettyname: Create ServiceNow Ticket
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.OpenedBy
+      description: Ticket opener ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.CreatedOn
+      description: Ticket creation date.
+      type: date
+    - contextPath: ServiceNow.Ticket.Assignee
+      description: Ticket assignee ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.State
+      description: Ticket state.
+      type: string
+    - contextPath: ServiceNow.Ticket.Summary
+      description: Ticket short summary.
+      type: string
+    - contextPath: ServiceNow.Ticket.Number
+      description: Ticket number.
+      type: string
+    - contextPath: ServiceNow.Ticket.Active
+      description: Ticket active.
+      type: boolean
+    - contextPath: ServiceNow.Ticket.AdditionalComments
+      description: Ticket comments.
+      type: string
+    - contextPath: ServiceNow.Ticket.Priority
+      description: Ticket priority.
+      type: string
+    - contextPath: ServiceNow.Ticket.OpenedAt
+      description: Ticket opening time.
+      type: date
+    - contextPath: ServiceNow.Ticket.ResolvedBy
+      description: Ticket resolver ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.CloseCode
+      description: Ticket close code.
+      type: string
+
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1691,6 +1893,8 @@ script:
   script: ''
   subtype: python3
   type: python
+
+supportsquickactions: true
 fromversion: 5.0.0
 tests:
 - servicenow_test_v2

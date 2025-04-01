@@ -1,0 +1,34 @@
+{
+    "trigger_id": "87c352f11994a9c17008e7e0354a2c96",
+    "playbook_id": "silent-Exchange User Mailbox Forwarding Test",
+    "suggestion_reason": "Recommended for Exchange User Mailbox Forwarding alerts.",
+    "description": "This trigger is responsible for handling Exchange User Mailbox Forwarding alerts.",
+    "trigger_name": "silent-Exchange User Mailbox Forwarding Test",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Exchange User Mailbox Forwarding"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_name",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "Suspicious Exchange User Mailbox Forwarding"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Correlation"
+                }
+            ]
+        }
+    },
+    "issilent": true,
+    "fromVersion": "8.9.0"
+}

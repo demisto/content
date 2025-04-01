@@ -473,6 +473,19 @@ def severity_to_level(severity):
     return 0
 
 
+def severity_filter(min_severity):
+    """
+    Create Severity Filter when min_severity >= Low.
+    """
+    severity_levels = ["Low", "Medium", "High"]
+    severity_filter = ""
+    if min_severity in severity_levels:
+        min_level = severity_to_level(min_severity)
+        conditions = [f"properties/severity eq '{s}'" for s in severity_levels if severity_to_level(s) >= min_level]
+        severity_filter = f"and ({ ' or '.join(conditions) })"
+    return severity_filter
+
+
 def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_result, outputs_prefix, xsoar_transformer):
     """
     Get a list of incident's items
@@ -1063,6 +1076,38 @@ def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
     )
 
 
+def create_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
+    inc_id = uuid.uuid4()
+    inc_data = {
+        'properties': {
+            "severity": args.get('severity'),
+            "status": args.get('status'),
+            "title": args.get('title'),
+            "description": args.get('description'),
+            "labels": argToList(args.get('labels', '')),
+        }
+    }
+    remove_nulls_from_dictionary(inc_data['properties'])
+
+    url_suffix = f'incidents/{inc_id}'
+    result = client.http_request('PUT', url_suffix, data=inc_data)
+    incident = incident_data_to_xsoar_format(result)
+    readable_output = tableToMarkdown(
+        f'Created incident {inc_id} details',
+        incident,
+        headers=INCIDENT_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.Incident',
+        outputs=incident,
+        outputs_key_field='ID',
+        raw_response=result,
+    )
+
+
 def delete_incident_command(client, args):
     inc_id = args.get('incident_id')
     url_suffix = f'incidents/{inc_id}'
@@ -1280,7 +1325,7 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
             incident[info_type] = client.http_request(method, f'incidents/{incident_id}/{info_type}').get(results_key)
 
 
-def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int) -> tuple:
+def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: str) -> tuple:
     """Fetching incidents.
     Args:
         first_fetch_time: The first fetch time.
@@ -1314,10 +1359,11 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
-            'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+            'filter': f'properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}',
             'orderby': 'properties/createdTimeUtc asc',
             'limit': limit
         }
+        demisto.debug(f"Filter query used:{command_args['filter']}")
 
     else:
         demisto.debug("last fetch time is empty, trying to fetch incidents by last incident id")
@@ -1325,10 +1371,11 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
         command_args = {
-            'filter': f'properties/incidentNumber gt {last_incident_number}',
+            'filter': f'properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}',
             'orderby': 'properties/incidentNumber asc',
             'limit': limit
         }
+        demisto.debug(f"Filter query used:{command_args['filter']}")
 
     raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
     if isinstance(raw_incidents, dict):
@@ -1339,14 +1386,14 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     fetch_incidents_additional_info(client, raw_incidents)
 
-    return process_incidents(raw_incidents, min_severity,
+    return process_incidents(raw_incidents,
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
 def fetch_incidents_command(client, params):
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = params.get('fetch_time', '3 days').strip()
-    min_severity = severity_to_level(params.get('min_severity', 'Informational'))
+    min_severity = params.get('min_severity', 'Informational')
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
@@ -1361,14 +1408,13 @@ def fetch_incidents_command(client, params):
     demisto.incidents(incidents)
 
 
-def process_incidents(raw_incidents: list, min_severity: int, latest_created_time: datetime,
+def process_incidents(raw_incidents: list, latest_created_time: datetime,
                       last_incident_number):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
         last_incident_number: The last incident number that was fetched.
         latest_created_time: The latest created time.
-        min_severity: The minimum severity.
 
     Returns:
         A next_run dictionary, and an array of incidents.
@@ -1385,22 +1431,19 @@ def process_incidents(raw_incidents: list, min_severity: int, latest_created_tim
 
         incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
         current_fetch_ids.append(incident.get('ID'))
-        if incident_severity >= min_severity:
-            add_mirroring_fields(incident)
-            xsoar_incident = {
-                'name': '[Azure Sentinel] ' + incident.get('Title'),
-                'occurred': incident.get('CreatedTimeUTC'),
-                'severity': incident_severity,
-                'rawJSON': json.dumps(incident)
-            }
-            incidents.append(xsoar_incident)
-        else:
-            demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                          f"due to the {incident_severity=} is lower then {min_severity=}")
+        add_mirroring_fields(incident)
+        xsoar_incident = {
+            'name': '[Azure Sentinel] ' + incident.get('Title'),
+            'occurred': incident.get('CreatedTimeUTC'),
+            'severity': incident_severity,
+            'rawJSON': json.dumps(incident)
+        }
 
         # Update last run to the latest fetch time
         if incident_created_time is None:
             raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
+
+        incidents.append(xsoar_incident)
 
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
@@ -2052,6 +2095,7 @@ def main():
             'azure-sentinel-get-incident-by-id': get_incident_by_id_command,
             'azure-sentinel-list-incidents': list_incidents_command,
             'azure-sentinel-update-incident': update_incident_command,
+            'azure-sentinel-create-incident': create_incident_command,
             'azure-sentinel-delete-incident': delete_incident_command,
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,

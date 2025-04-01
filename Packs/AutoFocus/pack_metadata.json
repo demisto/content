@@ -2,7 +2,7 @@
     "name": "AutoFocus by Palo Alto Networks",
     "description": "Use the Palo Alto Networks AutoFocus integration to distinguish the most\n  important threats from everyday commodity attacks.",
     "support": "xsoar",
-    "currentVersion": "2.2.10",
+    "currentVersion": "2.2.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -26,6 +26,16 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
