@@ -1,0 +1,151 @@
+category: Messaging and Conferencing
+commonfields:
+  id: Anthropic Claude
+  version: -1
+configuration:
+- defaultvalue: https://api.anthropic.com/
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ''
+  displaypassword: API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Connect
+  type: 9
+- additionalinfo: The model that will process the inputs and generate the response.
+  defaultvalue: claude-3-haiku-20240307
+  display: Model
+  name: model-select
+  options:
+  - claude-3-haiku-20240307
+  - claude-3-7-sonnet-20250219
+  - claude-3-7-sonnet-latest
+  - claude-3-5-haiku-latest
+  required: false
+  section: Connect
+  type: 15
+- additionalinfo: The model that will process the inputs and generate the response.
+  display: Model (Optional - overrides selected choice)
+  name: model-freetext
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: The maximum number of tokens that can be generated for the response. Required by Anthropic's API (defaults to 1024).
+  defaultvalue: '1024'
+  display: Max tokens
+  name: max_tokens
+  required: true
+  section: Collect
+  type: 0
+- additionalinfo: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety.
+  advanced: true
+  display: Temperature
+  name: temperature
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity.
+  advanced: true
+  display: Top P
+  name: top_p
+  required: false
+  section: Collect
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging Anthropic Claude's natural language conversational capabilities.
+display: Anthropic Claude
+name: Anthropic Claude
+script:
+  commands:
+  - arguments:
+    - description: The message that the Claude model will respond to.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Whether to keep previously sent messages in a conversation context or start a new conversation.
+      name: reset_conversation_history
+      predefined:
+      - yes
+      - no
+    - description: The maximum number of tokens that can be generated for the response.
+      name: max_tokens
+    - description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety.
+      name: temperature
+    - description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity.
+      name: top_p
+    description: Send a plain message to the selected Claude model and receive the generated response.
+    name: claude-send-message
+    outputs:
+    - contextPath: AnthropicClaude.Conversation
+      description: Entire conversation (if not reset) between the user and the Claude model.
+      type: Dictionary
+  - arguments:
+    - description: Entry ID of an uploaded '.eml' file.
+      name: entry_id
+      required: true
+    - description: Additional instructions or security issue to focus on.
+      name: additional_instructions
+    - description: The maximum number of tokens that can be generated for the response.
+      name: max_tokens
+    - description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety.
+      name: temperature
+    - description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity.
+      name: top_p
+    description: Checking email header for possible security issues. It is possible to keep asking questions on the provided info using 'claude-send-message'. Resets conversation context by default.
+    name: claude-check-email-header
+    outputs:
+    - contextPath: AnthropicClaude.Conversation
+      description: Entire conversation (if not reset) between the user and the Claude model.
+      type: Dictionary
+  - arguments:
+    - description: Entry ID of an uploaded '.eml' file.
+      name: entry_id
+      required: true
+    - description: Additional instructions or security issue to focus on.
+      name: additional_instructions
+    - description: The maximum number of tokens that can be generated for the response.
+      name: max_tokens
+    - description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety.
+      name: temperature
+    - description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity.
+      name: top_p
+    description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'claude-send-message'. Resets conversation context by default.
+    name: claude-check-email-body
+    outputs:
+    - contextPath: AnthropicClaude.Conversation
+      description: Entire conversation (if not reset) between the user and the Claude model.
+      type: Dictionary
+  - arguments:
+    - description: Additional instructions or security issue to focus on.
+      name: additional_instructions
+    - description: The maximum number of tokens that can be generated for the response.
+      name: max_tokens
+    - description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety.
+      name: temperature
+    - description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity.
+      name: top_p
+    description: Create an email template out of the conversation context to be sent from the SOC.
+    name: claude-create-soc-email-template
+    outputs:
+    - contextPath: AnthropicClaude.Conversation
+      description: Entire conversation (if not reset) between the user and the Claude model.
+      type: Dictionary
+  dockerimage: demisto/parse-emails:1.0.0.2147169
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
