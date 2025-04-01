@@ -26,7 +26,9 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "marketplaces": [
-        "xsoar"
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Targeted Malware"
     ]
 }
