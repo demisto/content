@@ -1,20 +1,19 @@
 from unittest.mock import patch
 
 import CreateSigmaRuleIndicator
+import demistomock as demisto  # noqa: F401
 import pytest
+from CommonServerPython import *  # noqa: F401
 from CreateSigmaRuleIndicator import (
     create_indicator_relationships,
+    create_relationship,
     get_mitre_technique_name,
+    main,
     parse_and_create_indicator,
     parse_detection_field,
     parse_tags,
-    create_relationship,
-    main
 )
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from sigma.rule import SigmaRuleTag, SigmaRule
+from sigma.rule import SigmaRule, SigmaRuleTag
 
 
 def load_file(path: str) -> dict[str, Any]:
@@ -33,25 +32,35 @@ def test_create_relationship():
         name="detects",
         reverse_name="detected-by",
         entity_b="Command and Scripting Interpreter",
-        entity_b_type="Attack Pattern"
+        entity_b_type="Attack Pattern",
     )
     assert create_relationship(indicator, entity_b, entity_b_type, relation_type).to_context() == result.to_context()
 
 
-@pytest.mark.parametrize("input, expected_result", [
-    pytest.param([SigmaRuleTag(namespace='attack', name='t1059', source=None)],
-                 ([{"value": "Command and Scripting Interpreter", "type": "Attack Pattern"}],
-                  ["T1059 - Command and Scripting Interpreter"],
-                  "CLEAR"),
-                 id="Tag Creation - MITRE technique"),
-    pytest.param([SigmaRuleTag(namespace="attack", name="resource-development"),
-                  SigmaRuleTag(namespace='tlp', name='RED')],
-                 ([], ["Resource Development"], "RED"),
-                 id="Tag Creation - MITRE tactic"),
-    pytest.param([SigmaRuleTag(namespace='cve', name="2024-3400")],
-                 ([{"value": "CVE-2024-3400", "type": "CVE"}], ["CVE-2024-3400"], "CLEAR"),
-                 id="Tag Creation - CVEs")
-])
+@pytest.mark.parametrize(
+    "input, expected_result",
+    [
+        pytest.param(
+            [SigmaRuleTag(namespace="attack", name="t1059", source=None)],
+            (
+                [{"value": "Command and Scripting Interpreter", "type": "Attack Pattern"}],
+                ["T1059 - Command and Scripting Interpreter"],
+                "CLEAR",
+            ),
+            id="Tag Creation - MITRE technique",
+        ),
+        pytest.param(
+            [SigmaRuleTag(namespace="attack", name="resource-development"), SigmaRuleTag(namespace="tlp", name="RED")],
+            ([], ["Resource Development"], "RED"),
+            id="Tag Creation - MITRE tactic",
+        ),
+        pytest.param(
+            [SigmaRuleTag(namespace="cve", name="2024-3400")],
+            ([{"value": "CVE-2024-3400", "type": "CVE"}], ["CVE-2024-3400"], "CLEAR"),
+            id="Tag Creation - CVEs",
+        ),
+    ],
+)
 @patch.object(CreateSigmaRuleIndicator, "get_mitre_technique_name")
 def test_parse_tags(mock_get_mitre_technique_name, input, expected_result):
     mock_get_mitre_technique_name.return_value = "Command and Scripting Interpreter"
@@ -64,9 +73,9 @@ def test_get_mitre_technique_name(mock_execute_command):
     mitre_id = "T1059"
     indicator_type = "Attack Pattern"
     get_mitre_technique_name(mitre_id, indicator_type)
-    mock_execute_command.assert_called_with(command='SearchIndicator',
-                                            args={'query': f'type:"Attack Pattern" and {mitre_id}'},
-                                            fail_on_error=False)
+    mock_execute_command.assert_called_with(
+        command="SearchIndicator", args={"query": f'type:"Attack Pattern" and {mitre_id}'}, fail_on_error=False
+    )
 
 
 @patch.object(CreateSigmaRuleIndicator, "create_relationship")
@@ -75,18 +84,16 @@ def test_create_indicator_relationships(mock_return_results, mock_create_relatio
     mock_create_relationship.return_value("relationship")
     indicator = "Sigma Rule Test"
     product = "Windows"
-    relationships = [{"value": "Some technique", "type": "Attack Pattern"},
-                     {"value": "CVE-2024-111", "type": "CVE"}]
+    relationships = [{"value": "Some technique", "type": "Attack Pattern"}, {"value": "CVE-2024-111", "type": "CVE"}]
     create_indicator_relationships(indicator, product, relationships)
     assert mock_create_relationship.call_count == 3
 
 
 def test_parse_detection_field():
-
     with open("test_data/sigma_rule.yml") as f:
         sigma_rule = SigmaRule.from_yaml(f.read())
 
-    result = [{'selection': 'selection', 'key': 'displaymessage', 'modifiers': '', 'values': '(1)Max sign in attempts exceeded'}]
+    result = [{"selection": "selection", "key": "displaymessage", "modifiers": "", "values": "(1)Max sign in attempts exceeded"}]
     assert parse_detection_field(sigma_rule) == result
 
 
@@ -109,4 +116,4 @@ def test_main(mock_executeCommand, mock_return_results, mock_args):
     main()
     mock_return_results.assert_called_once()
     args, kwargs = mock_return_results.call_args
-    assert args[0].readable_output == 'Created A new Sigma Rule indicator:\nOkta User Account Locked Out'
+    assert args[0].readable_output == "Created A new Sigma Rule indicator:\nOkta User Account Locked Out"
