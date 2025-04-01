@@ -1,29 +1,27 @@
-from CommonServerPython import *
-from SecurityScorecard import \
-    SecurityScorecardClient, \
-    incidents_to_import, \
-    get_last_run, \
-    portfolios_list_command, \
-    portfolio_list_companies_command, \
-    company_score_get_command, \
-    company_factor_score_get_command, \
-    company_history_score_get_command, \
-    company_history_factor_score_get_command, \
-    alert_grade_change_create_command, \
-    alert_score_threshold_create_command, \
-    company_services_get_command, \
-    issue_metadata_get_command, \
-    company_events_get_command, \
-    company_event_findings_get_command, \
-    alert_rules_list_command, \
-    issue_details_get_command
-
+import json
 from unittest.mock import MagicMock
 
-import json
-import io
 import pytest
-
+from CommonServerPython import *
+from SecurityScorecard import (
+    SecurityScorecardClient,
+    alert_grade_change_create_command,
+    alert_rules_list_command,
+    alert_score_threshold_create_command,
+    company_event_findings_get_command,
+    company_events_get_command,
+    company_factor_score_get_command,
+    company_history_factor_score_get_command,
+    company_history_score_get_command,
+    company_score_get_command,
+    company_services_get_command,
+    get_last_run,
+    incidents_to_import,
+    issue_details_get_command,
+    issue_metadata_get_command,
+    portfolio_list_companies_command,
+    portfolios_list_command,
+)
 
 """ TEST CONSTANTS """
 
@@ -39,7 +37,7 @@ DOMAIN_NE = "domain2.com"
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -53,13 +51,7 @@ FROZEN_DATE = "2021-10-09T22:38:02.560Z"
 
 @pytest.mark.freeze_time(FROZEN_DATE)
 @pytest.mark.parametrize(
-    'last_run, first_fetch',
-    [
-        (FROZEN_DATE, None),
-        (None, "3 days"),
-        (None, "7 days"),
-        (FROZEN_DATE, "7 days")
-    ]
+    "last_run, first_fetch", [(FROZEN_DATE, None), (None, "3 days"), (None, "7 days"), (FROZEN_DATE, "7 days")]
 )
 def test_get_last_run(last_run, first_fetch):
     """
@@ -83,16 +75,15 @@ def test_get_last_run(last_run, first_fetch):
     last_run_dt = get_last_run(last_run=last_run, first_fetch=first_fetch)
 
     if last_run:
-        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0) == \
-            arg_to_datetime(arg_name="last_run", arg=last_run).replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None)
+        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0) == arg_to_datetime(
+            arg_name="last_run", arg=last_run
+        ).replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None)
     else:
         # resetting microsecond as causes failure:
         # E             +datetime.datetime(2021, 10, 3, 14, 50, 3, 242595)
         # E             -datetime.datetime(2021, 10, 3, 14, 50, 3, 244008)
-        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None) == \
-            arg_to_datetime(
-                arg_name="first_fetch",
-                arg=first_fetch
+        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None) == arg_to_datetime(
+            arg_name="first_fetch", arg=first_fetch
         ).replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None)
 
 
@@ -104,7 +95,7 @@ incidents_to_import_test_inputs = [
 ]
 
 
-@pytest.mark.parametrize('alerts', incidents_to_import_test_inputs)
+@pytest.mark.parametrize("alerts", incidents_to_import_test_inputs)
 def test_incidents_to_import(alerts: list):
     """
     Given:
@@ -123,7 +114,7 @@ def test_incidents_to_import(alerts: list):
     # Need to remove tz info to deal with tz awareness with arg_to_datetime
     incidents = incidents_to_import(
         alerts=alerts,
-        last_run=arg_to_datetime("2021-07-25T00:00:00.000Z").replace(tzinfo=None)  # type: ignore
+        last_run=arg_to_datetime("2021-07-25T00:00:00.000Z").replace(tzinfo=None),  # type: ignore
     )
     if not alerts:
         assert not incidents
@@ -137,13 +128,7 @@ def test_incidents_to_import(alerts: list):
 MOCK_URL = "mock://securityscorecard-mock-url"
 
 client = SecurityScorecardClient(
-    base_url=MOCK_URL,
-    verify=False,
-    proxy=False,
-    headers={},
-    username=USERNAME,
-    api_key="API_KEY",
-    max_fetch=100
+    base_url=MOCK_URL, verify=False, proxy=False, headers={}, username=USERNAME, api_key="API_KEY", max_fetch=100
 )
 
 
@@ -184,7 +169,7 @@ companies_list_test_inputs = [
             "industry": None,
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": None
+            "had_breach_within_last_days": None,
         }
     ),
     (
@@ -194,7 +179,7 @@ companies_list_test_inputs = [
             "industry": None,
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": None
+            "had_breach_within_last_days": None,
         }
     ),
     (
@@ -204,7 +189,7 @@ companies_list_test_inputs = [
             "industry": "food",
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": None
+            "had_breach_within_last_days": None,
         }
     ),
     (
@@ -214,9 +199,9 @@ companies_list_test_inputs = [
             "industry": None,
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": "7"
+            "had_breach_within_last_days": "7",
         }
-    )
+    ),
 ]
 
 
@@ -281,7 +266,7 @@ def test_portfolio_list_companies_portfolio_not_found(mocker):
             industry_arg=None,
             vulnerability=None,
             issue_type=None,
-            had_breach_within_last_days=None
+            had_breach_within_last_days=None,
         )
 
 
@@ -289,7 +274,7 @@ company_score_test_input = [
     ({"domain": DOMAIN}),
     ({"domain": "google.com"}),
     ({"domain": "GOOGLE.COM"}),
-    ({"domain": "nonexistantdomain.com"})
+    ({"domain": "nonexistantdomain.com"}),
 ]
 
 
@@ -347,7 +332,7 @@ def test_get_company_score_not_found(mocker):
 factor_score_test_inputs = [
     ({"domain": DOMAIN, "severity": None}),
     ({"domain": DOMAIN, "severity": "positive"}),
-    ({"domain": DOMAIN, "severity": "high,low"})
+    ({"domain": DOMAIN, "severity": "high,low"}),
 ]
 
 
@@ -385,7 +370,7 @@ company_historical_scores_test_inputs = [
     ({"domain": DOMAIN, "from": None, "to": None, "timing": None}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "daily"}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": None}),
-    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"})
+    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"}),
 ]
 
 
@@ -417,10 +402,7 @@ def test_get_company_historical_scores(mocker, args):
 
     mocker.patch.object(client, "get_company_historical_scores", return_value=historical_score_mock)
 
-    response: CommandResults = company_history_score_get_command(
-        client=client,
-        args=args
-    )
+    response: CommandResults = company_history_score_get_command(client=client, args=args)
 
     cmd_output = response.outputs
 
@@ -431,7 +413,7 @@ company_historical_factor_scores_test_inputs = [
     ({"domain": DOMAIN, "from": None, "to": None, "timing": None}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "daily"}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": None}),
-    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"})
+    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"}),
 ]
 
 
@@ -471,30 +453,10 @@ def test_get_company_historical_factor_scores(mocker, args):
 
 
 alert_creation_inputs = [
-    ({
-        "change_direction": "drops",
-        "score_types": "overall",
-        "target": "my_scorecard",
-        "portfolio": None
-    }),
-    ({
-        "change_direction": "drops",
-        "score_types": ["application_security"],
-        "target": None,
-        "portfolio": "1"
-    }),
-    ({
-        "change_direction": "rises",
-        "score_types": "application_security",
-        "target": None,
-        "portfolio": "1"
-    }),
-    ({
-        "change_direction": "rises",
-        "score_types": ["overall"],
-        "target": "any_followed_company",
-        "portfolio": None
-    }),
+    ({"change_direction": "drops", "score_types": "overall", "target": "my_scorecard", "portfolio": None}),
+    ({"change_direction": "drops", "score_types": ["application_security"], "target": None, "portfolio": "1"}),
+    ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolio": "1"}),
+    ({"change_direction": "rises", "score_types": ["overall"], "target": "any_followed_company", "portfolio": None}),
 ]
 
 
@@ -519,7 +481,7 @@ def test_create_grade_alert_subscription_delivery_object(mocker, args, expected_
 
     result = alert_grade_change_create_command(client, args)
 
-    actual_delivery = client.create_alert_subscription.call_args[1]['delivery']
+    actual_delivery = client.create_alert_subscription.call_args[1]["delivery"]
 
     assert actual_delivery == expected_delivery
     assert result.outputs == "test_alert_id"
@@ -532,21 +494,20 @@ threshold_alert_creation_inputs = [
         "threshold": 85,
         "score_types": ["overall"],
         "target": "any_followed_company",
-        "portfolio": None
+        "portfolio": None,
     },
     {
         "change_direction": "rises_above",
         "threshold": 70,
         "score_types": ["application_security", "test_factor"],
         "target": None,
-        "portfolio": "1"
+        "portfolio": "1",
     },
 ]
 
 
 @pytest.mark.parametrize(
-    "args, expected_delivery",
-    zip(threshold_alert_creation_inputs, test_data.get("threshold_delivery_objects").get("entries"))
+    "args, expected_delivery", zip(threshold_alert_creation_inputs, test_data.get("threshold_delivery_objects").get("entries"))
 )
 def test_create_score_threshold_alert_subscription_delivery_object(mocker, args, expected_delivery):
     """
@@ -567,7 +528,7 @@ def test_create_score_threshold_alert_subscription_delivery_object(mocker, args,
     mocker.patch.object(client, "create_alert_subscription", return_value=create_score_threshold_alert_mock)
 
     result = alert_score_threshold_create_command(client, args)
-    actual_delivery = client.create_alert_subscription.call_args[1]['delivery']
+    actual_delivery = client.create_alert_subscription.call_args[1]["delivery"]
 
     assert actual_delivery == expected_delivery
     assert result.outputs == "test_alert_id"
@@ -576,7 +537,7 @@ def test_create_score_threshold_alert_subscription_delivery_object(mocker, args,
 grade_alert_test_input = [
     ({"change_direction": "rises", "score_types": "overall", "target": None, "portfolio": PORTFOLIO_ID}),
     ({"change_direction": "rises", "score_types": "application_security", "target": "my_scorecard", "portfolio": "1"}),
-    ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolio": None})
+    ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolio": None}),
 ]
 
 
@@ -602,35 +563,32 @@ def test_create_grade_change_alert(mocker, args):
 
     if args.get("target") and args.get("portfolio"):
         with pytest.raises(DemistoException) as exc:
-            alert_grade_change_create_command(
-                client=client,
-                args=args
-            )
+            alert_grade_change_create_command(client=client, args=args)
 
         assert "Both 'portfolio' and 'target' argument have been set" in str(exc.value)
     elif not args.get("target") and not args.get("portfolio"):
         with pytest.raises(DemistoException) as exc:
-            alert_grade_change_create_command(
-                client=client,
-                args=args
-            )
+            alert_grade_change_create_command(client=client, args=args)
 
         assert "Either 'portfolio' or 'target' argument must be given" in str(exc.value)
     else:
-        cmd_res: CommandResults = alert_grade_change_create_command(
-            client=client,
-            args=args
-        )
+        cmd_res: CommandResults = alert_grade_change_create_command(client=client, args=args)
 
         assert cmd_res.outputs == create_grade_alert_mock.get("id")
 
 
 score_alert_test_input = [
     ({"change_direction": "rises", "threshold": 90, "score_types": "overall", "target": None, "portfolio": PORTFOLIO_ID}),
-    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": "my_scorecard",
-        "portfolio": "1"}),
-    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": None,
-        "portfolio": None}),
+    (
+        {
+            "change_direction": "rises",
+            "threshold": 90,
+            "score_types": "application_security",
+            "target": "my_scorecard",
+            "portfolio": "1",
+        }
+    ),
+    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": None, "portfolio": None}),
     ({"change_direction": "rises", "threshold": "A", "score_types": "application_security", "target": None, "portfolio": None}),
 ]
 
@@ -675,16 +633,12 @@ def test_create_score_change_alert(mocker, args):
 
         assert "Either 'portfolio' or 'target' argument must be given" in str(exc.value)
     else:
-
         cmd_res: CommandResults = alert_score_threshold_create_command(client=client, args=args)
 
         assert cmd_res.outputs == create_score_alert_mock.get("id")
 
 
-services_test_input = (
-    ({"domain": DOMAIN}),
-    ({"domain": DOMAIN_NE})
-)
+services_test_input = (({"domain": DOMAIN}), ({"domain": DOMAIN_NE}))
 
 
 @pytest.mark.parametrize("args", services_test_input)
@@ -763,32 +717,22 @@ def test_incidents_to_import_alerts_last_run_in_past():
     Then:
         - A list of incidents is returned
     """
-    mock = [{
-        "id": "27",
-        "username": "user@domain.com",
-        "change_type": "score_change",
-        "domain": "domain1.co.il",
-        "company_name": "Domain1",
-        "portfolios": [{
-            "id": "a",
-            "name": "test_portfolio"
-        }],
-        "my_scorecard": False,  # corrected false to False
-        "created_at": "2021-07-27T00:00:00.000Z",
-        "change_data": [{
-            "score": 77,
-            "factor": "network_security",
-            "direction": "drops",
-            "grade_letter": "C",
-            "score_impact": -3
-        }, {
-            "score": 69,
-            "factor": "ip_reputation",
-            "direction": "drops",
-            "grade_letter": "D",
-            "score_impact": -3
-        }]
-    }]
+    mock = [
+        {
+            "id": "27",
+            "username": "user@domain.com",
+            "change_type": "score_change",
+            "domain": "domain1.co.il",
+            "company_name": "Domain1",
+            "portfolios": [{"id": "a", "name": "test_portfolio"}],
+            "my_scorecard": False,  # corrected false to False
+            "created_at": "2021-07-27T00:00:00.000Z",
+            "change_data": [
+                {"score": 77, "factor": "network_security", "direction": "drops", "grade_letter": "C", "score_impact": -3},
+                {"score": 69, "factor": "ip_reputation", "direction": "drops", "grade_letter": "D", "score_impact": -3},
+            ],
+        }
+    ]
     last_run = arg_to_datetime("2020-01-01T00:00:00.000Z").replace(tzinfo=None)
     incidents = incidents_to_import(alerts=mock, last_run=last_run)
     assert isinstance(incidents, list)
@@ -803,31 +747,37 @@ def mocked_security_scorecard_client():
         proxy=None,
         headers={"Content-Type": "application/json"},
         username="your_username",
-        api_key="your_api_key"
+        api_key="your_api_key",
     )
-    mocked_security_scorecard_client.get_issue_metadata = MagicMock(return_value={
-        "key": "issue_type",
-        "severity": "high",
-        "factor": "network_security",
-        "title": "Issue Title",
-        "short_description": "Short description",
-        "long_description": "Long description",
-        "recommendation": "Recommendation"
-    })
-    mocked_security_scorecard_client.get_company_events = MagicMock(return_value={
-        "entries": [
-            {
-                "id": "1",
-            }
-        ]
-    })
-    mocked_security_scorecard_client.get_company_event_findings = MagicMock(return_value={
-        "entries": [
-            {
-                "id": "1",
-            }
-        ]
-    })
+    mocked_security_scorecard_client.get_issue_metadata = MagicMock(
+        return_value={
+            "key": "issue_type",
+            "severity": "high",
+            "factor": "network_security",
+            "title": "Issue Title",
+            "short_description": "Short description",
+            "long_description": "Long description",
+            "recommendation": "Recommendation",
+        }
+    )
+    mocked_security_scorecard_client.get_company_events = MagicMock(
+        return_value={
+            "entries": [
+                {
+                    "id": "1",
+                }
+            ]
+        }
+    )
+    mocked_security_scorecard_client.get_company_event_findings = MagicMock(
+        return_value={
+            "entries": [
+                {
+                    "id": "1",
+                }
+            ]
+        }
+    )
     return mocked_security_scorecard_client
 
 
@@ -840,7 +790,10 @@ def test_issue_metadata_get_command_success(mocked_security_scorecard_client):
     assert isinstance(result, CommandResults)
     assert result.readable_output.startswith("### Issue Type issue_type")
     assert "key|severity|factor|title|short_description|long_description|recommendation" in result.readable_output
-    assert "| issue_type | high | network_security | Issue Title | Short description | Long description | Recommendation" in result.readable_output  # noqa: E501
+    assert (
+        "| issue_type | high | network_security | Issue Title | Short description | Long description | Recommendation"
+        in result.readable_output
+    )  # noqa: E501
     assert result.outputs == {
         "key": "issue_type",
         "severity": "high",
@@ -848,7 +801,7 @@ def test_issue_metadata_get_command_success(mocked_security_scorecard_client):
         "title": "Issue Title",
         "short_description": "Short description",
         "long_description": "Long description",
-        "recommendation": "Recommendation"
+        "recommendation": "Recommendation",
     }
     assert result.raw_response == {
         "key": "issue_type",
@@ -857,7 +810,7 @@ def test_issue_metadata_get_command_success(mocked_security_scorecard_client):
         "title": "Issue Title",
         "short_description": "Short description",
         "long_description": "Long description",
-        "recommendation": "Recommendation"
+        "recommendation": "Recommendation",
     }
     assert result.outputs_key_field == "key"
 
@@ -937,7 +890,7 @@ def test_issue_details_get_command_success(mocker):
                 "first_seen_time": "2023-01-01T00:00:00Z",
                 "last_seen_time": "2023-01-02T00:00:00Z",
                 "description": "SPF record is missing",
-                "recommendation": "Add SPF record"
+                "recommendation": "Add SPF record",
             }
         ]
     }
