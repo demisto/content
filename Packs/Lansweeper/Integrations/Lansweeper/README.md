@@ -171,6 +171,114 @@ Return a list of all assets associated with a given site and IP address.
 >| [XLAN-897](https://app.lansweeper.com/api-demo-data-v2/asset/ODk3LUFzc2V0LWY4N2RmODkxLWQ2ZWQtNDJjOC1hOGYxLWNkMmYxMGViYTVkZQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 192.168.2.1 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data-v2 | 2018-02-12T14:04:02.733Z | 2021-08-10T14:18:20.913Z |
 
 
+### ls-assetname-hunt
+***
+Return a list of all assets associated with a given asset name.
+
+
+#### Base Command
+
+`ls-assetname-hunt`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | Specify the site ID to retrieve the assets.<br/><br/>Note: To get site ID, execute ls-site-list command. | Optional | 
+| asset_name | Specify the asset name to retrieve the specific asset. <br/><br/>Note: Supports multiple comma separated values. | Required | 
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 500. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Lansweeper.AssetName.assetId | String | Asset ID. | 
+| Lansweeper.AssetName.assetBasicInfo.name | String | Asset name. | 
+| Lansweeper.AssetName.assetBasicInfo.domain | String | Domain the asset belongs to. | 
+| Lansweeper.AssetName.assetBasicInfo.description | String | Description of the asset. | 
+| Lansweeper.AssetName.assetBasicInfo.firstSeen | Date | Date and time at which the asset was first scanned. | 
+| Lansweeper.AssetName.assetBasicInfo.fqdn | String | FQDN of the asset. | 
+| Lansweeper.AssetName.assetBasicInfo.ipAddress | String | AssetName address associated with the asset. | 
+| Lansweeper.AssetName.assetBasicInfo.lastSeen | Date | Date and time at which the asset was last scanned. | 
+| Lansweeper.AssetName.assetBasicInfo.mac | String | Asset's main MAC address. | 
+| Lansweeper.AssetName.assetBasicInfo.userName | String | Name of the last logged on user. | 
+| Lansweeper.AssetName.assetBasicInfo.type | String | Type of the asset. | 
+| Lansweeper.AssetName.assetBasicInfo.userDomain | String | Domain of the last logged on user. | 
+| Lansweeper.AssetName.assetCustom.sku | String | Asset's SKU. | 
+| Lansweeper.AssetName.assetCustom.model | String | Model of the asset. | 
+| Lansweeper.AssetName.assetCustom.firmwareVersion | String | Firmware version, retrieved from plug and play devices via the UPnP, DNS-SD or SSDP protocol. | 
+| Lansweeper.AssetName.assetCustom.purchaseDate | Date | When the asset was purchased. | 
+| Lansweeper.AssetName.assetCustom.warrantyDate | Date | When the asset's warranty expires. | 
+| Lansweeper.AssetName.assetCustom.comment | String | Comment on the asset.. | 
+| Lansweeper.AssetName.assetCustom.location | String | Location of the asset. | 
+| Lansweeper.AssetName.assetCustom.contact | String | Contact person of the asset. | 
+| Lansweeper.AssetName.assetCustom.manufacturer | String | Manufacturer of the asset. | 
+| Lansweeper.AssetName.assetCustom.serialNumber | String | Serial number of the asset. | 
+| Lansweeper.AssetName.assetCustom.dnsName | String | DNS name of the asset. | 
+| Lansweeper.AssetName.assetCustom.stateName | String | State name of the asset. | 
+| Lansweeper.AssetName.operatingSystem.caption | String | Short description of the object. The string includes the operating system version. | 
+| Lansweeper.AssetName.operatingSystem.productType | String | Type of the operating system. | 
+| Lansweeper.AssetName.url | String | URL to the summary of the asset. | 
+| Lansweeper.AssetName.siteId | String | The ID of the site to which the asset belongs. | 
+| Lansweeper.AssetName.siteName | String | The name of the site to which the asset belongs. | 
+
+
+#### Command Example
+```!ls-assetname-hunt asset_name="AZSERVER001"```
+
+#### Context Example
+```json
+{
+    "Lansweeper": {
+        "AssetName": [
+            {
+                "assetBasicInfo": {
+                    "firstSeen": "2018-06-15T12:03:34.917Z",
+                    "ipAddress": "192.168.2.1",
+                    "lastSeen": "2018-07-19T14:45:58.793Z",
+                    "mac": "02:0C:29:FE:A6:64",
+                    "name": "192.168.2.1",
+                    "type": "Network device"
+                },
+                "assetCustom": {
+                    "stateName": "Active"
+                },
+                "assetId": "608fa4d61be3044511e7239e",
+                "siteId": "401d153d-2a59-45eb-879a-c291390448ca",
+                "siteName": "api-demo-data",
+                "url": "https://app.lansweeper.com/api-demo-data/asset/MTI3My1Bc3NldC0wZGYzZGRiYS0zNzA3LTQ0ZWUtOWI0My1jMTkxOTQ1NmZkYTE=/summary"
+            },
+            {
+                "assetBasicInfo": {
+                    "firstSeen": "2018-06-15T10:02:34.917Z",
+                    "ipAddress": "192.168.2.1",
+                    "lastSeen": "2018-07-19T12:44:58.793Z",
+                    "mac": "02:0C:29:FE:A6:64",
+                    "name": "192.168.2.1",
+                    "type": "Network device"
+                },
+                "assetCustom": {
+                    "stateName": "Active"
+                },
+                "assetId": "60eed3ba8a037f9341893701",
+                "siteId": "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
+                "siteName": "api-demo-data-v2",
+                "url": "https://app.lansweeper.com/api-demo-data-v2/asset/MTI3My1Bc3NldC1mODdkZjg5MS1kNmVkLTQyYzgtYThmMS1jZDJmMTBlYmE1ZGU=/summary"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset(s)
+>|Name|Domain|User Name|User Domain|FQDN|Description|Type|IP Address|Mac Address|Model|Manufacturer|Serial Number|SKU|Site Name|First Seen|Last Seen|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| [XLAN-897](https://app.lansweeper.com/api-demo-data/asset/ODk3LUFzc2V0LTBkZjNkZGJhLTM3MDctNDRlZS05YjQzLWMxOTE5NDU2ZmRhMQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 192.168.2.1 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data | 2018-02-12T16:04:02.733Z | 2018-02-12T16:04:02.733Z |
+>| [XLAN-897](https://app.lansweeper.com/api-demo-data-v2/asset/ODk3LUFzc2V0LWY4N2RmODkxLWQ2ZWQtNDJjOC1hOGYxLWNkMmYxMGViYTVkZQ==/summary) | Demo-domain | John Doe | Demo-domain | Demo67.com | Video / Image Editing | APC | 192.168.2.1 | 03:00:00:00:00:57 | iMac18,3 | Apple | LAN897 | LN001 | api-demo-data-v2 | 2018-02-12T14:04:02.733Z | 2021-08-10T14:18:20.913Z |
+
+
 ### ls-mac-hunt
 ***
 Return a list of all assets associated with a given site and MAC address.

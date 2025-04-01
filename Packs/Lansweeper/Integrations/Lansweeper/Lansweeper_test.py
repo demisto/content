@@ -182,6 +182,80 @@ def test_lansweeper_ip_hunt_command_when_valid_response_is_returned(mocker_get_c
     assert command_response.outputs == context
     assert command_response.readable_output == readable_output
 
+@patch('demistomock.getIntegrationContext')
+def test_lansweeper_assetname_hunt_command_when_valid_response_is_returned(mocker_get_context, mocker):
+    """
+    Test case scenario for successful execution of ls-assetname-hunt command.
+    Given:
+        - command arguments for assetname hunt command
+    When:
+        - Calling `ls-assetname-hunt` command
+    Then:
+        -  Returns the response data
+    """
+    from Lansweeper import lansweeper_assetname_hunt_command
+    mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
+    response = util_load_json(
+        os.path.join("test_data", "assetname_hunt_command_response.json"))
+    context = util_load_json(
+        os.path.join("test_data", "assetname_hunt_command_context.json"))
+    with open(os.path.join("test_data", "assetname_hunt_command_hr.md"), 'r') as f:
+        readable_output = f.read()
+
+    mocked_client = mocker.Mock()
+    mocked_client.asset_list.return_value = response
+    args = {
+        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
+        'ip': "127.0.0.1"
+
+    }
+    command_response = lansweeper_assetname_hunt_command(mocked_client, args)
+
+    assert command_response.outputs_prefix == "Lansweeper.AssetName"
+    assert command_response.outputs_key_field == "assetId"
+    assert command_response.outputs == context
+    assert command_response.readable_output == readable_output
+
+@patch('demistomock.getIntegrationContext')
+def test_lansweeper_assetname_hunt_command_when_empty_response_is_returned(mocker_get_context, mocker):
+    """
+    Test case scenario for successful execution of ls-assetname-hunt command with an empty response.
+    Given:
+        - command arguments for hunt assetname command
+    When:
+        - Calling `ls-assetname-hunt` command
+    Then:
+        - Returns no records for the given input arguments
+    """
+    from Lansweeper import lansweeper_assetname_hunt_command
+    mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
+    response = {
+        "data": {
+            "site": {
+                "assetResources": {
+                    "total": 0,
+                    "pagination": {
+                        "limit": 2,
+                        "current": None,
+                        "next": None,
+                        "page": "NEXT"
+                    },
+                    "items": []
+                }
+            }
+        }
+    }
+    args = {
+        'site_id': "56d4ed4f-b2ad-4587-91b5-07bd453c5c76",
+        'asset_name': "abc"
+
+    }
+    mocked_client = mocker.Mock()
+    mocked_client.asset_list.return_value = response
+
+    command_results = lansweeper_assetname_hunt_command(mocked_client, args=args)
+
+    assert command_results.readable_output == '### Asset(s)\n**No entries.**\n'
 
 @patch('demistomock.getIntegrationContext')
 def test_lansweeper_ip_hunt_command_when_empty_response_is_returned(mocker_get_context, mocker):
@@ -224,7 +298,31 @@ def test_lansweeper_ip_hunt_command_when_empty_response_is_returned(mocker_get_c
 
     assert command_results.readable_output == '### Asset(s)\n**No entries.**\n'
 
+@pytest.mark.parametrize("args,expected_error", [
+    ({"site_id": "abc", "asset_name": ""}, MESSAGES["REQUIRED_ARGUMENT"]),
+    ({"site_id": "abc", "asset_name": "abc,1.1"}, MESSAGES["INVALID_asset_name"]),
+    ({"asset_name": "abc", "limit": 501}, MESSAGES["INVALID_LIMIT"].format("501")),
+    ({"asset_name": "abc", "limit": 0}, MESSAGES["INVALID_LIMIT"].format("0")),
+])
+@patch('demistomock.getIntegrationContext')
+def test_lansweeper_assetname_hunt_command_when_invalid_args_provided(mocker_get_context, client, args, expected_error):
+    """
+    Test case scenario when invalid arguments for assetname hunt command are provided.
+    Given:
+        - invalid command arguments for assetname hunt command
+    When
+        - Calling `ls-assetname-hunt`
+    Then:
+        - Returns the response message of invalid input arguments
+    """
+    from Lansweeper import lansweeper_assetname_hunt_command
+    mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
+    with pytest.raises(ValueError) as err:
+        lansweeper_assetname_hunt_command(client, args)
 
+    assert str(err.value) == expected_error
+
+    
 @pytest.mark.parametrize("args,expected_error", [
     ({"site_id": "abc", "ip": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("ip")),
     ({"site_id": "abc", "ip": "abc,1.1"}, MESSAGES["INVALID_IP"]),
