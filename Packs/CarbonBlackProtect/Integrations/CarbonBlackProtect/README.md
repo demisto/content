@@ -1,7 +1,10 @@
 VMware Carbon Black App Control (formerly known as Carbon Black Enterprise Protection) is a next-generation endpoint threat prevention solution to deliver a portfolio of protection policies, real-time visibility across environments, and comprehensive compliance rule sets in a single platform. This integration only supports Carbon Black on-premise APIs.
 
+
+<!-- markdownlint-disable MD051 --> 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-vmware-carbon-black-app-control-v2).
+<!-- markdownlint-enable MD051 -->
 
 ## Configure VMware Carbon Black App Control v2 in Cortex
 

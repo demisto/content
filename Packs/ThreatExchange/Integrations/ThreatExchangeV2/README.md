@@ -31,7 +31,7 @@ For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the *pa
 
  
 ## Changes compared to previous version
-1. Dbot score calculation is different. See [DBot Score / Reputation scores](#dbot-score-/-Reputation-scores) for details. 
+1. Dbot score calculation is different. See [DBot Score / Reputation scores](#dbot-score--reputation-scores) for details. 
 
 2. The context output of the ***threatexchange-query*** command appears under *ThreatExchange - Query* instead of under *queryResult*.
 

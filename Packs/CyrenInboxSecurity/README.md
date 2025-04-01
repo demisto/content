@@ -90,5 +90,5 @@ With Cyren Inbox Security, your IT admins and security teams enjoy a complete ma
 
 
 
-The [Cyren Inbox Security content pack](#/market/browse/CyrenInboxSecurity) provides tools to import Cyren Incident details into XSOAR.
+The Cyren Inbox Security content pack provides tools to import Cyren Incident details into XSOAR.
 

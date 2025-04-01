@@ -460,7 +460,7 @@ List all response policy zones.
 | false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default | GIVEN | WARNING | LOCAL | default |
 | false | test123.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0MTIz:test123.com/default | GIVEN | WARNING | LOCAL | default |
 
-### 5\. infoblox-create-response-policy-zone
+### infoblox-create-response-policy-zone
 
 * * *
 

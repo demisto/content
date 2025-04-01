@@ -27,7 +27,7 @@ If you configure both **Syslog Server Alerts** and **Syslog Response Rule**, mak
 
 of the syslog server the same.
 
-If you want to configure them differently, make sure to configure 2 different syslog data sources on XSIAM as well, by repeating the [Broker VM](#-broker-vm) procedure for each one.
+If you want to configure them differently, make sure to configure 2 different syslog data sources on XSIAM as well, by repeating the [Broker VM](#broker-vm) procedure for each one.
 
 
 <br>
@@ -98,7 +98,7 @@ To enable sending server events to the syslog server, complete the following ste
 See [Enabling a syslog server](https://techdocs.broadcom.com/us/en/symantec-security-software/information-security/data-loss-prevention/15-8/maintaining-the-system/Using-system-event-reports-and-alerts/about-system-events-id-sf990320181-d297e6821/enabling-a-syslog-server-v15259482-d297e7937.html) for additional details.
 
 ## Collect Events from Vendor
-In order to use the collector, use the [Broker VM](#-broker-vm) option.
+In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).

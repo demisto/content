@@ -5,7 +5,7 @@ Security teams can ingest data from Triage such as email reporters, email report
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#Breaking-changes-from-the-previous-version-of-this-integration---Cofense-Triage-v3).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---cofense-triage-v2).
 
 ## Configure Cofense Triage v3 in Cortex
 

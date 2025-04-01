@@ -1,5 +1,9 @@
+
+[//]: # (todo: https://panw-global.slack.com/archives/C08JCHSMWJZ/p1743502979310469  )
+<!-- markdownlint-disable MD051 --> 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
+<!-- markdownlint-enable MD051 -->
 
 ## Configure Zendesk v2 in Cortex
 

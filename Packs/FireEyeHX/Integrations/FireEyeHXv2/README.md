@@ -1,8 +1,11 @@
 FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. This  integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook
 
 
+[//]: # (todo: asked israel https://panw-global.slack.com/archives/D07LQDDBT6J/p1743503399472389)
+<!-- markdownlint-disable MD051 --> 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fireeye-endpoint-security-(hx)-v2).
+<!-- markdownlint-enable MD051 -->
 
 ## Configure FireEye Endpoint Security (HX) v2 in Cortex
 

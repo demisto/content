@@ -2,7 +2,7 @@ Threat Intelligence Platform that connects and interprets intelligence data from
 This integration was integrated and tested with version 2.14 and 3.0 of EclecticIQ Intelligence Center v3.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-eclecticiq-intelligence-center-v3).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---eclecticiq-intelligence-center-v3).
 
 ## Configure EclecticIQ Intelligence Center v3 in Cortex
 

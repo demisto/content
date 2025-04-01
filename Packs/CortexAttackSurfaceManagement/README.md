@@ -128,7 +128,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
 - Layouts
-  - [ASM Alert Layout](#asmalertlayout)
+  - [ASM Alert Layout](#asm-alert-layout)
 
 ### Playbooks
 

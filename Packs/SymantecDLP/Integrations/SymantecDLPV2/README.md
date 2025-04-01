@@ -4,7 +4,7 @@ This integration was integrated and tested with Symantec Data Loss Prevention ve
 [Check Symantec DLP 15.7 API docs](https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/information-security/data-loss-prevention/generated-pdfs/Symantec_DLP_15.7_REST_API_Guide.pdf)
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-symantec-data-loss-prevention-v2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---symantec-data-loss-prevention-v2).
 
 ## Configure Symantec Data Loss Prevention v2 in Cortex
 

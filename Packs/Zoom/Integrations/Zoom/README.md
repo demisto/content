@@ -3,6 +3,8 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 
 ## Configure Zoom in Cortex
 
+[//]: # (todo: asked judith what she meant, waiting for response )
+<!-- markdownlint-disable MD051 --> 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -25,6 +27,7 @@ This integration was integrated and tested with version 2.0.0 of Zoom
  
   
 
+<!-- markdownlint-enable MD051 -->
 
 
 
@@ -89,7 +92,7 @@ Toggle on the "Team Chat Subscription" section. Under "Bot Endpoint URL", add:
        - Be a fully qualified domain name (FQDN).
        -  be able to respond with an HTTP Status Code.
 
-   - **Zoom Configurations:**
+   - #### **Zoom Configurations:**
      
      1. Copy the **Secret Token** from the "Features" > "Access" page under the "Token" section and add it to the instance configuration. ![enter image description here](../../doc_files/zoom-token.png)
      2. Configure Event Subscriptions.
