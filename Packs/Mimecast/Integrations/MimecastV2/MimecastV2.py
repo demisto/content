@@ -151,7 +151,7 @@ def fetch_held_messages_with_pagination(api_endpoint: str, data: list, limit: in
                                'data': data}
     len_of_results = 0
     results = []
-    dropped = 0
+    dropped = 0 
     next_page = current_next_page or ''
     while True: 
         pagination = {'pageSize': limit}
