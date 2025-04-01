@@ -91,8 +91,10 @@ class Client(BaseClient):
                         raise e
                     return_warning(f"{e.res.text} response received from server", exit=True)
                 else:
+                    demisto.debug("A DemistoException was raised but no status code was caught.")
                     raise
             else:
+                demisto.debug("A DemistoException was raised but there is no status code.")
                 raise
         except requests.exceptions.ReadTimeout as e:
             demisto.debug("A ReadTimeout error was raised.")
