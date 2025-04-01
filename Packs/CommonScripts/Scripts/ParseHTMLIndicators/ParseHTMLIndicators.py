@@ -1,9 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import re
 
+import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
 from tld import get_tld
 
 
@@ -11,9 +11,9 @@ def strip_html_tags(page):
     # Parse the HTML content
     soup = BeautifulSoup(page.content, "html.parser")
     # Strip irrelevant tags
-    for data in soup(['style', 'script', 'header', 'head', 'footer', 'aside', 'a']):
+    for data in soup(["style", "script", "header", "head", "footer", "aside", "a"]):
         data.decompose()
-    return (' '.join(soup.stripped_strings))
+    return " ".join(soup.stripped_strings)
 
 
 def validate_domains(domains, unescape_domain, TLD_exclusion):
@@ -27,14 +27,14 @@ def validate_domains(domains, unescape_domain, TLD_exclusion):
         for tld in TLD_exclusion:
             if indicator.endswith(tld):
                 bad_domain_TLD.add(indicator)
-    return (bad_domain_TLD)
+    return bad_domain_TLD
 
 
 def main():
     # Retrieve demisto args
     args = demisto.args()
     blog_url = args.get("url")
-    headers = {'user-agent': 'PANW-XSOAR'}
+    headers = {"user-agent": "PANW-XSOAR"}
     page = requests.get(blog_url, verify=False, headers=headers)  # nosec
     page.raise_for_status()
 
@@ -49,8 +49,9 @@ def main():
 
     # Declare indicator regexs
     url_regex = r"([https|ftp|hxxps]+:[//|\\\\]+[\w\d:#@%/;$()~_\+-=\\\[\.\]&]*)"
-    ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[" \
-               r"0-9])"
+    ip_regex = (
+        r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
+    )
     cve_regex = r"(CVE-\d{4}-\d{4,7})"
 
     page_update = strip_html_tags(page)
@@ -70,9 +71,13 @@ def main():
     # Combine all indicators
     blog_indicators = (md5 | sha1 | sha256 | domain | url | ip | cve) - exclusion_list - bad_domain_TLD
 
-    return_results(CommandResults(readable_output='\n'.join(blog_indicators), outputs={
-                   "http.parsedBlog.indicators": list(blog_indicators), "http.parsedBlog.sourceLink": blog_url}))
+    return_results(
+        CommandResults(
+            readable_output="\n".join(blog_indicators),
+            outputs={"http.parsedBlog.indicators": list(blog_indicators), "http.parsedBlog.sourceLink": blog_url},
+        )
+    )
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
