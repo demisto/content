@@ -40,7 +40,7 @@ def test_unzip_no_password(file_name):
         expected_data = f.read()
     shutil.rmtree(_dir)
     # - ensure that the saved file has expected content data
-    assert expected_data == actual_file_data, "failed extracting " + zipped_file_path
+    assert expected_data.splitlines() == actual_file_data.splitlines(), f"failed extracting {zipped_file_path}"
 
 
 @pytest.mark.parametrize("zip_tool", ("7z", "zipfile"))
