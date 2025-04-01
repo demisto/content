@@ -143,23 +143,23 @@
                     "simple": ""
                 },
                 "Categories": {
-					"complex": {
-						"filters": [],
-						"root": "categories",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "filters": [],
+                        "root": "categories",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
                 "Email BCC": {
                     "complex": null,
                     "simple": "bcc_recipients.email_address"
@@ -248,7 +248,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "\u003c\u003e"
+                                            "simple": "<>"
                                         }
                                     }
                                 },
@@ -385,5 +385,11 @@
     "name": "EWS - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

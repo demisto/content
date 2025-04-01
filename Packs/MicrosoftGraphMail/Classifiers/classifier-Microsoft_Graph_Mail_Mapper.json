@@ -76,24 +76,24 @@
                     },
                     "simple": ""
                 },
-				"Categories": {
-					"complex": {
-						"filters": [],
-						"root": "Categories",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
+                "Categories": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Categories",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
                 "Email Body Format": {
                     "complex": null,
                     "simple": "BodyType"
@@ -197,7 +197,7 @@
                             ]
                         ],
                         "root": "Headers",
-						"transformers": [
+                        "transformers": [
                             {
                                 "args": {
                                     "separator": {
@@ -209,7 +209,8 @@
                                 },
                                 "operator": "join"
                             }
-                        ]                    },
+                        ]
+                    },
                     "simple": ""
                 },
                 "Email Return Path": {
@@ -316,11 +317,11 @@
                     "simple": ""
                 },
                 "Email BCC": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "Bcc",
-						"transformers": [
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Bcc",
+                        "transformers": [
                             {
                                 "args": {
                                     "separator": {
@@ -333,9 +334,9 @@
                                 "operator": "join"
                             }
                         ]
-					},
-					"simple": ""
-				},
+                    },
+                    "simple": ""
+                },
                 "Email To Count": {
                     "complex": {
                         "accessor": "",
@@ -364,5 +365,11 @@
     "name": "Microsoft Graph Mail Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

@@ -4,7 +4,7 @@
     "modified": "2021-02-26T15:34:51.429147157-06:00",
     "name": "SailPoint IdentityNow Trigger Identity",
     "ownerOnly": false,
-    "description": "Identity information for whom this event was generated (id, name \u0026 type). Returned for the following event trigger types - idn:identity-attributes-changed, idn:identity-created \u0026 idn:identity-deleted.",
+    "description": "Identity information for whom this event was generated (id, name & type). Returned for the following event trigger types - idn:identity-attributes-changed, idn:identity-created & idn:identity-deleted.",
     "cliName": "sailpointidentitynowtriggeridentity",
     "type": "shortText",
     "closeForm": false,
@@ -24,5 +24,11 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

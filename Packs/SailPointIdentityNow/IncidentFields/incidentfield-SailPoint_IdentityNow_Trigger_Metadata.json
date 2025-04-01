@@ -4,7 +4,7 @@
     "modified": "2021-02-26T15:34:19.696443239-06:00",
     "name": "SailPoint IdentityNow Trigger Metadata",
     "ownerOnly": false,
-    "description": "Metadata of the IdentityNow Events (invocationId, triggerId, triggerType, callbackURL, secret \u0026 responseMode). Returned for all event trigger types.",
+    "description": "Metadata of the IdentityNow Events (invocationId, triggerId, triggerType, callbackURL, secret & responseMode). Returned for all event trigger types.",
     "cliName": "sailpointidentitynowtriggermetadata",
     "type": "shortText",
     "closeForm": false,
@@ -24,5 +24,11 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
