@@ -1259,7 +1259,7 @@ class MsClient:
             verify=verify,
             proxy=proxy,
             scope=urljoin(
-                MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type], "/windowsatpservice/.default"
+                MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type], "/.default"
             ),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
