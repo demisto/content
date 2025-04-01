@@ -1156,7 +1156,7 @@ def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, s
         chat_type = chat_data.get('chatType', '')
     else:
         # Find the chat_id without trying to create a chat, raise an error if the one-on-one chat doesn't already exist
-        chat_id = get_oneonone_chat_id(user_data[0].get('id'))
+        chat_id = get_one_on_one_chat_id(user_data[0].get('id'))
         if not chat_id:
             raise ValueError(f'Could not find chat: {chat}')
         chat_type = 'oneOnOne'
@@ -1394,7 +1394,7 @@ def get_signed_in_user() -> dict[str, str]:
     return cast(dict[str, str], http_request('GET', url))
 
 
-def get_oneonone_chat_id(user_id: str) -> str:
+def get_one_on_one_chat_id(user_id: str) -> str:
     """
     Retrieves the chat id for the one on one chat between the given user_id and the signed-in user.
     :param user_id: ID of the other user in the one on one chat
