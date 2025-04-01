@@ -31,8 +31,8 @@ The RDAP (Registration Data Access Protocol) pack allows you to query and retrie
 You can use the RDAP integration to query information about domains and IP addresses. Here are some example commands:
 
 ```
-!rdap ip 8.8.8.8
-!rdap domain example.com
+!ip ip=8.8.8.8
+!domain domain=example.com
 ```
 
 For more details on the available commands and their outputs, please refer to the integration's README file.
