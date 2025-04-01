@@ -6,7 +6,7 @@ You need to configure your Juniper SRX device to forward Syslog messages.
 
 Perform the following in order to configure log forwarding:
 1. Log in to the Juniper SRX device CLI console.
-2. Run the below commands:
+2. Run the following commands:
 ```
 set security log mode stream
 set security log format sd-syslog
