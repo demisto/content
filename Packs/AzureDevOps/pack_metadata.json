@@ -7,10 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
+        "IT Services",
         "Utilities",
         "Cloud Service Provider",
-        "Cloud Services",
-        "IT Services"
+        "Cloud Services"
     ],
     "tags": [
         "IT"
