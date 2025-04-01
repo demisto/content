@@ -3347,8 +3347,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
 
 
-def \
-    test_generate_login_url(mocker):
+def test_generate_login_url(mocker):
     """
     Given:
         - Self-deployed are true and auth code are the auth flow
@@ -3385,7 +3384,7 @@ def \
     expected_url = (
         f"[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?"
         f"response_type=code&scope=offline_access%20"
-        "https://api.securitycenter.microsoft.com/.default"
+        "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"
         f"&client_id={client_id}&redirect_uri={redirect_uri})"
     )
     res = MicrosoftDefenderAdvancedThreatProtection.return_results.call_args[0][0].readable_output
