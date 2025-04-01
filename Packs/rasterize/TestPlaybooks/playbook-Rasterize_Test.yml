@@ -394,11 +394,11 @@ tasks:
       id: b04cb3a6-2030-4511-8d5a-ba4eef04ecd2
       version: -1
       name: Rasterize URL to PNG (Google)
-      description: Rasterize a URL into image or PDF
-      script: 'Rasterize|||rasterize'
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: '|||rasterize'
       type: regular
       iscommand: true
-      brand: 'Rasterize'
+      brand: ""
     nexttasks:
       '#none#':
       - '14'
@@ -433,11 +433,11 @@ tasks:
       id: f3225da3-242a-4475-84e9-3bad825fd080
       version: -1
       name: Test Image (ImageOCR)
-      description: Extracts text from an image.
-      script: 'Image OCR|||image-ocr-extract-text'
+      description: Extract text from images.
+      script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: 'Image OCR'
+      brand: ""
     nexttasks:
       '#none#':
       - '15'
@@ -578,11 +578,11 @@ tasks:
       id: 40f17c40-10ee-407f-8fe7-c73a01c3d6cf
       version: -1
       name: Rasterize Large HTML with rasterize-email command
-      description: Converts the body of an email to an image file or a PDF file.
-      script: 'Rasterize|||rasterize-email'
+      description: Converts an HTML file to an image file or a PDF file.
+      script: '|||rasterize-email'
       type: regular
       iscommand: true
-      brand: "Rasterize"
+      brand: ""
     nexttasks:
       '#none#':
       - '18'
@@ -621,11 +621,11 @@ tasks:
       id: 0ebe7417-e0d7-4357-879c-d9f533f5c6f3
       version: -1
       name: Test Image (ImageOCR)
-      description: Extracts text from an image.
-      script: 'Image OCR|||image-ocr-extract-text'
+      description: Extract text from images.
+      script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: 'Image OCR'
+      brand: ""
     nexttasks:
       '#none#':
       - '19'
@@ -830,11 +830,11 @@ tasks:
       id: 88237afd-1038-4117-8a0c-f6b35ba854b7
       version: -1
       name: 'Rasterize URL -  Full_Screen '
-      description: Rasterize a URL into image or PDF
-      script: 'Rasterize|||rasterize'
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: '|||rasterize'
       type: regular
       iscommand: true
-      brand: 'Rasterize'
+      brand: ""
     nexttasks:
       '#none#':
       - '24'
@@ -871,11 +871,11 @@ tasks:
       id: bd900dcd-ee5c-41a3-875f-60f1ac32e96e
       version: -1
       name: Test Image (ImageOCR)
-      description: Extracts text from an image.
-      script: 'Image OCR|||image-ocr-extract-text'
+      description: Extract text from images.
+      script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: 'Image OCR'
+      brand: ""
     nexttasks:
       '#none#':
       - '25'
@@ -1048,11 +1048,11 @@ tasks:
       id: 05f5eb7d-a21b-472b-8bc5-26e83169babc
       version: -1
       name: Rasterize URL - Include URL bar
-      description: Rasterize a URL into image or PDF
-      script: 'Rasterize|||rasterize'
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: '|||rasterize'
       type: regular
       iscommand: true
-      brand: 'Rasterize'
+      brand: ""
     nexttasks:
       '#none#':
       - '29'
@@ -1089,11 +1089,11 @@ tasks:
       id: 393285be-bfa3-400f-863c-f8685f1b8fc0
       version: -1
       name: Test Image (ImageOCR)
-      description: Extracts text from an image.
-      script: 'Image OCR|||image-ocr-extract-text'
+      description: Extract text from images.
+      script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: 'Image OCR'
+      brand: ""
     nexttasks:
       '#none#':
       - '30'
@@ -1197,11 +1197,11 @@ tasks:
       id: 7029da22-006c-43a9-895b-586f8bad4af6
       version: -1
       name: Rasterize Large HTML with rasterize-html command
-      description: Converts an html file to an image file or a PDF file.
-      script: 'Rasterize|||rasterize-html'
+      description: Converts the body of an email to an image file or a PDF file.
+      script: '|||rasterize-html'
       type: regular
       iscommand: true
-      brand: "Rasterize"
+      brand: ""
     nexttasks:
       '#none#':
       - "34"
@@ -1232,11 +1232,11 @@ tasks:
       id: 10897ce4-b582-4a5a-830e-f285d269870e
       version: -1
       name: Test Image (ImageOCR)
-      description: Extracts text from an image.
-      script: 'Image OCR|||image-ocr-extract-text'
+      description: Extract text from images.
+      script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: "Image OCR"
+      brand: ""
     nexttasks:
       '#none#':
       - "35"
