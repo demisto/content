@@ -211,7 +211,7 @@ class ZeroFox(BaseClient):
                 "updated_after": start_time,
                 "updated_before": end_time,
                 "ordering": "updated",
-                "Tags": "Key Incident"
+                "tags": "Key Incident"
             }
         )
         key_incidents = []
