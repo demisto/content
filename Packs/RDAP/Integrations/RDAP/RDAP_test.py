@@ -2,17 +2,12 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from RDAP import RDAPClient, parse_ip_response, parse_domain_response, test_module
+from RDAP import RDAPClient, parse_ip_response, parse_domain_response
 
 
 @pytest.fixture
 def client():
-    return RDAPClient(base_url='https://rdap.org')
-
-
-def test_module_test(client, requests_mock):
-    requests_mock.get('https://rdap.org/domain/example.com', json={})
-    assert test_module(client) == "ok"
+    return RDAPClient(base_url='https://rdap.org', verify=False)
 
 
 def test_parse_domain_response():

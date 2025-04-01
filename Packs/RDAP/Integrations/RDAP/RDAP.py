@@ -2,6 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+from typing import Any
+from collections.abc import Callable
+
 
 INTEGRATION_NAME = "RDAP"
 VCARD_MAPPING = {
@@ -13,11 +16,11 @@ VCARD_MAPPING = {
 
 
 class RDAPClient(BaseClient):
-    def __init__(self, base_url):
-        super().__init__(base_url=base_url, verify=False)
+    def __init__(self, base_url, verify: bool):
+        super().__init__(base_url=base_url, verify=verify)
         demisto.debug(f"RDAPClient initialized with base_url: {base_url}")
 
-    def rdap_query(self, indicator_type, value):
+    def rdap_query(self, indicator_type: str, value: str):
         url_suffix = f"{indicator_type}/{value}"
         demisto.debug(f"Sending RDAP query for {indicator_type}: {value}")
         response = self._http_request(
@@ -28,7 +31,9 @@ class RDAPClient(BaseClient):
         return response
 
 
-def parse_indicator_data(input: str, indicator_type: str, response: dict[str, Any]) -> tuple[Common.Indicator, dict[str, Any], str]:
+def parse_indicator_data(input: str,
+                         indicator_type: str,
+                         response: dict[str, Any]) -> tuple[Common.Indicator, dict[str, Any], str]:
     """
     Parse the RDAP response for an indicator and return the appropriate Common.Indicator object.
 
@@ -71,13 +76,14 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
             reliability=DBotScoreReliability.A
         )
     )
-    
+
     if "Error" in response:
         context = {'Value': indicator, 'IndicatorType': 'Domain'}
         human_readable = f'### RDAP Information for {indicator}\n{response["Error"]}'
         return domain, context, human_readable
-    
+
     events = response.get('events', []) if isinstance(response, dict) else []
+    last_changed_date: str = ''
 
     for event in events:
         if isinstance(event, dict):
@@ -86,7 +92,7 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
             elif event.get('eventAction') == 'expiration':
                 domain.expiration_date = event.get('eventDate')
             elif event.get('eventAction') == 'last changed':
-                last_changed_date = event.get('eventDate')
+                last_changed_date = event.get('eventDate', '')
 
     secure_dns = response.get('secureDNS', {}) if isinstance(response, dict) else {}
     delegation_signed = secure_dns.get('delegationSigned', False) if isinstance(secure_dns, dict) else False
@@ -142,12 +148,12 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
     )
 
     ip.ip_type = "IP" if response.get("ipVersion", "") == "v4" else "IPv6"
-    
+
     if "error" in response:
         context = {'Value': indicator, 'IndicatorType': 'IP'}
         human_readable = f'### RDAP Information for {indicator}\n{response["Error"]}'
         return ip, context, human_readable
-    
+
     ip.geo_country = response.get('country', '')
 
     for remark in response.get('remarks', []):
@@ -207,10 +213,9 @@ def test_module(client: RDAPClient) -> str | None:
         client.rdap_query(indicator_type="domain", value="example.com")
 
     except Exception as e:
-        return_error(f"Failed to execute test-module command. Error: {str(e)}")
+        raise e
 
-    else:
-        return "ok"
+    return 'ok'
 
 
 def main():
@@ -218,61 +223,63 @@ def main():
     base_url = args.get('base_url', 'https://rdap.org')
     command = demisto.command()
     results = []
+    outputs_prefix = ''
+    indicators = argToList(args.get('ip', []) or args.get('domain', []))
+    verify = not argToBoolean(args.get('insecure', False))
+    client = RDAPClient(base_url=base_url, verify=verify)
+    parse_command: Callable = parse_ip_response
 
-    client = RDAPClient(base_url=base_url)
+    try:
+        if not indicators:
+            raise ValueError("An indicator is required.")
 
-    match command:
-        case "test-module":
+        if command == "test-module":
             demisto.debug("Executing test-module command")
             return_results(test_module(client))
 
-        case "ip":
-            indicators = argToList(args.get('ip', []))
-
-            if not indicators:
-                return_error("IP address is required.")
-
+        elif command == "ip":
             outputs_prefix = 'IP'
-            parse_command = parse_ip_response
 
-        case "domain":
-            indicators = argToList(args.get('domain', []))
-
-            if not indicators:
-                return_error("A domain is required.")
-
+        elif command == "domain":
             outputs_prefix = 'Domain'
             parse_command = parse_domain_response
 
-        case _:
-            return_error(f"Unknown command '{demisto.command()}'")
-    
-    for value in indicators:
-        demisto.debug(f"Executing {demisto.command()} command for value: {value}")
-        try:
-            response = client.rdap_query(indicator_type=command, value=value)
-            indicator, context, readable_output = parse_command(value, response)
-        
-        except Exception as e:
-            if hasattr(e, 'res') and e.res.status_code == 404:
-                response = {"Error": "Indicator Not Found"}
-                indicator, context, readable_output = parse_command(value, response)
-            
-            else:
-                raise e
-        
-        results.append(
-            CommandResults(
-                outputs_prefix=f'{INTEGRATION_NAME}.{outputs_prefix}',
-                outputs_key_field=outputs_prefix,
-                outputs=context,
-                indicator=indicator,
-                readable_output=readable_output,
-                # raw_response=response
-            )
-        )
+        else:
+            raise DemistoException(f"Unknown command '{demisto.command()}'")
 
-    return_results(results)
+        for value in indicators:
+            demisto.debug(f"Executing {demisto.command()} command for value: {value}")
+            try:
+                response = client.rdap_query(indicator_type=command, value=value)
+                indicator, context, readable_output = parse_command(value, response)
+
+            except requests.exceptions.RequestException as e:
+                if e.response and e.response.status_code == 404:
+                    response = {"Error": "Indicator Not Found"}
+                    indicator, context, readable_output = parse_command(value, response)
+
+                else:
+                    raise e
+
+            except Exception as e:
+                raise e
+
+            results.append(
+                CommandResults(
+                    outputs_prefix=f'{INTEGRATION_NAME}.{outputs_prefix}',
+                    outputs_key_field=outputs_prefix,
+                    outputs=context,
+                    indicator=indicator,
+                    readable_output=readable_output,
+                    # raw_response=response
+                )
+            )
+
+        return_results(results)
+
+    except Exception as e:
+        return_error(str(e))
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
