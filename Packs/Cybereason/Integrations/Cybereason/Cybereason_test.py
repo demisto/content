@@ -748,6 +748,12 @@ def test_add_comment_command(mocker):
 def test_fetch_incidents(mocker):
     from Cybereason import fetch_incidents
     from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://test.server.com:8888",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
 
     raw_response = json.loads(load_mock_response('query_malop_management_raw_response.json'))
     mocker.patch("Cybereason.get_malop_management_data", return_value=raw_response)
@@ -757,7 +763,7 @@ def test_fetch_incidents(mocker):
     command_output = fetch_incidents(client)
     command_output = str(command_output)
 
-    assert command_output == "None"
+    assert command_output == 'None'
 
 
 def test_archive_sensor_command(mocker):
