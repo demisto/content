@@ -19,7 +19,45 @@ class Client(BaseClient):
 
     def cve(self, cve_id) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"cve/{cve_id}")
+    
+    def cve_latest(self, limit) -> list[dict[str, Any]]:
+        return self._http_request(method="GET", url_suffix=f"/last/{limit}")
 
+
+
+
+def extract_cvss_info_from_vector(vector_str: str) -> str:
+    """
+    Parse a CVSS vector string using regex to determine score.
+
+    Args:
+        vector_str (str): A CVSS vector like "CVSS:3.1/AV:N/AC:L/..."
+
+    Returns:
+        base_score (str): base_score as str (estimated).
+    """
+    try:
+
+        if not vector_str.startswith("CVSS:"):
+            return "N\\A"
+
+        vector = dict(item.split(":") for item in vector_str.split("/")[1:])
+
+        impact_map = {"N": 0.0, "L": 0.22, "H": 0.56}
+        C = impact_map.get(vector.get("C", "N"), 0.0)
+        impact_i = impact_map.get(vector.get("I", "N"), 0.0)
+        A = impact_map.get(vector.get("A", "N"), 0.0)
+        impact = 1 - ((1 - C) * (1 - impact_i) * (1 - A))
+
+
+        scope = vector.get("S")
+        impact_score = 7.52 * impact if scope == "C" else 6.42 * impact
+
+        score = round(min(impact_score + 3.9, 10.0), 1)
+        return str(score)
+    except Exception as e:
+        demisto.info(f"[CVSS Parse Error] {str(e)}")
+        return "N\\A"
 
 def detect_format(cve_data: dict) -> str:
     """
@@ -28,6 +66,8 @@ def detect_format(cve_data: dict) -> str:
     Supports detection of:
     - CVE 5.1 format (e.g., NVD, VulDB)
     - Legacy format (old CIRCL style)
+    - CSAF format
+    - GHSA format
 
     Args:
         cve_data: The CVE data as a dictionary.
@@ -40,6 +80,12 @@ def detect_format(cve_data: dict) -> str:
     """
     if 'cveMetadata' in cve_data:
         return 'cve_5_1'
+    elif 'document' in cve_data and 'vulnerabilities' in cve_data:
+        return 'csaf'
+    elif 'schema_version' in cve_data and 'id' in cve_data:
+        return 'ghsa'
+    elif 'sourceIdentifier' in cve_data:
+        return 'nvd_cve_5_1'
     elif 'id' in cve_data and 'summary' in cve_data:
         return 'legacy'
     else:
@@ -64,17 +110,109 @@ def process_cve_data(cve: dict) -> dict:
         ValueError: If the format is unrecognized or processing fails.
     """
     try:
+        
         format_type = detect_format(cve)
+        standardized_cve: dict
 
         if format_type == "cve_5_1":
-            return handle_cve_5_1(cve)
+            standardized_cve = handle_cve_5_1(cve)
         elif format_type == "legacy":
-            return handle_legacy(cve)
+            standardized_cve = handle_legacy(cve)
+        elif format_type == 'ghsa':
+            standardized_cve = handle_ghsa(cve)
+        elif format_type == 'nvd_cve_5_1':
+            standardized_cve = handle_NVD_cve_5_1(cve)
         else:
             raise ValueError(f"Unsupported CVE format type: {format_type}")
+        
+        return standardized_cve
+    
     except Exception as e:
         raise ValueError(f"Failed to process CVE data: {e}")
 
+
+def handle_NVD_cve_5_1(cve_data):
+    """
+    Converts a CVE entry in NVD 5.1 format into a legacy CVE dictionary structure.
+
+    This includes extracting:
+    - CVE ID
+    - Summary description (EN language)
+    - CVSS base score and vector (version 3.1)
+    - CWE identifiers (from the weaknesses list)
+    - References (URLs)
+    - Vulnerable products and configurations (including version ranges)
+
+    Args:
+        cve_data: A dictionary representing a CVE in the NVD 5.1 format, typically retrieved from NVD API.
+
+    Returns:
+        A dictionary in legacy CVE format for internal compatibility and indicator generation.
+        Contains keys like id, summary, cvss, cvss-vector, Published, Modified, references, cwe,
+        vulnerable_product, and vulnerable_configuration.
+    """
+    legacy = {
+        "id": cve_data.get("id", ""),
+        "cvss": "",
+        "cvss-vector": "",
+        "Published": cve_data.get("published", ""),
+        "Modified": cve_data.get("lastModified", ""),
+        "summary": "",
+        "cwe": "",
+        "references": [],
+        "vulnerable_product": [],
+        "vulnerable_configuration": [],
+        "impact": {},
+        "access": {}
+    }
+
+    descriptions = cve_data.get("descriptions", [])
+    for desc in descriptions:
+        if desc.get("lang") == "en":
+            legacy["summary"] = desc.get("value", "")
+            break
+
+    metrics = cve_data.get("metrics", {})
+    cvss_metrics = metrics.get("cvssMetricV31", [])
+    if cvss_metrics:
+        cvss_data = cvss_metrics[0].get("cvssData", {})
+        legacy["cvss"] = str(cvss_data.get("baseScore", ""))
+        legacy["cvss-vector"] = cvss_data.get("vectorString", "")
+
+    weaknesses = cve_data.get("weaknesses", [])
+    cwe_list = []
+    for weakness in weaknesses:
+        descriptions = weakness.get("description", [])
+        for desc in descriptions:
+            if desc.get("lang") == "en":
+                cwe_list.append(desc.get("value", ""))
+    legacy["cwe"] = ", ".join(cwe_list)
+
+    references = cve_data.get("references", [])
+    for ref in references:
+        url = ref.get("url", "")
+        if url:
+            legacy["references"].append(url)
+
+    configurations = cve_data.get("configurations", [])
+    for config in configurations:
+        nodes = config.get("nodes", [])
+        for node in nodes:
+            cpe_matches = node.get("cpeMatch", [])
+            for cpe in cpe_matches:
+                criteria = cpe.get("criteria", "")
+                if criteria:
+                    legacy["vulnerable_product"].append(criteria)
+                    config_entry = {"criteria": criteria}
+                    version_start = cpe.get("versionStartIncluding")
+                    version_end = cpe.get("versionEndExcluding")
+                    if version_start:
+                        config_entry["version_start_including"] = version_start
+                    if version_end:
+                        config_entry["version_end_excluding"] = version_end
+                    legacy["vulnerable_configuration"].append(config_entry)
+
+    return legacy
 
 def handle_cve_5_1(cve: dict) -> dict:
     """
@@ -99,12 +237,13 @@ def handle_cve_5_1(cve: dict) -> dict:
         ),
         "NVD-CWE-noinfo",
     )
+    
     legacy = {
         "id": metadata.get("cveId", ""),
         "Published": metadata.get("datePublished", ""),
         "Modified": metadata.get("dateUpdated", ""),
         "last-modified": metadata.get("dateUpdated", ""),
-        "summary": next((d.get("value") for d in cna.get("descriptions", []) if d.get("lang") == "en"), ""),
+        "summary": next((d.get("value") for d in cna.get("descriptions", []) if d.get("lang") in ("en", "en-US")), ""),
         "cvss": None,
         "cvss-vector": "",
         "cvss-time": metadata.get("dateUpdated", ""),
@@ -186,6 +325,67 @@ def handle_legacy(cve: dict) -> dict:
     }
     return legacy
 
+def handle_ghsa(cve: dict) -> dict:
+    """
+    Converts a CVE entry in GitHub Security Advisory (GHSA) format into a legacy CVE dictionary structure.
+
+    The function extracts relevant fields such as CVE ID, CVSS vector and score, summary, publication dates,
+    references, and CWE (Common Weakness Enumeration) values.
+
+    Args:
+        cve: A dictionary representing a CVE in GHSA format (as provided by GitHub's advisory API).
+
+    Returns:
+        A dictionary in legacy CVE format, compatible with downstream processing.
+        The dictionary contains the following keys: id, Published, Modified, summary, cvss, cvss-vector,
+        references, cwe, and placeholders for access/impact fields.
+    """
+    legacy = {
+        "id": "",
+        "Published": "",
+        "Modified": "",
+        "last-modified": "",
+        "summary": "",
+        "cvss": "",
+        "cvss-vector": "",
+        "cvss-time": "",
+        "cwe": "",
+        "references": "",
+        "vulnerable_product": "",
+        "vulnerable_configuration": "",
+        "access": {},
+        "impact": {},
+    }
+        
+    legacy["id"] = cve.get("id", "")
+    legacy["summary"] = cve.get("details", "")
+
+    cvss_vector = ""
+    for s in cve.get("severity", []):
+        if s.get("type", "").upper() == "CVSS_V3":
+            cvss_vector = s.get("score", "")
+            break
+
+    legacy["cvss-vector"] = cvss_vector
+
+    if cvss_vector:
+        try:
+            legacy["cvss"] = str(extract_cvss_info_from_vector(cvss_vector))
+        except Exception as e:
+            demisto.info(f"Failed to parse CVSS vector: {cvss_vector}, error: {str(e)}")
+            legacy["cvss"] = "N\\A"
+    else:
+        legacy["cvss"] = "N\\A"
+
+    legacy["Published"] = cve.get("published", "")
+    legacy["Modified"] = cve.get("modified", "")
+    legacy["references"] = [ref.get("url") for ref in cve.get("references", []) if ref.get("url")]
+
+    cwe_ids = cve.get("database_specific", {}).get("cwe_ids", [])
+    if cwe_ids:
+        legacy["cwe"] = cwe_ids[0]
+
+    return legacy
 
 def create_cve_summary(cve: dict) -> dict:
     """
@@ -254,18 +454,20 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
             raise DemistoException(f'"{_id}" is not a valid cve ID')
 
         if response := client.cve(_id):
-            # return_results(response)
-            full_data = process_cve_data(response)
-            # return_results(full_data)
+            
+            try:
+                full_data = process_cve_data(response)
+            except ValueError as ve:
+                if "Unsupported CVE format type" in str(ve):
+                    continue
+                elif "Failed to process CVE data" in str(ve):
+                    continue
+            
             data = create_cve_summary(full_data)
-            # return_results(data)
             indicator = generate_indicator(full_data)
-            return_results(response)
-            return_results("indicator:")
-            return_results(indicator)
             cr = CommandResults(
                 outputs_prefix="CVESearch.CVE",
-                outputs_key_field="ID",
+                outputs_key_field="CVE",
                 outputs=data,
                 raw_response=response,
                 indicator=indicator,
@@ -277,6 +479,43 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
 
     return command_results
 
+def cve_latest_command(client: Client, limit) -> list[CommandResults]:
+    """
+    Returns the 30 latest updated CVEs.
+
+    Args:
+         limit int: The amount of CVEs to display
+    Returns:
+         Latest 30 CVE details containing ID, CVSS, modified date, published date and description.
+    """
+    res = client.cve_latest(limit)
+    command_results: list[CommandResults] = []
+    for cve_details in res:
+
+        try:
+            full_data = process_cve_data(cve_details)
+        except ValueError as ve:
+            if "Unsupported CVE format type" in str(ve):
+                continue
+            elif "Failed to process CVE data" in str(ve):
+                continue
+        data = create_cve_summary(full_data)
+        indicator = generate_indicator(full_data)
+        readable_output = tableToMarkdown("Latest CVEs", data)
+        command_results.append(
+            CommandResults(
+                outputs_prefix="CVE",
+                outputs_key_field="ID",
+                outputs=data,
+                readable_output=readable_output,
+                raw_response=res,
+                indicator=indicator,
+            )
+        )
+
+    if not res:
+        command_results.append(CommandResults(readable_output="No results found"))
+    return command_results
 
 def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
     """
@@ -336,14 +575,9 @@ def generate_indicator(data: dict) -> Common.CVE:
         A CVE indicator with dbotScore
     """
 
-    return_results("data")
-    return_results(data)
-
     cve_id = data.get("id", "")
     if cpe := data.get("vulnerable_product", ""):
         tags, relationships = parse_cpe(cpe, cve_id)
-        # return_results(tags)
-        # return_results(relationships)
 
     else:
         relationships = []
@@ -386,7 +620,7 @@ def generate_indicator(data: dict) -> Common.CVE:
     if relationships:
         cve_object.relationships = relationships
 
-    return_results(json.dumps(cve_object.to_context(), indent=4))
+    #return_results(json.dumps(cve_object.to_context(), indent=4))
 
     return cve_object
 
@@ -415,10 +649,10 @@ def main():
     try:
         if demisto.command() == "test-module":
             return_results(test_module(client))
-
         elif demisto.command() == "cve":
             return_results(cve_command(client, demisto.args()))
-
+        elif demisto.command() == "cve-latest":
+            return_results(cve_latest_command(client, demisto.args().get("limit", 30)))
         else:
             raise NotImplementedError(f"{command} is not an existing CVE Search command")
 

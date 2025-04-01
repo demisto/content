@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 import pytest
-from CirclCVESearch import Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_verion
+from CirclCVESearch import Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_version
 
 from CommonServerPython import DemistoException, EntityRelationship, argToList
 
@@ -83,7 +83,7 @@ def test_indicator_creation():
     [("CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H", 3.0), ("", 0), ("AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H", 2.0)],
 )
 def test_parse_cvss_version(cvss_vector, expected_output):
-    version = get_cvss_verion(cvss_vector)
+    version = get_cvss_version(cvss_vector)
     assert version == expected_output
 
 
