@@ -5,32 +5,33 @@ API Documentation:
 """
 
 import collections
+
 import urllib3
-from CommonServerUserPython import *  # noqa
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings #
 urllib3.disable_warnings()
 
 DEFAULT_LIMIT = 20
-COMMAND_PREFIX = 'threatexchange'
-VENDOR_NAME = 'ThreatExchange v2'
-CONTEXT_PREFIX = 'ThreatExchange'
-THREAT_DESCRIPTORS_SUFFIX = 'threat_descriptors'
-MALWARE_ANALYSES_SUFFIX = 'malware_analyses'
-THREAT_TAGS_SUFFIX = 'threat_tags'
-TAGGED_OBJECTS_SUFFIX = 'tagged_objects'
-THREAT_EXCHANGE_MEMBERS_SUFFIX = 'threat_exchange_members'
+COMMAND_PREFIX = "threatexchange"
+VENDOR_NAME = "ThreatExchange v2"
+CONTEXT_PREFIX = "ThreatExchange"
+THREAT_DESCRIPTORS_SUFFIX = "threat_descriptors"
+MALWARE_ANALYSES_SUFFIX = "malware_analyses"
+THREAT_TAGS_SUFFIX = "threat_tags"
+TAGGED_OBJECTS_SUFFIX = "tagged_objects"
+THREAT_EXCHANGE_MEMBERS_SUFFIX = "threat_exchange_members"
 TIMEOUT_FOR_LIST_CALLS = 30
-DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR = 'Indicator was classified as malicious by more than {}%' \
-                                              ' of detection engines.'
+DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR = "Indicator was classified as malicious by more than {}% of detection engines."
 
 
 class ThreatExchangeV2Status:
-    UNKNOWN = 'UNKNOWN'
-    NON_MALICIOUS = 'NON_MALICIOUS'
-    SUSPICIOUS = 'SUSPICIOUS'
-    MALICIOUS = 'MALICIOUS'
+    UNKNOWN = "UNKNOWN"
+    NON_MALICIOUS = "NON_MALICIOUS"
+    SUSPICIOUS = "SUSPICIOUS"
+    MALICIOUS = "MALICIOUS"
 
 
 class Client(BaseClient):
@@ -60,17 +61,17 @@ class Client(BaseClient):
         Returns: The API call response
         """
         response = self._http_request(
-            'GET',
+            "GET",
             THREAT_DESCRIPTORS_SUFFIX,
             params={
-                'access_token': self.access_token,
-                'type': 'IP_ADDRESS',
-                'text': ip,
-                'strict_text': True,
-                'since': since,
-                'until': until,
-                'limit': limit
-            }
+                "access_token": self.access_token,
+                "type": "IP_ADDRESS",
+                "text": ip,
+                "strict_text": True,
+                "since": since,
+                "until": until,
+                "limit": limit,
+            },
         )
         return response
 
@@ -88,21 +89,17 @@ class Client(BaseClient):
         """
 
         response = self._http_request(
-            'GET',
+            "GET",
             MALWARE_ANALYSES_SUFFIX,
-            params=assign_params(**{
-                'access_token': self.access_token,
-                'text': file,
-                'strict_text': True,
-                'since': since,
-                'until': until,
-                'limit': limit
-            })
+            params=assign_params(
+                access_token=self.access_token, text=file, strict_text=True, since=since, until=until, limit=limit
+            ),
         )
         return response
 
-    def domain(self, domain: str, since: Optional[int], until: Optional[int], share_level: str,
-               limit: Optional[int] = DEFAULT_LIMIT) -> Dict:
+    def domain(
+        self, domain: str, since: Optional[int], until: Optional[int], share_level: str, limit: Optional[int] = DEFAULT_LIMIT
+    ) -> Dict:
         """
         See Also:
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-descriptors
@@ -117,23 +114,24 @@ class Client(BaseClient):
         """
 
         response = self._http_request(
-            'GET',
+            "GET",
             THREAT_DESCRIPTORS_SUFFIX,
-            params=assign_params(**{
-                'access_token': self.access_token,
-                'type': 'DOMAIN',
-                'text': domain,
-                'strict_text': True,
-                'since': since,
-                'until': until,
-                'limit': limit,
-                'share_level': share_level
-            })
+            params=assign_params(
+                access_token=self.access_token,
+                type="DOMAIN",
+                text=domain,
+                strict_text=True,
+                since=since,
+                until=until,
+                limit=limit,
+                share_level=share_level,
+            ),
         )
         return response
 
-    def url(self, url: str, since: Optional[int], until: Optional[int], share_level: str,
-            limit: Optional[int] = DEFAULT_LIMIT) -> Dict:
+    def url(
+        self, url: str, since: Optional[int], until: Optional[int], share_level: str, limit: Optional[int] = DEFAULT_LIMIT
+    ) -> Dict:
         """
         See Also:
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-descriptors
@@ -148,18 +146,18 @@ class Client(BaseClient):
         """
 
         response = self._http_request(
-            'GET',
+            "GET",
             THREAT_DESCRIPTORS_SUFFIX,
-            params=assign_params(**{
-                'access_token': self.access_token,
-                'type': 'URI',
-                'text': url,
-                'strict_text': True,
-                'since': since,
-                'until': until,
-                'limit': limit,
-                'share_level': share_level
-            })
+            params=assign_params(
+                access_token=self.access_token,
+                type="URI",
+                text=url,
+                strict_text=True,
+                since=since,
+                until=until,
+                limit=limit,
+                share_level=share_level,
+            ),
         )
         return response
 
@@ -172,16 +170,21 @@ class Client(BaseClient):
         """
 
         response = self._http_request(
-            'GET',
-            THREAT_EXCHANGE_MEMBERS_SUFFIX,
-            params={'access_token': self.access_token},
-            timeout=TIMEOUT_FOR_LIST_CALLS
+            "GET", THREAT_EXCHANGE_MEMBERS_SUFFIX, params={"access_token": self.access_token}, timeout=TIMEOUT_FOR_LIST_CALLS
         )
         return response
 
-    def query(self, text: str, descriptor_type: str, since: Optional[int], until: Optional[int],
-              limit: Optional[int] = DEFAULT_LIMIT, strict_text: Optional[bool] = False,
-              before: Optional[str] = None, after: Optional[str] = None) -> Dict:
+    def query(
+        self,
+        text: str,
+        descriptor_type: str,
+        since: Optional[int],
+        until: Optional[int],
+        limit: Optional[int] = DEFAULT_LIMIT,
+        strict_text: Optional[bool] = False,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+    ) -> Dict:
         """
         See Also:
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-descriptors
@@ -199,20 +202,20 @@ class Client(BaseClient):
         """
 
         response = self._http_request(
-            'GET',
+            "GET",
             THREAT_DESCRIPTORS_SUFFIX,
-            params=assign_params(**{
-                'access_token': self.access_token,
-                'type': descriptor_type,
-                'text': text,
-                'strict_text': strict_text,
-                'since': since,
-                'until': until,
-                'limit': limit,
-                'before': before,
-                'after': after
-            }),
-            timeout=TIMEOUT_FOR_LIST_CALLS
+            params=assign_params(
+                access_token=self.access_token,
+                type=descriptor_type,
+                text=text,
+                strict_text=strict_text,
+                since=since,
+                until=until,
+                limit=limit,
+                before=before,
+                after=after,
+            ),
+            timeout=TIMEOUT_FOR_LIST_CALLS,
         )
         return response
 
@@ -229,20 +232,21 @@ class Client(BaseClient):
         Returns: The API call response
         """
         response = self._http_request(
-            'GET',
+            "GET",
             THREAT_TAGS_SUFFIX,
-            params=assign_params(**{
-                'access_token': self.access_token,
-                'text': text,
-                'before': before,
-                'after': after
-            }),
-            timeout=TIMEOUT_FOR_LIST_CALLS
+            params=assign_params(access_token=self.access_token, text=text, before=before, after=after),
+            timeout=TIMEOUT_FOR_LIST_CALLS,
         )
         return response
 
-    def tagged_objects_list(self, tag_id: str, tagged_since: Optional[int], tagged_until: Optional[int],
-                            before: Optional[str] = None, after: Optional[str] = None) -> Dict:
+    def tagged_objects_list(
+        self,
+        tag_id: str,
+        tagged_since: Optional[int],
+        tagged_until: Optional[int],
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+    ) -> Dict:
         """
         See also:
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threattags/v10.0
@@ -255,18 +259,14 @@ class Client(BaseClient):
 
         Returns: The API call response
         """
-        url_suffix = f'{tag_id}/{TAGGED_OBJECTS_SUFFIX}'
+        url_suffix = f"{tag_id}/{TAGGED_OBJECTS_SUFFIX}"
         response = self._http_request(
-            'GET',
+            "GET",
             url_suffix,
-            params=assign_params(**{
-                'access_token': self.access_token,
-                'tagged_since': tagged_since,
-                'tagged_until': tagged_until,
-                'before': before,
-                'after': after
-            }),
-            timeout=TIMEOUT_FOR_LIST_CALLS
+            params=assign_params(
+                access_token=self.access_token, tagged_since=tagged_since, tagged_until=tagged_until, before=before, after=after
+            ),
+            timeout=TIMEOUT_FOR_LIST_CALLS,
         )
         return response
 
@@ -278,13 +278,7 @@ class Client(BaseClient):
 
         Returns: The API call response
         """
-        response = self._http_request(
-            'GET',
-            object_id,
-            params={
-                'access_token': self.access_token
-            }
-        )
+        response = self._http_request("GET", object_id, params={"access_token": self.access_token})
         return response
 
 
@@ -296,7 +290,7 @@ def get_reputation_data_statuses(reputation_data: List) -> List[str]:
 
     Returns: a list of reported statuses
     """
-    reputation_statuses = [status for data_entry in reputation_data if (status := data_entry.get('status'))]
+    reputation_statuses = [status for data_entry in reputation_data if (status := data_entry.get("status"))]
     return reputation_statuses
 
 
@@ -314,14 +308,13 @@ def calculate_dbot_score(reputation_data: List, params: Dict[str, Any]) -> int:
     Returns: the calculated Dbot score
     """
     # get user's thresholds:
-    malicious_threshold = arg_to_number(params.get('malicious_threshold', 50), arg_name='malicious_threshold')
+    malicious_threshold = arg_to_number(params.get("malicious_threshold", 50), arg_name="malicious_threshold")
     if malicious_threshold is None:
         malicious_threshold = 50
-    suspicious_threshold = arg_to_number(params.get('suspicious_threshold', 1), arg_name='suspicious_threshold')
+    suspicious_threshold = arg_to_number(params.get("suspicious_threshold", 1), arg_name="suspicious_threshold")
     if suspicious_threshold is None:
         suspicious_threshold = 1
-    non_malicious_threshold = arg_to_number(params.get('non_malicious_threshold', 50),
-                                            arg_name='non_malicious_threshold')
+    non_malicious_threshold = arg_to_number(params.get("non_malicious_threshold", 50), arg_name="non_malicious_threshold")
     if non_malicious_threshold is None:
         non_malicious_threshold = 50
 
@@ -379,14 +372,14 @@ def flatten_outputs_paging(raw_response: Dict) -> Dict:
 
     """
     paging: Dict
-    paging = raw_response.get('paging', {})
+    paging = raw_response.get("paging", {})
     outputs = raw_response.copy()
-    cursor_before = paging.get('cursors', {}).get('before')
-    cursor_after = paging.get('cursors', {}).get('after')
-    outputs.pop('paging', None)
-    outputs['paging'] = {
-        'before': cursor_before,
-        'after': cursor_after,
+    cursor_before = paging.get("cursors", {}).get("before")
+    cursor_after = paging.get("cursors", {}).get("after")
+    outputs.pop("paging", None)
+    outputs["paging"] = {
+        "before": cursor_before,
+        "after": cursor_after,
     }
     return outputs
 
@@ -406,7 +399,7 @@ def get_malicious_description(score: int, reputation_data: List[Dict], params: D
     """
     malicious_description: Union[str, None]
     if score == Common.DBotScore.BAD:
-        malicious_threshold = arg_to_number(params.get('malicious_threshold', 50))
+        malicious_threshold = arg_to_number(params.get("malicious_threshold", 50))
         default_description = DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR.format(malicious_threshold)
         malicious_description = default_description
 
@@ -454,20 +447,20 @@ def test_module(client: Client) -> str:
     Returns: 'ok' if test passed, anything else will fail the test
     """
 
-    client.ip(ip='8.8.8.8', since=None, until=None)
-    return 'ok'
+    client.ip(ip="8.8.8.8", since=None, until=None)
+    return "ok"
 
 
 def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
     """
     Returns IP's reputation
     """
-    ips = argToList(args.get('ip'))
-    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
-    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
-    limit = arg_to_number(args.get('limit'), arg_name='limit')
-    headers = argToList(args.get('headers'))
-    reliability = params.get('feedReliability')
+    ips = argToList(args.get("ip"))
+    since = convert_string_to_epoch_time(args.get("since"), arg_name="since")
+    until = convert_string_to_epoch_time(args.get("until"), arg_name="until")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    headers = argToList(args.get("headers"))
+    reliability = params.get("feedReliability")
     results: List[CommandResults] = []
 
     for ip in ips:
@@ -477,10 +470,10 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
             raw_response = client.ip(ip, since, until, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            err_msg = f'Could not process IP: "{ip}"\n {str(exception)}'
+            err_msg = f'Could not process IP: "{ip}"\n {exception!s}'
             demisto.debug(err_msg)
             raw_response = {}
-        if data := raw_response.get('data'):
+        if data := raw_response.get("data"):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
             malicious_description = get_malicious_description(score, data, params)
@@ -490,17 +483,26 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 integration_name=VENDOR_NAME,
                 score=score,
                 reliability=reliability,
-                malicious_description=malicious_description
+                malicious_description=malicious_description,
             )
             if not headers:
-                headers = ['description', 'owner', 'status', 'type', 'raw_indicator', 'share_level', 'confidence',
-                           'severity', 'added_on', 'last_updated', 'review_status', 'id']
-            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP {ip}', data, headers=headers)
+                headers = [
+                    "description",
+                    "owner",
+                    "status",
+                    "type",
+                    "raw_indicator",
+                    "share_level",
+                    "confidence",
+                    "severity",
+                    "added_on",
+                    "last_updated",
+                    "review_status",
+                    "id",
+                ]
+            readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Result for IP {ip}", data, headers=headers)
             ip_indicator = Common.IP(
-                ip=ip,
-                dbot_score=dbot_score,
-                detection_engines=num_of_engines,
-                positive_engines=num_of_positive_engines
+                ip=ip, dbot_score=dbot_score, detection_engines=num_of_engines, positive_engines=num_of_positive_engines
             )
 
         else:  # no data
@@ -509,21 +511,21 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 indicator_type=DBotScoreType.IP,
                 integration_name=VENDOR_NAME,
                 score=Common.DBotScore.NONE,
-                reliability=reliability
+                reliability=reliability,
             )
-            readable_output = f'{CONTEXT_PREFIX} does not have details about IP: {ip} \n'
+            readable_output = f"{CONTEXT_PREFIX} does not have details about IP: {ip} \n"
             ip_indicator = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score,
             )
 
         result = CommandResults(
-            outputs_prefix=f'{CONTEXT_PREFIX}.IP',
-            outputs_key_field='id',
+            outputs_prefix=f"{CONTEXT_PREFIX}.IP",
+            outputs_key_field="id",
             outputs=data,
             indicator=ip_indicator,
             readable_output=readable_output,
-            raw_response=raw_response
+            raw_response=raw_response,
         )
         results.append(result)
 
@@ -534,25 +536,25 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
     """
     Returns file's reputation
     """
-    files = argToList(args.get('file'))
-    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
-    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
-    limit = arg_to_number(args.get('limit'), arg_name='limit')
-    headers = argToList(args.get('headers'))
-    reliability = params.get('feedReliability')
+    files = argToList(args.get("file"))
+    since = convert_string_to_epoch_time(args.get("since"), arg_name="since")
+    until = convert_string_to_epoch_time(args.get("until"), arg_name="until")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    headers = argToList(args.get("headers"))
+    reliability = params.get("feedReliability")
     results: List[CommandResults] = []
 
     for file in files:
-        if get_hash_type(file) not in ('sha256', 'sha1', 'md5'):  # check file's validity
+        if get_hash_type(file) not in ("sha256", "sha1", "md5"):  # check file's validity
             raise ValueError(f'Hash "{file}" is not of type SHA-256, SHA-1 or MD5')
         try:
             raw_response = client.file(file, since, until, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            err_msg = f'Could not process file: "{file}"\n {str(exception)}'
+            err_msg = f'Could not process file: "{file}"\n {exception!s}'
             demisto.debug(err_msg)
             raw_response = {}
-        if data := raw_response.get('data'):
+        if data := raw_response.get("data"):
             score = calculate_dbot_score(reputation_data=data, params=params)
             malicious_description = get_malicious_description(score, data, params)
             dbot_score = Common.DBotScore(
@@ -561,23 +563,38 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
                 integration_name=VENDOR_NAME,
                 score=score,
                 reliability=reliability,
-                malicious_description=malicious_description
+                malicious_description=malicious_description,
             )
             if not headers:
-                headers = ['description', 'status', 'share_level', 'added_on', 'review_status', 'id', 'password',
-                           'sample_size', 'sample_size_compressed', 'sample_type', 'victim_count', 'md5', 'sha1',
-                           'sha256', 'sha3_384', 'ssdeep']
-            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for file hash {file}', data, headers=headers)
+                headers = [
+                    "description",
+                    "status",
+                    "share_level",
+                    "added_on",
+                    "review_status",
+                    "id",
+                    "password",
+                    "sample_size",
+                    "sample_size_compressed",
+                    "sample_type",
+                    "victim_count",
+                    "md5",
+                    "sha1",
+                    "sha256",
+                    "sha3_384",
+                    "ssdeep",
+                ]
+            readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Result for file hash {file}", data, headers=headers)
             data_entry = data[0]
             file_indicator = Common.File(
                 dbot_score=dbot_score,
-                file_type=data_entry.get('sample_type'),
-                size=data_entry.get('sample_size'),
-                md5=data_entry.get('md5'),
-                sha1=data_entry.get('sha1'),
-                sha256=data_entry.get('sha256'),
-                ssdeep=data_entry.get('ssdeep'),
-                tags=data_entry.get('tags')
+                file_type=data_entry.get("sample_type"),
+                size=data_entry.get("sample_size"),
+                md5=data_entry.get("md5"),
+                sha1=data_entry.get("sha1"),
+                sha256=data_entry.get("sha256"),
+                ssdeep=data_entry.get("ssdeep"),
+                tags=data_entry.get("tags"),
             )
 
         else:  # no data
@@ -586,20 +603,18 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
                 indicator_type=DBotScoreType.FILE,
                 integration_name=VENDOR_NAME,
                 score=Common.DBotScore.NONE,
-                reliability=reliability
+                reliability=reliability,
             )
-            readable_output = f'{CONTEXT_PREFIX} does not have details about file: {file} \n'
-            file_indicator = Common.File(
-                dbot_score=dbot_score
-            )
+            readable_output = f"{CONTEXT_PREFIX} does not have details about file: {file} \n"
+            file_indicator = Common.File(dbot_score=dbot_score)
 
         result = CommandResults(
-            outputs_prefix=f'{CONTEXT_PREFIX}.File',
-            outputs_key_field='id',
+            outputs_prefix=f"{CONTEXT_PREFIX}.File",
+            outputs_key_field="id",
             outputs=data,
             indicator=file_indicator,
             readable_output=readable_output,
-            raw_response=raw_response
+            raw_response=raw_response,
         )
         results.append(result)
 
@@ -610,14 +625,14 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
     """
     Returns domain's reputation
     """
-    domains = argToList(args.get('domain'))
-    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
-    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
-    limit = arg_to_number(args.get('limit'), arg_name='limit')
-    headers = argToList(args.get('headers'))
-    reliability = params.get('feedReliability')
-    share_level = args.get('share_level', params.get('share_level', 'RED'))
-    demisto.debug(f'Setting share level to {share_level}')
+    domains = argToList(args.get("domain"))
+    since = convert_string_to_epoch_time(args.get("since"), arg_name="since")
+    until = convert_string_to_epoch_time(args.get("until"), arg_name="until")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    headers = argToList(args.get("headers"))
+    reliability = params.get("feedReliability")
+    share_level = args.get("share_level", params.get("share_level", "RED"))
+    demisto.debug(f"Setting share level to {share_level}")
     results: List[CommandResults] = []
 
     for domain in domains:
@@ -625,18 +640,14 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
             raw_response = client.domain(domain, since, until, share_level, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            err_msg = f'Could not process domain: "{domain}"\n {str(exception)}'
+            err_msg = f'Could not process domain: "{domain}"\n {exception!s}'
             demisto.debug(err_msg)
             raw_response = {}
             readable_output = f'Processing domain "{domain}" resulted in an exception. See logs for the exact error.'
-            result = CommandResults(
-                outputs={},
-                readable_output=readable_output,
-                raw_response=raw_response
-            )
+            result = CommandResults(outputs={}, readable_output=readable_output, raw_response=raw_response)
             results.append(result)
             continue
-        if data := raw_response.get('data'):
+        if data := raw_response.get("data"):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
             malicious_description = get_malicious_description(score, data, params)
@@ -646,17 +657,29 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
                 integration_name=VENDOR_NAME,
                 score=score,
                 reliability=reliability,
-                malicious_description=malicious_description
+                malicious_description=malicious_description,
             )
             if not headers:
-                headers = ['description', 'owner', 'status', 'type', 'raw_indicator', 'share_level', 'confidence',
-                           'severity', 'added_on', 'last_updated', 'review_status', 'id']
-            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain {domain}', data, headers=headers)
+                headers = [
+                    "description",
+                    "owner",
+                    "status",
+                    "type",
+                    "raw_indicator",
+                    "share_level",
+                    "confidence",
+                    "severity",
+                    "added_on",
+                    "last_updated",
+                    "review_status",
+                    "id",
+                ]
+            readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Result for domain {domain}", data, headers=headers)
             domain_indicator = Common.Domain(
                 domain=domain,
                 dbot_score=dbot_score,
                 detection_engines=num_of_engines,
-                positive_detections=num_of_positive_engines
+                positive_detections=num_of_positive_engines,
             )
         else:  # no data
             dbot_score = Common.DBotScore(
@@ -664,21 +687,18 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
                 score=Common.DBotScore.NONE,
-                reliability=reliability
+                reliability=reliability,
             )
-            readable_output = f'{CONTEXT_PREFIX} does not have details about domain: {domain} \n'
-            domain_indicator = Common.Domain(
-                domain=domain,
-                dbot_score=dbot_score
-            )
+            readable_output = f"{CONTEXT_PREFIX} does not have details about domain: {domain} \n"
+            domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
         result = CommandResults(
-            outputs_prefix=f'{CONTEXT_PREFIX}.Domain',
-            outputs_key_field='id',
+            outputs_prefix=f"{CONTEXT_PREFIX}.Domain",
+            outputs_key_field="id",
             outputs=data,
             indicator=domain_indicator,
             readable_output=readable_output,
-            raw_response=raw_response
+            raw_response=raw_response,
         )
         results.append(result)
 
@@ -689,32 +709,28 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
     """
     Returns URL's reputation
     """
-    urls = argToList(args.get('url'))
-    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
-    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
-    limit = arg_to_number(args.get('limit'), arg_name='limit')
-    headers = argToList(args.get('headers'))
-    reliability = params.get('feedReliability')
-    share_level = args.get('share_level', params.get('share_level', 'RED'))
-    demisto.debug(f'Setting share level to {share_level}')
+    urls = argToList(args.get("url"))
+    since = convert_string_to_epoch_time(args.get("since"), arg_name="since")
+    until = convert_string_to_epoch_time(args.get("until"), arg_name="until")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    headers = argToList(args.get("headers"))
+    reliability = params.get("feedReliability")
+    share_level = args.get("share_level", params.get("share_level", "RED"))
+    demisto.debug(f"Setting share level to {share_level}")
     results: List[CommandResults] = []
     for url in urls:
         try:
             raw_response = client.url(url, since, until, share_level, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            err_msg = f'Could not process URL: "{url}"\n {str(exception)}'
+            err_msg = f'Could not process URL: "{url}"\n {exception!s}'
             demisto.debug(err_msg)
             raw_response = {}
             readable_output = f'Processing URL "{url}" resulted in an exception. See logs for the exact error.'
-            result = CommandResults(
-                outputs={},
-                readable_output=readable_output,
-                raw_response=raw_response
-            )
+            result = CommandResults(outputs={}, readable_output=readable_output, raw_response=raw_response)
             results.append(result)
             continue
-        if data := raw_response.get('data'):
+        if data := raw_response.get("data"):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
             malicious_description = get_malicious_description(score, data, params)
@@ -724,17 +740,26 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
                 integration_name=VENDOR_NAME,
                 score=score,
                 reliability=reliability,
-                malicious_description=malicious_description
+                malicious_description=malicious_description,
             )
             if not headers:
-                headers = ['description', 'owner', 'status', 'type', 'raw_indicator', 'share_level', 'confidence',
-                           'severity', 'added_on', 'last_updated', 'review_status', 'id']
-            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL {url}', data, headers=headers)
+                headers = [
+                    "description",
+                    "owner",
+                    "status",
+                    "type",
+                    "raw_indicator",
+                    "share_level",
+                    "confidence",
+                    "severity",
+                    "added_on",
+                    "last_updated",
+                    "review_status",
+                    "id",
+                ]
+            readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Result for URL {url}", data, headers=headers)
             url_indicator = Common.URL(
-                url=url,
-                dbot_score=dbot_score,
-                detection_engines=num_of_engines,
-                positive_detections=num_of_positive_engines
+                url=url, dbot_score=dbot_score, detection_engines=num_of_engines, positive_detections=num_of_positive_engines
             )
         else:  # no data
             dbot_score = Common.DBotScore(
@@ -742,21 +767,18 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
                 indicator_type=DBotScoreType.URL,
                 integration_name=VENDOR_NAME,
                 score=Common.DBotScore.NONE,
-                reliability=reliability
+                reliability=reliability,
             )
-            readable_output = f'{CONTEXT_PREFIX} does not have details about URL: {url} \n'
-            url_indicator = Common.URL(
-                url=url,
-                dbot_score=dbot_score
-            )
+            readable_output = f"{CONTEXT_PREFIX} does not have details about URL: {url} \n"
+            url_indicator = Common.URL(url=url, dbot_score=dbot_score)
 
         result = CommandResults(
-            outputs_prefix=f'{CONTEXT_PREFIX}.URL',
-            outputs_key_field='id',
+            outputs_prefix=f"{CONTEXT_PREFIX}.URL",
+            outputs_key_field="id",
             outputs=data,
             indicator=url_indicator,
             readable_output=readable_output,
-            raw_response=raw_response
+            raw_response=raw_response,
         )
         results.append(result)
 
@@ -772,18 +794,18 @@ def members_command(client: Client) -> CommandResults:
 
     """
     raw_response = client.members()
-    if data := raw_response.get('data'):
-        headers = ['id', 'name', 'email']
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Members: ', data, headers=headers, removeNull=True)
+    if data := raw_response.get("data"):
+        headers = ["id", "name", "email"]
+        readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Members: ", data, headers=headers, removeNull=True)
     else:  # no data
-        readable_output = f'{CONTEXT_PREFIX} does not have any members \n'
+        readable_output = f"{CONTEXT_PREFIX} does not have any members \n"
 
     result = CommandResults(
-        outputs_prefix=f'{CONTEXT_PREFIX}.Member',
-        outputs_key_field='id',
+        outputs_prefix=f"{CONTEXT_PREFIX}.Member",
+        outputs_key_field="id",
         outputs=data,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return result
 
@@ -792,43 +814,43 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Searches for subjective opinions on indicators of compromise stored in ThreatExchange.
     """
-    text = str(args.get('text'))
-    descriptor_type = str(args.get('type'))
-    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
-    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
-    limit = arg_to_number(args.get('limit'), arg_name='limit')
-    strict_text = argToBoolean(args.get('strict_text', False))
-    headers = argToList(args.get('headers'))
-    before = args.get('before')
-    after = args.get('after')
+    text = str(args.get("text"))
+    descriptor_type = str(args.get("type"))
+    since = convert_string_to_epoch_time(args.get("since"), arg_name="since")
+    until = convert_string_to_epoch_time(args.get("until"), arg_name="until")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    strict_text = argToBoolean(args.get("strict_text", False))
+    headers = argToList(args.get("headers"))
+    before = args.get("before")
+    after = args.get("after")
 
     raw_response = client.query(text, descriptor_type, since, until, limit, strict_text, before, after)
     try:  # removes 'next' field to prevent access token uncovering
-        del raw_response['paging']['next']
+        del raw_response["paging"]["next"]
     except KeyError:  # for no paging cases
         pass
 
-    if data := raw_response.get('data'):
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Query Result:', data, headers=headers)
-        if raw_response.get('paging'):  # if paging exist - flatten the output
+    if data := raw_response.get("data"):
+        readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Query Result:", data, headers=headers)
+        if raw_response.get("paging"):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
-            readable_output += tableToMarkdown('Pagination:', outputs.get('paging'))
+            readable_output += tableToMarkdown("Pagination:", outputs.get("paging"))
         else:  # no paging
             outputs = raw_response
 
     else:  # no data
-        readable_output = f'{CONTEXT_PREFIX} does not have details about {descriptor_type}: {text} \n'
+        readable_output = f"{CONTEXT_PREFIX} does not have details about {descriptor_type}: {text} \n"
         outputs = raw_response
 
-    outputs['text'] = text
-    outputs['type'] = descriptor_type
+    outputs["text"] = text
+    outputs["type"] = descriptor_type
 
     result = CommandResults(
-        outputs_prefix=f'{CONTEXT_PREFIX}.Query',
-        outputs_key_field=['text', 'type'],
+        outputs_prefix=f"{CONTEXT_PREFIX}.Query",
+        outputs_key_field=["text", "type"],
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return result
@@ -841,36 +863,36 @@ def tags_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     See Also:
         https://developers.facebook.com/docs/threat-exchange/reference/apis/threattags/v10.0
     """
-    text = str(args.get('text'))
-    before = args.get('before')
-    after = args.get('after')
+    text = str(args.get("text"))
+    before = args.get("before")
+    after = args.get("after")
 
     raw_response = client.tags_search(text, before, after)
     try:  # removes 'next' field to prevent access token uncovering
-        del raw_response['paging']['next']
+        del raw_response["paging"]["next"]
     except KeyError:  # for no paging cases
         pass
 
-    if data := raw_response.get('data'):
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Tags: ', data, removeNull=True)
-        if raw_response.get('paging'):  # if paging exist - flatten the output
+    if data := raw_response.get("data"):
+        readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Tags: ", data, removeNull=True)
+        if raw_response.get("paging"):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
-            readable_output += tableToMarkdown('Pagination:', outputs.get('paging'))
+            readable_output += tableToMarkdown("Pagination:", outputs.get("paging"))
         else:  # no paging
             outputs = raw_response
 
     else:  # no data
-        readable_output = f'{CONTEXT_PREFIX} does not have any tags for text: {text} \n'
+        readable_output = f"{CONTEXT_PREFIX} does not have any tags for text: {text} \n"
         outputs = raw_response
 
-    outputs['text'] = text
+    outputs["text"] = text
 
     result = CommandResults(
-        outputs_prefix=f'{CONTEXT_PREFIX}.Tag',
-        outputs_key_field='text',
+        outputs_prefix=f"{CONTEXT_PREFIX}.Tag",
+        outputs_key_field="text",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return result
 
@@ -881,39 +903,38 @@ def tagged_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     See Also:
         https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-tags/v10.0
     """
-    tag_id = str(args.get('tag_id'))
-    tagged_since = arg_to_number(args.get('tagged_since'), arg_name='tagged_since')
-    tagged_until = arg_to_number(args.get('tagged_until'), arg_name='tagged_until')
-    before = args.get('before')
-    after = args.get('after')
+    tag_id = str(args.get("tag_id"))
+    tagged_since = arg_to_number(args.get("tagged_since"), arg_name="tagged_since")
+    tagged_until = arg_to_number(args.get("tagged_until"), arg_name="tagged_until")
+    before = args.get("before")
+    after = args.get("after")
 
     raw_response = client.tagged_objects_list(tag_id, tagged_since, tagged_until, before, after)
     try:  # removes 'next' field to prevent access token uncovering
-        del raw_response['paging']['next']
+        del raw_response["paging"]["next"]
     except KeyError:  # for no paging cases
         pass
 
-    if data := raw_response.get('data'):
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Tagged Objects for ThreatTag: {tag_id}', data,
-                                          removeNull=True)
-        if raw_response.get('paging'):  # if paging exist - flatten the output
+    if data := raw_response.get("data"):
+        readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Tagged Objects for ThreatTag: {tag_id}", data, removeNull=True)
+        if raw_response.get("paging"):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
-            readable_output += tableToMarkdown('Pagination:', outputs.get('paging'))
+            readable_output += tableToMarkdown("Pagination:", outputs.get("paging"))
         else:  # no paging
             outputs = raw_response
 
     else:  # no data
-        readable_output = f'{CONTEXT_PREFIX} does not have any tagged objects for ThreatTag: {tag_id} \n'
+        readable_output = f"{CONTEXT_PREFIX} does not have any tagged objects for ThreatTag: {tag_id} \n"
         outputs = raw_response
 
-    outputs['tag_id'] = tag_id
+    outputs["tag_id"] = tag_id
 
     result = CommandResults(
-        outputs_prefix=f'{CONTEXT_PREFIX}.TaggedObject',
-        outputs_key_field='tag_id',
+        outputs_prefix=f"{CONTEXT_PREFIX}.TaggedObject",
+        outputs_key_field="tag_id",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return result
 
@@ -922,20 +943,20 @@ def object_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     Gets ThreatExchange object by ID.
     """
-    object_id = str(args.get('object_id'))
+    object_id = str(args.get("object_id"))
 
     raw_response = client.object_get_by_id(object_id)
     if raw_response:
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Object {object_id}:', raw_response, removeNull=True)
+        readable_output = tableToMarkdown(f"{CONTEXT_PREFIX} Object {object_id}:", raw_response, removeNull=True)
     else:  # no data
-        readable_output = f'{CONTEXT_PREFIX} does not have any object with ID: {object_id} \n'
+        readable_output = f"{CONTEXT_PREFIX} does not have any object with ID: {object_id} \n"
 
     result = CommandResults(
-        outputs_prefix=f'{CONTEXT_PREFIX}.Object',
-        outputs_key_field='id',
+        outputs_prefix=f"{CONTEXT_PREFIX}.Object",
+        outputs_key_field="id",
         outputs=raw_response,
         readable_output=readable_output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return result
 
@@ -948,52 +969,47 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
-    app_id_obj = params.get('app_id')
-    app_id = app_id_obj['identifier']
-    app_secret = app_id_obj['password']
-    access_token = f'{app_id}|{app_secret}'
-    base_url = 'https://graph.facebook.com/v3.2'
-    verify_certificate = not argToBoolean(params.get('insecure', False))
-    proxy = argToBoolean(params.get('proxy', False))
+    app_id_obj = params.get("app_id")
+    app_id = app_id_obj["identifier"]
+    app_secret = app_id_obj["password"]
+    access_token = f"{app_id}|{app_secret}"
+    base_url = "https://graph.facebook.com/v3.2"
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
     handle_proxy()
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=base_url,
-            access_token=access_token,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+        client = Client(base_url=base_url, access_token=access_token, verify=verify_certificate, proxy=proxy)
         result: Union[str, CommandResults, List[CommandResults]]
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client)
-        elif command == 'ip':
+        elif command == "ip":
             result = ip_command(client, args, params)
-        elif command == 'file':
+        elif command == "file":
             result = file_command(client, args, params)
-        elif command == 'domain':
+        elif command == "domain":
             result = domain_command(client, args, params)
-        elif command == 'url':
+        elif command == "url":
             result = url_command(client, args, params)
-        elif command == f'{COMMAND_PREFIX}-members':
+        elif command == f"{COMMAND_PREFIX}-members":
             result = members_command(client)
-        elif command == f'{COMMAND_PREFIX}-query':
+        elif command == f"{COMMAND_PREFIX}-query":
             result = query_command(client, args)
-        elif command == f'{COMMAND_PREFIX}-tags-search':
+        elif command == f"{COMMAND_PREFIX}-tags-search":
             result = tags_search_command(client, args)
-        elif command == f'{COMMAND_PREFIX}-tagged-objects-list':
+        elif command == f"{COMMAND_PREFIX}-tagged-objects-list":
             result = tagged_objects_list_command(client, args)
-        elif command == f'{COMMAND_PREFIX}-object-get-by-id':
+        elif command == f"{COMMAND_PREFIX}-object-get-by-id":
             result = object_get_by_id_command(client, args)
         else:
-            raise NotImplementedError(f'Command {command} is not implemented')
+            raise NotImplementedError(f"Command {command} is not implemented")
         return_results(result)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
