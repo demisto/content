@@ -109,4 +109,4 @@ def test_main(mock_executeCommand, mock_return_results, mock_args):
     main()
     mock_return_results.assert_called_once()
     args, kwargs = mock_return_results.call_args
-    assert args[0].readable_output == 'Created A new Sigma Rule indicator:\nOkta User Account Locked Out'
+    assert args[0].readable_output == '1 Sigma Rule(s) Created.\n1 Relationship(s) Created.'
