@@ -1,15 +1,19 @@
 <~XSIAM>
 
-# Azure Web Application Firewall </br>
+# Azure Web Application Firewall 
+
 
 <~XSOAR> [Azure WAF Integration](https://xsoar.pan.dev/docs/reference/integrations/azure-waf) </~XSOAR>
 
 ## Overview
 
-Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting. </br>
+Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting. 
+
 It operates as an application-level firewall, focusing on web application traffic. 
 
 Azure WAF integrates with Azure services like Azure Application Gateway, Azure Front Door, and Azure CDN.
+
+
 
 
 ### This pack includes:
@@ -33,7 +37,8 @@ Azure WAF integrates with Azure services like Azure Application Gateway, Azure F
 1. yyyy-MM-ddThh:mm:ssZ 
 2. MMM dd yyyy HH:mm:ss
 
-For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. </br>
+For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. 
+
 
 - timeStamp
 - timeStamp_t
@@ -46,9 +51,13 @@ Examples:
 - 2024-11-19T10:50:39+05:00
 - Nov 19 2024 12:50:39
 
+
 > [!NOTE] 
-> Time offsets from UTC is supported. </br>
-> See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.</br>
+> Time offsets from UTC is supported. 
+>
+> See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.
+
+
 ***
 
 ## Data Collection
