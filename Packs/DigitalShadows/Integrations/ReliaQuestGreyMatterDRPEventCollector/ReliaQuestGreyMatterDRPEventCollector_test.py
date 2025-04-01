@@ -1,12 +1,9 @@
-
-from CommonServerPython import *
+import hashlib
+import json
 
 import pytest
-import hashlib
-from ReliaQuestGreyMatterDRPEventCollector import (
-    ReilaQuestClient, RateLimitError, RATE_LIMIT_LAST_RUN, LAST_FETCHED_EVENT_NUM
-)
-import json
+from CommonServerPython import *
+from ReliaQuestGreyMatterDRPEventCollector import LAST_FETCHED_EVENT_NUM, RATE_LIMIT_LAST_RUN, RateLimitError, ReilaQuestClient
 
 TEST_URL = "https://test.com/api"
 
@@ -22,7 +19,6 @@ def client() -> ReilaQuestClient:
 
 
 class HttpRequestMock:
-
     LAST_EVENT_TIME_AND_NUM = None
 
     def __init__(self, num_of_events: int, num_of_alerts: int, num_of_incidents: int):
@@ -44,13 +40,13 @@ class HttpRequestMock:
             response = create_triage_item_events(limit, start_event_num=event_num_after or 1)
             self.num_of_fetched_events += len(response)
             if self.num_of_fetched_events > self.num_of_events:
-                response = response[:self.num_of_fetched_events - self.num_of_events]
+                response = response[: self.num_of_fetched_events - self.num_of_events]
 
         elif url_suffix == "/triage-items":
             triage_item_ids = params["id"]
-            triage_item_alerts = triage_item_ids[:self.num_of_alerts - self.num_of_fetched_alerts]
+            triage_item_alerts = triage_item_ids[: self.num_of_alerts - self.num_of_fetched_alerts]
             alerts_response = create_triage_items_from_events(triage_item_alerts, item_type="alert-id")
-            triage_item_incidents = triage_item_ids[self.num_of_alerts - self.num_of_fetched_alerts:]
+            triage_item_incidents = triage_item_ids[self.num_of_alerts - self.num_of_fetched_alerts :]
             incidents_response = create_triage_items_from_events(triage_item_incidents, item_type="incident-id")
 
             self.num_of_fetched_alerts += len(alerts_response)
@@ -75,7 +71,7 @@ class HttpRequestMock:
 
 def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
     mocked_response = requests.Response()
-    mocked_response._content = json.dumps(response).encode('utf-8')
+    mocked_response._content = json.dumps(response).encode("utf-8")
     mocked_response.status_code = status_code
     return mocked_response
 
@@ -86,37 +82,24 @@ def create_triage_item_events(num_of_events: int, start_event_num: int = 1) -> L
             "event-num": event_num,
             "event-created": "2020-09-24T16:30:10.016Z",
             "triage-item-id": event_num,
-        } for event_num in range(start_event_num, num_of_events + start_event_num)
+        }
+        for event_num in range(start_event_num, num_of_events + start_event_num)
     ]
 
 
 def create_triage_items_from_events(triage_item_ids: List[str], item_type: str) -> List[Dict]:
     if item_type not in {"incident-id", "alert-id"}:
-        raise ValueError(f'item-type {item_type} must be one of incident-id/alert-id')
+        raise ValueError(f"item-type {item_type} must be one of incident-id/alert-id")
 
-    return [
-        {
-            "id": triage_item_id,
-            "title": "title",
-            "source": {
-                item_type: triage_item_id
-            }
-        } for triage_item_id in triage_item_ids
-    ]
+    return [{"id": triage_item_id, "title": "title", "source": {item_type: triage_item_id}} for triage_item_id in triage_item_ids]
 
 
 def create_incidents_and_alerts_from_triaged_items(_ids: List[str], item_type: str, amount_of_assets: int = 0) -> List[Dict]:
     if item_type not in {"incident-id", "alert-id"}:
-        raise ValueError(f'item-type {item_type} must be one of incident-id/alert-id')
+        raise ValueError(f"item-type {item_type} must be one of incident-id/alert-id")
     events = []
     for _id in _ids:
-        events.append(
-            {
-                "id": _id,
-                "title": f'{item_type}-{_id}',
-                "assets": []
-            }
-        )
+        events.append({"id": _id, "title": f"{item_type}-{_id}", "assets": []})
 
     if amount_of_assets > 0:
         for i, event in enumerate(events):
@@ -128,13 +111,7 @@ def create_incidents_and_alerts_from_triaged_items(_ids: List[str], item_type: s
 
 
 def create_assets(asset_ids: List[str]) -> List[Dict]:
-    return [
-        {
-            "id": _id,
-            "type": f"asset-{_id}"
-
-        } for _id in asset_ids
-    ]
+    return [{"id": _id, "type": f"asset-{_id}"} for _id in asset_ids]
 
 
 def test_the_test_module(requests_mock, client: ReilaQuestClient):
@@ -150,10 +127,8 @@ def test_the_test_module(requests_mock, client: ReilaQuestClient):
      - make sure the test is successful.
     """
     from ReliaQuestGreyMatterDRPEventCollector import test_module
-    requests_mock.get(
-        f"{TEST_URL}/triage-item-events?limit=1",
-        json=create_triage_item_events(num_of_events=1)
-    )
+
+    requests_mock.get(f"{TEST_URL}/triage-item-events?limit=1", json=create_triage_item_events(num_of_events=1))
     assert test_module(client) == "ok"
 
 
@@ -173,11 +148,7 @@ def test_http_request_rate_limit(mocker, client: ReilaQuestClient):
     mocked_responses = [
         create_mocked_response({"retry-after": "2020-09-24T16:30:10.017Z"}, status_code=429),
     ]
-    mocker.patch.object(
-        client,
-        "_http_request",
-        side_effect=mocked_responses
-    )
+    mocker.patch.object(client, "_http_request", side_effect=mocked_responses)
     with pytest.raises(RateLimitError):
         client.http_request("suffix")
 
@@ -197,26 +168,15 @@ def test_http_request_connection_errors(mocker, client: ReilaQuestClient):
     from requests.exceptions import ConnectionError, Timeout
 
     sleep_mocker = mocker.patch("CommonServerPython.time.sleep")
-    mocked_responses = [
-        Timeout, ConnectionError, create_mocked_response(response={"test": "test"})
-    ]
-    mocker.patch.object(
-        client,
-        "_http_request",
-        side_effect=mocked_responses
-    )
+    mocked_responses = [Timeout, ConnectionError, create_mocked_response(response={"test": "test"})]
+    mocker.patch.object(client, "_http_request", side_effect=mocked_responses)
     assert client.http_request("suffix") == {"test": "test"}
     assert sleep_mocker.called
 
 
 @pytest.mark.parametrize(
     "limit, num_of_events",
-    [
-        (200, 1000),
-        (1500, 1000),
-        (100, 100),
-        (10000, 15000)
-    ],
+    [(200, 1000), (1500, 1000), (100, 100), (10000, 15000)],
 )
 def test_list_triage_item_events(client: ReilaQuestClient, mocker, limit: int, num_of_events: int):
     """
@@ -231,11 +191,7 @@ def test_list_triage_item_events(client: ReilaQuestClient, mocker, limit: int, n
     """
     http_mocker = HttpRequestMock(num_of_events, num_of_alerts=0, num_of_incidents=0)
 
-    mocker.patch.object(
-        client,
-        "_http_request",
-        side_effect=http_mocker.http_request_side_effect
-    )
+    mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     fetched_events = []
     for events, latest_event in client.list_triage_item_events(limit=limit):
         fetched_events.extend(events)
@@ -245,7 +201,6 @@ def test_list_triage_item_events(client: ReilaQuestClient, mocker, limit: int, n
 
 
 class TestFetchEvents:
-
     def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker):
         """
         Given:
@@ -261,28 +216,29 @@ class TestFetchEvents:
         """
         import ReliaQuestGreyMatterDRPEventCollector
 
-        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value={})
-        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, "send_events_to_xsiam")
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", return_value={})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(
-            demisto, 'params',
+            demisto,
+            "params",
             return_value={
                 "url": TEST_URL,
                 "credentials": {
                     "identifier": "1234",
                     "password": "1234",
                 },
-                "max_fetch_events": 200
-            }
+                "max_fetch_events": 200,
+            },
         )
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
 
         http_mocker = HttpRequestMock(100, num_of_alerts=50, num_of_incidents=50)
 
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
-            side_effect=http_mocker.http_request_side_effect
+            side_effect=http_mocker.http_request_side_effect,
         )
 
         ReliaQuestGreyMatterDRPEventCollector.main()
@@ -314,28 +270,29 @@ class TestFetchEvents:
         """
         import ReliaQuestGreyMatterDRPEventCollector
 
-        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, "send_events_to_xsiam")
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", return_value={})
         mocker.patch.object(demisto, "error")
-        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(
-            demisto, 'params',
+            demisto,
+            "params",
             return_value={
                 "url": TEST_URL,
                 "credentials": {
                     "identifier": "1234",
                     "password": "1234",
                 },
-                "max_fetch_events": 200
-            }
+                "max_fetch_events": 200,
+            },
         )
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
             side_effect=[
                 create_mocked_response(response={"retry-after": "2024-01-18T10:22:00Z"}, status_code=429),
-            ]
+            ],
         )
         ReliaQuestGreyMatterDRPEventCollector.main()
         assert send_events_mocker.call_count == 0
@@ -354,26 +311,27 @@ class TestFetchEvents:
         """
         import ReliaQuestGreyMatterDRPEventCollector
 
-        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, "send_events_to_xsiam")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(
-            demisto, 'params',
+            demisto,
+            "params",
             return_value={
                 "url": TEST_URL,
                 "credentials": {
                     "identifier": "1234",
                     "password": "1234",
                 },
-                "max_fetch_events": 200
-            }
+                "max_fetch_events": 200,
+            },
         )
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
             side_effect=[
                 create_mocked_response(response=[]),
-            ]
+            ],
         )
 
         ReliaQuestGreyMatterDRPEventCollector.main()
@@ -392,29 +350,28 @@ class TestFetchEvents:
         """
         import ReliaQuestGreyMatterDRPEventCollector
 
-        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, "send_events_to_xsiam")
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, "getLastRun", return_value={LAST_FETCHED_EVENT_NUM: 1})
         mocker.patch.object(
-            demisto, 'getLastRun', return_value={LAST_FETCHED_EVENT_NUM: 1}
-        )
-        mocker.patch.object(
-            demisto, 'params',
+            demisto,
+            "params",
             return_value={
                 "url": TEST_URL,
                 "credentials": {
                     "identifier": "1234",
                     "password": "1234",
                 },
-                "max_fetch_events": 200
-            }
+                "max_fetch_events": 200,
+            },
         )
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
         http_mocker = HttpRequestMock(0, num_of_alerts=0, num_of_incidents=0)
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
-            side_effect=http_mocker.http_request_side_effect
+            side_effect=http_mocker.http_request_side_effect,
         )
 
         ReliaQuestGreyMatterDRPEventCollector.main()
@@ -433,31 +390,33 @@ class TestFetchEvents:
          - make sure that all events are enriched and fetched, make sure the send_events_to_xsiam is called multiple times
          - make sure last run saves the largest event number
         """
-        import ReliaQuestGreyMatterDRPEventCollector
         from unittest.mock import MagicMock
 
-        send_events_mocker: MagicMock = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
-        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        import ReliaQuestGreyMatterDRPEventCollector
+
+        send_events_mocker: MagicMock = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, "send_events_to_xsiam")
+        set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(
-            demisto, 'params',
+            demisto,
+            "params",
             return_value={
                 "url": TEST_URL,
                 "credentials": {
                     "identifier": "1234",
                     "password": "1234",
                 },
-                "max_fetch_events": 4000
-            }
+                "max_fetch_events": 4000,
+            },
         )
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
 
         http_mocker = HttpRequestMock(3500, num_of_alerts=1750, num_of_incidents=1750)
 
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
-            side_effect=http_mocker.http_request_side_effect
+            side_effect=http_mocker.http_request_side_effect,
         )
 
         ReliaQuestGreyMatterDRPEventCollector.main()
@@ -492,31 +451,33 @@ class TestFetchEvents:
          - make sure that all events are enriched and fetched, make sure the send_events_to_xsiam is called multiple times
          - make sure that the latest event-num is now larger = 10000
         """
-        import ReliaQuestGreyMatterDRPEventCollector
         from unittest.mock import MagicMock
 
-        send_events_mocker: MagicMock = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
-        mocker.patch.object(demisto, 'getLastRun', return_value={LAST_FETCHED_EVENT_NUM: 5000})
+        import ReliaQuestGreyMatterDRPEventCollector
+
+        send_events_mocker: MagicMock = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, "send_events_to_xsiam")
+        set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
+        mocker.patch.object(demisto, "getLastRun", return_value={LAST_FETCHED_EVENT_NUM: 5000})
         mocker.patch.object(
-            demisto, 'params',
+            demisto,
+            "params",
             return_value={
                 "url": TEST_URL,
                 "credentials": {
                     "identifier": "1234",
                     "password": "1234",
                 },
-                "max_fetch_events": 10000
-            }
+                "max_fetch_events": 10000,
+            },
         )
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
 
         http_mocker = HttpRequestMock(5000, num_of_alerts=2500, num_of_incidents=2500)
 
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
-            side_effect=http_mocker.http_request_side_effect
+            side_effect=http_mocker.http_request_side_effect,
         )
 
         ReliaQuestGreyMatterDRPEventCollector.main()
@@ -552,12 +513,9 @@ def test_get_events_command(mocker, client: ReilaQuestClient):
      - make sure that all events are enriched and fetched (5000)
     """
     from ReliaQuestGreyMatterDRPEventCollector import get_events_command
+
     http_mocker = HttpRequestMock(5000, num_of_alerts=2500, num_of_incidents=2500)
-    mocker.patch.object(
-        client,
-        "_http_request",
-        side_effect=http_mocker.http_request_side_effect
-    )
+    mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
 
     command_results = get_events_command(client, args={"limit": 10000})
     events = command_results.outputs
