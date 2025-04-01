@@ -1,19 +1,24 @@
-import demistomock as demisto
-from CommonServerPython import *
 import json
-from typing import Any
 from datetime import datetime
+from typing import Any
+
+import demistomock as demisto
+
 # Disable Secure Warnings
 import urllib3
+from CommonServerPython import *
+
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 JIZO_DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 MAX_ALERTS_TO_FETCH = 10
-ITEM_TEMP = '"id":{id},"name":"Jizo Alert #{id}",'\
-    '"alert_type":"{alert_type}","severity":"{severity}",'\
-    '"category":"{category}","signature":"{signature}",'\
+ITEM_TEMP = (
+    '"id":{id},"name":"Jizo Alert #{id}",'
+    '"alert_type":"{alert_type}","severity":"{severity}",'
+    '"category":"{category}","signature":"{signature}",'
     '"IP_source":"{IP_source}","IP_destination":"{IP_destination}","date":"{date}"'
+)
 
 
 """ CLIENT CLASS """
@@ -33,7 +38,6 @@ class Client(BaseClient):
         verify: bool = False,
         proxy: bool = False,
     ) -> None:
-
         self.base_url = base_url
         self.auth = auth
         self.headers = headers
@@ -66,9 +70,7 @@ class Client(BaseClient):
 
         url = f"{self.base_url}/jizo_get_protocols"
 
-        response = requests.get(
-            url, params=args, headers=self.headers, verify=self.verify
-        )
+        response = requests.get(url, params=args, headers=self.headers, verify=self.verify)
         if response.status_code == 200:
             return response.json()
         else:
@@ -83,9 +85,7 @@ class Client(BaseClient):
 
         url = f"{self.base_url}/jizo_get_peers"
 
-        response = requests.get(
-            url, params=args, headers=self.headers, verify=self.verify
-        )
+        response = requests.get(url, params=args, headers=self.headers, verify=self.verify)
         if response.status_code == 200:
             return response.json()
         else:
@@ -99,17 +99,13 @@ class Client(BaseClient):
         """
         url = f"{self.base_url}/jizo_query_records"
 
-        response = requests.get(
-            url, params=args, headers=self.headers, verify=self.verify
-        )
+        response = requests.get(url, params=args, headers=self.headers, verify=self.verify)
         if response.status_code == 200:
             return response.json()
         else:
             raise DemistoException(response.text, response.status_code, response.reason)
 
-    def get_alert_list(
-        self, limit: int, start_time: str, last_id: int = 0, first_fetched_ids: list = []
-    ):
+    def get_alert_list(self, limit: int, start_time: str, last_id: int = 0, first_fetched_ids: list = []):
         """Call jizo_query_records endpoint and select specific fields
         of response to return in alerts summary
 
@@ -123,9 +119,7 @@ class Client(BaseClient):
             list[dict]: data of formatted items
         """
 
-        context_data = self.get_query_records(
-            args={"datetime_from": start_time}
-        )
+        context_data = self.get_query_records(args={"datetime_from": start_time})
         alerts: list[dict] = []
         # Get alerts details
         alert_data = context_data["alerts_flows"]["data"]
@@ -156,10 +150,10 @@ class Client(BaseClient):
 
         if bool(alert_data):
             for i in range(limit):
-
-                if next_index_to_fetch + i == len(alert_data) or \
-                        (alert_data[next_index_to_fetch + i]["idx"] in first_fetched_ids
-                            and alert_data[next_index_to_fetch + i]["idx"] != first_fetched_ids[-1]):
+                if next_index_to_fetch + i == len(alert_data) or (
+                    alert_data[next_index_to_fetch + i]["idx"] in first_fetched_ids
+                    and alert_data[next_index_to_fetch + i]["idx"] != first_fetched_ids[-1]
+                ):
                     # Means the final element in alert_data list was fetched
                     # Or, In this fetch ,new coming alerts were fetched, but we are reaching
                     # indexes of alerts that were already fetched in previous ones
@@ -203,7 +197,7 @@ def convert_date(date: str) -> str:
     Converts date of format n days ago to datetime
     """
 
-    formatted = datetime.now() - timedelta(days=int(date.split(' ')[0]))
+    formatted = datetime.now() - timedelta(days=int(date.split(" ")[0]))
 
     return formatted.strftime(JIZO_DATE_FORMAT)
 
@@ -240,7 +234,6 @@ def test_module(client: Client) -> str:
 
 
 def get_token(client: Client):
-
     try:
         url = f"{client.base_url}/login"
 
@@ -261,9 +254,7 @@ def get_token(client: Client):
         if response.status_code == 200:
             return response.json()
         else:
-            return_error(
-                f"Error: {response.status_code} - Authentication failed, please try again with appropriate credentials "
-            )
+            return_error(f"Error: {response.status_code} - Authentication failed, please try again with appropriate credentials ")
 
     except Exception as e:
         return_error(f"An error occurred: {e}")
@@ -285,50 +276,53 @@ def get_protocols_command(client: Client, args: dict[str, Any]) -> List[CommandR
 
     command_results = []
 
-    headers = {'alerts_flows': ['Protocol', 'Probe name', 'Flow id', 'IP source', 'IP destination'],
-               'alerts_files': ['Protocol', 'Probe name', 'Flow id', 'IP source', 'IP destination'],
-               'alerts_usecase': ['Protocol', 'Probe name', 'Flow id', 'IP source', 'IP destination']}
+    headers = {
+        "alerts_flows": ["Protocol", "Probe name", "Flow id", "IP source", "IP destination"],
+        "alerts_files": ["Protocol", "Probe name", "Flow id", "IP source", "IP destination"],
+        "alerts_usecase": ["Protocol", "Probe name", "Flow id", "IP source", "IP destination"],
+    }
 
     for alert_type in result:
         alert_data = result[alert_type]["data"]
         human_readable = []
         for protocol in alert_data:
             for data in alert_data[protocol]:
-                d = {'Protocol': protocol,
-                     'Probe name': data.get('probe_name', 'None'),
-                     'Flow id': data.get('flow_id', 'None'),
-                     'IP source': data.get('src_ip', 'None'),
-                     'IP destination': data.get('dest_ip', 'None')}
+                d = {
+                    "Protocol": protocol,
+                    "Probe name": data.get("probe_name", "None"),
+                    "Flow id": data.get("flow_id", "None"),
+                    "IP source": data.get("src_ip", "None"),
+                    "IP destination": data.get("dest_ip", "None"),
+                }
 
                 human_readable.append(d)
 
         readable_output = tableToMarkdown(
-            name=alert_type.replace("_", " "),
-            t=human_readable,
-            removeNull=True,
-            headers=headers[alert_type]
+            name=alert_type.replace("_", " "), t=human_readable, removeNull=True, headers=headers[alert_type]
         )
         command_results.append(
             CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=f"JizoM.Protocols.{alert_type}",
-                outputs_key_field='flow_id',
+                outputs_key_field="flow_id",
                 outputs=result[alert_type],
-            ))
+            )
+        )
 
     return command_results
 
 
 def get_peers_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
-
     # Call the Client function and get the raw response
     result = client.get_peers(args)
 
     command_results = []
 
-    headers = {'alerts_flows': ['Probe name', 'IP source', 'IP destination', 'Protocol', 'Flow id'],
-               'alerts_files': ['Probe name', 'IP source', 'IP destination', 'Protocol', 'Flow id'],
-               'alerts_usecase': ['Probe name', 'IP source', 'IP destination', 'Protocol', 'Flow id']}
+    headers = {
+        "alerts_flows": ["Probe name", "IP source", "IP destination", "Protocol", "Flow id"],
+        "alerts_files": ["Probe name", "IP source", "IP destination", "Protocol", "Flow id"],
+        "alerts_usecase": ["Probe name", "IP source", "IP destination", "Protocol", "Flow id"],
+    }
 
     for alert_type in result:
         alert_data = result[alert_type]["data"]
@@ -337,11 +331,11 @@ def get_peers_command(client: Client, args: dict[str, Any]) -> List[CommandResul
             for ip in alert_data[probe]:
                 for data in alert_data[probe][ip]:
                     d = {
-                        'Probe name': probe,
-                        'IP source': ip,
-                        'IP destination': data.get('dest_ip', 'None'),
-                        'Protocol': data.get('protocol', 'None'),
-                        'Flow id': data.get('flow_id', 'None'),
+                        "Probe name": probe,
+                        "IP source": ip,
+                        "IP destination": data.get("dest_ip", "None"),
+                        "Protocol": data.get("protocol", "None"),
+                        "Flow id": data.get("flow_id", "None"),
                     }
 
                     human_readable.append(d)
@@ -356,58 +350,64 @@ def get_peers_command(client: Client, args: dict[str, Any]) -> List[CommandResul
             CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=f"JizoM.Peers.{alert_type}",
-                outputs_key_field='flow_id',
+                outputs_key_field="flow_id",
                 outputs=result[alert_type],
-            ))
+            )
+        )
 
     return command_results
 
 
 def get_query_records_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
-
     # Call the Client function and get the raw response
     result = client.get_query_records(args)
 
     command_results = []
 
-    headers = {'alerts_flows': ['Probe name', 'IP source', 'IP destination', 'Alert category', 'Severity'],
-               'alerts_files': ['Probe name', 'Rule name', 'Rule type', 'File name', 'Message'],
-               'alerts_usecase': ['Probe name', 'IP source', 'IP destination']}
+    headers = {
+        "alerts_flows": ["Probe name", "IP source", "IP destination", "Alert category", "Severity"],
+        "alerts_files": ["Probe name", "Rule name", "Rule type", "File name", "Message"],
+        "alerts_usecase": ["Probe name", "IP source", "IP destination"],
+    }
     for alert_type in result:
         alert_data = result[alert_type]["data"]
         human_readable = []
         for value in alert_data:
-            if 'flows' in alert_type:
-                d = {'Probe name': value.get('ip_probe', 'None'),
-                     'IP source': value.get('ip_src', 'None'),
-                     'IP destination': value.get('ip_dest', 'None'),
-                     'Alert category': value.get('alert_category', 'None'),
-                     'Severity': convert_to_demisto_severity(str(value.get('severity', '4')))}
-            elif 'files' in alert_type:
-                d = {'Probe name': value.get('probe_name', 'None'),
-                     'Rule name': value.get('rule_name', 'None'),
-                     'Rule type': value.get('type_rule', 'None'),
-                     'File name': value.get('filename', 'None'),
-                     'Message': value.get('message', 'None')}
+            if "flows" in alert_type:
+                d = {
+                    "Probe name": value.get("ip_probe", "None"),
+                    "IP source": value.get("ip_src", "None"),
+                    "IP destination": value.get("ip_dest", "None"),
+                    "Alert category": value.get("alert_category", "None"),
+                    "Severity": convert_to_demisto_severity(str(value.get("severity", "4"))),
+                }
+            elif "files" in alert_type:
+                d = {
+                    "Probe name": value.get("probe_name", "None"),
+                    "Rule name": value.get("rule_name", "None"),
+                    "Rule type": value.get("type_rule", "None"),
+                    "File name": value.get("filename", "None"),
+                    "Message": value.get("message", "None"),
+                }
             else:
-                d = {'Probe name': value.get('probe_name', 'None'),
-                     'IP source': value.get('ip_src', 'None'),
-                     'IP destination': value.get('ip_dest', 'None')}
+                d = {
+                    "Probe name": value.get("probe_name", "None"),
+                    "IP source": value.get("ip_src", "None"),
+                    "IP destination": value.get("ip_dest", "None"),
+                }
             human_readable.append(d)
 
         readable_output = tableToMarkdown(
-            name=alert_type.replace("_", " "),
-            t=human_readable,
-            removeNull=True,
-            headers=headers[alert_type]
+            name=alert_type.replace("_", " "), t=human_readable, removeNull=True, headers=headers[alert_type]
         )
         command_results.append(
             CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=f"JizoM.QueryRecords.{alert_type}",
-                outputs_key_field='idx',
+                outputs_key_field="idx",
                 outputs=result[alert_type],
-            ))
+            )
+        )
 
     return command_results
 
@@ -507,7 +507,6 @@ def main() -> None:  # pragma: no cover
         args["datetime_to"] = convert_date(args["datetime_to"])
 
     try:
-
         client = Client(
             base_url=base_url,
             auth=(username, password),
@@ -529,9 +528,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
         elif command == "fetch-incidents":
             # Convert the argument to an int using helper function or set to MAX_ALERTS_TO_FETCH
-            max_results = arg_to_number(
-                arg=params.get("max_fetch"), arg_name="max_fetch", required=False
-            )
+            max_results = arg_to_number(arg=params.get("max_fetch"), arg_name="max_fetch", required=False)
             if not max_results or max_results > MAX_ALERTS_TO_FETCH:
                 max_results = MAX_ALERTS_TO_FETCH
 
@@ -559,7 +556,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

@@ -2,7 +2,7 @@
     "name": "DHS Feed",
     "description": "Provides cyber threat indicators from the Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) by the Department of Homeland Security (DHS).",
     "support": "xsoar",
-    "currentVersion": "2.0.48",
+    "currentVersion": "2.0.49",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
