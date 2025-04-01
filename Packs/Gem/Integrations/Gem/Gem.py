@@ -1,50 +1,50 @@
 import re
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
-
-import urllib3
 from typing import Any
+
+import demistomock as demisto  # noqa: F401
 import jwt
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 PAGE_SIZE = 10
 OK_CODES = (200, 201, 202)
 MAX_ALERTS_TO_FETCH = 50
 
 # ENDPOINTS
-TOKEN_URL = 'https://login.gem.security/oauth/token'
+TOKEN_URL = "https://login.gem.security/oauth/token"
 
 
 # Get information Endpoints
-THREATS_ENDPOINT = '/v1/threats'
-THREAT_ENDPOINT = '/v1/threats/{id}'
-INVENTORY_ENDPOINT = '/v1/inventory'
-INVENTORY_ITEM_ENDPOINT = '/v1/inventory/{id}'
+THREATS_ENDPOINT = "/v1/threats"
+THREAT_ENDPOINT = "/v1/threats/{id}"
+INVENTORY_ENDPOINT = "/v1/inventory"
+INVENTORY_ITEM_ENDPOINT = "/v1/inventory/{id}"
 
-ALERTS_ENDPOINT = '/triage/investigation/timeline/configuration'
-BREAKDOWN_ENDPOINT = '/triage/investigation/timeline/breakdown'
-FETCH_ENDPOINT = '/integrations/notification'
+ALERTS_ENDPOINT = "/triage/investigation/timeline/configuration"
+BREAKDOWN_ENDPOINT = "/triage/investigation/timeline/breakdown"
+FETCH_ENDPOINT = "/integrations/notification"
 
 # Actions Endpoints
-UPDATE_THREAT_ENDPOINT = '/v1/threats/{id}/status'
+UPDATE_THREAT_ENDPOINT = "/v1/threats/{id}/status"
 
-RUN_ACTION_ENDPOINT = '/triage/containment/entity/run-action'
-ADD_TIMELINE_EVENT_ENDPOINT = '/detection/threats/{id}/add_timeline_event'
+RUN_ACTION_ENDPOINT = "/triage/containment/entity/run-action"
+ADD_TIMELINE_EVENT_ENDPOINT = "/detection/threats/{id}/add_timeline_event"
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class GemClient(BaseClient):
-    """This class defines a client to interact with the Gem API
-    """
+    """This class defines a client to interact with the Gem API"""
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=OK_CODES)
@@ -53,7 +53,7 @@ class GemClient(BaseClient):
         try:
             self._auth_token = self._get_token()
         except Exception as e:
-            raise DemistoException(f'Failed to get token. Error: {str(e)}')
+            raise DemistoException(f"Failed to get token. Error: {e!s}")
 
     def _get_token(self):
         """
@@ -67,22 +67,22 @@ class GemClient(BaseClient):
         """
         ctx = get_integration_context()
 
-        if not ctx or not ctx.get('auth_token'):
+        if not ctx or not ctx.get("auth_token"):
             # No token in integration context, probably first run
             auth_token = self._generate_token()
         else:
             # Token exists, check if it's expired and generate a new one if needed
-            auth_token = ctx.get('auth_token')
+            auth_token = ctx.get("auth_token")
             decoded_jwt = jwt.decode(auth_token, options={"verify_signature": False})  # type: ignore
 
-            token_expiration = datetime.fromtimestamp(decoded_jwt['exp'])
+            token_expiration = datetime.fromtimestamp(decoded_jwt["exp"])
 
             if token_expiration < datetime.now():
                 auth_token = self._generate_token()
 
         return auth_token
 
-    def http_request(self, method: str, url_suffix='', full_url=None, headers=None, json_data=None, params=None, auth=True):
+    def http_request(self, method: str, url_suffix="", full_url=None, headers=None, json_data=None, params=None, auth=True):
         """
         Sends an HTTP request to the specified URL, adding the required headers and authentication token.
 
@@ -105,7 +105,7 @@ class GemClient(BaseClient):
         """
         if auth:
             headers = headers or {}
-            headers['Authorization'] = f'Bearer {self._auth_token}'
+            headers["Authorization"] = f"Bearer {self._auth_token}"
         try:
             response = super()._http_request(
                 method=method,
@@ -114,13 +114,13 @@ class GemClient(BaseClient):
                 headers=headers,
                 json_data=json_data,
                 params=params,
-                raise_on_status=True
+                raise_on_status=True,
             )
             demisto.debug(f"Got response: {response}")
             return response
         except DemistoException as e:
-            demisto.error(f"Failed to execute {method} request to {url_suffix}. Error: {str(e)}")
-            raise Exception(f"Failed to execute {method} request to {url_suffix}. Error: {str(e)}")
+            demisto.error(f"Failed to execute {method} request to {url_suffix}. Error: {e!s}")
+            raise Exception(f"Failed to execute {method} request to {url_suffix}. Error: {e!s}")
 
     def _generate_token(self) -> str:
         """Generate an access token using the client id and secret
@@ -128,27 +128,19 @@ class GemClient(BaseClient):
         """
 
         data = {
-            'client_id': self._client_id,
-            'client_secret': self._client_secret,
-            'grant_type': 'client_credentials',
-            "audience": "https://backend.gem.security"
+            "client_id": self._client_id,
+            "client_secret": self._client_secret,
+            "grant_type": "client_credentials",
+            "audience": "https://backend.gem.security",
         }
 
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
-        token_res = self.http_request(
-            method='POST',
-            full_url=TOKEN_URL,
-            headers=headers,
-            json_data=data,
-            auth=False
-        )
+        token_res = self.http_request(method="POST", full_url=TOKEN_URL, headers=headers, json_data=data, auth=False)
 
-        set_integration_context((get_integration_context() or {}).update({'auth_token': token_res.get('access_token')}))
+        set_integration_context((get_integration_context() or {}).update({"auth_token": token_res.get("access_token")}))
 
-        return token_res.get('access_token')
+        return token_res.get("access_token")
 
     def _filter_non_empty_params(self, params):
         return {k: v for k, v in params.items() if v is not None}
@@ -164,13 +156,8 @@ class GemClient(BaseClient):
         Returns:
             list[dict]: A list of threat incidents.
         """
-        params = {'limit': maxincidents, 'created__gt': start_time, 'ordering': 'created'}
-        return self.http_request(
-            method='GET',
-            url_suffix=FETCH_ENDPOINT,
-            params=self._filter_non_empty_params(params)
-
-        )
+        params = {"limit": maxincidents, "created__gt": start_time, "ordering": "created"}
+        return self.http_request(method="GET", url_suffix=FETCH_ENDPOINT, params=self._filter_non_empty_params(params))
 
     def get_resource_details(self, resource_id: str) -> dict:
         """
@@ -179,10 +166,7 @@ class GemClient(BaseClient):
         :param resource_id: ID of the item to get.
         :return: Inventory item.
         """
-        return self.http_request(
-            method='GET',
-            url_suffix=INVENTORY_ITEM_ENDPOINT.format(id=resource_id)
-        )
+        return self.http_request(method="GET", url_suffix=INVENTORY_ITEM_ENDPOINT.format(id=resource_id))
 
     def get_threat_details(self, threat_id: str):
         """
@@ -191,10 +175,7 @@ class GemClient(BaseClient):
         :param threat_id: id of the threat to get
         :return: threat details
         """
-        response = self.http_request(
-            method='GET',
-            url_suffix=THREAT_ENDPOINT.format(id=threat_id)
-        )
+        response = self.http_request(method="GET", url_suffix=THREAT_ENDPOINT.format(id=threat_id))
 
         return response
 
@@ -206,16 +187,23 @@ class GemClient(BaseClient):
         :return: alert details
         """
         params = {"alert_id": alert_id}
-        response = self.http_request(
-            method='GET',
-            url_suffix=ALERTS_ENDPOINT,
-            params=self._filter_non_empty_params(params)
-        )
+        response = self.http_request(method="GET", url_suffix=ALERTS_ENDPOINT, params=self._filter_non_empty_params(params))
 
         return response
 
-    def list_threats(self, limit, time_start=None, time_end=None, ordering=None, status=None, ttp_id=None,
-                     title=None, severity=None, entity_type=None, cloud_provider=None) -> list[dict]:
+    def list_threats(
+        self,
+        limit,
+        time_start=None,
+        time_end=None,
+        ordering=None,
+        status=None,
+        ttp_id=None,
+        title=None,
+        severity=None,
+        entity_type=None,
+        cloud_provider=None,
+    ) -> list[dict]:
         """
         List threats
         :param time_start: time of first threat
@@ -239,45 +227,57 @@ class GemClient(BaseClient):
                 break
             if limit - results_fetched < PAGE_SIZE:
                 demisto.debug(f"Fetching page #{p} page_size {limit - results_fetched}")
-                params = {'start_time': time_start, 'end_time': time_end, 'page': p, 'page_size': limit - results_fetched,
-                          'ordering': ordering,
-                          'status': status, 'ttp_id': ttp_id, 'title': title, 'severity': severity, 'entity_type': entity_type,
-                          'provider': cloud_provider}
+                params = {
+                    "start_time": time_start,
+                    "end_time": time_end,
+                    "page": p,
+                    "page_size": limit - results_fetched,
+                    "ordering": ordering,
+                    "status": status,
+                    "ttp_id": ttp_id,
+                    "title": title,
+                    "severity": severity,
+                    "entity_type": entity_type,
+                    "provider": cloud_provider,
+                }
                 response = self.http_request(
-                    method='GET',
-                    url_suffix=THREATS_ENDPOINT,
-                    params=self._filter_non_empty_params(params)
-
+                    method="GET", url_suffix=THREATS_ENDPOINT, params=self._filter_non_empty_params(params)
                 )
                 results_fetched = limit
 
             else:
                 demisto.debug(f"Fetching page #{p} page_size {PAGE_SIZE}")
-                params = {'start_time': time_start, 'end_time': time_end, 'page': p, 'page_size': PAGE_SIZE, 'ordering': ordering,
-                          'status': status, 'ttp_id': ttp_id, 'title': title, 'severity': severity, 'entity_type': entity_type,
-                          'provider': cloud_provider}
+                params = {
+                    "start_time": time_start,
+                    "end_time": time_end,
+                    "page": p,
+                    "page_size": PAGE_SIZE,
+                    "ordering": ordering,
+                    "status": status,
+                    "ttp_id": ttp_id,
+                    "title": title,
+                    "severity": severity,
+                    "entity_type": entity_type,
+                    "provider": cloud_provider,
+                }
                 response = self.http_request(
-                    method='GET',
-                    url_suffix=THREATS_ENDPOINT,
-                    params=self._filter_non_empty_params(params)
-
+                    method="GET", url_suffix=THREATS_ENDPOINT, params=self._filter_non_empty_params(params)
                 )
-                if len(response['results']) < PAGE_SIZE:
+                if len(response["results"]) < PAGE_SIZE:
                     demisto.debug(f"Fetched {len(response['results'])}")
-                    results_fetched += len(response['results'])
-                    results.extend(response['results'])
+                    results_fetched += len(response["results"])
+                    results.extend(response["results"])
                     break
 
                 results_fetched += PAGE_SIZE
 
-            results.extend(response['results'])
+            results.extend(response["results"])
 
         demisto.debug(f"Fetched {len(results)} threats")
 
         return results
 
-    def list_inventory_resources(self, limit, include_deleted=None, region=None, resource_type=None,
-                                 search=None) -> list[dict]:
+    def list_inventory_resources(self, limit, include_deleted=None, region=None, resource_type=None, search=None) -> list[dict]:
         """List inventory resources
 
         Args:
@@ -292,49 +292,52 @@ class GemClient(BaseClient):
         """
         results = []
         results_fetched = 0
-        params = {'page_size': limit if limit < PAGE_SIZE else PAGE_SIZE, 'include_deleted': include_deleted, 'region': region,
-                  'resource_type': resource_type, 'search': search}
-        response = self.http_request(
-            method='GET',
-            url_suffix=INVENTORY_ENDPOINT,
-            params=self._filter_non_empty_params(params)
+        params = {
+            "page_size": min(PAGE_SIZE, limit),
+            "include_deleted": include_deleted,
+            "region": region,
+            "resource_type": resource_type,
+            "search": search,
+        }
+        response = self.http_request(method="GET", url_suffix=INVENTORY_ENDPOINT, params=self._filter_non_empty_params(params))
+        results_fetched += len(response["results"])
+        results.extend(response["results"])
 
-        )
-        results_fetched += len(response['results'])
-        results.extend(response['results'])
-
-        while response['next'] != "" and results_fetched < limit:
-            page_size = limit - results_fetched if limit - results_fetched < PAGE_SIZE else PAGE_SIZE
+        while response["next"] != "" and results_fetched < limit:
+            page_size = min(PAGE_SIZE, limit - results_fetched)
             demisto.debug(f"Fetching page #{response['next']} page_size {page_size}")
-            params = {'cursor': response['next'], 'page_size': page_size, 'include_deleted': include_deleted, 'region': region,
-                      'resource_type': resource_type, 'search': search}
+            params = {
+                "cursor": response["next"],
+                "page_size": page_size,
+                "include_deleted": include_deleted,
+                "region": region,
+                "resource_type": resource_type,
+                "search": search,
+            }
             response = self.http_request(
-                method='GET',
-                url_suffix=INVENTORY_ENDPOINT,
-                params=self._filter_non_empty_params(params)
-
+                method="GET", url_suffix=INVENTORY_ENDPOINT, params=self._filter_non_empty_params(params)
             )
-            results_fetched += len(response['results'])
-            results.extend(response['results'])
+            results_fetched += len(response["results"])
+            results.extend(response["results"])
 
         demisto.debug(f"Fetched {len(results)} inventory resources")
 
         return results
 
     def _breakdown(self, breakdown_by, entity_id=None, entity_type=None, read_only=None, start_time=None, end_time=None) -> dict:
+        params = {
+            "breakdown_by": breakdown_by,
+            "entity_id": entity_id,
+            "entity_type": entity_type,
+            "read_only": read_only,
+            "start_time": start_time,
+            "end_time": end_time,
+        }
+        response = self.http_request(method="GET", url_suffix=BREAKDOWN_ENDPOINT, params=self._filter_non_empty_params(params))
 
-        params = {'breakdown_by': breakdown_by, 'entity_id': entity_id, 'entity_type': entity_type, 'read_only': read_only,
-                  'start_time': start_time, 'end_time': end_time}
-        response = self.http_request(
-            method='GET',
-            url_suffix=BREAKDOWN_ENDPOINT,
-            params=self._filter_non_empty_params(params)
-        )
+        return response["table"]
 
-        return response['table']
-
-    def list_ips_by_entity(self, entity_id=None, entity_type=None, read_only=None, start_time=None,
-                           end_time=None) -> dict:
+    def list_ips_by_entity(self, entity_id=None, entity_type=None, read_only=None, start_time=None, end_time=None) -> dict:
         """
         Retrieves a dictionary of IP addresses associated with the specified entity.
 
@@ -348,11 +351,16 @@ class GemClient(BaseClient):
         Returns:
             dict: A dictionary of IP addresses associated with the entity.
         """
-        return self._breakdown(breakdown_by='source_ip', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="source_ip",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
-    def list_services_by_entity(self, entity_id=None, entity_type=None, read_only=None, start_time=None,
-                                end_time=None) -> dict:
+    def list_services_by_entity(self, entity_id=None, entity_type=None, read_only=None, start_time=None, end_time=None) -> dict:
         """
         Retrieves a list of services associated with a specific entity.
 
@@ -366,11 +374,16 @@ class GemClient(BaseClient):
         Returns:
             dict: A dictionary containing the list of services associated with the entity.
         """
-        return self._breakdown(breakdown_by='service', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="service",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
-    def list_events_by_entity(self, entity_id=None, entity_type=None, read_only=None, start_time=None,
-                              end_time=None) -> dict:
+    def list_events_by_entity(self, entity_id=None, entity_type=None, read_only=None, start_time=None, end_time=None) -> dict:
         """
         Retrieves a list of events associated with a specific entity.
 
@@ -384,11 +397,16 @@ class GemClient(BaseClient):
         Returns:
             dict: A dictionary containing the list of events.
         """
-        return self._breakdown(breakdown_by='entity_event_out', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="entity_event_out",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
-    def list_accessing_entities(self, entity_id=None, entity_type=None, read_only=None, start_time=None,
-                                end_time=None) -> dict:
+    def list_accessing_entities(self, entity_id=None, entity_type=None, read_only=None, start_time=None, end_time=None) -> dict:
         """
         Retrieves a list of accessing entities based on the provided parameters.
 
@@ -402,11 +420,16 @@ class GemClient(BaseClient):
         Returns:
             dict: A dictionary containing the list of accessing entities.
         """
-        return self._breakdown(breakdown_by='user_in', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="user_in",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
-    def list_using_entities(self, entity_id=None, entity_type=None, read_only=None, start_time=None,
-                            end_time=None) -> dict:
+    def list_using_entities(self, entity_id=None, entity_type=None, read_only=None, start_time=None, end_time=None) -> dict:
         """
         Retrieves a list of entities using the specified parameters.
 
@@ -421,8 +444,14 @@ class GemClient(BaseClient):
             dict: A dictionary containing the list of entities.
 
         """
-        return self._breakdown(breakdown_by='using_entities', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="using_entities",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
     def list_events_on_entity(self, entity_id=None, entity_type=None, start_time=None, end_time=None, read_only=None) -> dict:
         """
@@ -438,8 +467,14 @@ class GemClient(BaseClient):
         Returns:
             dict: A dictionary containing the list of events.
         """
-        return self._breakdown(breakdown_by='entity_event_in', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="entity_event_in",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
     def list_accessing_ips(self, entity_id=None, entity_type=None, start_time=None, end_time=None, read_only=None) -> dict:
         """
@@ -455,8 +490,14 @@ class GemClient(BaseClient):
         Returns:
             dict: A breakdown of accessing IPs.
         """
-        return self._breakdown(breakdown_by='ip_access', entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                               start_time=start_time, end_time=end_time)
+        return self._breakdown(
+            breakdown_by="ip_access",
+            entity_id=entity_id,
+            entity_type=entity_type,
+            read_only=read_only,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
     def update_threat_status(self, threat_id: str, status: Optional[str], verdict: Optional[str], reason: Optional[str] = None):
         """
@@ -471,17 +512,12 @@ class GemClient(BaseClient):
         Returns:
             dict: The response from the API call.
         """
-        json_data = {'verdict': verdict, 'additional_info': reason, 'status': status}
-        response = self.http_request(
-            method='PATCH',
-            url_suffix=UPDATE_THREAT_ENDPOINT.format(id=threat_id),
-            json_data=json_data
-        )
+        json_data = {"verdict": verdict, "additional_info": reason, "status": status}
+        response = self.http_request(method="PATCH", url_suffix=UPDATE_THREAT_ENDPOINT.format(id=threat_id), json_data=json_data)
 
         return response
 
-    def run_action_on_entity(self, action: str, entity_id: str, entity_type: str, alert_id: str,
-                             resource_id: str) -> dict:
+    def run_action_on_entity(self, action: str, entity_id: str, entity_type: str, alert_id: str, resource_id: str) -> dict:
         """
         Runs an action on a specific entity.
 
@@ -496,14 +532,15 @@ class GemClient(BaseClient):
             dict: The response from the API.
 
         """
-        params = {'action': action, 'entity_id': entity_id, 'entity_type': entity_type,
-                  'alert_id': alert_id, 'resource_id': resource_id}
+        params = {
+            "action": action,
+            "entity_id": entity_id,
+            "entity_type": entity_type,
+            "alert_id": alert_id,
+            "resource_id": resource_id,
+        }
 
-        response = self.http_request(
-            method='POST',
-            url_suffix=RUN_ACTION_ENDPOINT,
-            params=self._filter_non_empty_params(params)
-        )
+        response = self.http_request(method="POST", url_suffix=RUN_ACTION_ENDPOINT, params=self._filter_non_empty_params(params))
 
         return response
 
@@ -519,19 +556,19 @@ class GemClient(BaseClient):
         Returns:
             dict: The response from the API.
         """
-        params = {'title': "XSOAR comment", "description": comment, "timeline_event_type": "xsoar", "timestamp": timestamp}
+        params = {"title": "XSOAR comment", "description": comment, "timeline_event_type": "xsoar", "timestamp": timestamp}
         response = self.http_request(
-            method='POST',
+            method="POST",
             url_suffix=ADD_TIMELINE_EVENT_ENDPOINT.format(id=threat_id),
-            json_data=self._filter_non_empty_params(params)
+            json_data=self._filter_non_empty_params(params),
         )
 
         return response
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 # as per recommendation from @freylis, compile once only
-CLEANR = re.compile('<.*?>')
+CLEANR = re.compile("<.*?>")
 
 
 def _cleanhtml(raw_html):
@@ -544,7 +581,7 @@ def _cleanhtml(raw_html):
     Returns:
         str: The cleaned text without HTML tags.
     """
-    cleantext = re.sub(CLEANR, '', raw_html)
+    cleantext = re.sub(CLEANR, "", raw_html)
     return cleantext.replace("\n", "")
 
 
@@ -558,11 +595,11 @@ def _clean_description(alert: dict) -> dict:
     Returns:
         dict: The modified alert dictionary with cleaned description.
     """
-    if alert['triage_configuration']['event_groups']:
+    if alert["triage_configuration"]["event_groups"]:
         i = 0
-        for e in alert['triage_configuration']['event_groups']:
-            clean_description = _cleanhtml(e['description'])
-            alert['triage_configuration']['event_groups'][i]['description'] = clean_description
+        for e in alert["triage_configuration"]["event_groups"]:
+            clean_description = _cleanhtml(e["description"])
+            alert["triage_configuration"]["event_groups"][i]["description"] = clean_description
             i += 1
     return alert
 
@@ -572,15 +609,15 @@ def init_client(params: dict) -> GemClient:
     Initializes a new GemClient object
     """
     return GemClient(
-        base_url=params['api_endpoint'],
-        verify=not params.get('insecure', False),
-        proxy=params.get('proxy', False),
-        client_id=demisto.getParam('credentials')['identifier'] if demisto.getParam('credentials') else "",
-        client_secret=demisto.getParam('credentials')['password'] if demisto.getParam('credentials') else ""
+        base_url=params["api_endpoint"],
+        verify=not params.get("insecure", False),
+        proxy=params.get("proxy", False),
+        client_id=demisto.getParam("credentials")["identifier"] if demisto.getParam("credentials") else "",
+        client_secret=demisto.getParam("credentials")["password"] if demisto.getParam("credentials") else "",
     )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def fetch_threats(client: GemClient, max_results: int, last_run: dict, first_fetch_time: str) -> tuple[dict, list[dict]]:
@@ -596,7 +633,7 @@ def fetch_threats(client: GemClient, max_results: int, last_run: dict, first_fet
     Returns:
         tuple[dict, list[dict]]: A tuple containing the new last run and a list of incidents (threats).
     """
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get("last_fetch", None)
     if last_fetch is None:
         # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time
@@ -606,23 +643,23 @@ def fetch_threats(client: GemClient, max_results: int, last_run: dict, first_fet
     demisto.debug(f"Last fetch time: {last_fetch}")
     incidents: list[dict[str, Any]] = []
 
-    for _ in range(0, int(max_results / PAGE_SIZE) + 1):
+    for _ in range(int(max_results / PAGE_SIZE) + 1):
         results = client.fetch_threats(maxincidents=PAGE_SIZE, start_time=last_fetch)
         for r in results:
             incident = {
-                'name': r['title'],        # name is required field, must be set
-                'occurred': r['created'],  # must be string of a format ISO8601
-                'dbotMirrorId': str(r['id']),  # must be a string
-                'rawJSON': json.dumps(r)  # the original event, this will allow mapping of the event in the mapping stage.
+                "name": r["title"],  # name is required field, must be set
+                "occurred": r["created"],  # must be string of a format ISO8601
+                "dbotMirrorId": str(r["id"]),  # must be a string
+                "rawJSON": json.dumps(r),  # the original event, this will allow mapping of the event in the mapping stage.
             }
             incidents.append(incident)
         demisto.debug(f"Fetched {len(incidents)} incidents")
         if incidents:
-            last_fetch = incidents[-1].get('occurred')
+            last_fetch = incidents[-1].get("occurred")
 
     demisto.debug(f"Last fetch time: {last_fetch}")
     assert last_fetch
-    last_run['last_fetch'] = last_fetch
+    last_run["last_fetch"] = last_fetch
 
     return last_run, incidents
 
@@ -641,9 +678,9 @@ def test_module(params: dict[str, Any]) -> str:
     try:
         init_client(params)
     except Exception:
-        raise DemistoException('Authentication failed')
+        raise DemistoException("Authentication failed")
 
-    return 'ok'
+    return "ok"
 
 
 def get_resource_details(client: GemClient, args: dict[str, Any]) -> CommandResults:
@@ -658,15 +695,15 @@ def get_resource_details(client: GemClient, args: dict[str, Any]) -> CommandResu
         CommandResults: Object containing the resource details for display in Cortex XSOAR.
 
     """
-    resource_id = args.get('resource_id', "")
+    resource_id = args.get("resource_id", "")
 
     result = client.get_resource_details(resource_id)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Inventory Item', result),
-        outputs_prefix='Gem.InventoryItem',
-        outputs_key_field='resource_id',
-        outputs=result
+        readable_output=tableToMarkdown("Inventory Item", result),
+        outputs_prefix="Gem.InventoryItem",
+        outputs_key_field="resource_id",
+        outputs=result,
     )
 
 
@@ -682,15 +719,12 @@ def get_threat_details(client: GemClient, args: dict[str, Any]) -> CommandResult
         CommandResults: Object containing the threat details for display in Cortex XSOAR.
 
     """
-    threat_id = args.get('threat_id', "")
+    threat_id = args.get("threat_id", "")
 
     result = client.get_threat_details(threat_id=threat_id)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Threat', result),
-        outputs_prefix='Gem.Threat',
-        outputs_key_field='id',
-        outputs=result
+        readable_output=tableToMarkdown("Threat", result), outputs_prefix="Gem.Threat", outputs_key_field="id", outputs=result
     )
 
 
@@ -706,16 +740,13 @@ def get_alert_details(client: GemClient, args: dict[str, Any]) -> CommandResults
         CommandResults: Object containing the alert details for display in Cortex XSOAR.
 
     """
-    alert_id = args.get('alert_id', "")
+    alert_id = args.get("alert_id", "")
 
     result = client.get_alert_details(alert_id=alert_id)
     result = _clean_description(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Alert', result),
-        outputs_prefix='Gem.Alert',
-        outputs_key_field='id',
-        outputs=result
+        readable_output=tableToMarkdown("Alert", result), outputs_prefix="Gem.Alert", outputs_key_field="id", outputs=result
     )
 
 
@@ -732,19 +763,20 @@ def list_inventory_resources(client: GemClient, args: dict[str, Any]) -> Command
         CommandResults: Object containing the list of inventory resources for display in Cortex XSOAR.
     """
     limit = arg_to_number(args.get("limit")) or PAGE_SIZE
-    include_deleted = args.get('include_deleted')
-    region = args.get('region')
-    resource_type = args.get('resource_type')
-    search = args.get('search')
+    include_deleted = args.get("include_deleted")
+    region = args.get("region")
+    resource_type = args.get("resource_type")
+    search = args.get("search")
 
-    result = client.list_inventory_resources(limit, include_deleted=include_deleted,
-                                             region=region, resource_type=resource_type, search=search)
+    result = client.list_inventory_resources(
+        limit, include_deleted=include_deleted, region=region, resource_type=resource_type, search=search
+    )
 
     return CommandResults(
-        readable_output=tableToMarkdown('Inventory Items', result),
-        outputs_prefix='Gem.InventoryItems',
-        outputs_key_field='id',
-        outputs=result
+        readable_output=tableToMarkdown("Inventory Items", result),
+        outputs_prefix="Gem.InventoryItems",
+        outputs_key_field="id",
+        outputs=result,
     )
 
 
@@ -762,27 +794,36 @@ def list_threats(client: GemClient, args: dict[str, Any]) -> CommandResults:
         CommandResults: Object containing the list of threats for display in Cortex XSOAR.
 
     """
-    time_start = args.get('time_start')
-    time_end = args.get('time_end')
+    time_start = args.get("time_start")
+    time_end = args.get("time_end")
     limit = arg_to_number(args.get("limit")) or PAGE_SIZE
-    ordering = args.get('ordering')
-    status = args.get('status')
-    ttp_id = args.get('ttp_id')
-    title = args.get('title')
-    severity = args.get('severity')
-    entity_type = args.get('entity_type')
-    cloud_provider = args.get('cloud_provider')
+    ordering = args.get("ordering")
+    status = args.get("status")
+    ttp_id = args.get("ttp_id")
+    title = args.get("title")
+    severity = args.get("severity")
+    entity_type = args.get("entity_type")
+    cloud_provider = args.get("cloud_provider")
 
-    result = client.list_threats(time_start=time_start, time_end=time_end, limit=limit,
-                                 ordering=ordering, status=status, ttp_id=ttp_id, title=title, severity=severity,
-                                 entity_type=entity_type, cloud_provider=cloud_provider)
+    result = client.list_threats(
+        time_start=time_start,
+        time_end=time_end,
+        limit=limit,
+        ordering=ordering,
+        status=status,
+        ttp_id=ttp_id,
+        title=title,
+        severity=severity,
+        entity_type=entity_type,
+        cloud_provider=cloud_provider,
+    )
 
     demisto.debug(f"Got {len(result)} Threats")
     return CommandResults(
-        readable_output=tableToMarkdown('Threats', result),
-        outputs_prefix='Gem.ThreatsList',
-        outputs_key_field='id',
-        outputs=result
+        readable_output=tableToMarkdown("Threats", result),
+        outputs_prefix="Gem.ThreatsList",
+        outputs_key_field="id",
+        outputs=result,
     )
 
 
@@ -798,11 +839,11 @@ def _breakdown_validate_params(client: GemClient, args: dict[str, Any]) -> tuple
         tuple: A tuple containing extracted parameters.
 
     """
-    entity_id = args.get('entity_id')
-    entity_type = args.get('entity_type')
-    read_only = args.get('read_only')
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    entity_id = args.get("entity_id")
+    entity_type = args.get("entity_type")
+    read_only = args.get("read_only")
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
 
     return entity_id, entity_type, read_only, start_time, end_time
 
@@ -819,10 +860,10 @@ def _parse_breakdown_result(result: dict) -> tuple[list[str], list[list[str]], l
     """
     new_t = []
 
-    for r in result['rows']:
-        new_t.append(r['row'])
+    for r in result["rows"]:
+        new_t.append(r["row"])
 
-    return result['headers'], new_t, new_t
+    return result["headers"], new_t, new_t
 
 
 def list_ips_by_entity(client: GemClient, args: dict[str, Any]) -> CommandResults:
@@ -839,15 +880,16 @@ def list_ips_by_entity(client: GemClient, args: dict[str, Any]) -> CommandResult
 
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_ips_by_entity(entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                                       start_time=start_time, end_time=end_time)
+    result = client.list_ips_by_entity(
+        entity_id=entity_id, entity_type=entity_type, read_only=read_only, start_time=start_time, end_time=end_time
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('IPs', rows, headers=headers),
-        outputs_prefix='Gem.IP',
-        outputs_key_field='SOURCEIPADDRESS',
-        outputs=outputs
+        readable_output=tableToMarkdown("IPs", rows, headers=headers),
+        outputs_prefix="Gem.IP",
+        outputs_key_field="SOURCEIPADDRESS",
+        outputs=outputs,
     )
 
 
@@ -864,15 +906,16 @@ def list_services_by_entity(client: GemClient, args: dict[str, Any]) -> CommandR
     """
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_services_by_entity(entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                                            start_time=start_time, end_time=end_time)
+    result = client.list_services_by_entity(
+        entity_id=entity_id, entity_type=entity_type, read_only=read_only, start_time=start_time, end_time=end_time
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Services', rows, headers=headers),
-        outputs_prefix='Gem.Entity.By.Services',
-        outputs_key_field='SERVICE',
-        outputs=outputs
+        readable_output=tableToMarkdown("Services", rows, headers=headers),
+        outputs_prefix="Gem.Entity.By.Services",
+        outputs_key_field="SERVICE",
+        outputs=outputs,
     )
 
 
@@ -889,15 +932,16 @@ def list_events_by_entity(client: GemClient, args: dict[str, Any]) -> CommandRes
     """
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_events_by_entity(entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                                          start_time=start_time, end_time=end_time)
+    result = client.list_events_by_entity(
+        entity_id=entity_id, entity_type=entity_type, read_only=read_only, start_time=start_time, end_time=end_time
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Events by Entity', rows, headers=headers),
-        outputs_prefix='Gem.Entity.By.Events',
-        outputs_key_field='EVENTNAME',
-        outputs=outputs
+        readable_output=tableToMarkdown("Events by Entity", rows, headers=headers),
+        outputs_prefix="Gem.Entity.By.Events",
+        outputs_key_field="EVENTNAME",
+        outputs=outputs,
     )
 
 
@@ -915,15 +959,16 @@ def list_accessing_entities(client: GemClient, args: dict[str, Any]) -> CommandR
 
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_accessing_entities(entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                                            start_time=start_time, end_time=end_time)
+    result = client.list_accessing_entities(
+        entity_id=entity_id, entity_type=entity_type, read_only=read_only, start_time=start_time, end_time=end_time
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Accessing Entities', rows, headers=headers),
-        outputs_prefix='Gem.Entity.Accessing',
-        outputs_key_field='',
-        outputs=outputs
+        readable_output=tableToMarkdown("Accessing Entities", rows, headers=headers),
+        outputs_prefix="Gem.Entity.Accessing",
+        outputs_key_field="",
+        outputs=outputs,
     )
 
 
@@ -941,15 +986,16 @@ def list_using_entities(client: GemClient, args: dict[str, Any]) -> CommandResul
 
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_using_entities(entity_id=entity_id, entity_type=entity_type, read_only=read_only,
-                                        start_time=start_time, end_time=end_time)
+    result = client.list_using_entities(
+        entity_id=entity_id, entity_type=entity_type, read_only=read_only, start_time=start_time, end_time=end_time
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Using Entities', rows, headers=headers),
-        outputs_prefix='Gem.Entity.Using',
-        outputs_key_field='ENTITY_ID',
-        outputs=outputs
+        readable_output=tableToMarkdown("Using Entities", rows, headers=headers),
+        outputs_prefix="Gem.Entity.Using",
+        outputs_key_field="ENTITY_ID",
+        outputs=outputs,
     )
 
 
@@ -967,15 +1013,16 @@ def list_events_on_entity(client: GemClient, args: dict[str, Any]) -> CommandRes
 
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_events_on_entity(entity_id=entity_id, entity_type=entity_type,
-                                          start_time=start_time, end_time=end_time, read_only=read_only)
+    result = client.list_events_on_entity(
+        entity_id=entity_id, entity_type=entity_type, start_time=start_time, end_time=end_time, read_only=read_only
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Events on Entity', rows, headers=headers),
-        outputs_prefix='Gem.Entity.On.Events',
-        outputs_key_field='EVENTNAME',
-        outputs=outputs
+        readable_output=tableToMarkdown("Events on Entity", rows, headers=headers),
+        outputs_prefix="Gem.Entity.On.Events",
+        outputs_key_field="EVENTNAME",
+        outputs=outputs,
     )
 
 
@@ -993,15 +1040,16 @@ def list_accessing_ips(client: GemClient, args: dict[str, Any]) -> CommandResult
 
     entity_id, entity_type, read_only, start_time, end_time = _breakdown_validate_params(client, args)
 
-    result = client.list_accessing_ips(entity_id=entity_id, entity_type=entity_type,
-                                       start_time=start_time, end_time=end_time, read_only=read_only)
+    result = client.list_accessing_ips(
+        entity_id=entity_id, entity_type=entity_type, start_time=start_time, end_time=end_time, read_only=read_only
+    )
     headers, rows, outputs = _parse_breakdown_result(result)
 
     return CommandResults(
-        readable_output=tableToMarkdown('IPs Accessing Entity', rows, headers=headers),
-        outputs_prefix='Gem.Entity.Accessing.IPs',
-        outputs_key_field='AS_NAME',
-        outputs=outputs
+        readable_output=tableToMarkdown("IPs Accessing Entity", rows, headers=headers),
+        outputs_prefix="Gem.Entity.Accessing.IPs",
+        outputs_key_field="AS_NAME",
+        outputs=outputs,
     )
 
 
@@ -1014,48 +1062,48 @@ def update_threat_status(client: GemClient, args: dict[str, Any]):
         args (dict): Command arguments, must include 'threat_id', 'status', 'verdict', and optionally 'reason'.
 
     """
-    threat_id = args.get('threat_id', "")
-    status = args.get('status')
-    verdict = args.get('verdict')
-    reason = args.get('reason')
+    threat_id = args.get("threat_id", "")
+    status = args.get("status")
+    verdict = args.get("verdict")
+    reason = args.get("reason")
 
     client.update_threat_status(threat_id=threat_id, status=status, verdict=verdict, reason=reason)
 
 
 def run_action_on_entity(client: GemClient, args: dict[str, Any]) -> CommandResults:
+    action = args.get("action", "")
+    entity_id = args.get("entity_id", "")
+    entity_type = args.get("entity_type", "")
+    alert_id = args.get("alert_id", "")
+    resource_id = args.get("resource_id", "")
 
-    action = args.get('action', "")
-    entity_id = args.get('entity_id', "")
-    entity_type = args.get('entity_type', "")
-    alert_id = args.get('alert_id', "")
-    resource_id = args.get('resource_id', "")
-
-    result = client.run_action_on_entity(action=action, entity_id=entity_id, entity_type=entity_type, alert_id=alert_id,
-                                         resource_id=resource_id,)
+    result = client.run_action_on_entity(
+        action=action,
+        entity_id=entity_id,
+        entity_type=entity_type,
+        alert_id=alert_id,
+        resource_id=resource_id,
+    )
 
     return CommandResults(
-        readable_output=tableToMarkdown('Run Result', result),
-        outputs_prefix='Gem.Run',
-        outputs_key_field='id',
-        outputs=result
+        readable_output=tableToMarkdown("Run Result", result), outputs_prefix="Gem.Run", outputs_key_field="id", outputs=result
     )
 
 
 def add_timeline_event(client: GemClient, args: dict[str, Any]) -> CommandResults:
-
-    threat_id = args.get('threat_id', "")
-    comment = args.get('comment', "")
+    threat_id = args.get("threat_id", "")
+    comment = args.get("comment", "")
 
     result = client.add_timeline_event(threat_id=threat_id, comment=comment, timestamp=datetime.now().strftime(DATE_FORMAT))
     return CommandResults(
-        readable_output=tableToMarkdown('AddTimelineEvent Result', result),
-        outputs_prefix='Gem.AddTimelineEvent',
-        outputs_key_field='',
-        outputs=result
+        readable_output=tableToMarkdown("AddTimelineEvent Result", result),
+        outputs_prefix="Gem.AddTimelineEvent",
+        outputs_key_field="",
+        outputs=result,
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -1072,58 +1120,52 @@ def main() -> None:
     demisto.debug(f"args {args}")
     demisto.debug(f"params {params}")
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button
             return_results(test_module(params))
 
         client = init_client(params)
 
-        if command == 'gem-list-threats':
+        if command == "gem-list-threats":
             return_results(list_threats(client, args))
-        elif command == 'gem-get-threat-details':
+        elif command == "gem-get-threat-details":
             return_results(get_threat_details(client, args))
-        elif command == 'gem-get-alert-details':
+        elif command == "gem-get-alert-details":
             return_results(get_alert_details(client, args))
-        elif command == 'gem-list-inventory-resources':
+        elif command == "gem-list-inventory-resources":
             return_results(list_inventory_resources(client, args))
-        elif command == 'gem-get-resource-details':
+        elif command == "gem-get-resource-details":
             return_results(get_resource_details(client, args))
-        elif command == 'gem-list-ips-by-entity':
+        elif command == "gem-list-ips-by-entity":
             return_results(list_ips_by_entity(client, args))
-        elif command == 'gem-list-services-by-entity':
+        elif command == "gem-list-services-by-entity":
             return_results(list_services_by_entity(client, args))
-        elif command == 'gem-list-events-by-entity':
+        elif command == "gem-list-events-by-entity":
             return_results(list_events_by_entity(client, args))
-        elif command == 'gem-list-accessing-entities':
+        elif command == "gem-list-accessing-entities":
             return_results(list_accessing_entities(client, args))
-        elif command == 'gem-list-using-entities':
+        elif command == "gem-list-using-entities":
             return_results(list_using_entities(client, args))
-        elif command == 'gem-list-events-on-entity':
+        elif command == "gem-list-events-on-entity":
             return_results(list_events_on_entity(client, args))
-        elif command == 'gem-list-accessing-ips':
+        elif command == "gem-list-accessing-ips":
             return_results(list_accessing_ips(client, args))
-        elif command == 'gem-update-threat-status':
+        elif command == "gem-update-threat-status":
             return_results(update_threat_status(client, args))
-        elif command == 'gem-run-action':
+        elif command == "gem-run-action":
             return_results(run_action_on_entity(client, args))
-        elif command == 'gem-add-timeline-event':
+        elif command == "gem-add-timeline-event":
             return_results(add_timeline_event(client, args))
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             # How much time before the first fetch to retrieve alerts
             first_fetch_time = arg_to_datetime(
-                arg=params.get('first_fetch', '30 days'),
-                arg_name='First fetch time',
-                required=True
+                arg=params.get("first_fetch", "30 days"), arg_name="First fetch time", required=True
             )
             assert first_fetch_time
 
-            max_results = arg_to_number(
-                arg=params.get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
+            max_results = arg_to_number(arg=params.get("max_fetch"), arg_name="max_fetch", required=False)
             if not max_results or max_results > MAX_ALERTS_TO_FETCH:
                 max_results = MAX_ALERTS_TO_FETCH
 
@@ -1131,10 +1173,11 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=datetime.strftime(first_fetch_time, DATE_FORMAT))
+                first_fetch_time=datetime.strftime(first_fetch_time, DATE_FORMAT),
+            )
 
-            demisto.debug(f'Fetched {len(incidents)} incidents')
-            demisto.debug(f'Next run: {next_run}')
+            demisto.debug(f"Fetched {len(incidents)} incidents")
+            demisto.debug(f"Next run: {next_run}")
             # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
             # fetch-incidents calls ``demisto.incidents()`` to provide the list
@@ -1142,15 +1185,15 @@ def main() -> None:
             demisto.incidents(incidents)
 
         else:
-            raise NotImplementedError(f'Command {command} is not implemented')
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
