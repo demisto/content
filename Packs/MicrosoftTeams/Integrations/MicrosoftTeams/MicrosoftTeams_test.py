@@ -301,7 +301,7 @@ def test_mirror_investigation(mocker, requests_mock):
     assert demisto.setIntegrationContext.call_count == 3
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
-    set_integration_context[0].pop("authcode_token_params")
+    set_integration_context[0].pop("credentials_token_params")
     set_integration_context[0].pop("bot_access_token")
     set_integration_context[0].pop("bot_valid_until")
     assert set_integration_context[0] == expected_integration_context
@@ -2789,7 +2789,7 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
     mocker.patch.object(demisto, "command", return_value=command)
     mocker.patch("MicrosoftTeams.get_token_permissions", return_value=mock_permissions)
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={
-        "authcode_token_params": json.dumps({
+        "credentials_token_params": json.dumps({
             "graph_access_token": "mock_token"
             })
     })
@@ -2957,7 +2957,8 @@ def test_ring_user_in_auth_code(mocker, requests_mock):
         f'{GRAPH_BASE_URL}/v1.0/communications/calls',
         json={},
     )
+    integration_context.pop('credentials_token_params')
 
     ring_user()
 
-    assert requests_mock.request_history[1].headers['Authorization'] == f'Bearer {mock_credentials_token}'
+    assert requests_mock.last_request.headers['Authorization'] == f'Bearer {mock_credentials_token}'
