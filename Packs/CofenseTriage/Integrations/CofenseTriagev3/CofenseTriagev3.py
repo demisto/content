@@ -10,9 +10,9 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_FETCH = "15"
 DEFAULT_FIRST_FETCH = "3 days"
 
@@ -51,33 +51,32 @@ OUTPUT_PREFIX = {
     "ATTACHMENT": "Cofense.Attachment",
     "INTEGRATION_SUBMISSION": "Cofense.IntegrationSubmission",
     "COMMENT": "Cofense.Comment",
-    "CLUSTER": "Cofense.Cluster"
+    "CLUSTER": "Cofense.Cluster",
 }
 
 MESSAGES = {
-    'NO_RECORDS_FOUND': "No {} were found for the given argument(s).",
+    "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
     "API_TOKEN": "No API token found. Please try again.",
     "PAGE_SIZE": "{} is an invalid value for page size. Page size must be between 1 and 200.",
     "PAGE_NUMBER": "{} is an invalid value for page number. Page number must be greater than 0",
-    "FILTER": 'Please provide the filter in the valid JSON format. Format accepted- \' '
-              '{"attribute1_operator" : "value1, value2" , "attribute2_operator" : "value3, value4"} \'',
+    "FILTER": "Please provide the filter in the valid JSON format. Format accepted- ' "
+    '{"attribute1_operator" : "value1, value2" , "attribute2_operator" : "value3, value4"} \'',
     "REQUIRED_ARGUMENT": "Invalid argument value. {} is a required argument.",
     "INVALID_MAX_FETCH": "{} is an invalid value for maximum fetch. Maximum fetch must be between 1 and 200.",
     "INVALID_FIRST_FETCH": "Argument 'First fetch time interval' should be a valid date or relative timestamp such as "
-                           "'2 days', '2 months', 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
+    "'2 days', '2 months', 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
     "INVALID_LOCATION_FOR_CATEGORY_ID": "If Category ID is provided in fetch incident parameters, the Report Location "
-                                        "cannot be 'Inbox' or 'Reconnaissance'.",
+    "cannot be 'Inbox' or 'Reconnaissance'.",
     "INVALID_LOCATION_FOR_CATEGORIZATION_TAGS": "If Categorization Tags are provided in fetch incident parameters, "
-                                                "the Report Location cannot be 'Inbox' or 'Reconnaissance'.",
+    "the Report Location cannot be 'Inbox' or 'Reconnaissance'.",
     "INVALID_LOCATION_FOR_TAGS": "If Tags are provided in fetch incident parameters, the Report Location "
-                                 "must be 'Reconnaissance'.",
+    "must be 'Reconnaissance'.",
     "BODY_FORMAT": "Invalid value for body format. Body format must be text or json.",
-    "INTEGRATION_SUBMISSION_TYPE": "Invalid value for integration submission type. Type must be urls or "
-                                   "attachment_payloads.",
-    "INVALID_IMAGE_TYPE": "Invalid value for type. Type must be png or jpg."
+    "INTEGRATION_SUBMISSION_TYPE": "Invalid value for integration submission type. Type must be urls or " "attachment_payloads.",
+    "INVALID_IMAGE_TYPE": "Invalid value for type. Type must be png or jpg.",
 }
 
-TYPE_HEADER = 'application/vnd.api+json'
+TYPE_HEADER = "application/vnd.api+json"
 CREATED_AT = "Created At"
 UPDATED_AT = "Updated At"
 TOKEN_EXPIRY_TIMEOUT = 60 * 60 * 2
@@ -86,33 +85,28 @@ INTEGRATION_SUBMISSION_TYPE = ["urls", "attachment_payloads"]
 DEFAULT_THREAT_SOURCE = "XSOAR-UI"
 DEFAULT_REPORT_IMAGE_TYPE = "png"
 VALID_IMAGE_TYPE = ["png", "jpg"]
-MIRROR_DIRECTION = {
-    'None': None,
-    'Incoming': 'In'
-}
+MIRROR_DIRECTION = {"None": None, "Incoming": "In"}
 
 HTTP_ERRORS = {
     400: "Bad request: an error occurred while fetching the data.",
     401: "Authentication error: please provide valid Client ID and Client Secret.",
     403: "Forbidden: please provide valid Client ID and Client Secret.",
     404: "Resource not found: invalid endpoint was called.",
-    500: "The server encountered an internal error for Cofense Triage v3 and was unable to complete your request."
+    500: "The server encountered an internal error for Cofense Triage v3 and was unable to complete your request.",
 }
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    """
+    """Client class to interact with the service API"""
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id, client_secret):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.client_id = client_id,
+        self.client_id = (client_id,)
         self.client_secret = client_secret
 
-    def http_request(self, url_suffix, method="GET", resp_type="json", headers=None, json_data=None,
-                     params=None) -> Any:
+    def http_request(self, url_suffix, method="GET", resp_type="json", headers=None, json_data=None, params=None) -> Any:
         """
         Function to make http requests using inbuilt _http_request() method.
         Handles token expiration case and makes request using refreshed token.
@@ -128,26 +122,26 @@ class Client(BaseClient):
         token = self.get_api_token()
         if not token:
             response = self._http_request(
-                method='POST',
+                method="POST",
                 url_suffix=URL_SUFFIX["AUTH"],
-                params={
-                    'client_id': self.client_id,
-                    'client_secret': self.client_secret,
-                    'grant_type': 'client_credentials'
-                },
-                headers={'Content-Type': 'application/json'},
-                error_handler=self.exception_handler
+                params={"client_id": self.client_id, "client_secret": self.client_secret, "grant_type": "client_credentials"},
+                headers={"Content-Type": "application/json"},
+                error_handler=self.exception_handler,
             )
             token = self.set_integration_context(response)
 
         if not headers:
-            headers = {
-                'Accept': TYPE_HEADER
-            }
-        headers['Authorization'] = token
-        response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                      headers=headers, resp_type=resp_type,
-                                      error_handler=self.exception_handler)
+            headers = {"Accept": TYPE_HEADER}
+        headers["Authorization"] = token
+        response = self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            json_data=json_data,
+            headers=headers,
+            resp_type=resp_type,
+            error_handler=self.exception_handler,
+        )
 
         return response
 
@@ -175,7 +169,7 @@ class Client(BaseClient):
                 error_entry = response.json().get("errors")
 
                 if error_entry:
-                    err_details = ','.join([entry.get('detail') for entry in error_entry if entry.get('detail')])
+                    err_details = ",".join([entry.get("detail") for entry in error_entry if entry.get("detail")])
                     if err_details:
                         err_msg = f"{err_msg}\nDetails: {err_details}"
             except (ValueError, AttributeError):
@@ -195,14 +189,14 @@ class Client(BaseClient):
         """
 
         integration_context = {}
-        api_token = resp.get('access_token')
+        api_token = resp.get("access_token")
         if api_token:
-            integration_context['api_token'] = "Bearer " + api_token
-            integration_context['valid_until'] = int(time.time() + resp.get("expires_in", TOKEN_EXPIRY_TIMEOUT))
+            integration_context["api_token"] = "Bearer " + api_token
+            integration_context["valid_until"] = int(time.time() + resp.get("expires_in", TOKEN_EXPIRY_TIMEOUT))
         else:
             raise ValueError(MESSAGES["API_TOKEN"])
         set_integration_context(integration_context)
-        return integration_context.get('api_token')
+        return integration_context.get("api_token")
 
     @staticmethod
     def get_api_token() -> Any:
@@ -211,17 +205,17 @@ class Client(BaseClient):
         if API token is not found or expired it will return false
         """
         integration_context = get_integration_context()
-        api_token = integration_context.get('api_token')
-        valid_until = integration_context.get('valid_until')
+        api_token = integration_context.get("api_token")
+        valid_until = integration_context.get("valid_until")
 
         # Return API token from integration context, if found and not expired
         if api_token and valid_until and time.time() < valid_until:
-            demisto.debug('[CofenseTriagev3] Retrieved api-token from integration cache.')
+            demisto.debug("[CofenseTriagev3] Retrieved api-token from integration cache.")
             return api_token
         return False
 
 
-'''HELPER FUNCTIONS '''
+"""HELPER FUNCTIONS """
 
 
 def retrieve_fields(arg: str) -> str:
@@ -233,7 +227,7 @@ def retrieve_fields(arg: str) -> str:
     :return: Filtered out result.
     :rtype: ``str``
 
-     """
+    """
     return ",".join([x.strip() for x in arg.split(",") if x.strip()])
 
 
@@ -287,13 +281,13 @@ def validate_list_command_args(args: Dict[str, str], field_type: str) -> tuple:
     page_size = arg_to_number(args.get("page_size"))
     if page_size is not None:
         if page_size <= 0 or page_size > 200:
-            raise ValueError(MESSAGES['PAGE_SIZE'].format(page_size))
+            raise ValueError(MESSAGES["PAGE_SIZE"].format(page_size))
         params["page[size]"] = page_size
 
     page_number = arg_to_number(args.get("page_number"))
     if page_number is not None:
         if page_number <= 0:
-            raise ValueError(MESSAGES['PAGE_NUMBER'].format(page_number))
+            raise ValueError(MESSAGES["PAGE_NUMBER"].format(page_number))
         params["page[number]"] = page_number
 
     if args.get("sort_by"):
@@ -338,26 +332,26 @@ def validate_fetch_incidents_parameters(params: dict) -> dict:
         raise ValueError(MESSAGES["INVALID_FIRST_FETCH"])
     fetch_params["filter[updated_at_gteq]"] = first_fetch_time.strftime(DATE_FORMAT)
 
-    locations = params.get('mailbox_location', [])
+    locations = params.get("mailbox_location", [])
     if locations:
-        mailbox_location = retrieve_fields(','.join(locations))
+        mailbox_location = retrieve_fields(",".join(locations))
         custom_args.append("location")
         fetch_params["filter[location]"] = mailbox_location
 
     priorities = params.get("match_priority", [])
     if priorities:
-        match_priority = retrieve_fields(','.join(priorities))
+        match_priority = retrieve_fields(",".join(priorities))
         for priority in match_priority.split(","):
             arg_to_number(priority)
         custom_args.append("match_priority")
         fetch_params["filter[match_priority]"] = match_priority
 
-    if params.get('tags'):
+    if params.get("tags"):
         tags = retrieve_fields(params.get("tags", ""))
         custom_args.append("tags")
         fetch_params["filter[tags_any]"] = tags
 
-    if params.get('categorization_tags'):
+    if params.get("categorization_tags"):
         categorization_tags = retrieve_fields(params.get("categorization_tags", ""))
         custom_args.append("categorization_tags")
         fetch_params["filter[categorization_tags_any]"] = categorization_tags
@@ -431,9 +425,12 @@ def prepare_hr_for_threat_indicators(results: List[Dict[str, Any]]) -> str:
             hr[UPDATED_AT] = attributes.get("updated_at", "")
         threat_indicators_hr.append(hr)
 
-    return tableToMarkdown("Threat Indicator(s)", threat_indicators_hr,
-                           headers=["Threat Indicator ID", "Threat Level", "Threat Type", "Threat Value",
-                                    "Threat Source", CREATED_AT, UPDATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Threat Indicator(s)",
+        threat_indicators_hr,
+        headers=["Threat Indicator ID", "Threat Level", "Threat Type", "Threat Value", "Threat Source", CREATED_AT, UPDATED_AT],
+        removeNull=True,
+    )
 
 
 def prepare_hr_for_reports(reports: List[Dict[str, Any]]) -> str:
@@ -445,22 +442,26 @@ def prepare_hr_for_reports(reports: List[Dict[str, Any]]) -> str:
     hr_list = []
     for report in reports:
         hr_record = {
-            'Report ID': report.get('id', ''),
+            "Report ID": report.get("id", ""),
         }
-        attributes = report.get('attributes')
+        attributes = report.get("attributes")
         if attributes:
-            hr_record['From Address'] = attributes.get('from_address', '')
-            hr_record['Subject'] = attributes.get('subject', '')
-            hr_record['Match Priority'] = attributes.get('match_priority', '')
-            hr_record['Location'] = attributes.get('location', '')
-            hr_record['MD5'] = attributes.get('md5', '')
-            hr_record['SHA256'] = attributes.get('sha256', '')
-            hr_record[CREATED_AT] = attributes.get('created_at', '')
+            hr_record["From Address"] = attributes.get("from_address", "")
+            hr_record["Subject"] = attributes.get("subject", "")
+            hr_record["Match Priority"] = attributes.get("match_priority", "")
+            hr_record["Location"] = attributes.get("location", "")
+            hr_record["MD5"] = attributes.get("md5", "")
+            hr_record["SHA256"] = attributes.get("sha256", "")
+            hr_record[CREATED_AT] = attributes.get("created_at", "")
 
         hr_list.append(hr_record)
 
-    return tableToMarkdown('Report(s)', hr_list, ['Report ID', 'From Address', 'Subject', 'Match Priority', 'Location',
-                                                  'MD5', 'SHA256', CREATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Report(s)",
+        hr_list,
+        ["Report ID", "From Address", "Subject", "Match Priority", "Location", "MD5", "SHA256", CREATED_AT],
+        removeNull=True,
+    )
 
 
 def prepare_hr_for_categories(categories: List[Dict[str, Any]]) -> str:
@@ -472,20 +473,21 @@ def prepare_hr_for_categories(categories: List[Dict[str, Any]]) -> str:
     hr_list = []
     for category in categories:
         hr_record = {
-            'Category ID': category.get('id', ''),
+            "Category ID": category.get("id", ""),
         }
-        attributes = category.get('attributes')
+        attributes = category.get("attributes")
         if attributes:
-            hr_record['Name'] = attributes.get('name', '')
-            hr_record['Malicious'] = attributes.get('malicious', '')
-            hr_record['Archived'] = attributes.get('archived', '')
-            hr_record[CREATED_AT] = attributes.get('created_at', '')
-            hr_record[UPDATED_AT] = attributes.get('updated_at', '')
+            hr_record["Name"] = attributes.get("name", "")
+            hr_record["Malicious"] = attributes.get("malicious", "")
+            hr_record["Archived"] = attributes.get("archived", "")
+            hr_record[CREATED_AT] = attributes.get("created_at", "")
+            hr_record[UPDATED_AT] = attributes.get("updated_at", "")
 
         hr_list.append(hr_record)
 
-    return tableToMarkdown('Categories', hr_list, ['Category ID', 'Name', 'Malicious', 'Archived', CREATED_AT,
-                                                   UPDATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Categories", hr_list, ["Category ID", "Name", "Malicious", "Archived", CREATED_AT, UPDATED_AT], removeNull=True
+    )
 
 
 def prepare_hr_for_clusters(clusters: List[Dict[str, Any]]) -> str:
@@ -497,26 +499,39 @@ def prepare_hr_for_clusters(clusters: List[Dict[str, Any]]) -> str:
     hr_list = []
     for cluster in clusters:
         hr_record = {
-            'Cluster ID': cluster.get('id', ''),
+            "Cluster ID": cluster.get("id", ""),
         }
-        attributes = cluster.get('attributes')
+        attributes = cluster.get("attributes")
         if attributes:
-            hr_record['Unprocessed Report'] = attributes.get('unprocessed_reports_count', '')
-            hr_record['Total Report Count'] = attributes.get('total_reports_count', '')
-            hr_record['Match Priority'] = attributes.get('match_priority', '')
-            hr_record['Tags'] = attributes.get('tags', '')
-            hr_record['Host Source'] = attributes.get('host_source', '')
-            hr_record['Average Reporter Reputation Score'] = attributes.get('average_reporter_reputation', '')
-            hr_record['VIP Reporter count'] = attributes.get('vip_reporters_count', '')
-            hr_record[CREATED_AT] = attributes.get('created_at', '')
-            hr_record[UPDATED_AT] = attributes.get('updated_at', '')
+            hr_record["Unprocessed Report"] = attributes.get("unprocessed_reports_count", "")
+            hr_record["Total Report Count"] = attributes.get("total_reports_count", "")
+            hr_record["Match Priority"] = attributes.get("match_priority", "")
+            hr_record["Tags"] = attributes.get("tags", "")
+            hr_record["Host Source"] = attributes.get("host_source", "")
+            hr_record["Average Reporter Reputation Score"] = attributes.get("average_reporter_reputation", "")
+            hr_record["VIP Reporter count"] = attributes.get("vip_reporters_count", "")
+            hr_record[CREATED_AT] = attributes.get("created_at", "")
+            hr_record[UPDATED_AT] = attributes.get("updated_at", "")
 
         hr_list.append(hr_record)
 
-    return tableToMarkdown('Cluster(s)', hr_list, ['Cluster ID', 'Unprocessed Report', 'Total Report Count',
-                                                   'Match Priority', 'Tags', 'Host Source',
-                                                   'Average Reporter Reputation Score', 'VIP Reporter count',
-                                                   CREATED_AT, UPDATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Cluster(s)",
+        hr_list,
+        [
+            "Cluster ID",
+            "Unprocessed Report",
+            "Total Report Count",
+            "Match Priority",
+            "Tags",
+            "Host Source",
+            "Average Reporter Reputation Score",
+            "VIP Reporter count",
+            CREATED_AT,
+            UPDATED_AT,
+        ],
+        removeNull=True,
+    )
 
 
 def prepare_hr_for_rules(rules: List[Dict[str, Any]]) -> str:
@@ -528,25 +543,39 @@ def prepare_hr_for_rules(rules: List[Dict[str, Any]]) -> str:
     hr_list = []
     for rule in rules:
         hr_record = {
-            'Rule ID': rule.get('id', ''),
+            "Rule ID": rule.get("id", ""),
         }
-        attributes = rule.get('attributes')
+        attributes = rule.get("attributes")
         if attributes:
-            hr_record['Rule Name'] = attributes.get('name', '')
-            hr_record['Description'] = attributes.get('description', '')
-            hr_record['Active'] = attributes.get('active', '')
-            hr_record['Priority'] = attributes.get('priority', '')
-            hr_record['Scope'] = attributes.get('scope', '')
-            hr_record['Author Name'] = attributes.get('author_name', '')
-            hr_record['Rule Context'] = attributes.get('rule_context', '')
-            hr_record['Created At'] = attributes.get('created_at', '')
-            hr_record['Updated At'] = attributes.get('updated_at', '')
+            hr_record["Rule Name"] = attributes.get("name", "")
+            hr_record["Description"] = attributes.get("description", "")
+            hr_record["Active"] = attributes.get("active", "")
+            hr_record["Priority"] = attributes.get("priority", "")
+            hr_record["Scope"] = attributes.get("scope", "")
+            hr_record["Author Name"] = attributes.get("author_name", "")
+            hr_record["Rule Context"] = attributes.get("rule_context", "")
+            hr_record["Created At"] = attributes.get("created_at", "")
+            hr_record["Updated At"] = attributes.get("updated_at", "")
 
         hr_list.append(hr_record)
 
-    return tableToMarkdown('Rule(s)', hr_list, ['Rule ID', 'Rule Name', 'Description', 'Active', 'Priority', 'Scope',
-                                                'Author Name', 'Rule Context', 'Created At', 'Updated At'],
-                           removeNull=True)
+    return tableToMarkdown(
+        "Rule(s)",
+        hr_list,
+        [
+            "Rule ID",
+            "Rule Name",
+            "Description",
+            "Active",
+            "Priority",
+            "Scope",
+            "Author Name",
+            "Rule Context",
+            "Created At",
+            "Updated At",
+        ],
+        removeNull=True,
+    )
 
 
 def validate_tags_argument(args: Dict[str, str]) -> Dict:
@@ -746,8 +775,7 @@ def prepare_hr_for_urls(results: List[Dict[str, Any]]) -> str:
             hr[UPDATED_AT] = attributes.get("updated_at", "")
         urls_hr.append(hr)
 
-    return tableToMarkdown("URL(s)", urls_hr,
-                           headers=["URL ID", "URL", "Risk Score", CREATED_AT, UPDATED_AT], removeNull=True)
+    return tableToMarkdown("URL(s)", urls_hr, headers=["URL ID", "URL", "Risk Score", CREATED_AT, UPDATED_AT], removeNull=True)
 
 
 def validate_list_rule_args(args: Dict[str, str]) -> Dict[str, Any]:
@@ -901,9 +929,21 @@ def prepare_hr_for_reporters(results: List[Dict[str, Any]]) -> str:
             hr[UPDATED_AT] = attributes.get("updated_at", "")
         reporters_hr.append(hr)
 
-    return tableToMarkdown("Reporter(s)", reporters_hr,
-                           headers=["Reporter ID", "Reporter Email", "Reports Count", "Reputation Score", "VIP",
-                                    "Last Reported At", CREATED_AT, UPDATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Reporter(s)",
+        reporters_hr,
+        headers=[
+            "Reporter ID",
+            "Reporter Email",
+            "Reports Count",
+            "Reputation Score",
+            "VIP",
+            "Last Reported At",
+            CREATED_AT,
+            UPDATED_AT,
+        ],
+        removeNull=True,
+    )
 
 
 def validate_categorize_report_args(args: Dict[str, str]) -> Dict[str, Any]:
@@ -983,9 +1023,12 @@ def prepare_hr_for_attachment_payloads(results: List[Dict[str, Any]]) -> str:
             hr[UPDATED_AT] = attributes.get("updated_at", "")
         payloads_hr.append(hr)
 
-    return tableToMarkdown("Attachment Payload(s)", payloads_hr,
-                           headers=["Attachment Payload ID", "Mime Type", "MD5", "SHA256", "Risk Score", CREATED_AT,
-                                    UPDATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Attachment Payload(s)",
+        payloads_hr,
+        headers=["Attachment Payload ID", "Mime Type", "MD5", "SHA256", "Risk Score", CREATED_AT, UPDATED_AT],
+        removeNull=True,
+    )
 
 
 def prepare_hr_for_report_attachments(results: List[Dict[str, Any]]) -> str:
@@ -1011,10 +1054,12 @@ def prepare_hr_for_report_attachments(results: List[Dict[str, Any]]) -> str:
             hr[UPDATED_AT] = attributes.get("updated_at", "")
         attachments_hr.append(hr)
 
-    return tableToMarkdown("Attachment(s)", attachments_hr,
-                           headers=["Attachment ID", "File Name",
-                                    "File Size in Bytes", "Is Child", CREATED_AT, UPDATED_AT],
-                           removeNull=True)
+    return tableToMarkdown(
+        "Attachment(s)",
+        attachments_hr,
+        headers=["Attachment ID", "File Name", "File Size in Bytes", "Is Child", CREATED_AT, UPDATED_AT],
+        removeNull=True,
+    )
 
 
 def validate_comment_list_args(args: Dict[str, str]) -> Dict[str, Any]:
@@ -1062,27 +1107,31 @@ def prepare_hr_for_comments(comments: List[Dict[str, Any]]) -> str:
     hr = []
     for comment in comments:
         data = {
-            'Comment ID': comment.get('id', ''),
+            "Comment ID": comment.get("id", ""),
         }
-        attributes = comment.get('attributes')
+        attributes = comment.get("attributes")
         if attributes:
-            data['Body Format'] = attributes.get('body_format', '')
-            if data['Body Format'] == "json":
-                data['Body'] = attributes.get('body', {}).get('properties', {}).get('summary', {}).get('type', '')
+            data["Body Format"] = attributes.get("body_format", "")
+            if data["Body Format"] == "json":
+                data["Body"] = attributes.get("body", {}).get("properties", {}).get("summary", {}).get("type", "")
             else:
-                data['Body'] = attributes.get('body', '')
-            data['Tags'] = attributes.get('tags', [])
-            data['Created At'] = attributes.get('created_at', '')
-            data['Updated At'] = attributes.get('updated_at', '')
+                data["Body"] = attributes.get("body", "")
+            data["Tags"] = attributes.get("tags", [])
+            data["Created At"] = attributes.get("created_at", "")
+            data["Updated At"] = attributes.get("updated_at", "")
 
         relationships = comment.get("relationships")
         if relationships:
-            data['Associated To'] = relationships.get('commentable', {}).get('data', {}).get('type', '')
-            data['Associated To ID'] = relationships.get('commentable', {}).get('data', {}).get('id', '')
+            data["Associated To"] = relationships.get("commentable", {}).get("data", {}).get("type", "")
+            data["Associated To ID"] = relationships.get("commentable", {}).get("data", {}).get("id", "")
         hr.append(data)
 
-    return tableToMarkdown('Comment(s)', hr, ['Comment ID', 'Body Format', 'Body', 'Tags', 'Created At', 'Updated At',
-                                              'Associated To', 'Associated To ID'], removeNull=True)
+    return tableToMarkdown(
+        "Comment(s)",
+        hr,
+        ["Comment ID", "Body Format", "Body", "Tags", "Created At", "Updated At", "Associated To", "Associated To ID"],
+        removeNull=True,
+    )
 
 
 def validate_get_integration_submission_args(args: Dict[str, str]) -> Dict[str, Any]:
@@ -1145,26 +1194,28 @@ def prepare_hr_for_integration_submission(results: List[Dict[str, Any]]) -> str:
             hr[UPDATED_AT] = attributes.get("updated_at", "")
         integration_submission_hr.append(hr)
 
-    return tableToMarkdown("Integration Submission(s)", integration_submission_hr,
-                           headers=["Integration Submission ID", "Status", "Kind", "Risk Score",
-                                    CREATED_AT, UPDATED_AT], removeNull=True)
+    return tableToMarkdown(
+        "Integration Submission(s)",
+        integration_submission_hr,
+        headers=["Integration Submission ID", "Status", "Kind", "Risk Score", CREATED_AT, UPDATED_AT],
+        removeNull=True,
+    )
 
 
 def check_fetch_incident_configuration(fetch_params, params):
-    """ Raises an exception if any setting related to fetch incident is configured incorrectly."""
-    location = fetch_params.get('filter[location]', "")
+    """Raises an exception if any setting related to fetch incident is configured incorrectly."""
+    location = fetch_params.get("filter[location]", "")
     if not location:
         return
 
     for key, value in fetch_params.items():
-        if key.startswith("filter[tags") and (
-                "Inbox" not in location and "Reconnaissance" not in location):
+        if key.startswith("filter[tags") and ("Inbox" not in location and "Reconnaissance" not in location):
             raise ValueError(MESSAGES["INVALID_LOCATION_FOR_TAGS"])
 
         if key.startswith("filter[categorization_tags") and "Processed" not in location:
             raise ValueError(MESSAGES["INVALID_LOCATION_FOR_CATEGORIZATION_TAGS"])
 
-    if params.get('category_id') and 'Processed' not in location:
+    if params.get("category_id") and "Processed" not in location:
         raise ValueError(MESSAGES["INVALID_LOCATION_FOR_CATEGORY_ID"])
 
 
@@ -1193,7 +1244,7 @@ def validate_update_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any
     return params
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client, params: dict) -> str:
@@ -1214,7 +1265,7 @@ def test_module(client: Client, params: dict) -> str:
     is_fetch = params.get("isFetch")
     if is_fetch:
         fetch_incidents(client, {}, params)
-    return 'ok'
+    return "ok"
 
 
 def cofense_threat_indicator_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -1257,12 +1308,13 @@ def cofense_threat_indicator_list_command(client: Client, args: Dict[str, str]) 
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["THREAT_INDICATOR"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["THREAT_INDICATOR"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_report_list_command(client, args: Dict[str, str]) -> CommandResults:
@@ -1279,26 +1331,26 @@ def cofense_report_list_command(client, args: Dict[str, str]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    report_id = args.get('id')
-    category_id = args.get('category_id')
-    cluster_id = args.get('cluster_id')
+    report_id = args.get("id")
+    category_id = args.get("category_id")
+    cluster_id = args.get("cluster_id")
 
-    url_suffix = URL_SUFFIX['REPORTS']
+    url_suffix = URL_SUFFIX["REPORTS"]
     if report_id:
         url_suffix = f"{URL_SUFFIX['REPORTS']}/{report_id}"
     elif category_id:
-        url_suffix = URL_SUFFIX['REPORTS_BY_CATEGORY'].format(category_id)
+        url_suffix = URL_SUFFIX["REPORTS_BY_CATEGORY"].format(category_id)
     elif cluster_id:
-        url_suffix = URL_SUFFIX['REPORTS_BY_CLUSTER'].format(cluster_id)
+        url_suffix = URL_SUFFIX["REPORTS_BY_CLUSTER"].format(cluster_id)
 
     params = validate_list_report_args(args)
 
     response = client.http_request(url_suffix, params=params)
 
-    total_records = response.get('data', [])
+    total_records = response.get("data", [])
 
     if not total_records:
-        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('report(s)'))
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("report(s)"))
 
     if isinstance(total_records, dict):
         total_records = [total_records]
@@ -1311,10 +1363,10 @@ def cofense_report_list_command(client, args: Dict[str, str]) -> CommandResults:
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["REPORT"],
-        outputs_key_field='id',
+        outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1337,9 +1389,7 @@ def cofense_report_download_command(client: Client, args: Dict[str, str]) -> dic
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("id"))
     # Appending the id to the url_suffix
     url_suffix = URL_SUFFIX["REPORT_DOWNLOAD"].format(report_id)
-    headers = {
-        'Accept': "text/plain"
-    }
+    headers = {"Accept": "text/plain"}
     # Sending http request
     raw_response = client.http_request(url_suffix, resp_type="text", headers=headers)
     filename = f"Report ID - {report_id}.eml"
@@ -1373,9 +1423,7 @@ def cofense_report_image_download_command(client: Client, args: Dict[str, str]) 
 
     # Appending the id and type to the url_suffix
     url_suffix = URL_SUFFIX["REPORT_IMAGE_DOWNLOAD"].format(report_id, image_type)
-    headers = {
-        "Accept": f"image/{image_type if image_type == DEFAULT_REPORT_IMAGE_TYPE else 'jpeg'}"
-    }
+    headers = {"Accept": f"image/{image_type if image_type == DEFAULT_REPORT_IMAGE_TYPE else 'jpeg'}"}
     # Sending http request
     raw_response = client.http_request(url_suffix, resp_type="content", headers=headers)
 
@@ -1423,12 +1471,13 @@ def cofense_report_attachment_payload_list_command(client: Client, args: Dict[st
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["ATTACHMENT_PAYLOAD"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["ATTACHMENT_PAYLOAD"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_report_attachment_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -1471,12 +1520,13 @@ def cofense_report_attachment_list_command(client: Client, args: Dict[str, str])
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["ATTACHMENT"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["ATTACHMENT"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_report_attachment_download_command(client: Client, args: Dict[str, str]) -> dict:
@@ -1497,15 +1547,13 @@ def cofense_report_attachment_download_command(client: Client, args: Dict[str, s
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("id"))
     # Appending the id to the url_suffix
     url_suffix = URL_SUFFIX["REPORT_ATTACHMENT_DOWNLOAD"].format(attachment_id)
-    headers = {
-        'Accept': "*/*"
-    }
+    headers = {"Accept": "*/*"}
     # Sending http request
     response = client.http_request(url_suffix, resp_type="response", headers=headers)
-    content_disposition = response.headers.get('Content-Disposition') or ''
-    content_disposition_split = content_disposition.split(';')
+    content_disposition = response.headers.get("Content-Disposition") or ""
+    content_disposition_split = content_disposition.split(";")
     if len(content_disposition_split) > 1:
-        file_name = content_disposition_split[1].replace('filename=', '').replace('"', '')
+        file_name = content_disposition_split[1].replace("filename=", "").replace('"', "")
         file_name = urllib.parse.unquote(file_name).strip()
     else:
         file_name = f"Attachment ID - {attachment_id}"
@@ -1531,19 +1579,19 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict,
 
     check_fetch_incident_configuration(fetch_params, params)
 
-    if last_run.get('id'):
-        fetch_params["filter[id_gt]"] = last_run.get('id')
+    if last_run.get("id"):
+        fetch_params["filter[id_gt]"] = last_run.get("id")
         del fetch_params["filter[updated_at_gteq]"]
-    elif last_run.get('updated_at'):
+    elif last_run.get("updated_at"):
         fetch_params["filter[updated_at_gteq]"] = last_run.get("updated_at")
 
-    ids = last_run.get('ids', [])
+    ids = last_run.get("ids", [])
 
     fetch_params["sort"] = "updated_at"
     fetch_params["page[number]"] = last_run.get("page_number", 1)
     remove_nulls_from_dictionary(fetch_params)
 
-    category_id = params.get('category_id')
+    category_id = params.get("category_id")
     if category_id:
         url_suffix = URL_SUFFIX["REPORTS_BY_CATEGORY"].format(category_id)
     else:
@@ -1551,28 +1599,30 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict,
 
     response = client.http_request(url_suffix, params=fetch_params)
 
-    results = response.get('data', [])
+    results = response.get("data", [])
 
     next_run = last_run
     incidents = []
     for result in results:
-        if result.get('id') not in ids:
-            result['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'))
-            result['mirror_instance'] = demisto.integrationInstance()
-            incidents.append({
-                'name': result.get('attributes', {}).get('subject', ''),
-                'occurred': result.get('attributes', {}).get('created_at'),
-                'rawJSON': json.dumps(result)
-            })
-            ids.append(result.get('id'))
+        if result.get("id") not in ids:
+            result["mirror_direction"] = MIRROR_DIRECTION.get(params.get("mirror_direction", "None"))
+            result["mirror_instance"] = demisto.integrationInstance()
+            incidents.append(
+                {
+                    "name": result.get("attributes", {}).get("subject", ""),
+                    "occurred": result.get("attributes", {}).get("created_at"),
+                    "rawJSON": json.dumps(result),
+                }
+            )
+            ids.append(result.get("id"))
         else:
             demisto.debug(f"Skipping report {result.get('id')} since it has already been fetched.")
 
     if results:
-        next_run.pop('id', None)
+        next_run.pop("id", None)
         next_run["ids"] = ids
         if len(results) < int(params.get("max_fetch")) or not next_run.get("updated_at"):  # type:ignore
-            next_run['updated_at'] = results[-1].get('attributes', {}).get('updated_at')
+            next_run["updated_at"] = results[-1].get("attributes", {}).get("updated_at")
             next_run["page_number"] = 1
         else:
             next_run["page_number"] = last_run.get("page_number", 1) + 1
@@ -1596,10 +1646,9 @@ def cofense_report_categorize_command(client: Client, args: Dict[str, str]) -> C
     params = validate_categorize_report_args(args)
     url_suffix = URL_SUFFIX["REPORT_CATEGORIZE"].format(args["id"])
 
-    client.http_request(url_suffix, method="POST",
-                        headers={
-                            'Content-Type': TYPE_HEADER
-                        }, json_data={"data": params}, resp_type="response")
+    client.http_request(
+        url_suffix, method="POST", headers={"Content-Type": TYPE_HEADER}, json_data={"data": params}, resp_type="response"
+    )
 
     return CommandResults(readable_output=f"Report with ID = {args['id']} is categorized successfully.")
 
@@ -1613,17 +1662,17 @@ def cofense_category_list_command(client, args: Dict[str, str]) -> CommandResult
     :return: Command Result.
     """
 
-    category_id = args.get('id')
-    url_suffix = f"{URL_SUFFIX['CATEGORY']}/{category_id}" if category_id else URL_SUFFIX['CATEGORY']
+    category_id = args.get("id")
+    url_suffix = f"{URL_SUFFIX['CATEGORY']}/{category_id}" if category_id else URL_SUFFIX["CATEGORY"]
 
     params = validate_list_category_args(args)
 
     response = client.http_request(url_suffix, params=params)
 
-    total_records = response.get('data', [])
+    total_records = response.get("data", [])
 
     if not total_records:
-        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('categories'))
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("categories"))
 
     if isinstance(total_records, dict):
         total_records = [total_records]
@@ -1636,10 +1685,10 @@ def cofense_category_list_command(client, args: Dict[str, str]) -> CommandResult
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["CATEGORY"],
-        outputs_key_field='id',
+        outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1652,17 +1701,17 @@ def cofense_rule_list_command(client, args: Dict[str, str]) -> CommandResults:
     :return: Command Result.
     """
 
-    rule_id = args.get('id')
-    url_suffix = f"{URL_SUFFIX['RULE']}/{rule_id}" if rule_id else URL_SUFFIX['RULE']
+    rule_id = args.get("id")
+    url_suffix = f"{URL_SUFFIX['RULE']}/{rule_id}" if rule_id else URL_SUFFIX["RULE"]
 
     params = validate_list_rule_args(args)
 
     response = client.http_request(url_suffix, params=params)
 
-    total_records = response.get('data', [])
+    total_records = response.get("data", [])
 
     if not total_records:
-        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('rule(s)'))
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("rule(s)"))
 
     if isinstance(total_records, dict):
         total_records = [total_records]
@@ -1675,10 +1724,10 @@ def cofense_rule_list_command(client, args: Dict[str, str]) -> CommandResults:
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["RULE"],
-        outputs_key_field='id',
+        outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1723,12 +1772,13 @@ def cofense_url_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["URL"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["URL"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_threat_indicator_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -1748,12 +1798,12 @@ def cofense_threat_indicator_create_command(client: Client, args: Dict[str, str]
     params = validate_create_threat_indicator_args(args)
 
     # Sending http request
-    response = client.http_request(URL_SUFFIX["THREAT_INDICATORS"], method="POST",
-                                   headers={'Content-Type': TYPE_HEADER},
-                                   json_data={"data": {
-                                       "type": "threat_indicators",
-                                       "attributes": params
-                                   }})
+    response = client.http_request(
+        URL_SUFFIX["THREAT_INDICATORS"],
+        method="POST",
+        headers={"Content-Type": TYPE_HEADER},
+        json_data={"data": {"type": "threat_indicators", "attributes": params}},
+    )
 
     result = response.get("data")
     if isinstance(result, dict):
@@ -1765,27 +1815,28 @@ def cofense_threat_indicator_create_command(client: Client, args: Dict[str, str]
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["THREAT_INDICATOR"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["THREAT_INDICATOR"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_integration_submission_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
-        Retrieves integration submission based on the filter values provided in the command arguments.
+    Retrieves integration submission based on the filter values provided in the command arguments.
 
-        :type client: ``Client``
-        :param client: Client object to be used.
+    :type client: ``Client``
+    :param client: Client object to be used.
 
-        :type args: ``Dict[str, str]``
-        :param args: The command arguments provided by the user.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
 
-        :return: Standard command result or no records found message.
-        :rtype: ``CommandResults``
-        """
+    :return: Standard command result or no records found message.
+    :rtype: ``CommandResults``
+    """
     integration_submission_id = args.get("id")
     if not integration_submission_id:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("integration_submission_id"))
@@ -1816,12 +1867,13 @@ def cofense_integration_submission_get_command(client: Client, args: Dict[str, s
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["INTEGRATION_SUBMISSION"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["INTEGRATION_SUBMISSION"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_reporter_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -1865,12 +1917,13 @@ def cofense_reporter_list_command(client: Client, args: Dict[str, str]) -> Comma
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["REPORTER"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["REPORTER"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_attachment_payload_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -1914,12 +1967,13 @@ def cofense_attachment_payload_list_command(client: Client, args: Dict[str, str]
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["ATTACHMENT_PAYLOAD"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["ATTACHMENT_PAYLOAD"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
 def cofense_comment_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -1936,11 +1990,11 @@ def cofense_comment_list_command(client: Client, args: Dict[str, str]) -> Comman
     :rtype: ``CommandResults``
     """
 
-    comment_id = arg_to_number(args.get('id'))
-    report_id = arg_to_number(args.get('report_id'))
-    threat_indicator_id = arg_to_number(args.get('threat_indicator_id'))
+    comment_id = arg_to_number(args.get("id"))
+    report_id = arg_to_number(args.get("report_id"))
+    threat_indicator_id = arg_to_number(args.get("threat_indicator_id"))
 
-    url_suffix = URL_SUFFIX['COMMENTS']
+    url_suffix = URL_SUFFIX["COMMENTS"]
     if comment_id:
         url_suffix = f"{URL_SUFFIX['COMMENTS']}/{comment_id}"
     elif report_id:
@@ -1951,10 +2005,10 @@ def cofense_comment_list_command(client: Client, args: Dict[str, str]) -> Comman
     params = validate_comment_list_args(args)
     response = client.http_request(url_suffix=url_suffix, params=params)
 
-    total_records = response.get('data', [])
+    total_records = response.get("data", [])
 
     if not total_records:
-        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('comment(s)'))
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("comment(s)"))
 
     if isinstance(total_records, dict):
         total_records = [total_records]
@@ -1970,7 +2024,7 @@ def cofense_comment_list_command(client: Client, args: Dict[str, str]) -> Comman
         outputs_key_field="id",
         outputs=context_data,
         readable_output=hr_response,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1988,18 +2042,18 @@ def cofense_cluster_list_command(client: Client, args: Dict[str, str]) -> Comman
     :rtype: ``CommandResults``
     """
 
-    cluster_id = args.get('id')
+    cluster_id = args.get("id")
 
-    url_suffix = f"{URL_SUFFIX['CLUSTER']}/{cluster_id}" if cluster_id else URL_SUFFIX['CLUSTER']
+    url_suffix = f"{URL_SUFFIX['CLUSTER']}/{cluster_id}" if cluster_id else URL_SUFFIX["CLUSTER"]
 
     params = validate_list_cluster_args(args)
 
     response = client.http_request(url_suffix, params=params)
 
-    total_records = response.get('data', [])
+    total_records = response.get("data", [])
 
     if not total_records:
-        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('cluster(s)'))
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("cluster(s)"))
 
     if isinstance(total_records, dict):
         total_records = [total_records]
@@ -2012,10 +2066,10 @@ def cofense_cluster_list_command(client: Client, args: Dict[str, str]) -> Comman
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["CLUSTER"],
-        outputs_key_field='id',
+        outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2037,14 +2091,14 @@ def get_remote_data_command(client: Client, args: Dict[str, str]) -> GetRemoteDa
 
     responded_incident = client.http_request(URL_SUFFIX["REPORT_ID"].format(parsed_args.remote_incident_id))
 
-    result = responded_incident.get('data', {})
+    result = responded_incident.get("data", {})
     result = remove_empty_elements(result)
 
-    report_last_updated = arg_to_datetime(result.get('attributes', {}).get('updated_at', ""), is_utc=True)
+    report_last_updated = arg_to_datetime(result.get("attributes", {}).get("updated_at", ""), is_utc=True)
     incident_last_updated = arg_to_datetime(parsed_args.last_update, is_utc=True)
 
     if report_last_updated < incident_last_updated:  # type: ignore
-        demisto.debug(f'[CofenseTriagev3]: Incident {parsed_args.remote_incident_id} is already up to date')
+        demisto.debug(f"[CofenseTriagev3]: Incident {parsed_args.remote_incident_id} is already up to date")
         return GetRemoteDataResponse({}, [])
 
     return GetRemoteDataResponse(result, [])
@@ -2066,14 +2120,12 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, str]) -> Ge
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update_utc = arg_to_datetime(remote_args.last_update, is_utc=True).strftime(DATE_FORMAT)  # type:ignore
 
-    params = {
-        'filter[updated_at_gt]': last_update_utc
-    }
+    params = {"filter[updated_at_gt]": last_update_utc}
     raw_incidents = client.http_request(URL_SUFFIX["REPORTS"], params=params)
     results = raw_incidents.get("data", [])
     modified_incident_ids = list()
     for result in results:
-        incident_id = result.get('id')
+        incident_id = result.get("id")
         modified_incident_ids.append(incident_id)
 
     return GetModifiedRemoteDataResponse(modified_incident_ids)
@@ -2097,13 +2149,12 @@ def cofense_threat_indicator_update_command(client: Client, args: Dict[str, str]
     id = args["id"]
 
     # Sending http request
-    response = client.http_request(f"{URL_SUFFIX['THREAT_INDICATORS']}/{id}", method="PUT",
-                                   headers={'Content-Type': TYPE_HEADER},
-                                   json_data={"data": {
-                                       "id": id,
-                                       "type": "threat_indicators",
-                                       "attributes": params
-                                   }})
+    response = client.http_request(
+        f"{URL_SUFFIX['THREAT_INDICATORS']}/{id}",
+        method="PUT",
+        headers={"Content-Type": TYPE_HEADER},
+        json_data={"data": {"id": id, "type": "threat_indicators", "attributes": params}},
+    )
 
     result = response.get("data")
     if isinstance(result, dict):
@@ -2115,63 +2166,58 @@ def cofense_threat_indicator_update_command(client: Client, args: Dict[str, str]
     # Creating the Context data
     context_data = remove_empty_elements(result)
 
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX["THREAT_INDICATOR"],
-                          outputs_key_field="id",
-                          outputs=context_data,
-                          readable_output=hr_response,
-                          raw_response=response
-                          )
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["THREAT_INDICATOR"],
+        outputs_key_field="id",
+        outputs=context_data,
+        readable_output=hr_response,
+        raw_response=response,
+    )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-    """
+    """main function, parses params and runs command functions"""
     # Commands dictionary
     commands: Dict[str, Callable] = {
-        'cofense-report-list': cofense_report_list_command,
-        'cofense-threat-indicator-list': cofense_threat_indicator_list_command,
-        'cofense-report-download': cofense_report_download_command,
-        'cofense-report-categorize': cofense_report_categorize_command,
-        'cofense-category-list': cofense_category_list_command,
-        'cofense-url-list': cofense_url_list_command,
-        'cofense-rule-list': cofense_rule_list_command,
-        'cofense-threat-indicator-create': cofense_threat_indicator_create_command,
-        'cofense-reporter-list': cofense_reporter_list_command,
-        'cofense-attachment-payload-list': cofense_attachment_payload_list_command,
-        'cofense-integration-submission-get': cofense_integration_submission_get_command,
-        'cofense-comment-list': cofense_comment_list_command,
-        'cofense-cluster-list': cofense_cluster_list_command,
-        'cofense-threat-indicator-update': cofense_threat_indicator_update_command,
-        'cofense-report-image-download': cofense_report_image_download_command,
-        'cofense-report-attachment-payload-list': cofense_report_attachment_payload_list_command,
-        'cofense-report-attachment-list': cofense_report_attachment_list_command,
-        'cofense-report-attachment-download': cofense_report_attachment_download_command,
+        "cofense-report-list": cofense_report_list_command,
+        "cofense-threat-indicator-list": cofense_threat_indicator_list_command,
+        "cofense-report-download": cofense_report_download_command,
+        "cofense-report-categorize": cofense_report_categorize_command,
+        "cofense-category-list": cofense_category_list_command,
+        "cofense-url-list": cofense_url_list_command,
+        "cofense-rule-list": cofense_rule_list_command,
+        "cofense-threat-indicator-create": cofense_threat_indicator_create_command,
+        "cofense-reporter-list": cofense_reporter_list_command,
+        "cofense-attachment-payload-list": cofense_attachment_payload_list_command,
+        "cofense-integration-submission-get": cofense_integration_submission_get_command,
+        "cofense-comment-list": cofense_comment_list_command,
+        "cofense-cluster-list": cofense_cluster_list_command,
+        "cofense-threat-indicator-update": cofense_threat_indicator_update_command,
+        "cofense-report-image-download": cofense_report_image_download_command,
+        "cofense-report-attachment-payload-list": cofense_report_attachment_payload_list_command,
+        "cofense-report-attachment-list": cofense_report_attachment_list_command,
+        "cofense-report-attachment-download": cofense_report_attachment_download_command,
     }
     command = demisto.command()
-    demisto.debug(f'[CofenseTriagev3] Command being called is {command}')
+    demisto.debug(f"[CofenseTriagev3] Command being called is {command}")
 
     params = demisto.params()
 
     # get the service API url
-    base_url = params.get('url')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    base_url = params.get("url")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     credentials = params.get("credentials", {})
-    client_id = credentials.get('identifier').strip()
-    client_secret = credentials.get('password')
+    client_id = credentials.get("identifier").strip()
+    client_secret = credentials.get("password")
 
     try:
-
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            client_id=client_id,
-            client_secret=client_secret
+            base_url=base_url, verify=verify_certificate, proxy=proxy, client_id=client_id, client_secret=client_secret
         )
 
         # Trim the arguments
@@ -2184,20 +2230,20 @@ def main() -> None:
                 nargs[arg] = args[arg]
         args = nargs
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, params))
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client, last_run, params)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
-        elif demisto.command() == 'get-remote-data':
+        elif demisto.command() == "get-remote-data":
             return_results(get_remote_data_command(client, args))
 
-        elif demisto.command() == 'get-modified-remote-data':
+        elif demisto.command() == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
 
         elif command in commands:
@@ -2206,10 +2252,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
