@@ -2823,5 +2823,103 @@ def test_commands_required_includes_all_commands():
     except FileNotFoundError:
         pytest.skip("yml file is unavailable for testing in this environment")
 
-    for command in yml["script"]["commands"]:
-        assert command["name"] in COMMANDS_REQUIRED_PERMISSIONS
+    for command in yml['script']['commands']:
+        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS
+
+
+def test_get_one_on_one_chat_id(mocker, requests_mock):
+    """
+    Test functionality for getting the chat id of oneOnOne chats without using the chat creation endpoint.
+
+    Given:
+      - The user_id of a oneOnOne chat recipient
+    When:
+      - Calling the get_one_on_one_chat_id function
+    Then:
+      - Ensure the expected request body is sent and the chat id is retrieved successfully
+    """
+    from MicrosoftTeams import get_one_on_one_chat_id
+    mock_signed_in_response = test_data.get('signed_in_user')
+    mocker.patch('MicrosoftTeams.get_signed_in_user', return_value=mock_signed_in_response)
+    mock_chat_response = test_data.get('get_oneOnOne_chat_id_response')
+    mock_user_id = mock_chat_response.get('value')[0].get('members')[0].get('userId')
+    expected_request_qs = {
+        '$expand': ['members'],
+        '$filter': ["chattype eq 'oneonone' and members/any(m:m/microsoft.graph.aaduserconversationmember/userid "
+                    f"eq '{mock_user_id}')"]
+    }
+    expected_chat_id = mock_chat_response.get('value')[0].get('id')
+
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/me/chats',
+        json=mock_chat_response
+    )
+
+    chat_id = get_one_on_one_chat_id(mock_user_id)
+
+    assert requests_mock.request_history[1].qs == expected_request_qs
+    assert chat_id == expected_chat_id
+
+
+def test_get_chat_id_and_type_no_chat_creation_permission(mocker, requests_mock):
+    """
+    Test get_chat_id_and_type function when trying to get a oneOnOne chat and chat creation is forbidden.
+
+    Given:
+        The 'chat' argument as member name
+    When:
+      - Calling the get_chat_id_and_type function with create_dm_chat = False
+    Then:
+      - There will be no attempt to create the chat
+      - The chat_id is returned correctly
+    """
+    from MicrosoftTeams import get_chat_id_and_type
+
+    mock_chat_id = 'test_oneonone_chat_id'
+    mock_user_id = 'user_id'
+    chat_name = 'test_admin'
+    requests_mock.get(
+        f"https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq '{chat_name}'",
+        json=test_data.get('get_chat_id_and_type_no_chat_response')
+    )
+    get_user_mock = mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': mock_user_id, 'userType': 'Member'}])
+    get_one_on_one_chat_id_mock = mocker.patch('MicrosoftTeams.get_one_on_one_chat_id', return_value=mock_chat_id)
+    create_chat_mock = mocker.patch('MicrosoftTeams.create_chat')
+
+    assert get_chat_id_and_type(chat_name, create_dm_chat=False) == (mock_chat_id, 'oneOnOne')
+    create_chat_mock.assert_not_called()
+    get_one_on_one_chat_id_mock.assert_called_once_with(mock_user_id)
+    assert get_user_mock.call_count == 1
+
+
+def test_get_chat_id_and_type_not_found_no_chat_creation_permission(mocker, requests_mock):
+    """
+    Test get_chat_id_and_type function when trying to get a non-existent oneOnOne chat and chat creation is forbidden.
+
+    Given:
+      - chat as a user_id that does not have an existing oneOnOne chat
+    When:
+      - Calling the get_chat_id_and_type function with create_dm_chat = False
+    Then:
+      - A chat not found error is raised
+    """
+    from MicrosoftTeams import get_chat_id_and_type
+
+    mock_signed_in_response = test_data.get('signed_in_user')
+    mocker.patch('MicrosoftTeams.get_signed_in_user', return_value=mock_signed_in_response)
+    mock_chat_response = test_data.get('get_oneOnOne_chat_id_no_chat_response')
+    chat_name = 'unknown'
+    requests_mock.get(
+        f"https://graph.microsoft.com/v1.0/chats/?$select=id, chatType&$filter=topic eq '{chat_name}'",
+        json=test_data.get('get_chat_id_and_type_no_chat_response')
+    )
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/me/chats',
+        json=mock_chat_response
+    )
+    mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'mock_user_id', 'userType': 'Member'}])
+
+    with pytest.raises(ValueError) as e:
+        get_chat_id_and_type(chat_name, create_dm_chat=False)
+
+    assert str(e.value) == f'Could not find chat: {chat_name}'
