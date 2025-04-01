@@ -1,6 +1,9 @@
 {
   "config": {
     "default": false,
-      "MD051" : true
+      "MD051": {
+      "enabled": true,
+      "ignore_case": true
+    }
   } , "fix" :true
 }
