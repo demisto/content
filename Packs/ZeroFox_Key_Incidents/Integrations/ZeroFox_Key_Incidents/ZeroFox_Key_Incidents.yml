@@ -1,33 +1,33 @@
 category: Data Enrichment & Threat Intelligence
 sectionOrder:
-- Connect
-- Collect
+  - Connect
+  - Collect
 commonfields:
   id: ZeroFox_Key_Incidents
   version: -1
 configuration:
-- defaultvalue: https://api.zerofox.com/
-  display: URL (e.g., https://api.zerofox.com/)
-  name: url
-  required: true
-  section: Connect
-  type: 0
-- display: Username
-  name: credentials
-  required: true
-  section: Connect
-  type: 9
-description: 'Cloud-based SaaS to detect risks found on social media and digital channels.'
+  - defaultvalue: 'https://api.zerofox.com/'
+    display: 'URL (e.g., https://api.zerofox.com/)'
+    name: url
+    required: true
+    section: Connect
+    type: 0
+  - display: Username
+    name: credentials
+    required: true
+    section: Connect
+    type: 9
+description: Cloud-based SaaS to detect risks found on social media and digital channels.
 display: ZeroFox_Key_Incidents
 name: ZeroFox_Key_Incidents
 script:
   commands:
-  - name: zerofox-get-key-incident-attachment
-    description: Fetches a Key Incident Attachment by ID.
-    arguments:
-      - name: attachment_id
-        required: true
-        description: The ID of the Key Incident Attachment.
+    - name: zerofox-get-key-incident-attachment
+      description: Fetches a Key Incident Attachment by ID.
+      arguments:
+        - name: attachment_id
+          required: true
+          description: The ID of the Key Incident Attachment.
   script: '-'
   type: python
   subtype: python3
@@ -38,10 +38,10 @@ script:
   ismappable: false
   isremotesyncin: true
   isremotesyncout: false
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: 'demisto/python3:3.12.8.1983910'
 fromversion: 6.1.0
 marketplaces:
-- xsoar
-- marketplacev2
+  - xsoar
+  - marketplacev2
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)

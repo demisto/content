@@ -73,20 +73,25 @@ class KeyIncident:
 
 @dataclass
 class XSOARIncident:
-    def __init__(self, name: str, create_time: datetime, rawJSON: str, dbotMirrorId: str):
-        self.name = name
-        self.create_time = create_time
-        self.rawJSON = rawJSON
-        self.dbotMirrorId = dbotMirrorId
+    name: str
+    occurred: str
+    rawJSON: str
+    dbotMirrorId: str
+
+    def to_dict(self):
+        return asdict(self)
 
 def map_key_incident_to_xsoar(ki: KeyIncident) -> XSOARIncident:
     ki_as_dict = ki.to_dict()
     return XSOARIncident(
-        name=ki.incident_id + " " + ki.headline,
-        create_time=ki_as_dict.get("created_at", ""),
+        name=f"{ki.incident_id} {ki.headline}",
+        occurred=ki_as_dict.get("created_at", ""),
         rawJSON=json.dumps(ki_as_dict),
         dbotMirrorId=ki.incident_id
     )
+
+def get_last_incident_time(incidents: list[KeyIncident]):
+    return max(map(lambda x: x.updated_at.isoformat(), incidents))
 
 class ZeroFox(BaseClient):
     def __init__(
@@ -334,7 +339,7 @@ def get_key_incidents_command(
     )
 
 
-def test_conectivity(client: ZeroFox) -> str:
+def conectivity_test(client: ZeroFox) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -360,6 +365,10 @@ def main():
     BASE_URL: str = params["url"][:-1] if params["url"].endswith("/") else params["url"]
     USE_SSL: bool = not params.get("insecure", False)
     PROXY: bool = params.get("proxy", False)
+    FETCH_TIME: str = params.get(
+        "fetch_time",
+        FETCH_TIME_DEFAULT,
+    ).strip()
 
     commands: dict[str, Callable[[ZeroFox, dict[str, Any]], Any]] = {
         "zerofox-get-key-incidents": get_key_incidents_command,
@@ -377,17 +386,41 @@ def main():
             proxy=PROXY,
         )
         if command == "test-module":
-            results = test_conectivity(client)
+            results = conectivity_test(client)
             return_results(results)
+        elif command == "fetch-incidents":
+            last_run, incidents = fetch_incidents(
+                client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=FETCH_TIME,
+            )
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
         elif command in commands:
             command_handler = commands[command]
             results = command_handler(client, demisto.args())
             return_results(results)
-        raise NotImplementedError(f"Command {command} is not implemented")
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+
+def fetch_incidents(client: ZeroFox, last_run: dict[str, Any], first_fetch_time: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    start_time, end_time = get_fetch_run_time_range(last_run, first_fetch_time)
+
+    incidents = client.get_key_incidents(start_time, end_time)
+
+    if not incidents:
+        last_run = { "time": end_time }
+        return last_run, []
+
+    xsoar_incidents = [ map_key_incident_to_xsoar(item).to_dict() for item in incidents]
+
+    last_run = { "time": get_last_incident_time(incidents)}
+
+    return last_run, xsoar_incidents
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
