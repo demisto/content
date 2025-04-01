@@ -480,7 +480,6 @@ Get alert AI summary
 
 #### Context Output
 
-| **Path** | **Type** | **Description**   |
-| --- | --- |-------------------|
-| Reco.AlertSummary.alert_id | String | The alert id      |
-| Reco.AlertSummary | String | The alert summary |
+| **Path**                   | **Type** | **Description**   |
+|----------------------------| --- |-------------------|
+| Reco.AlertSummary.markdown         | String | The alert summary |
