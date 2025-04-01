@@ -975,7 +975,7 @@ tasks:
       id: d28d849f-54cd-4765-afc0-a36e99c60e20
       version: -1
       name: Save IP reputation
-      description: Saves a context key indicating 1 of the IP is malicious and 0 if benign.
+      description: Saves a context key indicating 1 if the IP is malicious and 0 if benign.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1801,9 +1801,6 @@ view: |-
 inputs: []
 outputs: []
 issilent: true
-marketplaces:
-- marketplacev2
-- platform
 fromversion: 8.9.0
 tests:
 - No tests (auto formatted)
