@@ -1164,14 +1164,6 @@ def get_chat_id_and_type(chat: str, create_dm_chat: bool = True) -> tuple[str, s
     return chat_id, chat_type
 
 
-# def add_member_to_team(user_principal_name: str, team_id: str):
-#     url: str = f'{GRAPH_BASE_URL}/v1.0/groups/{team_id}/members/$ref'
-#     requestjson_: dict = {
-#          '@odata.id': f'{GRAPH_BASE_URL}/v1.0/directoryObjects/{user_principal_name}'
-#     }
-#     http_request('POST', url, json_=requestjson_)
-
-
 def get_user(user: str) -> list:
     """Retrieves the AAD ID of requested user and the userType
 
@@ -1224,89 +1216,6 @@ def add_user_to_channel_command():
 
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
 
-
-# def create_group_request(
-#         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
-#         owners_ids: list, members_ids: list = None
-# ) -> str:
-#     url = f'{GRAPH_BASE_URL}/v1.0/groups'
-#     data: dict = {
-#         'displayName': display_name,
-#         'groupTypes': ['Unified'],
-#         'mailEnabled': mail_enabled,
-#         'mailNickname': mail_nickname,
-#         'securityEnabled': security_enabled,
-#         'owners@odata.bind': owners_ids,
-#         'members@odata.bind': members_ids or owners_ids
-#     }
-#     group_creation_response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=data))
-#     group_id: str = group_creation_response.get('id', '')
-#     return group_id
-#
-#
-# def create_team_request(group_id: str) -> str:
-#     url = f'{GRAPH_BASE_URL}/v1.0/groups/{group_id}/team'
-#     team_creation_response: dict = cast(Dict[Any, Any], http_request('PUT', url, json_={}))
-#     team_id: str = team_creation_response.get('id', '')
-#     return team_id
-#
-#
-# def add_bot_to_team(team_id: str):
-#     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/installedApps'
-#     bot_app_id: str = ''
-#     data: dict = {
-#         'teamsApp@odata.bind': f'https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_app_id}'
-#     }
-#     print(http_request('POST', url, json_=data))
-#
-#
-# def create_team():
-#     display_name: str = demisto.args().get('display_name', '')
-#     mail_enabled: bool = bool(strtobool(demisto.args().get('mail_enabled', True)))
-#     mail_nickname: str = demisto.args().get('mail_nickname', '')
-#     security_enabled: bool = bool(strtobool(demisto.args().get('security_enabled', True)))
-#     owners = argToList(demisto.args().get('owner', ''))
-#     members = argToList(demisto.args().get('members', ''))
-#     owners_ids: list = list()
-#     members_ids: list = list()
-#     users: list = get_users()
-#     user_id: str = str()
-#     for member in members:
-#         found_member: bool = False
-#         for user in users:
-#             if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-#                 found_member = True
-#                 user_id = user.get('id', '')
-#                 members_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-#                 break
-#         if not found_member:
-#             demisto.results({
-#                 'Type': entryTypes['warning'],
-#                 'Contents': f'User {member} was not found',
-#                 'ContentsFormat': formats['text']
-#             })
-#     for owner in owners:
-#         found_owner: bool = False
-#         for user in users:
-#             if owner in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-#                 found_owner = True
-#                 user_id = user.get('id', '')
-#                 owners_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-#                 break
-#         if not found_owner:
-#             demisto.results({
-#                 'Type': entryTypes['warning'],
-#                 'Contents': f'User {owner} was not found',
-#                 'ContentsFormat': formats['text']
-#             })
-#     if not owners_ids:
-#         raise ValueError('Could not find given users to be Team owners.')
-#     group_id: str = create_group_request(
-#         display_name, mail_enabled, mail_nickname, security_enabled, owners_ids, members_ids
-#     )
-#     team_id: str = create_team_request(group_id)
-#     add_bot_to_team(team_id)
-#     demisto.results(f'Team {display_name} was created successfully')
 
 def create_conversation_member(user_id: str, user_role: list) -> dict:
     """
