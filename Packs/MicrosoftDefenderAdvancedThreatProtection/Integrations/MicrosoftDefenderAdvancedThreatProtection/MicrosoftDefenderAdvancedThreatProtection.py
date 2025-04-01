@@ -1258,8 +1258,11 @@ class MsClient:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope=urljoin(
-                MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type], "/.default"
+            scope=(
+                "https://api-gov.securitycenter.microsoft.us/.default"
+                if self.endpoint_type == 'dod'
+                else urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
+                             "/windowsatpservice/.default")
             ),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
