@@ -14,7 +14,7 @@ VCARD_MAPPING = {
 
 class RDAPClient(BaseClient):
     def __init__(self, base_url):
-        super().__init__(base_url=base_url, verify=False)  # TODO: Remove verify=false
+        super().__init__(base_url=base_url)
         demisto.debug(f"RDAPClient initialized with base_url: {base_url}")
 
     def rdap_query(self, indicator_type, value):

@@ -1,36 +1,58 @@
-# RDAP Integration Pack
+# RDAP Pack
 
-## Overview
-The RDAP (Registration Data Access Protocol) Integration Pack allows you to query and retrieve registration data for Internet resources such as IP addresses and domain names.
+The RDAP (Registration Data Access Protocol) pack allows you to query and retrieve registration data for Internet resources, including domain names, IP addresses, and autonomous system numbers.
+
+## Pack Content
+
+### Integrations
+- **RDAP**: Allows querying RDAP servers for domain and IP information.
+
+### Playbooks
+- No playbooks are currently included in this pack.
+
+### Scripts
+- No scripts are currently included in this pack.
 
 ## Use Cases
-- Enrich IP addresses with registration and abuse contact information
-- Retrieve domain registration details including creation and expiration dates
-- Verify DNSSEC status for domains
+- Enrichment of domain and IP data for threat intelligence purposes.
+- Gathering registration information for domains and IP addresses during investigations.
+- Automating the retrieval of WHOIS-like data using the more modern RDAP protocol.
 
-## Commands
-This pack includes the following commands:
+## Configure RDAP Integration
 
-1. `ip`
-   Queries RDAP for information about an IP address.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for RDAP.
+3. Click **Add instance** to create and configure a new integration instance.
+4. Configure the instance name and reliability.
+5. Click **Test** to validate the configuration.
 
-2. `domain`
-   Queries RDAP for information about a domain name.
+## Using the RDAP Integration
 
-## Configuration
-To configure the RDAP integration:
+You can use the RDAP integration to query information about domains and IP addresses. Here are some example commands:
 
-1. Navigate to Settings > Integrations > Servers & Services
-2. Search for RDAP
-3. Click Add instance to create and configure a new integration instance
-4. Configure the instance name and Base URL (default: https://rdap.org)
-5. Test the connection to ensure it's working properly
+```
+!rdap ip 8.8.8.8
+!rdap domain example.com
+```
+
+For more details on the available commands and their outputs, please refer to the integration's README file.
+
+## Additional Information
+
+- This pack uses the RDAP protocol, which is designed to replace the older WHOIS protocol.
+- RDAP provides a more standardized and machine-readable format for registration data.
+- For more information on RDAP, visit [ICANN's RDAP page](https://www.icann.org/rdap).
+
+## Known Limitations
+
+- The availability and completeness of data may vary depending on the RDAP server being queried.
+- Some RDAP servers may have rate limiting in place, which could affect the frequency of queries.
 
 ## Troubleshooting
+
 If you encounter any issues:
+- Ensure that the integration is correctly configured.
+- Check that the queried domain or IP address is valid.
+- Verify that you have internet connectivity to reach RDAP servers.
 
-- Verify that the Base URL is correct and accessible from your Cortex XSOAR instance
-- Check the integration's logs for any error messages
-- Ensure that the queried IP addresses or domain names are valid
-
-For more information on using this pack, please refer to the RDAP Integration documentation.
+For more information and support, please refer to the integration's documentation or contact Cortex XSOAR support.
