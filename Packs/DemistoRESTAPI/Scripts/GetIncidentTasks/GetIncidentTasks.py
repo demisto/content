@@ -15,6 +15,7 @@ TASK_STATES = {
     'willnotbeexecuted': 'WillNotBeExecuted',
     'blocked': 'Blocked'
 }
+RETRY_ATTEMPTS = 5
 
 
 ''' STANDALONE FUNCTION '''
@@ -93,8 +94,21 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     tag = args.get('tag')
     states = get_states(argToList(args.get('states')))
     inc_id = args['inc_id']
-    res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
-    if not res or isError(res[0]):
+
+    for attempt in range(RETRY_ATTEMPTS):
+        try:
+            res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
+            if not res or isError(res[0]):
+                raise ValueError(f'Invalid response: {res}')
+
+            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} successful: "core-api-get"')
+            break
+
+        except Exception as e:
+            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" Error: {e}')
+            safe_sleep(2 ** attempt)
+    else:
+        demisto.error(f'All {RETRY_ATTEMPTS} attempts to execute "core-api-get" have failed.')
         raise Exception(res)
 
     tasks: dict = dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {})
