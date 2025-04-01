@@ -140,7 +140,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
-    url = BASE_URL + api_endpoint
+    url = BASE_URL + api_endpoint 
     # 3 types of auth, user, non user and OAuth2
     if USE_OAUTH2:
         if TOKEN_OAUTH2:
