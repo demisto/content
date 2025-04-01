@@ -1259,7 +1259,7 @@ class MsClient:
             verify=verify,
             proxy=proxy,
             scope=(
-                "https://api-gov.securitycenter.microsoft.us/.default"
+                urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type], "/.default")
                 if self.endpoint_type == 'dod'
                 else urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
                              "/windowsatpservice/.default")
