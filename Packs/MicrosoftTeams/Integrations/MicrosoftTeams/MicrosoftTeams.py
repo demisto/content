@@ -71,7 +71,8 @@ MISS_CONFIGURATION_ERROR_MESSAGE = (
 
 CLIENT_CREDENTIALS_FLOW = "Client Credentials"
 AUTHORIZATION_CODE_FLOW = "Authorization Code"
-AUTH_TYPE = PARAMS.get("auth_type", CLIENT_CREDENTIALS_FLOW)
+AUTH_TYPE = (PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW) if demisto.command() != 'microsoft-teams-ring-user'
+             else CLIENT_CREDENTIALS_FLOW)
 
 AUTH_CODE: str = PARAMS.get("auth_code_creds", {}).get("password")
 REDIRECT_URI: str = PARAMS.get("redirect_uri", "")
@@ -804,10 +805,24 @@ def get_graph_access_token() -> str:
     :return: The Microsoft Graph API access token
     """
     integration_context: dict = get_integration_context()
+    if 'graph_access_token' in integration_context:
+        # Migrate cached tokens to new format
+        token_params = {
+            'graph_access_token': integration_context.pop('graph_access_token', ''),
+            'current_refresh_token': integration_context.pop('current_refresh_token', ''),
+            'graph_valid_until': integration_context.pop('graph_valid_until', ''),
+        }
+        if PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW) == CLIENT_CREDENTIALS_FLOW:
+            integration_context['credentials_token_params'] = json.dumps(token_params)
+        else:
+            integration_context['authcode_token_params'] = json.dumps(token_params)
+    else:
+        token_params = json.loads(integration_context.get('credentials_token_params', '') if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW
+                                  else integration_context.get('authcode_token_params', ''))
 
-    refresh_token = integration_context.get("current_refresh_token", "")
-    access_token: str = integration_context.get("graph_access_token", "")
-    valid_until: int = integration_context.get("graph_valid_until", int)
+    refresh_token = token_params.get('current_refresh_token', '')
+    access_token: str = token_params.get('graph_access_token', '')
+    valid_until: int = token_params.get('graph_valid_until', 0)
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug("Using access token from integration context")
         return access_token
@@ -857,9 +872,17 @@ def get_graph_access_token() -> str:
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
             expires_in -= time_buffer
-        integration_context["current_refresh_token"] = refresh_token
-        integration_context["graph_access_token"] = access_token
-        integration_context["graph_valid_until"] = time_now + expires_in
+
+        token_params = {
+            'current_refresh_token': refresh_token,
+            'graph_access_token': access_token,
+            'graph_valid_until': time_now + expires_in,
+        }
+        if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+            integration_context['authcode_token_params'] = json.dumps(token_params)
+        else:
+            integration_context['credentials_token_params'] = json.dumps(token_params)
+
         set_integration_context(integration_context)
         return access_token
     except ValueError:
@@ -2787,10 +2810,6 @@ def ring_user():
     Returns:
         None.
     """
-    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
-        raise DemistoException(
-            "In order to use the 'microsoft-teams-ring-user' command, you need to use the 'Client Credentials flow'."
-        )
 
     bot_id = BOT_ID
     integration_context: dict = get_integration_context()
@@ -3138,6 +3157,7 @@ def auth_type_switch_handling():
     Handling cases where the user switches the auth type in the integration instance (from the client credentials flow to the
     auth code flow and vice versa), by auto-resetting the Graph API authorization in the integration context.
     """
+    auth_type = PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW)
     integration_context = get_integration_context()
     current_auth_type = integration_context.get("current_auth_type", "")
     if current_auth_type:
@@ -3146,22 +3166,22 @@ def auth_type_switch_handling():
         # current_auth_type is not set - First run of the integration instance
         demisto.debug(
             f"This is the first run of the integration instance.\n"
-            f"Setting the current_auth_type in the integration context to {AUTH_TYPE}."
+            f"Setting the current_auth_type in the integration context to {auth_type}."
         )
-        integration_context["current_auth_type"] = AUTH_TYPE
+        integration_context["current_auth_type"] = auth_type
         set_integration_context(integration_context)
-        current_auth_type = AUTH_TYPE
+        current_auth_type = auth_type
 
-    if current_auth_type != AUTH_TYPE:
+    if current_auth_type != auth_type:
         # First run after the user switched the authentication type
         demisto.debug(
-            f"The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n"
+            f"The user switched the instance authentication type from {current_auth_type} to {auth_type}.\n"
             f"Resetting the integration context."
         )
         reset_graph_auth()
         integration_context = get_integration_context()
-        demisto.debug(f"Setting the current_auth_type in the integration context to {AUTH_TYPE}.")
-        integration_context["current_auth_type"] = AUTH_TYPE
+        demisto.debug(f"Setting the current_auth_type in the integration context to {auth_type}.")
+        integration_context["current_auth_type"] = auth_type
         set_integration_context(integration_context)
 
 
@@ -3235,7 +3255,9 @@ def insufficient_permissions_error_handler() -> str:
 
     # Get current token permissions
     integration_context: dict = get_integration_context()
-    graph_access_token: str = integration_context.get("graph_access_token", "")
+    token_params = (integration_context.get('credentials_token_params', {}) if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW
+                    else integration_context.get('authcode_token_params', {}))
+    graph_access_token: str = token_params.get('graph_access_token', '')
     if not graph_access_token:
         demisto.error(
             f"Could not find a cached graph access token while trying to resolve permission requirements for {command=}"
