@@ -1,14 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """ IMPORTS """
 
 import requests
-
-from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
-
+from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -97,23 +96,17 @@ def main():
     session = requests.Session()
     session.proxies = handle_proxy()
 
-    client = SixgillEnrichClient(params.get("client_id"), params.get("client_secret"), channel_code, demisto,
-                                 session, verify)
+    client = SixgillEnrichClient(params.get("client_id"), params.get("client_secret"), channel_code, demisto, session, verify)
 
     LOG(f"Command being called is {demisto.command()}")
     try:
-
         if command == "cybersixgill-cve-enrich":
             return_results(cve_enrich_command(client, demisto.args()))
         elif command == "test-module":
-            return_results(
-                test_module(
-                    params.get("client_id"), params.get("client_secret"), channel_code, session, verify
-                )
-            )
+            return_results(test_module(params.get("client_id"), params.get("client_secret"), channel_code, session, verify))
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -1,30 +1,30 @@
 import pytest
-from pytest import raises
-
 from CommonServerPython import CommandResults, DemistoException
-from SingleConnect import Client, list_all_sapm_accounts_command, search_sapm_with_secret_name_command, \
-    get_sapm_user_info_command, show_password_command
-from test_data.http_responses import SEARCH_SAPM_ACCOUNTS_RESPONSE, EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE, \
-    GET_SAPM_USER_INFO_RESPONSE, SHOW_PASSWORD_RESPONSE, ERROR_MESSAGE_RESPONSE
+from pytest import raises  # noqa: PT013
+from SingleConnect import (
+    Client,
+    get_sapm_user_info_command,
+    list_all_sapm_accounts_command,
+    search_sapm_with_secret_name_command,
+    show_password_command,
+)
+from test_data.http_responses import (
+    EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE,
+    ERROR_MESSAGE_RESPONSE,
+    GET_SAPM_USER_INFO_RESPONSE,
+    SEARCH_SAPM_ACCOUNTS_RESPONSE,
+    SHOW_PASSWORD_RESPONSE,
+)
 
+UNEXPECTED_RESPONSE_FORMAT = "Unexpected response format"
 
-UNEXPECTED_RESPONSE_FORMAT = 'Unexpected response format'
+ERROR_SINGLE_CONNECT = "Error in Single Connect API call"
 
-ERROR_SINGLE_CONNECT = 'Error in Single Connect API call'
+ARGS_SEARCH_SAPM_WITH_SECRET_NAME = {"secret_name": "account7"}
 
-ARGS_SEARCH_SAPM_WITH_SECRET_NAME = {
-    "secret_name": "account7"
-}
+ARGS_GET_SAPM_USER_INFO = {"device_ip": "123141"}
 
-ARGS_GET_SAPM_USER_INFO = {
-    "device_ip": "123141"
-}
-
-ARGS_SHOW_PASSWORD = {
-    "password_expiration_in_minute": 30,
-    "sapm_db_id": 642365,
-    "comment": "reason for password request"
-}
+ARGS_SHOW_PASSWORD = {"password_expiration_in_minute": 30, "sapm_db_id": 642365, "comment": "reason for password request"}
 
 EMPTY_DICT = {}
 
@@ -37,19 +37,28 @@ AUTHENTICATION_ERROR_MESSAGE = "Authentication Error: Make sure username and pas
 HEADER_XSRF_TOKEN = {"XSRF-TOKEN": "4b6794ebc982f8aa3786d745555d8dc3"}
 
 
-@pytest.mark.parametrize('search_command, args, invalid_response_type', [
-    (list_all_sapm_accounts_command, {}, EMPTY_DICT),
-    (search_sapm_with_secret_name_command, ARGS_SEARCH_SAPM_WITH_SECRET_NAME, EMPTY_DICT)
-])
+@pytest.mark.parametrize(
+    "search_command, args, invalid_response_type",
+    [
+        (list_all_sapm_accounts_command, {}, EMPTY_DICT),
+        (search_sapm_with_secret_name_command, ARGS_SEARCH_SAPM_WITH_SECRET_NAME, EMPTY_DICT),
+    ],
+)
 def test_search_sapm_account_commands(search_command, args, invalid_response_type, mocker):
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, "_generate_token")
 
-    mocker.patch.object(Client, '_http_request', side_effect=[SEARCH_SAPM_ACCOUNTS_RESPONSE,
-                                                              EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE,
-                                                              invalid_response_type,
-                                                              ERROR_MESSAGE_RESPONSE])
+    mocker.patch.object(
+        Client,
+        "_http_request",
+        side_effect=[
+            SEARCH_SAPM_ACCOUNTS_RESPONSE,
+            EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE,
+            invalid_response_type,
+            ERROR_MESSAGE_RESPONSE,
+        ],
+    )
 
-    client = Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
+    client = Client(base_url="https://localhost", username="admin", password="admin", use_ssl=False, proxy=False)
 
     command_output = search_command(client, **args)
     assert type(command_output) is CommandResults
@@ -65,18 +74,19 @@ def test_search_sapm_account_commands(search_command, args, invalid_response_typ
         search_command(client, **args)
 
 
-@pytest.mark.parametrize('command, args, http_response, invalid_response_type', [
-    (get_sapm_user_info_command, ARGS_GET_SAPM_USER_INFO, GET_SAPM_USER_INFO_RESPONSE, EMPTY_DICT),
-    (show_password_command, ARGS_SHOW_PASSWORD, SHOW_PASSWORD_RESPONSE, EMPTY_LIST)
-])
+@pytest.mark.parametrize(
+    "command, args, http_response, invalid_response_type",
+    [
+        (get_sapm_user_info_command, ARGS_GET_SAPM_USER_INFO, GET_SAPM_USER_INFO_RESPONSE, EMPTY_DICT),
+        (show_password_command, ARGS_SHOW_PASSWORD, SHOW_PASSWORD_RESPONSE, EMPTY_LIST),
+    ],
+)
 def test_single_connect_commands(command, args, http_response, invalid_response_type, mocker):
-    mocker.patch.object(Client, '_generate_token')
+    mocker.patch.object(Client, "_generate_token")
 
-    mocker.patch.object(Client, '_http_request', side_effect=[http_response,
-                                                              invalid_response_type,
-                                                              ERROR_MESSAGE_RESPONSE])
+    mocker.patch.object(Client, "_http_request", side_effect=[http_response, invalid_response_type, ERROR_MESSAGE_RESPONSE])
 
-    client = Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
+    client = Client(base_url="https://localhost", username="admin", password="admin", use_ssl=False, proxy=False)
 
     command_output = command(client, **args)
     assert type(command_output) is CommandResults
@@ -89,13 +99,13 @@ def test_single_connect_commands(command, args, http_response, invalid_response_
 
 
 def test_generate_token_authentication_fail(mocker):
-    mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(AUTHENTICATION_ERROR_RESPONSE)])
+    mocker.patch.object(Client, "_http_request", side_effect=[DemistoException(AUTHENTICATION_ERROR_RESPONSE)])
 
     with raises(DemistoException, match=AUTHENTICATION_ERROR_MESSAGE):
-        Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
+        Client(base_url="https://localhost", username="admin", password="admin", use_ssl=False, proxy=False)
 
 
 def test_generate_token_success(requests_mock):
     requests_mock.post("https://localhost/aioc-rest-web/rest/login", headers=HEADER_XSRF_TOKEN)
-    client = Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
+    client = Client(base_url="https://localhost", username="admin", password="admin", use_ssl=False, proxy=False)
     assert HEADER_XSRF_TOKEN.get("XSRF-TOKEN") == client._token

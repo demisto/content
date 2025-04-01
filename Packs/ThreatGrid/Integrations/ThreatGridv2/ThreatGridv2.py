@@ -6,11 +6,11 @@ Cisco ThreatGird integration
 """
 import copy
 import hashlib
+from collections.abc import Callable, MutableMapping, MutableSequence
 from datetime import datetime
 from typing import (
     Any,
 )
-from collections.abc import Callable, MutableMapping, MutableSequence
 
 DEFAULT_INTERVAL = 90
 DEFAULT_TIMEOUT = 600
@@ -141,9 +141,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        analysis_type = (
-            f"{analysis_type}s" if analysis_type == "network_stream" else analysis_type
-        )
+        analysis_type = f"{analysis_type}s" if analysis_type == "network_stream" else analysis_type
         url_prefix = f"{analysis_type}/{arg_value}" if arg_value else analysis_type
 
         return self._http_request(
@@ -197,9 +195,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        return self._http_request(
-            "GET", urljoin(API_V2_PREFIX, f"samples/{sample_id}/state")
-        )
+        return self._http_request("GET", urljoin(API_V2_PREFIX, f"samples/{sample_id}/state"))
 
     def upload_sample(
         self,
@@ -217,9 +213,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        params = remove_empty_elements(
-            {"private": private, "vm": vm, "playbook": playbook}
-        )
+        params = remove_empty_elements({"private": private, "vm": vm, "playbook": playbook})
 
         # When the sample is a file, send the api_key via the data request
         if files:
@@ -236,9 +230,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def associated_samples(
-        self, arg_name: str, arg_value: str, url_arg: str
-    ) -> dict[str, Any]:
+    def associated_samples(self, arg_name: str, arg_value: str, url_arg: str) -> dict[str, Any]:
         """Returns a list of domains / URLs associated with the IP or
             list of IPs / URLs associated with the domain.
 
@@ -531,13 +523,9 @@ def search_command(
         arg_name=arg_name,
         arg_value=arg_value,
     )
-    search_data = (
-        response["data"]["url"] if response["data"].get("url") else response["data"]
-    )
+    search_data = response["data"]["url"] if response["data"].get("url") else response["data"]
 
-    readable_output = tableToMarkdown(
-        name=f"{arg_name} data:", t=search_data, headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown(name=f"{arg_name} data:", t=search_data, headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="ThreatGrid.search",
@@ -576,9 +564,7 @@ def list_associated_samples_command(
     )
 
     samples = response["data"]["samples"]
-    sample_list = delete_key_from_list(
-        samples, ["details", "relation", "owner", "iocs"]
-    )
+    sample_list = delete_key_from_list(samples, ["details", "relation", "owner", "iocs"])
 
     readable_output = tableToMarkdown(
         name=f"List of samples associated to the {arg_name} - {arg_value} : ",
@@ -615,17 +601,11 @@ def analysis_sample_command(
     sample_id = args["sample_id"]
     response = client.analysis_sample(sample_id, url_param, arg_value)
     if not response or not response.get("data"):
-        return CommandResults(
-            readable_output=f"### No results were found for sample_id {sample_id}"
-        )
+        return CommandResults(readable_output=f"### No results were found for sample_id {sample_id}")
 
-    items = (
-        response["data"]["items"] if response["data"].get("items") else response["data"]
-    )
+    items = response["data"]["items"] if response["data"].get("items") else response["data"]
 
-    items_to_display = (
-        parse_output(items, url_param) if isinstance(items, dict) else items
-    )
+    items_to_display = parse_output(items, url_param) if isinstance(items, dict) else items
 
     response["data"].update({"sample_id": sample_id})
 
@@ -694,9 +674,7 @@ def who_am_i_command(
 
     whoami_data = response["data"]
     whoami_data = delete_keys_from_dict(whoami_data, ["properties"])
-    readable_output = tableToMarkdown(
-        name="Who am I ?", t=whoami_data, headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown(name="Who am I ?", t=whoami_data, headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -871,14 +849,10 @@ def upload_sample_command(
 
     if file_id:
         file = parse_file_to_sample(file_id)
-        response = client.upload_sample(
-            files=file, private=private, vm=vm, playbook=playbook
-        )
+        response = client.upload_sample(files=file, private=private, vm=vm, playbook=playbook)
     else:
         payload = {"url": url}
-        response = client.upload_sample(
-            payload=payload, private=private, vm=vm, playbook=playbook
-        )
+        response = client.upload_sample(payload=payload, private=private, vm=vm, playbook=playbook)
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -916,9 +890,7 @@ def get_sample_command(
     limit, offset, pagination_message = pagination(args)
 
     if artifact and not sample_id:
-        raise ValueError(
-            "When 'artifact' argument is specified - 'sample_id' argument is required"
-        )
+        raise ValueError("When 'artifact' argument is specified - 'sample_id' argument is required")
 
     response = client.get_sample(
         sample_id=sample_id,
@@ -940,9 +912,7 @@ def get_sample_command(
         content_format = "html"
         return fileResult(filename=f"{sample_id}-{artifact}", data=response)
     else:
-        sample_details = dict_safe_get(response, ["data", "items"]) or response.get(
-            "data"
-        )  # type: ignore[assignment]
+        sample_details = dict_safe_get(response, ["data", "items"]) or response.get("data")  # type: ignore[assignment]
 
     readable_output = tableToMarkdown(
         name=SAMPLE_ARGS[arg_name]["name"],
@@ -953,9 +923,7 @@ def get_sample_command(
     return CommandResults(
         readable_output=readable_output,
         content_format=content_format,
-        outputs_prefix=SAMPLE_ARGS[arg_name][
-            "outputs_prefix"
-        ],  # type: ignore[arg-type]
+        outputs_prefix=SAMPLE_ARGS[arg_name]["outputs_prefix"],  # type: ignore[arg-type]
         outputs_key_field=SAMPLE_ARGS[arg_name]["outputs_key_field"],
         outputs=sample_details,
         raw_response=response,
@@ -978,9 +946,7 @@ def sample_state_get_command(
     output = response["data"]
 
     readable_output = "The command was executed successfully"
-    return CommandResults(
-        readable_output=readable_output, outputs=output, raw_response=output
-    )
+    return CommandResults(readable_output=readable_output, outputs=output, raw_response=output)
 
 
 @polling_function(
@@ -1006,8 +972,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
             return PollResult(
                 response=CommandResults(
                     readable_output=(
-                        "The file has not been analyzed. Reason:"
-                        " The file type is not supported or the file is low risk "
+                        "The file has not been analyzed. Reason: The file type is not supported or the file is low risk "
                     )
                 ),
                 continue_to_poll=False,
@@ -1038,9 +1003,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
         args_for_next_run=args_for_next_run,
         partial_result=(
             CommandResults(
-                readable_output=(
-                    f"Upload sample is executing. Sample ID: {sample_id}."
-                ),
+                readable_output=(f"Upload sample is executing. Sample ID: {sample_id}."),
             )
             if first_run
             else None
@@ -1131,12 +1094,8 @@ def reputation_command(
                 sample_details = {generic_command_name: command_arg}
                 sample_id = ""
 
-        dbot_score = get_dbotscore(
-            score, generic_command_name, command_arg, reliability
-        )
-        reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[
-            generic_command_name
-        ]
+        dbot_score = get_dbotscore(score, generic_command_name, command_arg, reliability)
+        reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[generic_command_name]
         kwargs = {
             "client": client,
             "command_arg": command_arg,
@@ -1199,9 +1158,7 @@ def is_day_diff_valid(sample_analysis_date: str) -> bool:
         analysis_date = sample_analysis_date.split("T")[0]
         today_date = str(datetime.now()).split(" ")[0]
     except IndexError as exc:
-        raise IndexError(
-            f"The time doesnt match the expected format {TIME_FORMAT} \n {exc}"
-        ) from exc
+        raise IndexError(f"The time doesnt match the expected format {TIME_FORMAT} \n {exc}") from exc
 
     start = datetime.strptime(analysis_date, TIME_FORMAT)
     end = datetime.strptime(today_date, TIME_FORMAT)
@@ -1305,9 +1262,7 @@ def parse_file_indicator(
             t=outputs,
         )
     else:
-        readable_output = tableToMarkdown(
-            name=f"ThreatGrid File Not Found for {file_hash} \n", t={"file": file_hash}
-        )
+        readable_output = tableToMarkdown(name=f"ThreatGrid File Not Found for {file_hash} \n", t={"file": file_hash})
 
     return CommandResults(
         readable_output=readable_output,
@@ -1338,11 +1293,7 @@ def parse_ip_indicator(
         Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
     """
 
-    response = (
-        client.analysis_sample(sample_id=sample_id, analysis_type="annotations")
-        if sample_id
-        else None
-    )
+    response = client.analysis_sample(sample_id=sample_id, analysis_type="annotations") if sample_id else None
     command_indicator = Common.IP(
         ip=command_arg,
         asn=dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
@@ -1350,9 +1301,7 @@ def parse_ip_indicator(
     )
     outputs = {
         "indicator": command_arg,
-        "asn": dict_safe_get(
-            response, ["data", "items", "network", command_arg, "asn"]
-        ),
+        "asn": dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
         "confidence": "",
     }
     readable_output = tableToMarkdown(
@@ -1407,9 +1356,7 @@ def parse_url_indicator(
     )
 
 
-def delete_keys_from_dict(
-    dictionary: MutableMapping, keys_to_delete: set[str] | list[str]
-) -> dict[str, Any]:
+def delete_keys_from_dict(dictionary: MutableMapping, keys_to_delete: set[str] | list[str]) -> dict[str, Any]:
     """Get a modified dictionary without the requested keys.
     Args:
         dictionary (Dict[str, Any]): Dictionary to modify according to.
@@ -1425,14 +1372,8 @@ def delete_keys_from_dict(
             if isinstance(value, MutableMapping):
                 modified_dict[key] = delete_keys_from_dict(value, keys_set)
 
-            elif (
-                isinstance(value, MutableSequence)
-                and value
-                and isinstance(value[0], MutableMapping)
-            ):
-                modified_dict[key] = [
-                    delete_keys_from_dict(val, keys_set) for val in value
-                ]
+            elif isinstance(value, MutableSequence) and value and isinstance(value[0], MutableMapping):
+                modified_dict[key] = [delete_keys_from_dict(val, keys_set) for val in value]
             else:
                 modified_dict[key] = copy.deepcopy(value)
 
@@ -1453,9 +1394,7 @@ def validate_pagination_arguments(
         ValueError: Appropriate error message.
     """
     if page_size and (page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE):
-        raise ValueError(
-            f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
-        )
+        raise ValueError(f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.")
 
     if page is not None and page < MIN_PAGE_NUM:
         raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM-1}.")
@@ -1634,7 +1573,6 @@ def test_module(client: Client):
 
 
 def main() -> None:
-
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
@@ -1702,7 +1640,7 @@ def main() -> None:
 
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{str(exc)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{exc!s}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

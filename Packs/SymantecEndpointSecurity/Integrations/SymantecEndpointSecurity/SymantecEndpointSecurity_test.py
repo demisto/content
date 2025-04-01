@@ -48,9 +48,7 @@ def mock_client() -> Client:
         ),
     ],
 )
-def test_extract_events_suspected_duplicates(
-    events: list[dict], expected_results: tuple[list[str]]
-):
+def test_extract_events_suspected_duplicates(events: list[dict], expected_results: tuple[list[str]]):
     """
     Given
         - A list of events with timestamps
@@ -161,9 +159,7 @@ def test_filter_duplicate_events(
     Then:
         - Ensure that a list of the events that are not duplicates is returned
     """
-    filtered_events = filter_duplicate_events(
-        events, integration_context, EventCounter()
-    )
+    filtered_events = filter_duplicate_events(events, integration_context, EventCounter())
     assert filtered_events == expected_filtered_events
 
 
@@ -210,9 +206,7 @@ def test_calculate_next_fetch_last_latest_event_time_are_equal(
         - Ensure that updated the 'integration_context' with new events in addition to the old ones, and the next hash
     """
 
-    integration_context = calculate_next_fetch(
-        filtered_events, next_hash, include_last_fetch_events, last_integration_context
-    )
+    integration_context = calculate_next_fetch(filtered_events, next_hash, include_last_fetch_events, last_integration_context)
 
     assert integration_context == expected_integration_context
 
@@ -303,9 +297,7 @@ def test_get_events_command_with_raises(
         status_code = mock_status_code
 
     mocker.patch.object(Client, "_update_access_token_in_headers")
-    mocker.patch.object(
-        Client, "get_events", side_effect=DemistoException("Test", res=MockException())
-    )
+    mocker.patch.object(Client, "get_events", side_effect=DemistoException("Test", res=MockException()))
 
     with pytest.raises(exception_type):
         get_events_command(mock_client(), {"next_fetch": {"next": "test"}})
@@ -318,9 +310,7 @@ def test_get_events_command_with_raises(
         pytest.param(10, 70, 0, id="The sleep function should not be called"),
     ],
 )
-def test_sleep_if_necessary(
-    mocker: MockerFixture, start_run: int, end_run: int, call_count: int
-):
+def test_sleep_if_necessary(mocker: MockerFixture, start_run: int, end_run: int, call_count: int):
     """
     Given:
         - Mocked time passed duration
@@ -365,6 +355,4 @@ def test_event_counter_with_missing_schema(mocker: MockerFixture):
 
     counter.print_summary()
 
-    demisto_debug_mock.assert_called_with(
-        "Example of an event missing a schema: {'test': 'test'}"
-    )
+    demisto_debug_mock.assert_called_with("Example of an event missing a schema: {'test': 'test'}")

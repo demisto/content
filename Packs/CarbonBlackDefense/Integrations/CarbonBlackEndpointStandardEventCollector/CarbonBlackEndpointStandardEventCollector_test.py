@@ -1,16 +1,17 @@
-import pytest
 import json
+
+import pytest
 from CarbonBlackEndpointStandardEventCollector import (
-    Client,
-    get_alerts_to_limit,
-    get_audit_logs_to_limit,
-    prepare_audit_logs_result,
-    get_events,
-    init_last_run,
     LAST_ALERT_IDS,
     LAST_AUDIT_TIME,
     MAX_AUDITS,
     MAX_FETCH_LOOP,
+    Client,
+    get_alerts_to_limit,
+    get_audit_logs_to_limit,
+    get_events,
+    init_last_run,
+    prepare_audit_logs_result,
     timestamp_to_datestring,
 )
 
@@ -27,12 +28,12 @@ def cb_client():
 
 @pytest.fixture
 def alerts():
-    return util_load_json('test_data/alerts.json')
+    return util_load_json("test_data/alerts.json")
 
 
 @pytest.fixture
 def audit_logs():
-    return util_load_json('test_data/audit_logs.json')
+    return util_load_json("test_data/audit_logs.json")
 
 
 @pytest.fixture
@@ -47,7 +48,7 @@ def test_get_alerts_to_limit_empty(mocker, cb_client, last_run):
     Then empty list is returned and last_run is returned unchanged
     """
 
-    mocker.patch.object(cb_client, 'get_alerts', return_value=[])
+    mocker.patch.object(cb_client, "get_alerts", return_value=[])
 
     alerts, new_last_run = get_alerts_to_limit(cb_client, last_run)
 
@@ -63,7 +64,7 @@ def test_prepare_audit_logs_result_remove_duplicates(cb_client, audit_logs):
     When: calling prepare_audit_logs_result
     Then: Filter out duplicate entries based on eventTime and return the filtered list
     """
-    last_time = timestamp_to_datestring(audit_logs[2]['eventTime'])
+    last_time = timestamp_to_datestring(audit_logs[2]["eventTime"])
     filtered_audit_logs = prepare_audit_logs_result(audit_logs, last_time)
     assert len(audit_logs) == len(filtered_audit_logs) + 2
 
@@ -75,8 +76,8 @@ def test_get_events(mocker, cb_client, last_run):
     Then return no events and the last_run unchanged
     """
 
-    mocker.patch.object(cb_client, 'get_alerts', return_value=[])
-    mocker.patch.object(cb_client, 'get_audit_logs', return_value=[])
+    mocker.patch.object(cb_client, "get_alerts", return_value=[])
+    mocker.patch.object(cb_client, "get_audit_logs", return_value=[])
 
     events, new_last_run = get_events(cb_client, last_run, True)
 
@@ -90,7 +91,7 @@ def test_get_audit_logs_to_limit_max(mocker, cb_client, audit_logs):
     When  get_audit_logs_to_limit is called
     Then  10 pages are returned
     """
-    mocker.patch.object(cb_client, 'get_audit_logs', return_value=[audit_logs] * (MAX_FETCH_LOOP + 1))
+    mocker.patch.object(cb_client, "get_audit_logs", return_value=[audit_logs] * (MAX_FETCH_LOOP + 1))
     audit_logs = get_audit_logs_to_limit(cb_client)
     assert len(audit_logs) < MAX_AUDITS
     assert cb_client.get_audit_logs.call_count == MAX_FETCH_LOOP

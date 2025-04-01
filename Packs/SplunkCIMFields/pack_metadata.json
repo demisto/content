@@ -2,7 +2,7 @@
     "name": "SplunkScripts",
     "description": "Splunk helper scripts.",
     "support": "community",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Farrukh Ahmed",
     "url": "",
     "email": "",
