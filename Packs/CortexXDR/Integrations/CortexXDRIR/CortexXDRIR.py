@@ -191,7 +191,7 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
             )
 
 
-def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> Tuple[list, bool]:  # type: ignore[name-defined]
+def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> Tuple[list, bool]:
     """handles the excluded_alert_fields parameter
 
     Args:
