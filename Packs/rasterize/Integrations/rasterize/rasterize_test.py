@@ -30,6 +30,10 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
+class MockPychromeEventHandler:
+    is_mailto = False
+    is_private_network_url = False
+
 
 def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
@@ -613,27 +617,32 @@ def test_is_mailto_urls(mocker: MockerFixture):
     """
     from rasterize import screenshot_image
 
-    mocker.patch("rasterize.navigate_to_path", return_results=type("PychromeEventHandler", (), {"is_mailto": True}))
-
+    mock_handler = MockPychromeEventHandler()
+    mock_handler.is_mailto = True
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
     res = screenshot_image(None, None, "url", None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
-def test_is_this_network_urls(mocker: MockerFixture):
+
+def test_is_private_network_urls(mocker: MockerFixture):
     """
-    Given   A this network URL is called.
+    Given   A private network URL is called.
     When    Attempting to make a screenshot.
     Then    Make sure the correct output is returned.
     """
     from rasterize import screenshot_image
 
-    mocker.patch("rasterize.navigate_to_path", return_results=type("PychromeEventHandler", (), {"is_this_network_url": True}))
+    mock_handler = MockPychromeEventHandler()
+    mock_handler.is_private_network_url = True
+    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
 
     res = screenshot_image(None, None, "url", None, None)
 
     assert res == (
         None,
-        'URLs that belong to the "This" Network (0.0.0.0/8) or Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url'
+        'URLs that belong to the "This" Network (0.0.0.0/8),'
+        ' or the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url'
     )
 
 
@@ -770,14 +779,14 @@ def test_rasterize_mailto(capfd, mocker):
     with pytest.raises(SystemExit) as excinfo, capfd.disabled():
         perform_rasterize(path="mailto:some.person@gmail.com", width=250, height=250, rasterize_type=RasterizeType.PNG)
 
-    assert (
-        mocker_output.call_args.args[0].readable_output == 'URLs that start with "mailto:" cannot be rasterized.'
-        "\nURL: ['mailto:some.person@gmail.com']"
+    assert mocker_output.call_args.args[0].readable_output == (
+        "The following paths were skipped as they are not valid for rasterization: ['mailto:some.person@gmail.com']"
     )
     assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
-def test_rasterize_this_network(capfd, mocker):
+
+def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerFixture):
     """
     Given:
         - argument as path.
@@ -796,8 +805,7 @@ def test_rasterize_this_network(capfd, mocker):
     )
     assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
-import pytest
-from rasterize import is_this_network
+
 
 @pytest.mark.parametrize("url, expected", [
     pytest.param("http://192.168.1.1", False, id="private IPv4"),
@@ -812,15 +820,17 @@ from rasterize import is_this_network
     pytest.param("http://127.0.0.1", True, id="loopback IPv4"),
     pytest.param("http://0.0.0.1", True, id="this network IPv4"),
 ])
-def test_is_this_network(url, expected):
-    assert is_this_network(url) == expected
+def test_is_private_network(url: str, expected: bool):
+    assert is_private_network(url) == expected
 
-def test_is_this_network_cache():
+
+def test_is_private_network_cache():
     # Test that the function is actually cached
-    assert is_this_network.cache_info().hits == 0
-    is_this_network("http://192.168.1.1")
-    is_this_network("http://192.168.1.1")
-    assert is_this_network.cache_info().hits == 1
+    assert is_private_network.cache_info().hits == 0
+    is_private_network("http://192.168.1.1")
+    is_private_network("http://192.168.1.1")
+    assert is_private_network.cache_info().hits == 1
+
 
 def test_handle_request_paused(mocker):
     """

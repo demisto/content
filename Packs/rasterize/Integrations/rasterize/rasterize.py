@@ -246,7 +246,7 @@ class PychromeEventHandler:
         """Triggered when a request is sent by the browser, catches mailto URLs."""
         demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}")
         self.is_mailto = documentURL.lower().startswith("mailto:")
-        self.is_this_network_url = is_this_network(documentURL)
+        self.is_private_network_url = is_private_network(documentURL)
 
         request_url = kwargs.get("request", {}).get("url", "")
 
@@ -729,7 +729,7 @@ def screenshot_image(
 
     if tab_event_handler.is_mailto:
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
-    if tab_event_handler.is_this_network_url:
+    if tab_event_handler.is_private_network_url:
         return None, (
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
             f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
@@ -958,21 +958,21 @@ def perform_rasterize(
     """
 
     # convert the path param to list in case we have only one string
-    paths = argToList(path)
+    paths: list[str] = argToList(path)
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith("mailto:")]
-    this_network_paths = [path_value for path_value in paths if is_this_network(path_value)]
+    private_network_paths = [path_value for path_value in paths if is_private_network(path_value)]
 
-    if this_network_paths or mailto_paths:
+    if private_network_paths or mailto_paths:
         paths = list(set(paths) - set(mailto_paths))
-        paths = list(set(paths) - set(this_network_paths))
-        demisto.error(f"Not rasterizing the following invalid paths: {this_network_paths + mailto_paths}")
+        paths = list(set(paths) - set(private_network_paths))
+        demisto.error(f"Not rasterizing the following invalid paths: {private_network_paths + mailto_paths}")
         return_results(
             CommandResults(
                 readable_output=(
                     "The following paths were skipped as they are not valid for rasterization:"
-                    f" {this_network_paths + mailto_paths}"
+                    f" {private_network_paths + mailto_paths}"
                 )
             )
         )
