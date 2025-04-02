@@ -1308,7 +1308,7 @@ def list_incidents_command(client: Client, args: dict) -> CommandResults:
         arg_to_number(args.get("limit")) or 50,
         argToBoolean(args.get("all_results", False)),
     )
-    outputs = transform_keys(incidents, {"history": "history"})
+
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_PREFIX}.Incident",
         outputs_key_field="id",
