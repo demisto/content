@@ -3060,19 +3060,19 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     closure_case = get_closure_case(params)
     demisto.debug(f"closure case= {closure_case}")
     is_custom_close = False
-    close_custom_state = params.get('close_custom_state', None)
+    close_custom_state = params.get("close_custom_state", None)
     demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
     if parsed_args.incident_changed:
         demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
         if parsed_args.inc_status == IncidentStatus.DONE:
             demisto.debug('Closing incident by closure case')
-            if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
-                parsed_args.delta['state'] = '3'
+            if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+                parsed_args.delta["state"] = "3"
             # These ticket types are closed by changing their state.
-            if closure_case == 'closed' and ticket_type == INCIDENT:
-                parsed_args.delta['state'] = '7'  # Closing incident ticket.
+            if closure_case == "closed" and ticket_type == INCIDENT:
+                parsed_args.delta['state'] = "7"  # Closing incident ticket.
             elif closure_case == 'resolved' and ticket_type == INCIDENT:
-                parsed_args.delta['state'] = '6'  # resolving incident ticket.
+                parsed_args.delta['state'] = "6"  # resolving incident ticket.
             if close_custom_state:  # Closing by custom state
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
                 is_custom_close = True
