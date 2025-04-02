@@ -644,6 +644,13 @@ def fetch_incidents(
     # creates incidents queue
     incidents_queue = last_run_dict.get("incidents_queue", [])
 
+    ids_list = []
+    for incident in incidents_queue:
+        raw_json = json.loads(incident.get("rawJSON", {}))
+        incident_id = raw_json.get("incidentId", '')
+        ids_list.append(incident_id)
+    demisto.debug(f'Got {len(ids_list)} incidents from last_run with ids: {ids_list}.')
+
     if len(incidents_queue) < fetch_limit:
         incidents = []
 
@@ -690,9 +697,16 @@ def fetch_incidents(
         incidents_queue += incidents
 
     oldest_incidents = incidents_queue[:fetch_limit]
-    demisto.debug(f'Incidents to fetch this cycle: {oldest_incidents}.')
+
+    ids_list = []
+    for incident in oldest_incidents:
+        raw_json = json.loads(incident.get("rawJSON", {}))
+        incident_id = raw_json.get("incidentId", '')
+        ids_list.append(incident_id)
+    demisto.debug(f'Fetched {len(oldest_incidents)} incidents with ids: {ids_list}.')
+
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
-    demisto.debug(f'Fetch incidents ended, setting {last_run=}.')
+    demisto.debug(f'Fetch incidents ended, setting {new_last_run=}.')
     demisto.setLastRun({"last_run": new_last_run, "incidents_queue": incidents_queue[fetch_limit:]})
     return oldest_incidents
 
