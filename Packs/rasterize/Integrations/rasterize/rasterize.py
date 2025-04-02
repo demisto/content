@@ -262,7 +262,7 @@ class PychromeEventHandler:
             except Exception as e:
                 demisto.debug(f"Error during navigation attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
 
-            safe_sleep(20)
+            safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
             frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
 
