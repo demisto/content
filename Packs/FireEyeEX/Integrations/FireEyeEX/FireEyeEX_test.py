@@ -1,15 +1,13 @@
-
 import pytest
-from freezegun import freeze_time
-
 from FireEyeEX import *
+from freezegun import freeze_time
 from test_data.result_constants import (
-    QUARANTINED_EMAILS_CONTEXT,
+    ALLOWEDLIST,
+    BLOCKEDLIST,
     GET_ALERTS_CONTEXT,
     GET_ALERTS_DETAILS_CONTEXT,
     GET_ARTIFACTS_METADATA_CONTEXT,
-    ALLOWEDLIST,
-    BLOCKEDLIST,
+    QUARANTINED_EMAILS_CONTEXT,
 )
 
 
