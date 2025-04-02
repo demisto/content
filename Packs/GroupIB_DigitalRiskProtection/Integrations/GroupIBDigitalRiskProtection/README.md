@@ -1,97 +1,154 @@
-# Group-IB Digital Risk Protection Pack for Cortex XSOAR
+Pack helps to integrate Group-IB Digital Risk Protection and get violations incidents directly into Cortex XSOAR.
+This integration was integrated and tested with version xx of Group-IB Digital Risk Protection.
 
-This pack enables integration between **Group-IB Digital Risk Protection** and **Cortex XSOAR**, allowing you direct retrieval and handling of violations.
+## Configure Group-IB Digital Risk Protection in Cortex
 
-## Configuration
 
-| Name                                      | Required | Description |
-|-------------------------------------------|----------|-------------|
-| **GIB DRP URL**                           | True     | The DRP server URL to connect to. |
-| **Fetch incidents**                       | True     | Determines whether the integration should start collecting violations. |
-| **Classifier**                            | True     | Maps collections and received data to appropriate incidents. |
-| **Incident type**                         | False    | Specifies the incident type to collect the received data into. This field should be ignored as our Classifier and Mapper manage this. |
-| **Mapper**                                | True     | Determines how fields are mapped to incidents. |
-| **Username**                              | True     | Username is the DRP account email. The API Key and Username required for authentication.  |
-| **Password**                              | True     | API Token (not your account password). Generated in the DRP web panel. API token specifically for interaction with the API. The API Key and Username required for authentication.  |
-| **Trust any certificate (not secure)**    | False    | Allows skipping SSL verification. Use with caution. |
-| **Use system proxy settings**             | False    | Enables XSOAR's proxy settings for the API connection. |
-| **Violation Section to filter received violations** | False    | Allows filtering retrieved violations by section. |
-| **Brands to filter received violations**  | False    | Allows filtering violations by brand. You must use a **BrandID**, which can be obtained via the `gibdrp-get-brands` command. Currently, filtering is available for only one brand per instance. |
-| **Incidents first fetch**                 | True     | Specifies the start date for retrieving violations. |
-| **Download images**                       | False    | Download images for each violation and display in the violation layout. |
-| **Getting Typosquatting only**            | False    | Retrieve only violations matching the **TypoSquatting** filter. |
-| **Number of requests per collection**     | True     | Number of requests per collection the integration sends per fetch iteration. |
-| **Log Level**                             | True     | Set the log collection level; we recommend **Debug**. |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| GIB DRP URL |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incidents Fetch Interval |  | False |
+| Username |  | True |
+| Password |  | True |
+| Violation Section to filter the received Violation |  | False |
+| Brands to filter the received Violation | Brands for filtering received violations. The list of available brands can be obtained with the command \!gibdrp-get-brands in the menu WarRoom -&gt; Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention\! Currently filtering is available only by one brand in one Instance | False |
+| Incidents first fetch | Date to start fetching incidents from. | False |
+| Download images | Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True | False |
+| Getting Typosquatting only | Allows for the collection of offenses suitable only for Typo Squatting | False |
+| Number of requests per collection | A number of requests per collection that integration sends in one fetch iteration \(each request picks up to 30 incidents\). If you face some runtime errors, lower the value. | True |
 
----
+## Commands
 
-## Available Commands
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-These commands can be executed from the CLI, as part of an automation, or within a playbook.
+### gibdrp-get-brands
 
-### 1. `gibdrp-get-brands`
-Retrieves a list of all available brands.
+***
+Receive all configured brands.
 
-#### Command Example:
+#### Base Command
+
+`gibdrp-get-brands`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GIBDRP.OtherInfo | string | List of configured brands. | 
+
+#### Command example
 ```!gibdrp-get-brands```
+#### Context Example
+```json
+{
+    "GIBDRP": {
+        "OtherInfo": {
+            "brands": [
+                {
+                    "id": "PvY1BZUBSFbLZGo2x8TA",
+                    "name": "Hrvatska Posta"
+                }
+            ]
+        }
+    }
+}
+```
 
-#### Context Output:
+#### Human Readable Output
 
-| Brand Name  | Brand ID |
-|------------|---------|
-| ExampleBrand | BrandID |
+>### Installed Brands
+>|Name|Id|
+>|---|---|
+>| Hrvatska Posta | PvY1BZUBSFbLZGo2x8TA |
 
----
 
-### 2. `gibdrp-get-subscriptions`
-Retrieves a list of all available subscriptions.
+### gibdrp-get-subscriptions
 
-#### Command Example:
+***
+Receive all configured subscriptions.
+
+#### Base Command
+
+`gibdrp-get-subscriptions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GIBDRP.OtherInfo | string | List of configured subscriptions. | 
+
+#### Command example
 ```!gibdrp-get-subscriptions```
+#### Context Example
+```json
+{
+    "GIBDRP": {
+        "OtherInfo": {
+            "subscriptions": [
+                "scam"
+            ]
+        }
+    }
+}
+```
 
-#### Context Output:
+#### Human Readable Output
 
-| Subscriptions |
-|--------------|
-| scam         |
-
----
-
-### 3. `gibdrp-get-violation-by-id`
-Retrieves violation details by ID.
-
-#### Input Parameters:
-
-| Argument Name | Description  | Required |
-|--------------|-------------|----------|
-| **id**       | GIB DRP ID  | True     |
-
-#### Command Example:
-```!gibdrp-get-violation-by-id id=violationID```
-
-
-#### Context Output:
-
-| approve_state | brand          | company         | dates_approved_date     | dates_created_date     | dates_found_date       | detected               | first_detected         | id           | images        | link  | source         | typosquatting_status | violation_status | violation_type | violation_uri                        |
-|--------------|---------------|----------------|------------------------|------------------------|------------------------|------------------------|------------------------|--------------|--------------|------|---------------|---------------------|-----------------|----------------|--------------------------------------|
-| approved     | Brand Example | Company Example | 2025-03-24T10:33:57+00:00 | 2025-02-15T00:14:08+00:00 | 2025-02-15T00:14:08+00:00 | 2025-02-15T00:14:08+00:00 | 2025-02-18T16:54:04+00:00 | ViolationID | image_sha256 | [View Violation](https://drp.group-ib.com/p/violation/?id=ViolationID&search={%22id%22:%22ViolationID%22}&dateFrom=15/02/2025&dateTo=15/02/2025) | SOCIAL_NETWORKS | true | detected | trademark | [https://example.com/exampleviolation/](https://example.com/exampleviolation/) |
+>### Purchased subscriptions
+>|Subscriptions|
+>|---|
+>| scam |
 
 
----
+### gibdrp-get-violation-by-id
 
-### 4. `gibdrp-change-violation-status`
-Changes the status of a violation.
+***
+Getting a single violation by its ID.
 
-#### Input Parameters:
+#### Base Command
 
-| Argument Name | Description  | Required | Possible Values |
-|--------------|-------------|----------|----------------|
-| **id**       | GIB DRP ID  | True     | -              |
-| **status**   | Violation Status | True     | approve, reject |
+`gibdrp-get-violation-by-id`
 
-#### Command Example:
-```!gibdrp-change-violation-status id=exampleId status=approve```
+#### Input
 
-#### Possible DBOT Messages:
-- **"Can not change the status of the selected feed"** – The status of the selected violation cannot be changed.  
-- **"Request to change violation status sent"** – The request to change the violation status was sent successfully.  
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID violation. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### gibdrp-change-violation-status
+
+***
+Changing the status of a single violation.
+
+#### Base Command
+
+`gibdrp-change-violation-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID violation. | Required | 
+| status | What status to change to. Possible values are: approve, reject. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

@@ -137,6 +137,7 @@ def test_command_get_brands(mocker, session_fixture):
         max_requests=1,
         download_images=False,
         violation_subtypes=[],
+        only_typosquatting=False,
     ).get_results()
     assert result.outputs_prefix == "GIBDRP.OtherInfo"
     assert result.outputs_key_field == "id"
@@ -158,6 +159,7 @@ def test_command_get_subscriptions(mocker, session_fixture):
         max_requests=1,
         download_images=False,
         violation_subtypes=[],
+        only_typosquatting=False,
     ).get_results()
     assert result.outputs_prefix == "GIBDRP.OtherInfo"
     assert result.outputs_key_field == "subscriptions"
@@ -179,6 +181,7 @@ def test_command_get_violation_by_id(mocker, session_fixture):
         max_requests=1,
         download_images=False,
         violation_subtypes=[],
+        only_typosquatting=False,
     ).get_results()
     assert result[0].outputs_key_field == "id"
     assert isinstance(requested_method, str)
@@ -199,6 +202,7 @@ def test_command_test_module(mocker, session_fixture):
         max_requests=1,
         download_images=False,
         violation_subtypes=[],
+        only_typosquatting=False,
     ).get_results()
     assert isinstance(result, str)
     assert result == "ok"
