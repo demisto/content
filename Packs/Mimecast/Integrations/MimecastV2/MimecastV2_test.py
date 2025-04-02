@@ -1012,7 +1012,7 @@ def test_create_block_sender_policy_command(mocker):
 
 def test_fetch_held_messages_next_token(mocker): 
     """
-    Given:
+    Given: 
     - response from mime cast api indicates there is more results then limit (a next token is returned)
 
     When:
