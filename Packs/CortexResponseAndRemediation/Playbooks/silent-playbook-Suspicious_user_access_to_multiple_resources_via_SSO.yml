@@ -44,8 +44,8 @@ description: |-
   **Requirements**:
   Ensure the following integrations are configured:
   - **Microsoft 365 Defender** for Azure user alerts.
-  - **Microsoft Graph Identity** for user disablement and session control.
-  - **Core** for alert context and user risk scores.
+  - **Microsoft Graph User** for user disablement and session control.
+  - **Core - Investigation and Response** for alert context and user risk scores.
   - **Threat Intelligence Integrations** for IP reputation analysis.
 issilent: true
 starttaskid: "0"
@@ -916,7 +916,7 @@ tasks:
       version: -1
       name: Disable user in Azure AD
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disable the user,
         but does not terminate an existing session. Supported only in a self deployed app flow with the
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-account-disable'
