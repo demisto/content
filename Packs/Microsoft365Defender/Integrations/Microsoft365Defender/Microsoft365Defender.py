@@ -167,8 +167,9 @@ class Client:
             if skip:
                 params["$skip"] = skip
 
-        return self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
-
+        raw_respond = self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
+        demisto.debug(f'Got the next results for incidents_list from Defender API  {raw_respond=}.')
+        return raw_respond
     @logger
     def update_incident(
         self,
@@ -631,6 +632,7 @@ def fetch_incidents(
     last_run_dict = demisto.getLastRun()
 
     last_run = last_run_dict.get("last_run")
+    demisto.debug(f'Start fetch-incidents with {last_run}.')
     if not last_run:  # this is the first run
         first_fetch_date_time = dateparser.parse(first_fetch_time)
         if not first_fetch_date_time:
@@ -666,6 +668,9 @@ def fetch_incidents(
                 incident.update(_get_meta_data_for_incident(incident))
                 incident.update(mirroring_fields)
 
+                incident_id = incident.get('incidentId')
+                demisto.debug(f'Updated data for incident with {incident_id=}.')
+
             incidents += [
                 {
                     "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
@@ -685,7 +690,9 @@ def fetch_incidents(
         incidents_queue += incidents
 
     oldest_incidents = incidents_queue[:fetch_limit]
+    demisto.debug(f'Incidents to fetch this cycle: {oldest_incidents}.')
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
+    demisto.debug(f'Fetch incidents ended, setting {last_run=}.')
     demisto.setLastRun({"last_run": new_last_run, "incidents_queue": incidents_queue[fetch_limit:]})
     return oldest_incidents
 
@@ -1138,6 +1145,7 @@ def main() -> None:
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     first_fetch_time = params.get("first_fetch", "3 days").strip()
+    demisto.debug(f'Getting incidents from {first_fetch_time} ago.')
     fetch_limit = arg_to_number(params.get("max_fetch", 10))
     fetch_timeout = arg_to_number(params.get("fetch_timeout", TIMEOUT))
 
