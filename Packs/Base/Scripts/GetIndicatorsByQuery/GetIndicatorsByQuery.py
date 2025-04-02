@@ -1,10 +1,10 @@
-from CommonServerPython import *
-
 import hashlib
+
+from CommonServerPython import *
 
 PAGE_SIZE = 500
 
-RANDOM_UUID = str(demisto.args().get('addRandomSalt', '').encode('utf8'))
+RANDOM_UUID = str(demisto.args().get("addRandomSalt", "").encode("utf8"))
 # Memo for key matching
 CACHE = {}  # type: ignore
 
@@ -14,7 +14,7 @@ def hash_value(simple_value):
         simple_value = str(simple_value)
     if simple_value.lower() in ["none", "null"]:
         return None
-    return hashlib.md5(simple_value.encode('utf8') + RANDOM_UUID.encode('utf8')).hexdigest()    # nosec
+    return hashlib.md5(simple_value.encode("utf8") + RANDOM_UUID.encode("utf8")).hexdigest()  # nosec
 
 
 def pattern_match(pattern, s):
@@ -60,7 +60,7 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
 def parse_ioc(ioc):
     global fields_to_hash, unpopulate_fields, populate_fields
     # flat
-    cf = ioc.pop('CustomFields', {}) or {}
+    cf = ioc.pop("CustomFields", {}) or {}
     ioc.update(cf)
     new_ioc = {}
     for k, v in ioc.items():
@@ -97,7 +97,7 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int):
     )
 
     for ioc_res in search_indicators:
-        fetched_iocs = ioc_res.get('iocs') or []
+        fetched_iocs = ioc_res.get("iocs") or []
         iocs.extend(fetched_iocs)
     demisto.debug(f"Received {len(iocs)} results from server. Parsing.")
 
@@ -105,7 +105,7 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int):
 
 
 def get_parsed_populated_fields(fields_to_parse: list[str]) -> frozenset | None:
-    """ Gets a list of fields to populate for an indicator and parse it according to specific requirements."""
+    """Gets a list of fields to populate for an indicator and parse it according to specific requirements."""
     # Due to using the always populated field and no ability to provide None value in the UI, we allow an explicit override.
 
     if "ALL" in fields_to_parse:
@@ -129,22 +129,22 @@ fields_to_hash, unpopulate_fields, populate_fields = [], [], []  # type: ignore
 def main():
     global fields_to_hash, unpopulate_fields, populate_fields
     args = demisto.args()
-    fields_to_hash = frozenset([x for x in argToList(args.get('fieldsToHash', '')) if x])  # type: ignore
-    unpopulate_fields = frozenset([x for x in argToList(args.get('dontPopulateFields', '')) if x])  # type: ignore
-    populate_fields = get_parsed_populated_fields(argToList(args.get('populateFields', '')))  # type: ignore
+    fields_to_hash = frozenset([x for x in argToList(args.get("fieldsToHash", "")) if x])  # type: ignore
+    unpopulate_fields = frozenset([x for x in argToList(args.get("dontPopulateFields", "")) if x])  # type: ignore
+    populate_fields = get_parsed_populated_fields(argToList(args.get("populateFields", "")))  # type: ignore
 
-    limit = int(args.get('limit', PAGE_SIZE))
-    query = args.get('query', '')
-    offset = int(args.get('offset', 0))
-    indicators = find_indicators_with_limit_loop(query, limit + offset)[offset:offset + limit]
+    limit = int(args.get("limit", PAGE_SIZE))
+    query = args.get("query", "")
+    offset = int(args.get("offset", 0))
+    indicators = find_indicators_with_limit_loop(query, limit + offset)[offset : offset + limit]
 
-    entry = fileResult("indicators.json", json.dumps(indicators).encode('utf8'))
-    entry['Contents'] = indicators
-    entry['ContentsFormat'] = formats['json']
-    entry['HumanReadable'] = f'Fetched {len(indicators)} indicators successfully by the query: {query}'
+    entry = fileResult("indicators.json", json.dumps(indicators).encode("utf8"))
+    entry["Contents"] = indicators
+    entry["ContentsFormat"] = formats["json"]
+    entry["HumanReadable"] = f"Fetched {len(indicators)} indicators successfully by the query: {query}"
 
     return entry
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     demisto.results(main())
