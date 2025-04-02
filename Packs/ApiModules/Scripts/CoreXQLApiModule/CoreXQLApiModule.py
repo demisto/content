@@ -26,7 +26,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
         self.is_core = is_core
 
-    def _http_request(
+    def _http_request(  # type: ignore[override]
         self,
         method,
         url_suffix="",

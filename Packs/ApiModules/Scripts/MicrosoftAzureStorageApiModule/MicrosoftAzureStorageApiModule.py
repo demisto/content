@@ -8,7 +8,7 @@ MANAGED_IDENTITIES_TOKEN_URL = (
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = "SYSTEM_ASSIGNED"
 
 
-class MicrosoftStorageClient(BaseClient):
+class MicrosoftStorageClient(BaseClient):   # type: ignore[name-defined]
     """
     Microsoft Azure Storage API Client
     """
@@ -21,7 +21,7 @@ class MicrosoftStorageClient(BaseClient):
         account_sas_token,
         storage_account_name,
         api_version,
-        managed_identities_client_id: Optional[str] = None,
+        managed_identities_client_id: Optional[str] = None, # type: ignore[name-defined]
     ):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._account_sas_token = account_sas_token or ""
@@ -123,7 +123,8 @@ class MicrosoftStorageClient(BaseClient):
                 defused_ET.parse(response.text)
             return response
         except ValueError as exception:
-            raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
+            raise DemistoException(f"Failed to parse json object from response:"    # type: ignore[name-defined]
+                                   f" {response.content}", exception) # type: ignore[name-defined]
 
     def _get_managed_identities_token(self):
         """
@@ -138,7 +139,8 @@ class MicrosoftStorageClient(BaseClient):
             params = {}
             if not use_system_assigned:
                 params["client_id"] = self._managed_identities_client_id
-            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={"Metadata": "True"}).json()
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL,  # type: ignore[name-defined]
+                                         params=params, headers={"Metadata": "True"}).json()  # type: ignore[name-defined]
             access_token = response_json.get("access_token")
             expires_in = int(response_json.get("expires_in", 3595))
             if access_token:
@@ -146,7 +148,7 @@ class MicrosoftStorageClient(BaseClient):
 
             err = response_json.get("error_description")
         except Exception as e:
-            err = f"{e!s}"
+            err = f"{e!s}"  # type: ignore[name-defined]
 
         return_error(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
         return None
@@ -181,7 +183,7 @@ class NotFoundError(Exception):
         self.message = message
 
 
-def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:  # type: ignore[name-defined]
     """ "extract the Azure Managed Identities from the demisto params
 
     Args:
@@ -194,7 +196,8 @@ def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
 
     """
     auth_type = params.get("auth_type") or params.get("authentication_type")
-    if params and (argToBoolean(params.get("use_managed_identities") or auth_type == "Azure Managed Identities")):
+    if params and (argToBoolean(params.get("use_managed_identities") or # type: ignore[name-defined]
+                                auth_type == "Azure Managed Identities")):
         client_id = params.get("managed_identities_client_id", {}).get("password")
         return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
     return None

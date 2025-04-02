@@ -2582,7 +2582,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         self._conn = _HTTPConnection(verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt)
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = merge_setting(
+            self._conn.session.headers = merge_setting( # type: ignore[attr-defined]
                 self._conn.session.headers,  # type: ignore[attr-defined]
                 {self.auth_header: self.auth_key},
                 dict_class=CaseInsensitiveDict,

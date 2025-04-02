@@ -141,8 +141,8 @@ def get_incidents(
     populate_fields: list[str] | None = None,
     non_empty_fields: list[str] | None = None,
     time_field: str = DEFAULT_TIME_FIELD,
-    from_date: datetime | None = None,
-    to_date: datetime | None = None,
+    from_date: datetime | None = None,  # type: ignore[name-defined]
+    to_date: datetime | None = None,    # type: ignore[name-defined]
     include_context: bool = False,
     limit: int = DEFAULT_LIMIT,
     page_size: int = DEFAULT_PAGE_SIZE,

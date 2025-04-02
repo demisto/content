@@ -167,7 +167,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
         # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
-    def _http_request(
+    def _http_request(  # type: ignore[override]
         self,
         method,
         url_suffix="",
