@@ -31,7 +31,7 @@ class Client:
                 '"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
         
         # Configure the connection arguments
-        connection_args = {
+        connection_args: dict[str, Any] = {
             "host": urls,
             "username": username,
             "password": password,
@@ -43,7 +43,7 @@ class Client:
         if auth_source:
             connection_args["authSource"] = auth_source
 
-        self._client = MongoClient(**connection_args)
+        self._client: MongoClient = MongoClient(**connection_args)
         self.db: Database = self._client.get_database(database)
 
     def is_collection_in_db(self, collection: str) -> bool:
