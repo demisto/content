@@ -12,12 +12,9 @@ The Cortex Core IR integration uses the Cortex API for detection and response, b
 | HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
 
 ## Commands
-
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### core-isolate-endpoint
-
 ***
 Isolates the specified endpoint.
 
@@ -25,7 +22,6 @@ Isolates the specified endpoint.
 #### Base Command
 
 `core-isolate-endpoint`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,7 +41,6 @@ Isolates the specified endpoint.
 | Core.Isolation.endpoint_id | String | The endpoint ID. | 
 
 ### core-unisolate-endpoint
-
 ***
 Reverses the isolation of an endpoint.
 
@@ -53,7 +48,6 @@ Reverses the isolation of an endpoint.
 #### Base Command
 
 `core-unisolate-endpoint`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,7 +67,6 @@ Reverses the isolation of an endpoint.
 | Core.UnIsolation.endpoint_id | String | Isolates the specified endpoint. | 
 
 ### core-get-endpoints
-
 ***
 Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
 
@@ -81,7 +74,6 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 #### Base Command
 
 `core-get-endpoints`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,11 +133,8 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 #### Command example
-
 ```!core-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
-
 #### Context Example
-
 ```json
 {
   "Account": [
@@ -195,13 +184,11 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 #### Human Readable Output
 
 >### Endpoints
-
 >|active_directory|alias|content_release_timestamp|content_version|domain|endpoint_id|endpoint_name|endpoint_status|endpoint_type|endpoint_version|first_seen|group_name|install_date|installation_package|ip|is_isolated|isolated_date|last_content_update_time|last_seen|operational_status|operational_status_description|os_type|os_version|scan_status|users|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  | 1643023344000 | 360-81029 | api.xdrurl.com | 87ae5fc622604ea4809dd28f01c436d0 | dummy_new_name2 | DISCONNECTED | AGENT_TYPE_SERVER | 1.1.1.1 | 1642943216960 |  | 1642943217006 | HOLODECK_1 | 1.1.1.1 | AGENT_UNISOLATED |  | 1643026320796 | 1643026320166 | PROTECTED |  | AGENT_OS_WINDOWS | 1.1.1. | SCAN_STATUS_NONE | woo@demisto.com |
 
 ### core-get-distribution-versions
-
 ***
 Gets a list of all the agent versions to use for creating a distribution list.
 
@@ -209,7 +196,6 @@ Gets a list of all the agent versions to use for creating a distribution list.
 #### Base Command
 
 `core-get-distribution-versions`
-
 #### Input
 
 There are no input arguments for this command.
@@ -223,11 +209,8 @@ There are no input arguments for this command.
 | Core.DistributionVersions.macos | Unknown | A list of Mac agent versions. | 
 
 #### Command example
-
 ```!core-get-distribution-versions```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -252,35 +235,30 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### windows
-
 >|versions|
 >|---|
 >| 1.1.1.1 |
 >
 >
 >### linux
-
 >|versions|
 >|---|
 >| 1.1.1.1 |
 >
 >
 >### macos
-
 >|versions|
 >|---|
 >| 1.1.1.1 |
 >
 >
 >### container
-
 >|versions|
 >|---|
 >| 1.1.1.1 |
 
 
 ### core-create-distribution
-
 ***
 Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
 
@@ -288,7 +266,6 @@ Creates an installation package. This is an asynchronous call that returns the d
 #### Base Command
 
 `core-create-distribution`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -311,11 +288,8 @@ Creates an installation package. This is an asynchronous call that returns the d
 | Core.Distribution.description | String | Information about the package. | 
 
 #### Command example
-
 ```!core-create-distribution agent_version=6.1.4.1680 name="dist_1" package_type=standalone platform=linux description="some description"```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -336,7 +310,6 @@ Creates an installation package. This is an asynchronous call that returns the d
 >Distribution 52c0e7988a024cbab32d4cd888e44dfb created successfully
 
 ### core-get-distribution-url
-
 ***
 Gets the distribution URL for downloading the installation package.
 
@@ -344,7 +317,6 @@ Gets the distribution URL for downloading the installation package.
 #### Base Command
 
 `core-get-distribution-url`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -362,7 +334,6 @@ Gets the distribution URL for downloading the installation package.
 | Core.Distribution.url | String | URL for downloading the installation package. | 
 
 ### core-get-create-distribution-status
-
 ***
 Gets the status of the installation package.
 
@@ -370,7 +341,6 @@ Gets the status of the installation package.
 #### Base Command
 
 `core-get-create-distribution-status`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -386,7 +356,6 @@ Gets the status of the installation package.
 | Core.Distribution.status | String | Installation package status. | 
 
 ### core-get-audit-management-logs
-
 ***
 Gets management logs. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
 
@@ -394,7 +363,6 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 #### Base Command
 
 `core-get-audit-management-logs`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -430,11 +398,8 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 | Core.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. | 
 
 #### Command example
-
 ```!core-get-audit-management-logs result=SUCCESS type=DISTRIBUTIONS limit=2 timestamp_gte="3 month"```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -464,7 +429,6 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 #### Human Readable Output
 
 >### Audit Management Logs
-
 >|AUDIT_ID|AUDIT_RESULT|AUDIT_DESCRIPTION|AUDIT_OWNER_NAME|AUDIT_OWNER_EMAIL|AUDIT_ASSET_JSON|AUDIT_ASSET_NAMES|AUDIT_HOSTNAME|AUDIT_REASON|AUDIT_ENTITY|AUDIT_ENTITY_SUBTYPE|AUDIT_SESSION_ID|AUDIT_CASE_ID|AUDIT_INSERT_TIME|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1002 | SUCCESS | Created a Windows Standalone installer installation package 'HOLODECK_3' with agent version 1.1.1.1 | Moo | moo@demisto.com |  |  |  |  | DISTRIBUTIONS | Create |  |  | 1636017216034 |
@@ -472,7 +436,6 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 
 
 ### core-get-audit-agent-reports
-
 ***
 Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
 
@@ -480,7 +443,6 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 #### Base Command
 
 `core-get-audit-agent-reports`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -519,12 +481,10 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | Endpoint.Domain | String | The domain of the endpoint. | 
 
 #### Command example
-
 ```!core-get-audit-agent-reports result=Success timestamp_gte="100 days" endpoint_ids=ea303670c76e4ad09600c8b346f7c804 type=Policy limit=2```
 
 
 ### core-blocklist-files
-
 ***
 Block lists requested files which have not already been block listed or added to allow lists.
 
@@ -532,7 +492,6 @@ Block lists requested files which have not already been block listed or added to
 #### Base Command
 
 `core-blocklist-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -551,11 +510,8 @@ Block lists requested files which have not already been block listed or added to
 | Core.blocklist.excluded_hashes | Number | Added fileHash to blocklist | 
 
 #### Command example
-
 ```!core-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -573,14 +529,12 @@ Block lists requested files which have not already been block listed or added to
 #### Human Readable Output
 
 >### Blocklist Files
-
 >|Added _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
 
 ### core-allowlist-files
-
 ***
 Adds requested files to allow list if they are not already on block list or allow list.
 
@@ -588,7 +542,6 @@ Adds requested files to allow list if they are not already on block list or allo
 #### Base Command
 
 `core-allowlist-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -607,11 +560,8 @@ Adds requested files to allow list if they are not already on block list or allo
 | Core.allowlist.excluded_hashes | Number | Added fileHash to allowlist | 
 
 #### Command example
-
 ```!core-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -629,14 +579,12 @@ Adds requested files to allow list if they are not already on block list or allo
 #### Human Readable Output
 
 >### Allowlist Files
-
 >|Added _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
 
 ### core-quarantine-files
-
 ***
 Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
@@ -644,7 +592,6 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 #### Base Command
 
 `core-quarantine-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -673,7 +620,6 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-get-quarantine-status
-
 ***
 Retrieves the quarantine status for a selected file.
 
@@ -681,7 +627,6 @@ Retrieves the quarantine status for a selected file.
 #### Base Command
 
 `core-get-quarantine-status`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -694,13 +639,9 @@ Retrieves the quarantine status for a selected file.
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!core-get-quarantine-status endpoint_id=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -719,14 +660,12 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Quarantine files status
-
 >|Status|Endpoint Id|File Path|File Hash|
 >|---|---|---|---|
 >| false | f8a2f58846b542579c12090652e79f3d | /home/ec2-user/test_file.txt | 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 |
 
 
 ### core-restore-file
-
 ***
 Restores a quarantined file on requested endpoints.
 
@@ -734,7 +673,6 @@ Restores a quarantined file on requested endpoints.
 #### Base Command
 
 `core-restore-file`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -762,7 +700,6 @@ Restores a quarantined file on requested endpoints.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-endpoint-scan
-
 ***
 Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
 
@@ -770,7 +707,6 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 #### Base Command
 
 `core-endpoint-scan`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -811,7 +747,6 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-endpoint-scan-abort
-
 ***
 Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
 
@@ -819,7 +754,6 @@ Cancel the selected endpoints scan. A scan can only be cancelled if the selected
 #### Base Command
 
 `core-endpoint-scan-abort`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -848,7 +782,6 @@ Cancel the selected endpoints scan. A scan can only be cancelled if the selected
 | Core.endpointScan.aborted | Boolean | Was the scan cancelled. | 
 
 ### core-get-policy
-
 ***
 Gets the policy name for a specific endpoint.
 
@@ -856,7 +789,6 @@ Gets the policy name for a specific endpoint.
 #### Base Command
 
 `core-get-policy`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -873,7 +805,6 @@ Gets the policy name for a specific endpoint.
 | Core.Policy.endpoint_id | string | Endpoint ID. | 
 
 ### core-get-scripts
-
 ***
 Gets a list of scripts available in the scripts library.
 
@@ -881,7 +812,6 @@ Gets a list of scripts available in the scripts library.
 #### Base Command
 
 `core-get-scripts`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -914,11 +844,8 @@ Gets a list of scripts available in the scripts library.
 | Core.Scripts.script_uid | string | Globally Unique Identifier of the script, used to identify the script when executing. | 
 
 #### Command example
-
 ```!core-get-scripts created_by="Palo Alto Networks" is_high_risk=true```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1022,7 +949,6 @@ Gets a list of scripts available in the scripts library.
 #### Human Readable Output
 
 >### Scripts
-
 >|Name|Description|Script Uid|Modification Date|Created By|Windows Supported|Linux Supported|Macos Supported|Is High Risk|
 >|---|---|---|---|---|---|---|---|---|
 >| delete_file | Delete a file by path | 548023b6e4a01ec51a495ba6e5d2a15d | 2021-05-04T14:33:48 | Palo Alto Networks | true | true | true | true |
@@ -1035,7 +961,6 @@ Gets a list of scripts available in the scripts library.
 
 
 ### core-delete-endpoints
-
 ***
 Deletes selected endpoints in the Cortex app. You can delete up to 1000 endpoints.
 
@@ -1043,7 +968,6 @@ Deletes selected endpoints in the Cortex app. You can delete up to 1000 endpoint
 #### Base Command
 
 `core-delete-endpoints`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1054,9 +978,7 @@ Deletes selected endpoints in the Cortex app. You can delete up to 1000 endpoint
 #### Context Output
 
 There is no context output for this command.
-
 ### core-get-endpoint-device-control-violations
-
 ***
 Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
 
@@ -1064,7 +986,6 @@ Gets a list of device control violations filtered by selected fields. You can re
 #### Base Command
 
 `core-get-endpoint-device-control-violations`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1105,11 +1026,8 @@ Gets a list of device control violations filtered by selected fields. You can re
 | Core.EndpointViolations.violations.endpoint_id | string | Endpoint ID of the violation. | 
 
 #### Command example
-
 ```!core-get-endpoint-device-control-violations violation_id_list=100,90,80```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1121,12 +1039,10 @@ Gets a list of device control violations filtered by selected fields. You can re
 #### Human Readable Output
 
 >### Endpoint Device Control Violation
-
 >**No entries.**
 
 
 ### core-retrieve-files
-
 ***
 Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
 
@@ -1134,7 +1050,6 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 #### Base Command
 
 `core-retrieve-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1166,7 +1081,6 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-retrieve-file-details
-
 ***
 View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
 
@@ -1174,7 +1088,6 @@ View the file retrieved by the core-retrieve-files command according to the acti
 #### Base Command
 
 `core-retrieve-file-details`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1198,18 +1111,14 @@ View the file retrieved by the core-retrieve-files command according to the acti
 | File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
 
 #### Command example
-
 ```!core-retrieve-file-details action_id=1763```
-
 #### Human Readable Output
 
 >### Action id : 1763 
-
 > Retrieved 0 files from 0 endpoints. 
 > To get the exact action status run the core-action-status-get command
 
 ### core-get-script-metadata
-
 ***
 Gets the full definition of a specific script in the scripts library.
 
@@ -1217,7 +1126,6 @@ Gets the full definition of a specific script in the scripts library.
 #### Base Command
 
 `core-get-script-metadata`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1245,11 +1153,8 @@ Gets the full definition of a specific script in the scripts library.
 | Core.ScriptMetadata.script_output_dictionary_definitions | Unknown | If the script_output_type is a dictionary, an array with friendly name, name, and type for each output. | 
 
 #### Command example
-
 ```!core-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1285,14 +1190,12 @@ Gets the full definition of a specific script in the scripts library.
 #### Human Readable Output
 
 >### Script Metadata
-
 >|Created By|Description|Entry Point|Is High Risk|Linux Supported|Macos Supported|Modification Date|Modification Date Timestamp|Name|Script Id|Script Input|Script Output Type|Script Uid|Windows Supported|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Palo Alto Networks | List all directories under path | run | false | true | true | 2021-05-04T14:33:48 | 1620138828771 | list_directories | 4 | {'name': 'path', 'type': 'string'},<br/>{'name': 'number_of_levels', 'type': 'number'} | string_list | 43973479d389f2ac7e99b6db88eaee40 | true |
 
 
 ### core-get-script-code
-
 ***
 Gets the code of a specific script in the script library.
 
@@ -1300,7 +1203,6 @@ Gets the code of a specific script in the script library.
 #### Base Command
 
 `core-get-script-code`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1317,11 +1219,8 @@ Gets the code of a specific script in the script library.
 | Core.ScriptCode.script_uid | string | Unique identifier of the script. | 
 
 #### Command example
-
 ```!core-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1336,7 +1235,6 @@ Gets the code of a specific script in the script library.
 #### Human Readable Output
 
 >### Script code: 
->
 > ``` import os
 >import sys
 >import traceback
@@ -1391,11 +1289,8 @@ Retrieves the status of the requested actions according to the action ID.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 #### Command example
-
 ```!core-action-status-get action_id="1819"```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1407,19 +1302,16 @@ Retrieves the status of the requested actions according to the action ID.
 #### Human Readable Output
 
 >### Get Action Status
-
 >**No entries.**
 
 
 ### core-run-script (Deprecated)
-
 ***
 Deprecated. Use core-script-run instead. 
 
 #### Base Command
 
 `core-run-script`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1439,7 +1331,6 @@ Deprecated. Use core-script-run instead.
 | Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### core-run-snippet-code-script
-
 ***
 Initiates a new endpoint script execution action using the provided snippet code.
 
@@ -1447,7 +1338,6 @@ Initiates a new endpoint script execution action using the provided snippet code
 #### Base Command
 
 `core-run-snippet-code-script`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1477,7 +1367,6 @@ Initiates a new endpoint script execution action using the provided snippet code
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-get-script-execution-status
-
 ***
 Retrieves the status of a script execution action.
 
@@ -1485,7 +1374,6 @@ Retrieves the status of a script execution action.
 #### Base Command
 
 `core-get-script-execution-status`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1511,7 +1399,6 @@ Retrieves the status of a script execution action.
 | Core.ScriptStatus.endpoints_aborted | Number | Number of endpoints in "aborted" status. | 
 
 ### core-get-script-execution-results
-
 ***
 Retrieve the results of a script execution action.
 
@@ -1519,7 +1406,6 @@ Retrieve the results of a script execution action.
 #### Base Command
 
 `core-get-script-execution-results`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1547,7 +1433,6 @@ Retrieve the results of a script execution action.
 | Core.ScriptResult.results.command_output | Array | The output of the command executed by the script. | 
 
 ### core-get-script-execution-result-files
-
 ***
 Gets the files retrieved from a specific endpoint during a script execution.
 
@@ -1555,7 +1440,6 @@ Gets the files retrieved from a specific endpoint during a script execution.
 #### Base Command
 
 `core-get-script-execution-result-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1581,7 +1465,6 @@ Gets the files retrieved from a specific endpoint during a script execution.
 | File.Extension | String | The extension of the file. | 
 
 ### core-run-script-execute-commands
-
 ***
 Initiate a new endpoint script execution of shell commands.
 
@@ -1589,7 +1472,6 @@ Initiate a new endpoint script execution of shell commands.
 #### Base Command
 
 `core-run-script-execute-commands`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1621,7 +1503,6 @@ Initiate a new endpoint script execution of shell commands.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-delete-file
-
 ***
 Initiates a new endpoint script execution to delete the specified file.
 
@@ -1629,7 +1510,6 @@ Initiates a new endpoint script execution to delete the specified file.
 #### Base Command
 
 `core-run-script-delete-file`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1660,7 +1540,6 @@ Initiates a new endpoint script execution to delete the specified file.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-file-exists
-
 ***
 Initiates a new endpoint script execution to check if file exists.
 
@@ -1668,7 +1547,6 @@ Initiates a new endpoint script execution to check if file exists.
 #### Base Command
 
 `core-run-script-file-exists`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1699,7 +1577,6 @@ Initiates a new endpoint script execution to check if file exists.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### core-run-script-kill-process
-
 ***
 Initiates a new endpoint script execution kill process.
 
@@ -1707,7 +1584,6 @@ Initiates a new endpoint script execution kill process.
 #### Base Command
 
 `core-run-script-kill-process`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1738,7 +1614,6 @@ Initiates a new endpoint script execution kill process.
 | Core.GetActionStatus.ErrorReasons.terminate_result | Unknown | The error reason terminate result. | 
 
 ### endpoint
-
 ***
 Returns information about an endpoint.
 
@@ -1746,7 +1621,6 @@ Returns information about an endpoint.
 #### Base Command
 
 `endpoint`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1770,7 +1644,6 @@ Returns information about an endpoint.
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 ### core-report-incorrect-wildfire
-
 ***
 Reports to WildFire about incorrect hash verdict through Cortex.
 
@@ -1778,7 +1651,6 @@ Reports to WildFire about incorrect hash verdict through Cortex.
 #### Base Command
 
 `core-report-incorrect-wildfire`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1797,7 +1669,6 @@ Reports to WildFire about incorrect hash verdict through Cortex.
 | Core.WildFire.new_verdict | Number | The new verdict of the file. | 
 
 ### core-remove-allowlist-files
-
 ***
 Removes requested files from allow list.
 
@@ -1805,7 +1676,6 @@ Removes requested files from allow list.
 #### Base Command
 
 `core-remove-allowlist-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1822,11 +1692,8 @@ Removes requested files from allow list.
 | Core.allowlist.removed_hashes | Number | Removed file hash | 
 
 #### Command example
-
 ```!core-remove-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1842,14 +1709,12 @@ Removes requested files from allow list.
 #### Human Readable Output
 
 >### Allowlist Files Removed
-
 >|Removed _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
 
 ### core-remove-blocklist-files
-
 ***
 Removes requested files from block list.
 
@@ -1857,7 +1722,6 @@ Removes requested files from block list.
 #### Base Command
 
 `core-remove-blocklist-files`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1874,11 +1738,8 @@ Removes requested files from block list.
 | Core.blocklist.removed_hashes | Number | Removed fileHash from blocklist | 
 
 #### Command example
-
 ```!core-remove-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1894,14 +1755,12 @@ Removes requested files from block list.
 #### Human Readable Output
 
 >### Blocklist Files Removed
-
 >|Removed _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
 
 ### core-add-exclusion
-
 ***
 Adds alert exclusion rule based on filterObject.
 
@@ -1909,7 +1768,6 @@ Adds alert exclusion rule based on filterObject.
 #### Base Command
 
 `core-add-exclusion`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1927,11 +1785,8 @@ Adds alert exclusion rule based on filterObject.
 | Core.exclusion.rule_id | Number | Added exclusion rule id | 
 
 #### Command example
-
 ```!core-add-exclusion filterObject={\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"alert_category\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}} name=test1```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1945,14 +1800,12 @@ Adds alert exclusion rule based on filterObject.
 #### Human Readable Output
 
 >### Add Exclusion
-
 >|rule_id|
 >|---|
 >| 45 |
 
 
 ### core-delete-exclusion
-
 ***
 Delete an alert exclusion rule based on rule ID.
 
@@ -1960,7 +1813,6 @@ Delete an alert exclusion rule based on rule ID.
 #### Base Command
 
 `core-delete-exclusion`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1975,11 +1827,8 @@ Delete an alert exclusion rule based on rule ID.
 | Core.deletedExclusion.rule_id | Number | Deleted exclusion rule id | 
 
 #### Command example
-
 ```!core-delete-exclusion alert_exclusion_id=36```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -1995,7 +1844,6 @@ Delete an alert exclusion rule based on rule ID.
 >Successfully deleted the following exclusion: 36
 
 ### core-get-exclusion
-
 ***
 Get a list of the alerts exclusion.
 
@@ -2003,7 +1851,6 @@ Get a list of the alerts exclusion.
 #### Base Command
 
 `core-get-exclusion`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2038,11 +1885,8 @@ Get a list of the alerts exclusion.
 | Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS | Number |  | 
 
 #### Command example
-
 ```!core-get-exclusion filterObject={\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"ALERT_WHITELIST_COMMENT\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}}```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -2100,13 +1944,11 @@ Get a list of the alerts exclusion.
 #### Human Readable Output
 
 >### Exclusion
-
 >|ALERT_WHITELIST_BACKWARDS_SCAN_STATUS|ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP|ALERT_WHITELIST_COMMENT|ALERT_WHITELIST_HITS|ALERT_WHITELIST_ID|ALERT_WHITELIST_INDICATOR|ALERT_WHITELIST_INDICATOR_TEXT|ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS|ALERT_WHITELIST_MODIFY_TIME|ALERT_WHITELIST_NAME|ALERT_WHITELIST_PRETTY_USER|ALERT_WHITELIST_STATUS|ALERT_WHITELIST_USER|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| DISABLED |  |  | 0 | 45 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1645102011552 | test1 | Public API - 3 | ENABLED | N/A |
 
 ### core-get-cloud-original-alerts
-
 ***
 Returns information about each alert ID.
 
@@ -2114,7 +1956,6 @@ Returns information about each alert ID.
 #### Base Command
 
 `core-get-cloud-original-alerts`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2171,7 +2012,6 @@ Returns information about each alert ID.
 | Core.OriginalAlert.event.ingestion_time | String | Ingestion time. | 
 
 ### core-get-dynamic-analysis
-
 ***
 Returns dynamic analysis of each alert ID.
 
@@ -2179,7 +2019,6 @@ Returns dynamic analysis of each alert ID.
 #### Base Command
 
 `core-get-dynamic-analysis`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2324,7 +2163,6 @@ Returns dynamic analysis of each alert ID.
 | Core.DynamicAnalysis.osSpawnerSigner | String |  | 
 
 ### core-get-hash-analytics-prevalence
-
 ***
 Get the prevalence of a file, identified by sha256.
 
@@ -2332,7 +2170,6 @@ Get the prevalence of a file, identified by sha256.
 #### Base Command
 
 `core-get-hash-analytics-prevalence`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2350,7 +2187,6 @@ Get the prevalence of a file, identified by sha256.
 | Core.AnalyticsPrevalence.Hash.data.prevalence.value | Number | The prevalence of the hash. | 
 
 ### core-get-IP-analytics-prevalence
-
 ***
 Get the prevalence of an ip, identified by ip_address.
 
@@ -2358,7 +2194,6 @@ Get the prevalence of an ip, identified by ip_address.
 #### Base Command
 
 `core-get-IP-analytics-prevalence`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2376,7 +2211,6 @@ Get the prevalence of an ip, identified by ip_address.
 | Core.AnalyticsPrevalence.Ip.data.prevalence.value | Number | The prevalence of the IP. | 
 
 ### core-get-domain-analytics-prevalence
-
 ***
 Get the prevalence of a domain, identified by domain_name.
 
@@ -2384,7 +2218,6 @@ Get the prevalence of a domain, identified by domain_name.
 #### Base Command
 
 `core-get-domain-analytics-prevalence`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2402,7 +2235,6 @@ Get the prevalence of a domain, identified by domain_name.
 | Core.AnalyticsPrevalence.Domain.data.prevalence.value | Number | The prevalence of the domain. | 
 
 ### core-get-process-analytics-prevalence
-
 ***
 Get the prevalence of a process, identified by process_name.
 
@@ -2410,7 +2242,6 @@ Get the prevalence of a process, identified by process_name.
 #### Base Command
 
 `core-get-process-analytics-prevalence`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2428,7 +2259,6 @@ Get the prevalence of a process, identified by process_name.
 | Core.AnalyticsPrevalence.Process.data.prevalence.value | Number | The prevalence of the process. | 
 
 ### core-get-registry-analytics-prevalence
-
 ***
 Get the prevalence of a registry_path, identified by key_name, value_name.
 
@@ -2436,7 +2266,6 @@ Get the prevalence of a registry_path, identified by key_name, value_name.
 #### Base Command
 
 `core-get-registry-analytics-prevalence`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2455,7 +2284,6 @@ Get the prevalence of a registry_path, identified by key_name, value_name.
 | Core.AnalyticsPrevalence.Registry.data.prevalence.value | Number | The prevalence of the registry. | 
 
 ### core-get-cmd-analytics-prevalence
-
 ***
 Get the prevalence of a process_command_line, identified by process_command_line.
 
@@ -2463,7 +2291,6 @@ Get the prevalence of a process_command_line, identified by process_command_line
 #### Base Command
 
 `core-get-cmd-analytics-prevalence`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2482,7 +2309,6 @@ Get the prevalence of a process_command_line, identified by process_command_line
 
 
 ### core-add-endpoint-tag
-
 ***
 Add a tag to one or more endpoints.
 
@@ -2490,7 +2316,6 @@ Add a tag to one or more endpoints.
 #### Base Command
 
 `core-add-endpoint-tag`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2517,22 +2342,18 @@ Add a tag to one or more endpoints.
 There is no context output for this command.
 
 #### Command example
-
 ```!core-add-endpoint-tag endpoint_ids=1234 tag=test```
-
 #### Human Readable Output
 
 >Successfully added tag test to endpoint(s) ['1234']
 
 ### core-remove-endpoint-tag
-
 ***
 Remove a tag from one or more endpoints.
 
 #### Base Command
 
 `core-remove-endpoint-tag`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2555,11 +2376,9 @@ Remove a tag from one or more endpoints.
 
 
 #### Context Output
-
 There is no context output for this command.
 
 #### Command example
-
 ```!core-remove-endpoint-tag endpoint_ids=1234 tag=test```
 
 #### Human Readable Output
@@ -2567,14 +2386,12 @@ There is no context output for this command.
 >Successfully removed tag test from endpoint(s) ['1234']
 
 ### core-endpoint-alias-change
-
 ***
 Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
 
 #### Base Command
 
 `core-endpoint-alias-change`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2600,11 +2417,8 @@ Gets a list of endpoints according to the passed filters, and changes their alia
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!core-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1```
-
 #### Human Readable Output
 
 >The endpoint alias was changed successfully.
@@ -2639,11 +2453,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | Core.User.scope | array | Name of scope associated with the user, if applicable. | 
 
 #### Command example
-
 ```!core-list-users```
-
 #### Context Example
-
 ```json
 {
     "dummy": {
@@ -2676,7 +2487,6 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Users
-
 >|First Name|Groups|Last Name|Role|Type|User email|
 >|---|---|---|---|---|---|
 >| dummy |  | dummy | dummy | dummy | dummy |
@@ -2715,11 +2525,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | Core.RiskyUser.reasons.points | Number | The score. | 
 
 #### Command example
-
 ```!core-list-risky-users user_id=dummy```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -2736,7 +2543,6 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Risky Users
-
 >|User ID|Score|Description|
 >|---|---|---|
 >| dummy | 0 |  |
@@ -2773,11 +2579,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | Core.RiskyHost.reasons.points | Number | The score. | 
 
 #### Command example
-
 ```!core-list-risky-hosts host_id=dummy```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -2794,7 +2597,6 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Risky Hosts
-
 >|Host ID|Score|Description|
 >|---|---|---|
 >| dummy | 0 |  |
@@ -2829,11 +2631,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | Core.UserGroup.source | String | Type of user group. | 
 
 #### Command example
-
 ```!core-list-user-groups group_names=test```
-
 #### Context Example
-
 ```json
 {
     "Core": {
@@ -2855,7 +2654,6 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Groups
-
 >|Group Name|Group Description|User email|
 >|---|---|---|
 >| test | test for demo |  |
@@ -3301,7 +3099,7 @@ xdm__asset__type__name | xdm__asset__strong_id |
 ### core-execute-command
 
 ***
-Run command on a specific endpoint and return its result
+Run command on a specific endpoint and return its result.
 
 #### Base Command
 
@@ -3311,13 +3109,14 @@ Run command on a specific endpoint and return its result
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
 | command | Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas. (Useful when using \\|\\|, &amp;amp;&amp;amp;, ; separators for controlling the flow of multiple commands. | Required | 
 | timeout | The input timeout should be used here to limit the max running time for the command. Default is 600. | Optional | 
-| verbose | No description provided. | Optional | 
 | incident_id | Link the response action to the triggered incident. | Optional | 
 | is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands that are run independently. | Optional | 
-| command_type | Type of shell command. Possible values are: powershell, native.  | Optional | 
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 
 #### Context Output
 
@@ -3339,7 +3138,7 @@ Run command on a specific endpoint and return its result
 
 ##### Command Example
 
-```!core-get-asset-details asset_id=123```
+```!core-execute-command command=dir endpoint_ids=5jhgu74i6bnh41mk45127413k4```
 
 ##### Context Example
 
