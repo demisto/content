@@ -55,5 +55,10 @@
             "type": "shortText",
             "name": "File Names"
         }
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
     ]
 }
