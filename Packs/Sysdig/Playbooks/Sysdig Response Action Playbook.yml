@@ -1,5 +1,5 @@
-id: d9fbeca9-89bf-4a26-80b7-98fa951901de
-version: 19
+id: Sysdig Response Action
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: Sysdig Response Action
 description: Manage different response actions based on incident fields
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 027a70e3-b5c8-4b22-83ac-24b94eb94e82
+    taskid: 0f451a9b-0e95-4119-8818-b6b8cae67099
     type: start
     task:
-      id: 027a70e3-b5c8-4b22-83ac-24b94eb94e82
+      id: 0f451a9b-0e95-4119-8818-b6b8cae67099
       version: -1
       name: ""
       iscommand: false
@@ -39,26 +39,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 10bdcf69-1951-4be3-b92e-4239903c6f99
+    taskid: 4b6d5053-def9-401a-84d6-41a770084654
     type: regular
     task:
-      id: 10bdcf69-1951-4be3-b92e-4239903c6f99
+      id: 4b6d5053-def9-401a-84d6-41a770084654
       version: -1
       name: Kill Container
       description: Calling the Sysdig response-actions API
-      script: '|||call-response-api'
+      script: 'SysdigResponseActions|||call-response-api'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "SysdigResponseActions"
     scriptarguments:
       actionType:
         simple: KILL_CONTAINER
       callerId:
         simple: ${incident.eventid}
       container_id:
-        simple: ${incident.containerid}
+        simple: ${incident.sysdigcontainerid}
       host_id:
-        simple: ${incident.hostid}
+        simple: ${incident.sysdighostid}
       json_data:
         keyvalue:
         - key: actionType
@@ -99,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d0590e40-050f-413d-9746-dec2bdaf0d93
+    taskid: 078a65de-a783-4d7e-8086-b7f22e5c9185
     type: condition
     task:
-      id: d0590e40-050f-413d-9746-dec2bdaf0d93
+      id: 078a65de-a783-4d7e-8086-b7f22e5c9185
       version: -1
       name: Validate Container ID
       description: commands.local.cmd.extract.indicators
@@ -121,7 +121,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.containerid
+              simple: incident.sysdigcontainerid
             iscontext: true
           right:
             value: {}
@@ -142,10 +142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6f999804-a2b7-4e21-a5fb-56882f266f1b
+    taskid: 63310cb8-bc95-4ad1-8320-875cdf5feab2
     type: condition
     task:
-      id: 6f999804-a2b7-4e21-a5fb-56882f266f1b
+      id: 63310cb8-bc95-4ad1-8320-875cdf5feab2
       version: -1
       name: Check Process an Host ID
       type: condition
@@ -173,7 +173,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.hostid
+              simple: incident.sysdighostid
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -192,10 +192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c4f2f433-b718-4883-95b5-f980178c4fe9
+    taskid: 767b087d-ec00-4d04-858a-ac9685974115
     type: condition
     task:
-      id: c4f2f433-b718-4883-95b5-f980178c4fe9
+      id: 767b087d-ec00-4d04-858a-ac9685974115
       version: -1
       name: Check file path
       type: condition
@@ -232,26 +232,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6a0cd534-c6c1-4c9a-8955-53aeefc46ec9
+    taskid: 393cb9c6-6702-4bb9-851d-ec822e9123f2
     type: regular
     task:
-      id: 6a0cd534-c6c1-4c9a-8955-53aeefc46ec9
+      id: 393cb9c6-6702-4bb9-851d-ec822e9123f2
       version: -1
       name: File quarantine
       description: Calling the Sysdig response-actions API
-      script: '|||call-response-api'
+      script: 'SysdigResponseActions|||call-response-api'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "SysdigResponseActions"
     scriptarguments:
       actionType:
         simple: FILE_QUARANTINE
       callerId:
         simple: ${incident.eventid}
       container_id:
-        simple: ${incident.containerid}
+        simple: ${incident.sysdigcontainerid}
       host_id:
-        simple: ${incident.hostid}
+        simple: ${incident.sysdighostid}
       json_data:
         keyvalue:
         - key: actionType
@@ -292,26 +292,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9368dba6-9e62-458c-82dc-2594351ef446
+    taskid: b30303a3-5a22-42bb-847e-d21b19c2f4d8
     type: regular
     task:
-      id: 9368dba6-9e62-458c-82dc-2594351ef446
+      id: b30303a3-5a22-42bb-847e-d21b19c2f4d8
       version: -1
       name: Kill Process
       description: Calling the Sysdig response-actions API
-      script: '|||call-response-api'
+      script: 'SysdigResponseActions|||call-response-api'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "SysdigResponseActions"
     scriptarguments:
       actionType:
         simple: KILL_PROCESS
       callerId:
         simple: ${incident.eventid}
       container_id:
-        simple: ${incident.containerid}
+        simple: ${incident.sysdigcontainerid}
       host_id:
-        simple: ${incident.hostid}
+        simple: ${incident.sysdighostid}
       json_data:
         keyvalue:
         - key: actionType
@@ -352,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4fdded1a-1575-4855-85b2-827fa3fa454e
+    taskid: 4e9a9068-9044-403d-8830-57ec3459d51d
     type: condition
     task:
-      id: 4fdded1a-1575-4855-85b2-827fa3fa454e
+      id: 4e9a9068-9044-403d-8830-57ec3459d51d
       version: -1
       name: Check trigger system capture
       type: condition
@@ -373,7 +373,7 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: incident.triggercapture
+              simple: incident.sysdigtriggercapture
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -392,18 +392,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3806f72d-25db-420b-8c7f-4d1367212791
+    taskid: c801bdb3-ada0-4277-8558-51883aac8111
     type: regular
     task:
-      id: 3806f72d-25db-420b-8c7f-4d1367212791
+      id: c801bdb3-ada0-4277-8558-51883aac8111
       version: -1
       name: Create system capture
       description: Command to trigger a system capture, it will record all system
         calls at the host level.
-      script: '|||create-system-capture'
+      script: 'SysdigResponseActions|||create-system-capture'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "SysdigResponseActions"
     nexttasks:
       '#none#':
       - "9"
@@ -413,7 +413,7 @@ tasks:
       capture_name:
         simple: xsoar-capture-${incident.eventid}
       container_id:
-        simple: ${incident.containerid}
+        simple: ${incident.sysdigcontainerid}
       customer_id:
         simple: ${incident.sysdigcustomerid}
       host_name:
@@ -442,17 +442,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fdead3f6-07d5-4888-b57f-f92e6f132c1d
+    taskid: 2fc220ea-08a9-479b-9664-4a17d54b06b5
     type: regular
     task:
-      id: fdead3f6-07d5-4888-b57f-f92e6f132c1d
+      id: 2fc220ea-08a9-479b-9664-4a17d54b06b5
       version: -1
       name: Save Capture
       description: Command to download a system capture based on the capture ID.
-      script: Sysdig-Response-Actions|||download-capture-file
+      script: SysdigResponseActions|||download-capture-file
       type: regular
       iscommand: true
-      brand: Sysdig-Response-Actions
+      brand: SysdigResponseActions
     scriptarguments:
       capture_id:
         simple: ${create_system_capture.Output.capture.id}

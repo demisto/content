@@ -1,0 +1,29 @@
+{
+	"id": "incident_hostid",
+	"version": 1,
+	"name": "Host ID",
+	"ownerOnly": false,
+	"description": "The Host ID",
+	"cliName": "hostid",
+	"type": "shortText",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"locked": false,
+	"packName": "",
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Sysdig Runtime Event"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"fromVersion": "6.0.0"
+}

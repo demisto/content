@@ -15,8 +15,8 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
-KILL_CONTAINER_RESPONSE = util_load_json('response_actions/Integrations/Sysdig-Response-Actions/test_data/response_api/kill_container_response.json')
-SYSTEM_CAPTURE_RESPONSE = util_load_json('response_actions/Integrations/Sysdig-Response-Actions/test_data/system_capture/create_response.json')
+KILL_CONTAINER_RESPONSE = util_load_json('Packs/Sysdig/Integrations/Sysdig-Response-Actions/test_data/response_api/kill_container_response.json')
+SYSTEM_CAPTURE_RESPONSE = util_load_json('Packs/Sysdig/Integrations/Sysdig-Response-Actions/test_data/system_capture/create_response.json')
 
 
 # TODO: ADD HERE unit tests for every command

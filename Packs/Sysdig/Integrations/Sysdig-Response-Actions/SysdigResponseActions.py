@@ -89,7 +89,7 @@ def _build_data_payload(args : Dict[str, Any]) -> Dict[str, Any]:
         parameters['path.absolute'] = path_absolute
     if process_id:
         parameters['process.id'] = int(process_id)
-        parameters['startTime'] = -1
+        parameters['startTime'] = -1 # To search from the beginning time
 
     data = {
         'actionType': actionType,
@@ -191,8 +191,6 @@ def _validate_response_actions_params(args: Dict[str, Any]) -> None:
 
 
 """ COMMAND FUNCTIONS """
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 def call_response_api_command(
     client: Client, args: Dict[str, Any]

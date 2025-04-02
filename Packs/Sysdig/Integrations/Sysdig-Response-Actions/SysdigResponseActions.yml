@@ -52,13 +52,13 @@ script:
     - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
       name: container_id
       type: String
-    - description: 'The path of the file to quarantine. Example "/etc/sensitive"'
+    - description: 'The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action'
       name: path_absolute
       type: String
     - description: 'The host ID. Example "laksjdf1923u90snca893"'
       name: host_id
       type: String
-    - description: 'The process ID. Example "1234"'
+    - description: 'The process ID. Example "1234". Required for the `KILL_PROCESS` action'
       name: process_id
       type: Number
     description: Calling the Sysdig response-actions API
@@ -123,7 +123,7 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 6.1.0
+fromversion: 6.0.0
 marketplaces:
 - xsoar
 - marketplacev2

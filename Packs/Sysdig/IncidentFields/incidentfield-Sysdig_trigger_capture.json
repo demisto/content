@@ -1,0 +1,30 @@
+{
+	"id": "incident_sysdigtriggercapture",
+	"version": 1,
+	"modified": "2025-02-26T15:27:26.26216777Z",
+	"name": "Sysdig Trigger Capture",
+	"ownerOnly": false,
+	"description": "Check to trigger a capture of the host",
+	"cliName": "sysdigtriggercapture",
+	"type": "boolean",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"locked": false,
+	"packName": "",
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Sysdig Runtime Event"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"fromVersion": "6.0.0"
+}
