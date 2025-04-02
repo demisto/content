@@ -16,17 +16,16 @@ def hunting_from_indicator_layout(sdo: str):
     Raises:
         - ValueError: If the indicator value is not part of Demisto args,
           a ValueError is raised with a message indicating that the automation was not executed from the indicator layout.
-       """
+    """
     try:
-        demisto.executeCommand("createNewIncident", {"name": f"Threat Hunting Session - {sdo}",
-                                                     "sdoname": f"{sdo}",
-                                                     "type": "Proactive Threat Hunting"})
+        demisto.executeCommand(
+            "createNewIncident",
+            {"name": f"Threat Hunting Session - {sdo}", "sdoname": f"{sdo}", "type": "Proactive Threat Hunting"},
+        )
     except Exception as e:
-        raise DemistoException(f'Failed to create hunting session: {str(e)}') from e
+        raise DemistoException(f"Failed to create hunting session: {e!s}") from e
 
-    return CommandResults(
-        readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}"
-    )
+    return CommandResults(readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}")
 
 
 def main() -> None:  # pragma: no cover
@@ -37,8 +36,8 @@ def main() -> None:  # pragma: no cover
         return_results(hunting_from_indicator_layout(args["indicator"].get("value")))
 
     except Exception as e:
-        return_error(f'Failed to create hunting session: {str(e)}')
+        return_error(f"Failed to create hunting session: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

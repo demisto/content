@@ -2,7 +2,7 @@
     "name": "Symantec Data Loss Prevention",
     "description": "Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.",
     "support": "xsoar",
-    "currentVersion": "2.1.4",
+    "currentVersion": "2.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
