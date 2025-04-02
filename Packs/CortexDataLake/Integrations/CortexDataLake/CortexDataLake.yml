@@ -2153,7 +2153,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.PlatformType
       description: The platform type.
     - contextPath: CDL.Logging.GlobalProtect.Portal
-      description: Global Protect Portal or Gateway that the user connected to.
+      description: GlobalProtect portal or gateway that the user connected to.
     - contextPath: CDL.Logging.GlobalProtect.PrivateIPv4
       description: Private IP address (v4) of the user that connected.
     - contextPath: CDL.Logging.GlobalProtect.PrivateIPv6
