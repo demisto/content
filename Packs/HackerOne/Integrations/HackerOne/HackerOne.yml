@@ -2,6 +2,9 @@ category: Vulnerability Management
 commonfields:
   id: HackerOne
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: Server URL to connect to HackerOne.
   defaultvalue: https://api.hackerone.com
@@ -559,7 +562,7 @@ script:
     - contextPath: HackerOne.Program.attributes.updated_at
       description: The date and time the object was updated. Formatted according to ISO 8601.
       type: Date
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

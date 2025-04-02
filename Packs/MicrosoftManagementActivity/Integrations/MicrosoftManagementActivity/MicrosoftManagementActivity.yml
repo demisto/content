@@ -100,6 +100,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
@@ -290,7 +291,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ms-management-activity-auth-reset
     arguments: []
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.3030454
   isfetch: true
   runonce: false
   script: '-'
