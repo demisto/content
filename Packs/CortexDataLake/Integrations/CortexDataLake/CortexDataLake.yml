@@ -2049,7 +2049,7 @@ script:
     arguments: []
   - arguments:
     - defaultValue: "10"
-      description: The maximum number of logs to return. Default is 10.
+      description: The maximum number of logs to return.
       name: limit
     - description: Page to return.
       name: page
