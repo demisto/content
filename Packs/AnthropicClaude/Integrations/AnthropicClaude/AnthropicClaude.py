@@ -10,8 +10,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-EML_FILE_PREFIX = '.eml'
+ANTHROPIC_VERSION = '2023-06-01'
+EML_FILE_SUFFIX = '.eml'
 
 CHECK_EMAIL_HEADERS_PROMPT = """
 I have a set of email headers.
@@ -88,7 +88,7 @@ class AnthropicClient(BaseClient):
         self.model = model
         self.headers = {
             'x-api-key': self.api_key,
-            'anthropic-version': '2023-06-01',
+            'anthropic-version': ANTHROPIC_VERSION,
             'Content-Type': 'application/json'
         }
 
@@ -141,20 +141,10 @@ class AnthropicClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def setup_args(args: Dict[str, Any], params: Dict[str, Any]):
-    """ Using instance params for model configuration, if command args were not provided."""
-    if not args.get(ArgAndParamNames.MAX_TOKENS, None) and params.get(ArgAndParamNames.MAX_TOKENS, None):
-        args[ArgAndParamNames.MAX_TOKENS] = params.get(ArgAndParamNames.MAX_TOKENS)
-    if not args.get(ArgAndParamNames.TEMPERATURE, None) and params.get(ArgAndParamNames.TEMPERATURE, None):
-        args[ArgAndParamNames.TEMPERATURE] = params.get(ArgAndParamNames.TEMPERATURE)
-    if not args.get(ArgAndParamNames.TOP_P, None) and params.get(ArgAndParamNames.TOP_P, False):
-        args[ArgAndParamNames.TOP_P] = params.get(ArgAndParamNames.TOP_P)
-
-
 def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dict[str, str]]:
     """ A 'Conversation' list that was retrieved from 'demisto.context()' is formatted to be more intuitive for XSOAR users
     and is formatted as: [
-                            {'user': '<USER_MESSAGE_0>, 'assistant': '<ASSISTANT_MESSAGE_0>},
+                            {'user': '<USER_MESSAGE_0>', 'assistant': '<ASSISTANT_MESSAGE_0>'},
                             {'user': '<USER_MESSAGE_1>', 'assistant': '<ASSISTANT_MESSAGE_1>'},
                              ...
                         ].
@@ -247,6 +237,7 @@ def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | N
             - headers (List[Dict[str, str]] | None): A list of dictionaries where each dictionary represents an email header.
             - text_body (str | None): The plain text body of the email, if available.
             - html_body (str | None): The HTML body of the email, if available.
+            - file_name (str | None): The name of the .eml file in the war room.
     """
     if not entry_id:
         DemistoException("Provide an entryId of an uploaded '.eml' file.")
@@ -347,9 +338,8 @@ def test_module(client: AnthropicClient, params: dict) -> str:
     message = ''
     try:
         chat_message = {"role": "user", "content": "test"}
-        # For test_module, use a hardcoded value for max_tokens to avoid conversion issues
         completion_params = {
-            ArgAndParamNames.MAX_TOKENS: 1024,  # Use hardcoded value for test
+            ArgAndParamNames.MAX_TOKENS: int(params.get("max_tokens", 1024)),
             ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
             ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None)
         }
@@ -373,7 +363,7 @@ def send_message_command(client: AnthropicClient,
         raise ValueError('Message not provided')
 
     completion_params = {
-        ArgAndParamNames.MAX_TOKENS: args.get(ArgAndParamNames.MAX_TOKENS, None),
+        ArgAndParamNames.MAX_TOKENS: int(args.get(ArgAndParamNames.MAX_TOKENS, 1024)),
         ArgAndParamNames.TEMPERATURE: args.get(ArgAndParamNames.TEMPERATURE, None),
         ArgAndParamNames.TOP_P: args.get(ArgAndParamNames.TOP_P, None)
     }
@@ -451,7 +441,7 @@ def main() -> None:  # pragma: no cover
     # The provided model will be tested for compatability within the test module.
     model = params.get('model-freetext') if params.get('model-freetext') else params.get('model-select')
 
-    setup_args(args, params)
+    args.update({key: value for key, value in params.items() if key not in args and value is not None})
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -480,7 +470,6 @@ def main() -> None:  # pragma: no cover
             return_results(create_soc_email_template_command(client=client, args=args))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
