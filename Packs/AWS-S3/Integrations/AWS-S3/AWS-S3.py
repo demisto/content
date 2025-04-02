@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
 import io
-import math
 import json
-from datetime import datetime, date
+import math
+from datetime import date, datetime
+from http import HTTPStatus
+
+import demistomock as demisto
 import urllib3.util
 from AWSApiModule import *  # noqa: E402
-from http import HTTPStatus
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -394,7 +395,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
