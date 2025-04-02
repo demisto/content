@@ -339,7 +339,7 @@ def test_module(client: AnthropicClient, params: dict) -> str:
     try:
         chat_message = {"role": "user", "content": "test"}
         completion_params = {
-            ArgAndParamNames.MAX_TOKENS: int(params.get("max_tokens", 1024)),
+            ArgAndParamNames.MAX_TOKENS: int(params.get(ArgAndParamNames.MAX_TOKENS, "").replace(",", "") or 1024),
             ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
             ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None)
         }
@@ -363,7 +363,7 @@ def send_message_command(client: AnthropicClient,
         raise ValueError('Message not provided')
 
     completion_params = {
-        ArgAndParamNames.MAX_TOKENS: int(args.get(ArgAndParamNames.MAX_TOKENS, 1024)),
+        ArgAndParamNames.MAX_TOKENS: int(args.get(ArgAndParamNames.MAX_TOKENS, "").replace(",", "") or 1024),
         ArgAndParamNames.TEMPERATURE: args.get(ArgAndParamNames.TEMPERATURE, None),
         ArgAndParamNames.TOP_P: args.get(ArgAndParamNames.TOP_P, None)
     }
