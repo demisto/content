@@ -56,9 +56,9 @@ tasks:
       callerId:
         simple: ${incident.eventid}
       container_id:
-        simple: ${incident.sysdigcontainerid}
+        simple: ${incident.containerid}
       host_id:
-        simple: ${incident.sysdighostid}
+        simple: ${incident.hostname}
       json_data:
         keyvalue:
         - key: actionType
@@ -121,7 +121,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.sysdigcontainerid
+              simple: incident.containerid
             iscontext: true
           right:
             value: {}
@@ -173,7 +173,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.sysdighostid
+              simple: incident.hostname
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -249,9 +249,9 @@ tasks:
       callerId:
         simple: ${incident.eventid}
       container_id:
-        simple: ${incident.sysdigcontainerid}
+        simple: ${incident.containerid}
       host_id:
-        simple: ${incident.sysdighostid}
+        simple: ${incident.hostname}
       json_data:
         keyvalue:
         - key: actionType
@@ -309,9 +309,9 @@ tasks:
       callerId:
         simple: ${incident.eventid}
       container_id:
-        simple: ${incident.sysdigcontainerid}
+        simple: ${incident.containerid}
       host_id:
-        simple: ${incident.sysdighostid}
+        simple: ${incident.hostname}
       json_data:
         keyvalue:
         - key: actionType
@@ -409,15 +409,15 @@ tasks:
       - "9"
     scriptarguments:
       agent_id:
-        simple: ${incident.agentid}
+        simple: ${incident.sysdigagentid}
       capture_name:
         simple: xsoar-capture-${incident.eventid}
       container_id:
-        simple: ${incident.sysdigcontainerid}
+        simple: ${incident.containerid}
       customer_id:
         simple: ${incident.sysdigcustomerid}
       host_name:
-        simple: ${incident.sourcehostname}
+        simple: ${incident.hostname}
       machine_id:
         simple: ${incident.macaddress}
       method:

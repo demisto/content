@@ -1,7 +1,7 @@
 This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture
-This integration was integrated and tested with version xx of Sysdig-Response-Actions.
+This integration was integrated and tested with version xx of SysdigResponseActions.
 
-## Configure Sysdig-Response-Actions in Cortex
+## Configure Sysdig Response Actions in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
@@ -34,9 +34,9 @@ Calling the Sysdig response-actions API
 | actionType | Action type to perform. Possible values are: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, FILE_QUARANTINE. | Optional | 
 | callerId | The caller ID, it must be unique every time. | Optional | 
 | container_id | The container ID to apply the action. Example "container.id": "123456789123". | Optional | 
-| path_absolute | The path of the file to quarantine. Example "/etc/sensitive". | Optional | 
+| path_absolute | The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action. | Optional | 
 | host_id | The host ID. Example "laksjdf1923u90snca893". | Optional | 
-| process_id | The process ID. Example "1234". | Optional | 
+| process_id | The process ID. Example "1234". Required for the `KILL_PROCESS` action. | Optional | 
 
 #### Context Output
 

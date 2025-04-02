@@ -5,7 +5,7 @@ Sysdig Response Actions Integration
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-import requests
+import re
 from urllib.parse import urljoin
 from typing import Any, Dict, Optional, Tuple
 import urllib3, traceback, json
@@ -189,6 +189,20 @@ def _validate_response_actions_params(args: Dict[str, Any]) -> None:
     if actionType == "KILL_PROCESS" and not 'process.id' in parameters and not 'host.id' in parameters:
         raise ValueError("process.id and host.id are required for actionType KILL_PROCESS")
 
+def _get_public_api_url(base_url: str) -> str:
+    """
+    Get the public API URL from the base URL.
+
+    Args:
+        base_url: The base URL of the Sysdig API
+    Returns:
+        The public API URL
+    """
+    match = re.search(r"https://(\w+)\.app\.sysdig\.com", base_url)
+    if match:
+        region = match.group(1)  # Extract the region
+        return f"https://api.{region}.sysdig.com"
+    raise ValueError(f"Invalid base URL format. Unable to extract region. Base URL should be in the format https://<region>.app.sysdig.com. Provided: {base_url}.")
 
 """ COMMAND FUNCTIONS """
 
@@ -200,11 +214,12 @@ def call_response_api_command(
     """
     method = args.get("method")
     url_suffix = args.get("url_suffix")
+    full_url = _get_public_api_url(client.base_url) + url_suffix
     data = None
     if method == "POST" or method == "PUT":
         data = _build_data_payload(args)
 
-    result = client.call_sysdig_api(method = method, url_suffix = url_suffix, json_data = data)
+    result = client.call_sysdig_api(method = method, full_url = full_url, json_data = data)
 
     return CommandResults(
         outputs_prefix="call_response_api.Output",
