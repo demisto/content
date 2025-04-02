@@ -76,24 +76,24 @@
                     },
                     "simple": ""
                 },
-                "Categories": {
-                    "complex": {
-                        "filters": [],
-                        "root": "Categories",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
-                    }
-                },
+				"Categories": {
+					"complex": {
+						"filters": [],
+						"root": "Categories",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
                 "Email Body Format": {
                     "complex": null,
                     "simple": "BodyType"
@@ -197,7 +197,7 @@
                             ]
                         ],
                         "root": "Headers",
-                        "transformers": [
+						"transformers": [
                             {
                                 "args": {
                                     "separator": {
@@ -209,8 +209,7 @@
                                 },
                                 "operator": "join"
                             }
-                        ]
-                    },
+                        ]                    },
                     "simple": ""
                 },
                 "Email Return Path": {
@@ -317,11 +316,11 @@
                     "simple": ""
                 },
                 "Email BCC": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "Bcc",
-                        "transformers": [
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Bcc",
+						"transformers": [
                             {
                                 "args": {
                                     "separator": {
@@ -334,9 +333,9 @@
                                 "operator": "join"
                             }
                         ]
-                    },
-                    "simple": ""
-                },
+					},
+					"simple": ""
+				},
                 "Email To Count": {
                     "complex": {
                         "accessor": "",

@@ -21,15 +21,15 @@
                 "Last Update Time": {
                     "simple": "lastUpdateDateTime"
                 },
-                "Microsoft Graph Security Alert Evidence": {
-                    "simple": "evidence"
-                },
-                "Microsoft Graph Security Detector Id": {
-                    "simple": "detectorId"
-                },
-                "Microsoft Graph Security Comment": {
-                    "simple": "comments"
-                },
+				"Microsoft Graph Security Alert Evidence": {
+					"simple": "evidence"
+				},
+				"Microsoft Graph Security Detector Id": {
+					"simple": "detectorId"
+				},
+				"Microsoft Graph Security Comment": {
+					"simple": "comments"
+				},
                 "Microsoft Graph Security Alert Determination": {
                     "simple": "determination"
                 },

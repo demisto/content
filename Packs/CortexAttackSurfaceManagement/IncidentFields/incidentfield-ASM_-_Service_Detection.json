@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: ID of the scan."
+            "_comment":"Mandatory: ID of the scan."
         },
         {
             "displayName": "ScanDone",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Optional: Set to false if the scan failed."
+            "_comment":"Optional: Set to false if the scan failed."
         },
         {
             "displayName": "ScanResult",
@@ -49,7 +49,7 @@
             ],
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: Set to REMEDIATED or UNREMEDIATED based on the result of the scan."
+            "_comment":"Mandatory: Set to REMEDIATED or UNREMEDIATED based on the result of the scan."
         },
         {
             "displayName": "TimeStamp",
@@ -63,7 +63,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: Current timestamp the scan was seen completed by the playbook."
+            "_comment":"Mandatory: Current timestamp the scan was seen completed by the playbook."
         },
         {
             "displayName": "ScanState",
@@ -77,7 +77,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: The status of the scan. Ex: SUCCESS, IN_PROGRESS, FAILED_ERROR, FAILED_TIMEOUT."
+            "_comment":"Mandatory: The status of the scan. Ex: SUCCESS, IN_PROGRESS, FAILED_ERROR, FAILED_TIMEOUT."
         }
     ],
     "content": true,

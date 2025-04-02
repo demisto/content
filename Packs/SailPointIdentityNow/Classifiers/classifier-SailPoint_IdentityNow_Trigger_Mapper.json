@@ -9,72 +9,104 @@
                 "SailPoint IdentityNow Trigger Access Request Details": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "accessRequestDetails",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Account Aggregated Details": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "accountAggregatedDetails",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Attributes": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "attributes",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Changes": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "changes",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Identity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "identity",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Metadata": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "metadata",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Post Provisioning Details": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "postProvisioningDetails",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "SailPoint IdentityNow Trigger Search Completed Details": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "searchCompletedDetails",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 }
