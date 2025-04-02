@@ -1339,7 +1339,7 @@ Searches the GlobalProtect VPN log table.
 | transform_results | If set to false, query results are not mapped into the standard command context. Possible values are: true, false. Default is true. | Optional | 
 | fields | The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all". Default is all. | Optional | 
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional | 
-| start_time | The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00. Default is '1970-01-01 00:00:00'. | Optional | 
+| start_time | The query start time. For example, start_time="2018-04-26 00:00:00". Default is '1970-01-01 00:00:00'. | Optional | 
 | time_range | First log time (&lt;number&gt; &lt;time unit&gt;. For example, 12 minutes, 7 days, 3 weeks). | Optional | 
 | event_name | Event name for which to search. | Optional | 
 | gateway | GlobalProtect gateway for which to search. | Optional | 
