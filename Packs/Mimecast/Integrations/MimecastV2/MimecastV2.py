@@ -11,7 +11,7 @@ import hmac
 import json
 import uuid
 from datetime import timedelta
-from urllib.error import HTTPError
+from urllib.error import HTTPError 
 from xml.etree import ElementTree
 
 import requests
@@ -185,7 +185,7 @@ def fetch_held_messages_with_pagination(
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
-    url = BASE_URL + api_endpoint 
+    url = BASE_URL + api_endpoint
     # 3 types of auth, user, non user and OAuth2
     if USE_OAUTH2:
         if TOKEN_OAUTH2:
