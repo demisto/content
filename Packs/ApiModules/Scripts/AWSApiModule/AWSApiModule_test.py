@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from AWSApiModule import *
-from pytest import raises
+from pytest import raises  # noqa: PT013
 
 VALIDATE_CASES = [
     {
@@ -154,7 +154,7 @@ def test_AWSClient_with_session_token():
             session = client.aws_session("s3")
             assert session
         except Exception:
-            print("failed to create session:" + Exception)
+            print("failed to create session:" + Exception)  # noqa: T201
 
 
 def test_AWSClient_without_session_token():
@@ -190,7 +190,7 @@ def test_AWSClient_without_session_token():
             session = client.aws_session("s3")
             assert session
         except Exception:
-            print("failed to create session:" + Exception)
+            print("failed to create session:" + Exception)  # noqa: T201
 
 
 @pytest.mark.parametrize(

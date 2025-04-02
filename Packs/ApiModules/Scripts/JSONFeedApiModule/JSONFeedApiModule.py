@@ -26,9 +26,9 @@ class Client:
         insecure: bool = False,
         cert_file: str = None,
         key_file: str = None,
-        headers: dict | str = None,
+        headers: dict | str = None, # type: ignore[assignment]
         tlp_color: str | None = None,
-        data: str | dict = None,
+        data: str | dict = None,    # type: ignore[assignment]
         **_,
     ):
         """

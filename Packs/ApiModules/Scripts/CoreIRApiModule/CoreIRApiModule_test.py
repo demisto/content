@@ -360,7 +360,7 @@ def test_unisolate_endpoint_pending_isolation(requests_mock):
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
 
     args = {"endpoint_id": "1111"}
-    with pytest.raises(ValueError, match="Error: Endpoint 1111 is pending isolation and therefore can not be" " un-isolated."):
+    with pytest.raises(ValueError, match="Error: Endpoint 1111 is pending isolation and therefore can not be un-isolated."):
         unisolate_endpoint_command(client, args)
 
 
@@ -2814,7 +2814,7 @@ class TestGetAlertByFilter:
         import dateparser
         from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
 
-        custom_filter = '{"OR": [{"SEARCH_FIELD": "actor_process_image_sha256",' '"SEARCH_TYPE": "EQ",' '"SEARCH_VALUE": "222"}]}'
+        custom_filter = '{"OR": [{"SEARCH_FIELD": "actor_process_image_sha256","SEARCH_TYPE": "EQ","SEARCH_VALUE": "222"}]}'
         api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
         request_data_log = mocker.patch.object(demisto, "debug")
@@ -2905,9 +2905,7 @@ class TestPollingCommands:
 
         command_result = script_run_polling_command({"endpoint_ids": "1", "script_uid": "1"}, client)
 
-        assert (
-            command_result.readable_output == "Waiting for the script to " "finish running on the following endpoints: ['1']..."
-        )
+        assert command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
         assert command_result.outputs == {"action_id": 1, "endpoints_count": 1, "status": 1}
 
         polling_args = {"endpoint_ids": "1", "script_uid": "1", "action_id": "1", "hide_polling_output": True}
@@ -3118,7 +3116,7 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
             command_to_run(client, args)
             assert "Other error" in str(e)
     else:
-        assert command_to_run(client, args).readable_output == "The operation executed is not supported on the given " "machine."
+        assert command_to_run(client, args).readable_output == "The operation executed is not supported on the given machine."
 
 
 @pytest.mark.parametrize(
@@ -4119,7 +4117,7 @@ def test_terminate_causality_command(mocker):
         client=client, args={"agent_id": "1", "causality_id": ["causality_id_1", "causality_id_2"]}
     )
     assert result.readable_output == (
-        "### Action terminate causality created on causality_id_1," "causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n"
+        "### Action terminate causality created on causality_id_1,causality_id_2\n|action_id|\n|---|\n| 1 |\n| 2 |\n"
     )
     assert result.raw_response == [{"action_id": 1}, {"action_id": 2}]
 
@@ -4171,16 +4169,16 @@ def test_run_polling_command_values_raise_error(mocker):
             DemistoException("An error occurred while processing XDR public API: No identity threat", res=Mock(status_code=500)),
             "user",
             (
-                "Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR "
-                "public API: No identity threat"
+                "Please confirm the XDR Identity Threat Module is enabled.\nFull error message: "
+                "An error occurred while processing XDR public API: No identity threat"
             ),
         ),
         (
             Exception('"err_code": 500: No identity threat. An error occurred while processing XDR public API'),
             "user",
             (
-                'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: "err_code": 500: No identity threat.'
-                " An error occurred while processing XDR public API"
+                'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: "err_code": '
+                "500: No identity threat. An error occurred while processing XDR public API"
             ),
         ),
         (
@@ -4195,16 +4193,16 @@ def test_run_polling_command_values_raise_error(mocker):
             DemistoException("An error occurred while processing XDR public API: No identity threat", res=Mock(status_code=500)),
             "host",
             (
-                "Please confirm the XDR Identity Threat Module is enabled.\nFull error message: An error occurred while processing XDR "
-                "public API: No identity threat"
+                "Please confirm the XDR Identity Threat Module is enabled.\nFull error message:"
+                " An error occurred while processing XDR public API: No identity threat"
             ),
         ),
         (
             Exception('"err_code": 500: No identity threat. An error occurred while processing XDR public API'),
             "host",
             (
-                'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: "err_code": 500: No identity threat. '
-                "An error occurred while processing XDR public API"
+                'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: "err_code":'
+                " 500: No identity threat. An error occurred while processing XDR public API"
             ),
         ),
         (DemistoException("Some other error", res=Mock(status_code=500)), "host", None),

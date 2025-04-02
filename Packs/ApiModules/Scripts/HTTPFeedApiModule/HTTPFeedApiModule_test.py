@@ -110,8 +110,8 @@ def test_custom_fields_creator():
 
     assert custom_fields.get("new_field1") == "value1"
     assert custom_fields.get("new_field2") == "value2"
-    assert "old_field1" not in custom_fields.keys()
-    assert "old_filed2" not in custom_fields.keys()
+    assert "old_field1" not in custom_fields
+    assert "old_filed2" not in custom_fields
 
 
 def test_datestring_to_server_format():
@@ -555,9 +555,7 @@ def test_build_iterator_not_modified_header(mocker):
         assert result[0]["https://api.github.com/meta"]
         assert list(result[0]["https://api.github.com/meta"]["result"]) == []
         assert result[0]["https://api.github.com/meta"]["no_update"]
-        assert (
-            demisto.debug.call_args[0][0] == "No new indicators fetched, " "createIndicators will be executed with noUpdate=True."
-        )
+        assert demisto.debug.call_args[0][0] == "No new indicators fetched, createIndicators will be executed with noUpdate=True."
 
 
 def test_build_iterator_with_version_6_2_0(mocker):

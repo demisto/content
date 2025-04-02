@@ -353,7 +353,7 @@ class TestCleanAnsiCodes(unittest.TestCase):
         result = clean_ansi_codes(input_string)
 
         # Then: The returned string should be cleaned of ANSI codes.
-        self.assertEqual(result, "Hello World!")
+        self.assertEqual(result, "Hello World!")  # noqa: PT009
 
     def test_without_ansi_codes(self):
         # Given: A string without any ANSI escape codes.
@@ -363,4 +363,4 @@ class TestCleanAnsiCodes(unittest.TestCase):
         result = clean_ansi_codes(input_string)
 
         # Then: The returned string should remain unchanged.
-        self.assertEqual(result, "Hello World!")
+        self.assertEqual(result, "Hello World!")  # noqa: PT009

@@ -2358,7 +2358,7 @@ def test_create_x509_certificate_grids():
     """
     cilent = STIX2XSOARParser(id_to_object={})
     result = cilent.create_x509_certificate_grids(
-        "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, " "CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+        "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
     )
     assert result == [
         {"data": "US", "title": "C"},

@@ -287,9 +287,7 @@ def test_build_iterator_not_modified_header(mocker):
         result, no_update = client.build_iterator(feed={"url": "https://api.github.com/meta"}, feed_name=feed_name)
         assert not result
         assert no_update
-        assert (
-            demisto.debug.call_args[0][0] == "No new indicators fetched, " "createIndicators will be executed with noUpdate=True."
-        )
+        assert demisto.debug.call_args[0][0] == "No new indicators fetched, createIndicators will be executed with noUpdate=True."
         assert "If-None-Match" in client.headers
         assert "If-Modified-Since" in client.headers
 

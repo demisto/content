@@ -68,18 +68,21 @@ ATP_REDIRECTS = [
     (
         "https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com"  # disable-secrets-detection
         "%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com"  # disable-secrets-detection
-        "%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha"  # disable-secrets-detection
+        "%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca092"  # disable-secrets-detection
+        "8ec39d8d5%7C0&sdata=PEoDOerQnha"  # disable-secrets-detection
         "%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0",  # disable-secrets-detection
         "https://office.memoriesflower.com/Permission/office.php",
     ),  # disable-secrets-detection
     (
         "https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__"  # disable-secrets-detection
-        "https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&",  # disable-secrets-detection
+        "https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ"  # disable-secrets-detection
+        "3kNJkRi5Jg&",  # disable-secrets-detection
         "https://google.com:443/search?q=a+test&gs=ps",
     ),  # disable-secrets-detection
     (
         "https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__"  # disable-secrets-detection
-        "hxxps%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&",  # disable-secrets-detection
+        "hxxps%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__"  # disable-secrets-detection
+        "%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&",  # disable-secrets-detection
         "https://google.com:443/search?q=a+test&gs=ps",
     ),  # disable-secrets-detection
     (
@@ -108,8 +111,8 @@ PROOF_POINT_REDIRECTS = [
         "https://urldefense.proofpoint.com/v2/url?"  # disable-secrets-detection
         "u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r"  # disable-secrets-detection
         "-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c"  # disable-secrets-detection
-        "=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m"  # disable-secrets-detection
-        "=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=",  # disable-secrets-detection
+        "=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m"  # disable-secrets-detection # noqa: E501
+        "=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=",  # disable-secrets-detection   # noqa: E501
         "http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j="  # disable-secrets-detection
         "MTMwMjA1ODYzNQS2&mt=1&rt=0",
     ),  # disable-secrets-detection
@@ -150,7 +153,7 @@ TRENDMICRO_REDIRECT = [
         "url==3Dhttp%3a%2f%2fclick.sanantonioshoemakers.com"  # disable-secrets-detection
         "%2f%3fqs%3dba654fa7d9346fec1b=3fa6c55906d045be350d0ee6e3ed"  # disable-secrets-detection
         "c4ff33ef33eacb79b79602f5aaf719ee16c3d24e8489293=4d3&"  # disable-secrets-detection
-        "umid=3DB8AB568B-E738-A205-9C9E-ECD7B0A0383F&auth==3D00e18db2b3f9ca3ba6337946518e0b003516e16e-"  # disable-secrets-detection
+        "umid=3DB8AB568B-E738-A205-9C9E-ECD7B0A0383F&auth==3D00e18db2b3f9ca3ba6337946518e0b003516e16e-"  # disable-secrets-detection    # noqa: E501
         "5a8d41640e706acd29c760ae7a8cd40=f664d6489",  # disable-secrets-detection
         "http://click.sanantonioshoemakers.com/?qs=ba654fa7d9346fec1b="  # disable-secrets-detection
         "3fa6c55906d045be350d0ee6e3edc4ff33ef33eacb"  # disable-secrets-detection
@@ -487,4 +490,4 @@ class TestFormatURL:
         url = URLType("https://www.test.com")
 
         assert url.raw == "https://www.test.com"
-        assert url.__str__() == ("Scheme = \nUser_info = \nHostname = \nPort = \n" "Path = \nQuery = \nFragment = ")
+        assert url.__str__() == ("Scheme = \nUser_info = \nHostname = \nPort = \nPath = \nQuery = \nFragment = ")

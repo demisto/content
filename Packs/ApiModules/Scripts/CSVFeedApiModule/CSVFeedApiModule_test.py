@@ -443,9 +443,7 @@ def test_build_iterator_not_modified_header(mocker):
         assert result[0]["https://api.github.com/meta"]
         assert list(result[0]["https://api.github.com/meta"]["result"]) == []
         assert result[0]["https://api.github.com/meta"]["no_update"]
-        assert (
-            demisto.debug.call_args[0][0] == "No new indicators fetched, " "createIndicators will be executed with noUpdate=True."
-        )
+        assert demisto.debug.call_args[0][0] == "No new indicators fetched, createIndicators will be executed with noUpdate=True."
 
 
 def test_build_iterator_with_version_6_2_0(mocker):

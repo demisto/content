@@ -233,7 +233,7 @@ def test_page_not_found_error(mocker):
     """
     error_404 = Response()
     error_404._content = (
-        b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' b'"NotExistingUser does not exist."}}'
+        b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource "NotExistingUser does not exist."}}'
     )
     error_404.status_code = 404
     client = self_deployed_client()
