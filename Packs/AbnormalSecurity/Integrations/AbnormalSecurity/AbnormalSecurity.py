@@ -576,7 +576,8 @@ def get_details_of_an_abnormal_case_command(client, args):
         'threatIds',
         'genai_summary'
     ]
-    markdown = tableToMarkdown(f"Details of Case {response.get('caseId', '')}", response, headers=headers, removeNull=True)
+    markdown = tableToMarkdown(
+        f"Details of Case {response.get('caseId', '')}", response, headers=headers, removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix="AbnormalSecurity.AbnormalCaseDetails",
