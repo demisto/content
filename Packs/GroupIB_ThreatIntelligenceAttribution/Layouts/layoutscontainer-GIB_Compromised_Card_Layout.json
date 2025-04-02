@@ -453,7 +453,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -508,7 +508,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Person Information from GIB",
+                        "name": "Person Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -549,5 +549,6 @@
     "name": "GIB Compromised Card Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": ["xsoar"]
 }
