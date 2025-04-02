@@ -917,6 +917,8 @@ def is_this_network(url: str) -> bool:
         bool: True if the hostname is in private networks, False otherwise
     """
     try:
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url
         parsed = urlparse(url)
         hostname = parsed.netloc.split(':')[0]  # Remove port if exists
         

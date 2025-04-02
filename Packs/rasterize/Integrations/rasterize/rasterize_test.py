@@ -796,6 +796,31 @@ def test_rasterize_this_network(capfd, mocker):
     )
     assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
+import pytest
+from rasterize import is_this_network
+
+@pytest.mark.parametrize("url, expected", [
+    pytest.param("http://192.168.1.1", False, id="private IPv4"),
+    pytest.param("https://10.0.0.1", False, id="private IPv4 with HTTPS"),
+    pytest.param("localhost", False, id="localhost"),
+    pytest.param("http://8.8.8.8", False, id="public IPv4"),
+    pytest.param("invalid_url", False, id="invalid URL"),
+    pytest.param("http://", False, id="empty URL"),
+    pytest.param("192.168.1.1", False, id="private IPv4 without scheme"),
+    pytest.param("2001:db8::1", False, id="IPv6 address"),
+    pytest.param("https://www.example.com", False, id="public domain"),
+    pytest.param("http://127.0.0.1", True, id="loopback IPv4"),
+    pytest.param("http://0.0.0.1", True, id="this network IPv4"),
+])
+def test_is_this_network(url, expected):
+    assert is_this_network(url) == expected
+
+def test_is_this_network_cache():
+    # Test that the function is actually cached
+    assert is_this_network.cache_info().hits == 0
+    is_this_network("http://192.168.1.1")
+    is_this_network("http://192.168.1.1")
+    assert is_this_network.cache_info().hits == 1
 
 def test_handle_request_paused(mocker):
     """
