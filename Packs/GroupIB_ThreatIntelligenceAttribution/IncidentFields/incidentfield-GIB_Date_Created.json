@@ -3,8 +3,7 @@
     "associatedTypes": [
         "GIB OSI Public Leak",
         "GIB Brand Protection Phishing Kit",
-        "GIB Brand Protection Domain",
-        "GIB OSI Git Leak"
+        "GIB Brand Protection Domain"
     ],
     "caseInsensitive": true,
     "cliName": "gibdatecreated",
@@ -28,13 +27,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "itemVersion": "1.4.2",
-    "openEnded": false,
-    "systemAssociatedTypes": [
-        "GIB OSI Public Leak",
-        "GIB Brand Protection Phishing Kit",
-        "GIB Brand Protection Domain",
-        "GIB OSI Git Leak"
-    ]
+    "fromVersion": "6.0.0"
 }

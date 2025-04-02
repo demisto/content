@@ -3,7 +3,6 @@ Nowadays businesses in any sphere may have problems with their cybersecurity: fr
 Group-IB Threat Intelligence Pack can help you with managing your incident and indicators from Group-IB within the SOAR system.
 
 ### What does this pack do?
-
 * Receive incidents and attribute them to adversaries.
 * Enrich security system with IOCs.
 * Provide possibilities for manual investigation through Group-IB data via Cortex XSOAR interface.
