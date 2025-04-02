@@ -649,7 +649,7 @@ def fetch_incidents(
         raw_json = json.loads(incident.get("rawJSON", {}))
         incident_id = raw_json.get("incidentId", '')
         ids_list.append(incident_id)
-    demisto.debug(f'Got {len(ids_list)} incidents from last_run with ids: {ids_list}.')
+    demisto.debug(f'Got {len(incidents_queue)} incidents from last_run with ids: {ids_list}.')
 
     if len(incidents_queue) < fetch_limit:
         incidents = []
