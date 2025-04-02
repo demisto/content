@@ -3082,7 +3082,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
         if closure_case:
             # Convert the closing state to the right one if the ticket type is not incident in order to close the
             # ticket/incident via XSOAR
-            if parsed_args.delta.get("state") == '7 - Closed' and not is_custom_close:
+            if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
                 fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
 
             fields = {key: val for key, val in fields.items() if key != "closed_at" and key != "resolved_at"}
