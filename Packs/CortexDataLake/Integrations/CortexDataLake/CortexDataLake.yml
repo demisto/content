@@ -2121,7 +2121,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.Gateway
       description: Gateway for the connection.
     - contextPath: CDL.Logging.GlobalProtect.GatewayPriority
-      description: Priority of gateway.
+      description: Priority of the gateway.
     - contextPath: CDL.Logging.GlobalProtect.GatewaySelectionType
       description: Gateway Selection Method i.e automatic, preferred or manual.
     - contextPath: CDL.Logging.GlobalProtect.HostID
