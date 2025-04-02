@@ -1,0 +1,932 @@
+id: Recurring rare domain access from an unsigned process
+version: -1
+name: Recurring rare domain access from an unsigned process
+description: "This playbook addresses the following alerts:\n\n- Recurring rare domain access from an uncommon unsigned process\n- Recurring access to a rare domain associated with known threats\n\nPlaybook Stages:\n  \nAnalysis:\n\n- Check actor process hash reputation\n- Check suspicious domain reputation\n- Check actor process hash category using WildFire\n\n  If suspicious/malicious reputation found:\n    - Execute Remediation\n\nInvestigation:\n\n- Check Actor for Risky Path\n- Get Actor CommandLine Analysis\n- Get CGO Process Prevalence\n- Get Related Alerts\n\n  If found related alerts and one other risk:\n    - Execute Remediation\n\nContainment:\n\n- Kill CGO Process\n- Add Domain IOC rule."
+tags:
+- T1071 - Application Layer Protocol
+- TA0011 - Command and Control
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6a610c72-14e4-44bb-8f93-8656923f772a
+    type: start
+    task:
+      id: 6a610c72-14e4-44bb-8f93-8656923f772a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -553
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7acd5fab-4226-408c-80ea-adeb6638ee6e
+    type: title
+    task:
+      id: 7acd5fab-4226-408c-80ea-adeb6638ee6e
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -117
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0547af53-c731-404f-8ad1-c44d730d29ad
+    type: regular
+    task:
+      id: 0547af53-c731-404f-8ad1-c44d730d29ad
+      version: -1
+      name: Get Process Hash Reputation
+      description: Retrieve results for a file hash using WildFire.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file:
+        simple: ${alert.initiatorsha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 9
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 69d4b951-f341-4662-8903-2d5981837170
+    type: regular
+    task:
+      id: 69d4b951-f341-4662-8903-2d5981837170
+      version: -1
+      name: Get Domain Reputation
+      description: Checks the reputation of a domain.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        simple: ${Core.OriginalAlert.raw_abioc.event.domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 497.5,
+          "y": 9
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5268de6d-14fa-4b08-9eee-3d893efeef78
+    type: condition
+    task:
+      id: 5268de6d-14fa-4b08-9eee-3d893efeef78
+      version: -1
+      name: Check for Malicious Reputation
+      description: Check  if the process hash or domain has a malicious reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: isNotEqualString
+          left:
+            value:
+              simple: WildFire.Verdicts.VerdictDescription
+            iscontext: true
+          right:
+            value:
+              simple: Benign
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 133
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8dd4d58a-0f57-4c14-81d6-45221f4b5f1f
+    type: condition
+    task:
+      id: 8dd4d58a-0f57-4c14-81d6-45221f4b5f1f
+      version: -1
+      name: Check Investigation Verdict
+      description: "Checks if any 2 heuristics match the Malicious condition:\n\n- Risky Path\n- Risky Commandline\n- Low Prevalence\n- Related Incidents Found"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Malicious:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: .
+                transformers:
+                - operator: If-Elif
+                  args:
+                    conditions:
+                      value:
+                        simple: |-
+                          [
+                            {
+                              "condition": "#{CommandLineAnalysis.risk} != 'Low Risk' and  #{Core.AnalyticsPrevalence.Process.value} == [false]",
+                              "return": "True"
+                            },
+                            {
+                              "condition": "#{isRiskyPath} and  #{Core.AnalyticsPrevalence.Process.value} == [false]",
+                              "return": "True"
+                            },
+                            {
+                              "condition": "#{CommandLineAnalysis.risk} != 'Low Risk' and  #{foundIncidents.[0]}",
+                              "return": "True"
+                            },
+                            {
+                              "condition": "#{Core.AnalyticsPrevalence.Process.value} == [false] and #{foundIncidents.[0]}",
+                              "return": "True"
+                            },
+                            {
+                              "condition": "#{isRiskyPath} and #{foundIncidents.[0]}",
+                              "return": "True"
+                            },
+                            {
+                              "default": "False"
+                            }
+                          ]
+                    flags:
+                      value:
+                        simple: case_insensitive
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 829
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 54fd5923-c7af-4f69-8f1d-de093eebb548
+    type: regular
+    task:
+      id: 54fd5923-c7af-4f69-8f1d-de093eebb548
+      version: -1
+      name: CommandLine Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      command_line:
+        simple: ${alert.initiatorcmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 58.5,
+          "y": 522
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 442c02ea-ae9c-4e49-8aca-24d4acb147ce
+    type: title
+    task:
+      id: 442c02ea-ae9c-4e49-8aca-24d4acb147ce
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": 999
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 259e52cd-1604-4ba6-8dda-3ad6087aa8d3
+    type: title
+    task:
+      id: 259e52cd-1604-4ba6-8dda-3ad6087aa8d3
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 999
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: cbdb143f-1c90-446b-8809-f67f5c361482
+    type: regular
+    task:
+      id: cbdb143f-1c90-446b-8809-f67f5c361482
+      version: -1
+      name: Terminate Causality - Action Process
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.actorprocessinstanceid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60.5,
+          "y": 1161
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9cf9d1b9-83ba-43e8-8243-6e631d7d37e7
+    type: regular
+    task:
+      id: 9cf9d1b9-83ba-43e8-8243-6e631d7d37e7
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      closeNotes:
+        simple: Resolved - Handled by the playbook "Recurring rare domain access from an unsigned process"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60.5,
+          "y": 1865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 99b5348b-f842-4a8f-84f4-ca6be03d0fc0
+    type: title
+    task:
+      id: 99b5348b-f842-4a8f-84f4-ca6be03d0fc0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60.5,
+          "y": 2029
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 17070c28-c80d-4d77-8de0-2e9c4e779b64
+    type: regular
+    task:
+      id: 17070c28-c80d-4d77-8de0-2e9c4e779b64
+      version: -1
+      name: Get Domain from Alert Extra Data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: bd1e4921-57ff-4eab-8885-a51b4cbc8bee
+    type: title
+    task:
+      id: bd1e4921-57ff-4eab-8885-a51b4cbc8bee
+      version: -1
+      name: Invesitgation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "22"
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 58.5,
+          "y": 364
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 0e00bedd-8e49-46dc-8fa9-2d4670ca739f
+    type: title
+    task:
+      id: 0e00bedd-8e49-46dc-8fa9-2d4670ca739f
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -868,
+          "y": 266
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: be69a6eb-e60c-4c7c-b643-8133201c3c87
+    type: regular
+    task:
+      id: be69a6eb-e60c-4c7c-b643-8133201c3c87
+      version: -1
+      name: Check CGO Process Prevalence
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      process_name:
+        simple: ${alert.cgoname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 497.5,
+          "y": 522
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 623c3d06-5461-40a2-82e3-054e3cb9d894
+    type: regular
+    task:
+      id: 623c3d06-5461-40a2-82e3-054e3cb9d894
+      version: -1
+      name: Check Risky Path
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "false"
+      force:
+        simple: "true"
+      key:
+        simple: isRiskyPath
+      value:
+        complex:
+          root: alert.initiatorpath
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: alert.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c\:\\users\\.+\\AppData
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: alert.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: temp
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: alert.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: ProgramData
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -384,
+          "y": 522
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a09fcfde-c9b1-4b9b-8f91-7871ab09b195
+    type: regular
+    task:
+      id: a09fcfde-c9b1-4b9b-8f91-7871ab09b195
+      version: -1
+      name: Get Related Alerts
+      description: |-
+        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+
+        For Cortex XSOAR 6.13, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Automations
+
+        For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Scripts
+
+        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Scripts
+
+        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Automations
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      includeinformational:
+        simple: "true"
+      query:
+        simple: cid:${alert.cid.[0]} AND (name:"Unsigned process makes connections over DNS ports" or name:"Scripting engine injects into another process" or name:"Uncommon WPAD quires to a rare domain" or name:"Wildfire Malware" or name:"Impair Defenses - 1497766117")
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 59.5,
+          "y": 654
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 47c1f3a7-df7d-43f9-9b8c-2ad2b2db84c1
+    type: regular
+    task:
+      id: 47c1f3a7-df7d-43f9-9b8c-2ad2b2db84c1
+      version: -1
+      name: Add Suspicious Domain Monitoring
+      description: send HTTP POST request.
+      script: '|||core-api-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body:
+        simple: |-
+          {
+            "request_data": "indicator,type,severity,expiration_date\n${Core.OriginalAlert.raw_abioc.event.domain},DOMAIN_NAME,MEDIUM,${iocExpiration}","validate":"true"
+          }
+      uri:
+        simple: /public_api/v1/indicators/insert_csv
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60.5,
+          "y": 1697
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a23c840c-5445-48c8-b061-80eafd2ee18f
+    type: regular
+    task:
+      id: a23c840c-5445-48c8-b061-80eafd2ee18f
+      version: -1
+      name: Calculate Now + 2 weeks in epoch
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: iocExpiration
+      value:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: in 2 weeks
+          - operator: toUnix
+          - operator: multiply
+            args:
+              by:
+                value:
+                  simple: "1000"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 61,
+          "y": 1514
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: b9b20f91-e0e4-4ed6-86c5-331a8b074696
+    type: regular
+    task:
+      id: b9b20f91-e0e4-4ed6-86c5-331a8b074696
+      version: -1
+      name: Get Current Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 61,
+          "y": 1325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 6aaa3e4c-1477-4739-85c5-3dda6aafa7e0
+    type: regular
+    task:
+      id: 6aaa3e4c-1477-4739-85c5-3dda6aafa7e0
+      version: -1
+      name: Get Actor Hash WF Category
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      hash:
+        simple: ${alert.initiatorsha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -384,
+          "y": 9
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_7_Malicious": 0.39
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2642,
+        "width": 1794.5,
+        "x": -868,
+        "y": -553
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0

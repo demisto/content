@@ -1,0 +1,34 @@
+{
+  "trigger_id": "3b34bc9728b97699a5a0bf74acd2675e",
+  "playbook_id": "silent-Recurring rare domain access from an unsigned process Test",
+  "suggestion_reason": "Recommended for Recurring rare domain access from an unsigned process alerts.",
+  "description": "This trigger is responsible for handling Recurring rare domain access from an unsigned process alerts.",
+  "trigger_name": "silent-Recurring rare domain access from an unsigned process Test",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "OR": [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Recurring rare domain access from an uncommon unsigned process"
+                },
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Recurring access to a rare domain associated with known threats"
+                }
+            ]
+        },
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+        }  
+      ]
+    }
+  }
+}
