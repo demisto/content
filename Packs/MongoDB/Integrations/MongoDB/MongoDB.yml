@@ -16,6 +16,10 @@ configuration:
   name: database
   required: true
   type: 0
+- display: Auth Source
+  name: auth_source
+  required: false
+  type: 0
 - defaultvalue: 'false'
   display: Use SSL/TLS secured connection
   name: use_ssl
