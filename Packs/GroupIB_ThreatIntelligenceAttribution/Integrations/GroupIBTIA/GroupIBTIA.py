@@ -1,17 +1,17 @@
-
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """ IMPORTS """
 
 import json
-from datetime import datetime, timedelta
+import random
 from collections.abc import Generator
+from datetime import datetime, timedelta
 
 import dateparser
 import urllib3
-import random
 from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
@@ -21,96 +21,59 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAPPING: dict = {
     "compromised/account_group": {
-        "date":
-            "dateFirstSeen",
-        "name":
-            "login",
-        "prefix":
-            "Compromised Account",
-        "indicators":
-            [
-                {
-                    "main_field": "events.cnc.url", "main_field_type": "URL"
-                },
-                {
-                    "main_field": "events.cnc.domain", "main_field_type": "Domain"
-                },
-                {
-                    "main_field": "events.cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["events.cnc.ipv4.asn", "events.cnc.ipv4.countryName", "events.cnc.ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                },
-                {
-                    "main_field": "events.client.ipv4.ip",
-                }
-            ]
+        "date": "dateFirstSeen",
+        "name": "login",
+        "prefix": "Compromised Account",
+        "indicators": [
+            {"main_field": "events.cnc.url", "main_field_type": "URL"},
+            {"main_field": "events.cnc.domain", "main_field_type": "Domain"},
+            {
+                "main_field": "events.cnc.ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["events.cnc.ipv4.asn", "events.cnc.ipv4.countryName", "events.cnc.ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+            {
+                "main_field": "events.client.ipv4.ip",
+            },
+        ],
     },
     "compromised/card": {
-        "date":
-            "dateDetected",
-        "name":
-            "cardInfo.number",
-        "prefix":
-            "Compromised Card",
-        "indicators":
-            [
-                {
-                    "main_field": "cnc.url", "main_field_type": "URL"
-                },
-                {
-                    "main_field": "cnc.domain", "main_field_type": "Domain"
-                },
-                {
-                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "date": "dateDetected",
+        "name": "cardInfo.number",
+        "prefix": "Compromised Card",
+        "indicators": [
+            {"main_field": "cnc.url", "main_field_type": "URL"},
+            {"main_field": "cnc.domain", "main_field_type": "Domain"},
+            {
+                "main_field": "cnc.ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
-    "compromised/breached": {
-        "date":
-            "uploadTime",
-        "name":
-            "email",
-        "prefix":
-            "Data Breach",
-        "indicators": []
-    },
+    "compromised/breached": {"date": "uploadTime", "name": "email", "prefix": "Data Breach", "indicators": []},
     "bp/phishing": {
-        "date":
-            "dateDetected",
-        "name":
-            "phishingDomain.domain",
-        "prefix":
-            "Phishing",
-        "indicators":
-            [
-                {
-                    "main_field": "url", "main_field_type": "URL"
-                },
-                {
-                    "main_field": "phishingDomain.domain", "main_field_type": "Domain",
-                    "add_fields": ["phishingDomain.registrar"],
-                    "add_fields_types": ["registrarname"]
-                },
-                {
-                    "main_field": "ipv4.ip", "main_field_type": "IP"
-                }
-            ]
+        "date": "dateDetected",
+        "name": "phishingDomain.domain",
+        "prefix": "Phishing",
+        "indicators": [
+            {"main_field": "url", "main_field_type": "URL"},
+            {
+                "main_field": "phishingDomain.domain",
+                "main_field_type": "Domain",
+                "add_fields": ["phishingDomain.registrar"],
+                "add_fields_types": ["registrarname"],
+            },
+            {"main_field": "ipv4.ip", "main_field_type": "IP"},
+        ],
     },
     "bp/phishing_kit": {
-        "date":
-            "dateDetected",
-        "name":
-            "hash",
-        "prefix":
-            "Phishing Kit",
-        "indicators":
-            [
-                {
-                    "main_field": "emails", "main_field_type": "Email"
-                }
-            ]
+        "date": "dateDetected",
+        "name": "hash",
+        "prefix": "Phishing Kit",
+        "indicators": [{"main_field": "emails", "main_field_type": "Email"}],
     },
     # "bp/domain": {
     #     "date":
@@ -134,283 +97,262 @@ MAPPING: dict = {
     #         ]
     # },
     "osi/git_repository": {
-        "date":
-            "dateDetected",
-        "name":
-            "name",
-        "prefix":
-            "Git Leak",
+        "date": "dateDetected",
+        "name": "name",
+        "prefix": "Git Leak",
     },
     "osi/public_leak": {
-        "date":
-            "created",
-        "name":
-            "hash",
-        "prefix":
-            "Public Leak",
+        "date": "created",
+        "name": "hash",
+        "prefix": "Public Leak",
     },
     "malware/targeted_malware": {
-        "date":
-            "date",
-        "name":
-            "injectMd5",
-        "prefix":
-            "Targeted Malware",
-        "indicators":
-            [
-                {
-                    "main_field": "md5", "main_field_type": "File",
-                    "add_fields": ["fileName", "md5", "sha1", "sha256", "size"],
-                    "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"]
-                }
-            ]
+        "date": "date",
+        "name": "injectMd5",
+        "prefix": "Targeted Malware",
+        "indicators": [
+            {
+                "main_field": "md5",
+                "main_field_type": "File",
+                "add_fields": ["fileName", "md5", "sha1", "sha256", "size"],
+                "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"],
+            }
+        ],
     },
-
-
     "compromised/mule": {
-        "name":
-            "account",
-        "prefix":
-            "Compromised Mule",
-        "indicators":
-            [
-                {
-                    "main_field": "cnc.url", "main_field_type": "URL",
-                },
-                {
-                    "main_field": "cnc.domain", "main_field_type": "Domain",
-                },
-                {
-                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "account",
+        "prefix": "Compromised Mule",
+        "indicators": [
+            {
+                "main_field": "cnc.url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "cnc.domain",
+                "main_field_type": "Domain",
+            },
+            {
+                "main_field": "cnc.ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
     "compromised/imei": {
-        "name":
-            "device.imei",
-        "prefix":
-            "Compromised IMEI",
-        "indicators":
-            [
-                {
-                    "main_field": "cnc.url", "main_field_type": "URL",
-                },
-                {
-                    "main_field": "cnc.domain", "main_field_type": "Domain",
-                },
-                {
-                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "device.imei",
+        "prefix": "Compromised IMEI",
+        "indicators": [
+            {
+                "main_field": "cnc.url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "cnc.domain",
+                "main_field_type": "Domain",
+            },
+            {
+                "main_field": "cnc.ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
     "attacks/ddos": {
-        "name":
-            "target.ipv4.ip",
-        "prefix":
-            "Attacks DDoS",
-        "indicators":
-            [
-                {
-                    "main_field": "cnc.url", "main_field_type": "URL",
-                },
-                {
-                    "main_field": "cnc.domain", "main_field_type": "Domain",
-                },
-                {
-                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                },
-            ]
+        "name": "target.ipv4.ip",
+        "prefix": "Attacks DDoS",
+        "indicators": [
+            {
+                "main_field": "cnc.url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "cnc.domain",
+                "main_field_type": "Domain",
+            },
+            {
+                "main_field": "cnc.ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
     "attacks/deface": {
-        "name":
-            "url",
-        "prefix":
-            "Attacks Deface",
-        "indicators":
-            [
-                {
-                    "main_field": "url", "main_field_type": "URL",
-                },
-                {
-                    "main_field": "targetDomain", "main_field_type": "Domain",
-                },
-                {
-                    "main_field": "targetIp.ip", "main_field_type": "IP",
-                    "add_fields": ["targetIp.asn", "targetIp.countryName", "targetIp.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "url",
+        "prefix": "Attacks Deface",
+        "indicators": [
+            {
+                "main_field": "url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "targetDomain",
+                "main_field_type": "Domain",
+            },
+            {
+                "main_field": "targetIp.ip",
+                "main_field_type": "IP",
+                "add_fields": ["targetIp.asn", "targetIp.countryName", "targetIp.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
     "attacks/phishing": {
-        "name":
-            "phishingDomain.domain",
-        "prefix":
-            "Phishing",
-        "indicators":
-            [
-                {
-                    "main_field": "url", "main_field_type": "URL",
-                },
-                {
-                    "main_field": "phishingDomain.domain", "main_field_type": "Domain",
-                    "add_fields": ["phishingDomain.registrar"],
-                    "add_fields_types": ["registrarname"]
-                },
-                {
-                    "main_field": "ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "phishingDomain.domain",
+        "prefix": "Phishing",
+        "indicators": [
+            {
+                "main_field": "url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "phishingDomain.domain",
+                "main_field_type": "Domain",
+                "add_fields": ["phishingDomain.registrar"],
+                "add_fields_types": ["registrarname"],
+            },
+            {
+                "main_field": "ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
     "attacks/phishing_kit": {
-        "name":
-            "emails",
-        "prefix":
-            "Phishing Kit",
-        "indicators":
-            [
-                {
-                    "main_field": "emails", "main_field_type": "Email",
-                }
-            ]
+        "name": "emails",
+        "prefix": "Phishing Kit",
+        "indicators": [
+            {
+                "main_field": "emails",
+                "main_field_type": "Email",
+            }
+        ],
     },
     "apt/threat": {
-        "prefix":
-            "Threat",
-        "indicators":
-            [
-                {
-                    "main_field": "indicators.params.ipv4", "main_field_type": "IP",
-                },
-                {
-                    "main_field": "indicators.params.domain", "main_field_type": "Domain",
-                },
-                {
-                    "main_field": "indicators.params.url", "main_field_type": "URL",
-                },
-                {
-                    "main_field": "indicators.params.hashes.md5", "main_field_type": "File",
-                    "add_fields":
-                    [
-                        "indicators.params.name", "indicators.params.hashes.md5",
-                        "indicators.params.hashes.sha1",
-                        "indicators.params.hashes.sha256", "indicators.params.size"
-                    ],
-                    "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"]
-                }
-            ]
+        "prefix": "Threat",
+        "indicators": [
+            {
+                "main_field": "indicators.params.ipv4",
+                "main_field_type": "IP",
+            },
+            {
+                "main_field": "indicators.params.domain",
+                "main_field_type": "Domain",
+            },
+            {
+                "main_field": "indicators.params.url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "indicators.params.hashes.md5",
+                "main_field_type": "File",
+                "add_fields": [
+                    "indicators.params.name",
+                    "indicators.params.hashes.md5",
+                    "indicators.params.hashes.sha1",
+                    "indicators.params.hashes.sha256",
+                    "indicators.params.size",
+                ],
+                "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"],
+            },
+        ],
     },
     "hi/threat": {
-        "prefix":
-            "Threat",
-        "indicators":
-            [
-                 {
-                     "main_field": "indicators.params.ipv4", "main_field_type": "IP",
-                 },
-                {
-                     "main_field": "indicators.params.domain", "main_field_type": "Domain",
-                 },
-                {
-                     "main_field": "indicators.params.url", "main_field_type": "URL",
-                 },
-                {
-                     "main_field": "indicators.params.hashes.md5", "main_field_type": "File",
-                     "add_fields":
-                         [
-                             "indicators.params.name", "indicators.params.hashes.md5",
-                             "indicators.params.hashes.sha1",
-                             "indicators.params.hashes.sha256", "indicators.params.size"
-                         ],
-                     "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"]
-                 }
-            ]
+        "prefix": "Threat",
+        "indicators": [
+            {
+                "main_field": "indicators.params.ipv4",
+                "main_field_type": "IP",
+            },
+            {
+                "main_field": "indicators.params.domain",
+                "main_field_type": "Domain",
+            },
+            {
+                "main_field": "indicators.params.url",
+                "main_field_type": "URL",
+            },
+            {
+                "main_field": "indicators.params.hashes.md5",
+                "main_field_type": "File",
+                "add_fields": [
+                    "indicators.params.name",
+                    "indicators.params.hashes.md5",
+                    "indicators.params.hashes.sha1",
+                    "indicators.params.hashes.sha256",
+                    "indicators.params.size",
+                ],
+                "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"],
+            },
+        ],
     },
     "suspicious_ip/tor_node": {
-        "name":
-            "ipv4.ip",
-        "prefix":
-            "Suspicious IP Tor Node",
-        "indicators":
-            [
-                {
-                    "main_field": "ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "ipv4.ip",
+        "prefix": "Suspicious IP Tor Node",
+        "indicators": [
+            {
+                "main_field": "ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            }
+        ],
     },
     "suspicious_ip/open_proxy": {
-        "name":
-            "ipv4.ip",
-        "prefix":
-            "Suspicious IP Open Proxy",
-        "indicators":
-            [
-                {
-                    "main_field": "ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "ipv4.ip",
+        "prefix": "Suspicious IP Open Proxy",
+        "indicators": [
+            {
+                "main_field": "ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            }
+        ],
     },
     "suspicious_ip/socks_proxy": {
-        "name":
-            "ipv4.ip",
-        "prefix":
-            "Suspicious IP Socks Proxy",
-        "indicators":
-            [
-                {
-                    "main_field": "ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "ipv4.ip",
+        "prefix": "Suspicious IP Socks Proxy",
+        "indicators": [
+            {
+                "main_field": "ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            }
+        ],
     },
     "malware/cnc": {
-        "name":
-            "ipv4.ip",
-        "prefix":
-            "Malware CNC",
-        "indicators":
-            [
-                {
-                    "main_field": "url", "main_field_type": "URL"
-                },
-                {
-                    "main_field": "domain", "main_field_type": "Domain"
-                },
-                {
-                    "main_field": "ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
+        "name": "ipv4.ip",
+        "prefix": "Malware CNC",
+        "indicators": [
+            {"main_field": "url", "main_field_type": "URL"},
+            {"main_field": "domain", "main_field_type": "Domain"},
+            {
+                "main_field": "ipv4.ip",
+                "main_field_type": "IP",
+                "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
+                "add_fields_types": ["asn", "geocountry", "geolocation"],
+            },
+        ],
     },
     "osi/vulnerability": {
-        "name":
-            "id",
-        "prefix":
-            "OSI Vulnerability",
-        "indicators":
-            [
-                {
-                    "main_field": "id", "main_field_type": "CVE",
-                    "add_fields": ["cvss.score", "description", "dateLastSeen", "datePublished"],
-                    "add_fields_types": ["cvss", "cvedescription", "cvemodified", "published"]
-                }
-            ]
+        "name": "id",
+        "prefix": "OSI Vulnerability",
+        "indicators": [
+            {
+                "main_field": "id",
+                "main_field_type": "CVE",
+                "add_fields": ["cvss.score", "description", "dateLastSeen", "datePublished"],
+                "add_fields_types": ["cvss", "cvedescription", "cvemodified", "published"],
+            }
+        ],
     },
     "hi/threat_actor": {"prefix": "Threat Actor"},
-    "apt/threat_actor": {"prefix": "Threat Actor"}
+    "apt/threat_actor": {"prefix": "Threat Actor"},
 }
 
 STATUS_CODE_MSGS = {
@@ -419,7 +361,7 @@ STATUS_CODE_MSGS = {
     404: "Not found. There is no such data on server.",
     500: "There are some troubles on server with your request.",
     301: "Verify that your public IP is whitelisted by Group IB.",
-    302: "Verify that your public IP is whitelisted by Group IB."
+    302: "Verify that your public IP is whitelisted by Group IB.",
 }
 
 # LEGACY_HEADERS = {
@@ -428,7 +370,7 @@ STATUS_CODE_MSGS = {
 #     'Keep-Alive': "30"
 # }
 
-TIMEOUT = 60.
+TIMEOUT = 60.0
 RETRIES = 4
 STATUS_LIST_TO_RETRY = [429, 500]
 
@@ -439,9 +381,9 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def _create_update_generator(self, collection_name: str, max_requests: int,
-                                 date_from: str | None = None, seq_update: int | str = '',
-                                 limit: int = 200) -> Generator:
+    def _create_update_generator(
+        self, collection_name: str, max_requests: int, date_from: str | None = None, seq_update: int | str = "", limit: int = 200
+    ) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
         (feeds are sorted in ascending order) `collection_name` with set parameters.
@@ -468,11 +410,11 @@ class Client(BaseClient):
             session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
 
             session.headers["Accept"] = "*/*"
-            session.headers["User-Agent"] = f'SOAR/CortexSOAR/{self._auth[0]}/unknown'
+            session.headers["User-Agent"] = f"SOAR/CortexSOAR/{self._auth[0]}/unknown"
 
-            params = {'df': date_from, 'limit': limit, 'seqUpdate': seq_update}
+            params = {"df": date_from, "limit": limit, "seqUpdate": seq_update}
             params = {key: value for key, value in params.items() if value}
-            portion = session.get(url=f'{self._base_url}{collection_name}/updated', params=params, timeout=60).json()
+            portion = session.get(url=f"{self._base_url}{collection_name}/updated", params=params, timeout=60).json()
 
             # params = {"df": date_from, "seqUpdate": seq_update}
             # params = assign_params(**params)
@@ -487,9 +429,16 @@ class Client(BaseClient):
 
             yield portion.get("items"), seq_update
 
-    def _create_search_generator(self, collection_name: str, max_requests: int, date_to: str = None,
-                                 page: int = 0, starting_date_from: str = None,
-                                 starting_date_to: str = None, limit: int = 200) -> Generator:
+    def _create_search_generator(
+        self,
+        collection_name: str,
+        max_requests: int,
+        date_to: str = None,
+        page: int = 0,
+        starting_date_from: str = None,
+        starting_date_to: str = None,
+        limit: int = 200,
+    ) -> Generator:
         """
         Creates generator of lists with feeds for the search session for ingestion purpose
         (feeds are sorted in descending order) for `collection_name` with set parameters. This version solves problem
@@ -514,32 +463,44 @@ class Client(BaseClient):
                 k = 0
                 while k != page:
                     if result_id:
-                        params = {'resultId': result_id}
+                        params = {"resultId": result_id}
                     else:
-                        params = {'df': starting_date_from, 'dt': date_to}
+                        params = {"df": starting_date_from, "dt": date_to}
                     params = assign_params(**params)
-                    portion = self._http_request(method="GET", url_suffix=collection_name,
-                                                 params=params, timeout=TIMEOUT, retries=RETRIES,
-                                                 status_list_to_retry=STATUS_LIST_TO_RETRY)
+                    portion = self._http_request(
+                        method="GET",
+                        url_suffix=collection_name,
+                        params=params,
+                        timeout=TIMEOUT,
+                        retries=RETRIES,
+                        status_list_to_retry=STATUS_LIST_TO_RETRY,
+                    )
                     result_id = portion.get("resultId")
                     k += 1
 
             if result_id:
-                params = {'resultId': result_id}
+                params = {"resultId": result_id}
             else:
-                params = {'df': starting_date_from, 'dt': date_to}
+                params = {"df": starting_date_from, "dt": date_to}
             params = assign_params(**params)
-            portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            portion = self._http_request(
+                method="GET",
+                url_suffix=collection_name,
+                params=params,
+                timeout=TIMEOUT,
+                retries=RETRIES,
+                status_list_to_retry=STATUS_LIST_TO_RETRY,
+            )
 
             requests_count += 1
-            data = portion.get('items')
+            data = portion.get("items")
             if len(data) < 100:
                 no_data_flag = 1
                 page = 0
-                starting_date_from = (dateparser.parse(starting_date_to)   # type: ignore
-                                      + timedelta(seconds=1)).strftime(DATE_FORMAT)
+                starting_date_from = (
+                    dateparser.parse(starting_date_to)  # type: ignore
+                    + timedelta(seconds=1)
+                ).strftime(DATE_FORMAT)
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
             else:
@@ -553,11 +514,15 @@ class Client(BaseClient):
                             upload_time_parsed = dateparser.parse(data[i].get("uploadTime"))
                             assert upload_time_parsed is not None, f'could not parse {data[i].get("uploadTime")}'
                             date_to = (upload_time_parsed - timedelta(seconds=1)).strftime(DATE_FORMAT)
-                            data = data[:i + 1:]
+                            data = data[: i + 1 :]
                             break
 
-            last_fetch = {"starting_date_from": starting_date_from, "page": page,
-                          "starting_date_to": starting_date_to, "current_date_to": date_to}
+            last_fetch = {
+                "starting_date_from": starting_date_from,
+                "page": page,
+                "starting_date_to": starting_date_to,
+                "current_date_to": date_to,
+            }
             yield data, last_fetch
 
     # def _create_legacy_generator(self, action: str, max_requests: int, last: Optional[str] = None) -> Generator:
@@ -627,9 +592,10 @@ class Client(BaseClient):
         if not last_fetch:
             date_from = dateparser.parse(kwargs.get("first_fetch_time"))  # type: ignore
             if date_from is None:
-                raise DemistoException('Inappropriate first_fetch format, '
-                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-            date_from = date_from.strftime('%Y-%m-%d')  # type: ignore
+                raise DemistoException(
+                    "Inappropriate first_fetch format, please use something like this: 2020-01-01 or January 1 2020 or 3 days"
+                )
+            date_from = date_from.strftime("%Y-%m-%d")  # type: ignore
 
         if collection_name == "compromised/breached":
             # we need the isinstance check for BC because it used to be a string
@@ -643,19 +609,29 @@ class Client(BaseClient):
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
                 page = 0
-            return self._create_search_generator(collection_name=collection_name, max_requests=max_requests,
-                                                 date_to=date_to, page=page, starting_date_from=starting_date_from,
-                                                 starting_date_to=starting_date_to)
+            return self._create_search_generator(
+                collection_name=collection_name,
+                max_requests=max_requests,
+                date_to=date_to,
+                page=page,
+                starting_date_from=starting_date_from,
+                starting_date_to=starting_date_to,
+            )
         # elif collection_name == "bp/domain":
         #     if not last_fetch:
         #         last_fetch = self._legacy_get_last(date_from=date_from, action="domain")
         #     return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
         else:
-            return self._create_update_generator(collection_name=collection_name, max_requests=max_requests,
-                                                 date_from=date_from, seq_update=last_fetch)  # type: ignore
+            return self._create_update_generator(
+                collection_name=collection_name,
+                max_requests=max_requests,
+                date_from=date_from,  # type: ignore
+                seq_update=last_fetch,  # type: ignore
+            )
 
-    def create_manual_generator(self, collection_name: str, date_from: str = None,
-                                date_to: str = None, query: str = None) -> Generator:
+    def create_manual_generator(
+        self, collection_name: str, date_from: str = None, date_to: str = None, query: str = None
+    ) -> Generator:
         """
         Creates generator of lists with feeds for the search session
         (feeds are sorted in descending order) for `collection_name` with set parameters.
@@ -668,19 +644,26 @@ class Client(BaseClient):
 
         result_id = None
         while True:
-            params = {'df': date_from, 'dt': date_to, 'resultId': result_id, 'q': query}
+            params = {"df": date_from, "dt": date_to, "resultId": result_id, "q": query}
             params = assign_params(**params)
-            portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
-            if portion.get('count') > 2000:
-                raise DemistoException('Portion is too large (count > 2000), this can cause timeout in Demisto.'
-                                       'Please, change or set date_from/date_to arguments or change query.')
-            if len(portion.get('items')) == 0:
+            portion = self._http_request(
+                method="GET",
+                url_suffix=collection_name,
+                params=params,
+                timeout=TIMEOUT,
+                retries=RETRIES,
+                status_list_to_retry=STATUS_LIST_TO_RETRY,
+            )
+            if portion.get("count") > 2000:
+                raise DemistoException(
+                    "Portion is too large (count > 2000), this can cause timeout in Demisto."
+                    "Please, change or set date_from/date_to arguments or change query."
+                )
+            if len(portion.get("items")) == 0:
                 break
             result_id = portion.get("resultId")
             date_from, date_to, query = None, None, None
-            yield portion.get('items')
+            yield portion.get("items")
 
     def search_feed_by_id(self, collection_name: str, feed_id: str) -> dict:
         """
@@ -689,9 +672,14 @@ class Client(BaseClient):
         :param collection_name: in what collection to search.
         :param feed_id: id of feed to search.
         """
-        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=TIMEOUT,
-                                     retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY,
-                                     backoff_factor=random.random() * 10 + 1)
+        portion = self._http_request(
+            method="GET",
+            url_suffix=collection_name + "/" + feed_id,
+            timeout=TIMEOUT,
+            retries=RETRIES,
+            status_list_to_retry=STATUS_LIST_TO_RETRY,
+            backoff_factor=random.random() * 10 + 1,
+        )
 
         return portion
 
@@ -700,10 +688,14 @@ class Client(BaseClient):
         Gets list of available collections from GIB TI&A API.
         """
 
-        response = self._http_request(method="GET", url_suffix="user/granted_collections",
-                                      timeout=TIMEOUT, retries=RETRIES,
-                                      status_list_to_retry=STATUS_LIST_TO_RETRY)
-        buffer_list = find_element_by_key(response, 'collection')
+        response = self._http_request(
+            method="GET",
+            url_suffix="user/granted_collections",
+            timeout=TIMEOUT,
+            retries=RETRIES,
+            status_list_to_retry=STATUS_LIST_TO_RETRY,
+        )
+        buffer_list = find_element_by_key(response, "collection")
 
         # buffer_list = list(response.get("list").keys())
         #
@@ -738,9 +730,14 @@ class Client(BaseClient):
         return {"collections": collections_list}, buffer_list
 
     def search_by_query(self, q):
-        results = self._http_request(method="GET", url_suffix="search", params={'q': q},
-                                     timeout=TIMEOUT, retries=RETRIES,
-                                     status_list_to_retry=STATUS_LIST_TO_RETRY)
+        results = self._http_request(
+            method="GET",
+            url_suffix="search",
+            params={"q": q},
+            timeout=TIMEOUT,
+            retries=RETRIES,
+            status_list_to_retry=STATUS_LIST_TO_RETRY,
+        )
         return results
 
 
@@ -817,11 +814,13 @@ def transform_to_command_results(iocs, ioc_type, fields, fields_names, collectio
 
         output = parse_to_outputs(iocs, ioc_type, fields)
         if output:
-            results = [CommandResults(
-                readable_output=tableToMarkdown(f"{ioc_type} indicator", {"value": iocs, **fields}),
-                indicator=output,
-                ignore_auto_extract=True
-            )]
+            results = [
+                CommandResults(
+                    readable_output=tableToMarkdown(f"{ioc_type} indicator", {"value": iocs, **fields}),
+                    indicator=output,
+                    ignore_auto_extract=True,
+                )
+            ]
             return results
         else:
             return []
@@ -839,29 +838,39 @@ def parse_to_outputs(value, indicator_type, fields):
         else:
             score = Common.DBotScore.NONE
 
-        return Common.DBotScore(
-            indicator=value,
-            indicator_type=type_,
-            integration_name="GIB TI&A",
-            score=score
-        )
+        return Common.DBotScore(indicator=value, indicator_type=type_, integration_name="GIB TI&A", score=score)
 
     if indicator_type == "IP":
-        return Common.IP(ip=value, asn=fields.get("asn"), geo_country=fields.get("geocountry"),
-                         geo_description=fields.get("geolocation"),
-                         dbot_score=calculate_dbot_score(DBotScoreType.IP))
+        return Common.IP(
+            ip=value,
+            asn=fields.get("asn"),
+            geo_country=fields.get("geocountry"),
+            geo_description=fields.get("geolocation"),
+            dbot_score=calculate_dbot_score(DBotScoreType.IP),
+        )
     elif indicator_type == "Domain":
-        return Common.Domain(domain=value, registrar_name=fields.get("registrarname"),
-                             dbot_score=calculate_dbot_score(DBotScoreType.DOMAIN))
+        return Common.Domain(
+            domain=value, registrar_name=fields.get("registrarname"), dbot_score=calculate_dbot_score(DBotScoreType.DOMAIN)
+        )
     elif indicator_type == "File":
-        return Common.File(md5=value, sha1=fields.get("sha1"), sha256=fields.get("sha256"),
-                           name=fields.get("gibfilename"), size=fields.get("size"),
-                           dbot_score=calculate_dbot_score(DBotScoreType.FILE))
+        return Common.File(
+            md5=value,
+            sha1=fields.get("sha1"),
+            sha256=fields.get("sha256"),
+            name=fields.get("gibfilename"),
+            size=fields.get("size"),
+            dbot_score=calculate_dbot_score(DBotScoreType.FILE),
+        )
     elif indicator_type == "URL":
         return Common.URL(url=value, dbot_score=calculate_dbot_score(DBotScoreType.URL))
     elif indicator_type == "CVE":
-        return Common.CVE(id=value, cvss=fields.get("cvss"), published=fields.get("published"),
-                          modified=fields.get("cvemodified"), description=fields.get("cvedescription"))
+        return Common.CVE(
+            id=value,
+            cvss=fields.get("cvss"),
+            published=fields.get("published"),
+            modified=fields.get("cvemodified"),
+            description=fields.get("cvedescription"),
+        )
     return None
 
 
@@ -883,8 +892,7 @@ def find_iocs_in_feed(feed: dict, collection_name: str) -> list:
         add_fields_types = i.get("add_fields_types", []) + ["severity"]
         for j in add_fields_list:
             add_fields.append(find_element_by_key(feed, j))
-        parsed_info = transform_to_command_results(main_field, main_field_type,
-                                                   add_fields, add_fields_types, collection_name)
+        parsed_info = transform_to_command_results(main_field, main_field_type, add_fields, add_fields_types, collection_name)
         indicators.extend(parsed_info)
 
     return indicators
@@ -907,14 +915,16 @@ def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
             date = i.get("dateCreated")
             # file_diff = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("fileDiff"))
             # info = find_element_by_key(i,'revisions.info')
-            author_email = ''.join(str(find_element_by_key(i, 'revisions.info.authorEmail')))
-            author_name = ''.join(str(find_element_by_key(i, 'revisions.info.authorName')))
-            timestamp = ''.join(str(find_element_by_key(i, 'revisions.info.timestamp')))
+            author_email = "".join(str(find_element_by_key(i, "revisions.info.authorEmail")))
+            author_name = "".join(str(find_element_by_key(i, "revisions.info.authorName")))
+            timestamp = "".join(str(find_element_by_key(i, "revisions.info.timestamp")))
             # author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
             buffer += f"| {url} | {author_email} | {author_name} | {date} | {timestamp} |\n"
         if buffer:
-            buffer = "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n" \
-                     "| ---- | --------------- | ------------ | ----------- | ------------ |\n" + buffer
+            buffer = (
+                "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n"
+                "| ---- | --------------- | ------------ | ----------- | ------------ |\n" + buffer
+            )
             feed["files"] = buffer
         else:
             del feed["files"]
@@ -931,8 +941,10 @@ def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
             source = i.get("source")
             buffer += f"| {author} | {detected} | {published} | {hash_} | {link} | {source} |\n"
         if buffer:
-            buffer = "| Author | Date Detected | Date Published | Hash | Link | Source |\n" \
-                     "| ------ | ------------- | -------------- | ---- |----- | ------ |\n" + buffer
+            buffer = (
+                "| Author | Date Detected | Date Published | Hash | Link | Source |\n"
+                "| ------ | ------------- | -------------- | ---- |----- | ------ |\n" + buffer
+            )
             feed["linkList"] = buffer
         else:
             del feed["linkList"]
@@ -946,8 +958,7 @@ def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
                 for value in sub_list:
                     buffer += f"| {type_} | {sub_type} | {value} |\n"
         if buffer:
-            buffer = "| Type | Sub Type | Value |\n" \
-                     "| ---- | -------- | ----- |\n" + buffer
+            buffer = "| Type | Sub Type | Value |\n| ---- | -------- | ----- |\n" + buffer
             feed["matches"] = buffer
         else:
             del feed["matches"]
@@ -968,8 +979,7 @@ def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
 
 
 def get_human_readable_feed(collection_name, feed):
-    return tableToMarkdown(name="Feed from {} with ID {}".format(collection_name, feed.get("id")),
-                           t=feed, removeNull=True)
+    return tableToMarkdown(name="Feed from {} with ID {}".format(collection_name, feed.get("id")), t=feed, removeNull=True)
 
 
 def transform_function(result, previous_keys="", is_inside_list=False):
@@ -982,8 +992,9 @@ def transform_function(result, previous_keys="", is_inside_list=False):
         else:
             for key, value in result.items():
                 sub_key = previous_keys + " " + key if previous_keys else key
-                transformed_part, additional_info = transform_function(value, previous_keys=sub_key,
-                                                                       is_inside_list=is_inside_list)
+                transformed_part, additional_info = transform_function(
+                    value, previous_keys=sub_key, is_inside_list=is_inside_list
+                )
                 result_dict.update(transformed_part)
                 additional_tables.extend(additional_info)
 
@@ -992,8 +1003,9 @@ def transform_function(result, previous_keys="", is_inside_list=False):
     elif isinstance(result, list):
         is_inside_list = True
         for value in result:
-            transformed_part, additional_info = transform_function(value, previous_keys=previous_keys,
-                                                                   is_inside_list=is_inside_list)
+            transformed_part, additional_info = transform_function(
+                value, previous_keys=previous_keys, is_inside_list=is_inside_list
+            )
             additional_tables.extend(additional_info)
             if result_dict.get(previous_keys) is None:
                 result_dict.update(transformed_part)
@@ -1001,10 +1013,12 @@ def transform_function(result, previous_keys="", is_inside_list=False):
                 result_dict[previous_keys].extend(transformed_part[previous_keys])
 
         if additional_tables:
-            additional_tables = [CommandResults(
-                readable_output=tableToMarkdown(f"{previous_keys} table", additional_tables, removeNull=True),
-                ignore_auto_extract=True
-            )]
+            additional_tables = [
+                CommandResults(
+                    readable_output=tableToMarkdown(f"{previous_keys} table", additional_tables, removeNull=True),
+                    ignore_auto_extract=True,
+                )
+            ]
 
         return result_dict, additional_tables
 
@@ -1021,8 +1035,9 @@ def transform_function(result, previous_keys="", is_inside_list=False):
 """ Commands """
 
 
-def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: str,
-                            incident_collections: list, requests_count: int) -> tuple[dict, list]:
+def fetch_incidents_command(
+    client: Client, last_run: dict, first_fetch_time: str, incident_collections: list, requests_count: int
+) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1039,17 +1054,18 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
 
-        portions = client.create_poll_generator(collection_name=collection_name, max_requests=requests_count,
-                                                last_fetch=last_fetch, first_fetch_time=first_fetch_time)
-        for portion, last_fetch in portions:
+        portions = client.create_poll_generator(
+            collection_name=collection_name, max_requests=requests_count, last_fetch=last_fetch, first_fetch_time=first_fetch_time
+        )
+        for portion, _last_fetch in portions:
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
-                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(
-                        find_element_by_key(feed, mapping.get("name")))})
+                    feed.update(
+                        {"name": mapping.get("prefix", "") + ": " + ", ".join(find_element_by_key(feed, mapping.get("name")))}
+                    )
                 else:
-                    feed.update({"name": mapping.get("prefix", "") + ": " + str(
-                        find_element_by_key(feed, mapping.get("name")))})
+                    feed.update({"name": mapping.get("prefix", "") + ": " + str(find_element_by_key(feed, mapping.get("name")))})
 
                 feed.update({"gibType": collection_name})
 
@@ -1077,7 +1093,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
                 incident = {
                     "name": feed["name"],
                     "occurred": incident_created_time.strftime(DATE_FORMAT),
-                    "rawJSON": json.dumps(feed)
+                    "rawJSON": json.dumps(feed),
                 }
                 incidents.append(incident)
 
@@ -1101,7 +1117,7 @@ def get_available_collections_command(client: Client):
         outputs=result,
         readable_output=readable_output,
         ignore_auto_extract=True,
-        raw_response=buffer_list
+        raw_response=buffer_list,
     )
 
 
@@ -1146,9 +1162,13 @@ def get_info_by_id_command(collection_name: str):
             indicators = find_iocs_in_feed(result, coll_name)
 
         if coll_name in ["apt/threat", "hi/threat"]:
-            del result["indicatorMalwareRelationships"], result["indicatorRelationships"], \
-                result["indicatorToolRelationships"], result["indicatorsIds"], \
-                result["indicators"]
+            del (
+                result["indicatorMalwareRelationships"],
+                result["indicatorRelationships"],
+                result["indicatorToolRelationships"],
+                result["indicatorsIds"],
+                result["indicators"],
+            )
 
         if coll_name == "compromised/breached":
             if "updateTime" in result:
@@ -1156,14 +1176,16 @@ def get_info_by_id_command(collection_name: str):
             main_table_data, additional_tables = result, []
         else:
             main_table_data, additional_tables = transform_function(result)
-        results.append(CommandResults(
-            outputs_prefix="GIBTIA.{}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
-            outputs_key_field="id",
-            outputs=result,
-            readable_output=get_human_readable_feed(collection_name, main_table_data),
-            raw_response=result,
-            ignore_auto_extract=True
-        ))
+        results.append(
+            CommandResults(
+                outputs_prefix="GIBTIA.{}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
+                outputs_key_field="id",
+                outputs=result,
+                readable_output=get_human_readable_feed(collection_name, main_table_data),
+                raw_response=result,
+                ignore_auto_extract=True,
+            )
+        )
         results.extend(additional_tables)
         results.extend(indicators)
         return results
@@ -1172,81 +1194,84 @@ def get_info_by_id_command(collection_name: str):
 
 
 def global_search_command(client: Client, args: dict):
-    query = str(args.get('query'))
+    query = str(args.get("query"))
     raw_response = client.search_by_query(query)
     handled_list = []
     for result in raw_response:
-        if result.get('apiPath') in MAPPING:
-            handled_list.append({'apiPath': result.get('apiPath'), 'count': result.get('count'),
-                                 'GIBLink': result.get('link'),
-                                 'query': result.get('apiPath') + '?q=' + query})
+        if result.get("apiPath") in MAPPING:
+            handled_list.append(
+                {
+                    "apiPath": result.get("apiPath"),
+                    "count": result.get("count"),
+                    "GIBLink": result.get("link"),
+                    "query": result.get("apiPath") + "?q=" + query,
+                }
+            )
     if len(handled_list) != 0:
         results = CommandResults(
             outputs_prefix="GIBTIA.search.global",
             outputs_key_field="query",
             outputs=handled_list,
-            readable_output=tableToMarkdown('Search results', t=handled_list,
-                                            headers=['apiPath', 'count', 'GIBLink'],
-                                            url_keys=['GIBLink']),
+            readable_output=tableToMarkdown(
+                "Search results", t=handled_list, headers=["apiPath", "count", "GIBLink"], url_keys=["GIBLink"]
+            ),
             raw_response=raw_response,
-            ignore_auto_extract=True
+            ignore_auto_extract=True,
         )
     else:
         results = CommandResults(
             raw_response=raw_response,
             ignore_auto_extract=True,
             outputs=[],
-            readable_output="Did not find anything for your query :("
+            readable_output="Did not find anything for your query :(",
         )
     return results
 
 
 def local_search_command(client: Client, args: dict):
-    query, date_from, date_to = args.get('query'), args.get('date_from', None), args.get('date_to', None)
-    collection_name = str(args.get('collection_name'))
+    query, date_from, date_to = args.get("query"), args.get("date_from", None), args.get("date_to", None)
+    collection_name = str(args.get("collection_name"))
 
     if date_from is not None:
         date_from_parsed = dateparser.parse(date_from)
         if date_from_parsed is None:
-            raise DemistoException('Inappropriate date_from format, '
-                                   'please use something like this: 2020-01-01 or January 1 2020')
-        date_from_parsed = date_from_parsed.strftime('%Y-%m-%dT%H:%M:%SZ')
+            raise DemistoException("Inappropriate date_from format, please use something like this: 2020-01-01 or January 1 2020")
+        date_from_parsed = date_from_parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
         date_from_parsed = date_from  # type: ignore
     if date_to is not None:
         date_to_parsed = dateparser.parse(date_to)
         if date_to_parsed is None:
-            raise DemistoException('Inappropriate date_to format, '
-                                   'please use something like this: 2020-01-01 or January 1 2020')
-        date_to_parsed = date_to_parsed.strftime('%Y-%m-%dT%H:%M:%SZ')
+            raise DemistoException("Inappropriate date_to format, please use something like this: 2020-01-01 or January 1 2020")
+        date_to_parsed = date_to_parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
         date_to_parsed = date_to  # type: ignore
 
-    portions = client.create_manual_generator(collection_name=collection_name, query=query,
-                                              date_from=date_from_parsed, date_to=date_to_parsed)
+    portions = client.create_manual_generator(
+        collection_name=collection_name, query=query, date_from=date_from_parsed, date_to=date_to_parsed
+    )
     result_list = []
-    name = MAPPING.get(collection_name, {}).get('name')
+    name = MAPPING.get(collection_name, {}).get("name")
     for portion in portions:
         for feed in portion:
             add_info = None
             if name is not None:
                 add_info = name + ": " + str(find_element_by_key(feed, name))
-            result_list.append({'id': feed.get('id'), 'additional_info': add_info})
+            result_list.append({"id": feed.get("id"), "additional_info": add_info})
 
     results = CommandResults(
         outputs_prefix="GIBTIA.search.local",
         outputs_key_field="id",
         outputs=result_list,
-        readable_output=tableToMarkdown('Search results', t=result_list,
-                                        headers=['id', 'additional_info']),
-        ignore_auto_extract=True
+        readable_output=tableToMarkdown("Search results", t=result_list, headers=["id", "additional_info"]),
+        ignore_auto_extract=True,
     )
     return results
 
 
 def main():
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
     username = params.get("credentials").get("identifier")
@@ -1264,11 +1289,7 @@ def main():
     LOG(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            auth=(username, password),
-            proxy=proxy,
-            headers={"Accept": "*/*"}
+            base_url=base_url, verify=verify_certificate, auth=(username, password), proxy=proxy, headers={"Accept": "*/*"}
         )
 
         commands = {
@@ -1293,7 +1314,7 @@ def main():
             "gibtia-get-malware-cnc-info": get_info_by_id_command("malware/cnc"),
             "gibtia-get-available-collections": get_available_collections_command,
             "gibtia-global-search": global_search_command,
-            "gibtia-local-search": local_search_command
+            "gibtia-local-search": local_search_command,
         }
 
         if command == "test-module":
@@ -1303,10 +1324,13 @@ def main():
 
         elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, incidents = fetch_incidents_command(client=client, last_run=demisto.getLastRun(),
-                                                          first_fetch_time=incidents_first_fetch,
-                                                          incident_collections=incident_collections,
-                                                          requests_count=requests_count)
+            next_run, incidents = fetch_incidents_command(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=incidents_first_fetch,
+                incident_collections=incident_collections,
+                requests_count=requests_count,
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:
@@ -1314,7 +1338,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

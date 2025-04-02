@@ -2,7 +2,7 @@
     "name": "Azure Risky Users",
     "description": "Azure Risky Users provides access to all at-risk users and risk detections in Azure AD environment.",
     "support": "xsoar",
-    "currentVersion": "1.1.42",
+    "currentVersion": "1.1.43",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
