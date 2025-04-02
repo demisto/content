@@ -146,9 +146,6 @@
 				"occurred": {
 					"simple": "created_at"
 				},
-				"platform": {
-					"simple": "platform"
-				},
 				"severity": {
 					"simple": "severity"
 				},
@@ -226,9 +223,6 @@
 				},
 				"occurred": {
 					"simple": "created_at"
-				},
-				"platform": {
-					"simple": "platform"
 				},
 				"severity": {
 					"simple": "severity"
@@ -589,9 +583,6 @@
 				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
-				},
-				"Doppel Alert Brand": {
-					"simple": "brand"
 				},
 				"Doppel Brand": {
 					"simple": "brand"
