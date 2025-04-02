@@ -255,12 +255,14 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Please provide 'uuid' parameter.")
     if status == 'None' and comment == 'None':
         raise DemistoException("Please provide either 'status' or 'comment' parameter.")
+    columns = {}
+    if status != 'None':
+        columns['status'] = status
+    if comment != 'None':
+        columns['comment'] = comment
     data = {
         "table_name": "alert",
-        "columns": {
-            "status": status,
-            "comment": comment
-        },
+        "columns": columns,
         "primary_key_columns": ["uuid_"],
         "primary_key_values": [[uuid_val]]
     }
