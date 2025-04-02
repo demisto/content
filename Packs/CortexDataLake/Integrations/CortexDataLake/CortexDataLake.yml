@@ -2123,7 +2123,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.GatewayPriority
       description: Priority of the gateway.
     - contextPath: CDL.Logging.GlobalProtect.GatewaySelectionType
-      description: Gateway Selection Method i.e automatic, preferred or manual.
+      description: Gateway selection method,  i.e., automatic, preferred, or manual.
     - contextPath: CDL.Logging.GlobalProtect.HostID
       description: Unique identifier GlobalProtect has assigned to the host.
     - contextPath: CDL.Logging.GlobalProtect.IsDuplicateLog
