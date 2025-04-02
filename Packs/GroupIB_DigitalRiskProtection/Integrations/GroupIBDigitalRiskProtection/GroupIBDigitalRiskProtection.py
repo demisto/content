@@ -159,7 +159,7 @@ class Client(BaseClient):
             return ViolationTypeMapping[normalized_name].value
         except KeyError:
             raise ValueError(f"Unknown violation type: {name}")
-    
+
     def create_generator(
         self,
         first_fetch_time: str,
@@ -211,8 +211,11 @@ class Client(BaseClient):
         }
         approve_status = approve_statuses.get(status)
         response = self.poller.search_feed_by_id(collection_name=Endpoints.VIOLATION.value, feed_id=feed_id)
-        demisto.debug('change_violation_status', approve_status, response.raw_dict.get('violation', {}).get('status', None), response.raw_dict.get('violation', {}).get('approveState', None))
-        if response.raw_dict.get('violation', {}).get('status', None) == 'detected' and response.raw_dict.get('violation', {}).get('approveState', None) == 'under_review':
+        demisto.debug('change_violation_status', approve_status, response.raw_dict.get('violation', {}).get(
+            'status', None), response.raw_dict.get('violation', {}).get('approveState', None))
+        violation_status = response.raw_dict.get('violation', {}).get('status', None)
+        violation_approve_state = response.raw_dict.get('violation', {}).get('approveState', None)
+        if violation_status == 'detected' and violation_approve_state == 'under_review':
             response = self._http_request(
                 method="POST",
                 url_suffix=Endpoints.CHANGE_APPROVE.value,
@@ -224,7 +227,7 @@ class Client(BaseClient):
                     "violationId": feed_id,
                     "approve": approve_status
                 },
-                resp_type = "response"
+                resp_type="response"
             )
             return response.status_code
         else:
