@@ -1,0 +1,37 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Attacks DDOS"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibddostargetdomain",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibddostargetdomain",
+    "isReadOnly": false,
+    "itemVersion": "1.4.2",
+    "locked": false,
+    "name": "GIB DDOS Target Domain",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Attacks DDOS"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

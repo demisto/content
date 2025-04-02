@@ -1,18 +1,17 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import copy
 import shutil
-import urllib3
 from collections.abc import Callable
 
+import defusedxml.ElementTree as defused_ET
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 from requests import Response
 
-import defusedxml.ElementTree as defused_ET
-
-GENERAL_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+GENERAL_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
-account_sas_token = ''
-storage_account_name = ''
+account_sas_token = ""
+storage_account_name = ""
 
 
 class Client:
@@ -21,8 +20,7 @@ class Client:
     """
 
     def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
-        self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
-                                                api_version)
+        self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name, api_version)
 
     def create_share_request(self, share_name: str) -> Response:
         """
@@ -36,8 +34,9 @@ class Client:
         """
         params = assign_params(restype="share")
 
-        response = self.ms_client.http_request(method='PUT', url_suffix=f'{share_name}',
-                                               params=params, return_empty_response=True)
+        response = self.ms_client.http_request(
+            method="PUT", url_suffix=f"{share_name}", params=params, return_empty_response=True
+        )
 
         return response
 
@@ -53,8 +52,9 @@ class Client:
         """
         params = assign_params(restype="share")
 
-        response = self.ms_client.http_request(method='DELETE', url_suffix=f'{share_name}',
-                                               params=params, return_empty_response=True)
+        response = self.ms_client.http_request(
+            method="DELETE", url_suffix=f"{share_name}", params=params, return_empty_response=True
+        )
 
         return response
 
@@ -71,13 +71,13 @@ class Client:
         """
         params = assign_params(comp="list", maxresults=limit, prefix=prefix, marker=marker)
 
-        response = self.ms_client.http_request(method='GET', url_suffix='',
-                                               params=params, resp_type="text")
+        response = self.ms_client.http_request(method="GET", url_suffix="", params=params, resp_type="text")
 
         return response
 
-    def list_directories_and_files_request(self, share_name: str, directory_path: str = None, prefix: str = None,
-                                           limit: str = None, marker: str = None) -> str:
+    def list_directories_and_files_request(
+        self, share_name: str, directory_path: str = None, prefix: str = None, limit: str = None, marker: str = None
+    ) -> str:
         """
         List files and directories under the specified share or directory.
 
@@ -92,13 +92,13 @@ class Client:
             str: API response from Azure.
 
         """
-        params = assign_params(restype="directory", comp="list", include="Timestamps",
-                               prefix=prefix, maxresults=limit, marker=marker)
+        params = assign_params(
+            restype="directory", comp="list", include="Timestamps", prefix=prefix, maxresults=limit, marker=marker
+        )
 
-        url_suffix = f'{share_name}/{directory_path}' if directory_path else f'{share_name}'
+        url_suffix = f"{share_name}/{directory_path}" if directory_path else f"{share_name}"
 
-        response = self.ms_client.http_request(method='GET', url_suffix=url_suffix,
-                                               params=params, resp_type="text")
+        response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params, resp_type="text")
 
         return response
 
@@ -116,15 +116,18 @@ class Client:
         """
         params = assign_params(restype="directory")
 
-        headers = {'x-ms-file-permission': 'inherit ',
-                   'x-ms-file-attributes': 'None',
-                   'x-ms-file-creation-time': 'now',
-                   'x-ms-file-last-write-time': 'now'}
+        headers = {
+            "x-ms-file-permission": "inherit ",
+            "x-ms-file-attributes": "None",
+            "x-ms-file-creation-time": "now",
+            "x-ms-file-last-write-time": "now",
+        }
 
-        url_suffix = f'{share_name}/{directory_path}/{directory_name}' if directory_path else f'{share_name}/{directory_name}'
+        url_suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
 
-        response = self.ms_client.http_request(method='PUT', url_suffix=url_suffix,
-                                               params=params, headers=headers, return_empty_response=True)
+        response = self.ms_client.http_request(
+            method="PUT", url_suffix=url_suffix, params=params, headers=headers, return_empty_response=True
+        )
 
         return response
 
@@ -142,15 +145,13 @@ class Client:
         """
         params = assign_params(restype="directory")
 
-        url_suffix = f'{share_name}/{directory_path}/{directory_name}' if directory_path else f'{share_name}/{directory_name}'
+        url_suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
 
-        response = self.ms_client.http_request(method='DELETE', url_suffix=url_suffix,
-                                               params=params, return_empty_response=True)
+        response = self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, params=params, return_empty_response=True)
 
         return response
 
-    def create_file_request(self, share_name: str, file_entry_id: str, file_name: str,
-                            directory_path: str = None) -> Response:
+    def create_file_request(self, share_name: str, file_entry_id: str, file_name: str, directory_path: str = None) -> Response:
         """
         Create a New empty file in Share from War room file Entry ID.
         Note that this operation only initializes the file. To add content to a file, we have to call the Put Range operation.
@@ -165,44 +166,45 @@ class Client:
 
 
         """
-        xsoar_file_data = demisto.getFilePath(
-            file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
-        xsoar_system_file_path = xsoar_file_data['path']
-        new_file_name = file_name if file_name else xsoar_file_data['name']
+        xsoar_file_data = demisto.getFilePath(file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
+        xsoar_system_file_path = xsoar_file_data["path"]
+        new_file_name = file_name if file_name else xsoar_file_data["name"]
 
-        create_file_headers = {'x-ms-type': 'file',
-                               'x-ms-file-permission': 'Inherit',
-                               'x-ms-file-attributes': 'None',
-                               'x-ms-file-creation-time': 'now',
-                               'x-ms-file-last-write-time': 'now'
-                               }
+        create_file_headers = {
+            "x-ms-type": "file",
+            "x-ms-file-permission": "Inherit",
+            "x-ms-file-attributes": "None",
+            "x-ms-file-creation-time": "now",
+            "x-ms-file-last-write-time": "now",
+        }
 
-        create_file_url = f'{share_name}/{directory_path}/{new_file_name}' if directory_path else f'{share_name}/{new_file_name}'
+        create_file_url = f"{share_name}/{directory_path}/{new_file_name}" if directory_path else f"{share_name}/{new_file_name}"
 
         try:
             shutil.copy(xsoar_system_file_path, new_file_name)
         except FileNotFoundError:
             raise Exception(
-                'Failed to prepare file for upload. '
-                'The process of importing and copying the file data from XSOAR failed.')
+                "Failed to prepare file for upload. The process of importing and copying the file data from XSOAR failed."
+            )
 
         try:
-            with open(new_file_name, 'rb') as file:
+            with open(new_file_name, "rb") as file:
                 file.seek(0, 2)
                 content_length = file.tell()
-                create_file_headers['x-ms-content-length'] = str(content_length)
+                create_file_headers["x-ms-content-length"] = str(content_length)
 
-                create_file_response = self.ms_client.http_request(method='PUT', url_suffix=create_file_url,
-                                                                   headers=create_file_headers,
-                                                                   return_empty_response=True)
+                create_file_response = self.ms_client.http_request(
+                    method="PUT", url_suffix=create_file_url, headers=create_file_headers, return_empty_response=True
+                )
 
         finally:
             shutil.rmtree(new_file_name, ignore_errors=True)
 
         return create_file_response
 
-    def add_file_content_request(self, share_name: str, file_entry_id: str, file_name: str,
-                                 directory_path: str = None) -> Response:
+    def add_file_content_request(
+        self, share_name: str, file_entry_id: str, file_name: str, directory_path: str = None
+    ) -> Response:
         """
         Write a range of bytes to a file.
         Note that this operation not initializes the file, but add content to a file.
@@ -216,41 +218,47 @@ class Client:
             Response: API response from Azure.
 
         """
-        xsoar_file_data = demisto.getFilePath(
-            file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
-        xsoar_system_file_path = xsoar_file_data['path']
-        new_file_name = file_name if file_name else xsoar_file_data['name']
+        xsoar_file_data = demisto.getFilePath(file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
+        xsoar_system_file_path = xsoar_file_data["path"]
+        new_file_name = file_name if file_name else xsoar_file_data["name"]
 
         try:
             shutil.copy(xsoar_system_file_path, new_file_name)
         except FileNotFoundError:
-            raise Exception('Failed to prepare file for upload. '
-                            'The process of importing and copying the file data from XSOAR failed.')
+            raise Exception(
+                "Failed to prepare file for upload. The process of importing and copying the file data from XSOAR failed."
+            )
 
         try:
-            with open(new_file_name, 'rb') as file:
+            with open(new_file_name, "rb") as file:
                 file.seek(0, 2)
                 content_length = file.tell()
                 file.seek(0)
 
                 max_range = int(content_length) - 1
-                bytes_range = f'bytes=0-{max_range}'
+                bytes_range = f"bytes=0-{max_range}"
 
                 put_rang_headers = {
-                    'x-ms-write': 'update',
-                    'x-ms-range': bytes_range,
-                    'Content-Length': str(content_length),
-                    'x-ms-type': 'file',
+                    "x-ms-write": "update",
+                    "x-ms-range": bytes_range,
+                    "Content-Length": str(content_length),
+                    "x-ms-type": "file",
                 }
 
-                params = {'comp': 'range'}
+                params = {"comp": "range"}
 
-                put_range_url = f'{share_name}/{directory_path}/{new_file_name}' if directory_path else \
-                    f'{share_name}/{new_file_name}'
+                put_range_url = (
+                    f"{share_name}/{directory_path}/{new_file_name}" if directory_path else f"{share_name}/{new_file_name}"
+                )
 
-                put_range_response = self.ms_client.http_request(method='PUT', url_suffix=put_range_url,
-                                                                 headers=put_rang_headers, params=params,
-                                                                 return_empty_response=True, data=file)
+                put_range_response = self.ms_client.http_request(
+                    method="PUT",
+                    url_suffix=put_range_url,
+                    headers=put_rang_headers,
+                    params=params,
+                    return_empty_response=True,
+                    data=file,
+                )
 
         finally:
             shutil.rmtree(new_file_name, ignore_errors=True)
@@ -270,9 +278,9 @@ class Client:
 
 
         """
-        url_suffix = f'{share_name}/{directory_path}/{file_name}' if directory_path else f'{share_name}/{file_name}'
+        url_suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
 
-        response = self.ms_client.http_request(method='GET', url_suffix=url_suffix, resp_type="response")
+        response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, resp_type="response")
 
         return response
 
@@ -288,9 +296,9 @@ class Client:
             Response: API response from Azure.
 
         """
-        url_suffix = f'{share_name}/{directory_path}/{file_name}' if directory_path else f'{share_name}/{file_name}'
+        url_suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
 
-        response = self.ms_client.http_request(method='DELETE', url_suffix=url_suffix, return_empty_response=True)
+        response = self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
         return response
 
@@ -305,19 +313,19 @@ def create_share_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args['share_name']
+    share_name = args["share_name"]
 
     share_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
     # Rules for naming shares can be found here:
     # https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
 
     if not re.search(share_name_regex, share_name):
-        raise Exception('The specified share name is invalid.')
+        raise Exception("The specified share name is invalid.")
 
     client.create_share_request(share_name)
 
     command_results = CommandResults(
-        readable_output=f'Share {share_name} successfully created.',
+        readable_output=f"Share {share_name} successfully created.",
     )
 
     return command_results
@@ -333,11 +341,11 @@ def delete_share_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args['share_name']
+    share_name = args["share_name"]
 
     client.delete_share_request(share_name)
     command_results = CommandResults(
-        readable_output=f'Share {share_name} successfully deleted.',
+        readable_output=f"Share {share_name} successfully deleted.",
     )
 
     return command_results
@@ -364,7 +372,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
-    return root.findtext('NextMarker')  # type: ignore
+    return root.findtext("NextMarker")  # type: ignore
 
 
 def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -377,22 +385,22 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit') or '50'
-    prefix = args.get('prefix')
-    page = arg_to_number(args.get('page') or '1')
-    marker = ''
-    readable_message = f'Shares List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+    limit = args.get("limit") or "50"
+    prefix = args.get("prefix")
+    page = arg_to_number(args.get("page") or "1")
+    marker = ""
+    readable_message = f"Shares List:\n Current page size: {limit}\n Showing page {page} out others that may exist"
 
     if page > 1:  # type: ignore
-        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
-                                                    client_request=client.list_shares_request,
-                                                    params={"prefix": prefix})
+        marker = get_pagination_next_marker_element(
+            limit=limit,
+            page=page,  # type: ignore
+            client_request=client.list_shares_request,
+            params={"prefix": prefix},
+        )
         if not marker:
             return CommandResults(
-                readable_output=readable_message,
-                outputs_prefix='AzureStorageFileShare.Share',
-                outputs=[],
-                raw_response=[]
+                readable_output=readable_message, outputs_prefix="AzureStorageFileShare.Share", outputs=[], raw_response=[]
             )
 
     response = client.list_shares_request(limit, prefix, marker=marker)
@@ -403,24 +411,19 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     raw_response = []
     outputs = []
 
-    for element in root.iter('Share'):
+    for element in root.iter("Share"):
         data = handle_content_properties_information(element)
         raw_response.append(data)
-        outputs.append({'Name': element.findtext('Name')})
+        outputs.append({"Name": element.findtext("Name")})
 
-    readable_output = tableToMarkdown(
-        readable_message,
-        outputs,
-        headers=['Name'],
-        headerTransform=pascalToSpace
-    )
+    readable_output = tableToMarkdown(readable_message, outputs, headers=["Name"], headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageFileShare.Share',
-        outputs_key_field='Name',
+        outputs_prefix="AzureStorageFileShare.Share",
+        outputs_key_field="Name",
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -437,12 +440,12 @@ def handle_content_properties_information(element: object) -> dict:
 
     """
 
-    data = {'Name': element.findtext('Name')}  # type: ignore
+    data = {"Name": element.findtext("Name")}  # type: ignore
     properties = {}
-    for share_property in element.findall('Properties'):  # type: ignore
+    for share_property in element.findall("Properties"):  # type: ignore
         for attribute in share_property:
             properties[attribute.tag] = attribute.text
-    data['Properties'] = properties  # type: ignore
+    data["Properties"] = properties  # type: ignore
 
     return data
 
@@ -460,13 +463,13 @@ def handle_directory_content_response(response: str) -> dict:
     tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
-    xml_path = ['Directory', 'File']
-    raw_response = {'Directory': [], 'File': [], 'DirectoryId': root.findtext('DirectoryId')}  # type: ignore
+    xml_path = ["Directory", "File"]
+    raw_response = {"Directory": [], "File": [], "DirectoryId": root.findtext("DirectoryId")}  # type: ignore
 
     for path in xml_path:
         for element in root.iter(path):
             data = handle_content_properties_information(element)
-            data['FileId'] = element.findtext('FileId')
+            data["FileId"] = element.findtext("FileId")
             raw_response[path].append(data)  # type: ignore
 
     return raw_response
@@ -485,31 +488,33 @@ def create_directory_content_output(share_name: str, raw_response: dict, directo
 
     """
 
-    xml_path = ['Directory', 'File']
+    xml_path = ["Directory", "File"]
 
-    outputs = {"Name": share_name, "Content": {"Path": directory_path, "DirectoryId": raw_response['DirectoryId']}}
+    outputs = {"Name": share_name, "Content": {"Path": directory_path, "DirectoryId": raw_response["DirectoryId"]}}
 
-    time_headers = ['CreationTime', 'LastAccessTime', 'LastWriteTime', 'ChangeTime']
+    time_headers = ["CreationTime", "LastAccessTime", "LastWriteTime", "ChangeTime"]
 
     for path in xml_path:
         for element in raw_response.get(path):  # type: ignore
             for header in time_headers:
-                str_time = element['Properties'].get(header)  # type: ignore
-                str_time = str_time[:-2] + 'Z'
-                element['Properties'][header] = FormatIso8601(  # type: ignore
-                    datetime.strptime(str_time, GENERAL_DATE_FORMAT))  # type: ignore
+                str_time = element["Properties"].get(header)  # type: ignore
+                str_time = str_time[:-2] + "Z"
+                element["Properties"][header] = FormatIso8601(  # type: ignore
+                    datetime.strptime(str_time, GENERAL_DATE_FORMAT)
+                )  # type: ignore
 
-            element['Properties']['Last-Modified'] = FormatIso8601(  # type: ignore
-                datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))  # type: ignore
+            element["Properties"]["Last-Modified"] = FormatIso8601(  # type: ignore
+                datetime.strptime(element["Properties"]["Last-Modified"], DATE_FORMAT)
+            )  # type: ignore
 
-            element['Property'] = element.pop('Properties')  # type: ignore
+            element["Property"] = element.pop("Properties")  # type: ignore
 
     outputs["Content"].update(raw_response)  # type: ignore
 
     return outputs
 
 
-def create_content_readable_output(outputs: dict, prefix: str = '') -> str:
+def create_content_readable_output(outputs: dict, prefix: str = "") -> str:
     """
     Create readable output for list directory content command.
     Args:
@@ -521,17 +526,11 @@ def create_content_readable_output(outputs: dict, prefix: str = '') -> str:
 
     """
     directories_outputs = tableToMarkdown(
-        'Directories:',
-        outputs["Content"]["Directory"],
-        headers=['Name', 'FileId'],
-        headerTransform=pascalToSpace
+        "Directories:", outputs["Content"]["Directory"], headers=["Name", "FileId"], headerTransform=pascalToSpace
     )
 
     files_outputs = tableToMarkdown(
-        'Files:',
-        outputs["Content"]["File"],
-        headers=['Name', 'FileId'],
-        headerTransform=pascalToSpace
+        "Files:", outputs["Content"]["File"], headers=["Name", "FileId"], headerTransform=pascalToSpace
     )
 
     return prefix + "\n" + directories_outputs + "\n" + files_outputs
@@ -547,27 +546,26 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    prefix = args.get('prefix')
-    limit = args.get('limit') or '50'
-    share_name = args['share_name']
-    directory_path = args.get('directory_path', '')
+    prefix = args.get("prefix")
+    limit = args.get("limit") or "50"
+    share_name = args["share_name"]
+    directory_path = args.get("directory_path", "")
 
-    page = arg_to_number(args.get('page') or '1')
-    marker = ''
-    readable_message = f'Directories and Files List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+    page = arg_to_number(args.get("page") or "1")
+    marker = ""
+    readable_message = f"Directories and Files List:\n Current page size: {limit}\n Showing page {page} out others that may exist"
 
     if page > 1:  # type: ignore
-        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
-                                                    client_request=client.list_directories_and_files_request,
-                                                    params={"prefix": prefix, "share_name": share_name,
-                                                            "directory_path": directory_path})
+        marker = get_pagination_next_marker_element(
+            limit=limit,
+            page=page,  # type: ignore
+            client_request=client.list_directories_and_files_request,
+            params={"prefix": prefix, "share_name": share_name, "directory_path": directory_path},
+        )
 
         if not marker:
             return CommandResults(
-                readable_output=readable_message,
-                outputs_prefix='AzureStorageFileShare.Share',
-                outputs=[],
-                raw_response=[]
+                readable_output=readable_message, outputs_prefix="AzureStorageFileShare.Share", outputs=[], raw_response=[]
             )
 
     response = client.list_directories_and_files_request(share_name, directory_path, prefix, limit, marker)
@@ -581,10 +579,10 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_key_field='Name',
-        outputs_prefix='AzureStorageFileShare.Share',
+        outputs_key_field="Name",
+        outputs_prefix="AzureStorageFileShare.Share",
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -614,17 +612,17 @@ def create_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args['share_name']
-    directory_name = args['directory_name']
-    directory_path = args.get('directory_path')
+    share_name = args["share_name"]
+    directory_name = args["directory_name"]
+    directory_path = args.get("directory_path")
 
-    if not validate_characters(directory_name, "\"\/:|<>*?"):
-        raise Exception('The specified directory name is invalid.')
+    if not validate_characters(directory_name, '"\/:|<>*?'):
+        raise Exception("The specified directory name is invalid.")
 
     client.create_directory_request(share_name, directory_name, directory_path)
 
     command_results = CommandResults(
-        readable_output=f'{directory_name} Directory successfully created in {share_name}.',
+        readable_output=f"{directory_name} Directory successfully created in {share_name}.",
     )
 
     return command_results
@@ -640,14 +638,12 @@ def delete_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args['share_name']
-    directory_name = args['directory_name']
-    directory_path = args.get('directory_path')
+    share_name = args["share_name"]
+    directory_name = args["directory_name"]
+    directory_path = args.get("directory_path")
 
     client.delete_directory_request(share_name, directory_name, directory_path)  # type: ignore
-    command_results = CommandResults(
-        readable_output=f'{directory_name} Directory successfully deleted from {share_name}.'
-    )
+    command_results = CommandResults(readable_output=f"{directory_name} Directory successfully deleted from {share_name}.")
 
     return command_results
 
@@ -662,17 +658,15 @@ def create_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args['share_name']
-    file_entry_id = args['file_entry_id']
-    directory_path = args.get('directory_path')
-    file_name = args.get('file_name')
+    share_name = args["share_name"]
+    file_entry_id = args["file_entry_id"]
+    directory_path = args.get("directory_path")
+    file_name = args.get("file_name")
 
     client.create_file_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
     client.add_file_content_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
 
-    command_results = CommandResults(
-        readable_output=f'File successfully created in {share_name}.'
-    )
+    command_results = CommandResults(readable_output=f"File successfully created in {share_name}.")
 
     return command_results
 
@@ -687,9 +681,9 @@ def get_file_command(client: Client, args: Dict[str, Any]) -> fileResult:  # typ
         fileResult: XSOAR File Result.
 
     """
-    share_name = args['share_name']
-    file_name = args['file_name']
-    directory_path = args.get('directory_path')
+    share_name = args["share_name"]
+    file_name = args["file_name"]
+    directory_path = args.get("directory_path")
 
     response = client.get_file_request(share_name, file_name, directory_path)
 
@@ -706,13 +700,13 @@ def delete_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args['share_name']
-    file_name = args['file_name']
-    directory_path = args.get('directory_path')
+    share_name = args["share_name"]
+    file_name = args["file_name"]
+    directory_path = args.get("directory_path")
 
     client.delete_file_request(share_name, file_name, directory_path)
     command_results = CommandResults(
-        readable_output=f'File {file_name} successfully deleted from {share_name}.',
+        readable_output=f"File {file_name} successfully deleted from {share_name}.",
     )
 
     return command_results
@@ -729,16 +723,17 @@ def test_module(client: Client) -> None:
     try:
         client.list_shares_request()
     except Exception as exception:
-        if 'Error in API call' in str(exception):
-            return return_results('Authorization Error: make sure API Credentials are correctly set')
+        if "Error in API call" in str(exception):
+            return return_results("Authorization Error: make sure API Credentials are correctly set")
 
-        if 'Error Type' in str(exception):
+        if "Error Type" in str(exception):
             return return_results(
-                'Verify that the storage account name is correct and that you have access to the server from your host.')
+                "Verify that the storage account name is correct and that you have access to the server from your host."
+            )
 
         raise exception
 
-    return_results('ok')
+    return_results("ok")
     return None
 
 
@@ -748,42 +743,41 @@ def main() -> None:
     """
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     global account_sas_token
     global storage_account_name
-    account_sas_token = params['credentials']['password']
-    storage_account_name = params['credentials']['identifier']
+    account_sas_token = params["credentials"]["password"]
+    storage_account_name = params["credentials"]["identifier"]
     api_version = "2020-10-02"
-    base_url = f'https://{storage_account_name}.file.core.windows.net/'
+    base_url = f"https://{storage_account_name}.file.core.windows.net/"
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
         urllib3.disable_warnings()
-        client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
-                                api_version)
+        client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name, api_version)
 
         commands = {
-            'azure-storage-fileshare-create': create_share_command,
-            'azure-storage-fileshare-delete': delete_share_command,
-            'azure-storage-fileshare-list': list_shares_command,
-            'azure-storage-fileshare-content-list': list_directories_and_files_command,
-            'azure-storage-fileshare-directory-create': create_directory_command,
-            'azure-storage-fileshare-directory-delete': delete_directory_command,
-            'azure-storage-fileshare-file-create': create_file_command,
-            'azure-storage-fileshare-file-get': get_file_command,
-            'azure-storage-fileshare-file-delete': delete_file_command,
+            "azure-storage-fileshare-create": create_share_command,
+            "azure-storage-fileshare-delete": delete_share_command,
+            "azure-storage-fileshare-list": list_shares_command,
+            "azure-storage-fileshare-content-list": list_directories_and_files_command,
+            "azure-storage-fileshare-directory-create": create_directory_command,
+            "azure-storage-fileshare-directory-delete": delete_directory_command,
+            "azure-storage-fileshare-file-create": create_file_command,
+            "azure-storage-fileshare-file-get": get_file_command,
+            "azure-storage-fileshare-file-delete": delete_file_command,
         }
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module(client)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
         return_error(str(e))
@@ -791,5 +785,5 @@ def main() -> None:
 
 from MicrosoftAzureStorageApiModule import *  # noqa: E402
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()
