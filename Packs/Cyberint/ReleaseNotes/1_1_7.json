@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Context output of the command 'cyberint-get-indicators' has been changed. See the release notes for more information."
+}
