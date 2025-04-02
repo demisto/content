@@ -1,9 +1,12 @@
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-
     def __init__(self, base_url: str, proxy: bool, verify: bool, is_workflow: bool = True):
         """
         Client to use in the. Overrides BaseClient.
@@ -27,20 +30,11 @@ class Client(BaseClient):
 
         if adaptive_cards_format or self.is_workflow:
             res = self._http_request(
-                method='POST',
-                json_data=messagecard,
-                raise_on_status=True,
-                resp_type='text',
-                full_url=self.base_url
+                method="POST", json_data=messagecard, raise_on_status=True, resp_type="text", full_url=self.base_url
             )
         else:
-            res = self._http_request(
-                method='POST',
-                json_data=messagecard,
-                raise_on_status=True,
-                resp_type='text'
-            )
-        demisto.info(f'completed post of message. response text: {res}')
+            res = self._http_request(method="POST", json_data=messagecard, raise_on_status=True, resp_type="text")
+        demisto.info(f"completed post of message. response text: {res}")
 
 
 def create_teams_message(
@@ -49,7 +43,7 @@ def create_teams_message(
     serverurls: str,
     adaptive_cards_format: bool = False,
     is_workflow: bool = True,
-    overwrite_adaptive_card_json: dict | None = None
+    overwrite_adaptive_card_json: dict | None = None,
 ) -> dict:
     """
     Creates the Teams message using the messageCard format, and returns the card
@@ -70,8 +64,8 @@ def create_teams_message(
         f"title={title}, serverurls={serverurls}, adaptive_cards_format={adaptive_cards_format}, is_workflow={is_workflow}"
     )
     # replacing special character so it will be shown correctly in the UI.
-    message = message.replace('\\n', '\n')
-    message = message.replace('\\r', '\r')
+    message = message.replace("\\n", "\n")
+    message = message.replace("\\r", "\r")
 
     messagecard: dict = {}
     if adaptive_cards_format:
@@ -86,31 +80,21 @@ def create_teams_message(
                         "content": {
                             "type": "AdaptiveCard",
                             "body": [
-                                    {
-                                        "type": "TextBlock",
-                                        "text": "Cortex XSOAR Notification",
-                                        "weight": "bolder",
-                                        "size": "medium",
-                                        "color": "accent"
-                                    },
                                 {
-                                        "type": "TextBlock",
-                                        "text": message,
-                                        "wrap": True
-                                }
+                                    "type": "TextBlock",
+                                    "text": "Cortex XSOAR Notification",
+                                    "weight": "bolder",
+                                    "size": "medium",
+                                    "color": "accent",
+                                },
+                                {"type": "TextBlock", "text": message, "wrap": True},
                             ],
-                            "actions": [
-                                {
-                                    "type": "Action.OpenUrl",
-                                    "title": title,
-                                    "url": serverurls
-                                }
-                            ],
+                            "actions": [{"type": "Action.OpenUrl", "title": title, "url": serverurls}],
                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                            "version": "1.0"
-                        }
+                            "version": "1.0",
+                        },
                     }
-                ]
+                ],
             }
         else:
             demisto.debug("Using overwritten adaptive card format")
@@ -125,17 +109,12 @@ def create_teams_message(
                         "contentType": "application/vnd.microsoft.card.adaptive",
                         "content": {
                             "type": "AdaptiveCard",
-                            "body": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": message
-                                }
-                            ],
+                            "body": [{"type": "TextBlock", "text": message}],
                             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                            "version": "1.0"
-                        }
+                            "version": "1.0",
+                        },
                     }
-                ]
+                ],
             }
         else:
             demisto.debug("Creating message for non-workflow")
@@ -144,16 +123,8 @@ def create_teams_message(
                 "@context": "http://schema.org/extensions",
                 "themeColor": "0076D7",
                 "summary": "Cortex XSOAR Notification",
-                "sections": [{
-                    "activityTitle": "Cortex XSOAR Notification",
-                    "activitySubtitle": message,
-                    "markdown": True
-                }],
-                "potentialAction": [{
-                    "@type": "OpenUri",
-                    "name": title,
-                    "targets": [{"os": "default", "uri": serverurls}]
-                }]
+                "sections": [{"activityTitle": "Cortex XSOAR Notification", "activitySubtitle": message, "markdown": True}],
+                "potentialAction": [{"@type": "OpenUri", "name": title, "targets": [{"os": "default", "uri": serverurls}]}],
             }
 
     return messagecard
@@ -175,9 +146,9 @@ def test_module(client: Client, serverurls: str) -> str:
         title = "Cortex XSOAR Notification"
         test_message = create_teams_message(message, title, serverurls, is_workflow=client.is_workflow)
         client.send_teams_message(test_message)
-        return 'ok'
+        return "ok"
     except DemistoException as e:
-        return f'Error: {e}'
+        return f"Error: {e}"
 
 
 def send_teams_message_command(
@@ -186,7 +157,7 @@ def send_teams_message_command(
     title: str,
     serverurls: str,
     adaptive_cards_format: bool = False,
-    overwrite_adaptive_card_json: dict | None = None
+    overwrite_adaptive_card_json: dict | None = None,
 ) -> CommandResults:
     """
     send_teams_message command: Sends the Teams Message to the provided webhook.
@@ -204,14 +175,19 @@ def send_teams_message_command(
         which contains the readable_output indicating the message was sent.
     """
 
-    messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format,
-                                       is_workflow=client.is_workflow,
-                                       overwrite_adaptive_card_json=overwrite_adaptive_card_json)
+    messagecard = create_teams_message(
+        message,
+        title,
+        serverurls,
+        adaptive_cards_format,
+        is_workflow=client.is_workflow,
+        overwrite_adaptive_card_json=overwrite_adaptive_card_json,
+    )
     client.send_teams_message(messagecard, adaptive_cards_format)
-    return CommandResults(readable_output='Message sent successfully')
+    return CommandResults(readable_output="Message sent successfully")
 
 
-def main() -> None:    # pragma: no cover
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     grab the params and the server urls, and send the message, or test message.
@@ -221,45 +197,40 @@ def main() -> None:    # pragma: no cover
     command = demisto.command()
     serverurls = demisto.demistoUrls()
 
-    title = args.get('url_title', 'Cortex XSOAR URL')
-    webhook = args.get('team_webhook', params.get('webhookurl'))
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    title = args.get("url_title", "Cortex XSOAR URL")
+    webhook = args.get("team_webhook", params.get("webhookurl"))
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     adaptive_cards_format: bool = argToBoolean(args.get("adaptive_cards_format", False))
-    overwrite_adaptive_card_json_param: str = args.get('overwrite_adaptive_card_json', None)
-    overwrite_adaptive_card_json: dict | None = json.loads(
-        overwrite_adaptive_card_json_param) if overwrite_adaptive_card_json_param else None
+    overwrite_adaptive_card_json_param: str = args.get("overwrite_adaptive_card_json", None)
+    overwrite_adaptive_card_json: dict | None = (
+        json.loads(overwrite_adaptive_card_json_param) if overwrite_adaptive_card_json_param else None
+    )
 
-    if args.get('alternative_url'):
-        serverurls = args.get('alternative_url', '')
+    if args.get("alternative_url"):
+        serverurls = args.get("alternative_url", "")
     else:
         serverurls = serverurls.get("investigation", serverurls["server"])
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=webhook,
-            verify=verify_certificate,
-            proxy=proxy,
-            is_workflow='workflow' in webhook
-        )
+        client = Client(base_url=webhook, verify=verify_certificate, proxy=proxy, is_workflow="workflow" in webhook)
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client, serverurls))
-        elif command == 'ms-teams-message':
+        elif command == "ms-teams-message":
             message = args.get("message", "")
-            return_results(send_teams_message_command(client, message, title, serverurls,
-                           adaptive_cards_format, overwrite_adaptive_card_json))
+            return_results(
+                send_teams_message_command(
+                    client, message, title, serverurls, adaptive_cards_format, overwrite_adaptive_card_json
+                )
+            )
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
     except Exception as e:
-        return_error(
-            f'Failed to execute {command} command.\n'
-            f'{str(e)}',
-            error=traceback.format_exc()
-        )
+        return_error(f"Failed to execute {command} command.\n" f"{str(e)}", error=traceback.format_exc())
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
