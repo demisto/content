@@ -167,8 +167,8 @@ class Client:
             if skip:
                 params["$skip"] = skip
 
-        raw_response = self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
-        return raw_response
+        return self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
+
     @logger
     def update_incident(
         self,
