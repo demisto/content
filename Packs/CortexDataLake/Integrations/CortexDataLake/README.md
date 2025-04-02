@@ -1397,7 +1397,7 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.SequenceNo | unknown | The log entry identifier, which is incremented sequentially. | 
 | CDL.Logging.GlobalProtect.SourceRegion | unknown | Region of the gateway \(or user\) that connected. | 
 | CDL.Logging.GlobalProtect.SourceUser | unknown | The username that connected. | 
-| CDL.Logging.GlobalProtect.SourceUserDomain | unknown | Domain to which the Source User belongs. | 
+| CDL.Logging.GlobalProtect.SourceUserDomain | unknown | Domain to which the source user belongs. | 
 | CDL.Logging.GlobalProtect.SourceUserName | unknown | The Source User username. | 
 | CDL.Logging.GlobalProtect.SourceUserUUID | unknown | Unique identifier assigned to the Source User. | 
 | CDL.Logging.GlobalProtect.SSLResponseTime | unknown | SSL Response Time in milliseconds. | 
