@@ -7,13 +7,7 @@
     "detached": false,
     "disabled": false,
     "extractSettings": {
-        "fieldCliNameToExtractSettings": {
-            "gibrelatedindicatorsdata": {
-                "extractAsIsIndicatorTypeId": "",
-                "extractIndicatorTypesIDs": [],
-                "isExtractingAllIndicatorTypes": true
-            }
-        },
+        "fieldCliNameToExtractSettings": {},
         "mode": "Specific"
     },
     "hours": 0,
@@ -22,10 +16,10 @@
     "layout": "GIB Data Breach Layout",
     "locked": false,
     "name": "GIB Data Breach",
-    "onChangeRepAlg": 0,
-    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "onChangeRepAlg": 1,
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
     "readonly": false,
-    "reputationCalc": 0,
+    "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
