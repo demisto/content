@@ -1,5 +1,6 @@
 import json
 import os
+from email.utils import format_datetime
 from http import HTTPStatus
 
 import dateparser
@@ -19,6 +20,42 @@ def mock_client():
         password="password",
         utc_now=dateparser.parse("2020-01-01T00:00:00Z"),
     )
+
+
+@pytest.fixture(autouse=True)
+def mock_token_requests(requests_mock):
+    token_response = {
+        "access_token": "mock_access_token",
+        "access_token_expires_in": 1800,
+        "refresh_token": "mock_refresh_token",
+        "refresh_token_expires_in": 3600
+    }
+    requests_mock.post(
+        "https://test.com/dlp/rest/v1/auth/refresh-token",
+        json=token_response,
+        headers={"Date": format_datetime(datetime.now(timezone.utc))},
+        status_code=HTTPStatus.OK,
+    )
+
+
+@pytest.fixture
+def context_patch(monkeypatch):
+    """Fixture to mock integration context access."""
+    context = {}
+    monkeypatch.setattr("ForcepointEventCollector.get_integration_context", lambda: context.copy())
+    monkeypatch.setattr("ForcepointEventCollector.set_integration_context", context.update)
+    return context
+
+
+@pytest.fixture
+def decorated_dummy():
+    from ForcepointEventCollector import validate_authentication
+
+    @validate_authentication
+    def dummy_command(_):
+        return "API_CALL_OK"
+
+    return dummy_command
 
 
 def test_get_events_command(requests_mock, mocker, mock_client: Client):
@@ -1382,3 +1419,110 @@ def test_update_incident_command(requests_mock, mock_client: Client):
         },
     )
     result.readable_output == "Rule `TestRule` was successfully created in policy 'TestPolicy'."
+
+
+def test_validate_authentication(mock_client: Client, context_patch, decorated_dummy):
+    """
+    Scenario: Access token is still valid.
+    Given:
+    - A valid access token is already stored and not expired.
+    When:
+    - A decorated Client method is called.
+    Then:
+    - Ensure that no new authentication is performed.
+    - Ensure existing token is used in headers.
+    - Ensure context_patch wasn't changed.
+    """
+    now = datetime.now(timezone.utc)
+    context = {
+        "access_token": "valid-token",
+        "access_token_expiry_date": (now + timedelta(minutes=10)).isoformat(),
+        "refresh_token": "valid-refresh",
+        "refresh_token_expiry_date": (now + timedelta(minutes=30)).isoformat(),
+    }
+    context_patch.update(context)
+
+    result = decorated_dummy(mock_client)
+
+    assert result == "API_CALL_OK"
+    assert mock_client._headers["Authorization"] == "Bearer valid-token"
+    assert context == context_patch
+
+
+def test_validate_authentication_get_access_token(requests_mock, mock_client: Client, context_patch, decorated_dummy):
+    """
+    Scenario: Access token expired, refresh token is still valid.
+    Given:
+    - An expired access token.
+    - A valid, non-expired refresh token.
+    When:
+    - A decorated API function is called.
+    Then:
+    - Ensure the access token is refreshed.
+    - Ensure the new token is used in headers.
+    - Ensure access_token token in context was changed.
+    - Ensure access_token_expiry_date token in context was changed.
+    - Ensure refresh_token token in context wasn't changed.
+    - Ensure refresh_token_expiry_date token in context wasn't changed.
+    """
+    now = datetime.now(timezone.utc)
+    context = {
+        "access_token": "expired-token",
+        "access_token_expiry_date": (now - timedelta(minutes=1)).isoformat(),
+        "refresh_token": "valid-refresh",
+        "refresh_token_expiry_date": (now + timedelta(minutes=30)).isoformat(),
+    }
+    context_patch.update(context)
+    requests_mock.post(
+        f"https://test.com/dlp/rest/v1/auth/access-token",
+        json={
+            "access_token": "new-access-token",
+            "access_token_expires_in": 1800,
+        },
+        status_code=HTTPStatus.OK,
+        headers={"Date": format_datetime(now)},
+    )
+
+    result = decorated_dummy(mock_client)
+
+    assert result == "API_CALL_OK"
+    assert mock_client._headers["Authorization"] == "Bearer new-access-token"
+    assert context_patch["access_token"] == "new-access-token"
+    assert context_patch["access_token_expiry_date"] != context["access_token_expiry_date"]
+    assert context_patch["refresh_token"] == context["refresh_token"]
+    assert context_patch["refresh_token_expiry_date"] == context["refresh_token_expiry_date"]
+
+
+def test_validate_authentication_get_refresh_token(requests_mock, mock_client: Client, context_patch, decorated_dummy):
+    """
+    Scenario: Both access and refresh tokens are missing or expired.
+    Given:
+    - No tokens or expired tokens in the integration context.
+    When:
+    - A decorated API function is called.
+    Then:
+    - Ensure the full authentication flow is triggered.
+    - Ensure new tokens are stored and used.
+    """
+    now = datetime.now(timezone.utc)
+    context_patch.clear()
+    requests_mock.post(
+        f"https://test.com/dlp/rest/v1/auth/refresh-token",
+        json={
+            "access_token": "new-access-token",
+            "access_token_expires_in": 1800,
+            "refresh_token": "new-refresh-token",
+            "refresh_token_expires_in": 3600,
+        },
+        status_code=HTTPStatus.OK,
+        headers={"Date": format_datetime(now)},
+    )
+
+    result = decorated_dummy(mock_client)
+
+    assert result == "API_CALL_OK"
+    assert mock_client._headers["Authorization"] == "Bearer new-access-token"
+    assert context_patch["access_token"] == "new-access-token"
+    assert context_patch["access_token_expiry_date"]
+    assert context_patch["refresh_token"] == "new-refresh-token"
+    assert context_patch["refresh_token_expiry_date"]

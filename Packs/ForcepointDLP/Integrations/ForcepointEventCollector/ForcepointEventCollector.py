@@ -3,15 +3,14 @@ import inspect
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime
 from functools import wraps
-from http import HTTPStatus
 from typing import (Any, Callable, Optional, TypeVar, Union, get_args,
                     get_origin, get_type_hints)
 
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from requests import Response
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -496,81 +495,65 @@ class PolicyExceptionRule(ValidatableMixin):
 
 
 def validate_authentication(func: Callable) -> Callable:
-    """
-    Decorator to manage authentication for API requests.
+    """Decorator to ensure a valid access token is available before executing an API call.
 
-    This decorator first attempts to execute the provided function using an existing authentication
-    access token stored in the 'integration_context'. If the current token is not available or invalid
-    (indicated by an HTTP FORBIDDEN status), it will attempt to re-authenticate with the API and then
-    retry the function execution.
+    This decorator checks if the current access token stored in the integration context is valid.
+    If it's missing or expired, it attempts to obtain a new one:
+    - If a valid refresh token is available, it uses it to get a new access token.
+    - If no valid refresh token is found, it performs a full authentication flow.
 
-    The 'integration_context' is used to store and retrieve the authentication token, ensuring that
-    the latest valid authentication details are used across different executions.
+    Tokens and their expiry times are stored in the integration context, with a 10% buffer applied
+    to expiration to account for timing edge cases (e.g., network delays).
 
     Args:
-        func (Callable): The API request function to be decorated and executed.
-
-    Raises:
-        DemistoException:
-            - If the API returns an HTTP FORBIDDEN status during the initial request attempt and
-              re-authentication also fails.
-            - If the API returns any other error during the request.
+        func (Callable): The API function to wrap.
 
     Returns:
-        Callable: The result from executing 'func' with the provided arguments and keyword arguments.
+        Callable: A wrapped function that ensures valid authentication before executing.
     """
 
     @wraps(wrapped=func)
     def wrapper(client: "Client", *args, **kwargs):
-        def try_request():
-            """
-            Attempts to execute the API request function. If the request fails due to authorization,
-            it triggers a re-authentication and retries the request.
-            """
-            try:
-                return func(client, *args, **kwargs)
-            except DemistoException as err:
-                if err.res.status_code in (
-                    http.HTTPStatus.FORBIDDEN,
-                    err.res.status_code == http.HTTPStatus.BAD_REQUEST,
-                ):
-                    demisto.debug(f"Got {err.res.status_code}. GOTO update_headers")
-                    update_headers()
-                return func(client, *args, **kwargs)
+        def is_token_expired(integration_context: dict[str, Any], key: str) -> bool:
+            return datetime.now(timezone.utc) >= datetime.fromisoformat(integration_context[f"{key}_token_expiry_date"])
 
-        def try_authentication():
-            """
-            Attempts to authenticate with the API and extract the access token from the response.
-            In case of error or exceptions, it handles them appropriately,
-            updating the integration context or raising a tailored exception.
-            """
-            demisto.debug("Attempting authentication")
-            try:
-                res = client.authenticate()
-                if res.status_code == HTTPStatus.FORBIDDEN:
-                    raise DemistoException("AUTHORIZATION_ERROR")
-                return res.json().get("access_token")
+        def get_token_and_expiry_date(data: dict[str, Any], response_time: datetime, key: str) -> dict[str, Any]:
+            expires_in = data[f"{key}_token_expires_in"]
+            buffer = min(30, expires_in * 0.1)  # Edge case buffer for near-expiration edge-cases
+            return {
+                f"{key}_token": data[f"{key}_token"],
+                f"{key}_token_expiry_date": (response_time + timedelta(seconds=expires_in - buffer)).isoformat(),
+            }
 
-            except DemistoException as err:
-                integration_context = get_integration_context()
-                integration_context["access_token"] = None
-                set_integration_context(integration_context)
-                raise DemistoException("AUTHORIZATION_ERROR", res=err.res)
+        def set_tokens_in_integration_context(response: requests.Response, integration_context: dict[str, Any]) -> None:
+            if "Date" in response.headers:
+                response_time = parsedate_to_datetime(response.headers["Date"])
+            else:
+                response_time = datetime.now(timezone.utc)
 
-        def update_headers():
-            """Updates the session and integration context with a new access token."""
-            access_token = try_authentication()
-            demisto.debug("Save new token to integration context")
-            client._headers = {"Authorization": f"Bearer {access_token}"}
-            integration_context = get_integration_context()
-            integration_context["access_token"] = access_token
+            data = response.json()
+            integration_context |= get_token_and_expiry_date(data, response_time, "access")
+
+            if "refresh_token" in data:
+                integration_context |= get_token_and_expiry_date(data, response_time, "refresh")
+
             set_integration_context(integration_context)
 
-        demisto.debug("Try to request with integration context token")
-        integration_context = get_integration_context()
-        access_token = integration_context.get("access_token")
-        client._headers = {"Authorization": f"Bearer {access_token}"}
-        return try_request()
+        def set_client_bearer_token(token: str) -> None:
+            client._headers = {"Authorization": f"Bearer {token}"}
+
+        integration_context = get_integration_context() or {}
+
+        if "access_token" not in integration_context or is_token_expired(integration_context, "access"):
+            if "refresh_token" not in integration_context or is_token_expired(integration_context, "refresh"):
+                response = client.get_refresh_token()
+            else:
+                response = client.get_access_token(integration_context["refresh_token"])
+
+            set_tokens_in_integration_context(response, integration_context)
+
+        set_client_bearer_token(integration_context["access_token"])
+        return func(client, *args, **kwargs)
 
     return wrapper
 
@@ -587,8 +570,8 @@ class Client(BaseClient):
         api_limit=API_DEFAULT_LIMIT,
         **kwargs,
     ):
-        self.username = username
-        self.password = password
+        self._username = username
+        self._password = password
         self.api_limit = api_limit
         self.utc_now = utc_now
         super().__init__(
@@ -596,14 +579,8 @@ class Client(BaseClient):
             verify=verify,
             proxy=proxy,
         )
-        self._headers = {}
 
-    @validate_authentication
-    def _http_request(self, *args, **kwargs):
-        kwargs["error_handler"] = self.error_handler
-        return super()._http_request(*args, **kwargs)
-
-    def error_handler(self, res: Response):
+    def error_handler(self, res: requests.Response):
         """Error handler for the API response.
 
         Args:
@@ -612,25 +589,32 @@ class Client(BaseClient):
         Raises:
             DemistoException: There is no data to return.
         """
-        error_code = res.status_code
-        if error_code == NO_CONTENT_CODE:
+        if res.status_code == NO_CONTENT_CODE:
             raise DemistoException(
                 NO_CONTENT_MESSAGE,
                 res=res,
             )
-        else:
-            raise DemistoException(
-                "ERROR:",
-                res=res,
-            )
 
-    def authenticate(self) -> Response:
+        super()._handle_error(None, res, False)
+
+    @validate_authentication
+    def _http_request(self, *args, **kwargs):
+        return super()._http_request(*args, **kwargs, error_handler=self.error_handler)
+
+    def get_refresh_token(self) -> requests.Response:
         return super()._http_request(
             method="POST",
             url_suffix="auth/refresh-token",
-            headers={"username": self.username, "password": self.password},
+            headers={"username": self._username, "password": self._password},
             resp_type="response",
-            ok_codes=[HTTPStatus.OK],
+        )
+
+    def get_access_token(self, refresh_token: str) -> requests.Response:
+        return super()._http_request(
+            method="POST",
+            url_suffix="auth/access-token",
+            headers={"refresh-token": f"Bearer {refresh_token}"},
+            resp_type="response",
         )
 
     def list_policies(self, policy_type: str = "DLP") -> dict:
@@ -945,19 +929,19 @@ def test_module(client: Client) -> str:
     Args:
         client (Client): Forcepoint DLP client.
     Raises:
-        DemistoException: In case of wrong request.
+        DemistoException: Unexpected error.
 
     Returns:
         str: Output message.
     """
     try:
-        client.authenticate()
+        client.list_policies()
     except DemistoException as err:
-        if err.res and err.res.status_code == HTTPStatus.FORBIDDEN:
-            return "Authentication failed"
-        return f"Error: {err}"
-    except Exception as err:
-        return f"Error: {err}"
+        if err.res is not None and err.res.status_code == http.HTTPStatus.FORBIDDEN:
+            return "Authorization Error: invalid credentials."
+
+        raise err
+
     return "ok"
 
 
