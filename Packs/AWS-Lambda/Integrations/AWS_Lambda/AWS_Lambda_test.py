@@ -1,20 +1,20 @@
 import json
+from collections.abc import Callable
+from typing import Any
 
 import pytest
-from typing import Any
-from collections.abc import Callable
 from AWS_Lambda import (
     _parse_policy_response,
-    get_policy_command,
-    list_versions_by_function_command,
-    get_function_url_config_command,
-    get_function_configuration_command,
+    create_function_command,
     delete_function_command,
     delete_function_url_config_command,
-    create_function_command,
-    publish_layer_version_command,
+    delete_layer_version_command,
+    get_function_configuration_command,
+    get_function_url_config_command,
+    get_policy_command,
     list_layer_version_command,
-    delete_layer_version_command
+    list_versions_by_function_command,
+    publish_layer_version_command,
 )
 
 
@@ -57,7 +57,7 @@ class MockClient:
 
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -108,8 +108,8 @@ def util_load_json(path: str):
                             "Resource": "resource2",
                             "Principal": "1",
                         },
-                    ]
-                }
+                    ],
+                },
             },
             {
                 "Id": "policy1",
@@ -265,9 +265,7 @@ def test_get_policy_command(mocker, test_data: dict, excepted_data: dict):
         ),
     ],
 )
-def test_list_versions_by_function_command(
-    mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]
-):
+def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
     """
     Test case for the list_versions_by_function_command function.
 
@@ -291,9 +289,7 @@ def test_list_versions_by_function_command(
     client = MockClient()
     mocker.patch.object(client, "list_versions_by_function", return_value=test_data)
 
-    res = list_versions_by_function_command(
-        args={"functionName": "test"}, aws_client=client
-    )
+    res = list_versions_by_function_command(args={"functionName": "test"}, aws_client=client)
     if test_data.get("NextMarker") and res.readable_output:
         assert "To get the next version run the command with the Marker argument with the value: test" in res.readable_output
     assert res.outputs == excepted_data
@@ -335,9 +331,7 @@ def test_list_versions_by_function_command(
         )
     ],
 )
-def test_get_function_url_config_command(
-    mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]
-):
+def test_get_function_url_config_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
     """
     Test case for the get_function_url_config_command function.
 
@@ -358,9 +352,7 @@ def test_get_function_url_config_command(
     client = MockClient()
     mocker.patch.object(client, "get_function_url_config", return_value=test_data)
 
-    res = get_function_url_config_command(
-        args={"functionName": "test"}, aws_client=client
-    )
+    res = get_function_url_config_command(args={"functionName": "test"}, aws_client=client)
     assert res.outputs == excepted_data
 
 
@@ -414,9 +406,7 @@ def test_get_function_url_config_command(
         )
     ],
 )
-def test_get_function_configuration_command(
-    mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]
-):
+def test_get_function_configuration_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
     """
     Test case for the get_function_configuration_command function.
 
@@ -437,9 +427,7 @@ def test_get_function_configuration_command(
     client = MockClient()
     mocker.patch.object(client, "get_function_configuration", return_value=test_data)
 
-    res = get_function_configuration_command(
-        args={"functionName": "test"}, aws_client=client
-    )
+    res = get_function_configuration_command(args={"functionName": "test"}, aws_client=client)
     assert res.outputs == excepted_data
 
 
@@ -450,9 +438,7 @@ def test_get_function_configuration_command(
         (delete_function_url_config_command, "delete_function_url_config"),
     ],
 )
-def test_delete_function_and_url_config_commands(
-    mocker, func_command: Callable, func_client: str
-):
+def test_delete_function_and_url_config_commands(mocker, func_command: Callable, func_client: str):
     """
     Test two cases for the scenario of deleting a function and url config with a qualifier.
 
@@ -484,93 +470,95 @@ def test_delete_function_and_url_config_commands(
 
 def test_create_function_command(mocker):
     """
-        Given: Params for create lambda function command
-        When: Running the command
-        Then: Assert that the correct command result is returned.
+    Given: Params for create lambda function command
+    When: Running the command
+    Then: Assert that the correct command result is returned.
     """
     client = MockClient()
-    mocker.patch.object(client, 'create_function', return_value=util_load_json('test_data/create_function.json'))
+    mocker.patch.object(client, "create_function", return_value=util_load_json("test_data/create_function.json"))
 
-    args = {"functionName": "TestLambdaFunction",
-            "code": "lambda_function.py.zip",
-            "runtime": "python3.8",
-            "description": "test lambda function",
-            "role": "test-role",
-            "handler": "test handler",
-            "layers": "test layer",
-            "vpcConfig": "{\"SubnetIds\": [\"subnet-1\",\"subnet-2\",\"3\"], \"SecurityGroupIds\":[\"sg-1\"]}",
-            "packageType": "Zip"}
+    args = {
+        "functionName": "TestLambdaFunction",
+        "code": "lambda_function.py.zip",
+        "runtime": "python3.8",
+        "description": "test lambda function",
+        "role": "test-role",
+        "handler": "test handler",
+        "layers": "test layer",
+        "vpcConfig": '{"SubnetIds": ["subnet-1","subnet-2","3"], "SecurityGroupIds":["sg-1"]}',
+        "packageType": "Zip",
+    }
 
-    kwargs = {'Code': {'ZipFile': b"test"},
-              'FunctionName': 'TestLambdaFunction',
-              'Runtime': 'python3.8',
-              'Role': 'test-role',
-              'Handler': 'test handler',
-              'Description': 'test lambda function',
-              'PackageType': 'Zip',
-              'Layers': ['test layer'],
-              'VpcConfig': {'SubnetIds': ['subnet-1', 'subnet-2', 'subnet-3'],
-                            'SecurityGroupIds': ['sg-1']}}
+    kwargs = {
+        "Code": {"ZipFile": b"test"},
+        "FunctionName": "TestLambdaFunction",
+        "Runtime": "python3.8",
+        "Role": "test-role",
+        "Handler": "test handler",
+        "Description": "test lambda function",
+        "PackageType": "Zip",
+        "Layers": ["test layer"],
+        "VpcConfig": {"SubnetIds": ["subnet-1", "subnet-2", "subnet-3"], "SecurityGroupIds": ["sg-1"]},
+    }
 
-    mocker.patch('AWS_Lambda.prepare_create_function_kwargs', return_value=kwargs)
+    mocker.patch("AWS_Lambda.prepare_create_function_kwargs", return_value=kwargs)
 
     results = create_function_command(args, client)
 
-    assert results.outputs_key_field == 'FunctionArn'
-    assert results.outputs_prefix == 'AWS.Lambda.Functions'
+    assert results.outputs_key_field == "FunctionArn"
+    assert results.outputs_prefix == "AWS.Lambda.Functions"
     assert len(results.outputs.keys()) == 13
 
 
 def test_publish_layer_version_command(mocker):
     """
-        Given: Params for publish layer version command
-        When: Running the command
-        Then: Assert that the correct command result is returned.
+    Given: Params for publish layer version command
+    When: Running the command
+    Then: Assert that the correct command result is returned.
     """
     client = MockClient()
-    mocker.patch.object(client, 'publish_layer_version', return_value=util_load_json('test_data/publish_layer.json'))
-    mocker.patch('AWS_Lambda.read_zip_to_bytes')
+    mocker.patch.object(client, "publish_layer_version", return_value=util_load_json("test_data/publish_layer.json"))
+    mocker.patch("AWS_Lambda.read_zip_to_bytes")
 
-    args = {"layer-name": "testLayer",
-            "description": "test lambda function",
-            "zip-file": "test",
-            "CompatibleRuntimes": "nodejs",
-            "CompatibleArchitectures": "x86_64",
-            }
+    args = {
+        "layer-name": "testLayer",
+        "description": "test lambda function",
+        "zip-file": "test",
+        "CompatibleRuntimes": "nodejs",
+        "CompatibleArchitectures": "x86_64",
+    }
 
     results = publish_layer_version_command(args, client)
 
-    assert results.outputs_key_field == 'LayerVersionArn'
-    assert results.outputs_prefix == 'AWS.Lambda.Layers'
+    assert results.outputs_key_field == "LayerVersionArn"
+    assert results.outputs_prefix == "AWS.Lambda.Layers"
     assert len(results.outputs.keys()) == 7
 
 
 def test_delete_layer_version_command(mocker):
     """
-        Given: Params for delete layer version command
-        When: Running the command
-        Then: Assert that the correct command result is returned.
+    Given: Params for delete layer version command
+    When: Running the command
+    Then: Assert that the correct command result is returned.
     """
     client = MockClient()
-    mocker.patch.object(client, 'delete_layer_version')
+    mocker.patch.object(client, "delete_layer_version")
 
-    args = {"layer-name": "testLayer",
-            "version-number": "2"
-            }
+    args = {"layer-name": "testLayer", "version-number": "2"}
 
     results = delete_layer_version_command(args, client)
 
-    assert results.readable_output == 'Deleted version number 2 of testLayer Successfully'
+    assert results.readable_output == "Deleted version number 2 of testLayer Successfully"
 
 
 def test_list_layer_version_command(mocker):
     """
-        Given: Params for list layer versions.
-        When: Running the command
-        Then: Assert that the correct command result is returned.
+    Given: Params for list layer versions.
+    When: Running the command
+    Then: Assert that the correct command result is returned.
     """
     client = MockClient()
-    mocker.patch.object(client, 'list_layer_versions', return_value=util_load_json('test_data/list_layer_version.json'))
+    mocker.patch.object(client, "list_layer_versions", return_value=util_load_json("test_data/list_layer_version.json"))
 
     args = {"layer-name": "testLayer"}
 

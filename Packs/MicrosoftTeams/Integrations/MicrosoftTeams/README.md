@@ -936,10 +936,6 @@ Retrieves a list of members from a chat.
 
 `Chat.ReadBasic` - *Delegated*
 
-`Chat.Create` - *Delegated*
-
-Note: Chat.Create is needed only when listing one-on-one chats.
-
 #### Input
 
 | **Argument Name** | **Description**                                                                  | **Required** |
@@ -984,10 +980,6 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 `User.Read.All` - *Delegated*
 
 `Chat.ReadBasic` - *Delegated*
-
-`Chat.Create` - *Delegated*
-
-Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 
@@ -1040,10 +1032,6 @@ Retrieves a list of messages in a chat.
 `User.Read.All` - *Delegated*
 
 `Chat.Read` - *Delegated*
-
-`Chat.Create` - *Delegated*
-
-Note: Chat.Create is needed only when listing one-on-one chats.
 
 #### Input
 
@@ -1167,7 +1155,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 >You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
