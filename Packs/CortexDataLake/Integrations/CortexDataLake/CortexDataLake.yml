@@ -2131,9 +2131,9 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.IsExported
       description: Indicates if this log was exported from the firewall using the firewall's log export function.
     - contextPath: CDL.Logging.GlobalProtect.IsForwarded
-      description: Internal-use field that indicates if the log is being forwarded.
+      description: Internal use field that indicates if the log is being forwarded.
     - contextPath: CDL.Logging.GlobalProtect.IsPrismaBranch
-      description: Internal-use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise.
+      description: Internal use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise.
     - contextPath: CDL.Logging.GlobalProtect.IsPrismaMobile
       description: Internal use field. If set to 1, the log record was generated using a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise.
     - contextPath: CDL.Logging.GlobalProtect.LogSource
