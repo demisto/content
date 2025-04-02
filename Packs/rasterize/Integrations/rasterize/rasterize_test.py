@@ -800,9 +800,10 @@ def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerF
     with pytest.raises(SystemExit) as excinfo, capfd.disabled():
         perform_rasterize(path="0.0.0.8/test", width=250, height=250, rasterize_type=RasterizeType.PNG)
 
-    assert (
-        mocker_output.call_args.args[0].readable_output == ""
-    )
+    assert mocker_output.call_args.args[0].readable_output == (
+            "The following paths were skipped as they are not"
+            " valid for rasterization: ['0.0.0.8/test']"
+        )
     assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
