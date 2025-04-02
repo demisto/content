@@ -492,13 +492,13 @@ def test_remove_system_user_with_system_users():
             "UserName": "administrator",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Source": [],
+            "Brand": "",
         },
         {
             "UserName": "system",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Source": [],
+            "Brand": "",
         }
     ]
 
@@ -527,19 +527,19 @@ def test_extract_usernames_with_ids():
         "Account(val.Username && val.Username == obj.Username)": [
             {
                 "ID": [{"Source": "Okta v2", "Value": "1234"}],
-                "Username": "user1@test.com",
+                "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}],
             },
             {
                 "ID": [{"Source": "Microsoft Graph User", "Value": "5678"}],
-                "Username": "user2@demistodev.onmicrosoft.com",
+                "Username": [{"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}],
             },
             {
                 "ID": [{"Source": "Okta v2", "Value": "789"}],
-                "Username": "user3@example.com",
+                "Username": [{"Source": "Okta v2", "Value": "user3@example.com"}],
             },
             {
                 "ID": [],
-                "Username": "user4@example.com",
+                "Username": [{"Source": "", "Value": "user4@example.com"}]
             }
         ]
     }
@@ -560,8 +560,9 @@ def test_get_user_data(mocker: MockerFixture):
     command = Command(name="get-user-data", args={"user_name": ["user1", "user2"], "brands": "brand_name"})
 
     expected_entry_context = [{"Account(val.Username && val.Username == obj.Username)": [
-        {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": "user1@test.com"},
-        {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": "user2@demistodev.onmicrosoft.com"}
+        {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}]},
+        {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": [
+            {"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}]}
     ]}]
     expected_id_info = {
         "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
