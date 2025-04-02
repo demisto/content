@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Account",
-        "GIB Compromised Account Group"
+        "GIB Compromised Account"
     ],
     "caseInsensitive": false,
     "cliName": "gibcompromisedlogin",
@@ -26,11 +25,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "itemVersion": "1.4.2",
-    "openEnded": false,
-    "systemAssociatedTypes": [
-        "GIB Compromised Account",
-        "GIB Compromised Account Group"
-    ]
+    "fromVersion": "6.0.0"
 }
