@@ -5,13 +5,12 @@ from collections import namedtuple
 from json import JSONDecodeError
 
 import urllib3
-
 from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_LIMIT = "1000"
 MAX_INCIDENTS_TO_FETCH = 10_000
 PaginationLogic = namedtuple(
@@ -21,7 +20,7 @@ PaginationLogic = namedtuple(
         "pagination_field_name",
         "pagination_flag",
     ),
-    defaults=(False, '', ''),
+    defaults=(False, "", ""),
 )
 TimestampFieldConfig = namedtuple(
     "TimestampFieldConfig",
@@ -117,11 +116,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def search_events(self,
-                      endpoint: str,
-                      http_method: str,
-                      request_data: RequestData,
-                      ok_codes: list[int]) -> dict[Any, Any]:
+    def search_events(self, endpoint: str, http_method: str, request_data: RequestData, ok_codes: list[int]) -> dict[Any, Any]:
         """
         Searches for events using the API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -175,25 +170,28 @@ def is_pagination_needed(events: dict[Any, Any], pagination_logic: PaginationLog
     return pagination_needed, next_page_value
 
 
-def fetch_events(client: Client,
-                 params: dict[str, Any],
-                 last_run: dict[Any, Any],
-                 first_fetch_datetime: datetime,
-                 endpoint: str,
-                 http_method: str,
-                 ok_codes: list[int],
-                 events_keys: list[str],
-                 timestamp_field_config: TimestampFieldConfig) -> tuple[dict[Any, Any], list[dict[Any, Any]]]:
+def fetch_events(
+    client: Client,
+    params: dict[str, Any],
+    last_run: dict[Any, Any],
+    first_fetch_datetime: datetime,
+    endpoint: str,
+    http_method: str,
+    ok_codes: list[int],
+    events_keys: list[str],
+    timestamp_field_config: TimestampFieldConfig,
+) -> tuple[dict[Any, Any], list[dict[Any, Any]]]:
     last_fetched_datetime, pagination_logic, request_data = setup_search_events(
-        first_fetch_datetime, last_run, params, timestamp_field_config)
+        first_fetch_datetime, last_run, params, timestamp_field_config
+    )
 
     # region Gets events & Searches for pagination
     all_events_list: list[dict[str, Any]] = []
     pagination_needed: bool = True
     id_type_lower: str | None = None
-    id_keys: list[str] = argToList(params.get('id_keys'), '.')
+    id_keys: list[str] = argToList(params.get("id_keys"), ".")
     if id_keys:
-        id_type: str = params.get('id_type')  # type: ignore[arg-type,assignment]
+        id_type: str = params.get("id_type")  # type: ignore[arg-type,assignment]
         if id_type:
             if id_type.lower() not in ALL_ID_TYPES:
                 return_error(f"ID type {id_type} but must be one of {', '.join(ALL_ID_TYPES)}")
@@ -204,11 +202,9 @@ def fetch_events(client: Client,
             return {}, []
 
     while pagination_needed:
-
-        raw_events = client.search_events(endpoint=endpoint,
-                                          http_method=http_method,
-                                          request_data=request_data,
-                                          ok_codes=ok_codes)
+        raw_events = client.search_events(
+            endpoint=endpoint, http_method=http_method, request_data=request_data, ok_codes=ok_codes
+        )
         events_list = organize_events_to_xsiam_format(raw_events, events_keys)
         all_events_list.extend(events_list)
         demisto.debug(f"{len(all_events_list)} events fetched")
@@ -229,7 +225,7 @@ def fetch_events(client: Client,
         except DemistoException as e:
             demisto.error(f"Error parsing timestamp for event: {event} exception: {e}")
             continue
-        event['_time'] = incident_created_dt.isoformat()
+        event["_time"] = incident_created_dt.isoformat()
 
         # to prevent duplicates, we are only adding events with creation_time > last fetched incident
         if incident_created_dt > last_fetched_datetime:
@@ -237,23 +233,20 @@ def fetch_events(client: Client,
             returned_event_list.append(event)
             latest_created_datetime = max(latest_created_datetime, incident_created_dt)
         else:
-            demisto.debug(f'This event is to old to pull, creation time: {incident_created_dt}')
+            demisto.debug(f"This event is to old to pull, creation time: {incident_created_dt}")
 
         # Handle the last event id.
         if id_keys:
             current_id: Any = dict_safe_get(event, id_keys)
-            demisto.debug(f'Current event id: {current_id}')
-            if (
-                last_fetched_id is not None
-                and id_type_lower == IdTypes.INTEGER.value
-            ):
+            demisto.debug(f"Current event id: {current_id}")
+            if last_fetched_id is not None and id_type_lower == IdTypes.INTEGER.value:
                 last_fetched_id = str(max(int(last_fetched_id), int(current_id)))  # noqa
             else:
                 # We assume the last event contains the last id.
                 last_fetched_id = current_id
 
     # region Saves important parameters here to Integration context / last run
-    demisto.debug(f'next run:{latest_created_datetime}')
+    demisto.debug(f"next run:{latest_created_datetime}")
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {
         PlaceHolders.LAST_FETCHED_DATETIME.value: latest_created_datetime.isoformat(),
@@ -266,14 +259,12 @@ def fetch_events(client: Client,
     return next_run, returned_event_list
 
 
-def setup_search_events(first_fetch_datetime: datetime,
-                        last_run: dict,
-                        params: dict,
-                        timestamp_field_config: TimestampFieldConfig) -> tuple[datetime, PaginationLogic, RequestData]:
+def setup_search_events(
+    first_fetch_datetime: datetime, last_run: dict, params: dict, timestamp_field_config: TimestampFieldConfig
+) -> tuple[datetime, PaginationLogic, RequestData]:
     # region Gets first fetch time.
     if PlaceHolders.FIRST_FETCH_DATETIME.value not in last_run:
-        first_fetch_datetime_str = datetime_to_timestamp_format(first_fetch_datetime,
-                                                                timestamp_field_config.timestamp_format)
+        first_fetch_datetime_str = datetime_to_timestamp_format(first_fetch_datetime, timestamp_field_config.timestamp_format)
         demisto.debug(f"Setting first fetch datetime: {first_fetch_datetime_str}")
         last_run[PlaceHolders.FIRST_FETCH_DATETIME.value] = first_fetch_datetime_str
     # endregion
@@ -293,25 +284,25 @@ def setup_search_events(first_fetch_datetime: datetime,
     # endregion
 
     # region load request arguments
-    request_data: dict[Any, Any] | None = parse_json_param(params.get('request_data'), 'request_data')
-    request_json: dict[Any, Any] | None = parse_json_param(params.get('request_json'), 'request_json')
-    query_params: dict[Any, Any] | None = parse_json_param(params.get('query_params'), 'query_params')
+    request_data: dict[Any, Any] | None = parse_json_param(params.get("request_data"), "request_data")
+    request_json: dict[Any, Any] | None = parse_json_param(params.get("request_json"), "request_json")
+    query_params: dict[Any, Any] | None = parse_json_param(params.get("query_params"), "query_params")
     pagination_logic = extract_pagination_params(params)
     # If we've an initial query argument, we try with it.
     if first_fetch_for_this_integration:
         demisto.debug("First fetch for integration, Checking if one of the 'initial_*' params is set to get the initial request")
-        if initial_query_params := params.get('initial_query_params'):
+        if initial_query_params := params.get("initial_query_params"):
             demisto.debug(f"Initial query params: {initial_query_params}")
-            query_params = parse_json_param(initial_query_params, 'initial_query_params')
-        if initial_pagination_params := params.get('initial_pagination_params'):
+            query_params = parse_json_param(initial_query_params, "initial_query_params")
+        if initial_pagination_params := params.get("initial_pagination_params"):
             demisto.debug(f"Initial pagination params: {initial_pagination_params}")
             pagination_logic = extract_pagination_params(initial_pagination_params)
-        if initial_request_data := params.get('initial_request_data'):
+        if initial_request_data := params.get("initial_request_data"):
             demisto.debug(f"Initial request data: {initial_request_data}")
-            request_data = parse_json_param(initial_request_data, 'initial_request_data')
-        if initial_request_json := params.get('initial_request_json'):
+            request_data = parse_json_param(initial_request_data, "initial_request_data")
+        if initial_request_json := params.get("initial_request_json"):
             demisto.debug(f"Initial request json: {initial_request_json}")
-            request_json = parse_json_param(initial_request_json, 'initial_request_json')
+            request_json = parse_json_param(initial_request_json, "initial_request_json")
 
     # endregion
 
@@ -320,17 +311,20 @@ def setup_search_events(first_fetch_datetime: datetime,
     # We're replacing the placeholders in the request parameters with the actual values from the last run.
     # This is how we make the requests from the API to be more dynamic and reusable.
     substitutions: list[tuple[str, str]] = [
-        (place_holder.value, last_run.get(place_holder.value)) for place_holder in PlaceHolders  # type: ignore[misc]
+        (place_holder.value, last_run.get(place_holder.value))  # type: ignore[misc]
+        for place_holder in PlaceHolders  # type: ignore[misc]
         if last_run.get(place_holder.value) is not None
     ]
 
     # region request size limit
-    if 'limit' in params:
-        limit = int(params['limit'])
+    if "limit" in params:
+        limit = int(params["limit"])
         demisto.debug(f"Setting request size limit to: {limit}")
         if limit > MAX_INCIDENTS_TO_FETCH:
-            return_error(f"The maximum allowed limit is {MAX_INCIDENTS_TO_FETCH} events per fetch. "
-                         f"Please update the limit parameter to a value of {MAX_INCIDENTS_TO_FETCH} or less.")
+            return_error(
+                f"The maximum allowed limit is {MAX_INCIDENTS_TO_FETCH} events per fetch. "
+                f"Please update the limit parameter to a value of {MAX_INCIDENTS_TO_FETCH} or less."
+            )
         substitutions.append((PlaceHolders.FETCH_SIZE_LIMIT.value, str(limit)))
     # endregion
     substitutions_query_params: dict[Any, Any] | None = recursive_replace(query_params, substitutions)
@@ -340,37 +334,33 @@ def setup_search_events(first_fetch_datetime: datetime,
     substitutions_request_data: dict[Any, Any] | None = recursive_replace(request_data, substitutions)
     demisto.debug(f"Request data subs: {substitutions_request_data}")
     # endregion
-    return last_fetched_datetime, pagination_logic, RequestData(substitutions_request_data, substitutions_request_json,
-                                                                substitutions_query_params)
+    return (
+        last_fetched_datetime,
+        pagination_logic,
+        RequestData(substitutions_request_data, substitutions_request_json, substitutions_query_params),
+    )
 
 
 def iso8601_to_datetime_str(iso8601_time: str) -> str:
     # In case the time format is ISO 8601 - ISO supports 7 digits while datetime in python supports only 6,
     # so we need to reduce 1 number from the nanoseconds
-    if '.' in iso8601_time:
+    if "." in iso8601_time:
         timestamp_without_nanoseconds, nanoseconds = re.split("[.]", iso8601_time, maxsplit=1)
-        fractional = nanoseconds.rstrip('Z')[:6]  # Keep only the first 6 digits.
+        fractional = nanoseconds.rstrip("Z")[:6]  # Keep only the first 6 digits.
         new_iso8601_time = f"{timestamp_without_nanoseconds}.{fractional}Z"
         demisto.debug(f"Converted ISO 8601:{iso8601_time} to:{new_iso8601_time}")
         return new_iso8601_time
     return iso8601_time
 
 
-def test_module(client: Client,
-                endpoint: str,
-                http_method: str,
-                ok_codes: list[int],
-                request_data: RequestData):
+def test_module(client: Client, endpoint: str, http_method: str, ok_codes: list[int], request_data: RequestData):
     try:
-        events = client.search_events(endpoint=endpoint,
-                                      http_method=http_method,
-                                      request_data=request_data,
-                                      ok_codes=ok_codes)
+        events = client.search_events(endpoint=endpoint, http_method=http_method, request_data=request_data, ok_codes=ok_codes)
         demisto.debug(f"{events!s}")
     except DemistoException as e:
         error = str(e)
-        if 'Forbidden' in error or 'Unauthorized' in error:
-            return_error(f'Authorization Error: make sure Username/Password/Token is correctly set.\nError:{error}')
+        if "Forbidden" in error or "Unauthorized" in error:
+            return_error(f"Authorization Error: make sure Username/Password/Token is correctly set.\nError:{error}")
         else:
             raise e
 
@@ -378,7 +368,7 @@ def test_module(client: Client,
 
 
 def parse_json_param(json_param_value: Any, json_param_name) -> dict | None:
-    if json_param_value and json_param_value != 'None':
+    if json_param_value and json_param_value != "None":
         try:
             demisto.debug(f"parsing argument: {json_param_name}")
             return safe_load_json(json_param_value)
@@ -390,17 +380,17 @@ def parse_json_param(json_param_value: Any, json_param_name) -> dict | None:
 
 
 def generate_headers(params: dict[str, Any]) -> dict[Any, Any]:
-
     headers = generate_authentication_headers(params)
-    if ((add_fields_to_header := str(params.get('add_fields_to_header')))
-            and (parsed := parse_json_param(add_fields_to_header, 'add_fields_to_header')) is not None):
+    if (add_fields_to_header := str(params.get("add_fields_to_header"))) and (
+        parsed := parse_json_param(add_fields_to_header, "add_fields_to_header")
+    ) is not None:
         headers.update(parsed)
     return headers
 
 
 def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
-    authentication = params.get('authentication')
-    if authentication == 'Basic':
+    authentication = params.get("authentication")
+    if authentication == "Basic":
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
         if password:
@@ -411,98 +401,101 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             return_error("Password is required for Basic Authentication.")
         demisto.debug(f"Authenticating with Basic Authentication, username: {username}")
         # encode username and password in a basic authentication method
-        auth_credentials = f'{username}:{password}'
-        encoded_credentials = b64encode(auth_credentials.encode()).decode('utf-8')
+        auth_credentials = f"{username}:{password}"
+        encoded_credentials = b64encode(auth_credentials.encode()).decode("utf-8")
         add_sensitive_log_strs(encoded_credentials)
         return {
-            'Authorization': f'Basic {encoded_credentials}',
+            "Authorization": f"Basic {encoded_credentials}",
         }
-    if authentication == 'Bearer':
+    if authentication == "Bearer":
         demisto.debug("Authenticating with Bearer Authentication")
-        if token := params.get('token', {}).get("password"):
+        if token := params.get("token", {}).get("password"):
             demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
             return_error("API Token is required.")
         return {
-            'Authorization': f'Bearer {token}',
+            "Authorization": f"Bearer {token}",
         }
-    if authentication == 'Token':
+    if authentication == "Token":
         demisto.debug("Authenticating with Token Authentication")
-        if token := params.get('token', {}).get("password"):
+        if token := params.get("token", {}).get("password"):
             demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
             return_error("API Token is required.")
         return {
-            'Authorization': f'Token {token}',
+            "Authorization": f"Token {token}",
         }
-    if authentication == 'Api-Key':
+    if authentication == "Api-Key":
         demisto.debug("Authenticating with Api-Key Authentication")
-        if token := params.get('token', {}).get("password"):
+        if token := params.get("token", {}).get("password"):
             demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
             return_error("API Token is required.")
         return {
-            'api-key': f'{token}',
+            "api-key": f"{token}",
         }
-    if authentication == 'RawToken':
+    if authentication == "RawToken":
         demisto.debug("Authenticating with raw token")
-        if token := params.get('token', {}).get("password"):
+        if token := params.get("token", {}).get("password"):
             demisto.debug("Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
             return_error("API Token is required.")
         return {
-            'Authorization': f'{token}',
+            "Authorization": f"{token}",
         }
-    if authentication == 'No Authorization':
+    if authentication == "No Authorization":
         demisto.debug("Connecting without Authorization")
         return {}
 
-    err_msg = ("Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
-               f"No Authorization, got: {authentication}")
+    err_msg = (
+        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
+        f"No Authorization, got: {authentication}"
+    )
     demisto.error(err_msg)
     return_error(err_msg)
     return {}
 
 
-def get_events_command(client: Client,
-                       endpoint: str,
-                       http_method: str,
-                       ok_codes: list[int],
-                       request_data: RequestData,
-                       events_keys: list[str],
-                       limit: int) -> tuple[Dict[str, Any], CommandResults]:
-    raw_events = client.search_events(endpoint=endpoint,
-                                      http_method=http_method,
-                                      request_data=request_data,
-                                      ok_codes=ok_codes)
+def get_events_command(
+    client: Client,
+    endpoint: str,
+    http_method: str,
+    ok_codes: list[int],
+    request_data: RequestData,
+    events_keys: list[str],
+    limit: int,
+) -> tuple[Dict[str, Any], CommandResults]:
+    raw_events = client.search_events(endpoint=endpoint, http_method=http_method, request_data=request_data, ok_codes=ok_codes)
     events = organize_events_to_xsiam_format(raw_events, events_keys)
     demisto.debug(f"Got {len(events)} events")
     return raw_events, CommandResults(
-        readable_output=tableToMarkdown('Generic Events', events[:limit], sort_headers=False),
+        readable_output=tableToMarkdown("Generic Events", events[:limit], sort_headers=False),
     )
 
 
 def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
-    pagination_needed: bool = argToBoolean(params.get('pagination_needed', False))
-    pagination_field_name: list[str] | None = argToList(params.get('pagination_field_name'), '.')
-    pagination_flag: list[str] | None = argToList(params.get('pagination_flag'), '.')
+    pagination_needed: bool = argToBoolean(params.get("pagination_needed", False))
+    pagination_field_name: list[str] | None = argToList(params.get("pagination_field_name"), ".")
+    pagination_flag: list[str] | None = argToList(params.get("pagination_flag"), ".")
     pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
     if pagination_logic.pagination_needed:
-        demisto.debug("Pagination logic - Pagination Needed, "
-                      f"pagination_field_name: {pagination_logic.pagination_field_name}, "
-                      f"pagination_flag: {pagination_logic.pagination_flag}")
+        demisto.debug(
+            "Pagination logic - Pagination Needed, "
+            f"pagination_field_name: {pagination_logic.pagination_field_name}, "
+            f"pagination_flag: {pagination_logic.pagination_flag}"
+        )
         if not pagination_logic.pagination_field_name:
-            return_error('Pagination field name is missing')
+            return_error("Pagination field name is missing")
         if not pagination_logic.pagination_flag:
-            return_error('Pagination flag is missing')
+            return_error("Pagination flag is missing")
     else:
         demisto.debug("Pagination logic - Pagination Not Needed")
     return pagination_logic
@@ -516,66 +509,60 @@ def main() -> None:  # pragma: no cover
         params = demisto.params()
 
         # region Gets the service API url endpoint and method.
-        base_url: str = params.get('base_url')
-        endpoint: str = params.get('endpoint')
-        http_method: str | None = params.get('http_method')
-        ok_codes: list[int] = argToList(params.get('ok_codes', '200,201,202'), transform=int)
+        base_url: str = params.get("base_url")
+        endpoint: str = params.get("endpoint")
+        http_method: str | None = params.get("http_method")
+        ok_codes: list[int] = argToList(params.get("ok_codes", "200,201,202"), transform=int)
         demisto.debug(f"base url: {base_url}, endpoint: {endpoint}, http method: {http_method}, ok codes: {ok_codes}")
         if not base_url:
-            return_error('Base URL is missing')
+            return_error("Base URL is missing")
         if not endpoint:
-            return_error('Endpoint is missing')
+            return_error("Endpoint is missing")
         if http_method is None:
-            return_error('HTTP method is missing')
-        if not http_method or http_method.upper() not in ['GET', 'POST']:
-            return_error(f'HTTP method is not valid, please choose between GET and POST, got: {http_method}')
+            return_error("HTTP method is missing")
+        if not http_method or http_method.upper() not in ["GET", "POST"]:
+            return_error(f"HTTP method is not valid, please choose between GET and POST, got: {http_method}")
         # endregion
 
         # region Gets the timestamp field configuration
-        if not (timestamp_field_name_param := params.get('timestamp_field_name')):
-            return_error('Timestamp field is missing')
-        timestamp_field_name: list[str] = argToList(timestamp_field_name_param, '.')
-        timestamp_field_config = TimestampFieldConfig(timestamp_field_name, params.get('timestamp_format', DATE_FORMAT))
-        demisto.debug(f"Timestamp field configuration - field_name: {timestamp_field_config.timestamp_field_name}, "
-                      f"format: {timestamp_field_config.timestamp_format}")
+        if not (timestamp_field_name_param := params.get("timestamp_field_name")):
+            return_error("Timestamp field is missing")
+        timestamp_field_name: list[str] = argToList(timestamp_field_name_param, ".")
+        timestamp_field_config = TimestampFieldConfig(timestamp_field_name, params.get("timestamp_format", DATE_FORMAT))
+        demisto.debug(
+            f"Timestamp field configuration - field_name: {timestamp_field_config.timestamp_field_name}, "
+            f"format: {timestamp_field_config.timestamp_format}"
+        )
         # endregion
 
         # region Gets the events keys
-        events_keys: list[str] = argToList(params.get('events_keys'), '.')
+        events_keys: list[str] = argToList(params.get("events_keys"), ".")
         demisto.debug(f"Events keys: {events_keys}")
         # endregion
 
         # How much time before the first fetch to retrieve incidents.
         first_fetch_datetime: datetime = arg_to_datetime(  # type: ignore[assignment]
-            arg=params.get('first_fetch', '3 days'),
-            arg_name='First fetch time',
-            required=True
+            arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True
         )
 
         # if your Client class inherits from BaseClient, it handles system proxy
         # out of the box, pass ``proxy`` to the Client constructor.
-        proxy: bool = argToBoolean(params.get('proxy', False))
-        verify: bool = not argToBoolean(params.get('insecure', False))
+        proxy: bool = argToBoolean(params.get("proxy", False))
+        verify: bool = not argToBoolean(params.get("insecure", False))
 
         # Create a client object.
-        client = Client(
-            base_url=base_url,
-            verify=verify,
-            headers=generate_headers(params),
-            proxy=proxy
-        )
-        vendor: str = params.get('vendor').lower()
-        raw_product: str = params.get('product').lower()
+        client = Client(base_url=base_url, verify=verify, headers=generate_headers(params), proxy=proxy)
+        vendor: str = params.get("vendor").lower()
+        raw_product: str = params.get("product").lower()
         product: str = f"{raw_product}_generic"
         demisto.debug(f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}")
 
         command: str = demisto.command()
         demisto.debug(f"Command being called is {command}")
-        if command == 'test-module':
+        if command == "test-module":
             # Forcing the limit to 1 to ensure that the test module runs quickly.
-            params['limit'] = 1
-            _, _, request_data = setup_search_events(
-                first_fetch_datetime, {}, params, timestamp_field_config)
+            params["limit"] = 1
+            _, _, request_data = setup_search_events(first_fetch_datetime, {}, params, timestamp_field_config)
             test_module(
                 client=client,
                 endpoint=endpoint,
@@ -584,7 +571,7 @@ def main() -> None:  # pragma: no cover
                 ok_codes=ok_codes,
             )
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()  # getLastRun() gets the last run dict.
             demisto.debug(f"Last run: {last_run}")
             next_run, events = fetch_events(
@@ -613,11 +600,17 @@ def main() -> None:  # pragma: no cover
             limit: int = arg_to_number(args.get("limit", DEFAULT_LIMIT), "limit", True)  # type: ignore[assignment]
             demisto.debug(f"should_push_events: {should_push_events}, limit: {limit}")
             last_fetched_datetime, pagination_logic, request_data = setup_search_events(
-                first_fetch_datetime, demisto.getLastRun(), params, timestamp_field_config)
-            raw_events, results = get_events_command(client, endpoint,
-                                                     http_method,  # type: ignore[arg-type]
-                                                     ok_codes,
-                                                     request_data, events_keys, limit)
+                first_fetch_datetime, demisto.getLastRun(), params, timestamp_field_config
+            )
+            raw_events, results = get_events_command(
+                client,
+                endpoint,
+                http_method,  # type: ignore[arg-type]
+                ok_codes,
+                request_data,
+                events_keys,
+                limit,
+            )
             demisto.debug("Fetched events")
             return_results(results)
 
@@ -629,8 +622,8 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         # Log exceptions and return errors
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
