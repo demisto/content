@@ -85,7 +85,7 @@
             "is_array": false
         },
         "clientPort_d": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "clientPort_s": {
@@ -141,7 +141,7 @@
             "is_array": false
         },
         "httpStatusCode_d": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "requestProtocol_s": {
@@ -169,7 +169,7 @@
             "is_array": false
         },
         "timeTaken_d": {
-            "type": "string",
+            "type": "float",
             "is_array": false
         },
         "timeTaken_s": {
