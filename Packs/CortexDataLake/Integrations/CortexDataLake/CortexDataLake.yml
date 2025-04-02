@@ -2169,7 +2169,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.SequenceNo
       description: The log entry identifier, which is incremented sequentially.
     - contextPath: CDL.Logging.GlobalProtect.SourceRegion
-      description: Region of the Gateway (or User) that connected.
+      description: Region of the gateway (or user) that connected.
     - contextPath: CDL.Logging.GlobalProtect.SourceUser
       description: The username that connected.
     - contextPath: CDL.Logging.GlobalProtect.SourceUserDomain
