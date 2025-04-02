@@ -681,13 +681,13 @@ class URLFormatter:
     # URL Security Wrappers
     ATP_regex = re.compile('.*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
-                                  'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
-    trendmicro_regex = re.compile('.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url[?]u=)?(.+?)(?:&amp|&d|$)|'
+                                  'https?(?::|%3A)//urldefense[.]\\w{2,3}/v3/__(.+?)(?:__;|$))')
+    trendmicro_regex = re.compile('.*?trendmicro[.]com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
                                   re.I)
 
     # Scheme slash fixer
-    scheme_fix = re.compile("https?(:[/|\\\]*)")
+    scheme_fix = re.compile("https?(:[/|\\\\]*)")
 
     def __init__(self, original_url):
         """
