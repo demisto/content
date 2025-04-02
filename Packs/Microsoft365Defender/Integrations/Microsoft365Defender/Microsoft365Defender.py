@@ -598,6 +598,14 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
     )
 
 
+def get_ids_from_incidents(incidents: list) -> list:
+    ids_list = []
+    for incident in incidents:
+        raw_json = json.loads(incident.get("rawJSON", {}))
+        incident_id = raw_json.get("incidentId", '')
+        ids_list.append(incident_id)
+    return ids_list
+
 @logger
 def fetch_incidents(
     client: Client, mirroring_fields: dict, first_fetch_time: str, fetch_limit: int, timeout: int = None
@@ -643,11 +651,7 @@ def fetch_incidents(
     # creates incidents queue
     incidents_queue = last_run_dict.get("incidents_queue", [])
 
-    ids_list = []
-    for incident in incidents_queue:
-        raw_json = json.loads(incident.get("rawJSON", {}))
-        incident_id = raw_json.get("incidentId", '')
-        ids_list.append(incident_id)
+    ids_list = get_ids_from_incidents(incidents_queue)
     demisto.debug(f'Got {len(incidents_queue)} incidents from last_run with ids: {ids_list}.')
 
     if len(incidents_queue) < fetch_limit:
@@ -686,6 +690,9 @@ def fetch_incidents(
                 for incident in raw_incidents
             ]
 
+            ids_list = get_ids_from_incidents(incidents)
+            demisto.debug(f'These are the ids of the new fetched incidents: {ids_list}')
+
             # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
             if len(raw_incidents) < int(MAX_ENTRIES):
                 break
@@ -697,12 +704,8 @@ def fetch_incidents(
 
     oldest_incidents = incidents_queue[:fetch_limit]
 
-    ids_list = []
-    for incident in oldest_incidents:
-        raw_json = json.loads(incident.get("rawJSON", {}))
-        incident_id = raw_json.get("incidentId", '')
-        ids_list.append(incident_id)
-    demisto.debug(f'Fetched {len(oldest_incidents)} incidents with ids: {ids_list}.')
+    ids_list = get_ids_from_incidents(oldest_incidents)
+    demisto.debug(f'Outputting {len(oldest_incidents)} incidents with ids: {ids_list}.')
 
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
     demisto.debug(f'Fetch incidents ended, setting {new_last_run=}.')
