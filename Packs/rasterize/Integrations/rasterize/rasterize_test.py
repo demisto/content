@@ -631,7 +631,10 @@ def test_is_this_network_urls(mocker: MockerFixture):
 
     res = screenshot_image(None, None, "url", None, None)
 
-    assert res == (None, 'URLs that belong to the "This" Network (0.0.0.0/8) or Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url')
+    assert res == (
+        None,
+        'URLs that belong to the "This" Network (0.0.0.0/8) or Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url'
+    )
 
 
 def test_increase_counter_chrome_instances_file(mocker):

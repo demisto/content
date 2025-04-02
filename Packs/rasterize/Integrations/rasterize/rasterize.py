@@ -966,7 +966,10 @@ def perform_rasterize(
         demisto.error(f"Not rasterizing the following invalid paths: {this_network_paths + mailto_paths}")
         return_results(
             CommandResults(
-                readable_output=f"The following paths were skipped as they are not valid for rasterization: {this_network_paths + mailto_paths}"
+                readable_output=(
+                    "The following paths were skipped as they are not valid for rasterization:"
+                    f" {this_network_paths + mailto_paths}"
+                )
             )
         )
     if not paths:
