@@ -2,6 +2,9 @@ category: Messaging and Conferencing
 commonfields:
   id: Anthropic Claude
   version: -1
+sectionorder:
+ - Connect
+ - Collect
 configuration:
 - defaultvalue: https://api.anthropic.com/
   display: Server URL
@@ -59,10 +62,12 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging Anthropic Claude's natural language conversational capabilities.
 display: Anthropic Claude
 name: Anthropic Claude
