@@ -254,6 +254,31 @@ def get_last_run_results_command():
             please wait one minute and try running the command again.")
 
 
+KEEPALIVE_INTERVAL = 30  # how often to send pings, in seconds
+
+async def keepalive_loop(connection: EventConnection):
+    """
+    Periodically send ping frames to ensure the connection stays alive
+    or detect that it is dead. If the ping fails, reconnect.
+    """
+    event_type = connection.event_type
+    while True:
+        try:
+            await asyncio.sleep(KEEPALIVE_INTERVAL)
+            # Ping the server:
+            if connection.connection is not None:
+                pong_waiter = await connection.connection.ping()
+                demisto.debug(f"[{event_type}] Sent ping, awaiting pong...")
+                await pong_waiter  # Wait for the pong frame
+                demisto.debug(f"[{event_type}] Received pong.")
+        except (ConnectionClosedError, ConnectionClosedOK) as e:
+            demisto.error(f"[{event_type}] Connection lost during keepalive: {str(e)}. Reconnecting...")
+            await connection.reconnect(datetime.utcnow().isoformat())
+        except Exception as e:
+            demisto.error(f"[{event_type}] Unexpected error in keepalive: {str(e)}. Reconnecting...")
+            await connection.reconnect(datetime.utcnow().isoformat())
+
+
 async def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
     """
     Long running loop iteration function. Fetches events from each connection and sends them to XSIAM.
@@ -313,6 +338,9 @@ async def long_running_execution_command(host: str, cluster_id: str, api_key: st
     async with websocket_connections(host, cluster_id, api_key, since_time=since_time, fetch_interval=fetch_interval) as connections:
         demisto.info("Connected to websocket")
         fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
+
+        for conn in connections:
+            keepalive_task = asyncio.create_task(keepalive_loop(conn))
 
         while True:
             try:
