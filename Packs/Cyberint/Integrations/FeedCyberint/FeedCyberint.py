@@ -36,7 +36,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.6"
+            "X-Integration-Version": "1.1.6",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
@@ -141,7 +141,7 @@ class Client(BaseClient):
     @logger
     def retrieve_indicators_from_api(self, date_time, limit, offset):
         url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-        demisto.debug(f'URL to fetch indicators: {url_suffix}')
+        demisto.debug(f"URL to fetch indicators: {url_suffix}")
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -164,7 +164,7 @@ class Client(BaseClient):
             Enrichment information.
         """
         url_suffix = f"/ioc/api/v1/file/sha256?value={value}"
-        demisto.debug(f'URL to retrieve File SHA256 IoC: {url_suffix}')
+        demisto.debug(f"URL to retrieve File SHA256 IoC: {url_suffix}")
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -186,7 +186,7 @@ class Client(BaseClient):
             Enrichment information.
         """
         url_suffix = f"/ioc/api/v1/domain?value={value}"
-        demisto.debug(f'URL to retrieve Domain IoC: {url_suffix}')
+        demisto.debug(f"URL to retrieve Domain IoC: {url_suffix}")
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -208,7 +208,7 @@ class Client(BaseClient):
             Enrichment information.
         """
         url_suffix = f"/ioc/api/v1/ipv4?value={value}"
-        demisto.debug(f'URL to retrieve IPv4 IoC: {url_suffix}')
+        demisto.debug(f"URL to retrieve IPv4 IoC: {url_suffix}")
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -230,7 +230,7 @@ class Client(BaseClient):
             Enrichment information.
         """
         url_suffix = f"/ioc/api/v1/url?value={value}"
-        demisto.debug(f'URL to retrieve URL IoC: {url_suffix}')
+        demisto.debug(f"URL to retrieve URL IoC: {url_suffix}")
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -393,19 +393,21 @@ def get_url_command(
     indicator = client.retrieve_url_from_api(value)
 
     indicator_data = indicator.get("data", {})
-    indicator_formatted = [{
-        "type": indicator_data.get("entity", {}).get("type"),
-        "value": indicator_data.get("entity", {}).get("value"),
-        "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
-        "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
-        "ips": (indicator_data.get("enrichment") or {}).get("ips"),
-        "hostname": (indicator_data.get("enrichment") or {}).get("hostname"),
-        "domain": (indicator_data.get("enrichment") or {}).get("domain"),
-        "benign": indicator_data.get("benign"),
-    }]
+    indicator_formatted = [
+        {
+            "type": indicator_data.get("entity", {}).get("type"),
+            "value": indicator_data.get("entity", {}).get("value"),
+            "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
+            "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
+            "ips": (indicator_data.get("enrichment") or {}).get("ips"),
+            "hostname": (indicator_data.get("enrichment") or {}).get("hostname"),
+            "domain": (indicator_data.get("enrichment") or {}).get("domain"),
+            "benign": indicator_data.get("benign"),
+        }
+    ]
 
     human_readable = tableToMarkdown(
-        'URL Entity',
+        "URL Entity",
         indicator_formatted,
         headers=["type", "value", "malicious_score", "occurrences_count", "ips", "hostname", "domain", "benign"],
         headerTransform=indicator_header_transformer,
@@ -416,16 +418,18 @@ def get_url_command(
 
     for activity in detected_activities:
         activity = activity or {}
-        activities_formatted = [{
-            "type": activity.get("type", ""),
-            "observation_date": activity.get("observation_date", ""),
-            "description": activity.get("description", ""),
-            "confidence": activity.get("confidence", ""),
-            "occurrences_count": activity.get("occurrences_count", ""),
-        }]
+        activities_formatted = [
+            {
+                "type": activity.get("type", ""),
+                "observation_date": activity.get("observation_date", ""),
+                "description": activity.get("description", ""),
+                "confidence": activity.get("confidence", ""),
+                "occurrences_count": activity.get("occurrences_count", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'URL Detected activities',
+            "URL Detected activities",
             activities_formatted,
             date_fields=["observation_date"],
             headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
@@ -437,14 +441,16 @@ def get_url_command(
 
     for entity in related_entities:
         entity = entity or {}
-        entities_formatted = [{
-            "entity_id": entity.get("entity_id", ""),
-            "entity_type": entity.get("entity_type", ""),
-            "entity_name": entity.get("entity_name", ""),
-        }]
+        entities_formatted = [
+            {
+                "entity_id": entity.get("entity_id", ""),
+                "entity_type": entity.get("entity_type", ""),
+                "entity_name": entity.get("entity_name", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'URL Related Entities',
+            "URL Related Entities",
             entities_formatted,
             headers=["entity_id", "entity_type", "entity_name"],
             headerTransform=indicator_header_transformer,
@@ -480,31 +486,42 @@ def get_ipv4_command(
     indicator = client.retrieve_ipv4_from_api(value)
 
     indicator_data = indicator.get("data", {})
-    indicator_formatted = [{
-        "type": indicator_data.get("entity", {}).get("type"),
-        "value": indicator_data.get("entity", {}).get("value"),
-        "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
-        "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
-        "country": (indicator_data.get("enrichment", {}).get("geo") or {}).get("country"),
-        "city": (indicator_data.get("enrichment", {}).get("geo") or {}).get("city"),
-        "asn_number": (indicator_data.get("enrichment", {}).get("asn") or {}).get("number"),
-        "asn_organization": (indicator_data.get("enrichment", {}).get("asn") or {}).get("organization"),
-        "suspicious_urls": indicator_data.get("enrichment", {}).get("suspicious_urls", []),
-        "suspicious_domains": indicator_data.get("enrichment", {}).get("suspicious_domains", []),
-        "benign": indicator_data.get("benign"),
-    }]
+    indicator_formatted = [
+        {
+            "type": indicator_data.get("entity", {}).get("type"),
+            "value": indicator_data.get("entity", {}).get("value"),
+            "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
+            "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
+            "country": (indicator_data.get("enrichment", {}).get("geo") or {}).get("country"),
+            "city": (indicator_data.get("enrichment", {}).get("geo") or {}).get("city"),
+            "asn_number": (indicator_data.get("enrichment", {}).get("asn") or {}).get("number"),
+            "asn_organization": (indicator_data.get("enrichment", {}).get("asn") or {}).get("organization"),
+            "suspicious_urls": indicator_data.get("enrichment", {}).get("suspicious_urls", []),
+            "suspicious_domains": indicator_data.get("enrichment", {}).get("suspicious_domains", []),
+            "benign": indicator_data.get("benign"),
+        }
+    ]
 
     human_readable = tableToMarkdown(
-        'IPv4 Entity',
+        "IPv4 Entity",
         indicator_formatted,
-        headers=["type", "value", "malicious_score", "occurrences_count", "country", "city", "asn_number", "asn_organization",
-                 "benign"],
+        headers=[
+            "type",
+            "value",
+            "malicious_score",
+            "occurrences_count",
+            "country",
+            "city",
+            "asn_number",
+            "asn_organization",
+            "benign",
+        ],
         headerTransform=indicator_header_transformer,
         removeNull=False,
     )
 
     human_readable += tableToMarkdown(
-        'IPv4 Enrichment',
+        "IPv4 Enrichment",
         indicator_formatted,
         headers=["suspicious_urls", "suspicious_domains"],
         headerTransform=indicator_header_transformer,
@@ -515,16 +532,18 @@ def get_ipv4_command(
 
     for activity in detected_activities:
         activity = activity or {}
-        activities_formatted = [{
-            "type": activity.get("type", ""),
-            "observation_date": activity.get("observation_date", ""),
-            "description": activity.get("description", ""),
-            "confidence": activity.get("confidence", ""),
-            "occurrences_count": activity.get("occurrences_count", ""),
-        }]
+        activities_formatted = [
+            {
+                "type": activity.get("type", ""),
+                "observation_date": activity.get("observation_date", ""),
+                "description": activity.get("description", ""),
+                "confidence": activity.get("confidence", ""),
+                "occurrences_count": activity.get("occurrences_count", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'IPv4 Detected activities',
+            "IPv4 Detected activities",
             activities_formatted,
             date_fields=["observation_date"],
             headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
@@ -536,14 +555,16 @@ def get_ipv4_command(
 
     for entity in related_entities:
         entity = entity or {}
-        entities_formatted = [{
-            "entity_id": entity.get("entity_id", ""),
-            "entity_type": entity.get("entity_type", ""),
-            "entity_name": entity.get("entity_name", ""),
-        }]
+        entities_formatted = [
+            {
+                "entity_id": entity.get("entity_id", ""),
+                "entity_type": entity.get("entity_type", ""),
+                "entity_name": entity.get("entity_name", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'Domain Related Entities',
+            "Domain Related Entities",
             entities_formatted,
             headers=["entity_id", "entity_type", "entity_name"],
             headerTransform=indicator_header_transformer,
@@ -579,33 +600,38 @@ def get_domain_command(
     indicator = client.retrieve_domain_from_api(value)
 
     indicator_data = indicator.get("data", {})
-    indicator_formatted = [{
-        "type": (indicator_data.get("entity") or {}).get("type"),
-        "value": (indicator_data.get("entity") or {}).get("value"),
-        "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
-        "ips": (indicator_data.get("enrichment") or {}).get("ips"),
-        "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
-        "registrant_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_name"),
-        "registrant_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_email"),
-        "registrant_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_organization"),
-        "registrant_country": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_country"),
-        "registrant_telephone": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_telephone"),
-        "technical_contact_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("technical_contact_email"),
-        "technical_contact_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("technical_contact_name"),
-        "technical_contact_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get(
-            "technical_contact_organization"),
-        "registrar_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrar_name"),
-        "admin_contact_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_name"),
-        "admin_contact_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_organization"),
-        "admin_contact_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_email"),
-        "created_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("created_date"),
-        "updated_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("updated_date"),
-        "expiration_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("expiration_date"),
-        "benign": indicator_data.get("benign"),
-    }]
+    indicator_formatted = [
+        {
+            "type": (indicator_data.get("entity") or {}).get("type"),
+            "value": (indicator_data.get("entity") or {}).get("value"),
+            "malicious_score": (indicator_data.get("risk") or {}).get("malicious_score"),
+            "ips": (indicator_data.get("enrichment") or {}).get("ips"),
+            "occurrences_count": (indicator_data.get("risk") or {}).get("occurrences_count"),
+            "registrant_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_name"),
+            "registrant_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_email"),
+            "registrant_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_organization"),
+            "registrant_country": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_country"),
+            "registrant_telephone": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrant_telephone"),
+            "technical_contact_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("technical_contact_email"),
+            "technical_contact_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("technical_contact_name"),
+            "technical_contact_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get(
+                "technical_contact_organization"
+            ),
+            "registrar_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("registrar_name"),
+            "admin_contact_name": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_name"),
+            "admin_contact_organization": (indicator_data.get("enrichment", {}).get("whois") or {}).get(
+                "admin_contact_organization"
+            ),
+            "admin_contact_email": (indicator_data.get("enrichment", {}).get("whois") or {}).get("admin_contact_email"),
+            "created_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("created_date"),
+            "updated_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("updated_date"),
+            "expiration_date": (indicator_data.get("enrichment", {}).get("whois") or {}).get("expiration_date"),
+            "benign": indicator_data.get("benign"),
+        }
+    ]
 
     human_readable = tableToMarkdown(
-        'Domain Entity',
+        "Domain Entity",
         indicator_formatted,
         headers=["type", "value", "malicious_score", "occurrences_count", "benign"],
         headerTransform=indicator_header_transformer,
@@ -613,13 +639,27 @@ def get_domain_command(
     )
 
     human_readable += tableToMarkdown(
-        'Domain Enrichment',
+        "Domain Enrichment",
         indicator_formatted,
         date_fields=["created_date", "updated_date", "expiration_date"],
-        headers=["ips", "registrant_name", "registrant_email", "registrant_organization",
-                 "registrant_country", "registrant_telephone", "technical_contact_email", "technical_contact_name",
-                 "technical_contact_organization", "registrar_name", "admin_contact_name", "admin_contact_organization",
-                 "admin_contact_email", "created_date", "updated_date", "expiration_date"],
+        headers=[
+            "ips",
+            "registrant_name",
+            "registrant_email",
+            "registrant_organization",
+            "registrant_country",
+            "registrant_telephone",
+            "technical_contact_email",
+            "technical_contact_name",
+            "technical_contact_organization",
+            "registrar_name",
+            "admin_contact_name",
+            "admin_contact_organization",
+            "admin_contact_email",
+            "created_date",
+            "updated_date",
+            "expiration_date",
+        ],
         headerTransform=indicator_header_transformer,
         removeNull=False,
     )
@@ -627,16 +667,18 @@ def get_domain_command(
     detected_activities: list = (indicator_data.get("risk", {}) or {}).get("detected_activities", [])
 
     for activity in detected_activities or []:
-        activities_formatted = [{
-            "type": (activity or {}).get("type", ""),
-            "observation_date": (activity or {}).get("observation_date", ""),
-            "description": (activity or {}).get("description", ""),
-            "confidence": (activity or {}).get("confidence", ""),
-            "occurrences_count": (activity or {}).get("occurrences_count", ""),
-        }]
+        activities_formatted = [
+            {
+                "type": (activity or {}).get("type", ""),
+                "observation_date": (activity or {}).get("observation_date", ""),
+                "description": (activity or {}).get("description", ""),
+                "confidence": (activity or {}).get("confidence", ""),
+                "occurrences_count": (activity or {}).get("occurrences_count", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'Domain Detected activities',
+            "Domain Detected activities",
             activities_formatted,
             date_fields=["observation_date"],
             headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
@@ -647,14 +689,16 @@ def get_domain_command(
     related_entities: list = (indicator_data.get("risk", {}) or {}).get("related_entities", [])
 
     for entity in related_entities or []:
-        entities_formatted = [{
-            "entity_id": (entity or {}).get("entity_id", ""),
-            "entity_type": (entity or {}).get("entity_type", ""),
-            "entity_name": (entity or {}).get("entity_name", ""),
-        }]
+        entities_formatted = [
+            {
+                "entity_id": (entity or {}).get("entity_id", ""),
+                "entity_type": (entity or {}).get("entity_type", ""),
+                "entity_name": (entity or {}).get("entity_name", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'Domain Related Entities',
+            "Domain Related Entities",
             entities_formatted,
             headers=["entity_id", "entity_type", "entity_name"],
             headerTransform=indicator_header_transformer,
@@ -690,18 +734,20 @@ def get_file_sha256_command(
     indicator = client.retrieve_file_sha256_from_api(value)
 
     indicator_data = indicator.get("data", {})
-    indicator_formatted = [{
-        "type": indicator_data.get("entity", {}).get("type", ""),
-        "value": indicator_data.get("entity", {}).get("value", ""),
-        "malicious_score": indicator_data.get("risk", {}).get("malicious_score", ""),
-        "filenames": indicator_data.get("enrichment", {}).get("filenames", []),
-        "first_seen": indicator_data.get("enrichment", {}).get("first_seen", ""),
-        "download_urls": indicator_data.get("enrichment", {}).get("download_urls", []),
-        "benign": indicator_data.get("benign", ""),
-    }]
+    indicator_formatted = [
+        {
+            "type": indicator_data.get("entity", {}).get("type", ""),
+            "value": indicator_data.get("entity", {}).get("value", ""),
+            "malicious_score": indicator_data.get("risk", {}).get("malicious_score", ""),
+            "filenames": indicator_data.get("enrichment", {}).get("filenames", []),
+            "first_seen": indicator_data.get("enrichment", {}).get("first_seen", ""),
+            "download_urls": indicator_data.get("enrichment", {}).get("download_urls", []),
+            "benign": indicator_data.get("benign", ""),
+        }
+    ]
 
     human_readable = tableToMarkdown(
-        'File SHA256 Entity',
+        "File SHA256 Entity",
         indicator_formatted,
         headers=["type", "value", "malicious_score", "benign"],
         headerTransform=indicator_header_transformer,
@@ -709,7 +755,7 @@ def get_file_sha256_command(
     )
 
     human_readable += tableToMarkdown(
-        'File SHA256 Enrichment',
+        "File SHA256 Enrichment",
         indicator_formatted,
         date_fields=["first_seen"],
         headers=["filenames", "first_seen", "download_urls"],
@@ -721,16 +767,18 @@ def get_file_sha256_command(
 
     for activity in detected_activities or []:
         activity = activity or {}
-        activities_formatted = [{
-            "type": activity.get("type", ""),
-            "observation_date": activity.get("observation_date", ""),
-            "description": activity.get("description", ""),
-            "confidence": activity.get("confidence", ""),
-            "occurrences_count": activity.get("occurrences_count", ""),
-        }]
+        activities_formatted = [
+            {
+                "type": activity.get("type", ""),
+                "observation_date": activity.get("observation_date", ""),
+                "description": activity.get("description", ""),
+                "confidence": activity.get("confidence", ""),
+                "occurrences_count": activity.get("occurrences_count", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'File SHA256 Detected activities',
+            "File SHA256 Detected activities",
             activities_formatted,
             date_fields=["observation_date"],
             headers=["type", "observation_date", "description", "confidence", "occurrences_count"],
@@ -742,14 +790,16 @@ def get_file_sha256_command(
 
     for entity in related_entities or []:
         entity = entity or {}
-        entities_formatted = [{
-            "entity_id": entity.get("entity_id", ""),
-            "entity_type": entity.get("entity_type", ""),
-            "entity_name": entity.get("entity_name", ""),
-        }]
+        entities_formatted = [
+            {
+                "entity_id": entity.get("entity_id", ""),
+                "entity_type": entity.get("entity_type", ""),
+                "entity_name": entity.get("entity_name", ""),
+            }
+        ]
 
         human_readable += tableToMarkdown(
-            'File SHA256 Related Entities',
+            "File SHA256 Related Entities",
             entities_formatted,
             headers=["entity_id", "entity_type", "entity_name"],
             headerTransform=indicator_header_transformer,
@@ -960,68 +1010,68 @@ def indicator_header_transformer(header: str) -> str:
     Returns:
         header (Str).
     """
-    if header == 'type':
-        return 'Type'
-    if header == 'value':
-        return 'Value'
-    if header == 'malicious_score':
-        return 'Malicious score'
-    if header == 'detected_activities':
-        return 'Detected activities'
-    if header == 'related_entities':
-        return 'Related entities'
-    if header == 'filenames':
-        return 'Filenames'
-    if header == 'first_seen':
-        return 'First seen'
-    if header == 'download_urls':
-        return 'Download URLs'
-    if header == 'benign':
-        return 'Benign'
-    if header == 'observation_date':
-        return 'Observation date'
-    if header == 'occurrences_count':
-        return 'Occurrences count'
-    if header == 'ips':
-        return 'IPs'
-    if header == 'registrant_name':
-        return 'Whois registrant name'
-    if header == 'registrant_email':
-        return 'Whois registrant email'
-    if header == 'registrant_organization':
-        return 'Whois registrant organization'
-    if header == 'registrant_country':
-        return 'Whois registrant country'
-    if header == 'registrant_telephone':
-        return 'Whois registrant telephone'
-    if header == 'technical_contact_email':
-        return 'Whois technical contact email'
-    if header == 'technical_contact_name':
-        return 'Whois technical contact name'
-    if header == 'technical_contact_organization':
-        return 'Whois technical contact organization'
-    if header == 'registrar_name':
-        return 'Whois registrar name'
-    if header == 'admin_contact_name':
-        return 'Whois admin contact name'
-    if header == 'admin_contact_organization':
-        return 'Whois admin contact organization'
-    if header == 'admin_contact_email':
-        return 'Whois admin contact email'
-    if header == 'created_date':
-        return 'Created date'
-    if header == 'updated_date':
-        return 'Updated date'
-    if header == 'expiration_date':
-        return 'Expiration date'
-    if header == 'hostname':
-        return 'Hostname'
-    if header == 'domain':
-        return 'Domain'
-    if header == 'asn_number':
-        return 'ASN number'
-    if header == 'asn_organization':
-        return 'ASN organization'
+    if header == "type":
+        return "Type"
+    if header == "value":
+        return "Value"
+    if header == "malicious_score":
+        return "Malicious score"
+    if header == "detected_activities":
+        return "Detected activities"
+    if header == "related_entities":
+        return "Related entities"
+    if header == "filenames":
+        return "Filenames"
+    if header == "first_seen":
+        return "First seen"
+    if header == "download_urls":
+        return "Download URLs"
+    if header == "benign":
+        return "Benign"
+    if header == "observation_date":
+        return "Observation date"
+    if header == "occurrences_count":
+        return "Occurrences count"
+    if header == "ips":
+        return "IPs"
+    if header == "registrant_name":
+        return "Whois registrant name"
+    if header == "registrant_email":
+        return "Whois registrant email"
+    if header == "registrant_organization":
+        return "Whois registrant organization"
+    if header == "registrant_country":
+        return "Whois registrant country"
+    if header == "registrant_telephone":
+        return "Whois registrant telephone"
+    if header == "technical_contact_email":
+        return "Whois technical contact email"
+    if header == "technical_contact_name":
+        return "Whois technical contact name"
+    if header == "technical_contact_organization":
+        return "Whois technical contact organization"
+    if header == "registrar_name":
+        return "Whois registrar name"
+    if header == "admin_contact_name":
+        return "Whois admin contact name"
+    if header == "admin_contact_organization":
+        return "Whois admin contact organization"
+    if header == "admin_contact_email":
+        return "Whois admin contact email"
+    if header == "created_date":
+        return "Created date"
+    if header == "updated_date":
+        return "Updated date"
+    if header == "expiration_date":
+        return "Expiration date"
+    if header == "hostname":
+        return "Hostname"
+    if header == "domain":
+        return "Domain"
+    if header == "asn_number":
+        return "ASN number"
+    if header == "asn_organization":
+        return "ASN organization"
     return string_to_table_header(header)
 
 

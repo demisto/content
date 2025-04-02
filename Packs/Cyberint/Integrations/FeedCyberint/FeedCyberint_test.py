@@ -7,7 +7,7 @@ import FeedCyberint
 import pytest
 from CommonServerPython import DemistoException
 
-date_time = '2025-01-01'
+date_time = "2025-01-01"
 
 BASE_URL = "https://feed-example.com"
 REQUEST_URL1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
@@ -176,7 +176,7 @@ def test_get_indicators_command(
         assert result == response1
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
 def test_get_url_command(
     is_execution_time_exceeded_mock,
     mock_client,
@@ -205,15 +205,17 @@ def test_get_url_command(
 
     args = {"value": "http://dummy.com"}
 
-    with patch.object(FeedCyberint, 'get_url_command', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+    with (
+        patch.object(FeedCyberint, "get_url_command", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
         mock_auto_detect.side_effect = lambda x: "URL" if x == "http://dummy.com" else None
         result = FeedCyberint.get_url_command(mock_client, args)
 
         assert result == response1
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
 def test_get_ipv4_command(
     is_execution_time_exceeded_mock,
     mock_client,
@@ -242,15 +244,17 @@ def test_get_ipv4_command(
 
     args = {"value": "1.1.1.1"}
 
-    with patch.object(FeedCyberint, 'get_ipv4_command', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+    with (
+        patch.object(FeedCyberint, "get_ipv4_command", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
         mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
         result = FeedCyberint.get_ipv4_command(mock_client, args)
 
         assert result == response1
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
 def test_get_domain_command(
     is_execution_time_exceeded_mock,
     mock_client,
@@ -279,8 +283,10 @@ def test_get_domain_command(
 
     args = {"value": "dummy.com"}
 
-    with patch.object(FeedCyberint, 'get_domain_command', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
+    with (
+        patch.object(FeedCyberint, "get_domain_command", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
         mock_auto_detect.side_effect = lambda x: "Domain" if x == "dummy.com" else None
         result = FeedCyberint.get_domain_command(mock_client, args)
 
@@ -299,9 +305,7 @@ def test_get_domain_command_with_invalid_arg(mock_client):
     )
 
     # Mock args input with invalid value
-    args = {
-        "value": "@"
-    }
+    args = {"value": "@"}
 
     mock_client.retrieve_domain_from_api.side_effect = TypeError(err_msg)
 
@@ -314,14 +318,10 @@ def test_get_domain_command_with_invalid_arg(mock_client):
 def test_get_url_command_with_invalid_arg(mock_client):
     """Test get_url_command when value argument is invalid."""
 
-    err_msg = (
-        "1 validation error for Request\nquery -> value\n  invalid or missing URL scheme (type=value_error.url.scheme)"
-    )
+    err_msg = "1 validation error for Request\nquery -> value\n  invalid or missing URL scheme (type=value_error.url.scheme)"
 
     # Mock args input with invalid value
-    args = {
-        "value": "@"
-    }
+    args = {"value": "@"}
 
     mock_client.retrieve_url_from_api.side_effect = TypeError(err_msg)
 
@@ -334,14 +334,10 @@ def test_get_url_command_with_invalid_arg(mock_client):
 def test_get_ipv4_command_with_invalid_arg(mock_client):
     """Test get_ipv4_command when value argument is invalid."""
 
-    err_msg = (
-        "1 validation error for Request\nquery -> value\n  value is not a valid IPv4 address (type=value_error.ipv4address)"
-    )
+    err_msg = "1 validation error for Request\nquery -> value\n  value is not a valid IPv4 address (type=value_error.ipv4address)"
 
     # Mock args input with invalid value
-    args = {
-        "value": "@"
-    }
+    args = {"value": "@"}
 
     mock_client.retrieve_ipv4_from_api.side_effect = TypeError(err_msg)
 
@@ -360,9 +356,7 @@ def test_get_file_sha256_command_with_invalid_arg(mock_client):
     )
 
     # Mock args input with invalid value
-    args = {
-        "value": "@"
-    }
+    args = {"value": "@"}
 
     mock_client.retrieve_file_sha256_from_api.side_effect = TypeError(err_msg)
 
@@ -371,7 +365,7 @@ def test_get_file_sha256_command_with_invalid_arg(mock_client):
         FeedCyberint.get_file_sha256_command(mock_client, args)
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
 def test_get_file_sha256_command(
     is_execution_time_exceeded_mock,
     mock_client,
@@ -400,21 +394,20 @@ def test_get_file_sha256_command(
 
     args = {"value": "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789"}
 
-    with patch.object(FeedCyberint, 'get_file_sha256_command', return_value=response1), \
-            patch('CommonServerPython.auto_detect_indicator_type') as mock_auto_detect:
-        mock_auto_detect.side_effect = lambda x: "File" \
-            if x == "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789" else None
+    with (
+        patch.object(FeedCyberint, "get_file_sha256_command", return_value=response1),
+        patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
+    ):
+        mock_auto_detect.side_effect = (
+            lambda x: "File" if x == "6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789" else None
+        )
         result = FeedCyberint.get_file_sha256_command(mock_client, args)
 
         assert result == response1
 
 
-@mock.patch('FeedCyberint.is_execution_time_exceeded')
-def test_fetch_indicators_command_ok(
-    is_execution_time_exceeded_mock,
-    mock_client: FeedCyberint,
-    requests_mock
-):
+@mock.patch("FeedCyberint.is_execution_time_exceeded")
+def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_client: FeedCyberint, requests_mock):
     """
     Scenario:
     - Test retrieving indicators by filters from feed.
@@ -452,20 +445,20 @@ def test_ioc_header_transformer():
     Test the ioc_header_transformer function to ensure it correctly transforms headers.
     """
     # Test predefined headers
-    assert FeedCyberint.ioc_header_transformer('detected_activity') == 'Detected activity'
-    assert FeedCyberint.ioc_header_transformer('ioc_type') == 'IoC type'
-    assert FeedCyberint.ioc_header_transformer('ioc_value') == 'IoC value'
-    assert FeedCyberint.ioc_header_transformer('observation_date') == 'Observation date'
-    assert FeedCyberint.ioc_header_transformer('severity_score') == 'Severity score'
-    assert FeedCyberint.ioc_header_transformer('confidence') == 'Confidence'
-    assert FeedCyberint.ioc_header_transformer('description') == 'Description'
+    assert FeedCyberint.ioc_header_transformer("detected_activity") == "Detected activity"
+    assert FeedCyberint.ioc_header_transformer("ioc_type") == "IoC type"
+    assert FeedCyberint.ioc_header_transformer("ioc_value") == "IoC value"
+    assert FeedCyberint.ioc_header_transformer("observation_date") == "Observation date"
+    assert FeedCyberint.ioc_header_transformer("severity_score") == "Severity score"
+    assert FeedCyberint.ioc_header_transformer("confidence") == "Confidence"
+    assert FeedCyberint.ioc_header_transformer("description") == "Description"
 
     # Test fallback case with a mock
-    with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
-        mock_string_to_table_header.return_value = 'Fallback Header'
-        result = FeedCyberint.ioc_header_transformer('custom_header')
-        mock_string_to_table_header.assert_called_once_with('custom_header')
-        assert result == 'Fallback Header'
+    with patch("FeedCyberint.string_to_table_header") as mock_string_to_table_header:
+        mock_string_to_table_header.return_value = "Fallback Header"
+        result = FeedCyberint.ioc_header_transformer("custom_header")
+        mock_string_to_table_header.assert_called_once_with("custom_header")
+        assert result == "Fallback Header"
 
 
 def test_indicator_header_transformer():
@@ -473,44 +466,44 @@ def test_indicator_header_transformer():
     Test the indicator_header_transformer function to ensure it correctly transforms headers.
     """
     # Test predefined headers
-    assert FeedCyberint.indicator_header_transformer('type') == 'Type'
-    assert FeedCyberint.indicator_header_transformer('value') == 'Value'
-    assert FeedCyberint.indicator_header_transformer('malicious_score') == 'Malicious score'
-    assert FeedCyberint.indicator_header_transformer('detected_activities') == 'Detected activities'
-    assert FeedCyberint.indicator_header_transformer('related_entities') == 'Related entities'
-    assert FeedCyberint.indicator_header_transformer('filenames') == 'Filenames'
-    assert FeedCyberint.indicator_header_transformer('first_seen') == 'First seen'
-    assert FeedCyberint.indicator_header_transformer('download_urls') == 'Download URLs'
-    assert FeedCyberint.indicator_header_transformer('benign') == 'Benign'
-    assert FeedCyberint.indicator_header_transformer('observation_date') == 'Observation date'
-    assert FeedCyberint.indicator_header_transformer('occurrences_count') == 'Occurrences count'
-    assert FeedCyberint.indicator_header_transformer('ips') == 'IPs'
-    assert FeedCyberint.indicator_header_transformer('registrant_name') == 'Whois registrant name'
-    assert FeedCyberint.indicator_header_transformer('registrant_email') == 'Whois registrant email'
-    assert FeedCyberint.indicator_header_transformer('registrant_organization') == 'Whois registrant organization'
-    assert FeedCyberint.indicator_header_transformer('registrant_country') == 'Whois registrant country'
-    assert FeedCyberint.indicator_header_transformer('registrant_telephone') == 'Whois registrant telephone'
-    assert FeedCyberint.indicator_header_transformer('technical_contact_email') == 'Whois technical contact email'
-    assert FeedCyberint.indicator_header_transformer('technical_contact_name') == 'Whois technical contact name'
-    assert FeedCyberint.indicator_header_transformer('technical_contact_organization') == 'Whois technical contact organization'
-    assert FeedCyberint.indicator_header_transformer('registrar_name') == 'Whois registrar name'
-    assert FeedCyberint.indicator_header_transformer('admin_contact_name') == 'Whois admin contact name'
-    assert FeedCyberint.indicator_header_transformer('admin_contact_organization') == 'Whois admin contact organization'
-    assert FeedCyberint.indicator_header_transformer('admin_contact_email') == 'Whois admin contact email'
-    assert FeedCyberint.indicator_header_transformer('created_date') == 'Created date'
-    assert FeedCyberint.indicator_header_transformer('updated_date') == 'Updated date'
-    assert FeedCyberint.indicator_header_transformer('expiration_date') == 'Expiration date'
-    assert FeedCyberint.indicator_header_transformer('hostname') == 'Hostname'
-    assert FeedCyberint.indicator_header_transformer('domain') == 'Domain'
-    assert FeedCyberint.indicator_header_transformer('asn_number') == 'ASN number'
-    assert FeedCyberint.indicator_header_transformer('asn_organization') == 'ASN organization'
+    assert FeedCyberint.indicator_header_transformer("type") == "Type"
+    assert FeedCyberint.indicator_header_transformer("value") == "Value"
+    assert FeedCyberint.indicator_header_transformer("malicious_score") == "Malicious score"
+    assert FeedCyberint.indicator_header_transformer("detected_activities") == "Detected activities"
+    assert FeedCyberint.indicator_header_transformer("related_entities") == "Related entities"
+    assert FeedCyberint.indicator_header_transformer("filenames") == "Filenames"
+    assert FeedCyberint.indicator_header_transformer("first_seen") == "First seen"
+    assert FeedCyberint.indicator_header_transformer("download_urls") == "Download URLs"
+    assert FeedCyberint.indicator_header_transformer("benign") == "Benign"
+    assert FeedCyberint.indicator_header_transformer("observation_date") == "Observation date"
+    assert FeedCyberint.indicator_header_transformer("occurrences_count") == "Occurrences count"
+    assert FeedCyberint.indicator_header_transformer("ips") == "IPs"
+    assert FeedCyberint.indicator_header_transformer("registrant_name") == "Whois registrant name"
+    assert FeedCyberint.indicator_header_transformer("registrant_email") == "Whois registrant email"
+    assert FeedCyberint.indicator_header_transformer("registrant_organization") == "Whois registrant organization"
+    assert FeedCyberint.indicator_header_transformer("registrant_country") == "Whois registrant country"
+    assert FeedCyberint.indicator_header_transformer("registrant_telephone") == "Whois registrant telephone"
+    assert FeedCyberint.indicator_header_transformer("technical_contact_email") == "Whois technical contact email"
+    assert FeedCyberint.indicator_header_transformer("technical_contact_name") == "Whois technical contact name"
+    assert FeedCyberint.indicator_header_transformer("technical_contact_organization") == "Whois technical contact organization"
+    assert FeedCyberint.indicator_header_transformer("registrar_name") == "Whois registrar name"
+    assert FeedCyberint.indicator_header_transformer("admin_contact_name") == "Whois admin contact name"
+    assert FeedCyberint.indicator_header_transformer("admin_contact_organization") == "Whois admin contact organization"
+    assert FeedCyberint.indicator_header_transformer("admin_contact_email") == "Whois admin contact email"
+    assert FeedCyberint.indicator_header_transformer("created_date") == "Created date"
+    assert FeedCyberint.indicator_header_transformer("updated_date") == "Updated date"
+    assert FeedCyberint.indicator_header_transformer("expiration_date") == "Expiration date"
+    assert FeedCyberint.indicator_header_transformer("hostname") == "Hostname"
+    assert FeedCyberint.indicator_header_transformer("domain") == "Domain"
+    assert FeedCyberint.indicator_header_transformer("asn_number") == "ASN number"
+    assert FeedCyberint.indicator_header_transformer("asn_organization") == "ASN organization"
 
     # Test fallback case with a mock
-    with patch('FeedCyberint.string_to_table_header') as mock_string_to_table_header:
-        mock_string_to_table_header.return_value = 'Fallback Header'
-        result = FeedCyberint.indicator_header_transformer('custom_header')
-        mock_string_to_table_header.assert_called_once_with('custom_header')
-        assert result == 'Fallback Header'
+    with patch("FeedCyberint.string_to_table_header") as mock_string_to_table_header:
+        mock_string_to_table_header.return_value = "Fallback Header"
+        result = FeedCyberint.indicator_header_transformer("custom_header")
+        mock_string_to_table_header.assert_called_once_with("custom_header")
+        assert result == "Fallback Header"
 
 
 def test_is_execution_time_exceeded_within_limit():
@@ -618,10 +611,11 @@ def test_retrieve_indicators_from_api_success(mock_client, requests_mock):
 
     # Mock the HTTP request
     url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     response = FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
 
@@ -637,10 +631,11 @@ def test_retrieve_indicators_from_api_failure(mock_client, requests_mock):
 
     # Mock the HTTP request to return a 500 error
     url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}{url_suffix}",
-                      status_code=500,
-                      text="Internal Server Error",
-                      )
+    requests_mock.get(
+        f"{BASE_URL}{url_suffix}",
+        status_code=500,
+        text="Internal Server Error",
+    )
 
     with pytest.raises(DemistoException):
         FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
@@ -655,9 +650,10 @@ def test_retrieve_indicators_from_api_timeout(mock_client, requests_mock):
 
     # Mock the HTTP request to simulate a timeout
     url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}{url_suffix}",
-                      exc=TimeoutError("Request timed out"),
-                      )
+    requests_mock.get(
+        f"{BASE_URL}{url_suffix}",
+        exc=TimeoutError("Request timed out"),
+    )
 
     with pytest.raises(TimeoutError):
         FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
@@ -673,10 +669,11 @@ def test_retrieve_indicators_from_api_invalid_response(mock_client, requests_moc
 
     # Mock the HTTP request
     url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     response = FeedCyberint.Client.retrieve_indicators_from_api(mock_client, date_time, limit, offset)
 
@@ -1054,10 +1051,11 @@ def test_process_feed_response_wrong_data(mock_client, requests_mock, capfd):
 
         # Mock the HTTP request
         url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-        requests_mock.get(f"{BASE_URL}{url_suffix}",
-                          text=mock_response,
-                          status_code=200,
-                          )
+        requests_mock.get(
+            f"{BASE_URL}{url_suffix}",
+            text=mock_response,
+            status_code=200,
+        )
 
         # Call the method with test data
         mock_auto_detect = MagicMock(return_value=True)
@@ -1079,10 +1077,11 @@ def test_get_indicators_command_ok(mock_client, requests_mock):
 
     # Mock the HTTP request
     url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     with (
         patch.object(FeedCyberint, "get_indicators_command", return_value=expected_output),
@@ -1106,10 +1105,11 @@ def test_test_module_success(requests_mock):
 
     # Mock the HTTP request
     url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(f"{BASE_URL}{url_suffix}",
-                      text=mock_response,
-                      status_code=200,
-                      )
+    requests_mock.get(
+        f"{BASE_URL}{url_suffix}",
+        text=mock_response,
+        status_code=200,
+    )
 
     result = FeedCyberint.test_module(client)  # Call the function
 
