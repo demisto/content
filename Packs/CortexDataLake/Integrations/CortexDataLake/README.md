@@ -1375,8 +1375,8 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.HostID | unknown | Unique identifier GlobalProtect has assigned to the host. | 
 | CDL.Logging.GlobalProtect.IsDuplicateLog | unknown | Indicates whether this log data is available in multiple locations, such as from Strata Logging Service as well as from an on-premise log collector. | 
 | CDL.Logging.GlobalProtect.IsExported | unknown | Indicates if this log was exported from the firewall using the firewall's log export function. | 
-| CDL.Logging.GlobalProtect.IsForwarded | unknown | Internal-use field that indicates if the log is being forwarded. | 
-| CDL.Logging.GlobalProtect.IsPrismaBranch | unknown | Internal-use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise. | 
+| CDL.Logging.GlobalProtect.IsForwarded | unknown | Internal use field that indicates if the log is being forwarded. | 
+| CDL.Logging.GlobalProtect.IsPrismaBranch | unknown | Internal use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise. | 
 | CDL.Logging.GlobalProtect.IsPrismaMobile | unknown | Internal use field. If set to 1, the log record was generated using a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise. | 
 | CDL.Logging.GlobalProtect.LogSource | unknown | Identifies the origin of the data. | 
 | CDL.Logging.GlobalProtect.LogSourceID | unknown | ID that uniquely identifies the source of the log. | 
