@@ -1,8 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 from typing import Any
 
+import demistomock as demisto
+from CommonServerPython import *
 
 OKTA_BRAND = "Okta v2"
 MS_GRAPH_BRAND = "Microsoft Graph User"
@@ -58,9 +57,7 @@ def prepare_human_readable(
         command = f'{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
-            result.append(
-                CommandResults(readable_output=result_message, mark_as_note=True)
-            )
+            result.append(CommandResults(readable_output=result_message, mark_as_note=True))
         else:
             result_message = f"#### Error for {command}\n{human_readable}"
             result.append(
@@ -118,9 +115,7 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
     return full_output_key
 
 
-def run_execute_command(
-    command_name: str, args: dict[str, Any]
-) -> tuple[list[dict], str, list[CommandResults]]:
+def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[dict], str, list[CommandResults]]:
     """
     Executes a command and processes its results.
 
@@ -145,11 +140,7 @@ def run_execute_command(
     for entry in res:
         entry_context_list.append(entry.get("EntryContext", {}))
         if is_error(entry):
-            errors_command_results.extend(
-                prepare_human_readable(
-                    command_name, args, get_error(entry), is_error=True
-                )
-            )
+            errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
         else:
             human_readable_list.append(entry.get("HumanReadable") or "")
     human_readable = "\n".join(human_readable_list)
@@ -245,6 +236,7 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
     )
     id_info = {}
 
+
     for entry in entry_context:
         if entry:
             output_key = get_output_key("Account", entry)
@@ -269,9 +261,7 @@ def get_user_id(users_ids: dict, brand_name: str, user_name: str) -> str:
         if brand_name == item.get("Source", ""):
             return item.get("Value", "")
 
-    demisto.debug(
-        f"Skipping user session clearance for user '{user_name}' and brand '{brand_name}' - user name not found."
-    )
+    demisto.debug(f"Skipping user session clearance for user '{user_name}' and brand '{brand_name}' - user name not found.")
     return ""
 
 
@@ -292,9 +282,7 @@ def clear_user_sessions(command: Command) -> tuple[list[CommandResults], str, Op
 
     _, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     error_message = readable_errors[0].readable_output if readable_errors else ""
 
     return readable_outputs_list, human_readable, error_message
@@ -431,6 +419,7 @@ def main():
                 }
                 outputs.append(user_output)
 
+
         ##############################
         ### Complete for all users ###
         ##############################
@@ -449,7 +438,7 @@ def main():
 
         return_results(command_results_list)
     except Exception as e:
-        return_error(f"Failed to execute clear-user-session. Error: {str(e)}")
+        return_error(f"Failed to execute clear-user-session. Error: {e!s}")
 
 
 """ ENTRY POINT """
