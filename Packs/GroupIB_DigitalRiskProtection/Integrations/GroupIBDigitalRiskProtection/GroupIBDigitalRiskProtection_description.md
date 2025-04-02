@@ -5,11 +5,14 @@
 #### Step 1: Open the Group-IB TI Web Interface  
 1.1 Go to [https://drp.group-ib.com](https://drp.group-ib.com).  
 
-#### Step 2: Generate an API Key  
+#### Step 2: Authentication
 2.1 In the new interface:  
   - Log in to your account on DRP: [drp.group-ib.com](drp.group-ib.com)
-  - Go to the Help Center / API [direct link](https://drp.group-ib.com/p/info/api).
-  - Click the big blue button **Generate API key** at the top of the page. Then an API key will show up nearby.
+  - Go to the your profile settings [direct link](https://drp.group-ib.com/p/info/api).
+  - Click the big blue button **Generate API key**. Then an API key will show up nearby.
+  - Don’t forget to save API key during generation.
+
+Success! Now you can use it with HTTP Basic Auth, where login is your email and password is your API token.
 
 #### Step 3: Set Up Connection Details  
 3.1 **Server URL:** Use your **DRP web interface URL**.  
