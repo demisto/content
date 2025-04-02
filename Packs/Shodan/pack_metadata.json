@@ -2,7 +2,7 @@
     "name": "Shodan",
     "description": "A search engine used for searching Internet-connected devices",
     "support": "xsoar",
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.2.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
