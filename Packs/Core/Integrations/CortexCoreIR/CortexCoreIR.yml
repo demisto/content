@@ -4036,7 +4036,7 @@ script:
       required: true
       isArray: true
       type: String
-    - description: The input timeout should be used here to limit the max running time for the command.
+    - description: The maximum running time of the command.
       name: timeout
       required: false
       isArray: false
