@@ -25,7 +25,6 @@ MAX_AUDIT_LOGS_PAGE_SIZE = 10000
 MAX_FETCH_FILE_EVENTS = 50000
 MAX_FILE_EVENTS_PAGE_SIZE = 10000
 
-
 VENDOR = "code42"
 PRODUCT = "code42"
 
@@ -134,6 +133,7 @@ class Client:
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
         demisto.debug(f'[TEMP] Are the events in order?: {sorted_file_events == file_events}')
         demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
+        demisto.debug('[TEMP] Last 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(max(0, len(file_events) - 100), len(file_events)), file_events)))
 
         sorted_file_events = sorted_file_events[:limit]
 
