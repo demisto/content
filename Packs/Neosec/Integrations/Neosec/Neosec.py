@@ -1,9 +1,9 @@
-from typing import Tuple, cast
+from typing import cast
 
 import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from requests import Response
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
@@ -29,9 +29,7 @@ class NeosecNodeClient(BaseClient):
         return response.get("Status", "")
 
     def detokenize_message(self, message: str) -> str:
-        response = self._http_request(
-            method="POST", url_suffix="/detokenize", json_data={"message": message}
-        )
+        response = self._http_request(method="POST", url_suffix="/detokenize", json_data={"message": message})
         return response.get("Message", "")
 
 
@@ -45,19 +43,17 @@ class NeosecClient(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(
-            self, base_url: str, proxy: bool, verify: bool, headers: Dict, tenant_key: str
-    ):
+    def __init__(self, base_url: str, proxy: bool, verify: bool, headers: Dict, tenant_key: str):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
         self.tenant_key = tenant_key
 
     def search_alerts(
-            self,
-            alert_status: Optional[str],
-            severities: Optional[List[str]],
-            alert_types: Optional[List[str]],
-            max_results: Optional[int],
-            start_time: Optional[int],
+        self,
+        alert_status: Optional[str],
+        severities: Optional[List[str]],
+        alert_types: Optional[List[str]],
+        max_results: Optional[int],
+        start_time: Optional[int],
     ) -> List[Dict[str, Any]]:
         """
         Searches for Neosec alerts using the '/alerts/query' API endpoint.
@@ -81,9 +77,7 @@ class NeosecClient(BaseClient):
         }
 
         if alert_status:
-            request_data["alert_filters"].append(
-                build_filter("status", "Eq", alert_status)
-            )
+            request_data["alert_filters"].append(build_filter("status", "Eq", alert_status))
 
         if alert_types:
             request_data["alert_filters"].append(
@@ -95,16 +89,10 @@ class NeosecClient(BaseClient):
             )
 
         if severities:
-            request_data["alert_filters"].append(
-                build_filter("severity", "Eq", severities)
-            )
+            request_data["alert_filters"].append(build_filter("severity", "Eq", severities))
 
         if start_time:
-            request_data["alert_filters"].append(
-                build_filter(
-                    "triggered_at", "Gt", timestamp_to_neosec_datetime(start_time)
-                )
-            )
+            request_data["alert_filters"].append(build_filter("triggered_at", "Gt", timestamp_to_neosec_datetime(start_time)))
 
         if max_results:
             request_data["limit"] = max_results
@@ -123,7 +111,7 @@ class NeosecClient(BaseClient):
             method="PATCH",
             url_suffix=f"organizations/{self.tenant_key}/alerts/{alert_id}",
             json_data=request_data,
-            resp_type='response'
+            resp_type="response",
         )
 
 
@@ -151,9 +139,7 @@ def convert_to_demisto_severity(severity: str) -> float:
     }[severity]
 
 
-def build_filter(
-        name: str, operator: str, values: Union[List[Any], Any]
-) -> List[Dict[str, Any]]:
+def build_filter(name: str, operator: str, values: Union[List[Any], Any]) -> List[Dict[str, Any]]:
     if not isinstance(values, list):
         values = [values]
     return [{"name": name, "operator": operator, "value": value} for value in values]
@@ -163,9 +149,7 @@ def timestamp_to_neosec_datetime(timestamp: int) -> str:
     return datetime.utcfromtimestamp(timestamp).strftime(NEOSEC_DATE_FORMAT)
 
 
-def detokenize_alerts(
-        neosec_node_client: NeosecNodeClient, alerts: List[Dict[str, Any]]
-) -> List[Dict[str, Any]]:
+def detokenize_alerts(neosec_node_client: NeosecNodeClient, alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return json.loads(neosec_node_client.detokenize_message(json.dumps(alerts)))
 
 
@@ -173,12 +157,12 @@ def detokenize_alerts(
 
 
 def test_module(
-        client: NeosecClient,
-        node_client: Optional[NeosecNodeClient],
-        alert_status: Optional[str],
-        severities: Optional[List[str]],
-        alert_types: Optional[List[str]],
-        max_results: int,
+    client: NeosecClient,
+    node_client: Optional[NeosecNodeClient],
+    alert_status: Optional[str],
+    severities: Optional[List[str]],
+    alert_types: Optional[List[str]],
+    max_results: int,
 ) -> str:
     """Tests API connectivity and authentication'
 
@@ -218,15 +202,15 @@ def test_module(
 
 
 def fetch_incidents(
-        client: NeosecClient,
-        node_client: Optional[NeosecNodeClient],
-        max_results: int,
-        last_run: Dict[str, int],
-        first_fetch_time: int,
-        alert_status: Optional[str] = None,
-        severities: Optional[List[str]] = None,
-        alert_type: Optional[List[str]] = None,
-) -> Tuple[Dict[str, int], List[dict]]:
+    client: NeosecClient,
+    node_client: Optional[NeosecNodeClient],
+    max_results: int,
+    last_run: Dict[str, int],
+    first_fetch_time: int,
+    alert_status: Optional[str] = None,
+    severities: Optional[List[str]] = None,
+    alert_type: Optional[List[str]] = None,
+) -> tuple[Dict[str, int], List[dict]]:
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get("last_fetch", None)
@@ -263,9 +247,8 @@ def fetch_incidents(
         incident_created_time = alert_trigger_at.timestamp()
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        if last_fetch and incident_created_time <= last_fetch:
+            continue
 
         alert_timestamp = dateparser.parse(alert.get("timestamp"))  # type: ignore
         if not alert_timestamp:
@@ -332,15 +315,12 @@ def main() -> None:
     if first_fetch_time:
         first_fetch_timestamp = int(first_fetch_time.timestamp())
     else:
-        raise DemistoException('The first fetch parameter is inavlid, make sure it\'s according to standards.')
+        raise DemistoException("The first fetch parameter is inavlid, make sure it's according to standards.")
 
     demisto.debug(f"Command being called is {command}")
     try:
         neosec_node_url = params.get("neosec_node_url")
-        neosec_node_client = (
-            NeosecNodeClient(base_url=neosec_node_url, verify=False, proxy=False)
-            if neosec_node_url else None
-        )
+        neosec_node_client = NeosecNodeClient(base_url=neosec_node_url, verify=False, proxy=False) if neosec_node_url else None
         client = NeosecClient(
             base_url=base_url,
             verify=not params.get("insecure", False),
@@ -350,9 +330,7 @@ def main() -> None:
         )
 
         # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-        max_results = arg_to_number(
-            arg=params.get("max_fetch"), arg_name="max_fetch", required=False
-        )
+        max_results = arg_to_number(arg=params.get("max_fetch"), arg_name="max_fetch", required=False)
         if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
             max_results = MAX_INCIDENTS_TO_FETCH
 
@@ -364,7 +342,7 @@ def main() -> None:
                 params.get("alert_status", None),
                 params.get("severities", None),
                 params.get("alert_type", None),
-                max_results
+                max_results,
             )
             return_results(result)
 
@@ -391,7 +369,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """
