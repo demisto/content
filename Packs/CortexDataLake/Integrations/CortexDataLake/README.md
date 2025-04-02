@@ -1405,7 +1405,7 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.EventStatus | unknown | The status \(success or failure\) of the event. | 
 | CDL.Logging.GlobalProtect.Subtype | unknown | The log subtype. | 
 | CDL.Logging.GlobalProtect.TimeGenerated | unknown | Time when the log was generated on the firewall's data plane. | 
-| CDL.Logging.GlobalProtect.TunnelType | unknown | Tunnel Type i.e. SSL or VPN. | 
+| CDL.Logging.GlobalProtect.TunnelType | unknown | Tunnel type i.e., SSL or VPN. | 
 | CDL.Logging.GlobalProtect.VendorName | unknown | The vendor that produced the data. | 
 
 ##### Command Example
