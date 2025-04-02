@@ -67,7 +67,7 @@ class AlibabaEventsClient(IntegrationEventsClient):
         signature = get_request_authorization(
             f"/logstores/{self.logstore_name}",
             self.access_key,
-            self.request.params.dict(by_alias=True),
+            self.request.params.dict(by_alias=True),  # type: ignore
             headers,  # type: ignore
         )  # type: ignore
 
