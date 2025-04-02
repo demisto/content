@@ -183,7 +183,7 @@ def test_command_get_search_job_results_no_fields_records(mocker):
         verify=True,
         proxy=False
     )
-    
+
     status_response = {'status': 'DONE'}
     return_data = {
         'result': 'raw data',
