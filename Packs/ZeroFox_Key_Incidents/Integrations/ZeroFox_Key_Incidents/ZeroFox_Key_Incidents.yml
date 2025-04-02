@@ -22,12 +22,46 @@ display: ZeroFox_Key_Incidents
 name: ZeroFox_Key_Incidents
 script:
   commands:
-    - name: zerofox-get-key-incident-attachment
-      description: Fetches a Key Incident Attachment by ID.
-      arguments:
-        - name: attachment_id
-          required: true
-          description: The ID of the Key Incident Attachment.
+  - name: zerofox-get-key-incident-attachment
+    description: Fetches a Key Incident Attachment by ID and uploads it to the current investigation War Room.
+    arguments:
+      - name: attachment_id
+        required: true
+        description: The ID of the Key Incident Attachment.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   script: '-'
   type: python
   subtype: python3
