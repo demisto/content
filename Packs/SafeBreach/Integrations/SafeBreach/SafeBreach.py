@@ -1,12 +1,12 @@
-from CommonServerPython import *
-
-import demistomock as demisto
-from copy import deepcopy
 import json
 import re
 from ast import literal_eval
-from typing import Any
 from collections.abc import Iterable
+from copy import deepcopy
+from typing import Any
+
+import demistomock as demisto
+from CommonServerPython import *
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S UTC"  # ISO8601 format with UTC, default in XSOAR
 
@@ -86,9 +86,7 @@ DEMISTO_INDICATOR_REPUTATION = {"None": 0, "Good": 1, "Suspicious": 2, "Bad": 3}
 IP_REGEX = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 simulator_details_inputs = [
-    InputArgument(
-        name="hostname", description="if hostname to be included for search.", required=False, is_array=False
-    ),
+    InputArgument(name="hostname", description="if hostname to be included for search.", required=False, is_array=False),
     InputArgument(
         name="external_ip",
         description="if external IP details to be included for search.",
@@ -172,13 +170,9 @@ simulators_output_fields = [
     OutputArgument(name="simulator_status", description="status of the simulator.", output_type=str),
     OutputArgument(name="connection_status", description="connection status of simulator.", output_type=str),
     OutputArgument(name="simulator_framework_version", description="Framework version of simulator.", output_type=str),
-    OutputArgument(
-        name="operating_system_type", description="operating system type of given simulator.", output_type=str
-    ),
+    OutputArgument(name="operating_system_type", description="operating system type of given simulator.", output_type=str),
     OutputArgument(name="operating_system", description="Operating system of given simulator.", output_type=str),
-    OutputArgument(
-        name="execution_hostname", description="Execution Hostname of the given simulator.", output_type=str
-    ),
+    OutputArgument(name="execution_hostname", description="Execution Hostname of the given simulator.", output_type=str),
     OutputArgument(name="deployments", description="deployments simulator is part of.", output_type=str),
     OutputArgument(name="created_at", description="Creation datetime of simulator.", output_type=str),
     OutputArgument(name="updated_at", description="Update datetime of given simulator.", output_type=str),
@@ -194,8 +188,7 @@ simulator_details_for_update_fields = [
         name="connection_url",
         required=False,
         is_array=False,
-        description="The given value will be set as "
-        + "connection string, meaning this can be used to connect to this URL.",
+        description="The given value will be set as " + "connection string, meaning this can be used to connect to this URL.",
     ),
     InputArgument(
         name="cloud_proxy_url",
@@ -228,18 +221,12 @@ simulator_details_for_update_fields = [
 test_summaries_output_fields = [
     OutputArgument(name="scenario_id", description="scenario ID of the test.", output_type=str),
     OutputArgument(name="simulation_name", description="Name of the simulation.", output_type=str),
-    OutputArgument(
-        name="security_action_per_control", description="Security Actions of the simulation.", output_type=str
-    ),
+    OutputArgument(name="security_action_per_control", description="Security Actions of the simulation.", output_type=str),
     OutputArgument(name="test_id", description="Test id of the test.", output_type=str),
     OutputArgument(name="status", description="status of the test.", output_type=str),
-    OutputArgument(
-        name="planned_simulations_amount", description="Planned simulations count of the test.", output_type=str
-    ),
+    OutputArgument(name="planned_simulations_amount", description="Planned simulations count of the test.", output_type=str),
     OutputArgument(name="simulator_executions", description="simulator executions of the test.", output_type=str),
-    OutputArgument(
-        name="attack_executions", description="list of attacks that are part of the simulation.", output_type=str
-    ),
+    OutputArgument(name="attack_executions", description="list of attacks that are part of the simulation.", output_type=str),
     OutputArgument(name="ran_by", description="user who started the simulation.", output_type=str),
     OutputArgument(name="simulator_count", description="simulators count per account.", output_type=str),
     OutputArgument(name="end_time", description="End Time of the test.", output_type=str),
@@ -256,15 +243,11 @@ tests_outputs = [
     OutputArgument(name="name", description="Name of the test being run.", output_type=str),
     OutputArgument(name="description", description="Details related to the test being run.", output_type=str),
     OutputArgument(name="success_criteria", description="success criterion for the test.", output_type=str),
-    OutputArgument(
-        name="original_scenario_id", description="Original scenario ID of the running test", output_type=str
-    ),
+    OutputArgument(name="original_scenario_id", description="Original scenario ID of the running test", output_type=str),
     OutputArgument(name="actions_count", description="number of actions", output_type=str),
     OutputArgument(name="edges_count", description="number of edges.", output_type=str),
     OutputArgument(name="created_at", description="details related to when test is created.", output_type=str),
-    OutputArgument(
-        name="updated_at", description="details related to when test is last updated/changed", output_type=str
-    ),
+    OutputArgument(name="updated_at", description="details related to when test is last updated/changed", output_type=str),
     OutputArgument(name="steps_count", description="number of steps in simulator.", output_type=str),
     OutputArgument(name="scenario_id", description="scenario_id of the test.", output_type=str),
     OutputArgument(name="original_scenario_id", description="scenario_id for reference.", output_type=str),
@@ -276,9 +259,7 @@ tests_outputs = [
     OutputArgument(name="pause_duration", description="is the test paused and if so till when", output_type=str),
     OutputArgument(name="paused_date", description="when the test is paused", output_type=str),
     OutputArgument(name="expected_simulations_amount", description="number of simulations expected", output_type=str),
-    OutputArgument(
-        name="dispatched_simulations_amount", description="the number of simulations dispatched", output_type=str
-    ),
+    OutputArgument(name="dispatched_simulations_amount", description="the number of simulations dispatched", output_type=str),
     OutputArgument(name="skipped_simulations_amount", description="The number of simulations skipped", output_type=str),
     OutputArgument(name="failed_simulations_amount", description="The number of simulations failed", output_type=str),
 ]
@@ -550,7 +531,7 @@ class Client(BaseClient):
         This function calls API endpoint and handles the response
 
         Args:
-            url (str, optional): endpoint url which follows base URL will be this input . Defaults to "". 
+            url (str, optional): endpoint url which follows base URL will be this input . Defaults to "".
             method (str, optional): HTTP method to be used, Defaults to "GET".
             request_params (dict, optional): request parameters if any. Defaults to {}.
             body (dict, optional): request body for API call. Defaults to None.
@@ -621,8 +602,10 @@ class Client(BaseClient):
             elif "Error in API call [401] - Unauthorized" in str(exc):
                 raise DemistoException(f"Please check the API used and try again. Error:-{exc}")
             elif "SSL Certificate Verification Failed" in str(exc):
-                raise DemistoException("Unable to verify SSL certificate. Please ensure that the SSL "
-                                       + f"certificate is valid and properly configured. Error:-{exc}")
+                raise DemistoException(
+                    "Unable to verify SSL certificate. Please ensure that the SSL "
+                    + f"certificate is valid and properly configured. Error:-{exc}"
+                )
             else:
                 raise DemistoException(exc)
 
@@ -935,12 +918,14 @@ class Client(BaseClient):
         error_list = error_log.get("errors", [])
         if error_list:
             for error in error_list:
-                log.update({
-                    "action": error.get("action", ""),
-                    "success": error.get("success", ""),
-                    "error": error.get("error", ""),
-                    "timestamp": error.get("timestamp", "")
-                })
+                log.update(
+                    {
+                        "action": error.get("action", ""),
+                        "success": error.get("success", ""),
+                        "error": error.get("error", ""),
+                        "timestamp": error.get("timestamp", ""),
+                    }
+                )
                 errors.append(log)
         return errors
 
@@ -1068,9 +1053,7 @@ class Client(BaseClient):
         """
         active_keys = self.get_all_active_api_keys_with_details()
         demisto.debug(f"active api keys count is {len(active_keys.get('data'))}")
-        required_key_object = list(
-            filter(lambda key_obj: key_obj["name"].lower() == key_name.lower(), active_keys.get("data"))
-        )
+        required_key_object = list(filter(lambda key_obj: key_obj["name"].lower() == key_name.lower(), active_keys.get("data")))
         if not required_key_object:
             raise DemistoException(f"couldn't find API key with given name: {key_name}")
         return required_key_object[0]["id"]
@@ -1180,8 +1163,7 @@ class Client(BaseClient):
                     argToBoolean(demisto.args().get(parameter))
                     if (
                         demisto.args().get(parameter) not in ["true", "false"]
-                        and parameter
-                        in ["details", "deleted", "is_enabled", "is_connected", "is_critical", "additional_details"]
+                        and parameter in ["details", "deleted", "is_enabled", "is_connected", "is_critical", "additional_details"]
                     )
                     else demisto.args().get(parameter).strip()
                 )
@@ -1575,9 +1557,9 @@ class Client(BaseClient):
         for service in deepcopy(services):
             if isinstance(service, dict):
                 # Now proceed with the formatting
-                service[
-                    "connection_status"
-                ] = f"Service {service['name']} is {'running' if service['isUp'] else 'not running'} as on {service['lastCheck']}"
+                service["connection_status"] = (
+                    f"Service {service['name']} is {'running' if service['isUp'] else 'not running'} as on {service['lastCheck']}"
+                )
                 return_list.append(service)
         return return_list
 
@@ -1656,9 +1638,7 @@ class Client(BaseClient):
             demisto.debug(f"{demisto.command()=} didn't match any condition. {test_data=}")
         method = "POST"
         url = f"/orch/v3/accounts/{account_id}/queue"
-        tests_data = self.get_response(
-            url=url, method=method, body={"plan": test_data}
-        )  # , request_params=request_params)
+        tests_data = self.get_response(url=url, method=method, body={"plan": test_data})  # , request_params=request_params)
         return tests_data
 
     def contains(self, list_a, list_b):
@@ -1672,9 +1652,7 @@ class Client(BaseClient):
             insight_data_type = insight_data_type.split(",")
 
         # if the user provide invalid category or data type raise an ValueError.
-        if not self.contains(
-            insight_category, ["Network Access", "Network Inspection", "Endpoint", "Email", "Web", "Data Leak"]
-        ):
+        if not self.contains(insight_category, ["Network Access", "Network Inspection", "Endpoint", "Email", "Web", "Data Leak"]):
             raise ValueError(f"Category {insight_category} is not a valid category")
         if not self.contains(insight_data_type, ["Hash", "Domain", "URI", "Command", "Port", "Protocol"]):
             raise ValueError(f"Data type {insight_data_type} is not a valid data type")
@@ -1807,9 +1785,7 @@ class Client(BaseClient):
         insights_ids = self.get_insights_ids_by_category(insight_category)
         raw_insights = self.get_insights(test_id)
         # Filter insight by category
-        insights = [
-            item for item in raw_insights if isinstance(item, dict) and int(item.get("ruleId", 0)) in insights_ids
-        ]
+        insights = [item for item in raw_insights if isinstance(item, dict) and int(item.get("ruleId", 0)) in insights_ids]
 
         for insight in insights:
             # Fetch remediation data for each insight
@@ -2056,12 +2032,8 @@ def get_all_users(client: Client):
 @metadata_collector.command(
     command_name="safebreach-get-user-with-matching-name-or-email",
     inputs_list=[
-        InputArgument(
-            name="name", required=False, is_array=False, description="Name of the user. Partial match is supported"
-        ),
-        InputArgument(
-            name="email", required=False, is_array=False, description="Email of the user. Exact match required"
-        ),
+        InputArgument(name="name", required=False, is_array=False, description="Name of the user. Partial match is supported"),
+        InputArgument(name="email", required=False, is_array=False, description="Email of the user. Exact match required"),
     ],
     outputs_prefix="SafeBreach.User",
     outputs_list=[
@@ -2113,8 +2085,7 @@ def get_user_id_by_name_or_email(client: Client):
     filtered_user_list = list(
         filter(
             lambda user_data: (
-                (name.lower() == user_data["name"].lower() if name else False)
-                or (email.lower() == user_data["email"].lower())
+                (name.lower() == user_data["name"].lower() if name else False) or (email.lower() == user_data["email"].lower())
             ),
             user_list,
         )
@@ -2158,8 +2129,7 @@ def get_user_id_by_name_or_email(client: Client):
             name="password",
             required=True,
             is_array=False,
-            description="Enforce password change on user creation."
-            + " Possible values are: true, false. Default is false.",
+            description="Enforce password change on user creation." + " Possible values are: true, false. Default is false.",
         ),
         InputArgument(
             name="change_password_on_create",
@@ -2194,15 +2164,9 @@ def get_user_id_by_name_or_email(client: Client):
     outputs_prefix="SafeBreach.User",
     outputs_list=[
         OutputArgument(name="id", description="The ID of User created.", prefix="SafeBreach.User", output_type=int),
-        OutputArgument(
-            name="name", description="The name of User created.", prefix="SafeBreach.User", output_type=str
-        ),
-        OutputArgument(
-            name="email", description="The email of User created.", prefix="SafeBreach.User", output_type=str
-        ),
-        OutputArgument(
-            name="createdAt", prefix="SafeBreach.User", output_type=str, description="The creation time of User."
-        ),
+        OutputArgument(name="name", description="The name of User created.", prefix="SafeBreach.User", output_type=str),
+        OutputArgument(name="email", description="The email of User created.", prefix="SafeBreach.User", output_type=str),
+        OutputArgument(name="createdAt", prefix="SafeBreach.User", output_type=str, description="The creation time of User."),
         OutputArgument(
             name="roles",
             prefix="SafeBreach.User",
@@ -2276,9 +2240,7 @@ def create_user(client: Client):
 @metadata_collector.command(
     command_name="safebreach-update-user",
     inputs_list=[
-        InputArgument(
-            name="user_id", required=True, is_array=False, description="user ID of user from safebreach to search."
-        ),
+        InputArgument(name="user_id", required=True, is_array=False, description="user ID of user from safebreach to search."),
         InputArgument(
             name="name",
             required=False,
@@ -2460,9 +2422,7 @@ def update_user_with_details(client: Client):
             output_type=str,
             description="The name of User deleted.",
         ),
-        OutputArgument(
-            name="email", description="The email of User deleted.", prefix="SafeBreach.User", output_type=str
-        ),
+        OutputArgument(name="email", description="The email of User deleted.", prefix="SafeBreach.User", output_type=str),
         OutputArgument(
             name="createdAt",
             prefix="SafeBreach.User",
@@ -2470,9 +2430,7 @@ def update_user_with_details(client: Client):
             description="the time at which the user who has been selected has been created",
         ),
         OutputArgument(name="updatedAt", prefix="SafeBreach.User", output_type=str, description="last updated time."),
-        OutputArgument(
-            name="deletedAt", prefix="SafeBreach.User", output_type=str, description="Deletion time of user."
-        ),
+        OutputArgument(name="deletedAt", prefix="SafeBreach.User", output_type=str, description="Deletion time of user."),
         OutputArgument(
             name="roles",
             description="The roles of User before they were deleted.",
@@ -2621,8 +2579,7 @@ def get_deployments(client: Client):
             name="name",
             required=True,
             is_array=False,
-            description="Name of the deployment to create. this will "
-            + "be shown as name in deployments page of safebreach",
+            description="Name of the deployment to create. this will " + "be shown as name in deployments page of safebreach",
         ),
         InputArgument(
             name="description",
@@ -3009,9 +2966,7 @@ def create_api_key(client: Client):
     ],
     outputs_prefix="SafeBreach.API",
     outputs_list=[
-        OutputArgument(
-            name="name", description="The Name of API Key deleted.", prefix="SafeBreach.API", output_type=int
-        ),
+        OutputArgument(name="name", description="The Name of API Key deleted.", prefix="SafeBreach.API", output_type=int),
         OutputArgument(
             name="description", description="Description of API Key deleted.", prefix="SafeBreach.API", output_type=str
         ),
@@ -3334,9 +3289,7 @@ def get_simulator_quota_with_table(client: Client):
         "account_details": simulator_details.get("data"),
         "simulator_quota": simulator_details.get("data").get("nodesQuota"),
     }
-    simulator_details = CommandResults(
-        outputs_prefix="SafeBreach.Account", outputs=outputs, readable_output=human_readable
-    )
+    simulator_details = CommandResults(outputs_prefix="SafeBreach.Account", outputs=outputs, readable_output=human_readable)
     return simulator_details
 
 
@@ -3386,14 +3339,12 @@ def get_simulator_with_name(client: Client):
 @metadata_collector.command(
     command_name="safebreach-delete-simulator",
     inputs_list=[
-        InputArgument(
-            name="simulator_id", required=True, is_array=False, description="Id of the simulator we want to delete"
-        )
+        InputArgument(name="simulator_id", required=True, is_array=False, description="Id of the simulator we want to delete")
     ],
     outputs_prefix="SafeBreach.Simulator",
     outputs_list=simulators_output_fields,
     description="The provided command facilitates the deletion of a simulator identified by its unique ID."
-    + "To obtain the respective simulator ID, execute the \"safebreach-get-all-simulators\" command."
+    + 'To obtain the respective simulator ID, execute the "safebreach-get-all-simulators" command.',
 )
 def delete_simulator_with_given_name(client: Client):
     """
@@ -3481,9 +3432,7 @@ def approve_simulator(client: Client):
     else:
         human_readable = f"Unable to approve simulator: {flattened_simulators}"
     outputs = approved_simulator.get("data", {})
-    result = CommandResults(
-        outputs_prefix="SafeBreach.Simulator", outputs=outputs, readable_output=human_readable
-    )
+    result = CommandResults(outputs_prefix="SafeBreach.Simulator", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -3492,9 +3441,7 @@ def approve_simulator(client: Client):
     inputs_list=None,
     outputs_prefix="SafeBreach.Token",
     outputs_list=[
-        OutputArgument(
-            name="new_token", output_type=str, description="New token which has been generated due to the API call"
-        ),
+        OutputArgument(name="new_token", output_type=str, description="New token which has been generated due to the API call"),
     ],
     description="This command rotates generated verification token meaning it creates a new token which will be used for "
     + "verification of simulator and adding the simulator.",
@@ -3739,16 +3686,12 @@ def pause_resume_tests_and_simulations(client: Client):
     """
     simulations_status = client.set_simulations_status()
     if simulations_status.get("data"):
-        human_readable = tableToMarkdown(
-            name="Simulations/tests status", t=simulations_status.get("data"), headers=["status"]
-        )
+        human_readable = tableToMarkdown(name="Simulations/tests status", t=simulations_status.get("data"), headers=["status"])
     else:
         human_readable = f"No tests and simulations summary found: {simulations_status}"
 
     outputs = simulations_status
-    result = CommandResults(
-        outputs_prefix="SafeBreach.Test", outputs=outputs.get("data"), readable_output=human_readable
-    )
+    result = CommandResults(outputs_prefix="SafeBreach.Test", outputs=outputs.get("data"), readable_output=human_readable)
 
     return result
 
@@ -3787,9 +3730,7 @@ def plan_id_name_map(test_summaries):
     outputs_prefix="SafeBreach.Schedules",
     outputs_list=[
         OutputArgument(name="id", description="the Id of the schedule.", prefix="schedules", output_type=str),
-        OutputArgument(
-            name="is_enabled", description="if simulation is enabled.", prefix="schedules", output_type=bool
-        ),
+        OutputArgument(name="is_enabled", description="if simulation is enabled.", prefix="schedules", output_type=bool),
         OutputArgument(
             name="user_schedule",
             description="the user readable form of the schedule.",
@@ -3809,7 +3750,10 @@ def plan_id_name_map(test_summaries):
             name="scenario_id", description="the matrix ID of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="created_at", description="the creation datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str  # noqa: E501
+            name="created_at",
+            description="the creation datetime of the schedule.",
+            prefix="SafeBreach.Schedules",
+            output_type=str,  # noqa: E501
         ),
         OutputArgument(
             name="updated_at", description="the updated datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
@@ -3929,7 +3873,7 @@ def get_schedules(client: Client):
             description="the updated datetime of the scheduled scenario.",
             prefix="SafeBreach.Scenario",
             output_type=str,
-        )
+        ),
     ],
     description="This command deletes the scheduled scenario with the specified schedule_id.",
 )
@@ -3953,9 +3897,7 @@ def delete_schedules(client: Client):
         human_readable = f"Unable to delete schedules: {schedules_data.get('data')}"
 
     outputs = schedules_data.get("data")
-    result = CommandResults(
-        outputs_prefix="SafeBreach.Scenario", outputs=outputs, readable_output=human_readable
-    )
+    result = CommandResults(outputs_prefix="SafeBreach.Scenario", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -3966,9 +3908,7 @@ def delete_schedules(client: Client):
     outputs_prefix="SafeBreach.Scenario",
     outputs_list=[
         OutputArgument(name="id", description="the Id of scenario.", prefix="SafeBreach.Scenario", output_type=str),
-        OutputArgument(
-            name="name", description="he name of the scenario.", prefix="SafeBreach.Scenario", output_type=str
-        ),
+        OutputArgument(name="name", description="he name of the scenario.", prefix="SafeBreach.Scenario", output_type=str),
         OutputArgument(
             name="description",
             description="the description of the scenario.",
@@ -4105,16 +4045,13 @@ def scenarios_transformer(header):
             options=["false", "true"],
             required=False,
             is_array=False,
-            description="Details of custom scenarios (My scenarios)."
-            + " Possible values are: false, true. Default is true.",
+            description="Details of custom scenarios (My scenarios)." + " Possible values are: false, true. Default is true.",
         ),
     ],
     outputs_prefix="SafeBreach.Scenario",
     outputs_list=[
         OutputArgument(name="id", description="the Id of scenario.", prefix="SafeBreach.Scenario", output_type=str),
-        OutputArgument(
-            name="name", description="the name of the scenario.", prefix="SafeBreach.Scenario", output_type=str
-        ),
+        OutputArgument(name="name", description="the name of the scenario.", prefix="SafeBreach.Scenario", output_type=str),
         OutputArgument(
             name="description",
             description="the description of the scenario.",
@@ -4210,9 +4147,7 @@ def get_custom_scenarios(client: Client):
     outputs_prefix="SafeBreach.Service",
     outputs_list=[
         OutputArgument(name="name", description="the name of the service.", prefix="SafeBreach.Service", output_type=str),
-        OutputArgument(
-            name="version", description="version of the service.", prefix="SafeBreach.Service", output_type=str
-        ),
+        OutputArgument(name="version", description="version of the service.", prefix="SafeBreach.Service", output_type=str),
         OutputArgument(
             name="connection status",
             description="connection status of service.",
@@ -4316,11 +4251,9 @@ def simulations_transformer(header):
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
-        OutputArgument(
-            name="attack_description", description="attack details.", prefix="SafeBreach.Simulation", output_type=str
-        ),
+        OutputArgument(name="attack_description", description="attack details.", prefix="SafeBreach.Simulation", output_type=str),
     ],
-    description="This command facilitates the retrieval of simulations and their associated data for a specified test. It can be used as a precursor command for the rerun-simulations command, streamlining the process of queuing simulations. It's important to note that this command currently lacks pagination limiters, potentially resulting in the retrieval of a large volume of data."  # noqa: E501
+    description="This command facilitates the retrieval of simulations and their associated data for a specified test. It can be used as a precursor command for the rerun-simulations command, streamlining the process of queuing simulations. It's important to note that this command currently lacks pagination limiters, potentially resulting in the retrieval of a large volume of data.",  # noqa: E501
 )
 def get_simulations(client: Client):
     """
@@ -4421,9 +4354,7 @@ def tests_scenarios_transformer(header):
     outputs_list=[
         OutputArgument(name="id", description="the Id of test.", prefix="SafeBreach.Test", output_type=str),
         OutputArgument(name="name", description="the name of the test.", prefix="SafeBreach.Test", output_type=str),
-        OutputArgument(
-            name="description", description="the description of the test.", prefix="SafeBreach.Test", output_type=str
-        ),
+        OutputArgument(name="description", description="the description of the test.", prefix="SafeBreach.Test", output_type=str),
         OutputArgument(
             name="success_criteria", description="success criteria the test.", prefix="SafeBreach.Test", output_type=str
         ),
@@ -4433,12 +4364,8 @@ def tests_scenarios_transformer(header):
             prefix="SafeBreach.Test",
             output_type=str,
         ),
-        OutputArgument(
-            name="actions_list", description="actions list of the test.", prefix="SafeBreach.Test", output_type=str
-        ),
-        OutputArgument(
-            name="edges_count", description="edges_count for the test.", prefix="SafeBreach.Test", output_type=str
-        ),
+        OutputArgument(name="actions_list", description="actions list of the test.", prefix="SafeBreach.Test", output_type=str),
+        OutputArgument(name="edges_count", description="edges_count for the test.", prefix="SafeBreach.Test", output_type=str),
         OutputArgument(
             name="steps_order", description="the order of steps of the test.", prefix="SafeBreach.Test", output_type=str
         ),
@@ -4448,9 +4375,7 @@ def tests_scenarios_transformer(header):
         OutputArgument(
             name="updated_at", description="the last updated time the test.", prefix="SafeBreach.Test", output_type=str
         ),
-        OutputArgument(
-            name="scenario_id", description="the test id of the test.", prefix="SafeBreach.Test", output_type=str
-        ),
+        OutputArgument(name="scenario_id", description="the test id of the test.", prefix="SafeBreach.Test", output_type=str),
         OutputArgument(
             name="ran_by",
             description="the user id of the user who ran the test.",
@@ -4524,9 +4449,7 @@ def rerun_test(client):
     outputs_prefix="SafeBreach.Simulation",
     outputs_list=[
         OutputArgument(name="id", description="the Id of simulation.", prefix="SafeBreach.Simulation", output_type=str),
-        OutputArgument(
-            name="name", description="the name of the simulation.", prefix="SafeBreach.Simulation", output_type=str
-        ),
+        OutputArgument(name="name", description="the name of the simulation.", prefix="SafeBreach.Simulation", output_type=str),
         OutputArgument(
             name="description",
             description="the description of the simulation.",
@@ -4636,12 +4559,8 @@ def rerun_simulation(client):
     ],
     outputs_prefix="SafeBreach.Indicator",
     outputs_list=[
-        OutputArgument(
-            name="value", description="The value of the indicator", prefix="SafeBreach.Indicator", output_type=str
-        ),
-        OutputArgument(
-            name="type", description="The type of the indicator", prefix="SafeBreach.Indicator", output_type=str
-        ),
+        OutputArgument(name="value", description="The value of the indicator", prefix="SafeBreach.Indicator", output_type=str),
+        OutputArgument(name="type", description="The type of the indicator", prefix="SafeBreach.Indicator", output_type=str),
         OutputArgument(
             name="rawJSON.dataType",
             description="The data type of the indicator",
@@ -4696,9 +4615,7 @@ def rerun_simulation(client):
         OutputArgument(
             name="fields.tags", description="The tags of the indicator", prefix="SafeBreach.Indicator", output_type=str
         ),
-        OutputArgument(
-            name="score", description="The score of the indicator", prefix="SafeBreach.Indicator", output_type=int
-        ),
+        OutputArgument(name="score", description="The score of the indicator", prefix="SafeBreach.Indicator", output_type=int),
     ],
     description="This command fetches SafeBreach Insights from which indicators are extracted, "
     + " creating new indicators or updating existing indicators.",
@@ -4774,9 +4691,7 @@ def get_simulators_versions_list(client):
     outputs_prefix="SafeBreach.Simulator",
     outputs_list=[
         OutputArgument(name="nodeId", description="Simulator ID", prefix="SafeBreach.Simulator", output_type=str),
-        OutputArgument(
-            name="status", description="Simulator status", prefix="SafeBreach.Simulator", output_type=str
-        ),
+        OutputArgument(name="status", description="Simulator status", prefix="SafeBreach.Simulator", output_type=str),
     ],
     description="This command updates the simulator using the Simulator ID and available version.",
 )
