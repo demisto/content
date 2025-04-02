@@ -177,7 +177,7 @@ class Client(BaseClient):
             sequpdate = self.generate_seq_update(first_fetch_time)
 
         if section:
-            section = self._get_violation_section_number(section.strip())
+            section: int = self._get_violation_section_number(section.strip())  # type: ignore[no-redef]
 
         if brands:
             brands = brands.strip(",")
@@ -201,7 +201,7 @@ class Client(BaseClient):
                 f"subtypes: {violation_subtypes} section: {section} sequpdate: {sequpdate} {str(e)}"
             ) from e
 
-    def change_violation_status(self, feed_id: str, status: str) -> None | str:
+    def change_violation_status(self, feed_id: str, status: str) -> int | str:
         """
         Status could be approve or reject
         """
@@ -802,7 +802,7 @@ class BuilderCommandResponses:
         if result == 200:
             return "Request to change violation status sent"
         else:
-            return result
+            return result  # type: ignore[return-value]
 
     def build(self) -> str | tuple[CommandResults, dict[str, Any]] | CommandResults:
         # Check if the method exists in the class
