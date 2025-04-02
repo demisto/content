@@ -167,9 +167,9 @@ class Client:
             if skip:
                 params["$skip"] = skip
 
-        raw_respond = self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
-        demisto.debug(f'Got the next results for incidents_list from Defender API  {raw_respond=}.')
-        return raw_respond
+        raw_response = self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
+        demisto.debug(f'Got the next results for incidents_list from Defender API  {raw_response=}.')
+        return raw_response
     @logger
     def update_incident(
         self,
