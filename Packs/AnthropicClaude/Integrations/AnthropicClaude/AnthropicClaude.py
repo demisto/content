@@ -246,7 +246,7 @@ def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | N
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
 
-    if not file_name.endswith(EML_FILE_PREFIX):
+    if not file_name.endswith(EML_FILE_SUFFIX):
         DemistoException("Provided 'entry_id' does not point to a valid '.eml' file.")
 
     email_parser = parse_emails.EmailParser(file_path=file_path)
