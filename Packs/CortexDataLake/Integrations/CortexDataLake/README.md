@@ -1333,7 +1333,7 @@ Searches the GlobalProtect VPN log table.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of logs to return. Default is 10. Default is 10. | Optional | 
+| limit | The maximum number of logs to return. Default is 10. | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
 | transform_results | If set to false, query results are not mapped into the standard command context. Default is "true". Possible values are: true, false. Default is true. | Optional | 
