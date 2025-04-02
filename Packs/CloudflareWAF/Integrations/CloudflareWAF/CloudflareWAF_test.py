@@ -5,7 +5,7 @@ import pytest
 from CloudflareWAF import Client
 
 
-'''MOCK PARAMETERS '''
+"""MOCK PARAMETERS """
 CREDENTIALS = '{"Authorization": "Bearer YOUR_TOKEN"}'
 ACCOUNT_ID = "account_id"
 ZONE_ID = "zone_id"
@@ -23,7 +23,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
 
-    with open(os.path.join('test_data', file_name), encoding='utf-8') as mock_file:
+    with open(os.path.join("test_data", file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -501,13 +501,8 @@ def test_get_headers_with_api_token():
     """
     from CloudflareWAF import get_headers
 
-    params = {
-        'credentials': {'password': 'test_token'}
-    }
-    expected = {
-        'Authorization': 'Bearer test_token',
-        'Content-Type': 'application/json'
-    }
+    params = {"credentials": {"password": "test_token"}}
+    expected = {"Authorization": "Bearer test_token", "Content-Type": "application/json"}
     result = get_headers(params)
     assert json.loads(result) == expected
 
@@ -525,15 +520,8 @@ def test_get_headers_with_global_api_key():
     """
     from CloudflareWAF import get_headers
 
-    params = {
-        'global_api_key': {'password': 'test_key'},
-        'email': 'user@example.com'
-    }
-    expected = {
-        'X-Auth-Email': 'user@example.com',
-        'X-Auth-Key': 'test_key',
-        'Content-Type': 'application/json'
-    }
+    params = {"global_api_key": {"password": "test_key"}, "email": "user@example.com"}
+    expected = {"X-Auth-Email": "user@example.com", "X-Auth-Key": "test_key", "Content-Type": "application/json"}
     result = get_headers(params)
     assert json.loads(result) == expected
 

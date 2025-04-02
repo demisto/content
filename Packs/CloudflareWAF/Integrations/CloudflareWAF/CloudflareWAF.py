@@ -18,11 +18,19 @@ class Client(BaseClient):
         self.zone_id = zone_id
         super().__init__(base_url=base_url, headers=json.loads(credentials), proxy=proxy, verify=insecure)
 
-    def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None,
-                                                    products: List[str] = None, paused: bool = None, priority: int = None,
-                                                    ref: str = None, filter_id: int = None,
-                                                    filter_expression: str = None) -> dict[str, Any]:
-        """ Create a new Firewall rule in Cloudflare.
+    def cloudflare_waf_firewall_rule_create_request(
+        self,
+        action: str,
+        zone_id: str,
+        description: str = None,
+        products: List[str] = None,
+        paused: bool = None,
+        priority: int = None,
+        ref: str = None,
+        filter_id: int = None,
+        filter_expression: str = None,
+    ) -> dict[str, Any]:
+        """Create a new Firewall rule in Cloudflare.
 
         Args:
             description (str, optional): A description of the rule to help identify it. Defaults to None.
@@ -55,10 +63,19 @@ class Client(BaseClient):
         )
         return self._http_request(method="POST", url_suffix=f"zones/{zone_id}/firewall/rules", json_data=[params])
 
-    def cloudflare_waf_firewall_rule_update_request(self, rule_id: str, filter_id: str, zone_id: str, action: str,
-                                                    description: str = None, products: List[str] = None, paused: bool = None,
-                                                    priority: int = None, ref: str = None) -> dict[str, Any]:
-        """ Sets the Firewall rule for the specified rule id. Can update rule action, paused, description,
+    def cloudflare_waf_firewall_rule_update_request(
+        self,
+        rule_id: str,
+        filter_id: str,
+        zone_id: str,
+        action: str,
+        description: str = None,
+        products: List[str] = None,
+        paused: bool = None,
+        priority: int = None,
+        ref: str = None,
+    ) -> dict[str, Any]:
+        """Sets the Firewall rule for the specified rule id. Can update rule action, paused, description,
             priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
 
         Args:
@@ -92,7 +109,7 @@ class Client(BaseClient):
         return self._http_request(method="PUT", url_suffix=f"zones/{zone_id}/firewall/rules", json_data=[params])
 
     def cloudflare_waf_firewall_rule_delete_request(self, rule_id: str, zone_id: str) -> dict[str, Any]:
-        """ Delete Firewall rule for the specified rule id.
+        """Delete Firewall rule for the specified rule id.
         Args:
             id(str, optional): Firewall Rule identifier.
 
@@ -102,7 +119,7 @@ class Client(BaseClient):
         return self._http_request(method="DELETE", url_suffix=f"zones/{zone_id}/firewall/rules", params={"id": rule_id})
 
     def cloudflare_waf_firewall_rule_list_request(self, args: dict, page: int = None, page_size: int = None) -> dict[str, Any]:
-        """ List of firewall rules or details of individual rule by ID.
+        """List of firewall rules or details of individual rule by ID.
 
         Args:
             id(str, optional): Firewall Rule identifier. Defaults to None.
@@ -130,7 +147,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=f"zones/{zone_id}/firewall/rules", params=params)
 
     def cloudflare_waf_zone_list_request(self, args: dict = None, page: int = None, page_size: int = None) -> dict[str, Any]:
-        """ List account's zones or details of individual zone by ID.
+        """List account's zones or details of individual zone by ID.
 
         Args:
             match(str, optional): Whether to match all search requirements or at least one(any). Defaults to None.
@@ -164,9 +181,10 @@ class Client(BaseClient):
         )
         return self._http_request(method="GET", url_suffix="zones", params=params)
 
-    def cloudflare_waf_filter_create_request(self, expression: str, zone_id: str, ref: str = None, paused: bool = None,
-                                             description: str = None) -> dict[str, Any]:
-        """ Create a new Filter in Cloudflare.
+    def cloudflare_waf_filter_create_request(
+        self, expression: str, zone_id: str, ref: str = None, paused: bool = None, description: str = None
+    ) -> dict[str, Any]:
+        """Create a new Filter in Cloudflare.
         Args:
             expression(str): The filter expression to be used. Defaults to None.
             ref(str, optional): Short reference tag to quickly select related rules. Defaults to None.
@@ -182,9 +200,10 @@ class Client(BaseClient):
         )
         return self._http_request(method="POST", url_suffix=f"zones/{zone_id}/filters", json_data=[params])
 
-    def cloudflare_waf_filter_update_request(self, filter_id: str, expression: str, zone_id: str, ref: str = None,
-                                             paused: bool = None, description: str = None) -> dict[str, Any]:
-        """ Sets the Filter for the specified id.
+    def cloudflare_waf_filter_update_request(
+        self, filter_id: str, expression: str, zone_id: str, ref: str = None, paused: bool = None, description: str = None
+    ) -> dict[str, Any]:
+        """Sets the Filter for the specified id.
 
         Args:
             id (str, optional): Filter identifier. Defaults to None.
@@ -210,7 +229,7 @@ class Client(BaseClient):
         return self._http_request(method="PUT", url_suffix=f"zones/{zone_id}/filters", json_data=[params])
 
     def cloudflare_waf_filter_delete_request(self, filter_id: str, zone_id: str) -> dict[str, Any]:
-        """ Delete filter by the specified id.
+        """Delete filter by the specified id.
 
         Args:
             filter_id (str): Filter ID.
@@ -223,7 +242,7 @@ class Client(BaseClient):
         return self._http_request(method="DELETE", url_suffix=f"zones/{zone_id}/filters", params={"id": filter_id})
 
     def cloudflare_waf_filter_list_request(self, args: dict, page: int = None, page_size: int = None) -> dict[str, Any]:
-        """ List filters or details of individual filter by ID.
+        """List filters or details of individual filter by ID.
 
         Args:
             id (str, optional): Filter identifier. Defaults to None.
@@ -252,9 +271,10 @@ class Client(BaseClient):
         zone_id = args.get("zone_id")
         return self._http_request(method="GET", url_suffix=f"zones/{zone_id}/filters", params=params)
 
-    def cloudflare_waf_ip_lists_list_request(self, list_id: str = None, page: int = None,
-                                             page_size: int = None) -> dict[str, Any]:
-        """ List ip-lists or details of individual list by ID.
+    def cloudflare_waf_ip_lists_list_request(
+        self, list_id: str = None, page: int = None, page_size: int = None
+    ) -> dict[str, Any]:
+        """List ip-lists or details of individual list by ID.
 
         Args:
             id (str, optional): List-ip identifier. Defaults to None.
@@ -271,7 +291,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=f"accounts/{self.account_id}/rules/lists{ip_list}", params=params)
 
     def cloudflare_waf_ip_list_create_request(self, name: str, description: str = None) -> dict[str, Any]:
-        """  Create a new ip-list.
+        """Create a new ip-list.
 
         Args:
             name (str, optional): The name of the list (used in filter expressions). Defaults to None.
@@ -286,7 +306,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=f"accounts/{self.account_id}/rules/lists", json_data=params)
 
     def cloudflare_waf_ip_list_delete_request(self, list_id: str) -> dict[str, Any]:
-        """ Delete ip-list for the specified list id.
+        """Delete ip-list for the specified list id.
         Args:
             id (str, optional): IP-list identifier.
 
@@ -296,7 +316,7 @@ class Client(BaseClient):
         return self._http_request(method="DELETE", url_suffix=f"accounts/{self.account_id}/rules/lists/{list_id}")
 
     def cloudflare_waf_ip_list_item_create_request(self, list_id: str, items: list) -> dict[str, Any]:
-        """  Create a new ip-list items.
+        """Create a new ip-list items.
 
         Args:
             list_id (str, optional): The list ID.
@@ -310,7 +330,7 @@ class Client(BaseClient):
         )
 
     def cloudflare_waf_ip_list_item_update_request(self, list_id: str, items: list) -> dict[str, Any]:
-        """  Replace ip-list items with a new items. Remove all current list items and append the given items to the List.
+        """Replace ip-list items with a new items. Remove all current list items and append the given items to the List.
 
         Args:
             list_id (str, optional): The list ID.
@@ -324,7 +344,7 @@ class Client(BaseClient):
         )
 
     def cloudflare_waf_ip_list_item_delete_request(self, list_id: str, items: list) -> dict[str, Any]:
-        """  Delete ip-list items.
+        """Delete ip-list items.
 
         Args:
             list_id (str, optional): The list ID.
@@ -338,7 +358,7 @@ class Client(BaseClient):
         )
 
     def cloudflare_waf_ip_list_item_list_request(self, list_id: str, item: list = None, cursors: str = None) -> dict[str, Any]:
-        """  List ip-list items.
+        """List ip-list items.
 
         Args:
             list_id (str, optional): The list ID.
@@ -356,7 +376,7 @@ class Client(BaseClient):
         )
 
     def cloudflare_waf_get_operation_request(self, operation_id: str) -> dict[str, Any]:
-        """ Get the current status of a Lists asynchronous operation.
+        """Get the current status of a Lists asynchronous operation.
 
         Args:
             operation_id (str): The obtained operation id.
@@ -384,14 +404,14 @@ def validate_pagination_arguments(page: int = None, page_size: int = None, limit
         raise ValueError(f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.")
 
     if page and page < 1:
-        raise ValueError('page argument must be greater than 0.')
+        raise ValueError("page argument must be greater than 0.")
 
     if limit and (limit < 5 or limit > 100):
-        raise ValueError('limit argument must be between 5 and 100.')
+        raise ValueError("limit argument must be between 5 and 100.")
 
 
 def pagination(request_command: Callable, args: dict[str, Any], pagination_args: dict[str, Any]) -> tuple:
-    """ Executing Manual Pagination (using the page and page size arguments)
+    """Executing Manual Pagination (using the page and page size arguments)
         or Automatic Pagination (display a number of total results).
     Args:
         request_command (Callable): The command to execute.
@@ -431,7 +451,7 @@ def pagination(request_command: Callable, args: dict[str, Any], pagination_args:
 
 
 def ip_list_pagination(response: Union[list, dict], page: int = None, page_size: int = None, limit: int = None) -> tuple:
-    """ Executing Manual Pagination (using the page and page size arguments)
+    """Executing Manual Pagination (using the page and page size arguments)
         or Automatic Pagination (display a number of total results) for the ip-list commands.
 
     Args:
@@ -474,7 +494,7 @@ def arg_to_boolean(arg: str) -> Optional[bool]:
 
 
 def cloudflare_waf_firewall_rule_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Create a new firewall rule by a new filter (if filter_expression is specified)
+    """Create a new firewall rule by a new filter (if filter_expression is specified)
         or an already exist filter (if filter_id is specified).
 
     Args:
@@ -484,19 +504,19 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: dict[str, 
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    action = args['action']
-    zone_id = args.get('zone_id', client.zone_id)
+    action = args["action"]
+    zone_id = args.get("zone_id", client.zone_id)
 
     if not zone_id:
         raise ValueError("zone_id cannot be empty")
 
-    filter_id = args.get('filter_id')
-    filter_expression = args.get('filter_expression')
-    products = argToList(args.get('products'))
-    description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))  # type: ignore
-    priority = arg_to_number(args.get('priority'))
-    ref = args.get('ref')
+    filter_id = args.get("filter_id")
+    filter_expression = args.get("filter_expression")
+    products = argToList(args.get("products"))
+    description = args.get("description")
+    paused = arg_to_boolean(args.get("paused"))  # type: ignore
+    priority = arg_to_number(args.get("priority"))
+    ref = args.get("ref")
 
     response = client.cloudflare_waf_firewall_rule_create_request(
         action,
@@ -544,7 +564,7 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: dict[str, 
 
 
 def cloudflare_waf_firewall_rule_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Update firewall rule by the specified rule ID. Can update rule action, paused, description,
+    """Update firewall rule by the specified rule ID. Can update rule action, paused, description,
         priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
 
     Args:
@@ -554,19 +574,19 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: dict[str, 
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    rule_id = args['id']
-    zone_id = args.get('zone_id', client.zone_id)
+    rule_id = args["id"]
+    zone_id = args.get("zone_id", client.zone_id)
 
     if not zone_id:
         raise ValueError("zone_id cannot be empty")
 
-    action = args.get('action')
-    filter_id = args.get('filter_id')
-    products = args.get('products')
-    description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))  # type: ignore
-    priority = arg_to_number(args.get('priority'))
-    ref = args.get('ref')
+    action = args.get("action")
+    filter_id = args.get("filter_id")
+    products = args.get("products")
+    description = args.get("description")
+    paused = arg_to_boolean(args.get("paused"))  # type: ignore
+    priority = arg_to_number(args.get("priority"))
+    ref = args.get("ref")
 
     response = client.cloudflare_waf_firewall_rule_update_request(
         rule_id,
@@ -592,7 +612,7 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: dict[str, 
 
 
 def cloudflare_waf_firewall_rule_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Delete firewall rule by the specified rule ID.
+    """Delete firewall rule by the specified rule ID.
 
     Args:
         client (Client): Cloudflare API client.
@@ -613,7 +633,7 @@ def cloudflare_waf_firewall_rule_delete_command(client: Client, args: dict[str, 
 
 
 def cloudflare_waf_firewall_rule_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ List of firewall rules under the specified firewall rules information includes the description, action and paused.
+    """List of firewall rules under the specified firewall rules information includes the description, action and paused.
         Or retrieve details of individual firewall rule by specified the rule ID.
 
     Args:
@@ -623,18 +643,18 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: dict[str, An
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    zone_id = args.get('zone_id', client.zone_id)
+    zone_id = args.get("zone_id", client.zone_id)
 
     if not zone_id:
         raise ValueError("zone_id cannot be empty")
 
-    rule_id = args.get('id')
-    description = args.get('description')
-    action = args.get('action')
-    paused = arg_to_boolean(args.get('paused'))  # type: ignore
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    rule_id = args.get("id")
+    description = args.get("description")
+    action = args.get("action")
+    paused = arg_to_boolean(args.get("paused"))  # type: ignore
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    limit = arg_to_number(args.get("limit"))
 
     validate_pagination_arguments(page, page_size, limit)
 
@@ -677,7 +697,7 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: dict[str, An
 
 
 def cloudflare_waf_zone_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ List of Zones under the specified zone information includes the name, account and status.
+    """List of Zones under the specified zone information includes the name, account and status.
         Or retrieve details of individual zone by specified the zone ID.
 
     Args:
@@ -730,7 +750,7 @@ def cloudflare_waf_zone_list_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def cloudflare_waf_filter_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Create a new filter for a firewall rule by a new filter expression.
+    """Create a new filter for a firewall rule by a new filter expression.
 
     Args:
         client (Client): Cloudflare API client.
@@ -746,9 +766,9 @@ def cloudflare_waf_filter_create_command(client: Client, args: dict[str, Any]) -
     if not zone_id:
         raise ValueError("zone_id cannot be empty")
 
-    ref = args.get('ref')
-    description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))  # type: ignore
+    ref = args.get("ref")
+    description = args.get("description")
+    paused = arg_to_boolean(args.get("paused"))  # type: ignore
 
     response = client.cloudflare_waf_filter_create_request(expression, zone_id, description=description, paused=paused, ref=ref)
 
@@ -772,7 +792,7 @@ def cloudflare_waf_filter_create_command(client: Client, args: dict[str, Any]) -
 
 
 def cloudflare_waf_filter_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Update filter by the specified filter ID.
+    """Update filter by the specified filter ID.
 
     Args:
         client (Client): Cloudflare API client.
@@ -782,16 +802,16 @@ def cloudflare_waf_filter_update_command(client: Client, args: dict[str, Any]) -
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    filter_id = args['id']
-    expression = args.get('expression')
-    zone_id = args.get('zone_id', client.zone_id)
+    filter_id = args["id"]
+    expression = args.get("expression")
+    zone_id = args.get("zone_id", client.zone_id)
 
     if not zone_id:
         raise ValueError("zone_id cannot be empty")
 
-    ref = args.get('ref')
-    description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))  # type: ignore
+    ref = args.get("ref")
+    description = args.get("description")
+    paused = arg_to_boolean(args.get("paused"))  # type: ignore
 
     response = client.cloudflare_waf_filter_update_request(
         filter_id,
@@ -814,7 +834,7 @@ def cloudflare_waf_filter_update_command(client: Client, args: dict[str, Any]) -
 
 
 def cloudflare_waf_filter_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Delete filter by the specified filter ID.
+    """Delete filter by the specified filter ID.
 
     Args:
         client (Client): Cloudflare API client.
@@ -835,7 +855,7 @@ def cloudflare_waf_filter_delete_command(client: Client, args: dict[str, Any]) -
 
 
 def cloudflare_waf_filter_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ List of filters under the specified filter information includes the paused, ref and description.
+    """List of filters under the specified filter information includes the paused, ref and description.
         Or retrieve details of individual filter by specified the ID.
 
     Args:
@@ -845,16 +865,16 @@ def cloudflare_waf_filter_list_command(client: Client, args: dict[str, Any]) -> 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    zone_id = args.get('zone_id', client.zone_id)
+    zone_id = args.get("zone_id", client.zone_id)
 
     if not zone_id:
         raise ValueError("zone_id cannot be empty")
 
-    filter_id = args.get('id')
-    expression = args.get('expression')
-    ref = args.get('ref')
-    description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))  # type: ignore
+    filter_id = args.get("id")
+    expression = args.get("expression")
+    ref = args.get("ref")
+    description = args.get("description")
+    paused = arg_to_boolean(args.get("paused"))  # type: ignore
 
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
@@ -894,7 +914,7 @@ def cloudflare_waf_filter_list_command(client: Client, args: dict[str, Any]) -> 
 
 
 def cloudflare_waf_ip_lists_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ List IP-lists under the specified list information includes the description, kind, number of items,
+    """List IP-lists under the specified list information includes the description, kind, number of items,
         number of referencing filters and dates.
         Or retrieve details of individual ip-list by specified the ID.
 
@@ -939,7 +959,7 @@ def cloudflare_waf_ip_lists_list_command(client: Client, args: dict[str, Any]) -
 
 
 def cloudflare_waf_ip_list_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Create a new IP-list. An IP-list is a list that includes IP addresses and CIDR.
+    """Create a new IP-list. An IP-list is a list that includes IP addresses and CIDR.
         IP-list is used in the filter expression.
 
     Args:
@@ -972,7 +992,7 @@ def cloudflare_waf_ip_list_create_command(client: Client, args: dict[str, Any]) 
 
 
 def cloudflare_waf_ip_list_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Delete IP-list by the specified ID.
+    """Delete IP-list by the specified ID.
 
     Args:
         client (Client): Cloudflare API client.
@@ -990,7 +1010,7 @@ def cloudflare_waf_ip_list_delete_command(client: Client, args: dict[str, Any]) 
 
 
 def cloudflare_waf_ip_list_item_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Create a new ip-list items.
+    """Create a new ip-list items.
 
     Args:
         client (Client): Cloudflare API client.
@@ -1010,7 +1030,7 @@ def cloudflare_waf_ip_list_item_create_command(client: Client, args: dict[str, A
 
 
 def cloudflare_waf_ip_list_item_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Replace exist ip-list items with a new items.
+    """Replace exist ip-list items with a new items.
 
     Args:
         client (Client): Cloudflare API client.
@@ -1031,7 +1051,7 @@ def cloudflare_waf_ip_list_item_update_command(client: Client, args: dict[str, A
 
 
 def cloudflare_waf_ip_list_item_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ Delete items from an ip-list.
+    """Delete items from an ip-list.
 
     Args:
         client (Client): ClouDflare API client.
@@ -1052,7 +1072,7 @@ def cloudflare_waf_ip_list_item_delete_command(client: Client, args: dict[str, A
 
 
 def cloudflare_waf_ip_list_item_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """ List ip-list items. Can get by specified item ID or item IP.
+    """List ip-list items. Can get by specified item ID or item IP.
 
     Args:
         client (Client): ClouDflare API client.
@@ -1148,9 +1168,10 @@ def test_module(client: Client):
     return "ok"
 
 
-def schedule_command(operation_id: str, interval: Optional[int], timeout: Optional[int], cmd: str,
-                     args: dict[str, Any]) -> ScheduledCommand:
-    """ Build scheduled command if operation status is not completed.
+def schedule_command(
+    operation_id: str, interval: Optional[int], timeout: Optional[int], cmd: str, args: dict[str, Any]
+) -> ScheduledCommand:
+    """Build scheduled command if operation status is not completed.
 
     Args:
         operation_id (str): The command operation ID.
@@ -1173,7 +1194,7 @@ def schedule_command(operation_id: str, interval: Optional[int], timeout: Option
 
 
 def run_polling_command(client: Client, cmd: str, command_function: Callable, args: dict[str, Any]) -> CommandResults:
-    """ Run a pipeline.
+    """Run a pipeline.
 
     Args:
         cmd (str): The command name.
@@ -1226,23 +1247,16 @@ def get_headers(params: dict) -> str:
     """
     headers = {}
 
-    api_token = params.get('credentials', {}).get('password')
-    global_api_key = params.get('global_api_key', {}).get('password')
-    email = params.get('email')
+    api_token = params.get("credentials", {}).get("password")
+    global_api_key = params.get("global_api_key", {}).get("password")
+    email = params.get("email")
 
     if api_token:
-        headers = {
-            'Authorization': f'Bearer {api_token}',
-            'Content-Type': 'application/json'
-        }
+        headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
     elif global_api_key and email:
-        headers = {
-            'X-Auth-Email': email,
-            'X-Auth-Key': global_api_key,
-            'Content-Type': 'application/json'
-        }
+        headers = {"X-Auth-Email": email, "X-Auth-Key": global_api_key, "Content-Type": "application/json"}
     else:
-        raise ValueError('Missing authentication parameters. Provide either API Token or Global API Key with Email.')
+        raise ValueError("Missing authentication parameters. Provide either API Token or Global API Key with Email.")
 
     return json.dumps(headers)
 
@@ -1251,12 +1265,12 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
-    base_url: str = params.get('server', 'https://api.cloudflare.com/client/v4/')
-    account_id: str = params.get('account_id', '')
-    zone_id = params.get('zone_id')
-    proxy = argToBoolean(params.get('proxy', False))
-    insecure = argToBoolean(params.get('insecure', True))
-    polling = args.get('polling')
+    base_url: str = params.get("server", "https://api.cloudflare.com/client/v4/")
+    account_id: str = params.get("account_id", "")
+    zone_id = params.get("zone_id")
+    proxy = argToBoolean(params.get("proxy", False))
+    insecure = argToBoolean(params.get("insecure", True))
+    polling = args.get("polling")
 
     command = demisto.command()
     commands = {
@@ -1292,13 +1306,13 @@ def main() -> None:
 
     except Exception as e:
         error_str = str(e)
-        if 'Unable to authenticate request' in error_str:
+        if "Unable to authenticate request" in error_str:
             return_error(
-                'Authentication failed. Please verify that your token has the necessary '
-                'permissions and access to the required resources.'
+                "Authentication failed. Please verify that your token has the necessary "
+                "permissions and access to the required resources."
             )
         else:
-            return_error(f'One or more of the specified fields are invalid. Please validate them. {error_str}')
+            return_error(f"One or more of the specified fields are invalid. Please validate them. {error_str}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
