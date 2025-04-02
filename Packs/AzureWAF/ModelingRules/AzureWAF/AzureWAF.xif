@@ -32,7 +32,9 @@ filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
     source_ipv4 = arrayindex(regextract(tmp_ip_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     source_ipv6 = arrayindex(regextract(tmp_ip_address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
     source_socket_ipv4 = regextract(socketIP_s, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),
-    source_socket_ipv6 = regextract(socketIP_s, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})")
+    source_socket_ipv6 = regextract(socketIP_s, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),
+    clientPort_s = to_integer(clientPort_s),
+    clientPort_d = to_integer(clientPort_d)
 
 | alter
     xdm.event.id = trackingReference_s,
@@ -40,7 +42,7 @@ filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
     xdm.target.resource.name = Resource,
     xdm.target.resource.parent_id = ResourceGroup ,
     xdm.target.resource.type = ResourceType ,
-    xdm.source.port = to_integer(coalesce(clientPort_d , clientPort_s)),
+    xdm.source.port = coalesce(clientPort_d , clientPort_s),
     xdm.source.ipv4 = source_ipv4 ,
     xdm.source.ipv6 = source_ipv6,
     xdm.source.host.ipv4_addresses = source_socket_ipv4,
