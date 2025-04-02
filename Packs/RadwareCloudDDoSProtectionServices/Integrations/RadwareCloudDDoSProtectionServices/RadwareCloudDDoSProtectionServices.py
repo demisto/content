@@ -1,0 +1,237 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
+
+import urllib3
+from typing import Any
+from requests import Response
+import time
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+VENDOR = "Radware"
+PRODUCT = "cloud ddos"
+
+
+class Client(BaseClient):
+
+    def __init__(self, base_url: str, account_id: str, api_key: str, verify: bool, proxy: bool):
+        self.account_id = account_id
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={'x-api-key': api_key, 'Context': account_id})
+
+    def get_events(self, start_time=None, end_time=None, skip=0, take=700) -> dict[str, Any] | Response:
+        """
+        Fetches events from a specific time range with pagination support.
+        Args:
+            start_time(int): The start time for fetching events in milliseconds since epoch.
+            end_time(int): The end time for fetching events in milliseconds since epoch.
+            skip(int): The number of events to skip for pagination (default: 0).
+            take(int): The number of events to take for pagination (default: 700).
+        return dict[str, Any] | Response: A dictionary containing the fetched events and related metadata.
+        """
+
+        params = {
+            "criteria": [
+                {
+                    "key": "startTimestamp",
+                    "value": [start_time, None]
+                },
+                {
+                    "key": "endTimestamp",
+                    "value": [None, end_time]
+                },
+                {
+                    "key": "risk",
+                    "value": ["Info", "Low", "Medium", "High", "Critical"]
+                }
+            ],
+            "skip": skip,
+            "take": take
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/api/sdcc/attack/core/analytics/object/vision/securityevents",
+            json_data=params,
+        )
+
+    def get_alerts(self, start_time=None, end_time=None, skip=0, take=700) -> dict[str, Any] | Response:
+        """
+        Fetches alerts from a specific time range with pagination support.
+        Args:
+            start_time(int): The start time for fetching alerts in milliseconds since epoch.
+            end_time(int): The end time for fetching alerts in milliseconds since epoch.
+            skip(int): The number of alerts to skip for pagination (default: 0).
+            take(int): The number of alerts to take for pagination (default: 700).
+        return: A dictionary containing the fetched alerts and related metadata.
+        """
+
+        params = {
+            "criteria": [
+                {
+                    "key": "timestamp",
+                    "value": [start_time, end_time]
+                },
+                {
+                    "key": "severity",
+                    "value": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                }
+            ],
+            "skip": skip,
+            "take": take
+        }
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/api/sdcc/infrastructure/core/analytics/object/operationalmessages/virtual",
+            json_data=params,
+        )
+
+
+def add_fields(events: list[dict], evnet_type: str | None):
+    """
+    Gets a list of events of a specific event type and adds the `_time` & `source_log_type` fields to the event.
+    Args:
+        events: A list of events.
+        evnet_type: The event type.
+    """
+    for event in events:
+        event['_time'] = event.get('timestamp')
+        event['source_log_type'] = evnet_type
+
+
+def fetch_events(client, last_run):
+    end_time = int(time.time() * 1000)
+    start_time = last_run.get('last_fetch_events', end_time-2)+1
+    continue_fetch_events = last_run.get('continue_fetch_events', None)
+    skip = 0
+    if continue_fetch_events:
+        end_time = continue_fetch_events.get('end_time')
+        start_time = continue_fetch_events.get('start_time')
+        skip = continue_fetch_events.get('fetched_events')
+
+    demisto.debug(f'RadwareCloudDDoS: {start_time=}, {end_time=}, {skip=}')
+    response = client.get_events(start_time, end_time, skip, 700)
+    documents = response.get("documents")
+    demisto.debug(f'RadwareCloudDDoS: {len(documents)=}')
+    new_continue_fetch_events = {}
+
+    if documents:
+        latest_timestamp_events = documents[0]["endTimestamp"]
+        demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_events=}')
+        if len(documents) == 700:
+            demisto.debug('RadwareCloudDDoS: found next page')
+            new_continue_fetch_events = {'end_time': end_time, 'start_time': start_time, 'fetched_events': len(documents)+skip}
+
+        if not continue_fetch_events:
+            last_run['last_fetch_events'] = latest_timestamp_events
+            demisto.debug(f'RadwareCloudDDoS: saved {latest_timestamp_events=}')
+
+        if new_continue_fetch_events:
+            last_run['nextTrigger'] = '0'
+
+        last_run['continue_fetch_events'] = new_continue_fetch_events
+        demisto.debug(f'RadwareCloudDDoS: set {new_continue_fetch_events=}')
+        add_fields(documents, 'security_events')
+
+    return documents, last_run
+
+
+def fetch_alerts(client, last_run):
+    end_time = int(time.time() * 1000)
+    start_time = last_run.get('last_fetch_alerts', end_time-2)+1
+    continue_fetch_alerts = last_run.get('continue_fetch_alerts', None)
+    skip = 0
+
+    if continue_fetch_alerts:
+        end_time = continue_fetch_alerts.get('end_time')
+        start_time = continue_fetch_alerts.get('start_time')
+        skip = continue_fetch_alerts.get('fetched_alerts')
+
+    demisto.debug(f'RadwareCloudDDoS: {start_time=}, {end_time=},  {skip=}')
+    response = client.get_alerts(start_time, end_time, skip, 700)
+    documents = response.get("documents")
+    demisto.debug(f'RadwareCloudDDoS: {len(documents)=}')
+    new_continue_fetch_alerts = {}
+
+    if documents:
+        latest_timestamp_alerts = documents[0].get('context', {}).get("_timestamp")
+        demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_alerts=}')
+        if len(documents) == 700:
+            demisto.debug('RadwareCloudDDoS: found next page')
+            new_continue_fetch_alerts = {'end_time': end_time, 'start_time': start_time, 'fetched_alerts': len(documents)+skip}
+
+        if not continue_fetch_alerts:
+            last_run['last_fetch_alerts'] = latest_timestamp_alerts
+            demisto.debug(f'RadwareCloudDDoS: saved {latest_timestamp_alerts=}')
+
+        if new_continue_fetch_alerts:
+            last_run['nextTrigger'] = '0'
+
+        last_run['continue_fetch_alerts'] = new_continue_fetch_alerts
+        demisto.debug(f'RadwareCloudDDoS: set {new_continue_fetch_alerts=}')
+        add_fields(documents, 'operational_alerts')
+
+    return documents, last_run
+
+
+''' MAIN FUNCTION '''
+
+
+def main() -> None:
+
+    params = demisto.params()
+    account_id: str = params.get('credentials', {}).get('identifier', '')
+    api_key: str = params.get('credentials', {}).get('password', '')
+    base_url: str = params.get('url', '').rstrip('/')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    event_types = argToList(params.get("event_types"))
+    last_run = demisto.getLastRun()
+    demisto.debug(f'RadwareCloudDDoS: {last_run=}')
+
+    command = demisto.command()
+    demisto.info(f'Command being called is {command}')
+    try:
+        client = Client(
+            account_id=account_id,
+            api_key=api_key,
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy
+        )
+        if command == 'test-module':
+            client.get_events(take=1)
+            return_results('ok')
+        elif command == 'fetch-events':
+            events = []
+            alerts = []
+            if 'Events' in event_types:
+                events, last_run = fetch_events(client, last_run=last_run)
+            if 'Alerts' in event_types:
+                alerts, last_run = fetch_alerts(client, last_run=last_run)
+
+            demisto.setLastRun(last_run)
+            send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
+            demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
+        elif command == "radware-cloud-ddos-protection-services-get-events":
+            if 'Events' in event_types:
+                events, _ = fetch_events(client, last_run=last_run)
+            if 'Alerts' in event_types:
+                alerts, _ = fetch_alerts(client, last_run=last_run)
+            events, _ = fetch_events(client, last_run=demisto.getLastRun())
+            return_results(events)
+
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
+
+
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
