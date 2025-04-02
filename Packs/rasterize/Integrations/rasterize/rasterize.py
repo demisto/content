@@ -214,7 +214,7 @@ class PychromeEventHandler:
         self.tab_ready_event = tab_ready_event
         self.start_frame = None
         self.is_mailto = False
-        self.is_this_network_url = False
+        self.is_private_network_url = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
@@ -731,8 +731,8 @@ def screenshot_image(
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
     if tab_event_handler.is_this_network_url:
         return None, (
-            'URLs that belong to the "This" Network (0.0.0.0/8) or'
-            f' Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+            'URLs that belong to the "This" Network (0.0.0.0/8), or'
+            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
         )
 
     try:
@@ -906,15 +906,15 @@ def kill_zombie_processes():
 
 
 @lru_cache(maxsize=1024)
-def is_this_network(url: str) -> bool:
+def is_private_network(url: str) -> bool:
     """
-    Check if a URL's hostname belongs to "This" Network or Loopback Network.
+    Check if a URL's hostname belongs to a private network.
     
     Args:
         url (str): The URL to check
         
     Returns:
-        bool: True if the hostname is in private networks, False otherwise
+        bool: True if the hostname is in a private network, False otherwise
     """
     try:
         if not url.startswith(('http://', 'https://')):
