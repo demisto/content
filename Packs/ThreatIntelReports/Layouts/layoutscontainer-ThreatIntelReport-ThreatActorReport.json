@@ -592,7 +592,7 @@
                 "id": "canvas",
                 "name": "Canvas",
                 "type": "canvas",
-                "hidden": false
+                "hidden": true
             }
         ]
     },

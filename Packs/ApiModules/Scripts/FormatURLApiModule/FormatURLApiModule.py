@@ -1,4 +1,6 @@
+from base64 import urlsafe_b64decode
 import ipaddress
+import string
 import tldextract
 import urllib.parse
 from CommonServerPython import *
@@ -229,6 +231,7 @@ class URLCheck:
         index = self.base
         host: Any = ''
         is_ip = False
+        numerical_ip = False
 
         while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
 
@@ -305,6 +308,13 @@ class URLCheck:
                 index += 1
 
         if not is_ip:
+            try:  # Check if host is a numerical representation of an IP address
+                host = int(host)
+                numerical_ip = True
+
+            except ValueError:
+                pass
+
             try:
                 ip = ipaddress.ip_address(host)
 
@@ -314,6 +324,9 @@ class URLCheck:
             except ValueError:
                 self.check_domain(host)
 
+        if numerical_ip:
+            self.url.hostname = ip.exploded
+            self.output = self.output.replace(str(host), ip.exploded)
         self.url.hostname = host
         self.check_done(index)
 
@@ -599,6 +612,66 @@ class URLCheck:
             self.modified_url = self.modified_url[beginning:end + 1]
 
 
+class ProofPointFormatter(object):
+    ud_pattern = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
+    v3_pattern = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
+    v3_token_pattern = re.compile(r"\*(\*.)?")
+    v3_single_slash = re.compile(r"^([a-z0-9+.-]+:/)([^/].+)", re.IGNORECASE)
+    v3_run_mapping: dict[Any, Any] = {}
+
+    def __init__(self, url):
+        self.url = url
+        run_values = string.ascii_uppercase + string.ascii_lowercase + string.digits + '-' + '_'
+        run_length = 2
+        for value in run_values:
+            self.v3_run_mapping[value] = run_length
+            run_length += 1
+
+    def decode_v3(self):
+        def replace_token(token):
+            if token == '*':
+                character = self.dec_bytes[self.current_marker]
+                self.current_marker += 1
+                return character
+            if token.startswith('**'):
+                run_length = self.v3_run_mapping[token[-1]]
+                run = self.dec_bytes[self.current_marker:self.current_marker + run_length]
+                self.current_marker += run_length
+                return run
+            return ''
+
+        def substitute_tokens(text, start_pos=0):
+            match = self.v3_token_pattern.search(text, start_pos)
+            if match:
+                start = text[start_pos:match.start()]
+                built_string = start
+                token = text[match.start():match.end()]
+                built_string += replace_token(token)
+                built_string += substitute_tokens(text, match.end())
+                return built_string
+            else:
+                return text[start_pos:len(text)]
+        match = self.ud_pattern.search(self.url)
+        if match and match.group(2) == 'v3':
+            match = self.v3_pattern.search(self.url)
+            if match:
+                url = match.group('url')
+                singleSlash = self.v3_single_slash.findall(url)
+                if singleSlash and len(singleSlash[0]) == 2:
+                    url = singleSlash[0][0] + "/" + singleSlash[0][1]
+                encoded_url = urllib.parse.unquote(url)
+                enc_bytes = match.group('enc_bytes')
+                enc_bytes += '=='
+                self.dec_bytes = (urlsafe_b64decode(enc_bytes)).decode('utf-8')
+                self.current_marker = 0
+                return substitute_tokens(encoded_url)
+
+            else:
+                raise ValueError('Error parsing URL')
+        else:
+            raise ValueError('Unrecognized v3 version in: ', self.url)
+
+
 class URLFormatter:
 
     # URL Security Wrappers
@@ -673,7 +746,7 @@ class URLFormatter:
                 url = URLFormatter.ATP_regex.findall(url)[0]
 
             elif URLFormatter.proofpoint_regex.findall(url):
-                url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0])
+                url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0], url)
 
             else:
                 wrapper = False
@@ -681,7 +754,7 @@ class URLFormatter:
         return url
 
     @staticmethod
-    def extract_url_proofpoint(url: str) -> str:
+    def extract_url_proofpoint(url: str, original_url: str) -> str:
         """
         Extracts the domain from the Proofpoint wrappers using a regex
 
@@ -698,7 +771,11 @@ class URLFormatter:
 
         else:
             # Proofpoint v3
-            return urllib.parse.unquote(url[1])
+            try:
+                result = ProofPointFormatter(original_url).decode_v3()
+                return result
+            except Exception:
+                return urllib.parse.unquote(url[1])
 
     @staticmethod
     def correct_and_refang_url(url: str) -> str:

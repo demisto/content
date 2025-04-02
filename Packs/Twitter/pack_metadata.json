@@ -3,7 +3,7 @@
     "description": "A simple integration that uses Twitter's API to perform searches on twitter for tweets and users.",
     "support": "xsoar",
     "certification": "verified",
-    "currentVersion": "2.0.11",
+    "currentVersion": "2.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,6 +17,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

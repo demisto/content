@@ -77,10 +77,10 @@ ATP_REDIRECTS = [
      'https://office.memoriesflower.com/Permission/office.php'),  # disable-secrets-detection
     ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'  # disable-secrets-detection
      'https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',  # disable-secrets-detection
-     'https://google.com:443/search?q=a*test&gs=ps'),  # disable-secrets-detection
+     'https://google.com:443/search?q=a+test&gs=ps'),  # disable-secrets-detection
     ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'  # disable-secrets-detection
      'hxxps%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',  # disable-secrets-detection
-     'https://google.com:443/search?q=a*test&gs=ps'),  # disable-secrets-detection
+     'https://google.com:443/search?q=a+test&gs=ps'),  # disable-secrets-detection
     ('http://nam12.safelinks.protection.outlook.com/'  # disable-secrets-detection
      '?url=http%3A%2F%2Fi.ms00.net%2Fsubscribe%3Fserver_action%3D'  # disable-secrets-detection
      'Unsubscribe%26list%3Dvalintry2%26sublist%3D*%26msgid%3D1703700099.20966'  # disable-secrets-detection
@@ -117,11 +117,11 @@ PROOF_POINT_REDIRECTS = [
     ('https://urldefense.com/v3/__https://google.com:443/'  # disable-secrets-detection
      'search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg'  # disable-secrets-detection
      '!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$',  # disable-secrets-detection
-     'https://google.com:443/search?q=a*test&gs=ps'),  # disable-secrets-detection
+     'https://google.com:443/search?q=a+test&gs=ps'),  # disable-secrets-detection
     ('https://urldefense.us/v3/__https://google.com:443/'  # disable-secrets-detection
      'search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg'  # disable-secrets-detection
      '!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$',  # disable-secrets-detection
-     'https://google.com:443/search?q=a*test&gs=ps')  # disable-secrets-detection
+     'https://google.com:443/search?q=a+test&gs=ps')  # disable-secrets-detection
 ]
 
 FIREEYE_REDIRECT = [
@@ -158,6 +158,7 @@ FORMAT_IPv4 = [
     ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),  # disable-secrets-detection
     ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),  # disable-secrets-detection
     ('http://223.255.255.254', 'http://223.255.255.254'),  # disable-secrets-detection
+    ('https://86834311/test', 'https://5.44.252.135/test'),  # disable-secrets-detection
 ]
 
 FORMAT_IPv6 = [
