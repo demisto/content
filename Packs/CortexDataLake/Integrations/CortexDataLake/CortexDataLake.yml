@@ -2177,7 +2177,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.SourceUserName
       description: The source user username.
     - contextPath: CDL.Logging.GlobalProtect.SSLResponseTime
-      description: SSL Response Time in milliseconds.
+      description: SSL response time in milliseconds.
     - contextPath: CDL.Logging.GlobalProtect.Stage
       description: Name of the stage in the GlobalProtect connection workflow.
     - contextPath: CDL.Logging.GlobalProtect.EventStatus
