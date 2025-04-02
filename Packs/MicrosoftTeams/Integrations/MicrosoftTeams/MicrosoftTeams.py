@@ -736,8 +736,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    #tenant_id = integration_context.get('tenant_id')
-    tenant_id = '##### Add your tenant id here #####'
+    tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
         raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
     headers = None
@@ -1517,6 +1516,7 @@ def add_bot_to_chat(chat_id: str):
     Add the Dbot to a chat.
     :param chat_id: chat id which to add the bot to.
     """
+    missing_bot_err_msg = f"Bot with ID: {BOT_ID} was not found in the App Catalog in Microsoft."
 
     demisto.debug(f'adding bot with id {BOT_ID} to chat')
 
@@ -1527,17 +1527,31 @@ def add_bot_to_chat(chat_id: str):
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
                        params={"$filter": f"externalId eq '{BOT_ID}'"})
     demisto.debug(f"App data is: {res}")
-    value = res.get('value', []) # type: ignore
-    if not value:
-        raise DemistoException(f"Bot with ID: {BOT_ID} was not found in the App Catalog in Microsoft.")
-    app_data = value[0]
-    bot_internal_id = app_data.get('id')
-    demisto.debug(f"Bot internal ID is: {bot_internal_id}")
+    if isinstance(res, dict):
+        value = res.get('value', []) # type: ignore
+        if not value:
+            raise DemistoException(missing_bot_err_msg)
+        app_data = value[0]
+        bot_internal_id = app_data.get('id')
+        demisto.debug(f"Bot internal ID is: {bot_internal_id}")
 
-    request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
-    http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
+        request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+        http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
 
-    demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+        demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    
+    else:
+       raise DemistoException(missing_bot_err_msg)
+
+
+    if isinstance(res, dict):
+        app_data = res.get("value")[0]  # type: ignore
+        bot_internal_id = app_data.get("id")
+        request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+        http_request("POST", f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps", json_=request_json)
+        demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    else:
+        demisto.debug("Bot not in catalog")
 
 
 def chat_create_command():
