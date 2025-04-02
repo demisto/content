@@ -1,10 +1,15 @@
+import json
 from pathlib import Path
 from typing import Any, cast
+
+import demistomock as demisto
 import pytest
+from CommonServerPython import DemistoException, assign_params
 from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
     INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
     INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
     INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
     INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
     INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
@@ -15,10 +20,9 @@ from Infoblox import (
     INTEGRATION_IPV4_CONTEXT_NAME,
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
-    INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
     IP_MAPPING,
-    IPv4AddressStatus,
     InfoBloxNIOSClient,
+    IPv4AddressStatus,
     get_extended_attributes_context,
     get_host_records_command,
     get_ip_command,
@@ -27,14 +31,10 @@ from Infoblox import (
     transform_host_records_context,
     transform_ip_context,
     transform_ipv4_range,
-    transform_network_info_context
+    transform_network_info_context,
 )
-import demistomock as demisto
-import json
 
-from CommonServerPython import DemistoException, assign_params
-
-BASE_URL = 'https://example.com/v1/'
+BASE_URL = "https://example.com/v1/"
 
 POST_NEW_ZONE_RESPONSE = {
     "result": {
@@ -44,70 +44,72 @@ POST_NEW_ZONE_RESPONSE = {
         "rpz_policy": "GIVEN",
         "rpz_severity": "WARNING",
         "rpz_type": "LOCAL",
-        "view": "default"
+        "view": "default",
     }
 }
 
 API_ERROR_OBJ = {
     "Error": "AdmConDataError: None (IBDataConflictError: IB.Data.Conflict:Duplicate object 'test123.com' of type zone "
-             "exists in the database.)",
+    "exists in the database.)",
     "code": "Client.Ibap.Data.Conflict",
-    "text": "Duplicate object 'test123.com' of type zone exists in the database."
+    "text": "Duplicate object 'test123.com' of type zone exists in the database.",
 }
 
 # disable-secrets-detection-start
-SSL_ERROR = "Failed to parse json object from response: b'<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" " \
-            "content=\"text/html; charset=utf-8\">\r\n<META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">\r\n<meta " \
-            "name=\"viewport\" content=\"initial-scale=1.0\">\r\n<title>Certificate Error</title>\r\n<style>\r\n  " \
-            "#content {\r\n    border:3px solid#aaa;\r\n    background-color:#fff;\r\n    margin:1.5em;\r\n    " \
-            "padding:1.5em;\r\n    font-family:Tahoma,Helvetica,Arial,sans-serif;\r\n    font-size:1em;\r\n  }\r\n  " \
-            "h1 {\r\n    font-size:1.3em;\r\n    font-weight:bold;\r\n    color:#196390;\r\n  }\r\n  b {\r\n    " \
-            "color:#196390;\r\n  }\r\n</style>\r\n</head>\r\n<body " \
-            "\">\r\n<div id=\"content\">\r\n<h1>Certificate Error</h1>\r\n<p>There is an issue with " \
-            "the SSL certificate of the server you are trying to contact.</p>\r\n<p><b>Certificate Name:</b> " \
-            "www.infoblox.com </p>\r\n<p><b>IP:</b> </p>\r\n<p><b>Category:</b> any </p>\r\n<p><b>Issuer:</b> " \
-            "www.infoblox.com </p>\r\n<p><b>Status:</b> expired </p>\r\n<p><b>Reason:</b>  </p>\r\n<p><b>User:</b> " \
-            "</p>\r\n</div>\r\n</body>\r\n</html>\r\n\r\n'"
+SSL_ERROR = (
+    'Failed to parse json object from response: b\'<html>\r\n<head>\r\n<meta http-equiv="Content-Type" '
+    'content="text/html; charset=utf-8">\r\n<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">\r\n<meta '
+    'name="viewport" content="initial-scale=1.0">\r\n<title>Certificate Error</title>\r\n<style>\r\n  '
+    "#content {\r\n    border:3px solid#aaa;\r\n    background-color:#fff;\r\n    margin:1.5em;\r\n    "
+    "padding:1.5em;\r\n    font-family:Tahoma,Helvetica,Arial,sans-serif;\r\n    font-size:1em;\r\n  }\r\n  "
+    "h1 {\r\n    font-size:1.3em;\r\n    font-weight:bold;\r\n    color:#196390;\r\n  }\r\n  b {\r\n    "
+    "color:#196390;\r\n  }\r\n</style>\r\n</head>\r\n<body "
+    '">\r\n<div id="content">\r\n<h1>Certificate Error</h1>\r\n<p>There is an issue with '
+    "the SSL certificate of the server you are trying to contact.</p>\r\n<p><b>Certificate Name:</b> "
+    "www.infoblox.com </p>\r\n<p><b>IP:</b> </p>\r\n<p><b>Category:</b> any </p>\r\n<p><b>Issuer:</b> "
+    "www.infoblox.com </p>\r\n<p><b>Status:</b> expired </p>\r\n<p><b>Reason:</b>  </p>\r\n<p><b>User:</b> "
+    "</p>\r\n</div>\r\n</body>\r\n</html>\r\n\r\n'"
+)
 #  disable-secrets-detection-end
 
 GET_USER_LIST = {
-    'account': [
-        {'username': 'User1', 'name': 'DBot Demisto', 'isLocked': False},
-        {'username': 'User2', 'name': 'Demisto DBot', 'isLocked': True}
+    "account": [
+        {"username": "User1", "name": "DBot Demisto", "isLocked": False},
+        {"username": "User2", "name": "Demisto DBot", "isLocked": True},
     ]
 }
 
-REQUEST_PARAM_ZONE = f'?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
-                     'substitute_name%2Ccomment%2Cdisable'  # noqa: E501
+REQUEST_PARAM_ZONE = (
+    f"?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C"
+    "substitute_name%2Ccomment%2Cdisable"
+)  # noqa: E501
 
-client = InfoBloxNIOSClient('https://example.com/v1/')
+client = InfoBloxNIOSClient("https://example.com/v1/")
 
 
 class TestHelperFunctions:
-
     def test_parse_demisto_exception_unauthorized_error(self):
         from Infoblox import parse_demisto_exception
-        json_err = 'Expecting value: line 1 column 1 (char 0)'
-        api_err = 'Error in API call [401] - Authorization Required'
+
+        json_err = "Expecting value: line 1 column 1 (char 0)"
+        api_err = "Error in API call [401] - Authorization Required"
         parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
-        assert str(parsed_err) == str(
-            DemistoException("Authorization error, check your credentials."))
+        assert str(parsed_err) == str(DemistoException("Authorization error, check your credentials."))
 
     def test_parse_demisto_exception_json_parse_error(self):
         from Infoblox import parse_demisto_exception
-        json_err = 'Expecting value: line 1 column 1 (char 0)'
-        api_err = f'Failed to parse json object from response: {SSL_ERROR}'
+
+        json_err = "Expecting value: line 1 column 1 (char 0)"
+        api_err = f"Failed to parse json object from response: {SSL_ERROR}"
         parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
-        assert str(parsed_err) == str(
-            DemistoException("Cannot connect to Infoblox server, check your proxy and connection."))
+        assert str(parsed_err) == str(DemistoException("Cannot connect to Infoblox server, check your proxy and connection."))
 
     def test_parse_demisto_exception_api_error(self):
         from Infoblox import parse_demisto_exception
 
-        api_err = f'Error in API call [400] - Bad Request\n {json.dumps(API_ERROR_OBJ)}'
+        api_err = f"Error in API call [400] - Bad Request\n {json.dumps(API_ERROR_OBJ)}"
         parsed_err = parse_demisto_exception(DemistoException(api_err))
-        assert str(parsed_err) == str(
-            DemistoException("Duplicate object 'test123.com' of type zone exists in the database."))
+        assert str(parsed_err) == str(DemistoException("Duplicate object 'test123.com' of type zone exists in the database."))
 
     def test_transform_ext_attrs_2_attrs(self):
         """
@@ -126,7 +128,7 @@ class TestHelperFunctions:
         input = "IB Discovery Owned=EMEA,Site=Tel-Aviv"
 
         actual = transform_ext_attrs(input)
-        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        expected = [{"*IB Discovery Owned": "EMEA"}, {"*Site": "Tel-Aviv"}]
         assert actual == expected
 
     def test_transform_ext_attrs_2_attrs_whitespace(self):
@@ -148,7 +150,7 @@ class TestHelperFunctions:
 
         input = " IB Discovery Owned=EMEA,Site= Tel-Aviv"
         actual = transform_ext_attrs(input)
-        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        expected = [{"*IB Discovery Owned": "EMEA"}, {"*Site": "Tel-Aviv"}]
         assert actual == expected
 
     def test_transform_ext_attrs_2_attrs_comma_attr_end(self):
@@ -171,7 +173,7 @@ class TestHelperFunctions:
 
         with pytest.raises(
             DemistoException,
-            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"
+            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'",
         ):
             transform_ext_attrs(input)
 
@@ -195,7 +197,7 @@ class TestHelperFunctions:
 
         with pytest.raises(
             DemistoException,
-            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"
+            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'",
         ):
             transform_ext_attrs(input)
 
@@ -215,7 +217,7 @@ class TestHelperFunctions:
 
         input = "Site=Tel-Aviv"
         actual = transform_ext_attrs(input)
-        expected = [{'*Site': 'Tel-Aviv'}]
+        expected = [{"*Site": "Tel-Aviv"}]
         assert actual == expected
 
     def test_transform_ext_attrs_no_delimiter_no_equal_sign(self):
@@ -238,12 +240,11 @@ class TestHelperFunctions:
         assert not actual
 
     def test_transform_ipv4_range(self):
-
         from_address = "192.168.1.0"
         to_address = "192.168.1.254"
 
         actual = transform_ipv4_range(from_address, to_address)
-        expected = {'ip_address>': '192.168.1.0', 'ip_address<': '192.168.1.254'}
+        expected = {"ip_address>": "192.168.1.0", "ip_address<": "192.168.1.254"}
 
         assert actual == expected
 
@@ -255,8 +256,14 @@ class TestHelperFunctions:
         when provided with only extattr
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestNetworkInfoOperations" / "get_network_return_fields_extattrs.json").read_text()).get("result")
+        input = json.loads(
+            (
+                Path(__file__).parent.resolve()
+                / "test_data"
+                / "TestNetworkInfoOperations"
+                / "get_network_return_fields_extattrs.json"
+            ).read_text()
+        ).get("result")
 
         actual = transform_network_info_context(input)
 
@@ -273,8 +280,14 @@ class TestHelperFunctions:
         when provided with additional fields specified
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestNetworkInfoOperations" / "get_networks_return_fields_options_extattrs.json").read_text()).get("result")  # noqa: E501
+        input = json.loads(
+            (
+                Path(__file__).parent.resolve()
+                / "test_data"
+                / "TestNetworkInfoOperations"
+                / "get_networks_return_fields_options_extattrs.json"
+            ).read_text()
+        ).get("result")  # noqa: E501
 
         actual = transform_network_info_context(input)
 
@@ -291,8 +304,9 @@ class TestHelperFunctions:
         when provided with additional fields specified
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestHostRecordsOperations" / "get_records.json").read_text()).get("result")  # noqa: E501
+        input = json.loads(
+            (Path(__file__).parent.resolve() / "test_data" / "TestHostRecordsOperations" / "get_records.json").read_text()
+        ).get("result")  # noqa: E501
 
         actual = transform_host_records_context(input)
 
@@ -305,8 +319,15 @@ class TestHelperFunctions:
     def test_get_extended_attributes_context_valid_extattrs(self):
         """Test get_extended_attributes_context with valid extattrs"""
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_data"
-                            / "TestHostRecordsOperations" / "get_record_extattrs.json").read_text()).get("result")[0].get("extattrs")  # noqa: E501
+        input = (
+            json.loads(
+                (
+                    Path(__file__).parent.resolve() / "test_data" / "TestHostRecordsOperations" / "get_record_extattrs.json"
+                ).read_text()
+            )
+            .get("result")[0]
+            .get("extattrs")
+        )  # noqa: E501
 
         actual = get_extended_attributes_context(input)
         expected = {"IB Discovery Owned": "EMEA", "Site": "Tel-Aviv"}
@@ -332,47 +353,46 @@ class TestHelperFunctions:
 
 
 class TestZonesOperations:
-
     def test_create_response_policy_zone_command(self, mocker, requests_mock):
         from Infoblox import create_response_policy_zone_command
-        mocker.patch.object(demisto, 'params', return_value={})
-        requests_mock.post(
-            f'{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}',
-            json=POST_NEW_ZONE_RESPONSE)
-        args = {
-            "FQDN": "test.com", "rpz_policy": "GIVEN", "rpz_severity": "WARNING", "substitute_name": "", "rpz_type": ""
-        }
+
+        mocker.patch.object(demisto, "params", return_value={})
+        requests_mock.post(f"{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}", json=POST_NEW_ZONE_RESPONSE)
+        args = {"FQDN": "test.com", "rpz_policy": "GIVEN", "rpz_severity": "WARNING", "substitute_name": "", "rpz_type": ""}
         human_readable, context, raw_response = create_response_policy_zone_command(client, args)
-        assert human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n" \
-                                 "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
-                                 "|---|---|---|---|---|---|---|\n" \
-                                 "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default " \
-                                 "| GIVEN | WARNING | LOCAL | default |\n"
+        assert (
+            human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n"
+            "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n"
+            "|---|---|---|---|---|---|---|\n"
+            "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default "
+            "| GIVEN | WARNING | LOCAL | default |\n"
+        )
         assert context == {
-            'Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': {
-                'ReferenceID': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
-                'Disable': False,
-                'FQDN': 'test.com',
-                'RpzPolicy': 'GIVEN',
-                'RpzSeverity': 'WARNING',
-                'RpzType': 'LOCAL',
-                'View': 'default'
-            }}
+            "Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)": {
+                "ReferenceID": "zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default",
+                "Disable": False,
+                "FQDN": "test.com",
+                "RpzPolicy": "GIVEN",
+                "RpzSeverity": "WARNING",
+                "RpzType": "LOCAL",
+                "View": "default",
+            }
+        }
         assert raw_response == {
-            'result': {
-                '_ref': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
-                'disable': False,
-                'fqdn': 'test.com',
-                'rpz_policy': 'GIVEN',
-                'rpz_severity': 'WARNING',
-                'rpz_type': 'LOCAL',
-                'view': 'default'
-            }}
+            "result": {
+                "_ref": "zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default",
+                "disable": False,
+                "fqdn": "test.com",
+                "rpz_policy": "GIVEN",
+                "rpz_severity": "WARNING",
+                "rpz_type": "LOCAL",
+                "view": "default",
+            }
+        }
 
 
 class TestIPOperations:
-
-    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}'  # noqa: E501
+    CONTEXT_PATH = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}"  # noqa: E501
     VALID_IP_ADDRESS = "192.168.1.1"
     VALID_NETMASK = "192.168.1.0/24"
     BASE_URL = f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
@@ -396,8 +416,8 @@ class TestIPOperations:
                     "ip": self.VALID_IP_ADDRESS,
                     "network": self.VALID_NETMASK,
                     "from_ip": self.VALID_IP_ADDRESS,
-                    "to_ip": self.VALID_IP_ADDRESS
-                }
+                    "to_ip": self.VALID_IP_ADDRESS,
+                },
             )
 
     def test_get_ip_command_no_valid_argument_specified(self):
@@ -470,12 +490,13 @@ class TestIPOperations:
         """
 
         ip = self.VALID_IP_ADDRESS
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         requests_mock.get(
             f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",  # noqa: E501
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"ip": ip})
@@ -509,16 +530,18 @@ class TestIPOperations:
         """
 
         ip = self.VALID_IP_ADDRESS
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         requests_mock.get(
             f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",  # noqa: E501
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(
-            client, {"ip": ip, "status": IPv4AddressStatus.USED.value})
+            client, {"ip": ip, "status": IPv4AddressStatus.USED.value}
+        )
 
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration" in actual_hr_lines[0]
@@ -549,16 +572,16 @@ class TestIPOperations:
         from_ip = self.VALID_IP_ADDRESS
         to_ip = self.VALID_IP_ADDRESS[:-1] + "9"
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_addresses_from_network.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_addresses_from_network.json"
+        ).read_text()
 
         requests_mock.get(
             f"{self.BASE_URL}&ip_address>={from_ip}&ip_address<={to_ip}&_max_results={INTEGRATION_MAX_RESULTS_DEFAULT}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
-        actual_hr, actual_context, actual_raw_response = get_ip_command(
-            client, {"from_ip": from_ip, "to_ip": to_ip})
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"from_ip": from_ip, "to_ip": to_ip})
 
         assert "Infoblox Integration" in actual_hr.splitlines()[0]
 
@@ -629,12 +652,13 @@ class TestIPOperations:
 
         network = self.VALID_NETMASK
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_addresses_from_network.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_addresses_from_network.json"
+        ).read_text()
 
         requests_mock.get(
             f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",  # noqa: E501
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"network": network})
@@ -661,8 +685,9 @@ class TestIPOperations:
         - The transformation keys are as expected.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         res: dict[str, list] = json.loads(mock_response)
         ip: list[dict[str, Any]] = res.get("result")
@@ -688,8 +713,9 @@ class TestIPOperations:
         - The context output includes the transformed unknown key "LeaseState".
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_ipv4_address_from_ip_address.json"
+        ).read_text()
 
         unknown_key = "lease_state"
         unknown_key_value = "active"
@@ -706,7 +732,6 @@ class TestIPOperations:
 
 
 class TestHostRecordsOperations:
-
     CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}"
     GET_HOST_RECORDS_ENDPOINT = "record:host"
 
@@ -724,12 +749,11 @@ class TestHostRecordsOperations:
         - Ensure records are returned as expected.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records.json").read_text()
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records.json").read_text()
 
         requests_mock.get(
             f"{client._base_url}{self.GET_HOST_RECORDS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         hr, records, _ = get_host_records_command(client, {})
@@ -752,14 +776,16 @@ class TestHostRecordsOperations:
         - Ensure only matching record is returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_record_by_hostname.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_record_by_hostname.json"
+        ).read_text()
         host_name = "ciac-3607.test"
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT
+            client._base_url
+            + self.GET_HOST_RECORDS_ENDPOINT
             + f"?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&name={host_name}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         hr, records, _ = get_host_records_command(client, {"host_name": host_name})
@@ -782,13 +808,14 @@ class TestHostRecordsOperations:
         - Ensure only matching record is returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_record_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_record_extattrs.json"
+        ).read_text()
         input = "Site=Tel-Aviv"
 
         requests_mock.get(
             client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B=extattrs&*{input}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         hr, records, _ = get_host_records_command(client, {"extattrs": input})
@@ -815,12 +842,12 @@ class TestHostRecordsOperations:
 
         input = "extattrs,aliases"
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records_extattrs_aliases.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records_extattrs_aliases.json"
+        ).read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}",
-            json=json.loads(mock_response)
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}", json=json.loads(mock_response)
         )
 
         actual_hr, actual_records, actual_raw_response = get_host_records_command(client, {"additional_return_fields": input})
@@ -883,21 +910,17 @@ class TestHostRecordsOperations:
         """
 
         additional_return_fields = "none"
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "unknown_argument.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "unknown_argument.json"
+        ).read_text()
 
         requests_mock.get(
             client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={additional_return_fields}",
-            json=json.loads(mock_response)
+            json=json.loads(mock_response),
         )
 
         with pytest.raises(DemistoException, match="Unknown argument/field: 'none'"):
-            get_host_records_command(
-                client,
-                {
-                    "additional_return_fields": additional_return_fields
-                }
-            )
+            get_host_records_command(client, {"additional_return_fields": additional_return_fields})
 
     def test_get_host_records_command_no_additional_fields(self, requests_mock):
         """
@@ -911,18 +934,18 @@ class TestHostRecordsOperations:
         - The `extattrs` should appended and returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records_extattrs.json"
+        ).read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",  # noqa: E501
-            json=json.loads(mock_response)
+            client._base_url
+            + self.GET_HOST_RECORDS_ENDPOINT
+            + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",  # noqa: E501
+            json=json.loads(mock_response),
         )
 
-        actual_hr, actual_context, actual_raw_response = get_host_records_command(
-            client,
-            {}
-        )
+        actual_hr, actual_context, actual_raw_response = get_host_records_command(client, {})
 
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_hr.splitlines()[1]
 
@@ -944,20 +967,23 @@ class TestHostRecordsOperations:
         - The `extattrs` should appended and returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_records_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_records_extattrs.json"
+        ).read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",  # noqa: E501
-            json=json.loads(mock_response)
+            client._base_url
+            + self.GET_HOST_RECORDS_ENDPOINT
+            + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",  # noqa: E501
+            json=json.loads(mock_response),
         )
 
         actual_hr, actual_context, actual_raw_response = get_host_records_command(
             client,
             {
                 "additional_return_fields": INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
-                INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: "Site=ciac-5843"
-            }
+                INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: "Site=ciac-5843",
+            },
         )
 
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_hr.splitlines()[1]
@@ -970,7 +996,6 @@ class TestHostRecordsOperations:
 
 
 class TestNetworkInfoOperations:
-
     CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}"
     BASE_URL = f"{client._base_url}network?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
 
@@ -991,13 +1016,11 @@ class TestNetworkInfoOperations:
         - No additional fields context key is set.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_networks.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_networks.json"
+        ).read_text()
 
-        requests_mock.get(
-            self.BASE_URL,
-            json=json.loads(mock_response)
-        )
+        requests_mock.get(self.BASE_URL, json=json.loads(mock_response))
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {})
 
@@ -1030,14 +1053,14 @@ class TestNetworkInfoOperations:
         - No additional fields context key is set.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_network_return_fields_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__ / "get_network_return_fields_extattrs.json"
+        ).read_text()
 
         pattern = "192.168."
 
         requests_mock.get(
-            f"{self.BASE_URL}&_max_results=50&_return_fields%2B=extattrs&network~={pattern}",
-            json=json.loads(mock_response)
+            f"{self.BASE_URL}&_max_results=50&_return_fields%2B=extattrs&network~={pattern}", json=json.loads(mock_response)
         )
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {"pattern": pattern})
@@ -1076,20 +1099,17 @@ class TestNetworkInfoOperations:
 
         limit = 10
 
-        mock_response = (Path(__file__).parent.resolve() / "test_data"
-                         / self.__class__.__name__ / "get_networks_return_fields_options_extattrs.json").read_text()
+        mock_response = (
+            Path(__file__).parent.resolve()
+            / "test_data"
+            / self.__class__.__name__
+            / "get_networks_return_fields_options_extattrs.json"
+        ).read_text()
 
-        requests_mock.get(
-            self.BASE_URL,
-            json=json.loads(mock_response)
-        )
+        requests_mock.get(self.BASE_URL, json=json.loads(mock_response))
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(
-            client,
-            {
-                "additional_return_fields": "extattrs,options",
-                "max_results": limit
-            }
+            client, {"additional_return_fields": "extattrs,options", "max_results": limit}
         )
 
         assert "Network information" in actual_hr
