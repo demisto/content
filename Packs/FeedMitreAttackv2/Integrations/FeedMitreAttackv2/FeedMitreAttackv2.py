@@ -69,7 +69,7 @@ logging.getLogger("taxii2client.v21").setLevel(logging.ERROR)
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
+test_var = 'x'
 class Client:
     def __init__(self, url, proxies, verify, tags: list | None = None, tlp_color: str | None = None):
         self.base_url = url
