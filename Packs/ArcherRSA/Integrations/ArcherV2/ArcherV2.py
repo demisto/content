@@ -1001,9 +1001,11 @@ class Client(BaseClient):
 
     def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
+        cache_key = f"{field_id}__{depth}"
 
-        if cache["fieldValueList"].get(field_id):
-            return cache.get("fieldValueList").get(field_id)
+        if cached_field_value_list:= cache["fieldValueList"].get(cache_key):
+            demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
+            return cached_field_value_list
 
         res = self.do_rest_request(
             "GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}"
@@ -1032,7 +1034,8 @@ class Client(BaseClient):
                     self.get_field_value_list_helper(value, values_list, depth)
                 field_data = {"FieldId": field_id, "ValuesList": values_list}
 
-                cache["fieldValueList"][field_id] = field_data
+                cache["fieldValueList"][cache_key] = field_data
+                demisto.debug(f"Merging field value list for field ID: {field_id} and depth: {depth} into integration context.")
                 merge_integration_context(cache)
                 return field_data
         return {}
