@@ -1312,7 +1312,7 @@ def list_incidents_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_PREFIX}.Incident",
         outputs_key_field="id",
-        outputs=outputs,
+        outputs=incidents,
         readable_output=tableToMarkdown(
             name="Incidents List:",
             t=incidents,
