@@ -2187,7 +2187,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.TimeGenerated
       description: Time when the log was generated on the firewall's data plane.
     - contextPath: CDL.Logging.GlobalProtect.TunnelType
-      description: Tunnel Type i.e. SSL or VPN.
+      description: Tunnel type i.e., SSL or VPN.
     - contextPath: CDL.Logging.GlobalProtect.VendorName
       description: The vendor that produced the data.
   dockerimage: demisto/python_pancloud_v2:1.0.0.2027056
