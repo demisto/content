@@ -48,10 +48,8 @@ class KeyIncident:
     def from_dict(cls, data: dict[str, Any]) -> "KeyIncident":
         return KeyIncident(
             analysis=data.get("analysis", ""),
-            created_at=datetime.fromisoformat(
-                data.get("created_at", "").replace("Z", "+00:00")),
-            updated_at=datetime.fromisoformat(
-                data.get("updated_at", "").replace("Z", "+00:00")),
+            created_at=datetime.fromisoformat(data.get("created_at", "").replace("Z", "+00:00")),
+            updated_at=datetime.fromisoformat(data.get("updated_at", "").replace("Z", "+00:00")),
             headline=data.get("headline", ""),
             incident_id=data.get("incident_id", ""),
             risk_level=data.get("risk_level", ""),
@@ -60,16 +58,15 @@ class KeyIncident:
             threat_types=data.get("threat_types", []),
             title=data.get("title", ""),
             url=data.get("url", ""),
-            attachments=[
-                _extract_ki_attachment_id(attch.get("url")) for attch in data.get("attachments", [])
-            ],
+            attachments=[_extract_ki_attachment_id(attch.get("url")) for attch in data.get("attachments", [])],
         )
 
     def to_dict(self):
         new_dict = asdict(self)
-        new_dict['created_at'] = self.created_at.isoformat()
-        new_dict['updated_at'] = self.updated_at.isoformat()
+        new_dict["created_at"] = self.created_at.isoformat()
+        new_dict["updated_at"] = self.updated_at.isoformat()
         return new_dict
+
 
 @dataclass
 class XSOARIncident:
@@ -81,27 +78,25 @@ class XSOARIncident:
     def to_dict(self):
         return asdict(self)
 
+
 def map_key_incident_to_xsoar(ki: KeyIncident) -> XSOARIncident:
     ki_as_dict = ki.to_dict()
     return XSOARIncident(
         name=f"{ki.incident_id} {ki.headline}",
         occurred=ki_as_dict.get("created_at", ""),
         rawJSON=json.dumps(ki_as_dict),
-        dbotMirrorId=ki.incident_id
+        dbotMirrorId=ki.incident_id,
     )
 
+
 def get_last_incident_time(incidents: list[KeyIncident]):
-    return max(map(lambda x: x.updated_at.isoformat(), incidents))
+    return max(x.updated_at.isoformat() for x in incidents)
+
 
 class ZeroFox(BaseClient):
-    def __init__(
-        self, username, token, *args, **kwargs
-    ):
+    def __init__(self, username, token, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.credentials = {
-            "username": username,
-            "password": token
-        }
+        self.credentials = {"username": username, "password": token}
         self.access_token = None
 
     def _make_rest_call(
@@ -114,6 +109,7 @@ class ZeroFox(BaseClient):
         data: dict[str, Any] | None = None,
         ok_codes: tuple[int, ...] = None,
         empty_response: bool = False,
+        error_handler: Callable[[Response], None] | None = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -131,6 +127,16 @@ class ZeroFox(BaseClient):
         if cti:
             headers = self.get_cti_request_header()
 
+        if error_handler is None:
+            err_handler = self.handle_zerofox_error
+        else:
+
+            def combined_error_handler(raw_response: Response):
+                error_handler(raw_response)
+                self.handle_zerofox_error(raw_response)
+
+            err_handler = combined_error_handler
+
         return self._http_request(
             method=method,
             url_suffix=url_suffix,
@@ -140,7 +146,7 @@ class ZeroFox(BaseClient):
             json_data=data,
             ok_codes=ok_codes,
             return_empty_response=empty_response,
-            error_handler=self.handle_zerofox_error,
+            error_handler=err_handler,
             **kwargs,
         )
 
@@ -212,12 +218,7 @@ class ZeroFox(BaseClient):
         url_suffix = "/cti/key-incidents/"
         headers = self.get_cti_request_header()
         params = remove_none_dict(
-            {
-                "updated_after": start_time,
-                "updated_before": end_time,
-                "ordering": "updated",
-                "tags": "Key Incident"
-            }
+            {"updated_after": start_time, "updated_before": end_time, "ordering": "updated", "tags": "Key Incident"}
         )
         key_incidents = []
         response = self._http_request(
@@ -226,8 +227,7 @@ class ZeroFox(BaseClient):
             params=params,
             headers=headers,
         )
-        key_incidents += [KeyIncident.from_dict(ki)
-                          for ki in response.get("results", [])]
+        key_incidents += [KeyIncident.from_dict(ki) for ki in response.get("results", [])]
 
         if next_page := response.get("next"):
             cursor = self._parse_cursor(next_page)
@@ -238,10 +238,7 @@ class ZeroFox(BaseClient):
                 params=params,
                 headers=headers,
             )
-            key_incidents += [
-                KeyIncident.from_dict(ki)
-                for ki in response.get("results", [])
-            ]
+            key_incidents += [KeyIncident.from_dict(ki) for ki in response.get("results", [])]
         return key_incidents
 
     def get_key_incident_attachment(self, attachment_id: str) -> KeyIncidentAttachment:
@@ -249,23 +246,22 @@ class ZeroFox(BaseClient):
         :param attachment_id: The ID of the attachment to fetch
         :return: The attachment data
         """
-        url_suffix = f"/cti/key-incident-attachments/{attachment_id}/"
-        headers = self.get_cti_request_header()
-        response = self._http_request(
+        url_suffix = f"/cti/key-incident-attachment/{attachment_id}/"
+
+        def error_handler(raw_response: Response):
+            if raw_response.status_code == 404:
+                raise ZeroFoxKIAttachmentNotFoundException
+
+        response = self._make_rest_call(
             "GET",
             url_suffix,
-            headers=headers,
+            error_handler=error_handler,
         )
-        mime_type, content = _parse_file_content(
-            response.get("content"))
+        mime_type, content = _parse_file_content(response.get("content"))
 
         return KeyIncidentAttachment(
-            content=content,
-            mime_type=mime_type,
-            name=response["name"],
-            created_at=response["created_at"]
+            content=content, mime_type=mime_type, name=response["name"], created_at=response["created_at"]
         )
-
 
 
 """ HELPERS """
@@ -276,12 +272,17 @@ def _extract_ki_attachment_id(url) -> str:
 
 
 def _parse_file_content(data_uri):
-    header_data_match = re.match(r'data:(.*?);base64,(.+)', data_uri)
+    header_data_match = re.match(r"data:(.*?);base64,(.+)", data_uri)
     if not header_data_match:
         raise ValueError("Invalid data URL format")
     mime_type, data = header_data_match.groups()
 
     return mime_type, data
+
+
+class ZeroFoxKIAttachmentNotFoundException(Exception):
+    def __init__(self):
+        super().__init__("The requested Key Incident attachment was not found")
 
 
 class ZeroFoxInternalException(Exception):
@@ -318,10 +319,7 @@ def remove_none_dict(input_dict: dict[Any, Any]) -> dict[Any, Any]:
 """ COMMAND FUNCTIONS """
 
 
-def get_key_incidents_command(
-    client: ZeroFox,
-    args: dict[str, Any]
-) -> CommandResults:
+def get_key_incidents_command(client: ZeroFox, args: dict[str, Any]) -> CommandResults:
     start_time: str = args.get("start_time", "")
     end_time: str = args.get("end_time", "")
     key_incidents = client.get_key_incidents(start_time, end_time)
@@ -358,6 +356,17 @@ def conectivity_test(client: ZeroFox) -> str:
     return "ok"
 
 
+def get_key_incident_attachment_command(client: ZeroFox, args: dict[str, Any]) -> CommandResults:
+    attachment_id: str = args.get("attachment_id", "")
+    try:
+        attachment = client.get_key_incident_attachment(attachment_id)
+        return fileResult(attachment.name, base64.b64decode(attachment.content))
+    except ZeroFoxKIAttachmentNotFoundException:
+        return CommandResults(
+            readable_output=f"Key Incident attachment {attachment_id} was not found",
+        )
+
+
 def main():
     params = demisto.params()
     USERNAME: str = params.get("credentials", {}).get("identifier")
@@ -371,7 +380,7 @@ def main():
     ).strip()
 
     commands: dict[str, Callable[[ZeroFox, dict[str, Any]], Any]] = {
-        "zerofox-get-key-incidents": get_key_incidents_command,
+        "zerofox-get-key-incident-attachment": get_key_incident_attachment_command,
     }
     try:
         handle_proxy()
@@ -407,18 +416,21 @@ def main():
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
-def fetch_incidents(client: ZeroFox, last_run: dict[str, Any], first_fetch_time: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+
+def fetch_incidents(
+    client: ZeroFox, last_run: dict[str, Any], first_fetch_time: str
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     start_time, end_time = get_fetch_run_time_range(last_run, first_fetch_time)
 
     incidents = client.get_key_incidents(start_time, end_time)
 
     if not incidents:
-        last_run = { "time": end_time }
+        last_run = {"time": end_time}
         return last_run, []
 
-    xsoar_incidents = [ map_key_incident_to_xsoar(item).to_dict() for item in incidents]
+    xsoar_incidents = [map_key_incident_to_xsoar(item).to_dict() for item in incidents]
 
-    last_run = { "time": get_last_incident_time(incidents)}
+    last_run = {"time": get_last_incident_time(incidents)}
 
     return last_run, xsoar_incidents
 
