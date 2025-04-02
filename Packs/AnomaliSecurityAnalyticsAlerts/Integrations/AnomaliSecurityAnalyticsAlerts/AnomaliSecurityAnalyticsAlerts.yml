@@ -30,7 +30,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: "The Anomali Security Analytics pack enables users to interact with Anomali ThreatStream's XDR API to manage security alerts. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR."
+description: "The Anomali Security Analytics pack allows users to manage security alerts by interacting directly with the Anomali Security Analytics platform. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR."
 display: Anomali Security Analytics Alerts
 name: AnomaliSecurityAnalyticsAlerts
 script:
@@ -42,7 +42,7 @@ script:
       description: Search expression or keyword you're looking for in logs, e.g. alerts.
       required: false
     - name: source
-      description: Filters results by the log source or origin system, e.g. third_party_mynewapp.
+      description: Filters results by the log source or origin system, e.g. third_party_xsoar_integration.
       required: false
     - name: from
       defaultValue: 1 day
@@ -68,6 +68,12 @@ script:
       description: Unique identifier assigned to a background process or job.
       required: true
       isArray: true
+    - name: offset
+      description: Offset of the search results. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 30. Default value is 0.
+      required: false
+    - name: fetch_size
+      description: Number of rows returned. Maximum rows is 1000. Default value is 25.
+      required: false
     execution: false
     outputs:
       - contextPath: ThreatstreamAlerts.SearchJobResults.job_id
@@ -106,33 +112,22 @@ script:
       - contextPath: ThreatstreamAlerts.SearchJobResults.types
         description: "Data types of the search record attributes."
         type: Array
-  - name: anomali-security-analytics-update-alert-status
-    description: "Update alert status"
+  - name: anomali-security-analytics-update-alert
+    description: "Update alert's comment or status"
     arguments:
-    - name: status
-      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos.
-      required: true
     - name: uuid
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
-    execution: false
-    outputs:
-      - contextPath: ThreatstreamAlerts.UpdateAlertStatus.message
-        description: "."
-        type: String
-  - name: anomali-security-analytics-update-alert-comment
-    description: "Update alert comment"
-    arguments:
     - name: comment
       description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions.
-      required: true
-    - name: uuid
-      description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
-      required: true
+      required: false
+    - name: status
+      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos.
+      required: false
     execution: false
     outputs:
-      - contextPath: ThreatstreamAlerts.UpdateAlertComment.message
-        description: "."
+      - contextPath: ThreatstreamAlerts.UpdateAlert.message
+        description: "Confirmation message returned after updating the alert status."
         type: String
   isfetch: false
   runonce: false

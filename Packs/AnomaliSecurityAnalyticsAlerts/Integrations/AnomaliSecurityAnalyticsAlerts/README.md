@@ -65,47 +65,26 @@ get search job results
 | 905 | AlertTriageDemo | test@anomali.com | new    | high     | 1741867250299   | 7af7bc62c807446fa4bf7ad12dfbe64b         |
 
 
-### anomali-security-analytics-update-alert-status
+### anomali-security-analytics-update-alert
 
 ***
-update status of alert
+update alert
 
 #### Base Command
 
-`anomali-security-analytics-update-alert-status`
+`anomali-security-analytics-update-alert`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | new status of the alert | Optional | 
-| uuid | uuid of alert | Optional | 
-
-#### Context Output
-
-### Update Alert Status
-|message|
-|---|
-| Table (alert) was successfully updated. |
-### anomali-security-analytics-update-alert-comment
-
-***
-update comment of alert
-
-#### Base Command
-
-`anomali-security-analytics-update-alert-comment`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| comment | new comment of the alert | Yes | 
+| comment | new comment of the alert | Optional | 
 | uuid | uuid of alert | Yes | 
 
 #### Context Output
 
-### Update Alert Comment
+### Update Alert Status
 |message|
 |---|
 | Table (alert) was successfully updated. |

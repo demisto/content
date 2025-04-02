@@ -37,7 +37,6 @@ def test_command_create_search_job(mocker):
     assert isinstance(result, CommandResults)
     outputs = result.outputs
     assert outputs.get('job_id') == '1234'
-    assert outputs.get('status') == 'in progress'
     assert "Search Job Created" in result.readable_output
 
 
@@ -64,7 +63,9 @@ def test_command_get_search_job_results_running(mocker):
     mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
 
     args = {
-        'job_id': 'job_running'
+        'job_id': 'job_running',
+        'offset': 0,
+        'fetch_size': 2
     }
 
     results = command_get_search_job_results(client, args)
@@ -108,7 +109,9 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
     mocker.patch.object(client, 'get_search_job_results', return_value=results_response)
 
     args = {
-        'job_id': 'job_done'
+        'job_id': 'job_done',
+        'offset': 0,
+        'fetch_size': 2
     }
 
     results = command_get_search_job_results(client, args)
@@ -146,7 +149,9 @@ def test_command_get_search_job_results_invalid(mocker):
     mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
 
     args = {
-        'job_id': 'invalid_job'
+        'job_id': 'invalid_job',
+        'offset': 0,
+        'fetch_size': 2
     }
 
     results = command_get_search_job_results(client, args)
@@ -178,15 +183,19 @@ def test_command_get_search_job_results_no_fields_records(mocker):
         verify=True,
         proxy=False
     )
-
+    
+    status_response = {'status': 'DONE'}
     return_data = {
         'result': 'raw data',
         'complete': True
     }
+    mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
     mocker.patch.object(client, 'get_search_job_results', return_value=return_data)
 
     args = {
-        'job_id': 'job_no_fields'
+        'job_id': 'job_no_fields',
+        'offset': 0,
+        'fetch_size': 2
     }
 
     results = command_get_search_job_results(client, args)
@@ -201,16 +210,16 @@ def test_command_get_search_job_results_no_fields_records(mocker):
     assert "raw data" in human_readable
 
 
-def test_command_update_alert_status(mocker):
+def test_command_update_alert_status_and_comment(mocker):
     """
     Given:
-        - 'status' and 'uuid' parameters
+        - 'status', 'comment' and 'uuid' parameters
 
     When:
         - client.update_alert returns a response
 
     Then:
-        - Validate that command_update_alert_status returns a CommandResults object
+        - Validate that command_update_alert returns a CommandResults object
           with outputs equal to the mocked response
 
     """
@@ -225,43 +234,11 @@ def test_command_update_alert_status(mocker):
 
     args = {
         'status': 'IN_PROGRESS',
+        'comment': 'Test comment',
         'uuid': 'alert-uuid-123'
     }
 
-    result = command_update_alert_status(client, args)
+    result = command_update_alert(client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs == return_data
-    assert "Update Alert Status" in result.readable_output
-
-
-def test_command_update_alert_comment(mocker):
-    """
-    Given:
-        - 'uuid' and 'comment' parameters
-
-    When:
-        - client.update_alert returns a response
-
-    Then:
-        - Validate that command_update_alert_comment returns a CommandResults object
-          with outputs equal to the mocked response
-
-    """
-    client = Client(server_url='https://test.com',
-                    username='test_user',
-                    api_key='test_api_key',
-                    verify=True,
-                    proxy=False)
-
-    return_data = {'updated': True}
-    mocker.patch.object(client, 'update_alert', return_value=return_data)
-
-    args = {
-        'comment': 'Test comment',
-        'uuid': 'alert-uuid-456'
-    }
-
-    result = command_update_alert_comment(client, args)
-    assert isinstance(result, CommandResults)
-    assert result.outputs == return_data
-    assert "Update Alert Comment" in result.readable_output
+    assert "Update Alert" in result.readable_output

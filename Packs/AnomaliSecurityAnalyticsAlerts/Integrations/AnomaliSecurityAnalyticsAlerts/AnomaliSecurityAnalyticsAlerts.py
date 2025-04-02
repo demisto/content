@@ -40,7 +40,7 @@ class Client(BaseClient):
 
         Args:
             query: The query string
-            source: The source identifier (e.g. third_party_mynewapp)
+            source: The source identifier (e.g. third_party_xsoar_integration)
             time_range: A dict with keys "from", "to" and "timezone"
                         (e.g. {"from": 1738681620000,
                         "to": 1738706820000,
@@ -71,22 +71,35 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/')
 
-    def get_search_job_results(self, job_id: str) -> dict:
+    def get_search_job_results(self, job_id: str, offset: int = 0, fetch_size: int = 25) -> dict:
         """
         Get the results of a search job.
 
         Args:
             job_id: the search job uuid
+            offset: offset for pagination. Default is 0.
+            fetch_size: number of records to fetch. Default is 25.
 
         Returns:
             Response from API.
         """
+        params = {'offset': offset, 'fetch_size': fetch_size}
         return self._http_request(method='GET',
-                                  url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/results/')
+                                  url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/results/',
+                                  params=params)
 
     def update_alert(self, data: dict) -> dict:
         """
         Update alert data (status or comment).
+
+        Args:
+        data (dict): A dictionary containing the update parameters. It should include:
+            - table_name (str): The name of the table to update (e.g. "alert").
+            - columns (dict): A dictionary mapping column names to their new values.
+            - primary_key_columns: A list of primary key column names.
+            - primary_key_values: A list of lists, where each inner list contains
+              the corresponding values for the primary key columns.
+
         """
         return self._http_request(method='PATCH',
                                   url_suffix='/api/v1/xdr/event/lookup/iceberg/update/',
@@ -169,6 +182,8 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
         list[CommandResults]: A list of command results for each job id.
     """
     job_ids = argToList(str(args.get('job_id')))
+    offset = int(args.get('offset', 0))
+    fetch_size = int(args.get('fetch_size', 25))
     command_results: list[CommandResults] = []
 
     for job_id in job_ids:
@@ -199,7 +214,7 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
             )
             command_results.append(command_result)
         else:
-            results_response = client.get_search_job_results(job_id)
+            results_response = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_size)
             if 'fields' in results_response and 'records' in results_response:
                 headers = results_response['fields']
                 records = results_response['records']
@@ -223,8 +238,8 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
     return command_results
 
 
-def command_update_alert_status(client: Client, args: dict) -> CommandResults:
-    """Update the status of an alert.
+def command_update_alert(client: Client, args: dict) -> CommandResults:
+    """Update the status or comment of an alert.
 
     Args:
         client (Client): Client object with request
@@ -234,43 +249,14 @@ def command_update_alert_status(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     status = str(args.get('status'))
-    uuid_val = str(args.get('uuid'))
-    if not status or not uuid_val:
-        raise DemistoException("Please provide both 'status' and 'uuid' parameters.")
-    data = {
-        "table_name": "alert",
-        "columns": {
-            "status": status
-        },
-        "primary_key_columns": ["uuid_"],
-        "primary_key_values": [[uuid_val]]
-    }
-    response = client.update_alert(data)
-    return CommandResults(
-        outputs_prefix='ThreatstreamAlerts.UpdateAlertStatus',
-        outputs=response,
-        readable_output=tableToMarkdown(name="Update Alert Status", t=response, removeNull=True),
-        raw_response=response
-    )
-
-
-def command_update_alert_comment(client: Client, args: dict) -> CommandResults:
-    """Update the comment of an alert.
-
-    Args:
-        client (Client): Client object with request
-        args (dict): Usually demisto.args()
-
-    Returns:
-        CommandResults.
-    """
     comment = str(args.get('comment'))
     uuid_val = str(args.get('uuid'))
-    if not comment or not uuid_val:
-        raise DemistoException("Please provide both 'comment' and 'uuid' parameters.")
+    if not uuid_val:
+        raise DemistoException("Please provide 'uuid' parameter.")
     data = {
         "table_name": "alert",
         "columns": {
+            "status": status,
             "comment": comment
         },
         "primary_key_columns": ["uuid_"],
@@ -278,9 +264,9 @@ def command_update_alert_comment(client: Client, args: dict) -> CommandResults:
     }
     response = client.update_alert(data)
     return CommandResults(
-        outputs_prefix='ThreatstreamAlerts.UpdateAlertComment',
+        outputs_prefix='ThreatstreamAlerts.UpdateAlert',
         outputs=response,
-        readable_output=tableToMarkdown(name="Update Alert Comment", t=response, removeNull=True),
+        readable_output=tableToMarkdown(name="Update Alert", t=response, removeNull=True),
         raw_response=response
     )
 
@@ -331,8 +317,7 @@ def main():
         commands = {
             'anomali-security-analytics-search-job-create': command_create_search_job,
             'anomali-security-analytics-search-job-results': command_get_search_job_results,
-            'anomali-security-analytics-update-alert-status': command_update_alert_status,
-            'anomali-security-analytics-update-alert-comment': command_update_alert_comment,
+            'anomali-security-analytics-update-alert': command_update_alert,
         }
         if command == 'test-module':
             return_results(test_module(client))
