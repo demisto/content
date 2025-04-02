@@ -619,6 +619,20 @@ def test_is_mailto_urls(mocker: MockerFixture):
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
+def test_is_this_network_urls(mocker: MockerFixture):
+    """
+    Given   A this network URL is called.
+    When    Attempting to make a screenshot.
+    Then    Make sure the correct output is returned.
+    """
+    from rasterize import screenshot_image
+
+    mocker.patch("rasterize.navigate_to_path", return_results=type("PychromeEventHandler", (), {"is_this_network_url": True}))
+
+    res = screenshot_image(None, None, "url", None, None)
+
+    assert res == (None, 'URLs that belong to the "This" Network (0.0.0.0/8) or Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url')
+
 
 def test_increase_counter_chrome_instances_file(mocker):
     """
@@ -760,6 +774,25 @@ def test_rasterize_mailto(capfd, mocker):
     assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
+def test_rasterize_this_network(capfd, mocker):
+    """
+    Given:
+        - argument as path.
+    When:
+        - Running the 'rasterize' function.
+    Then:
+        - Verify that perform_rasterize exit with the expected error message.
+    """
+    mocker_output = mocker.patch("rasterize.return_results")
+
+    with pytest.raises(SystemExit) as excinfo, capfd.disabled():
+        perform_rasterize(path="0.0.0.8/test", width=250, height=250, rasterize_type=RasterizeType.PNG)
+
+    assert (
+        mocker_output.call_args.args[0].readable_output == ""
+    )
+    assert excinfo.type is SystemExit
+    assert excinfo.value.code == 0
 
 def test_handle_request_paused(mocker):
     """
