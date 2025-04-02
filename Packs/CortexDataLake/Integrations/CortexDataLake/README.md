@@ -1336,7 +1336,7 @@ Searches the GlobalProtect VPN log table.
 | limit | The maximum number of logs to return. Default is 10. | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional | 
-| transform_results | If set to false, query results are not mapped into the standard command context. Default is "true". Possible values are: true, false. Default is true. | Optional | 
+| transform_results | If set to false, query results are not mapped into the standard command context. Possible values are: true, false. Default is true. | Optional | 
 | fields | The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all". Default is all. | Optional | 
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional | 
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00. Default is '1970-01-01 00:00:00'. | Optional | 
