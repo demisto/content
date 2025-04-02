@@ -965,6 +965,8 @@ def perform_rasterize(
     this_network_paths = [path_value for path_value in paths if is_this_network(path_value)]
 
     if this_network_paths or mailto_paths:
+        paths = list(set(paths) - set(mailto_paths))
+        paths = list(set(paths) - set(this_network_paths))
         demisto.error(f"Not rasterizing the following invalid paths: {this_network_paths + mailto_paths}")
         return_results(
             CommandResults(
