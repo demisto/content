@@ -1370,8 +1370,8 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.EventID | unknown | The name of the event. | 
 | CDL.Logging.GlobalProtect.Gateway | unknown | Gateway for the connection. | 
 | CDL.Logging.GlobalProtect.GatewayPriority | unknown | Priority of the gateway. | 
-| CDL.Logging.GlobalProtect.GatewaySelectionType | unknown | Gateway Selection Method i.e automatic, preferred or manual. | 
-| CDL.Logging.GlobalProtect.GPGatewayLocation | unknown | Location of the Global Protect Gateway. | 
+| CDL.Logging.GlobalProtect.GatewaySelectionType | unknown | Gateway selection method i.e., automatic, preferred, or manual. | 
+| CDL.Logging.GlobalProtect.GPGatewayLocation | unknown | Location of the GlobalProtect gateway. | 
 | CDL.Logging.GlobalProtect.HostID | unknown | Unique identifier GlobalProtect has assigned to the host. | 
 | CDL.Logging.GlobalProtect.IsDuplicateLog | unknown | Indicates whether this log data is available in multiple locations, such as from Strata Logging Service as well as from an on-premise log collector. | 
 | CDL.Logging.GlobalProtect.IsExported | unknown | Indicates if this log was exported from the firewall using the firewall's log export function. | 
