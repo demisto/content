@@ -2068,7 +2068,7 @@ script:
     - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
     - defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
       name: start_time
     - description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
       name: time_range
