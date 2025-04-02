@@ -1,4 +1,3 @@
-import datetime
 
 import demistomock as demisto
 import freezegun
