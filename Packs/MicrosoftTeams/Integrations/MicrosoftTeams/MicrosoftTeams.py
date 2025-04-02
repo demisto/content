@@ -71,6 +71,8 @@ MISS_CONFIGURATION_ERROR_MESSAGE = (
 
 CLIENT_CREDENTIALS_FLOW = "Client Credentials"
 AUTHORIZATION_CODE_FLOW = "Authorization Code"
+CREDENTIALS_TOKEN_PARAMS = 'credentials_token_params'
+AUTHCODE_TOKEN_PARAMS = 'authcode_token_params'
 AUTH_TYPE = PARAMS.get("auth_type", CLIENT_CREDENTIALS_FLOW)
 
 AUTH_CODE: str = PARAMS.get("auth_code_creds", {}).get("password")
@@ -320,8 +322,8 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context.pop('current_refresh_token', '')
     integration_context.pop('graph_access_token', '')
     integration_context.pop('graph_valid_until', '')
-    integration_context['authcode_token_params'] = '{}'
-    integration_context['credentials_token_params'] = '{}'
+    integration_context[AUTHCODE_TOKEN_PARAMS] = '{}'
+    integration_context[CREDENTIALS_TOKEN_PARAMS] = '{}'
     set_integration_context(integration_context)
 
     if error_codes or error_desc:
@@ -816,14 +818,14 @@ def get_graph_access_token(auth_type: str = AUTH_TYPE) -> str:
             'graph_valid_until': integration_context.pop('graph_valid_until', ''),
         }
         if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
-            integration_context['credentials_token_params'] = json.dumps(token_params)
+            integration_context[CREDENTIALS_TOKEN_PARAMS] = json.dumps(token_params)
         else:
-            integration_context['authcode_token_params'] = json.dumps(token_params)
+            integration_context[AUTHCODE_TOKEN_PARAMS] = json.dumps(token_params)
 
         set_integration_context(integration_context)
 
-    token_params = json.loads(integration_context.get('credentials_token_params', '{}') if auth_type == CLIENT_CREDENTIALS_FLOW
-                              else integration_context.get('authcode_token_params', '{}'))
+    token_params_key = CREDENTIALS_TOKEN_PARAMS if auth_type == CLIENT_CREDENTIALS_FLOW else AUTHCODE_TOKEN_PARAMS
+    token_params = json.loads(integration_context.get(token_params_key, '{}'))
 
     refresh_token = token_params.get('current_refresh_token', '')
     access_token: str = token_params.get('graph_access_token', '')
@@ -883,11 +885,8 @@ def get_graph_access_token(auth_type: str = AUTH_TYPE) -> str:
             'graph_access_token': access_token,
             'graph_valid_until': time_now + expires_in,
         }
-        if auth_type == AUTHORIZATION_CODE_FLOW:
-            integration_context['authcode_token_params'] = json.dumps(token_params)
-        else:
-            integration_context['credentials_token_params'] = json.dumps(token_params)
 
+        integration_context[token_params_key] = json.dumps(token_params)
         set_integration_context(integration_context)
         return access_token
     except ValueError:
@@ -3264,8 +3263,8 @@ def insufficient_permissions_error_handler(auth_type: str = AUTH_TYPE) -> str:
 
     # Get current token permissions
     integration_context: dict = get_integration_context()
-    token_params = json.loads(integration_context.get('credentials_token_params', '{}') if auth_type == CLIENT_CREDENTIALS_FLOW
-                              else integration_context.get('authcode_token_params', '{}'))
+    token_params = json.loads(integration_context.get(CREDENTIALS_TOKEN_PARAMS, '{}') if auth_type == CLIENT_CREDENTIALS_FLOW
+                              else integration_context.get(AUTHCODE_TOKEN_PARAMS, '{}'))
     graph_access_token: str = token_params.get('graph_access_token', '')
     if not graph_access_token:
         demisto.error(
