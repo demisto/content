@@ -2175,7 +2175,7 @@ script:
     - contextPath: CDL.Logging.GlobalProtect.SourceUserDomain
       description: Domain to which the source user belongs.
     - contextPath: CDL.Logging.GlobalProtect.SourceUserName
-      description: The Source User username.
+      description: The source user username.
     - contextPath: CDL.Logging.GlobalProtect.SSLResponseTime
       description: SSL Response Time in milliseconds.
     - contextPath: CDL.Logging.GlobalProtect.Stage
