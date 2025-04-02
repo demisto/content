@@ -246,6 +246,7 @@ def test_page_not_found_error(mocker):
 
 def test_epoch_seconds(mocker):
     from datetime import datetime as date_time
+
     mocker.patch.object(MicrosoftClient, "_get_utcnow", return_value=date_time(2019, 12, 24, 14, 12, 0, 586636))
     mocker.patch.object(MicrosoftClient, "_get_utc_from_timestamp", return_value=date_time(1970, 1, 1, 0, 0))
     integer = MicrosoftClient.epoch_seconds()
