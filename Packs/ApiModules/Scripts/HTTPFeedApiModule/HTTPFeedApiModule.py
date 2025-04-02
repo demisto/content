@@ -134,7 +134,7 @@ class Client(BaseClient):
             header_field = username.split(":")
             if len(header_field) < 2:
                 raise ValueError(
-                    "An incorrect value was provided for an API key header." ' The correct value is "_header:<header_name>"'
+                    'An incorrect value was provided for an API key header. The correct value is "_header:<header_name>"'
                 )
             header_name: str = header_field[1]
             header_value: str = credentials.get("password", "")

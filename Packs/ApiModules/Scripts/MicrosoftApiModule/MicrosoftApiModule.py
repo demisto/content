@@ -1541,7 +1541,7 @@ def generate_login_url(client: MicrosoftClient, login_url: str = "https://login.
         missing.append("redirect_uri")
     if missing:
         raise DemistoException(
-            "Please make sure you entered the Authorization configuration correctly. " f"Missing:{','.join(missing)}"
+            f"Please make sure you entered the Authorization configuration correctly. Missing:{','.join(missing)}"
         )
 
     login_url = urljoin(

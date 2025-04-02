@@ -249,7 +249,7 @@ class CoreClient(BaseClient):
         response_data_type = "bin" if resp_type == "content" and ALLOW_RESPONSE_AS_BINARY else None
         if resp_type == "content" and not ALLOW_RESPONSE_AS_BINARY:
             allowed_version = f"{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}"
-            raise DemistoException("getting binary data from server is allowed from " f"version: {allowed_version} and above")
+            raise DemistoException(f"getting binary data from server is allowed from version: {allowed_version} and above")
         params = assign_params(
             method=method, path=address, data=data, headers=headers, timeout=timeout, response_data_type=response_data_type
         )
@@ -1561,7 +1561,7 @@ def create_filter_from_args(args: dict) -> dict:
     end_time = args.pop("end_time", None)
 
     if (start_time or end_time) and ("time_frame" not in args):
-        raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time ' "arguments")
+        raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time arguments')
 
     for arg_name, arg_value in args.items():
         if arg_name not in valid_args:

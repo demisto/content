@@ -21,7 +21,7 @@ class CrowdStrikeClient(BaseClient):
         super().__init__(
             base_url=params.get("server_url", "https://api.crowdstrike.com/"),
             verify=not params.get("insecure", False),
-            ok_codes=tuple(),
+            ok_codes=(),
             proxy=params.get("proxy", False),
         )  # type: ignore[misc]
         self.timeout = float(params.get("timeout", "10"))

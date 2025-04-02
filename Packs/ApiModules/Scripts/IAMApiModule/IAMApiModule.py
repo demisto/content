@@ -305,9 +305,8 @@ class IAMUserProfile:
         # Special treatment for ID field, because he is not included in outgoing mappers.
         for iam_attr in iam_attrs:
             # Special treatment for ID field, because he is not included in outgoing mappers.
-            if iam_attr == "id":
-                if attr_value := self.get_attribute(iam_attr, use_old_user_data):
-                    return iam_attr, attr_value
+            if iam_attr == "id" and (attr_value := self.get_attribute(iam_attr, use_old_user_data)):
+                return iam_attr, attr_value
             if attr_value := self.get_attribute(iam_attr, use_old_user_data, self.mapped_user_profile):
                 # Special treatment for emails, as mapper maps it to a list object.
                 if iam_attr == "emails" and not isinstance(attr_value, str):

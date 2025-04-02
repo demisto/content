@@ -530,7 +530,7 @@ def format_item(item_to_format: Any) -> Any:
         "TRUE": True,
         "NULL": None,
     }
-    return mapper[item_to_format] if item_to_format in mapper else item_to_format
+    return mapper.get(item_to_format, item_to_format)
 
 
 def is_empty(item_to_check: Any) -> bool:
