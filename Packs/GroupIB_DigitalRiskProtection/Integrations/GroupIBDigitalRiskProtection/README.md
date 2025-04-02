@@ -1,27 +1,27 @@
 # Group-IB Digital Risk Protection Pack for Cortex XSOAR
 
-This pack helps integrate **Group-IB Digital Risk Protection** with **Cortex XSOAR**, allowing you to receive and manage violations directly.
+This pack enables integration between **Group-IB Digital Risk Protection** and **Cortex XSOAR**, allowing you direct retrieval and handling of violations.
 
 ## Configuration
 
 | Name                                      | Required | Description |
 |-------------------------------------------|----------|-------------|
-| **GIB DRP URL**                           | True     | The FQDN/IP address the integration should connect to. |
-| **Fetch incidents**                       | True     | Determines whether the integration should start collecting incident violations. |
-| **Classifier**                            | True     | Defines which collections and received data should be linked to which incidents. |
-| **Incident type**                         | False    | Specifies the incident type to collect the received data into. This field should be ignored as our Classifier and Mapper handle this. |
-| **Mapper**                                | True     | Determines which data should be linked to which incident types. |
-| **Username**                              | True     | The API Key and Username required for authentication. |
-| **Password**                              | True     | The API Key and Username required for authentication. |
-| **Trust any certificate (not secure)**    | False    | Whether to allow connections without verifying SSL certificate validity. |
-| **Use system proxy settings**             | False    | Whether to use the XSOAR system proxy settings to connect to the API. |
+| **GIB DRP URL**                           | True     | The DRP server URL to connect to. |
+| **Fetch incidents**                       | True     | Determines whether the integration should start collecting violations. |
+| **Classifier**                            | True     | Maps collections and received data to appropriate incidents. |
+| **Incident type**                         | False    | Specifies the incident type to collect the received data into. This field should be ignored as our Classifier and Mapper manage this. |
+| **Mapper**                                | True     | Determines how fields are mapped to incidents. |
+| **Username**                              | True     | Username is the DRP account email. The API Key and Username required for authentication.  |
+| **Password**                              | True     | API Token (not your account password). Generated in the DRP web panel. API token specifically for interaction with the API. The API Key and Username required for authentication.  |
+| **Trust any certificate (not secure)**    | False    | Allows skipping SSL verification. Use with caution. |
+| **Use system proxy settings**             | False    | Enables XSOAR's proxy settings for the API connection. |
 | **Violation Section to filter received violations** | False    | Allows filtering retrieved violations by section. |
 | **Brands to filter received violations**  | False    | Allows filtering violations by brand. You must use a **BrandID**, which can be obtained via the `gibdrp-get-brands` command. Currently, filtering is available for only one brand per instance. |
 | **Incidents first fetch**                 | True     | Specifies the start date for retrieving violations. |
-| **Download images**                       | False    | If set to **True**, images for each violation will be downloaded and displayed in the violation layout. |
-| **Getting Typosquatting only**            | False    | Whether to retrieve only violations matching the **TypoSquatting** filter. |
-| **Number of requests per collection**     | True     | The number of requests per collection the integration sends in one fetch iteration. |
-| **Log Level**                             | True     | Sets the log collection level; we recommend **Debug**. |
+| **Download images**                       | False    | Download images for each violation and display in the violation layout. |
+| **Getting Typosquatting only**            | False    | Retrieve only violations matching the **TypoSquatting** filter. |
+| **Number of requests per collection**     | True     | Number of requests per collection the integration sends per fetch iteration. |
+| **Log Level**                             | True     | Set the log collection level; we recommend **Debug**. |
 
 ---
 
@@ -68,6 +68,7 @@ Retrieves violation details by ID.
 
 #### Command Example:
 ```!gibdrp-get-violation-by-id id=violationID```
+
 
 #### Context Output:
 
