@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Brand Protection Phishing Kit",
-        "GIB Attacks Phishing Group"
+        "GIB Brand Protection Phishing Kit"
     ],
     "caseInsensitive": true,
     "cliName": "gibdownloadedfrom",
@@ -23,14 +22,8 @@
     "threshold": 72,
     "type": "markdown",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "itemVersion": "1.4.2",
-    "openEnded": false,
-    "systemAssociatedTypes": [
-        "GIB Brand Protection Phishing Kit",
-        "GIB Attacks Phishing Group"
-    ]
+    "fromVersion": "6.0.0"
 }
