@@ -1008,7 +1008,7 @@ class Cache:
 
 
 def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backslash=False, to_lower=False):
-    """
+    """Given the fields to search for in the notables and the prefix, creates the query part for splunk search.
     For example: if fields are ["user"], and the value of the "user" fields in the notable is ["u1", "u2"], and the
     prefix is "identity", the function returns: (identity="u1" OR identity="u2")
 
