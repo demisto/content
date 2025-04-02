@@ -1387,7 +1387,7 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.Opaque | unknown | Additional information regarding the event. | 
 | CDL.Logging.GlobalProtect.PanoramaSN | unknown | Panorama Serial associated with CDL. | 
 | CDL.Logging.GlobalProtect.PlatformType | unknown | The platform type. | 
-| CDL.Logging.GlobalProtect.Portal | unknown | Global Protect Portal or Gateway that the user connected to. | 
+| CDL.Logging.GlobalProtect.Portal | unknown | GlobalProtect portal or gateway that the user connected to. | 
 | CDL.Logging.GlobalProtect.PrivateIPv4 | unknown | Private IP address \(v4\) of the user that connected. | 
 | CDL.Logging.GlobalProtect.PrivateIPv6 | unknown | Private IP address \(v6\) of the user that connected. | 
 | CDL.Logging.GlobalProtect.ProjectName | unknown | Project name. | 
