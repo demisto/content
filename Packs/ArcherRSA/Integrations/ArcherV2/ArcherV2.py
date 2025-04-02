@@ -923,7 +923,7 @@ class Client(BaseClient):
         cache = get_integration_context()
         cache_key = f"{field_id}__{depth}"
 
-        if cached_field_value_list:= cache["fieldValueList"].get(cache_key):
+        if cached_field_value_list:= cache.get("fieldValueList", {}).get(cache_key):
             demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
             return cached_field_value_list
 
