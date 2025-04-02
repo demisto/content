@@ -1398,9 +1398,9 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.SourceRegion | unknown | Region of the gateway \(or user\) that connected. | 
 | CDL.Logging.GlobalProtect.SourceUser | unknown | The username that connected. | 
 | CDL.Logging.GlobalProtect.SourceUserDomain | unknown | Domain to which the source user belongs. | 
-| CDL.Logging.GlobalProtect.SourceUserName | unknown | The Source User username. | 
-| CDL.Logging.GlobalProtect.SourceUserUUID | unknown | Unique identifier assigned to the Source User. | 
-| CDL.Logging.GlobalProtect.SSLResponseTime | unknown | SSL Response Time in milliseconds. | 
+| CDL.Logging.GlobalProtect.SourceUserName | unknown | The source user username. | 
+| CDL.Logging.GlobalProtect.SourceUserUUID | unknown | Unique identifier assigned to the source user. | 
+| CDL.Logging.GlobalProtect.SSLResponseTime | unknown | SSL response time in milliseconds. | 
 | CDL.Logging.GlobalProtect.Stage | unknown | Name of the stage in the GlobalProtect connection workflow. | 
 | CDL.Logging.GlobalProtect.EventStatus | unknown | The status \(success or failure\) of the event. | 
 | CDL.Logging.GlobalProtect.Subtype | unknown | The log subtype. | 
