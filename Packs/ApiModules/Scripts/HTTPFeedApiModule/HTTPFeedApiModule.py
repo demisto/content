@@ -16,7 +16,7 @@ TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
-CIDR_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+)\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+)"
+CIDR_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
 
 
 class Client(BaseClient):
