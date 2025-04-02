@@ -2,6 +2,7 @@ id: silent-Recurring rare domain access from an unsigned process
 version: -1
 name: silent-Recurring rare domain access from an unsigned process
 description: "This playbook addresses the following alerts:\n\n- Recurring rare domain access from an uncommon unsigned process\n- Recurring access to a rare domain associated with known threats\n\nPlaybook Stages:\n  \nAnalysis:\n\n- Check actor process hash reputation\n- Check suspicious domain reputation\n- Check actor process hash category using WildFire\n\n  If suspicious/malicious reputation found:\n    - Execute Remediation\n\nInvestigation:\n\n- Check Actor for Risky Path\n- Get Actor CommandLine Analysis\n- Get CGO Process Prevalence\n- Get Related Alerts\n\n  If found related alerts and one other risk:\n    - Execute Remediation\n\nContainment:\n\n- Kill CGO Process\n- Add Domain IOC rule."
+issilent: true
 tags:
 - T1071 - Application Layer Protocol
 - TA0011 - Command and Control
