@@ -2057,7 +2057,7 @@ script:
       name: page_size
     - auto: PREDEFINED
       defaultValue: "true"
-      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      description: If set to false, query results are not mapped into the standard command context.
       name: transform_results
       predefined:
       - "true"
