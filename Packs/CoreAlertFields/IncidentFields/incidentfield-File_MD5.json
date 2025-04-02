@@ -40,10 +40,5 @@
             "type": "shortText",
             "name": "MD5"
         }
-    ],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
     ]
 }
