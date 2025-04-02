@@ -1298,7 +1298,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1",
+            "instance_names": "palo_alto_panorama_11",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000,
@@ -1306,7 +1306,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.1",
+            "instance_names": "palo_alto_firewall_11",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000,
@@ -1314,7 +1314,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1",
+            "instance_names": "palo_alto_panorama_11",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
             "timeout": 2400,
@@ -1564,7 +1564,8 @@
         {
             "playbookID": "ContentPackInstaller_Test",
             "integrations": "Core REST API",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "playbookID": "Default - Test",
@@ -3768,7 +3769,8 @@
                 "Core REST API"
             ],
             "playbookID": "FeedZoom_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 500
         },
         {
             "playbookID": "PCAP Analysis Test",
@@ -5157,7 +5159,7 @@
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
             "marketplaces": "xsoar_saas",
-            "timeout": 170
+            "timeout": 300
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5739,7 +5741,7 @@
         {
             "integrations": [
                 "LOLBAS Feed",
-                "Demisto REST API"
+                "Core REST API"
             ],
             "playbookID": "FeedLOLBas_test"
         },
@@ -5841,6 +5843,7 @@
         }
     ],
     "skipped_tests": {
+        "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -6033,7 +6036,11 @@
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
         "Mail Sender (New) Test": "Creds not working CRTX-160174",
-        "Mail-Listener Test Playbook": "Creds not working CRTX-160174"
+        "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
+        "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+
+
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
