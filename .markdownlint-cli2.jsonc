@@ -1,6 +1,7 @@
 {
   "config": {
     "default": false,
+     "MDO39" : true,
       "MD020" : true,
       "MD021" : true,
       "MD043" : true,
