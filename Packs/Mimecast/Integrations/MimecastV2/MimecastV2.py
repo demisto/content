@@ -4,14 +4,14 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-
+#stam
 import base64
 import hashlib
 import hmac
 import json
 import uuid
 from datetime import timedelta
-from urllib.error import HTTPError 
+from urllib.error import HTTPError
 from xml.etree import ElementTree
 
 import requests
