@@ -31,11 +31,6 @@
     "x2_fields": "action_file_md5",
     "Aliases": [
         {
-            "cliName": "gibinjectmd5",
-            "type": "shortText",
-            "name": "GIB Inject MD5"
-        },
-        {
             "cliName": "md5",
             "type": "shortText",
             "name": "MD5"

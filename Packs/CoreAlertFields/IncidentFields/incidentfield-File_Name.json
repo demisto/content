@@ -31,11 +31,6 @@
     "x2_fields": "action_file_name",
     "Aliases": [
         {
-            "cliName": "gibleakedfilename",
-            "type": "shortText",
-            "name": "GIB Leaked File Name"
-        },
-        {
             "cliName": "pcapfilename",
             "type": "shortText",
             "name": "PCAP File Name"

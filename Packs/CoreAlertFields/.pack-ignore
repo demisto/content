@@ -15,9 +15,3 @@ ignore=IF115
 
 [file:incidentfield-Alert_Search_Results.json]
 ignore=IF100
-
-[file:incidentfield-File_Name.json]
-ignore=IF117
-
-[file:incidentfield-File_MD5.json]
-ignore=IF117
