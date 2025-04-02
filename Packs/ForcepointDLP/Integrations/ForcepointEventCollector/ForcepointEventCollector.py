@@ -1289,13 +1289,8 @@ def list_incidents_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Results to return to the war room.
     """
     incident_type = args.get("type", "INCIDENTS")  # Default to INCIDENTS
-
-    from_date = arg_to_datetime(args["from_date"])
-    to_date = arg_to_datetime(args["to_date"])
-
-    if from_date is None or to_date is None:
-        raise DemistoException("Please provide correct dates")
-
+    from_date = arg_to_datetime(args["from_date"], required=True)
+    to_date = arg_to_datetime(args.get("to_date", "now"), required=True)
     status = args.get("status")
     ids = argToList(args.get("ids"))
 
