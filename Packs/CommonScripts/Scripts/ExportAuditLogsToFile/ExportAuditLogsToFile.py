@@ -94,9 +94,10 @@ def main():   # pragma: no cover
         if is_error(res):
             raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
         response = res[0]["Contents"]["response"]
-        audits.extend(get_audit_logs(response))
-        if len(get_audit_logs(response)) == 0:
+        audit_logs = get_audit_logs(response)
+        if len(audit_logs) == 0:
             break
+        audits.extend(audit_logs)
         page_num += 1
         # break if this goes crazy, if there are more than 100 pages of audit log entries.
         if page_num == 100:
