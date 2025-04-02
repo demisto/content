@@ -28,7 +28,8 @@ def parse_alerts(alerts: list) -> list:
             "Type": alert.get("type"),
             "Detail": alert.get("detail"),
         }
-        for alert in alerts if alerts
+        for alert in alerts
+        if alerts
     ]
 
 
@@ -49,11 +50,7 @@ def json_to_md(incident_fields: dict) -> str:
 
 def main():
     incident_fields = read_context_from_rsa_netwitness_alerts()
-    return_results(
-        CommandResults(
-            readable_output=json_to_md(incident_fields) if incident_fields else "No data to present."
-        )
-    )
+    return_results(CommandResults(readable_output=json_to_md(incident_fields) if incident_fields else "No data to present."))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
