@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Card",
-        "GIB Compromised Card Group"
+        "GIB Compromised Card"
     ],
     "caseInsensitive": true,
     "cliName": "gibcardnumber",
@@ -26,11 +25,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "itemVersion": "1.4.2",
-    "openEnded": false,
-    "systemAssociatedTypes": [
-        "GIB Compromised Card",
-        "GIB Compromised Card Group"
-    ]
+    "fromVersion": "6.0.0"
 }
