@@ -1369,7 +1369,7 @@ Searches the GlobalProtect VPN log table.
 | CDL.Logging.GlobalProtect.EndpointSN | unknown | ID that uniquely identifies the endpoint on which the GlobalProtect client is deployed. | 
 | CDL.Logging.GlobalProtect.EventID | unknown | The name of the event. | 
 | CDL.Logging.GlobalProtect.Gateway | unknown | Gateway for the connection. | 
-| CDL.Logging.GlobalProtect.GatewayPriority | unknown | Priority of gateway. | 
+| CDL.Logging.GlobalProtect.GatewayPriority | unknown | Priority of the gateway. | 
 | CDL.Logging.GlobalProtect.GatewaySelectionType | unknown | Gateway Selection Method i.e automatic, preferred or manual. | 
 | CDL.Logging.GlobalProtect.GPGatewayLocation | unknown | Location of the Global Protect Gateway. | 
 | CDL.Logging.GlobalProtect.HostID | unknown | Unique identifier GlobalProtect has assigned to the host. | 
