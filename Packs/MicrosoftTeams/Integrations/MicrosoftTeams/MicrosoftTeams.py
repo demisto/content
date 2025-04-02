@@ -1524,16 +1524,15 @@ def add_bot_to_chat(chat_id: str):
     if is_bot_in_chat(chat_id):
         demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
-    # res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
-    #                    params={"$filter": f"externalId eq '{BOT_ID}'"})
     res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
-                       params={})
+                       params={"$filter": f"externalId eq '{BOT_ID}'"})
     demisto.debug(f"App data is: {res}")
     value = res.get('value', []) # type: ignore
     if not value:
         raise DemistoException(f"Bot with ID: {BOT_ID} was not found in the App Catalog in Microsoft.")
     app_data = value[0]
     bot_internal_id = app_data.get('id')
+    demisto.debug(f"Bot internal ID is: {bot_internal_id}")
 
     request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
     http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
