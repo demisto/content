@@ -253,6 +253,8 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     uuid_val = str(args.get('uuid'))
     if not uuid_val:
         raise DemistoException("Please provide 'uuid' parameter.")
+    if status == 'None' and comment == 'None':
+        raise DemistoException("Please provide either 'status' or 'comment' parameter.")
     data = {
         "table_name": "alert",
         "columns": {

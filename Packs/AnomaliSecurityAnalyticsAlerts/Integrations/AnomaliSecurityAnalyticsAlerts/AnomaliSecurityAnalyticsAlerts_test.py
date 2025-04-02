@@ -1,7 +1,8 @@
-from AnomaliSecurityAnalyticsAlerts import *
+from AnomaliSecurityAnalyticsAlerts import Client, command_create_search_job, command_get_search_job_results, command_update_alert
 from CommonServerPython import *
 from CommonServerUserPython import *
 from freezegun import freeze_time
+import pytest
 
 
 @freeze_time("2025-03-01")
@@ -242,3 +243,28 @@ def test_command_update_alert_status_and_comment(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs == return_data
     assert "Update Alert" in result.readable_output
+
+
+def test_command_update_alert_missing_params(mocker):
+    """
+    Given:
+        - Only 'uuid' parameter is provided (both 'status' and 'comment' are missing).
+
+    When:
+        - command_update_alert is invoked.
+
+    Then:
+        - Validate that a DemistoException is raised indicating that either 'status' or 'comment' must be provided.
+    """
+    client = Client(
+        server_url='https://test.com',
+        username='test_user',
+        api_key='test_api_key',
+        verify=True,
+        proxy=False
+    )
+    args = {
+        'uuid': 'alert-uuid-789'
+    }
+    with pytest.raises(DemistoException, match="Please provide either 'status' or 'comment' parameter."):
+        command_update_alert(client, args)

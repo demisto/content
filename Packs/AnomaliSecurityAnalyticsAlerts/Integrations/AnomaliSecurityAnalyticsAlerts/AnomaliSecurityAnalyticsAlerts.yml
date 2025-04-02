@@ -36,7 +36,7 @@ name: AnomaliSecurityAnalyticsAlerts
 script:
   commands:
   - name: anomali-security-analytics-search-job-create
-    description: "Create a new search job"
+    description: "Create a new search job."
     arguments:
     - name: query
       description: Search expression or keyword you're looking for in logs, e.g. alerts.
@@ -62,14 +62,14 @@ script:
         description: Job ID of the search job.
         type: String
   - name: anomali-security-analytics-search-job-results
-    description: "Get search job results"
+    description: "Get search job results."
     arguments:
     - name: job_id
       description: Unique identifier assigned to a background process or job.
       required: true
       isArray: true
     - name: offset
-      description: Offset of the search results. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 30. Default value is 0.
+      description: Offset of the search results. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0.
       required: false
     - name: fetch_size
       description: Number of rows returned. Maximum rows is 1000. Default value is 25.
@@ -113,7 +113,7 @@ script:
         description: "Data types of the search record attributes."
         type: Array
   - name: anomali-security-analytics-update-alert
-    description: "Update alert's comment or status"
+    description: "Update alert's comment or status."
     arguments:
     - name: uuid
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
@@ -134,7 +134,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.5.0
 marketplaces:
 - xsoar
