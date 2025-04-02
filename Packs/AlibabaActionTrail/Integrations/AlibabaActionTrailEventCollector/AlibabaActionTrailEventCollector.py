@@ -1,13 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-from SiemApiModule import *
+import base64
+import hashlib
+import hmac
 from datetime import datetime
 from typing import Any
+
+import demistomock as demisto
 import six
-import hmac
-import hashlib
-import base64
 import urllib3
+from CommonServerPython import *
+from SiemApiModule import *
 
 API_VERSION = "0.6.0"
 VENDOR = "alibaba"
@@ -64,7 +65,10 @@ class AlibabaEventsClient(IntegrationEventsClient):
         headers["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         signature = get_request_authorization(
-            f"/logstores/{self.logstore_name}", self.access_key, self.request.params.dict(by_alias=True), headers   # type: ignore
+            f"/logstores/{self.logstore_name}",
+            self.access_key,
+            self.request.params.dict(by_alias=True),
+            headers,  # type: ignore
         )  # type: ignore
 
         headers["Authorization"] = "LOG " + self.access_key_id + ":" + signature
