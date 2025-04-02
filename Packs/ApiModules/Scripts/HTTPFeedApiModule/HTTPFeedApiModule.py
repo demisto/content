@@ -1,27 +1,43 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
-''' IMPORTS '''
-import urllib3
+""" IMPORTS """
+from re import Pattern
+
 import requests
-from typing import Optional, Pattern, List
+import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS '''
-TAGS = 'tags'
-TLP_COLOR = 'trafficlightprotocol'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
+""" GLOBALS """
+TAGS = "tags"
+TLP_COLOR = "trafficlightprotocol"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+THRESHOLD_IN_SECONDS = 43200  # 12 hours in seconds
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
-                 ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
-                 indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
+    def __init__(
+        self,
+        url: str,
+        feed_name: str = "http",
+        insecure: bool = False,
+        credentials: dict = None,
+        ignore_regex: str = None,
+        encoding: str = None,
+        indicator_type: str = "",
+        indicator: str = "",
+        fields: str = "{}",
+        feed_url_to_config: dict = None,
+        polling_timeout: int = 20,
+        headers: dict = None,
+        proxy: bool = False,
+        custom_fields_mapping: dict = None,
+        **kwargs,
+    ):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
@@ -111,27 +127,28 @@ class Client(BaseClient):
         self.username = None
         self.password = None
 
-        username = credentials.get('identifier', '')
-        if username.startswith('_header:'):
+        username = credentials.get("identifier", "")
+        if username.startswith("_header:"):
             if not self.headers:
                 self.headers = {}
-            header_field = username.split(':')
+            header_field = username.split(":")
             if len(header_field) < 2:
-                raise ValueError('An incorrect value was provided for an API key header.'
-                                 ' The correct value is "_header:<header_name>"')
+                raise ValueError(
+                    "An incorrect value was provided for an API key header." ' The correct value is "_header:<header_name>"'
+                )
             header_name: str = header_field[1]
-            header_value: str = credentials.get('password', '')
+            header_value: str = credentials.get("password", "")
             self.headers[header_name] = header_value
         else:
             self.username = username
-            self.password = credentials.get('password', None)
+            self.password = credentials.get("password", None)
 
         self.indicator_type = indicator_type
         if feed_url_to_config:
             self.feed_url_to_config = feed_url_to_config
         else:
             self.feed_url_to_config = {url: self.get_feed_config(fields, indicator)}
-        self.ignore_regex: Optional[Pattern] = None
+        self.ignore_regex: Pattern | None = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
 
@@ -139,7 +156,7 @@ class Client(BaseClient):
             custom_fields_mapping = {}
         self.custom_fields_mapping = custom_fields_mapping
 
-    def get_feed_config(self, fields_json: str = '', indicator_json: str = ''):
+    def get_feed_config(self, fields_json: str = "", indicator_json: str = ""):
         """
         Get the feed configuration from the indicator and field JSON strings.
         :param fields_json: JSON string of fields to extract, for example:
@@ -162,31 +179,29 @@ class Client(BaseClient):
         config = {}
         if indicator_json:
             indicator = json.loads(indicator_json)
-            if 'regex' in indicator:
-                indicator['regex'] = re.compile(indicator['regex'])
+            if "regex" in indicator:
+                indicator["regex"] = re.compile(indicator["regex"])
             else:
-                raise ValueError(f'{self.feed_name} - indicator stanza should have a regex')
-            if 'transform' not in indicator:
-                if indicator['regex'].groups > 0:
-                    LOG(f'{self.feed_name} - no transform string for indicator but pattern contains groups')
-                indicator['transform'] = r'\g<0>'
+                raise ValueError(f"{self.feed_name} - indicator stanza should have a regex")
+            if "transform" not in indicator:
+                if indicator["regex"].groups > 0:
+                    LOG(f"{self.feed_name} - no transform string for indicator but pattern contains groups")
+                indicator["transform"] = r"\g<0>"
 
-            config['indicator'] = indicator
+            config["indicator"] = indicator
         if fields_json:
             fields = json.loads(fields_json)
-            config['fields'] = []
+            config["fields"] = []
             for f, fattrs in fields.items():
-                if 'regex' in fattrs:
-                    fattrs['regex'] = re.compile(fattrs['regex'])
+                if "regex" in fattrs:
+                    fattrs["regex"] = re.compile(fattrs["regex"])
                 else:
-                    raise ValueError(f'{self.feed_name} - {f} field does not have a regex')
-                if 'transform' not in fattrs:
-                    if fattrs['regex'].groups > 0:
-                        LOG(f'{self.feed_name} - no transform string for field {f} but pattern contains groups')
-                    fattrs['transform'] = r'\g<0>'
-                config['fields'].append({
-                    f: fattrs
-                })
+                    raise ValueError(f"{self.feed_name} - {f} field does not have a regex")
+                if "transform" not in fattrs:
+                    if fattrs["regex"].groups > 0:
+                        LOG(f"{self.feed_name} - no transform string for field {f} but pattern contains groups")
+                    fattrs["transform"] = r"\g<0>"
+                config["fields"].append({f: fattrs})
 
         return config
 
@@ -196,101 +211,107 @@ class Client(BaseClient):
         :param kwargs: Arguments to send to the HTTP API endpoint
         :return: List of indicators
         """
-        kwargs['stream'] = True
-        kwargs['verify'] = self._verify
-        kwargs['timeout'] = self.polling_timeout
+        kwargs["stream"] = True
+        kwargs["verify"] = self._verify
+        kwargs["timeout"] = self.polling_timeout
 
         if self.headers is not None:
-            kwargs['headers'] = self.headers
+            kwargs["headers"] = self.headers
 
         if self.username is not None and self.password is not None:
-            kwargs['auth'] = (self.username, self.password)
+            kwargs["auth"] = (self.username, self.password)
         try:
             urls = self._base_url
-            url_to_response_list: List[dict] = []
+            url_to_response_list: list[dict] = []
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
-                if is_demisto_version_ge('6.5.0'):
+                if is_demisto_version_ge("6.5.0"):
                     # Set the If-None-Match and If-Modified-Since headers if we have etag or
                     # last_modified values in the context, for server version higher than 6.5.0.
                     last_run = demisto.getLastRun()
-                    etag = last_run.get(url, {}).get('etag')
+                    etag = last_run.get(url, {}).get("etag")
                     if etag:
                         etag = etag.strip('"')
-                    last_modified = last_run.get(url, {}).get('last_modified')
-                    last_updated = last_run.get(url, {}).get('last_updated')
+                    last_modified = last_run.get(url, {}).get("last_modified")
+                    last_updated = last_run.get(url, {}).get("last_updated")
                     # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
                     # we'll refresh the indicators to ensure their expiration time is updated.
                     # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module     # noqa: E501
-                    if last_updated and has_passed_time_threshold(timestamp_str=last_updated,
-                                                                  seconds_threshold=THRESHOLD_IN_SECONDS):
+                    if last_updated and has_passed_time_threshold(
+                        timestamp_str=last_updated, seconds_threshold=THRESHOLD_IN_SECONDS
+                    ):
                         last_modified = None
                         etag = None
-                        demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators\
-                            alive, we will refetch them from scratch")
+                        demisto.debug(
+                            "Since it's been a long time with no update, to make sure we are keeping the indicators\
+                            alive, we will refetch them from scratch"
+                        )
                     if etag:
-                        if not kwargs.get('headers'):
-                            kwargs['headers'] = {}
-                        kwargs['headers']['If-None-Match'] = etag
+                        if not kwargs.get("headers"):
+                            kwargs["headers"] = {}
+                        kwargs["headers"]["If-None-Match"] = etag
 
                     if last_modified:
-                        if not kwargs.get('headers'):
-                            kwargs['headers'] = {}
-                        kwargs['headers']['If-Modified-Since'] = last_modified
+                        if not kwargs.get("headers"):
+                            kwargs["headers"] = {}
+                        kwargs["headers"]["If-Modified-Since"] = last_modified
 
-                r = requests.get(
-                    url,
-                    **kwargs
-                )
+                r = requests.get(url, **kwargs)
                 try:
                     r.raise_for_status()
                 except Exception:
-                    LOG(f'{self.feed_name!r} - exception in request:'
-                        f' {r.status_code!r} {r.content!r}')
+                    LOG(f"{self.feed_name!r} - exception in request:" f" {r.status_code!r} {r.content!r}")
                     raise
-                no_update = get_no_update_value(r, url) if is_demisto_version_ge('6.5.0') else True
-                url_to_response_list.append({url: {'response': r, 'no_update': no_update}})
+                no_update = get_no_update_value(r, url) if is_demisto_version_ge("6.5.0") else True
+                url_to_response_list.append({url: {"response": r, "no_update": no_update}})
         except requests.exceptions.ConnectTimeout as exception:
-            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
+            err_msg = (
+                "Connection Timeout Error - potential reasons might be that the Server URL parameter"
+                " is incorrect or that the Server is not accessible from your host."
+            )
             raise DemistoException(err_msg, exception)
         except requests.exceptions.SSLError as exception:
             # in case the "Trust any certificate" is already checked
             if not self._verify:
                 raise
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                      ' the integration configuration.'
+            err_msg = (
+                "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in"
+                " the integration configuration."
+            )
             raise DemistoException(err_msg, exception)
         except requests.exceptions.ProxyError as exception:
-            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                      ' selected, try clearing the checkbox.'
+            err_msg = (
+                "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is"
+                " selected, try clearing the checkbox."
+            )
             raise DemistoException(err_msg, exception)
         except requests.exceptions.ConnectionError as exception:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = 'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                .format(err_type, exception.errno, exception.strerror)
+            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
+            err_msg = (
+                "Verify that the server URL parameter"
+                " is correct and that you have access to the server from your host."
+                f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"
+            )
             raise DemistoException(err_msg, exception)
 
         results = []
         for url_to_response in url_to_response_list:
             for url, res_data in url_to_response.items():
-                lines = res_data.get('response')
+                lines = res_data.get("response")
                 result = lines.iter_lines()
                 if self.encoding is not None:
-                    result = (x.decode(self.encoding).encode('utf_8') for x in result)
+                    result = (x.decode(self.encoding).encode("utf_8") for x in result)
                 else:
-                    result = (x.decode('utf_8') for x in result)
+                    result = (x.decode("utf_8") for x in result)
                 if self.ignore_regex is not None:
                     result = filter(
                         lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr, arg-type]
-                        result
+                        result,
                     )
-                results.append({url: {'result': result, 'no_update': res_data.get('no_update')}})
+                results.append({url: {"result": result, "no_update": res_data.get("no_update")}})
         return results
 
     def custom_fields_creator(self, attributes: dict):
@@ -319,28 +340,29 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
         The value should be False if the response was modified.
     """
     if response.status_code == 304:
-        demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
+        demisto.debug("No new indicators fetched, createIndicators will be executed with noUpdate=True.")
         return True
 
-    etag = response.headers.get('ETag')
+    etag = response.headers.get("ETag")
     if etag:
         etag = etag.strip('"')
-    last_modified = response.headers.get('Last-Modified')
+    last_modified = response.headers.get("Last-Modified")
     current_time = datetime.utcnow()
     # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
-        demisto.debug('Last-Modified and Etag headers are not exists,'
-                      'createIndicators will be executed with noUpdate=False.')
+        demisto.debug("Last-Modified and Etag headers are not exists," "createIndicators will be executed with noUpdate=False.")
         return False
 
     last_run = demisto.getLastRun()
-    last_run[url] = {'last_modified': last_modified, 'etag': etag, 'last_updated': last_updated}
+    last_run[url] = {"last_modified": last_modified, "etag": etag, "last_updated": last_updated}
     demisto.setLastRun(last_run)
 
-    demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
-                  ' createIndicators will be executed with noUpdate=False.')
+    demisto.debug(
+        "New indicators fetched - the Last-Modified value has been updated,"
+        " createIndicators will be executed with noUpdate=False."
+    )
     return False
 
 
@@ -350,11 +372,11 @@ def datestring_to_server_format(date_string: str) -> str:
     :param date_string: Date represented as a tring
     :return: ISO-8601 date string
     """
-    parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
-    return parsed_date.strftime(DATE_FORMAT)    # type: ignore
+    parsed_date = dateparser.parse(date_string, settings={"TIMEZONE": "UTC"})
+    return parsed_date.strftime(DATE_FORMAT)  # type: ignore
 
 
-def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
+def get_indicator_fields(line, url, feed_tags: list, tlp_color: str | None, client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed
@@ -365,45 +387,45 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     :return: The indicator
     """
     attributes = None
-    value: str = ''
+    value: str = ""
     indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
-    if feed_config and 'indicator' in feed_config:
-        indicator = feed_config['indicator']
-        if 'regex' in indicator:
-            indicator['regex'] = re.compile(indicator['regex'])
-        if 'transform' not in indicator:
-            indicator['transform'] = r'\g<0>'
+    if feed_config and "indicator" in feed_config:
+        indicator = feed_config["indicator"]
+        if "regex" in indicator:
+            indicator["regex"] = re.compile(indicator["regex"])
+        if "transform" not in indicator:
+            indicator["transform"] = r"\g<0>"
 
-    if 'fields' in feed_config:
-        fields = feed_config['fields']
+    if "fields" in feed_config:
+        fields = feed_config["fields"]
         for field in fields:
             for f, fattrs in field.items():
                 field = {f: {}}
-                if 'regex' in fattrs:
-                    field[f]['regex'] = re.compile(fattrs['regex'])
-                field[f]['transform'] = fattrs.get('transform', '\\g<0>')
+                if "regex" in fattrs:
+                    field[f]["regex"] = re.compile(fattrs["regex"])
+                field[f]["transform"] = fattrs.get("transform", "\\g<0>")
                 fields_to_extract.append(field)
 
     line = line.strip()
     if line:
         extracted_indicator = line.split()[0]
         if indicator:
-            extracted_indicator = indicator['regex'].search(line)
+            extracted_indicator = indicator["regex"].search(line)
             if extracted_indicator is None:
                 return attributes, value
-            if 'transform' in indicator:
-                extracted_indicator = extracted_indicator.expand(indicator['transform'])
+            if "transform" in indicator:
+                extracted_indicator = extracted_indicator.expand(indicator["transform"])
         attributes = {}
         for field in fields_to_extract:
             for f, fattrs in field.items():
-                m = fattrs['regex'].search(line)
+                m = fattrs["regex"].search(line)
 
                 if m is None:
                     continue
 
-                attributes[f] = m.expand(fattrs['transform'])
+                attributes[f] = m.expand(fattrs["transform"])
 
                 try:
                     i = int(attributes[f])
@@ -411,64 +433,62 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                     pass
                 else:
                     attributes[f] = i
-        attributes['value'] = value = extracted_indicator
-        attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
-        attributes['tags'] = feed_tags
+        attributes["value"] = value = extracted_indicator
+        attributes["type"] = feed_config.get("indicator_type", client.indicator_type)
+        attributes["tags"] = feed_tags
 
         if tlp_color:
-            attributes['trafficlightprotocol'] = tlp_color
+            attributes["trafficlightprotocol"] = tlp_color
 
     return attributes, value
 
 
-def fetch_indicators_command(client,
-                             feed_tags,
-                             tlp_color,
-                             itype,
-                             auto_detect,
-                             create_relationships=False,
-                             enrichment_excluded: bool = False,
-                             **kwargs):
+def fetch_indicators_command(
+    client, feed_tags, tlp_color, itype, auto_detect, create_relationships=False, enrichment_excluded: bool = False, **kwargs
+):
     iterators = client.build_iterator(**kwargs)
     indicators = []
 
     # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
-    no_update = all(next(iter(iterator.values())).get('no_update', False) for iterator in iterators)
+    no_update = all(next(iter(iterator.values())).get("no_update", False) for iterator in iterators)
 
     for iterator in iterators:
         for url, lines in iterator.items():
-            for line in lines.get('result', []):
+            for line in lines.get("result", []):
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
-                    if 'lastseenbysource' in attributes:
-                        attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
+                    if "lastseenbysource" in attributes:
+                        attributes["lastseenbysource"] = datestring_to_server_format(attributes["lastseenbysource"])
 
-                    if 'firstseenbysource' in attributes:
-                        attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
+                    if "firstseenbysource" in attributes:
+                        attributes["firstseenbysource"] = datestring_to_server_format(attributes["firstseenbysource"])
                     indicator_type = determine_indicator_type(
-                        client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
+                        client.feed_url_to_config.get(url, {}).get("indicator_type"), itype, auto_detect, value
+                    )
                     indicator_data = {
-                        'value': value,
-                        'type': indicator_type,
-                        'rawJSON': attributes,
+                        "value": value,
+                        "type": indicator_type,
+                        "rawJSON": attributes,
                     }
                     if enrichment_excluded:
-                        indicator_data['enrichmentExcluded'] = enrichment_excluded
+                        indicator_data["enrichmentExcluded"] = enrichment_excluded
 
-                    if (create_relationships
-                            and client.feed_url_to_config.get(url, {}).get('relationship_name')
-                            and attributes.get('relationship_entity_b')
-                        ):
+                    if (
+                        create_relationships
+                        and client.feed_url_to_config.get(url, {}).get("relationship_name")
+                        and attributes.get("relationship_entity_b")
+                    ):
                         relationships_lst = EntityRelationship(
-                            name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
+                            name=client.feed_url_to_config.get(url, {}).get("relationship_name"),
                             entity_a=value,
                             entity_a_type=indicator_type,
-                            entity_b=attributes.get('relationship_entity_b'),
+                            entity_b=attributes.get("relationship_entity_b"),
                             entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
+                                client.feed_url_to_config.get(url, {}).get("relationship_entity_b_type")
+                            ),
                         )
                         relationships_of_indicator = [relationships_lst.to_indicator()]
-                        indicator_data['relationships'] = relationships_of_indicator
+                        indicator_data["relationships"] = relationships_of_indicator
 
                     if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
                         custom_fields = client.custom_fields_creator(attributes)
@@ -497,69 +517,66 @@ def determine_indicator_type(indicator_type, default_indicator_type, auto_detect
 
 
 def get_indicators_command(client: Client, args, enrichment_excluded: bool = False):
-    itype = args.get('indicator_type', client.indicator_type)
-    limit = int(args.get('limit'))
-    feed_tags = args.get('feedTags')
-    tlp_color = args.get('tlp_color')
-    auto_detect = demisto.params().get('auto_detect_type')
-    create_relationships = demisto.params().get('create_relationships')
-    indicators_list, _ = fetch_indicators_command(client,
-                                                  feed_tags,
-                                                  tlp_color,
-                                                  itype,
-                                                  auto_detect,
-                                                  create_relationships,
-                                                  enrichment_excluded)[:limit]
+    itype = args.get("indicator_type", client.indicator_type)
+    limit = int(args.get("limit"))
+    feed_tags = args.get("feedTags")
+    tlp_color = args.get("tlp_color")
+    auto_detect = demisto.params().get("auto_detect_type")
+    create_relationships = demisto.params().get("create_relationships")
+    indicators_list, _ = fetch_indicators_command(
+        client, feed_tags, tlp_color, itype, auto_detect, create_relationships, enrichment_excluded
+    )[:limit]
     entry_result = camelize(indicators_list)
-    hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
+    hr = tableToMarkdown("Indicators", entry_result, headers=["Value", "Type", "Rawjson"])
     return hr, {}, indicators_list
 
 
 def test_module(client: Client, args):
     if not client.feed_url_to_config:
-        indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
+        indicator_type = args.get("indicator_type", demisto.params().get("indicator_type"))
         if not FeedIndicatorType.is_valid_type(indicator_type):
             indicator_types = []
             for key, val in vars(FeedIndicatorType).items():
-                if not key.startswith('__') and isinstance(val, str):
+                if not key.startswith("__") and isinstance(val, str):
                     indicator_types.append(val)
-            supported_values = ', '.join(indicator_types)
-            raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
-                             f' {supported_values}')
+            supported_values = ", ".join(indicator_types)
+            raise ValueError(f"Indicator type of {indicator_type} is not supported. Supported values are:" f" {supported_values}")
     client.build_iterator()
-    return 'ok', {}, {}
+    return "ok", {}, {}
 
 
-def feed_main(feed_name, params=None, prefix=''):
+def feed_main(feed_name, params=None, prefix=""):
     if not params:
         params = assign_params(**demisto.params())
-    if 'feed_name' not in params:
-        params['feed_name'] = feed_name
-    feed_tags = argToList(demisto.params().get('feedTags'))
-    tlp_color = demisto.params().get('tlp_color')
-    enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
-                           or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
+    if "feed_name" not in params:
+        params["feed_name"] = feed_name
+    feed_tags = argToList(demisto.params().get("feedTags"))
+    tlp_color = demisto.params().get("tlp_color")
+    enrichment_excluded = demisto.params().get("enrichmentExcluded", False) or (
+        demisto.params().get("tlp_color") == "RED" and is_xsiam_or_xsoar_saas()
+    )
     client = Client(**params)
     command = demisto.command()
-    if command != 'fetch-indicators':
-        demisto.info('Command being called is {}'.format(command))
-    if prefix and not prefix.endswith('-'):
-        prefix += '-'
+    if command != "fetch-indicators":
+        demisto.info(f"Command being called is {command}")
+    if prefix and not prefix.endswith("-"):
+        prefix += "-"
     # Switch case
-    commands: dict = {
-        'test-module': test_module,
-        f'{prefix}get-indicators': get_indicators_command
-    }
+    commands: dict = {"test-module": test_module, f"{prefix}get-indicators": get_indicators_command}
     try:
-        if command == 'fetch-indicators':
-            indicators, no_update = fetch_indicators_command(client, feed_tags, tlp_color,
-                                                             params.get('indicator_type'),
-                                                             params.get('auto_detect_type'),
-                                                             params.get('create_relationships'),
-                                                             enrichment_excluded=enrichment_excluded)
+        if command == "fetch-indicators":
+            indicators, no_update = fetch_indicators_command(
+                client,
+                feed_tags,
+                tlp_color,
+                params.get("indicator_type"),
+                params.get("auto_detect_type"),
+                params.get("create_relationships"),
+                enrichment_excluded=enrichment_excluded,
+            )
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
-            if is_demisto_version_ge('6.5.0'):
+            if is_demisto_version_ge("6.5.0"):
                 if not indicators:
                     demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
                 else:
@@ -576,13 +593,13 @@ def feed_main(feed_name, params=None, prefix=''):
 
         else:
             args = demisto.args()
-            args['feed_name'] = feed_name
+            args["feed_name"] = feed_name
             if feed_tags:
-                args['feedTags'] = feed_tags
+                args["feedTags"] = feed_tags
             if tlp_color:
-                args['tlp_color'] = tlp_color
+                args["tlp_color"] = tlp_color
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} integration [{e}]'
+        err_msg = f"Error in {feed_name} integration [{e}]"
         return_error(err_msg, error=e)
