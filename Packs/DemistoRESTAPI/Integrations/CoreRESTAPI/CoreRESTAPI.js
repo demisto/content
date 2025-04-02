@@ -106,10 +106,12 @@ sendMultipart = function (uri, entryID, body) {
     else if (params.auth_method == 'Advanced') {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
 
     var res;
     var tries = 0;
     do {
+        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeout);
         res = httpMultipart(
             requestUrl,
             entryID,
@@ -120,15 +122,22 @@ sendMultipart = function (uri, entryID, body) {
             params.insecure,
             params.proxy,
             undefined,
-            'file'
+            'file',
+            undefined,
+            undefined,
+            timeout
         );
+        logDebug('The result of calling httpMultipart, with the requestUrl = ' + requestUrl + ' is ' + res.Status + ' and res is ' + JSON.stringify(res))
         tries++;
     } while (tries < 3 && res.Status.startsWith('timeout'));
     logDebug("Ran httpMultipart() " + tries + " time(s)")
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        logDebug('httpMultipart request to requestUrl = ' + requestUrl + ' failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.');
+        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
+    logDebug('httpMultipart request to requestUrl = ' + requestUrl + ' was successful.');
+
     try {
         var response = res.Body;
         try {
@@ -138,7 +147,7 @@ sendMultipart = function (uri, entryID, body) {
         }
         return {response: response};
     } catch (ex) {
-        throw 'Core REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+        throw 'Core REST APIs - Error parsing response in httpMultipart request - ' + ex + '\nBody:' + res.Body;
     }
 
 };
@@ -162,6 +171,8 @@ var sendRequest = function(method, uri, body, raw) {
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
+    logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ' Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
         requestUrl,
         {
@@ -171,11 +182,18 @@ var sendRequest = function(method, uri, body, raw) {
             SaveToFile: raw
         },
         params.insecure,
-        params.proxy
+        params.proxy,
+        undefined,
+        undefined,
+        timeout
     );
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        logDebug('http() request to requestUrl = ' + requestUrl + ' failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.');
+        throw 'Core REST APIs - Request to requestUrl = ' + requestUrl + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+    }
+    else {
+        logDebug('http() request to requestUrl = ' + requestUrl + ' was successful.');
     }
     if (raw) {
         return res;
@@ -189,61 +207,44 @@ var sendRequest = function(method, uri, body, raw) {
             }
             return {response: response};
         } catch (ex) {
-            throw 'Core REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+            throw 'Core REST APIs - Error parsing response - http() request to requestUrl = ' + requestUrl + '\nError: ' + ex + '\nBody:' + res.Body;
         }
     }
 };
 
-function reduce_one_entry(data, keep_fields) {
+function reduce_data(data, keep_fields) {
     var new_d = {};
     for (var field_index = 0; field_index < keep_fields.length; field_index += 1) {
         var field = keep_fields[field_index];
-        if (data[field]) {
+        if (field in data) {
             new_d[field] = data[field];
         }
     }
     return new_d;
 }
 
-function reduce_data(data, fields_to_keep) {
-    if (data instanceof Array) {
-        var new_data = [];
-        for (var data_index = 0; data_index < data.length; data_index += 1) {
-            var d = data[data_index];
-            new_data.push(reduce_one_entry(d, fields_to_keep));
-        }
-        return new_data;
-    }
-    else {
-        if (data.constructor == Object) {
-            return [reduce_one_entry(data, fields_to_keep)];
-        }
-    }
-    return data;
-}
-
-var deleteIncidents = function(ids_to_delete, fields_to_keep) {
+var deleteIncidents = function(ids_to_delete) {
     var body = {
         ids: ids_to_delete,
         all: false,
-        filter: {}
+        filter: {"size": 1},
+        excludeIncidentsResponseData: true // exclude unrelated data in response
     };
 
     var res = sendRequest('POST', '/incident/batchDelete', JSON.stringify(body));
     if (isError(res[0])) {
         throw res[0].Contents;
     }
+    
+    var relevant_headers = ['totalDeleted', "notUpdated", 'total']
+    var response = reduce_data(res['response'], relevant_headers)
 
-    var response = res['response'];
-    if (fields_to_keep && (fields_to_keep != "all")) {
-        response['data'] = reduce_data(response['data'], fields_to_keep);
-    }
-    var md = tableToMarkdown('Core delete incidents', response, ['data', 'total', "notUpdated"]);
+    var md = tableToMarkdown('Core delete incidents', response);
 
     return {
         ContentsFormat: formats.json,
         Type: entryTypes.note,
-        Contents: res,
+        Contents: {"response": response},
         HumanReadable: md
     };
 };
@@ -254,19 +255,30 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         file_path = entry_id;
     }
     else{
+        var method = 'GET';
+        var save_to_file = true;
         // download pack zip file
+        timeout = 3 * 60 * 1000; // timeout in milliseconds
+        logDebug('Calling http() from installPack, with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file + ', timeout in milliseconds = ' + timeout);
         var res = http(
         pack_url,
         {
-            Method: 'GET',
+            Method: method,
             Headers: {},
-            SaveToFile: true
-        });
+            SaveToFile: save_to_file
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        timeout
+        );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Core REST APIs - Failed to download pack file from ' + pack_url;
         }
         file_path = res.Path;
+        logDebug('The result of http() from installPack, to pack_url = ' + pack_url + ' is ' + res.StatusCode)
     }
 
     let upload_url = 'contentpacks/installed/upload?'
@@ -341,7 +353,10 @@ Returns:
 """
  */
 var uploadFile= function(incident_id, entry_id) {
-    var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id);
+    timeout = 3 * 60 * 1000; // timeout in milliseconds
+    logDebug('Calling httpMultipart from uploadFile, with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + ', timeout in milliseconds = ' + timeout);
+    var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, timeout);
+    logDebug('After Calling to httpMultipart with the url /entry/upload/' + incident_id + ' and entry_id = ' + entry_id + '. The satus code: ' + res.StatusCode);
     if (isError(res[0])) {
         throw res[0].Contents;
     }
@@ -422,11 +437,16 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     }
     var fileId = '';
     if ((!entryID)) {
+        logDebug('Calling saveFile for the file ' + file_name);
         fileId = saveFile(file_content);
+        logDebug('Calling uploadFile for the incident ' + incident_id + ' with fileId = ' + fileId);
         response = uploadFile(incident_id, fileId);
+        logDebug('After the call to uploadFile for the incident ' + incident_id + ' with fileId = ' + fileId + '. Status code: ' + response.StatusCode);
     } else {
         if (file_name === undefined) {
+            logDebug('Calling dq with the invContext of incident ' + incident_id + ' and the transformation string: File(val.EntryID == ${entryID}).Name');
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
+            logDebug('After calling dq. The returned file name is ' + file_name + '. The parameters were the invContext of incident ' + incident_id + ' and the transformation string: File(val.EntryID == ${entryID}).Name');
         }
         if (Array.isArray(file_name)) {
             if (file_name.length > 0) {
@@ -579,8 +599,7 @@ switch (command) {
     case 'demisto-delete-incidents':
     case 'core-delete-incidents':
         var ids = argToList(args.ids);
-        var fields = argToList(args.fields);
-        return deleteIncidents(ids, fields);
+        return deleteIncidents(ids);
     case 'demisto-api-install-packs':
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);

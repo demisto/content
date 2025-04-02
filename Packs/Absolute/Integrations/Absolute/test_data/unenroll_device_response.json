@@ -1,18 +1,19 @@
-[
-  {
-    "deviceUid": "1",
-    "systemName": "user1",
-    "username": "example@test.com",
-    "eligibleStatus": 0,
-    "serial": "CNF83051BN",
-    "esn": "2BU2PJD28VAA1UYL0008"
-  },
-  {
-    "deviceUid": "2",
-    "systemName": "user2",
-    "username": "example2@test.com",
-    "eligibleStatus": 1,
-    "serial": "CNF43051BN",
-    "esn": "2BU2PJ545L0008"
-  }
-]
+{"data": [
+    {
+      "deviceUid": "1",
+      "systemName": "user1",
+      "username": "example@test.com",
+      "eligibleStatus": 0,
+      "serial": "CNF83051BN",
+      "esn": "2BU2PJD28VAA1UYL0008"
+    },
+    {
+      "deviceUid": "2",
+      "systemName": "user2",
+      "username": "example2@test.com",
+      "eligibleStatus": 1,
+      "serial": "CNF43051BN",
+      "esn": "2BU2PJ545L0008"
+    }
+  ]
+}

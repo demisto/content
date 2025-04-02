@@ -2,7 +2,7 @@
     "name": "PingIdentity",
     "description": "Integration with PingIdentity's PingOne identity platform",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Ping Identity",
     "url": "https://docs.pingidentity.com/bundle/p14c/page/als1564020488261.html",
     "email": "tap-global@pingidentity.com",
@@ -36,6 +36,16 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

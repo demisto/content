@@ -2,37 +2,38 @@ id: Uncommon execution of ODBCConf
 version: -1
 name: Uncommon execution of ODBCConf
 description: |-
-    This playbook handles "Uncommon execution of ODBCConf" alerts.
+  This playbook handles "Uncommon execution of ODBCConf" alerts.
 
-    Playbook Stages:
+  Playbook Stages:
 
-    Analysis:
-    During the analysis, the playbook will perform the following:
+  Analysis:
+  During the analysis, the playbook will perform the following:
 
-    - Checks if the causality process (CGO) is signed and prevalent.
-    - Checks for the host's risk score.
+  - Checks if the causality process (CGO) is signed and prevalent.
+  - Checks for the host's risk score.
 
-    If the CGO process is not signed and not prevalent, or if either of these conditions is met in addition to having a high-risk score, the playbook proceeds with remediation actions. Otherwise, it will continue to the investigation phase.
+  If the CGO process is not signed and not prevalent, or if either of these conditions is met in addition to having a high-risk score, the playbook proceeds with remediation actions. Otherwise, it will continue to the investigation phase.
 
-    Investigation:
-    During the alert investigation, the playbook will perform the following:
+  Investigation:
+  During the alert investigation, the playbook will perform the following:
 
-    Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
-    - Evasion Technique - 3048798454
-    - An uncommon LOLBIN added to startup-related Registry keys
-    - Behavioral Threat
-    - An uncommon file was created in the startup folder
-    - Unsigned process running from a temporary directory
-    - Execution From a Restricted Location
-    - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
+  Searches for related Cortex XSIAM alerts and insights on the same causalities chains by specific alert names :  
+  - Evasion Technique - 3048798454
+  - Evasion Technique - 474958459
+  - An uncommon LOLBIN added to startup-related Registry keys
+  - Behavioral Threat
+  - An uncommon file was created in the startup folder
+  - Unsigned process running from a temporary directory
+  - Execution From a Restricted Location
+  - Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO
 
-    The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
+  The playbook determines the appropriate verdict. If related alerts are found, it proceeds to remediation actions. In case of related insights are found ,and one of the following is met: the host score is listed as high or the CGO process is not prevalent, it will proceed to remediation actions. Otherwise, it closes the alert with the following message: "No indication of malicious activity was found".
 
 
-    Remediation:  
+  Remediation:  
 
-    - Automatically terminate the causality process.
-    - Automatically Close the alert.
+  - Automatically terminate the causality process.
+  - Automatically Close the alert.
 tags:
 - 'T1218.008 - System Binary Proxy Execution: Odbcconf'
 - TA0005 - Defense Evasion
@@ -40,10 +41,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ccc98587-c43d-4666-8b85-c27092f73e1a
+    taskid: 68d76aff-766a-46c7-840c-cfe3b4edb479
     type: start
     task:
-      id: ccc98587-c43d-4666-8b85-c27092f73e1a
+      id: 68d76aff-766a-46c7-840c-cfe3b4edb479
       version: -1
       name: ""
       iscommand: false
@@ -59,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -260
+          "y": -190
         }
       }
     note: false
@@ -71,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d6d828b0-4213-478a-84e4-56ab20a4ce74
+    taskid: 0bcbf8ee-8a62-455a-8862-553e77f7c02e
     type: regular
     task:
-      id: d6d828b0-4213-478a-84e4-56ab20a4ce74
+      id: 0bcbf8ee-8a62-455a-8862-553e77f7c02e
       version: -1
       name: Check if the causality process is prevalent
       description: Get the prevalence of a process, identified by the process_name.
@@ -93,8 +94,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": -100
+          "x": 220,
+          "y": -52
         }
       }
     note: false
@@ -106,13 +107,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a30d9322-0cf5-469f-88cf-c6c63d905b08
+    taskid: 750ed7ab-69d3-469c-8882-fab5c4420ceb
     type: condition
     task:
-      id: a30d9322-0cf5-469f-88cf-c6c63d905b08
+      id: 750ed7ab-69d3-469c-8882-fab5c4420ceb
       version: -1
-      name: Check if the causality process is prevalent and not signed
-      description: Checks if the causality process is prevalent and unsigned.
+      name: Check if the causality process is not prevalent and not signed
+      description: Checks if the causality process is not prevalent and unsigned.
       type: condition
       iscommand: false
       brand: ""
@@ -167,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 765fe8d2-bdd1-4be4-8a98-48c82c984a70
+    taskid: c63a6a65-62a0-40b6-8094-85460e1d6824
     type: title
     task:
-      id: 765fe8d2-bdd1-4be4-8a98-48c82c984a70
+      id: c63a6a65-62a0-40b6-8094-85460e1d6824
       version: -1
       name: Remediation
       description: Terminate a process tree by its causality ID. Available for Cortex XSIAM 2.4 and above.
@@ -199,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: bd9cacdf-4ffb-44e7-81b4-7d958cb76986
+    taskid: e855a546-8885-4133-814c-4686f4fbb446
     type: regular
     task:
-      id: bd9cacdf-4ffb-44e7-81b4-7d958cb76986
+      id: e855a546-8885-4133-814c-4686f4fbb446
       version: -1
       name: Close Alert
       description: Close the current alert as a True Positive.
@@ -240,10 +241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: deab0d59-be1c-454b-8043-540b7456529e
+    taskid: a6372af6-6421-437a-812d-9bd3ce0956ea
     type: title
     task:
-      id: deab0d59-be1c-454b-8043-540b7456529e
+      id: a6372af6-6421-437a-812d-9bd3ce0956ea
       version: -1
       name: Done
       type: title
@@ -268,10 +269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8d7bf580-9887-46c9-85bc-05eab9fad48f
+    taskid: bea8a8cd-582f-4349-851a-86b8f2a8bc3d
     type: regular
     task:
-      id: 8d7bf580-9887-46c9-85bc-05eab9fad48f
+      id: bea8a8cd-582f-4349-851a-86b8f2a8bc3d
       version: -1
       name: Terminate Process Manually
       description: |-
@@ -292,7 +293,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1510
+          "y": 1482
         }
       }
     note: false
@@ -304,10 +305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5b00bf39-f41c-4580-8ee8-a7eb6546221f
+    taskid: bfcf84ed-71d7-4acd-889d-01c1e4e3ceee
     type: regular
     task:
-      id: 5b00bf39-f41c-4580-8ee8-a7eb6546221f
+      id: bfcf84ed-71d7-4acd-889d-01c1e4e3ceee
       version: -1
       name: Close Alert - No malicious activity was found
       description: Close the current alert as a False Positive.
@@ -330,7 +331,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
+          "x": 1062,
           "y": 1700
         }
       }
@@ -343,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6bb015bc-9dc9-4669-8e89-17a7be7c0a70
+    taskid: bedf8844-9b2a-4b78-835f-c8677b9e45e4
     type: title
     task:
-      id: 6bb015bc-9dc9-4669-8e89-17a7be7c0a70
+      id: bedf8844-9b2a-4b78-835f-c8677b9e45e4
       version: -1
       name: No malicious activity was found
       type: title
@@ -361,7 +362,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
+          "x": 1062,
           "y": 1170
         }
       }
@@ -374,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 2f2ea69d-4ed3-404f-869e-8d0f824d82e6
+    taskid: 5da1e84d-434d-4aab-83d8-357e700f5f42
     type: regular
     task:
-      id: 2f2ea69d-4ed3-404f-869e-8d0f824d82e6
+      id: 5da1e84d-434d-4aab-83d8-357e700f5f42
       version: -1
       name: Terminate Causality (CGO)
       description: Terminate a process tree by its causality ID. Available for Cortex XSIAM 2.4 and above.
@@ -416,10 +417,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 94c0909f-061e-47d4-88e4-82fd6440f9cd
+    taskid: 167ff706-cc08-4e29-8344-3bd66f4a2cb9
     type: regular
     task:
-      id: 94c0909f-061e-47d4-88e4-82fd6440f9cd
+      id: 167ff706-cc08-4e29-8344-3bd66f4a2cb9
       version: -1
       name: Get Host's Risk Score
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
@@ -438,8 +439,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": -100
+          "x": 671,
+          "y": -52
         }
       }
     note: false
@@ -451,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: bcca051a-ab0b-4b59-8846-c6b7238fe153
+    taskid: 8373a08b-556b-416e-818c-d745d7101b5a
     type: condition
     task:
-      id: bcca051a-ab0b-4b59-8846-c6b7238fe153
+      id: 8373a08b-556b-416e-818c-d745d7101b5a
       version: -1
       name: Is There a Host Risk Score?
       description: Checks if the host risk score was retrieved.
@@ -492,13 +493,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 5170b127-ee82-4589-874a-6b668e00b2c5
+    taskid: bdd87ba6-8ce9-4839-8b8c-1e24c7329759
     type: condition
     task:
-      id: 5170b127-ee82-4589-874a-6b668e00b2c5
+      id: bdd87ba6-8ce9-4839-8b8c-1e24c7329759
       version: -1
-      name: Is the Risk Score High and the CGO isn't prevelant or unsigned
-      description: Checks if the host risk score is "High" and the CGO isn't prevelant or unsigned.
+      name: Is the Host Risk Score High and is the CGO not prevalent or unsigned
+      description: Checks if the host risk score is "High" and the CGO isn't prevalent or unsigned.
       type: condition
       iscommand: false
       brand: ""
@@ -562,15 +563,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7ce3bc2a-81a0-42e7-8d82-c6f35d296cbf
+    taskid: 73bcfa10-da6c-4b49-8b0c-664926b31305
     type: regular
     task:
-      id: 7ce3bc2a-81a0-42e7-8d82-c6f35d296cbf
+      id: 73bcfa10-da6c-4b49-8b0c-664926b31305
       version: -1
       name: Check For Specific Alerts By CGO
       description: |-
         Searches Cortex XSIAM alerts. A summarized version of this scripts is available with the summarizedversion argument.
-      scriptName: SearchIncidentsV2
+      scriptName: SearchAlertsV2
       type: regular
       iscommand: false
       brand: ""
@@ -583,7 +584,7 @@ tasks:
       includeinformational:
         simple: "true"
       query:
-        simple: "(cid:${alert.cid.[0]} or actorprocessinstanceid:${alert.cid.[0]} or actionprocessinstanceid:${alert.cid.[0]} or actorprocessinstanceid:${alert.actorprocessinstanceid.[0]} or actionprocessinstanceid:${alert.actorprocessinstanceid.[0]}) AND (name:\"Evasion Technique - 3048798454\" OR \nname:\"An uncommon LOLBIN added to startup-related Registry keys\" OR name:\"Behavioral Threat\" OR\nname:\"An uncommon file was created in the startup folder\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Execution From a Restricted Location\" OR name:\"Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO\")"
+        simple: "(cid:${alert.cid.[0]} or actorprocessinstanceid:${alert.cid.[0]} or actionprocessinstanceid:${alert.cid.[0]} or actorprocessinstanceid:${alert.actorprocessinstanceid.[0]} or actionprocessinstanceid:${alert.actorprocessinstanceid.[0]}) AND (name:\"Evasion Technique - 3048798454\" OR  name:\"Evasion Technique - 474958459\" OR \nname:\"An uncommon LOLBIN added to startup-related Registry keys\" OR name:\"Behavioral Threat\" OR\nname:\"An uncommon file was created in the startup folder\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Execution From a Restricted Location\" OR name:\"Execution of an uncommon process with a local/domain user SID at an early startup stage by Windows system binary - Explorer CGO\")"
       todate:
         simple: now
     separatecontext: false
@@ -604,10 +605,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 479b74ff-7b0c-4e72-8abb-e037908adbc1
+    taskid: 7debdf54-52c0-4d0f-a0f5-dffbc437740c
     type: condition
     task:
-      id: 479b74ff-7b0c-4e72-8abb-e037908adbc1
+      id: 7debdf54-52c0-4d0f-a0f5-dffbc437740c
       version: -1
       name: Found any related alerts or Insights?
       description: This task checks if any related alerts or Insights were found.
@@ -621,8 +622,38 @@ tasks:
       - "4"
       Related Insights:
       - "16"
+      Alerts with prevention:
+      - "17"
     separatecontext: false
     conditions:
+    - label: Alerts with prevention
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Evasion Technique - 474958459
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Evasion Technique - 3048798454
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIncidents.CustomFields.action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
     - label: Related Alerts
       condition:
       - - operator: isNotEmpty
@@ -671,7 +702,7 @@ tasks:
       {
         "position": {
           "x": 940,
-          "y": 790
+          "y": 791
         }
       }
     note: false
@@ -683,10 +714,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 07941cf5-7b9b-445c-8034-9f73fed3a7a7
+    taskid: fd185074-d526-4b0c-8138-c8a9c98801fc
     type: title
     task:
-      id: 07941cf5-7b9b-445c-8034-9f73fed3a7a7
+      id: fd185074-d526-4b0c-8138-c8a9c98801fc
       version: -1
       name: Related Insights
       type: title
@@ -701,8 +732,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 1030
+          "x": 157,
+          "y": 971
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 93875315-aa36-4df2-88e7-442f1fccdbb9
+    type: title
+    task:
+      id: 93875315-aa36-4df2-88e7-442f1fccdbb9
+      version: -1
+      name: Action Blocked by the Agent
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 768,
+          "y": 1487
         }
       }
     note: false
@@ -715,14 +777,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_7_#error#": 0.45
+      "10_7_#error#": 0.45,
+      "15_16_Related Insights": 0.42,
+      "15_4_Related Alerts": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 2195,
-        "width": 1380,
-        "x": 220,
-        "y": -260
+        "height": 2120,
+        "width": 1286,
+        "x": 157,
+        "y": -190
       }
     }
   }
@@ -731,4 +795,7 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

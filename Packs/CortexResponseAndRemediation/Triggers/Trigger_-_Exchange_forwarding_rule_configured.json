@@ -51,7 +51,12 @@
                 "SEARCH_VALUE": "Suspicious Exchange transport forwarding rule configured"
             }
           ]
-        }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
       ]
     }
   }

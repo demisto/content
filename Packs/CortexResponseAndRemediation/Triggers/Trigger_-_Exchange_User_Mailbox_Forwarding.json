@@ -24,7 +24,12 @@
                             "SEARCH_VALUE": "Suspicious Exchange User Mailbox Forwarding"
                         }
                     ]
-                }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
             ]
         }
     }
