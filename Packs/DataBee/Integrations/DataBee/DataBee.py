@@ -1,11 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from http import HTTPStatus
-from enum import Enum
-from typing import Any
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
+from http import HTTPStatus
+from typing import Any
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 DEFAULT_OFFSET = 0
 DEFAULT_LIMIT = 10
@@ -173,9 +173,7 @@ class Client(BaseClient):
         """
         match res.status_code:
             case HTTPStatus.UNAUTHORIZED:
-                raise DemistoException(
-                    "Unauthorized error. Please check your API token/ username/ password."
-                )
+                raise DemistoException("Unauthorized error. Please check your API token/ username/ password.")
             case _:
                 if "application/json" in res.headers.get("Content-Type", ""):
                     json_response = res.json()
@@ -264,11 +262,7 @@ def parse_response(
     else:
         fixed_data = [
             remove_empty_elements(
-                {
-                    camelize_string(key) if isinstance(obj.get(key), dict) else key: obj.get(key)
-                    for key in keys
-                    if key in obj
-                }
+                {camelize_string(key) if isinstance(obj.get(key), dict) else key: obj.get(key) for key in keys if key in obj}
             )
             for obj in data
         ]
@@ -366,35 +360,21 @@ def build_full_query(search_type: SearchTypes, args: dict[str, Any]) -> str:
     # Handle with common filters
     start_time = arg_to_datetime(args.get("start_time"))
     end_time = arg_to_datetime(args.get("end_time"))
-    time_range = (
-        parse_date_range(date_range=args["time_range"], date_format=DATE_FORMAT)
-        if args.get("time_range")
-        else None
-    )
+    time_range = parse_date_range(date_range=args["time_range"], date_format=DATE_FORMAT) if args.get("time_range") else None
 
     if start_time and end_time:
         format_start_time = start_time.strftime(DATE_FORMAT)
         format_end_time = end_time.strftime(DATE_FORMAT)
-        query.append(
-            create_query(
-                operator="between", key="start_time", value=f"{format_start_time},{format_end_time}"
-            )
-        )
+        query.append(create_query(operator="between", key="start_time", value=f"{format_start_time},{format_end_time}"))
 
     if time_range:
-        query.append(
-            create_query(
-                operator="between", key="start_time", value=f"{time_range[0]},{time_range[1]}"
-            )
-        )
+        query.append(create_query(operator="between", key="start_time", value=f"{time_range[0]},{time_range[1]}"))
 
     # Handle with custom filters
     filter_keys = SEARCH_CONFIGURATIONS[search_type].filters
     search_operator = args.get("search_operator")
     for xsoar_key, databee_key in filter_keys:
-        query.append(
-            create_query(operator=search_operator, key=databee_key, value=args.get(xsoar_key))
-        )
+        query.append(create_query(operator=search_operator, key=databee_key, value=args.get(xsoar_key)))
     query = remove_empty_elements(query)
     if len(query) == 0:
         raise ValueError("You have to provide at least one filter or use the query argument.")
@@ -422,11 +402,7 @@ def get_pagination_args(
     """
     xsoar_limit = arg_to_number(page_size if page_size else limit)
     xsoar_offset = DEFAULT_OFFSET
-    if (
-        page_size
-        and (new_page := arg_to_number(page))
-        and (new_page_size := arg_to_number(page_size))
-    ):
+    if page_size and (new_page := arg_to_number(page)) and (new_page_size := arg_to_number(page_size)):
         xsoar_offset = new_page * new_page_size
 
     return (xsoar_limit or DEFAULT_LIMIT, xsoar_offset or DEFAULT_OFFSET)
@@ -518,9 +494,7 @@ def get_endpoint_command(
         endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         hr = tableToMarkdown("DataBee Endpoint", endpoint_context)
 
-        command_results.append(
-            CommandResults(readable_output=hr, raw_response=raw_res, indicator=endpoint)
-        )
+        command_results.append(CommandResults(readable_output=hr, raw_response=raw_res, indicator=endpoint))
     return command_results
 
 
@@ -625,7 +599,7 @@ def fetch_incidents(
     return incidents, {"time": new_last_run}
 
 
-''' HELPER COMMANDS '''
+""" HELPER COMMANDS """
 
 
 def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalContext]):
@@ -681,9 +655,7 @@ def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalC
         },
         "duration": data.get("duration"),
         "end_time": data.get("end_time"),
-        "Evidence": (
-            data.get("evidence", {}) if AdditionalContext.evidence in additional_context else {}
-        ),
+        "Evidence": (data.get("evidence", {}) if AdditionalContext.evidence in additional_context else {}),
         "Finding": {
             "created_time": dict_safe_get(data, ["finding", "created_time"]),
             "desc": dict_safe_get(data, ["finding", "desc"]),
@@ -697,9 +669,7 @@ def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalC
                 else None
             ),
             "Remediation": (
-                dict_safe_get(data, ["finding", "remediation"])
-                if AdditionalContext.remediation in additional_context
-                else None
+                dict_safe_get(data, ["finding", "remediation"]) if AdditionalContext.remediation in additional_context else None
             ),
             "src_url": dict_safe_get(data, ["finding", "src_url"]),
             "supporting_data": dict_safe_get(data, ["finding", "supporting_data"]),
@@ -712,9 +682,7 @@ def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalC
         "impact_score": data.get("impact_score"),
         "KillChain": data.get("kill_chain", {}),
         "message": data.get("message"),
-        "Metadata": (
-            data.get("metadata") if AdditionalContext.metadata in additional_context else {}
-        ),
+        "Metadata": (data.get("metadata") if AdditionalContext.metadata in additional_context else {}),
         "Observable": (
             [
                 {
@@ -811,11 +779,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command in search_types:
-            return_results(
-                search_command(
-                    client, args, search_types[command], params.get("additional_context", [])
-                )
-            )
+            return_results(search_command(client, args, search_types[command], params.get("additional_context", [])))
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(
                 client=client,
