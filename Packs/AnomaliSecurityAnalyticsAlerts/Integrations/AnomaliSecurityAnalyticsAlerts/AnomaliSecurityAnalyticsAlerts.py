@@ -2,7 +2,7 @@
 Anomali Security Analytics Alerts Integration
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import urllib3
 import demistomock as demisto
 from CommonServerPython import *
@@ -15,7 +15,6 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR_NAME = 'Anomali Security Analytics Alerts'
-UTC = timezone.utc
 
 """ CLIENT CLASS """
 

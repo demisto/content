@@ -36,7 +36,7 @@ name: AnomaliSecurityAnalyticsAlerts
 script:
   commands:
   - name: anomali-security-analytics-search-job-create
-    description: "Create a new search job."
+    description: Create a new search job.
     arguments:
     - name: query
       description: Search expression or keyword you're looking for in logs, e.g. alerts.
@@ -62,7 +62,7 @@ script:
         description: Job ID of the search job.
         type: String
   - name: anomali-security-analytics-search-job-results
-    description: "Get search job results."
+    description: Get search job results.
     arguments:
     - name: job_id
       description: Unique identifier assigned to a background process or job.
@@ -77,28 +77,28 @@ script:
     execution: false
     outputs:
       - contextPath: ThreatstreamAlerts.SearchJobResults.job_id
-        description: "Job ID of the search job."
+        description: Job ID of the search job.
         type: String
       - contextPath: ThreatstreamAlerts.SearchJobResults.status
-        description: "Status of the search."
+        description: Status of the search.
         type: String
       - contextPath: ThreatstreamAlerts.SearchJobResults.count
-        description: "Number of records returned."
+        description: Number of records returned.
         type: Number
       - contextPath: ThreatstreamAlerts.SearchJobResults.fields
-        description: "List of search fields returned."
+        description: List of search fields returned.
         type: String
       - contextPath: ThreatstreamAlerts.SearchJobResults.has_next
-        description: "Indicates if more pages are available."
+        description: Indicates if more pages are available.
         type: Boolean
       - contextPath: ThreatstreamAlerts.SearchJobResults.is_aggregated
-        description: "Indicates if the search is aggregated."
+        description: Indicates if the search is aggregated.
         type: Boolean
       - contextPath: ThreatstreamAlerts.SearchJobResults.records
-        description: "List of records containing the fields included in the fields response attribute."
+        description: List of records containing the fields included in the fields response attribute.
         type: Array
       - contextPath: ThreatstreamAlerts.SearchJobResults.result_row_count
-        description: "Total number of records retrieved by the search."
+        description: Total number of records retrieved by the search.
         type: Number
       - contextPath: ThreatstreamAlerts.SearchJobResults.search_end_time
         description: "End timestamp of the search (UNIX timestamp in milliseconds)."

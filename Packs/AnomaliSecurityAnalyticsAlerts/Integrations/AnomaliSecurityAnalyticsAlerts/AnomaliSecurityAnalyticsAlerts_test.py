@@ -26,12 +26,13 @@ def test_command_create_search_job(mocker):
                     proxy=False)
 
     return_data = {'job_id': '1234'}
-    mocker.patch.object(client, 'create_search_job', return_value=return_data)
+    mocker.patch.object(client, '_http_request', return_value=return_data)
 
     args = {
         'query': 'alert',
         'source': 'source',
         'from': '1 day',
+        'to': '1 hour'
     }
 
     result = command_create_search_job(client, args)
@@ -61,7 +62,7 @@ def test_command_get_search_job_results_running(mocker):
                     proxy=False)
 
     status_response = {'status': 'RUNNING'}
-    mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
+    mocker.patch.object(client, '_http_request', return_value=status_response)
 
     args = {
         'job_id': 'job_running',
@@ -106,8 +107,9 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
         ],
         'complete': True
     }
-    mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
-    mocker.patch.object(client, 'get_search_job_results', return_value=results_response)
+    mocker.patch.object(client,
+                        '_http_request',
+                        side_effect=[status_response, results_response])
 
     args = {
         'job_id': 'job_done',
@@ -147,7 +149,7 @@ def test_command_get_search_job_results_invalid(mocker):
                     proxy=False)
 
     status_response = {'error': 'Invalid Job ID'}
-    mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
+    mocker.patch.object(client, '_http_request', return_value=status_response)
 
     args = {
         'job_id': 'invalid_job',
@@ -186,12 +188,13 @@ def test_command_get_search_job_results_no_fields_records(mocker):
     )
 
     status_response = {'status': 'DONE'}
-    return_data = {
+    results_response = {
         'result': 'raw data',
         'complete': True
     }
-    mocker.patch.object(client, 'get_search_job_status', return_value=status_response)
-    mocker.patch.object(client, 'get_search_job_results', return_value=return_data)
+    mocker.patch.object(client,
+                        '_http_request',
+                        side_effect=[status_response, results_response])
 
     args = {
         'job_id': 'job_no_fields',
@@ -204,7 +207,7 @@ def test_command_get_search_job_results_no_fields_records(mocker):
     assert isinstance(results, list)
     assert len(results) == 1
     outputs = results[0].outputs
-    assert outputs == return_data
+    assert outputs == results_response
 
     human_readable = results[0].readable_output
     assert "Search Job Results" in human_readable
@@ -231,7 +234,7 @@ def test_command_update_alert_status_and_comment(mocker):
                     proxy=False)
 
     return_data = {'updated': True}
-    mocker.patch.object(client, 'update_alert', return_value=return_data)
+    mocker.patch.object(client, '_http_request', return_value=return_data)
 
     args = {
         'status': 'IN_PROGRESS',
