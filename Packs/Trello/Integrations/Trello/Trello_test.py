@@ -1,6 +1,7 @@
-import pytest
-import os
 import json
+import os
+
+import pytest
 from Trello import Client, select_outputs, select_outputs_camelize
 
 """
@@ -25,17 +26,11 @@ PARAMS = {
     "url": "https://api.trello.com",
     "key": os.getenv("API_KEY"),
     "token": os.getenv("API_TOKEN"),
-    "board_id": os.getenv("TEST_BOARD")
+    "board_id": os.getenv("TEST_BOARD"),
 }
-ARGS = {
-    "message": "This is a test alert!"
-}
+ARGS = {"message": "This is a test alert!"}
 
-mock_client = Client(
-    "false",
-    "false",
-    base_url="false"
-)
+mock_client = Client("false", "false", base_url="false")
 
 
 def load_json_file(path):
@@ -108,10 +103,9 @@ def test_fetch(mocker):
     """
     Test the fetch process
     """
-    last_run = {
-        "last_fetch": None
-    }
+    last_run = {"last_fetch": None}
     from Trello import fetch_incidents
+
     lists = load_json_file("./test_data/list_lists_unit.json")
     mocker.patch.object(Client, "list_actions", return_value=load_json_file("./test_data/list_actions_unit.json"))
     mocker.patch.object(Client, "list_lists", return_value=lists)
@@ -132,11 +126,12 @@ def test_fetch(mocker):
 
 def test_flatten_actions():
     from Trello import flatten_action_data
+
     test_actions = load_json_file("./test_data/list_actions_unit.json")
     r = flatten_action_data(test_actions)
-    assert (r[0].get("board_id"))
-    assert (r[0].get("card_id"))
-    assert (r[0].get("list_id"))
+    assert r[0].get("board_id")
+    assert r[0].get("card_id")
+    assert r[0].get("list_id")
 
 
 def list_boards_tester(testclient):
@@ -158,10 +153,7 @@ def list_lists_tester(testclient, board_id):
 def create_card_tester(testclient, list_id):
     from Trello import create_card
 
-    list_args = {
-        "list_id": "blah",
-        "name": "Test card"
-    }
+    list_args = {"list_id": "blah", "name": "Test card"}
     r = create_card(testclient, list_id, list_args)
     assert r.raw_response.get("id")
     return r.raw_response
@@ -178,10 +170,7 @@ def list_cards_tester(testclient, list_id):
 def update_card_tester(testclient, card_id):
     from Trello import update_card
 
-    card_args = {
-        "card_id": "blah",
-        "desc": "This is an updated card description!"
-    }
+    card_args = {"card_id": "blah", "desc": "This is an updated card description!"}
     r = update_card(testclient, card_id, card_args)
     return r.raw_response
 
@@ -211,10 +200,7 @@ def list_labels_tester(testclient, board_id):
 def create_label_tester(testclient, board_id):
     from Trello import create_label
 
-    args = {
-        "name": "Testlabel",
-        "color": "green"
-    }
+    args = {"name": "Testlabel", "color": "green"}
     r = create_label(testclient, board_id, args)
     assert len(r.raw_response) > 0
     return r.raw_response
@@ -222,9 +208,8 @@ def create_label_tester(testclient, board_id):
 
 def fetch_tester(testclient, board_id):
     from Trello import fetch_incidents
-    last_run = {
-        "last_fetch": None
-    }
+
+    last_run = {"last_fetch": None}
     next_run, incidents = fetch_incidents(testclient, last_run, board_id, None)  # type: ignore[arg-type]
     # First fetch should return something
     assert len(incidents) > 0
@@ -235,6 +220,7 @@ def fetch_tester(testclient, board_id):
 
 def add_comment_tester(testclient, card_id):
     from Trello import add_comment
+
     comment_args = {
         "text": "This is a card comment!",
     }
