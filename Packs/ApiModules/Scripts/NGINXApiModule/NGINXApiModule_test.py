@@ -1,16 +1,15 @@
-from CommonServerPython import DemistoException
+import os
+import subprocess
+from pathlib import Path
+from time import sleep
+
+import demistomock as demisto
 import pytest
 import requests
-import demistomock as demisto
-from pathlib import Path
-import os
+from CommonServerPython import DemistoException
 from pytest_mock import MockerFixture
-from time import sleep
-import subprocess
-from typing import Optional
 
-
-SSL_TEST_KEY = '''-----BEGIN PRIVATE KEY-----
+SSL_TEST_KEY = """-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDd5FcvCKgtXjkY
 aiDdqpFAYKw6WxNEpZIGjzD9KhEqr7OZjpPoLeyGh1U6faAcN6XpkQugFA/2Gq+Z
 j/pe1abiTCbctdE978FYVjXxbEEAtEn4x28s/bKah/xjjw+RjUyQB9DsioFkV1eN
@@ -38,9 +37,9 @@ fCRUIbRyUH/PCN/VvsuKFs+BWbFTnqBXRDQetzTyuUvNKiL7GmWQuR/QpgYjLd9W
 jxAayhtcVKeL96dqimK9twmw/NC5DveOVoReXx7io4gicmQi7AGq5WRkm8NUZRVE
 1dH1Hhp7kjnPlUOUBvKf8mfFxQ==
 -----END PRIVATE KEY-----
-'''
+"""
 
-SSL_TEST_CRT = '''-----BEGIN CERTIFICATE-----
+SSL_TEST_CRT = """-----BEGIN CERTIFICATE-----
 MIIDeTCCAmGgAwIBAgIUaam3vV40bjLs7mabludFi6dRsxkwDQYJKoZIhvcNAQEL
 BQAwTDELMAkGA1UEBhMCSUwxEzARBgNVBAgMClNvbWUtU3RhdGUxEzARBgNVBAoM
 ClhTT0FSIFRlc3QxEzARBgNVBAMMCnhzb2FyLXRlc3QwHhcNMjEwNTE2MTQzNDU0
@@ -61,39 +60,42 @@ bwa5YsCF+qzBiWPMUs5s/el8AHTnUQdU/CKLMI7ZL2IpyTpfW4PERw2HiOBdgCbl
 k+cVw239GwbLsYkRg5BpkQF4IC6a4+Iz9fpvpUc/g6jpxtGU0kE2DVWOEAyPOOWC
 C/t/GFcoOUze68WuI/BqMAiWhPJ1ioL7RI2ZPvI=
 -----END CERTIFICATE-----
-'''
+"""
 
 
 def test_nginx_conf(tmp_path: Path, mocker):
     from NGINXApiModule import create_nginx_server_conf
+
     conf_file = str(tmp_path / "nginx-test-server.conf")
-    mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
     create_nginx_server_conf(conf_file, 12345, params={})
     with open(conf_file) as f:
         conf = f.read()
-        assert 'listen 12345 default_server' in conf
+        assert "listen 12345 default_server" in conf
 
 
 def test_nginx_conf_taxii2(tmp_path: Path, mocker):
     from NGINXApiModule import create_nginx_server_conf
-    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': 'TAXII2 Server'}})
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationBrand": "TAXII2 Server"}})
     conf_file = str(tmp_path / "nginx-test-server.conf")
-    create_nginx_server_conf(conf_file, 12345, params={'version': '2.0', 'credentials': {'identifier': 'identifier'}})
+    create_nginx_server_conf(conf_file, 12345, params={"version": "2.0", "credentials": {"identifier": "identifier"}})
     with open(conf_file) as f:
         conf = f.read()
-        assert '$http_authorization' in conf
-        assert '$http_accept' in conf
-        assert 'proxy_set_header Range $http_range;' in conf
-        assert '$http_range' in conf
+        assert "$http_authorization" in conf
+        assert "$http_accept" in conf
+        assert "proxy_set_header Range $http_range;" in conf
+        assert "$http_range" in conf
 
 
-NGINX_PROCESS: Optional[subprocess.Popen] = None
+NGINX_PROCESS: subprocess.Popen | None = None
 
 
 @pytest.fixture
 def nginx_cleanup():
     yield
     from NGINXApiModule import NGINX_SERVER_CONF_FILE
+
     Path(NGINX_SERVER_CONF_FILE).unlink(missing_ok=True)
     global NGINX_PROCESS
     if NGINX_PROCESS:
@@ -103,73 +105,80 @@ def nginx_cleanup():
         NGINX_PROCESS = None
 
 
-docker_only = pytest.mark.skipif('flask-nginx' not in os.getenv('DOCKER_IMAGE', ''), reason='test should run only within docker')
+docker_only = pytest.mark.skipif("flask-nginx" not in os.getenv("DOCKER_IMAGE", ""), reason="test should run only within docker")
 
 
 @docker_only
 def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
-    """Test that nginx fails when config is invalid
-    """
+    """Test that nginx fails when config is invalid"""
+
     def nginx_bad_conf(file_path: str, port: int, params: dict):
         with open(file_path, "w") as f:
-            f.write('server {bad_stuff test;}')
+            f.write("server {bad_stuff test;}")
+
     import NGINXApiModule as module
-    mocker.patch.object(module, 'create_nginx_server_conf', side_effect=nginx_bad_conf)
+
+    mocker.patch.object(module, "create_nginx_server_conf", side_effect=nginx_bad_conf)
     with pytest.raises(ValueError) as e:
         module.start_nginx_server(12345, {})
-        assert 'bad_stuff' in str(e)
+        assert "bad_stuff" in str(e)
 
 
 @docker_only
 def test_nginx_start_fail_directive(nginx_cleanup, mocker):
-    """Test that nginx fails when invalid global directive is passed
-    """
+    """Test that nginx fails when invalid global directive is passed"""
     import NGINXApiModule as module
+
     with pytest.raises(ValueError) as e:
-        mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
-        module.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test;'})
-        assert 'bad_directive' in str(e)
+        mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+        module.start_nginx_server(12345, {"nginx_global_directives": "bad_directive test;"})
+        assert "bad_directive" in str(e)
 
 
 @docker_only
-@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
-@pytest.mark.parametrize('params', [
-    {},
-    {'certificate': SSL_TEST_CRT, 'key': SSL_TEST_KEY},
-])
+@pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
+@pytest.mark.parametrize(
+    "params",
+    [
+        {},
+        {"certificate": SSL_TEST_CRT, "key": SSL_TEST_KEY},
+    ],
+)
 def test_nginx_test_start_valid(nginx_cleanup, params, mocker):
     import NGINXApiModule as module
-    mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
     module.test_nginx_server(11300, params)
     # check that nginx process is not up
     sleep(0.5)
-    ps_out = subprocess.check_output(['ps', 'aux'], text=True)
-    assert 'nginx' not in ps_out
+    ps_out = subprocess.check_output(["ps", "aux"], text=True)
+    assert "nginx" not in ps_out
 
 
 @docker_only
 def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     import NGINXApiModule as module
+
     # clear logs for test
     Path(module.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
     Path(module.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
     global NGINX_PROCESS
-    mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
     NGINX_PROCESS = module.start_nginx_server(12345, {})
     sleep(0.5)  # give nginx time to start
     # create a request to get a log line
-    requests.get('http://localhost:12345/nginx-test?unit_testing')
+    requests.get("http://localhost:12345/nginx-test?unit_testing")
     sleep(0.2)
-    mocker.patch.object(demisto, 'info')
-    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "error")
     module.nginx_log_process(NGINX_PROCESS)
     # call_args is tuple (args list, kwargs). we only need the args
     arg = demisto.info.call_args[0][0]
-    assert 'nginx access log' in arg
-    assert 'unit_testing' in arg
+    assert "nginx access log" in arg
+    assert "unit_testing" in arg
     # make sure old file was removed
-    assert not Path(module.NGINX_SERVER_ACCESS_LOG + '.old').exists()
-    assert not Path(module.NGINX_SERVER_ERROR_LOG + '.old').exists()
+    assert not Path(module.NGINX_SERVER_ACCESS_LOG + ".old").exists()
+    assert not Path(module.NGINX_SERVER_ERROR_LOG + ".old").exists()
     # make sure log was rolled over files should be of size 0
     assert not Path(module.NGINX_SERVER_ACCESS_LOG).stat().st_size
     assert not Path(module.NGINX_SERVER_ERROR_LOG).stat().st_size
@@ -177,30 +186,34 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
 
 def test_nginx_web_server_is_down(requests_mock, capfd):
     import NGINXApiModule as module
+
     with capfd.disabled():
-        requests_mock.get('http://localhost:9009/nginx-test', status_code=404)
-        with pytest.raises(DemistoException,
-                           match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
+        requests_mock.get("http://localhost:9009/nginx-test", status_code=404)
+        with pytest.raises(
+            DemistoException, match="Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test"
+        ):
             module.test_nginx_web_server(9009, {})
 
 
 def test_nginx_web_server_is_up_running(requests_mock):
     import NGINXApiModule as module
-    requests_mock.get('http://localhost:9009/nginx-test', status_code=200, text='Welcome to nginx')
+
+    requests_mock.get("http://localhost:9009/nginx-test", status_code=200, text="Welcome to nginx")
     try:
         module.test_nginx_web_server(9009, {})
     except DemistoException as ex:
-        pytest.fail(f'Failed to test nginx server. {ex}')
+        pytest.fail(f"Failed to test nginx server. {ex}")
 
 
 def test_lost_connection_engine_to_server(mocker):
     import NGINXApiModule as module
     from flask import Flask
-    module.APP = Flask('demisto-edl')
 
-    mocker.patch.object(demisto, 'info', side_effect=ValueError("Try to write when connection closed"))
-    mocker.patch.object(demisto, 'error', side_effect=ValueError("Try to write when connection closed"))
-    mocker.patch.object(demisto, 'params', return_value={'longRunningPort': '8080'})
+    module.APP = Flask("demisto-edl")
+
+    mocker.patch.object(demisto, "info", side_effect=ValueError("Try to write when connection closed"))
+    mocker.patch.object(demisto, "error", side_effect=ValueError("Try to write when connection closed"))
+    mocker.patch.object(demisto, "params", return_value={"longRunningPort": "8080"})
     with pytest.raises(SystemExit) as e:
         module.run_long_running()
         assert e.value.code == 1
