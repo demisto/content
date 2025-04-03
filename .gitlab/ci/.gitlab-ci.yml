@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "prevent-pipeline-from-running-lable"
+  CURRENT_BRANCH_NAME: "prevent-pipeline-sharing-global"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "prevent-pipeline-from-running-lable"
+    ref: "prevent-pipeline-sharing-global"
     project: "${CI_PROJECT_NAMESPACE}/infra"
