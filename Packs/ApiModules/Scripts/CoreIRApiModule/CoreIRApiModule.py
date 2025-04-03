@@ -3548,6 +3548,7 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple = ('PENDING', 'IN_PROGRESS')) -> PollResult:
+    # is_core true used when this script is called from Core pack, else it is called from XDR core
     if action_id := args.get('action_id'):
         response = client.get_script_execution_status(action_id)
         general_status = response.get('reply', {}).get('general_status') or ''

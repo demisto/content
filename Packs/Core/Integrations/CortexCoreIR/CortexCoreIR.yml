@@ -4031,7 +4031,7 @@ script:
       required: true
       isArray: true
       type: String
-    - description: Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas. (Useful when using \|\|, &amp;&amp;, ; separators for controlling the flow of multiple commands.
+    - description: Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas.
       name: command
       required: true
       isArray: true
