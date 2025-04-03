@@ -350,7 +350,7 @@ def main():
         args = demisto.args()
         users_names = argToList(args.get("user_name", ""))
         verbose = argToBoolean(args.get("verbose", False))
-        brands = args.get("brands", "")
+        brands = args.get("brands", DEFAULT_BRANDS)
 
         outputs: list = []
         results_for_verbose: list[CommandResults] = []
