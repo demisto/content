@@ -1,39 +1,44 @@
 import json
 from datetime import datetime, timedelta, UTC
-from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on_a_case_command,
-                              check_the_status_of_an_action_requested_on_a_threat_command,
-                              get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
-                              get_a_list_of_threats_command,
-                              get_a_list_of_vendors_command,
-                              get_the_details_of_a_specific_vendor_command,
-                              get_the_activity_of_a_specific_vendor_command,
-                              get_a_list_of_vendor_cases_command,
-                              get_the_details_of_a_vendor_case_command,
-                              manage_a_threat_identified_by_abnormal_security_command,
-                              manage_an_abnormal_case_command,
-                              get_details_of_an_abnormal_case_command,
-                              get_details_of_an_abuse_mailbox_campaign_command,
-                              provides_the_analysis_and_timeline_details_of_a_case_command,
-                              submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
-                              submit_false_negative_report_command,
-                              submit_false_positive_report_command,
-                              get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
-                              get_the_latest_threat_intel_feed_command,
-                              get_employee_identity_analysis_genome_data_command,
-                              get_employee_information_command,
-                              get_employee_login_information_for_last_30_days_in_csv_format_command,
-                              download_data_from_threat_log_in_csv_format_command,
-                              generate_threat_incidents,
-                              get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
-from CommonServerPython import *
+import demistomock as demisto
+import pytest
 
-from test_data.fixtures \
-    import BASE_URL, apikey
+from AbnormalSecurity import (
+    Client,
+    check_the_status_of_an_action_requested_on_a_case_command,
+    check_the_status_of_an_action_requested_on_a_threat_command,
+    get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
+    get_a_list_of_threats_command,
+    get_a_list_of_vendors_command,
+    get_the_details_of_a_specific_vendor_command,
+    get_the_activity_of_a_specific_vendor_command,
+    get_a_list_of_vendor_cases_command,
+    get_the_details_of_a_vendor_case_command,
+    manage_a_threat_identified_by_abnormal_security_command,
+    manage_an_abnormal_case_command,
+    get_details_of_an_abnormal_case_command,
+    get_details_of_an_abuse_mailbox_campaign_command,
+    provides_the_analysis_and_timeline_details_of_a_case_command,
+    submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
+    submit_false_negative_report_command,
+    submit_false_positive_report_command,
+    get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
+    get_the_latest_threat_intel_feed_command,
+    get_employee_identity_analysis_genome_data_command,
+    get_employee_information_command,
+    get_employee_login_information_for_last_30_days_in_csv_format_command,
+    download_data_from_threat_log_in_csv_format_command,
+    generate_threat_incidents,
+    get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT
+)
+from CommonServerPython import DemistoException
+from test_data.fixtures import BASE_URL, apikey
 from test_data.mock_paginated_response import create_mock_paginator_side_effect, create_mock_detail_side_effect
+
+
 headers = {
     "Authorization": f"Bearer {apikey}",
 }
-
 
 class MockResponse:
     def __init__(self, data, status_code):
