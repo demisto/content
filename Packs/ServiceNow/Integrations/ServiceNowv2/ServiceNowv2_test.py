@@ -15,8 +15,8 @@ from requests_mock import MockerCore
 from ServiceNowv2 import (
     DATE_FORMAT,
     DATE_FORMAT_OPTIONS,
-    Client,
     MAX_RETRY,
+    Client,
     ServiceNowClient,
     add_comment_command,
     add_link_command,
