@@ -59,7 +59,7 @@ script: '-'
 subtype: python3
 timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.1870375
+dockerimage: devdemisto/ml:1.0.0.3011669
 tests:
 - DbotPredictOufOfTheBoxTestV2
 - VerifyOOBV2Predictions-Test
