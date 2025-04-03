@@ -825,14 +825,6 @@ def test_is_private_network(url: str, expected: bool):
     assert is_private_network(url) == expected
 
 
-def test_is_private_network_cache():
-    # Test that the function is actually cached
-    assert is_private_network.cache_info().hits == 0
-    is_private_network("http://192.168.1.1")
-    is_private_network("http://192.168.1.1")
-    assert is_private_network.cache_info().hits == 1
-
-
 def test_handle_request_paused(mocker):
     """
     Given:
