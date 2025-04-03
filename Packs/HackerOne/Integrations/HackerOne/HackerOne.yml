@@ -12,24 +12,28 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The username of the user.
   display: Username
   displaypassword: API Token
   name: username
   required: true
   type: 9
+  section: Connect
 - additionalinfo: The maximum limit is 100.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: "Date or relative timestamp to start fetching incidents from. \n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, ISO timestamp."
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: |-
     Fetches reports based on the specified program handle. Supports comma separated values.
 
@@ -38,6 +42,7 @@ configuration:
   name: program_handle
   type: 0
   required: false
+  section: Collect
 - additionalinfo: "Fetches reports based on the specified report state. \n\nNote: Supports comma separated values."
   display: State
   name: state
@@ -54,6 +59,7 @@ configuration:
   - new
   type: 16
   required: false
+  section: Collect
 - additionalinfo: "Fetches reports based on severity ratings of the report. \n\nNote: Supports comma separated values."
   display: Severity
   name: severity
@@ -65,6 +71,7 @@ configuration:
   - critical
   type: 16
   required: false
+  section: Collect
 - additionalinfo: |-
     By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.
 
@@ -79,24 +86,29 @@ configuration:
   name: filter_by
   type: 0
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - defaultvalue: HackerOne Report
   display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: HackerOne integration allows users to fetch reports by using the fetch incidents capability. It also provides commands to retrieve all the reports and programs.
 display: HackerOne
 name: HackerOne
