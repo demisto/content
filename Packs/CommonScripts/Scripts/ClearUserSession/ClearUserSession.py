@@ -114,7 +114,6 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
             demisto.debug(
                 f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}"
             )
-
     return full_output_key
 
 
@@ -236,6 +235,7 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
             - dict: A dictionary containing extracted user identifiers and their associated information.
     """
     readable_outputs_list = []
+
     entry_context, human_readable, readable_errors = run_execute_command(
         command.name, command.args
     )
@@ -311,20 +311,22 @@ def create_readable_output(outputs: list):
     Args:
         outputs (dict): A dictionary where each key is a username and the value is
             another dictionary containing:
+            - "UserName" (str): The user name a session cleared for.
             - "Message" (str): A detailed message related to the session status.
             - "Result" (str): The session result (e.g., Success, Failure).
             - "Brand" (str): The brand associated with the session.
-            - "UserName" (str): The user name a session cleared for.
+
 
     Returns:
         str: A markdown-formatted table summarizing user session statuses.
     """
     data_users_list = [
         {
+            "UserName": details["UserName"],
             "Message": details["Message"],
             "Result": details["Result"],
             "Brand": details["Brand"],
-            "UserName": details["UserName"],
+
         }
         for details in outputs
     ]
@@ -332,7 +334,7 @@ def create_readable_output(outputs: list):
     readable_output = tableToMarkdown(
         name="User(s) Session Status",
         t=data_users_list,
-        headers=["Message", "Result", "Brand", "UserName"],
+        headers=["UserName", "Message", "Result", "Brand"],
         removeNull=True,
     )
 
