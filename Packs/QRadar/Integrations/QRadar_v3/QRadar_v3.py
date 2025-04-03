@@ -2495,6 +2495,7 @@ def get_incidents_long_running_execution(
     else:
         offenses = raw_offenses
     if is_reset_triggered():
+        print_debug_msg(f'[test] reset triggered.')
         return None, None
     offenses_with_mirror = (
         [dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance()) for offense in offenses]
@@ -2503,7 +2504,9 @@ def get_incidents_long_running_execution(
     )
 
     enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich, assets_limit)
+    print_debug_msg(f'[test] {enriched_offenses=}.')
     final_offenses = sanitize_outputs(enriched_offenses)
+    print_debug_msg(f'[test] got this list of offenses. {[offense.get("id") for offense in final_offenses]}.')
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
 
