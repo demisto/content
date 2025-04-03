@@ -2495,7 +2495,7 @@ def get_incidents_long_running_execution(
     else:
         offenses = raw_offenses
     if is_reset_triggered():
-        print_debug_msg(f'[test] reset triggered.')
+        print_debug_msg('[test] reset triggered.')
         return None, None
     offenses_with_mirror = (
         [dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance()) for offense in offenses]
