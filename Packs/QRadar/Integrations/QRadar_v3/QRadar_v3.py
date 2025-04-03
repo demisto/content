@@ -2753,7 +2753,9 @@ def qradar_offenses_list_command(client: Client, args: dict) -> CommandResults:
 
     # if this call fails, raise an error and stop command execution
     response = client.offenses_list(range_, offense_id, filter_, fields)
+    demisto.info(f"[test] in qradar_offenses_list_command, after offenses_list, received {response}")
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
+    demisto.info(f"[test] in qradar_offenses_list_command, after enrich_offenses_result, received {enriched_outputs=}")
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
     headers = build_headers(["ID", "Description", "OffenseType", "Status", "Severity"], set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
 
