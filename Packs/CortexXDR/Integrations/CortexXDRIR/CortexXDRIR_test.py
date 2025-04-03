@@ -1773,13 +1773,7 @@ def test_fetch_incidents_dedup():
 
     class MockClient:
 
-        _incidents = [
-            {
-                "incident_id": str(i),
-                "creation_time": 100000000 + (i * 10)
-            } for i in range(100)
-        ]
-        # load_test_data('./test_data/get_incidents_list_dedup.json')
+        _incidents = load_test_data('./test_data/get_incidents_list_dedup.json')
 
         def save_modified_incidents_to_integration_context(self): ...
 
@@ -1804,7 +1798,7 @@ def test_fetch_incidents_dedup():
     assert 'XDR Incident 1' in result_1[0]['name']
     assert 'XDR Incident 2' in result_1[1]['name']
     assert last_run['time'] == 100000001
-    assert last_run['dedup_incidents'] == ['1', '2']
+    assert last_run['dedup_incidents'] == ['2']
 
     last_run, result_2 = fetch_incidents(
         client=mock_client,

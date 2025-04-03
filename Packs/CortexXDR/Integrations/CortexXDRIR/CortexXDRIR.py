@@ -233,7 +233,7 @@ class Client(CoreClient):
                 raise
 
         # XSOAR -> XDR
-        validate_custom_close_reasons_mapping(mapping=s elf._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
+        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
                                               direction=XSOAR_TO_XDR)
 
         # XDR -> XSOAR
@@ -510,6 +510,10 @@ class Client(CoreClient):
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response['reply']['alerts_ids']
+
+
+def get_incident_creation_time(incident: dict) -> int:
+    return incident.get("incident", incident).get("creation_time")
 
 
 def get_incident_id(incident: dict) -> str:
@@ -1195,7 +1199,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         demisto.debug(
             f"starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
 
-    new_last_fetch = int((datetime.now() - FETCH_LOOK_BACK).timestamp() * 1000)
+    last_minute = int((datetime.now() - FETCH_LOOK_BACK).timestamp() * 1000)
 
     if incidents_from_previous_run:
         demisto.debug('Using incidents from last run')
@@ -1215,11 +1219,15 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         )
 
     if raw_incidents:
-        last_fetch = max(new_last_fetch, last_fetch)
-        next_dedup_incidents = sorted(
-            get_incident_id(incident) for incident in raw_incidents
-            if incident.get('creation_time', 0) >= last_fetch
+        last_fetch = min(
+            get_incident_creation_time(raw_incidents[-1]),
+            max(last_minute, last_fetch)
         )
+        next_dedup_incidents = [
+            get_incident_id(incident) for incident in raw_incidents
+            if get_incident_creation_time(incident) >= last_fetch
+        ]
+        demisto.debug(f'{last_fetch=}, {next_dedup_incidents=}')
 
     # remove duplicate incidents
     raw_incidents = [
