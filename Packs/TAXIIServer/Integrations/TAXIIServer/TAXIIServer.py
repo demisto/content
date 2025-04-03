@@ -1,67 +1,66 @@
-import demistomock as demisto
-from CommonServerPython import *
-from flask import Flask, request, make_response, Response, stream_with_context
-from gevent.pywsgi import WSGIServer
-from urllib.parse import urlparse, ParseResult
-from tempfile import NamedTemporaryFile
+import functools
+import uuid
 from base64 import b64decode
 from collections.abc import Callable, Generator
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
-from werkzeug.datastructures import Headers
+from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
+from tempfile import NamedTemporaryFile
+from urllib.parse import ParseResult, urlparse
 
-from libtaxii.messages_11 import (
-    TAXIIMessage,
-    DiscoveryRequest,
-    DiscoveryResponse,
-    CollectionInformationRequest,
-    CollectionInformation,
-    CollectionInformationResponse,
-    PollRequest,
-    PollingServiceInstance,
-    ServiceInstance,
-    ContentBlock,
-    generate_message_id,
-    get_message_from_xml)
-from libtaxii.constants import (
-    MSG_COLLECTION_INFORMATION_REQUEST,
-    MSG_DISCOVERY_REQUEST,
-    MSG_POLL_REQUEST,
-    SVC_DISCOVERY,
-    SVC_COLLECTION_MANAGEMENT,
-    SVC_POLL,
-    CB_STIX_XML_11
-)
-from cybox.core import Observable
-from requests.utils import requote_uri
-
-import functools
-import stix.core
-import stix.indicator
-import stix.extensions.marking.ais
-import stix.data_marking
-import stix.extensions.marking.tlp
 import cybox.objects.address_object
 import cybox.objects.domain_name_object
-import cybox.objects.uri_object
 import cybox.objects.file_object
+import cybox.objects.uri_object
+import demistomock as demisto
 import mixbox.idgen
 import mixbox.namespaces
 import netaddr
-import uuid
-import werkzeug.urls
 import pytz
+import stix.core
+import stix.data_marking
+import stix.extensions.marking.ais
+import stix.extensions.marking.tlp
+import stix.indicator
+import werkzeug.urls
+from CommonServerPython import *
+from cybox.core import Observable
+from flask import Flask, Response, make_response, request, stream_with_context
+from gevent.pywsgi import WSGIServer
+from libtaxii.constants import (
+    CB_STIX_XML_11,
+    MSG_COLLECTION_INFORMATION_REQUEST,
+    MSG_DISCOVERY_REQUEST,
+    MSG_POLL_REQUEST,
+    SVC_COLLECTION_MANAGEMENT,
+    SVC_DISCOVERY,
+    SVC_POLL,
+)
+from libtaxii.messages_11 import (
+    CollectionInformation,
+    CollectionInformationRequest,
+    CollectionInformationResponse,
+    ContentBlock,
+    DiscoveryRequest,
+    DiscoveryResponse,
+    PollingServiceInstance,
+    PollRequest,
+    ServiceInstance,
+    TAXIIMessage,
+    generate_message_id,
+    get_message_from_xml,
+)
+from requests.utils import requote_uri
+from werkzeug.datastructures import Headers
 
-
-''' GLOBAL VARIABLES '''
-INTEGRATION_NAME: str = 'TAXII Server'
+""" GLOBAL VARIABLES """
+INTEGRATION_NAME: str = "TAXII Server"
 PAGE_SIZE = 1000
-APP: Flask = Flask('demisto-taxii')
-NAMESPACE_URI = 'https://www.paloaltonetworks.com/cortex'
-NAMESPACE = 'cortex'
+APP: Flask = Flask("demisto-taxii")
+NAMESPACE_URI = "https://www.paloaltonetworks.com/cortex"
+NAMESPACE = "cortex"
 
 
-''' Log Handler '''
+""" Log Handler """
 
 
 class Handler:
@@ -76,12 +75,22 @@ class Handler:
         demisto.info(message)
 
 
-''' TAXII Server '''
+""" TAXII Server """
 
 
 class TAXIIServer:
-    def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
-                 http_server: bool, credentials: dict, service_address: Optional[str] = None):
+    def __init__(
+        self,
+        url_scheme: str,
+        host: str,
+        port: int,
+        collections: dict,
+        certificate: str,
+        private_key: str,
+        http_server: bool,
+        credentials: dict,
+        service_address: Optional[str] = None,
+    ):
         """
         Class for a TAXII Server configuration.
         Args:
@@ -104,21 +113,12 @@ class TAXIIServer:
         self.service_address = service_address
         self.auth = None
         if credentials:
-            self.auth = (credentials.get('identifier', ''), credentials.get('password', ''))
+            self.auth = (credentials.get("identifier", ""), credentials.get("password", ""))
 
         self.service_instances = [
-            {
-                'type': SVC_DISCOVERY,
-                'path': 'taxii-discovery-service'
-            },
-            {
-                'type': SVC_COLLECTION_MANAGEMENT,
-                'path': 'taxii-collection-management-service'
-            },
-            {
-                'type': SVC_POLL,
-                'path': 'taxii-poll-service'
-            }
+            {"type": SVC_DISCOVERY, "path": "taxii-discovery-service"},
+            {"type": SVC_COLLECTION_MANAGEMENT, "path": "taxii-collection-management-service"},
+            {"type": SVC_POLL, "path": "taxii-poll-service"},
         ]
 
     def get_discovery_service(self, taxii_message: DiscoveryRequest, request_headers: Headers) -> DiscoveryResponse:
@@ -133,33 +133,31 @@ class TAXIIServer:
         """
         demisto.debug(f"TS1: The request_headers are {request_headers.to_wsgi_list()}")
         if taxii_message.message_type != MSG_DISCOVERY_REQUEST:
-            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
+            raise ValueError(f"Invalid message, invalid Message Type is {taxii_message.message_type}")
 
         discovery_service_url = self.get_url(request_headers)
-        discovery_response = DiscoveryResponse(
-            generate_message_id(),
-            taxii_message.message_id
-        )
+        discovery_response = DiscoveryResponse(generate_message_id(), taxii_message.message_id)
 
         for instance in self.service_instances:
-            instance_type = instance['type']
-            instance_path = instance['path']
+            instance_type = instance["type"]
+            instance_path = instance["path"]
             taxii_service_instance = ServiceInstance(
                 instance_type,
-                'urn:taxii.mitre.org:services:1.1',
-                'urn:taxii.mitre.org:protocol:http:1.0',
-                f'{discovery_service_url}/{instance_path}',
-                ['urn:taxii.mitre.org:message:xml:1.1'],
-                available=True
+                "urn:taxii.mitre.org:services:1.1",
+                "urn:taxii.mitre.org:protocol:http:1.0",
+                f"{discovery_service_url}/{instance_path}",
+                ["urn:taxii.mitre.org:message:xml:1.1"],
+                available=True,
             )
             discovery_response.service_instances.append(taxii_service_instance)
 
         return discovery_response
 
-    def get_collections(self,
-                        taxii_message: CollectionInformationRequest,
-                        request_headers: Headers,
-                        ) -> CollectionInformationResponse:
+    def get_collections(
+        self,
+        taxii_message: CollectionInformationRequest,
+        request_headers: Headers,
+    ) -> CollectionInformationResponse:
         """
         Handle collection management request.
         Args:
@@ -173,24 +171,14 @@ class TAXIIServer:
         url = self.get_url(request_headers)
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
-            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
+            raise ValueError(f"Invalid message, invalid Message Type is {taxii_message.message_type}")
 
-        collection_info_response = CollectionInformationResponse(
-            generate_message_id(),
-            taxii_message.message_id
-        )
+        collection_info_response = CollectionInformationResponse(generate_message_id(), taxii_message.message_id)
 
         for feed in taxii_feeds:
-            collection_info = CollectionInformation(
-                feed,
-                f'{feed} Data Feed',
-                ['urn:stix.mitre.org:xml:1.1.1'],
-                True
-            )
+            collection_info = CollectionInformation(feed, f"{feed} Data Feed", ["urn:stix.mitre.org:xml:1.1.1"], True)
             polling_instance = PollingServiceInstance(
-                'urn:taxii.mitre.org:protocol:http:1.0',
-                f'{url}/taxii-poll-service',
-                ['urn:taxii.mitre.org:message:xml:1.1']
+                "urn:taxii.mitre.org:protocol:http:1.0", f"{url}/taxii-poll-service", ["urn:taxii.mitre.org:message:xml:1.1"]
             )
             collection_info.polling_service_instances.append(polling_instance)
             collection_info_response.collection_informations.append(collection_info)
@@ -207,18 +195,25 @@ class TAXIIServer:
             The poll response.
         """
         if taxii_message.message_type != MSG_POLL_REQUEST:
-            raise ValueError(f'Invalid message, invalid Message Type is {taxii_message.message_type}')
+            raise ValueError(f"Invalid message, invalid Message Type is {taxii_message.message_type}")
 
         taxii_feeds = list(self.collections.keys())
         collection_name = taxii_message.collection_name
         exclusive_begin_time = taxii_message.exclusive_begin_timestamp_label
         inclusive_end_time = taxii_message.inclusive_end_timestamp_label
 
-        return self.stream_stix_data_feed(taxii_feeds, taxii_message.message_id, collection_name,
-                                          exclusive_begin_time, inclusive_end_time)
+        return self.stream_stix_data_feed(
+            taxii_feeds, taxii_message.message_id, collection_name, exclusive_begin_time, inclusive_end_time
+        )
 
-    def stream_stix_data_feed(self, taxii_feeds: list, message_id: str, collection_name: str,
-                              exclusive_begin_time: datetime, inclusive_end_time: datetime) -> Response:
+    def stream_stix_data_feed(
+        self,
+        taxii_feeds: list,
+        message_id: str,
+        collection_name: str,
+        exclusive_begin_time: datetime,
+        inclusive_end_time: datetime,
+    ) -> Response:
         """
         Get the indicator query results in STIX data feed format.
         Args:
@@ -232,7 +227,7 @@ class TAXIIServer:
             Stream of STIX indicator data feed.
         """
         if collection_name not in taxii_feeds:
-            raise ValueError('Invalid message, unknown feed')
+            raise ValueError("Invalid message, unknown feed")
 
         if not inclusive_end_time:
             inclusive_end_time = datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -244,18 +239,22 @@ class TAXIIServer:
 
             """
             # yield the opening tag of the Poll Response
-            response = '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"' \
-                       ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" ' \
-                       'xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1"' \
-                       f' message_id="{generate_message_id()}"' \
-                       f' in_response_to="{message_id}"' \
-                       f' collection_name="{collection_name}" more="false" result_part_number="1"> ' \
-                       f'<taxii_11:Inclusive_End_Timestamp>{inclusive_end_time.isoformat()}' \
-                       '</taxii_11:Inclusive_End_Timestamp>'
+            response = (
+                '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"'
+                ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" '
+                'xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1"'
+                f' message_id="{generate_message_id()}"'
+                f' in_response_to="{message_id}"'
+                f' collection_name="{collection_name}" more="false" result_part_number="1"> '
+                f"<taxii_11:Inclusive_End_Timestamp>{inclusive_end_time.isoformat()}"
+                "</taxii_11:Inclusive_End_Timestamp>"
+            )
 
             if exclusive_begin_time is not None:
-                response += (f'<taxii_11:Exclusive_Begin_Timestamp>{exclusive_begin_time.isoformat()}'
-                             f'</taxii_11:Exclusive_Begin_Timestamp>')
+                response += (
+                    f"<taxii_11:Exclusive_Begin_Timestamp>{exclusive_begin_time.isoformat()}"
+                    f"</taxii_11:Exclusive_Begin_Timestamp>"
+                )
 
             yield response
 
@@ -265,28 +264,25 @@ class TAXIIServer:
             for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
                 try:
                     stix_xml_indicator = get_stix_indicator(indicator).to_xml(ns_dict={NAMESPACE_URI: NAMESPACE})
-                    content_block = ContentBlock(
-                        content_binding=CB_STIX_XML_11,
-                        content=stix_xml_indicator
-                    )
+                    content_block = ContentBlock(content_binding=CB_STIX_XML_11, content=stix_xml_indicator)
 
-                    content_xml = content_block.to_xml().decode('utf-8')
-                    yield f'{content_xml}\n'
+                    content_xml = content_block.to_xml().decode("utf-8")
+                    yield f"{content_xml}\n"
                 except Exception as e:
                     handle_long_running_error(f"Failed to parse the indicator '{indicator.get('value', '')}' to STIX: {e}")
 
             # yield the closing tag
 
-            yield '</taxii_11:Poll_Response>'
+            yield "</taxii_11:Poll_Response>"
 
         return Response(
             response=stream_with_context(yield_response()),
             status=200,
             headers={
-                'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
-                'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
+                "X-TAXII-Content-Type": "urn:taxii.mitre.org:message:xml:1.1",
+                "X-TAXII-Protocol": "urn:taxii.mitre.org:protocol:http:1.0",
             },
-            mimetype='application/xml'
+            mimetype="application/xml",
         )
 
     def get_url(self, request_headers: Headers) -> str:
@@ -296,31 +292,31 @@ class TAXIIServer:
         Returns:
             The service URL according to the protocol.
         """
-        prefix = ''
-        xsoar_path = ''
+        prefix = ""
+        xsoar_path = ""
         if self.service_address:
             return self.service_address
-        if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
+        if request_headers and "/instance/execute" in request_headers.get("X-Request-URI", ""):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
-            self.url_scheme = 'https'
+            self.url_scheme = "https"
             calling_context = get_calling_context()
-            instance_name = calling_context.get('IntegrationInstance', '')
-            endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
+            instance_name = calling_context.get("IntegrationInstance", "")
+            endpoint = requote_uri(os.path.join("/instance", "execute", instance_name))
 
             if is_xsiam_or_xsoar_saas():
-                prefix = 'ext-'
-                xsoar_path = '/xsoar'
+                prefix = "ext-"
+                xsoar_path = "/xsoar"
         else:
-            endpoint = f':{self.port}'
+            endpoint = f":{self.port}"
 
-        return f'{self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}'
+        return f"{self.url_scheme}://{prefix}{self.host}{xsoar_path}{endpoint}"
 
 
 SERVER: TAXIIServer
 DEMISTO_LOGGER: Handler = Handler()
 
-''' STIX MAPPING '''
+""" STIX MAPPING """
 
 
 def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observable]:
@@ -334,16 +330,16 @@ def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observabl
         STIX IP observable.
     """
     category = cybox.objects.address_object.Address.CAT_IPV4
-    type_ = indicator.get('indicator_type', '')
-    value = indicator.get('value', '')
+    type_ = indicator.get("indicator_type", "")
+    value = indicator.get("value", "")
 
     if type_ in [FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR]:
         category = cybox.objects.address_object.Address.CAT_IPV6
 
     indicator_values = [value]
-    if '-' in value:
+    if "-" in value:
         # looks like an IP Range, let's try to make it a CIDR
-        a1, a2 = value.split('-', 1)
+        a1, a2 = value.split("-", 1)
         if a1 == a2:
             # same IP
             indicator_values = [a1]
@@ -355,17 +351,10 @@ def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observabl
 
     observables = []
     for indicator_value in indicator_values:
-        id_ = f'{namespace}:observable-{uuid.uuid4()}'
-        address_object = cybox.objects.address_object.Address(
-            address_value=indicator_value,
-            category=category
-        )
+        id_ = f"{namespace}:observable-{uuid.uuid4()}"
+        address_object = cybox.objects.address_object.Address(address_value=indicator_value, category=category)
 
-        observable = Observable(
-            title=f'{type_}: {indicator_value}',
-            id_=id_,
-            item=address_object
-        )
+        observable = Observable(title=f"{type_}: {indicator_value}", id_=id_, item=address_object)
 
         observables.append(observable)
 
@@ -383,20 +372,13 @@ def create_stix_email_observable(namespace: str, indicator: dict) -> list[Observ
         STIX Email observable.
     """
     category = cybox.objects.address_object.Address.CAT_EMAIL
-    type_ = indicator.get('indicator_type', '')
-    value = indicator.get('value', '')
-    id_ = f'{namespace}:observable-{uuid.uuid4()}'
+    type_ = indicator.get("indicator_type", "")
+    value = indicator.get("value", "")
+    id_ = f"{namespace}:observable-{uuid.uuid4()}"
 
-    email_object = cybox.objects.address_object.Address(
-        address_value=indicator.get('value', ''),
-        category=category
-    )
+    email_object = cybox.objects.address_object.Address(address_value=indicator.get("value", ""), category=category)
 
-    observable = Observable(
-        title=f'{type_}: {value}',
-        id_=id_,
-        item=email_object
-    )
+    observable = Observable(title=f"{type_}: {value}", id_=id_, item=email_object)
 
     return [observable]
 
@@ -411,18 +393,14 @@ def create_stix_domain_observable(namespace, indicator):
     Returns:
         STIX Domain observable.
     """
-    id_ = f'{namespace}:observable-{uuid.uuid4()}'
-    value = indicator.get('value', '')
+    id_ = f"{namespace}:observable-{uuid.uuid4()}"
+    value = indicator.get("value", "")
 
     domain_object = cybox.objects.domain_name_object.DomainName()
     domain_object.value = value
-    domain_object.type_ = 'FQDN'
+    domain_object.type_ = "FQDN"
 
-    observable = Observable(
-        title=f'FQDN: {value}',
-        id_=id_,
-        item=domain_object
-    )
+    observable = Observable(title=f"FQDN: {value}", id_=id_, item=domain_object)
 
     return [observable]
 
@@ -437,19 +415,12 @@ def create_stix_url_observable(namespace, indicator):
     Returns:
         STIX URL observable.
     """
-    id_ = f'{namespace}:observable-{uuid.uuid4()}'
-    value = indicator.get('value', '')
+    id_ = f"{namespace}:observable-{uuid.uuid4()}"
+    value = indicator.get("value", "")
 
-    uri_object = cybox.objects.uri_object.URI(
-        value=value,
-        type_=cybox.objects.uri_object.URI.TYPE_URL
-    )
+    uri_object = cybox.objects.uri_object.URI(value=value, type_=cybox.objects.uri_object.URI.TYPE_URL)
 
-    observable = Observable(
-        title=f'URL: {value}',
-        id_=id_,
-        item=uri_object
-    )
+    observable = Observable(title=f"URL: {value}", id_=id_, item=uri_object)
 
     return [observable]
 
@@ -465,55 +436,51 @@ def create_stix_hash_observable(namespace, indicator):
         STIX File observable.
     """
 
-    id_ = f'{namespace}:observable-{uuid.uuid4()}'
-    value = indicator.get('value', '')
-    type_ = indicator.get('indicator_type', '')
+    id_ = f"{namespace}:observable-{uuid.uuid4()}"
+    value = indicator.get("value", "")
+    type_ = indicator.get("indicator_type", "")
 
     file_object = cybox.objects.file_object.File()
     file_object.add_hash(value)
 
-    observable = Observable(
-        title=f'{value}: {type_}',
-        id_=id_,
-        item=file_object
-    )
+    observable = Observable(title=f"{value}: {type_}", id_=id_, item=file_object)
 
     return [observable]
 
 
 TYPE_MAPPING = {
     FeedIndicatorType.IP: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': create_stix_ip_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        "mapper": create_stix_ip_observable,
     },
     FeedIndicatorType.CIDR: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': create_stix_ip_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        "mapper": create_stix_ip_observable,
     },
     FeedIndicatorType.IPv6: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': create_stix_ip_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        "mapper": create_stix_ip_observable,
     },
     FeedIndicatorType.IPv6CIDR: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': create_stix_ip_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        "mapper": create_stix_ip_observable,
     },
     FeedIndicatorType.URL: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_URL_WATCHLIST,
-        'mapper': create_stix_url_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_URL_WATCHLIST,
+        "mapper": create_stix_url_observable,
     },
     FeedIndicatorType.Domain: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_DOMAIN_WATCHLIST,
-        'mapper': create_stix_domain_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_DOMAIN_WATCHLIST,
+        "mapper": create_stix_domain_observable,
     },
     FeedIndicatorType.File: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': create_stix_hash_observable
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
+        "mapper": create_stix_hash_observable,
     },
     FeedIndicatorType.Email: {
-        'indicator_type': stix.common.vocabs.IndicatorType.TERM_MALICIOUS_EMAIL,
-        'mapper': create_stix_email_observable
-    }
+        "indicator_type": stix.common.vocabs.IndicatorType.TERM_MALICIOUS_EMAIL,
+        "mapper": create_stix_email_observable,
+    },
 }
 
 
@@ -540,18 +507,18 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
     """
     set_id_namespace(NAMESPACE_URI, NAMESPACE)
 
-    type_ = indicator.get('indicator_type', '')
+    type_ = indicator.get("indicator_type", "")
     type_mapper: dict = TYPE_MAPPING.get(type_, {})
 
-    value = indicator.get('value', '')
-    source = indicator.get('sourceBrands', [])
-    sources = ','.join(source)
+    value = indicator.get("value", "")
+    source = indicator.get("sourceBrands", [])
+    sources = ",".join(source)
 
     handling = None
 
     # Add TLP if available
-    share_level = indicator.get('trafficlightprotocol', '').upper()
-    if share_level and share_level in ['WHITE', 'GREEN', 'AMBER', 'RED']:
+    share_level = indicator.get("trafficlightprotocol", "").upper()
+    if share_level and share_level in ["WHITE", "GREEN", "AMBER", "RED"]:
         marking_specification = stix.data_marking.MarkingSpecification()
         marking_specification.controlled_structure = "//node() | //@*"
 
@@ -564,51 +531,49 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
 
     header = None
     if handling is not None:
-        header = stix.core.STIXHeader(
-            handling=handling
-        )
+        header = stix.core.STIXHeader(handling=handling)
 
     # Create the STIX package
-    package_id = f'{NAMESPACE}:observable-{uuid.uuid4()}'
+    package_id = f"{NAMESPACE}:observable-{uuid.uuid4()}"
     stix_package = stix.core.STIXPackage(id_=package_id, stix_header=header)
 
     # Get the STIX observables according to the indicator mapper
-    observables = type_mapper['mapper'](NAMESPACE, indicator)
+    observables = type_mapper["mapper"](NAMESPACE, indicator)
 
     # Create the STIX indicator
     for observable in observables:
-        id_ = f'{NAMESPACE}:indicator-{uuid.uuid4()}'
+        id_ = f"{NAMESPACE}:indicator-{uuid.uuid4()}"
 
-        if type_ == 'URL':
+        if type_ == "URL":
             indicator_value = werkzeug.urls.iri_to_uri(value)
         else:
             indicator_value = value
 
         stix_indicator = stix.indicator.indicator.Indicator(
             id_=id_,
-            title=f'{type_}: {indicator_value}',
-            description=f'{type_} indicator from {sources}',
-            timestamp=datetime.utcnow().replace(tzinfo=pytz.utc)
+            title=f"{type_}: {indicator_value}",
+            description=f"{type_} indicator from {sources}",
+            timestamp=datetime.utcnow().replace(tzinfo=pytz.utc),
         )
 
         # Confidence is mapped by the indicator score
-        confidence = 'Low'
-        indicator_score = indicator.get('score')
+        confidence = "Low"
+        indicator_score = indicator.get("score")
         if indicator_score is None:
-            demisto.error(f'indicator without score: {value}')
+            demisto.error(f"indicator without score: {value}")
             stix_indicator.confidence = "Unknown"
         else:
-            score = int(indicator.get('score', 0))
+            score = int(indicator.get("score", 0))
             if score < 2:
                 pass
             elif score < 3:
-                confidence = 'Medium'
+                confidence = "Medium"
             else:
-                confidence = 'High'
+                confidence = "High"
 
         stix_indicator.confidence = confidence
 
-        stix_indicator.add_indicator_type(type_mapper['indicator_type'])
+        stix_indicator.add_indicator_type(type_mapper["indicator_type"])
 
         stix_indicator.add_observable(observable)
 
@@ -617,11 +582,11 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
     return stix_package
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_calling_context():
-    return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+    return demisto.callingContext.get("context", {})  # type: ignore[attr-defined]
 
 
 def handle_long_running_error(error: str):
@@ -643,25 +608,26 @@ def validate_credentials(f: Callable) -> Callable:
     Returns:
         The function result (if the authentication is valid).
     """
+
     @functools.wraps(f)
     def validate(*args, **kwargs):
         headers = request.headers
         global SERVER
         if SERVER.auth:
-            credentials: str = headers.get('Authorization', '')
-            if not credentials or 'Basic ' not in credentials:
-                return make_response('Invalid authentication', 401)
-            encoded_credentials: str = credentials.split('Basic ')[1]
-            credentials: str = b64decode(encoded_credentials).decode('utf-8')
-            if ':' not in credentials:
-                return make_response('Invalid authentication', 401)
-            credentials_list = credentials.split(':')
+            credentials: str = headers.get("Authorization", "")
+            if not credentials or "Basic " not in credentials:
+                return make_response("Invalid authentication", 401)
+            encoded_credentials: str = credentials.split("Basic ")[1]
+            credentials: str = b64decode(encoded_credentials).decode("utf-8")
+            if ":" not in credentials:
+                return make_response("Invalid authentication", 401)
+            credentials_list = credentials.split(":")
             if len(credentials_list) != 2:
-                return make_response('Invalid authentication', 401)
+                return make_response("Invalid authentication", 401)
             username, password = credentials_list
 
             if not (username == SERVER.auth[0] and password == SERVER.auth[1]):
-                return make_response('Invalid authentication', 401)
+                return make_response("Invalid authentication", 401)
 
         return f(*args, **kwargs)
 
@@ -677,20 +643,20 @@ def taxii_check(f: Callable) -> Callable:
     Returns:
         The function result (if the headers are valid).
     """
+
     @functools.wraps(f)
     def check(*args, **kwargs):
-        taxii_content_type = request.headers.get('X-TAXII-Content-Type', None)
-        if taxii_content_type not in ['urn:taxii.mitre.org:message:xml:1.1', 'urn:taxii.mitre.org:message:xml:1.0']:
-            return make_response('Invalid TAXII Headers', 400)
-        taxii_content_type = request.headers.get('X-TAXII-Protocol', None)
+        taxii_content_type = request.headers.get("X-TAXII-Content-Type", None)
+        if taxii_content_type not in ["urn:taxii.mitre.org:message:xml:1.1", "urn:taxii.mitre.org:message:xml:1.0"]:
+            return make_response("Invalid TAXII Headers", 400)
+        taxii_content_type = request.headers.get("X-TAXII-Protocol", None)
 
-        if taxii_content_type not in ['urn:taxii.mitre.org:protocol:http:1.0',
-                                      'urn:taxii.mitre.org:protocol:https:1.0']:
-            return make_response('Invalid TAXII Headers', 400)
+        if taxii_content_type not in ["urn:taxii.mitre.org:protocol:http:1.0", "urn:taxii.mitre.org:protocol:https:1.0"]:
+            return make_response("Invalid TAXII Headers", 400)
 
-        taxii_content_type = request.headers.get('X-TAXII-Services', None)
-        if taxii_content_type not in ['urn:taxii.mitre.org:services:1.1', 'urn:taxii.mitre.org:services:1.0']:
-            return make_response('Invalid TAXII Headers', 400)
+        taxii_content_type = request.headers.get("X-TAXII-Services", None)
+        if taxii_content_type not in ["urn:taxii.mitre.org:services:1.1", "urn:taxii.mitre.org:services:1.0"]:
+            return make_response("Invalid TAXII Headers", 400)
 
         return f(*args, **kwargs)
 
@@ -701,12 +667,12 @@ def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters.
     """
-    if not params.get('longRunningPort'):
-        params['longRunningPort'] = '1111'
+    if not params.get("longRunningPort"):
+        params["longRunningPort"] = "1111"
     try:
-        port = int(params.get('longRunningPort', ''))
+        port = int(params.get("longRunningPort", ""))
     except ValueError as e:
-        raise ValueError(f'Invalid listen port - {e}')
+        raise ValueError(f"Invalid listen port - {e}")
 
     return port
 
@@ -715,12 +681,12 @@ def get_collections(params: dict = demisto.params()) -> dict:
     """
     Gets the indicator query collections from the integration parameters.
     """
-    collections_json: str = params.get('collections', '')
+    collections_json: str = params.get("collections", "")
 
     try:
         collections = json.loads(collections_json)
     except Exception:
-        raise ValueError('The collections string must be a valid JSON object.')
+        raise ValueError("The collections string must be a valid JSON object.")
 
     return collections
 
@@ -738,19 +704,19 @@ def find_indicators_by_time_frame(indicator_query: str, begin_time: datetime, en
     """
 
     if indicator_query:
-        indicator_query += ' and '
+        indicator_query += " and "
     else:
-        indicator_query = ''
+        indicator_query = ""
 
     if begin_time:
-        tz_begin_time = datetime.strftime(begin_time, '%Y-%m-%dT%H:%M:%S %z')
+        tz_begin_time = datetime.strftime(begin_time, "%Y-%m-%dT%H:%M:%S %z")
         indicator_query += f'sourcetimestamp:>"{tz_begin_time}"'
         if end_time:
-            indicator_query += ' and '
+            indicator_query += " and "
     if end_time:
-        tz_end_time = datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%S %z')
+        tz_end_time = datetime.strftime(end_time, "%Y-%m-%dT%H:%M:%S %z")
         indicator_query += f'sourcetimestamp:<="{tz_end_time}"'
-    demisto.info(f'Querying indicators by: {indicator_query}')
+    demisto.info(f"Querying indicators by: {indicator_query}")
 
     return find_indicators_loop(indicator_query)
 
@@ -771,7 +737,7 @@ def find_indicators_loop(indicator_query: str):
 
     search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
     for ioc_res in search_indicators:
-        fetched_iocs = ioc_res.get('iocs') or []
+        fetched_iocs = ioc_res.get("iocs") or []
         iocs.extend(fetched_iocs)
 
     finish_time: float = time.time()
@@ -792,19 +758,19 @@ def taxii_make_response(taxii_message: TAXIIMessage):
         A taxii HTTP response.
     """
     headers = {
-        'Content-Type': "application/xml",
-        'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
-        'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
+        "Content-Type": "application/xml",
+        "X-TAXII-Content-Type": "urn:taxii.mitre.org:message:xml:1.1",
+        "X-TAXII-Protocol": "urn:taxii.mitre.org:protocol:http:1.0",
     }
     response = make_response((taxii_message.to_xml(pretty_print=True), 200, headers))
 
     return response
 
 
-''' ROUTE FUNCTIONS '''
+""" ROUTE FUNCTIONS """
 
 
-@APP.route('/taxii-discovery-service', methods=['POST'])
+@APP.route("/taxii-discovery-service", methods=["POST"])
 @taxii_check
 @validate_credentials
 def taxii_discovery_service() -> Response:
@@ -816,14 +782,14 @@ def taxii_discovery_service() -> Response:
         demisto.debug(f"TS1: the taxii_discovery_service data {request.data!r}")
         discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data), request.headers)
     except Exception as e:
-        error = f'Could not perform the discovery request: {str(e)}'
+        error = f"Could not perform the discovery request: {e!s}"
         handle_long_running_error(error)
         return make_response(error, 400)
 
     return taxii_make_response(discovery_response)
 
 
-@APP.route('/taxii-collection-management-service', methods=['POST'])
+@APP.route("/taxii-collection-management-service", methods=["POST"])
 @taxii_check
 @validate_credentials
 def taxii_collection_management_service() -> Response:
@@ -835,14 +801,14 @@ def taxii_collection_management_service() -> Response:
         demisto.debug(f"TS1: the taxii_collection_management_service data {request.data!r}")
         collection_response = SERVER.get_collections(get_message_from_xml(request.data), request.headers)
     except Exception as e:
-        error = f'Could not perform the collection management request: {str(e)}'
+        error = f"Could not perform the collection management request: {e!s}"
         handle_long_running_error(error)
         return make_response(error, 400)
 
     return taxii_make_response(collection_response)
 
 
-@APP.route('/taxii-poll-service', methods=['POST'])
+@APP.route("/taxii-poll-service", methods=["POST"])
 @taxii_check
 @validate_credentials
 def taxii_poll_service() -> Response:
@@ -851,26 +817,26 @@ def taxii_poll_service() -> Response:
     """
 
     try:
-        taxiicontent_type = request.headers['X-TAXII-Content-Type']
-        if taxiicontent_type == 'urn:taxii.mitre.org:message:xml:1.1':
+        taxiicontent_type = request.headers["X-TAXII-Content-Type"]
+        if taxiicontent_type == "urn:taxii.mitre.org:message:xml:1.1":
             demisto.debug(f"TS1: the taxii_poll_service data {request.data!r}")
             taxii_message = get_message_from_xml(request.data)
         else:
-            raise ValueError('Invalid message')
+            raise ValueError("Invalid message")
     except Exception as e:
-        error = f'Could not perform the polling request: {str(e)}'
+        error = f"Could not perform the polling request: {e!s}"
         handle_long_running_error(error)
         return make_response(error, 400)
 
     return SERVER.get_poll_response(taxii_message)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(taxii_server: TAXIIServer):
     run_server(taxii_server, is_test=True)
-    return 'ok'
+    return "ok"
 
 
 def run_server(taxii_server: TAXIIServer, is_test=False):
@@ -878,44 +844,43 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
     Start the taxii server.
     """
 
-    certificate_path = ''
-    private_key_path = ''
+    certificate_path = ""
+    private_key_path = ""
     ssl_args = {}
 
     try:
-
         if taxii_server.certificate and taxii_server.private_key and not taxii_server.http_server:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
-            certificate_file.write(bytes(taxii_server.certificate, 'utf-8'))
+            certificate_file.write(bytes(taxii_server.certificate, "utf-8"))
             certificate_file.close()
 
             private_key_file = NamedTemporaryFile(delete=False)
             private_key_path = private_key_file.name
-            private_key_file.write(bytes(taxii_server.private_key, 'utf-8'))
+            private_key_file.write(bytes(taxii_server.private_key, "utf-8"))
             private_key_file.close()
             context = SSLContext(PROTOCOL_TLSv1_2)
             context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
+            ssl_args["ssl_context"] = context
+            demisto.debug("Starting HTTPS Server")
         else:
-            demisto.debug('Starting HTTP Server')
+            demisto.debug("Starting HTTP Server")
 
-        wsgi_server = WSGIServer(('0.0.0.0', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        wsgi_server = WSGIServer(("0.0.0.0", taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=wsgi_server.serve_forever)
             server_process.start()
             time.sleep(5)
             server_process.terminate()
         else:
-            demisto.updateModuleHealth('')
+            demisto.updateModuleHealth("")
             wsgi_server.serve_forever()
     except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
+        ssl_err_message = f"Failed to validate certificate and/or private key: {e!s}"
         handle_long_running_error(ssl_err_message)
         raise ValueError(ssl_err_message)
     except Exception as e:
-        handle_long_running_error(f'An error occurred: {str(e)}')
+        handle_long_running_error(f"An error occurred: {e!s}")
         raise ValueError(str(e))
     finally:
         if certificate_path:
@@ -931,47 +896,48 @@ def main():
     params = demisto.params()
     command = demisto.command()
 
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-    credentials: dict = params.get('credentials', None)
+    certificate: str = params.get("certificate", "")
+    private_key: str = params.get("key", "")
+    credentials: dict = params.get("credentials", None)
     http_server = True
     if (certificate and not private_key) or (private_key and not certificate):
-        raise ValueError('When using HTTPS connection, both certificate and private key must be provided.')
+        raise ValueError("When using HTTPS connection, both certificate and private key must be provided.")
     elif certificate and private_key:
         http_server = False
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     commands: dict = {}
     try:
         port = get_port(params)
         collections = get_collections(params)
         server_links = demisto.demistoUrls()
-        server_link_parts: ParseResult = urlparse(server_links.get('server'))
+        server_link_parts: ParseResult = urlparse(server_links.get("server"))
 
         global SERVER
-        scheme = 'http'
+        scheme = "http"
         host_name = server_link_parts.hostname
         if is_xsiam():
             # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
             # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
-            host_name = str(server_link_parts.hostname).replace('.xdr', '.crtx', 1)
+            host_name = str(server_link_parts.hostname).replace(".xdr", ".crtx", 1)
         if not http_server:
-            scheme = 'https'
+            scheme = "https"
 
-        service_address = params.get('service_address')
-        SERVER = TAXIIServer(scheme, str(host_name), port, collections,
-                             certificate, private_key, http_server, credentials, service_address)
-        if command == 'test-module':
+        service_address = params.get("service_address")
+        SERVER = TAXIIServer(
+            scheme, str(host_name), port, collections, certificate, private_key, http_server, credentials, service_address
+        )
+        if command == "test-module":
             return_results(test_module(SERVER))
-        elif command == 'long-running-execution':
+        elif command == "long-running-execution":
             run_server(SERVER)
         else:
             readable_output, outputs, raw_response = commands[command](SERVER)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg)
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

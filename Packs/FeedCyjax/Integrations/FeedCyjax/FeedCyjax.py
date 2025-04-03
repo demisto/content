@@ -1,28 +1,27 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-import urllib3
 import traceback
-import dateparser
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import cyjax as cyjax_sdk
-from cyjax.exceptions import UnauthorizedException, TooManyRequestsException
+import dateparser
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+from cyjax.exceptions import TooManyRequestsException, UnauthorizedException
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-INDICATORS_LAST_FETCH_KEY = 'last_fetch'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+INDICATORS_LAST_FETCH_KEY = "last_fetch"
 INDICATORS_LIMIT = 50
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client:
@@ -57,7 +56,7 @@ class Client:
         :rtype: ``Tuple(bool, str)``
         """
         result = False
-        error_msg = 'Not responding'
+        error_msg = "Not responding"
 
         try:
             indicators = list(cyjax_sdk.IndicatorOfCompromise().list(since=timedelta(minutes=5)))
@@ -65,19 +64,18 @@ class Client:
                 result = True
         except Exception as e:
             if isinstance(e, UnauthorizedException):
-                error_msg = 'Unauthorized'
+                error_msg = "Unauthorized"
             elif isinstance(e, TooManyRequestsException):
-                error_msg = 'Too many requests'
+                error_msg = "Too many requests"
             else:
                 if str(e):
                     error_msg = str(e)
 
-            demisto.debug(f'Error when testing connection to Cyjax API {error_msg}')
+            demisto.debug(f"Error when testing connection to Cyjax API {error_msg}")
 
         return result, error_msg
 
-    def fetch_indicators(self, since=None, until=None, indicator_type=None, source_type=None, source_id=None,
-                         limit=None) -> list:
+    def fetch_indicators(self, since=None, until=None, indicator_type=None, source_type=None, source_id=None, limit=None) -> list:
         """
         Fetch indicators from Cyjax SDK.
 
@@ -103,15 +101,12 @@ class Client:
         :rtype: list
         """
         try:
-            indicators = cyjax_sdk.IndicatorOfCompromise().list(since=since,
-                                                                until=until,
-                                                                type=indicator_type,
-                                                                source_type=source_type,
-                                                                source_id=source_id,
-                                                                limit=limit)
+            indicators = cyjax_sdk.IndicatorOfCompromise().list(
+                since=since, until=until, type=indicator_type, source_type=source_type, source_id=source_id, limit=limit
+            )
         except Exception as e:
             indicators = []
-            demisto.debug(f'Error when fetching Indicators from Cyjax SDK {str(e)}')
+            demisto.debug(f"Error when fetching Indicators from Cyjax SDK {e!s}")
 
         return indicators
 
@@ -127,20 +122,20 @@ class Client:
         """
         try:
             enrichment = cyjax_sdk.IndicatorOfCompromise().enrichment(value)
-            enrichment['value'] = value
+            enrichment["value"] = value
 
             # Do not expose geoip enrichment data in sighting method
-            if 'geoip' in enrichment:
-                del enrichment['geoip']
-            if 'asn' in enrichment:
-                del enrichment['asn']
+            if "geoip" in enrichment:
+                del enrichment["geoip"]
+            if "asn" in enrichment:
+                del enrichment["asn"]
         except Exception:
             enrichment = None
 
         return enrichment
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_indicators_last_fetch_date() -> datetime:
@@ -157,14 +152,12 @@ def get_indicators_last_fetch_date() -> datetime:
     if last_fetch_timestamp is None:
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = arg_to_datetime(
-            arg=demisto.params().get('first_fetch', '3 days'),
-            arg_name='First fetch time',
-            required=True
+            arg=demisto.params().get("first_fetch", "3 days"), arg_name="First fetch time", required=True
         )
         if first_fetch_time:
             last_fetch_timestamp = first_fetch_time.timestamp()
         else:
-            raise ValueError('Invalid first_fetch date config param')
+            raise ValueError("Invalid first_fetch date config param")
 
     date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)  # noqa: UP017
 
@@ -198,16 +191,16 @@ def map_indicator_type(cyjax_type: str) -> str | None:
     :rtype: ``Optional[str]``
     """
     indicator_map = {
-        'IPv4': FeedIndicatorType.IP,
-        'IPv6': FeedIndicatorType.IPv6,
-        'URL': FeedIndicatorType.URL,
-        'Email': FeedIndicatorType.Email,
-        'Hostname': FeedIndicatorType.Domain,
-        'Domain': FeedIndicatorType.Domain,
-        'FileHash-SHA1': FeedIndicatorType.File,
-        'FileHash-SHA256': FeedIndicatorType.File,
-        'FileHash-MD5': FeedIndicatorType.File,
-        'FileHash-SSDEEP': FeedIndicatorType.SSDeep
+        "IPv4": FeedIndicatorType.IP,
+        "IPv6": FeedIndicatorType.IPv6,
+        "URL": FeedIndicatorType.URL,
+        "Email": FeedIndicatorType.Email,
+        "Hostname": FeedIndicatorType.Domain,
+        "Domain": FeedIndicatorType.Domain,
+        "FileHash-SHA1": FeedIndicatorType.File,
+        "FileHash-SHA256": FeedIndicatorType.File,
+        "FileHash-MD5": FeedIndicatorType.File,
+        "FileHash-SSDEEP": FeedIndicatorType.SSDeep,
     }
 
     return indicator_map.get(cyjax_type)
@@ -222,19 +215,14 @@ def map_reputation_to_score(reputation: str) -> int:
     :return: the score integer value
     :rtype: ``int``
     """
-    reputation_map = {
-        'unknown': 0,
-        'none': 0,
-        'good': 1,
-        'suspicious': 2,
-        'bad': 3
-    }
+    reputation_map = {"unknown": 0, "none": 0, "good": 1, "suspicious": 2, "bad": 3}
 
     return reputation_map.get(reputation.lower(), 0)
 
 
-def convert_cyjax_indicator(cyjax_indicator: dict, score: int | None = None, tlp: str | None = None,
-                            tags: list | None = None) -> dict[str, Any]:
+def convert_cyjax_indicator(
+    cyjax_indicator: dict, score: int | None = None, tlp: str | None = None, tags: list | None = None
+) -> dict[str, Any]:
     """Convert Cyjax indicator into XSOAR indicator
 
     :type cyjax_indicator: ``dict``
@@ -253,66 +241,64 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: int | None = None, tlp
     :rtype: ``Dict[str, Any]``
     """
     if score is None:
-        score = map_reputation_to_score('Suspicious')
+        score = map_reputation_to_score("Suspicious")
 
-    if tlp is None and 'handling_condition' in cyjax_indicator:
-        tlp = cyjax_indicator['handling_condition']
+    if tlp is None and "handling_condition" in cyjax_indicator:
+        tlp = cyjax_indicator["handling_condition"]
 
     if tags is None:
         tags = []
 
-    indicator_date = dateparser.parse(cyjax_indicator['discovered_at'])
+    indicator_date = dateparser.parse(cyjax_indicator["discovered_at"])
     assert indicator_date is not None
 
     indicator = {
-        'value': cyjax_indicator['value'],
-        'type': map_indicator_type(cyjax_indicator['type']),
-        'rawJSON': cyjax_indicator,
-        'score': score
+        "value": cyjax_indicator["value"],
+        "type": map_indicator_type(cyjax_indicator["type"]),
+        "rawJSON": cyjax_indicator,
+        "score": score,
     }
 
     # Add additional indicator fields
-    fields = {
-        'firstseenbysource': indicator_date.strftime(DATE_FORMAT)
-    }
+    fields = {"firstseenbysource": indicator_date.strftime(DATE_FORMAT)}
 
     if tlp is not None:
-        fields['trafficlightprotocol'] = tlp
+        fields["trafficlightprotocol"] = tlp
 
     if tags:
-        fields['tags'] = tags  # type: ignore
+        fields["tags"] = tags  # type: ignore
 
-    if 'description' in cyjax_indicator:
-        fields['description'] = cyjax_indicator['description']
+    if "description" in cyjax_indicator:
+        fields["description"] = cyjax_indicator["description"]
 
-    if 'source' in cyjax_indicator:
-        fields['source'] = cyjax_indicator['source']
+    if "source" in cyjax_indicator:
+        fields["source"] = cyjax_indicator["source"]
 
-    if 'industry_type' in cyjax_indicator:
-        fields['cyjaxindustrytypes'] = cyjax_indicator['industry_type']
+    if "industry_type" in cyjax_indicator:
+        fields["cyjaxindustrytypes"] = cyjax_indicator["industry_type"]
 
-    if 'ttp' in cyjax_indicator:
-        fields['cyjaxtechniquestacticsprocedures'] = cyjax_indicator['ttp']
+    if "ttp" in cyjax_indicator:
+        fields["cyjaxtechniquestacticsprocedures"] = cyjax_indicator["ttp"]
 
-    if 'asn' in cyjax_indicator and 'asn' in cyjax_indicator['asn']:
-        fields['ASN'] = cyjax_indicator['asn']['asn']
+    if "asn" in cyjax_indicator and "asn" in cyjax_indicator["asn"]:
+        fields["ASN"] = cyjax_indicator["asn"]["asn"]
 
-    if 'geoip' in cyjax_indicator:
-        if 'city_name' in cyjax_indicator['geoip']:
-            fields['city'] = cyjax_indicator['geoip']['city_name']
-        if 'country_name' in cyjax_indicator['geoip']:
-            fields['geocountry'] = cyjax_indicator['geoip']['country_name']
-        if 'location' in cyjax_indicator['geoip']:
-            fields['geolocation'] = "Lon: {}, Lat: {}".format(
-                cyjax_indicator['geoip']['location']['lon'],
-                cyjax_indicator['geoip']['location']['lat'])
+    if "geoip" in cyjax_indicator:
+        if "city_name" in cyjax_indicator["geoip"]:
+            fields["city"] = cyjax_indicator["geoip"]["city_name"]
+        if "country_name" in cyjax_indicator["geoip"]:
+            fields["geocountry"] = cyjax_indicator["geoip"]["country_name"]
+        if "location" in cyjax_indicator["geoip"]:
+            fields["geolocation"] = "Lon: {}, Lat: {}".format(
+                cyjax_indicator["geoip"]["location"]["lon"], cyjax_indicator["geoip"]["location"]["lat"]
+            )
 
-    indicator['fields'] = fields
+    indicator["fields"] = fields
 
     return indicator
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -327,13 +313,14 @@ def test_module(client: Client) -> str:
     (result, error_msg) = client.test_connection()
 
     if result:
-        return 'ok'
+        return "ok"
     else:
-        return f'Could not connect to Cyjax API ({error_msg})'
+        return f"Could not connect to Cyjax API ({error_msg})"
 
 
-def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: str | None = None,
-                             tags: list | None = None) -> tuple[int, list[dict]]:
+def fetch_indicators_command(
+    client: Client, last_fetch_date: datetime, reputation: str, tlp: str | None = None, tags: list | None = None
+) -> tuple[int, list[dict]]:
     """Fetch indicators from Cyjax API.
     This function retrieves new indicators every interval (default is 60 minutes).
 
@@ -363,12 +350,12 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
     since = last_fetch_date + timedelta(seconds=1)
 
     indicators = []  # type:List
-    cyjax_indicators = client.fetch_indicators(since=since.isoformat())   # type:List
+    cyjax_indicators = client.fetch_indicators(since=since.isoformat())  # type:List
 
     indicators_score = map_reputation_to_score(reputation)  # type: int
 
     for cyjax_indicator in cyjax_indicators:
-        indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
+        indicator_date = dateparser.parse(cyjax_indicator.get("discovered_at"))
         assert indicator_date is not None
         indicator_timestamp = int(indicator_date.timestamp())
 
@@ -393,55 +380,55 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> dict[str, An
     :return: A dict with result options that is then passed to ``return_results``,
     :rtype: ``dict``
     """
-    since = args.get('since', None)
-    until = args.get('until', None)
-    indicator_type = args.get('type', None)
-    source_type = args.get('source_type', None)
-    source_id = args.get('source_id', None)
-    limit = int(args.get('limit', INDICATORS_LIMIT))
+    since = args.get("since", None)
+    until = args.get("until", None)
+    indicator_type = args.get("type", None)
+    source_type = args.get("source_type", None)
+    source_id = args.get("source_id", None)
+    limit = int(args.get("limit", INDICATORS_LIMIT))
 
     if since is not None:
-        since_date = arg_to_datetime(since, 'since')
+        since_date = arg_to_datetime(since, "since")
         since = since_date.strftime(DATE_FORMAT) if since_date else None
 
     if until is not None:
-        until_date = arg_to_datetime(until, 'until')
+        until_date = arg_to_datetime(until, "until")
         until = until_date.strftime(DATE_FORMAT) if until_date else None
 
     if source_id is not None:
         source_id = int(source_id)
 
-    cyjax_indicators = client.fetch_indicators(since=since,
-                                               until=until,
-                                               indicator_type=indicator_type,
-                                               source_type=source_type,
-                                               source_id=source_id,
-                                               limit=limit)
+    cyjax_indicators = client.fetch_indicators(
+        since=since, until=until, indicator_type=indicator_type, source_type=source_type, source_id=source_id, limit=limit
+    )
 
     indicators = [convert_cyjax_indicator(indicator) for indicator in cyjax_indicators]  # type:List
 
     # Format indicators for human readable table output
     human_readable_indicators = []
     for indicator in indicators:
-        human_readable_indicators.append({
-            'value': indicator['value'],
-            'score': indicator['score'],
-            'type': indicator['type'],
-            'description': indicator['fields'].get('description'),
-            'date': indicator['fields'].get('firstseenbysource')
-        })
-    human_readable_headers = ['value', 'type', 'score', 'description', 'date']
+        human_readable_indicators.append(
+            {
+                "value": indicator["value"],
+                "score": indicator["score"],
+                "type": indicator["type"],
+                "description": indicator["fields"].get("description"),
+                "date": indicator["fields"].get("firstseenbysource"),
+            }
+        )
+    human_readable_headers = ["value", "type", "score", "description", "date"]
 
     return {
-        'Type': EntryType.NOTE,
-        'ContentsFormat': EntryFormat.JSON,
-        'Contents': indicators,
-        'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown('Cyjax indicators:', human_readable_indicators, headers=human_readable_headers,
-                                         headerTransform=pascalToSpace),
-        'EntryContext': {
-            'Cyjax.Indicators(val.value && val.value === obj.value)': createContext(indicators, removeNull=True),
-        }
+        "Type": EntryType.NOTE,
+        "ContentsFormat": EntryFormat.JSON,
+        "Contents": indicators,
+        "ReadableContentsFormat": EntryFormat.MARKDOWN,
+        "HumanReadable": tableToMarkdown(
+            "Cyjax indicators:", human_readable_indicators, headers=human_readable_headers, headerTransform=pascalToSpace
+        ),
+        "EntryContext": {
+            "Cyjax.Indicators(val.value && val.value === obj.value)": createContext(indicators, removeNull=True),
+        },
     }
 
 
@@ -457,33 +444,31 @@ def indicator_sighting_command(client: Client, args: dict[str, Any]) -> dict[str
     :return: A dict with result options that is then passed to ``return_results``,
     :rtype: ``dict``
     """
-    value = args.get('value', None)
+    value = args.get("value", None)
 
     if not value:
-        raise ValueError('Value not specified')
+        raise ValueError("Value not specified")
 
     indicator_sighting = client.sighting(value)
 
     if indicator_sighting is not None:
-        sightings_list = indicator_sighting.get('sightings', [])
-        description = 'Indicator "{}" sightings. Last seen at: {}'.format(value,
-                                                                          indicator_sighting.get('last_seen_timestamp'))
+        sightings_list = indicator_sighting.get("sightings", [])
+        description = 'Indicator "{}" sightings. Last seen at: {}'.format(value, indicator_sighting.get("last_seen_timestamp"))
     else:
         sightings_list = []
         description = f'No events found for indicator "{value}"'
 
     return_object = {
-        'Type': EntryType.NOTE,
-        'ContentsFormat': EntryFormat.JSON,
-        'Contents': sightings_list,
-        'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=string_to_table_header)
+        "Type": EntryType.NOTE,
+        "ContentsFormat": EntryFormat.JSON,
+        "Contents": sightings_list,
+        "ReadableContentsFormat": EntryFormat.MARKDOWN,
+        "HumanReadable": tableToMarkdown(description, sightings_list, headerTransform=string_to_table_header),
     }
 
     if indicator_sighting is not None:
-        return_object['EntryContext'] = {
-            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)':
-                createContext(indicator_sighting, removeNull=True),
+        return_object["EntryContext"] = {
+            "Cyjax.IndicatorSighting(val.value && val.value === obj.value)": createContext(indicator_sighting, removeNull=True),
         }
 
     return return_object
@@ -503,13 +488,13 @@ def unset_indicators_last_fetch_date_command() -> dict[str, Any] | None:
     demisto.setIntegrationContext(integration_context)
 
     return {
-        'Type': EntryType.NOTE,
-        'ContentsFormat': EntryFormat.TEXT,
-        'Contents': 'Indicators feed last fetch date has been unset. Next feed run will use first_fetch param.',
+        "Type": EntryType.NOTE,
+        "ContentsFormat": EntryFormat.TEXT,
+        "Contents": "Indicators feed last fetch date has been unset. Next feed run will use first_fetch param.",
     }
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -519,30 +504,25 @@ def main() -> None:
     :rtype:
     """
     params = demisto.params()
-    api_key = params.get('apikey')
-    base_url = params.get('url')
-    verify_ssl = not params.get('insecure', False)
-    proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-    reputation = params.get('feedReputation', 'Suspicious')
-    use_cyjax_tlp = params.get('use_cyjax_tlp', False)
-    tlp_color = params.get('tlp_color')
+    api_key = params.get("apikey")
+    base_url = params.get("url")
+    verify_ssl = not params.get("insecure", False)
+    proxies = handle_proxy(proxy_param_name="proxy", checkbox_default_value=False)
+    reputation = params.get("feedReputation", "Suspicious")
+    use_cyjax_tlp = params.get("use_cyjax_tlp", False)
+    tlp_color = params.get("tlp_color")
     tlp_to_use = tlp_color if use_cyjax_tlp is False else None  # Whether to use Cyjax TLP or TLP set by the user.
-    tags = params.get('feedTags')
+    tags = params.get("feedTags")
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
 
     try:
+        client = Client(base_url=base_url, api_key=api_key, proxies=proxies, verify_ssl=verify_ssl)
 
-        client = Client(
-            base_url=base_url,
-            api_key=api_key,
-            proxies=proxies,
-            verify_ssl=verify_ssl)
-
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             return_results(test_module(client))
 
-        elif demisto.command() == 'fetch-indicators':
+        elif demisto.command() == "fetch-indicators":
             last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 
@@ -552,23 +532,23 @@ def main() -> None:
 
                 set_indicators_last_fetch_date(next_run)
 
-        elif demisto.command() == 'cyjax-get-indicators':
+        elif demisto.command() == "cyjax-get-indicators":
             return_results(get_indicators_command(client, demisto.args()))
 
-        elif demisto.command() == 'cyjax-indicator-sighting':
+        elif demisto.command() == "cyjax-indicator-sighting":
             return_results(indicator_sighting_command(client, demisto.args()))
 
-        elif demisto.command() == 'cyjax-unset-indicators-last-fetch-date':
+        elif demisto.command() == "cyjax-unset-indicators-last-fetch-date":
             return_results(unset_indicators_last_fetch_date_command())
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -31,3 +31,19 @@ The incidents are based on these errors written in this [page](https://github.co
 - The error codes, ND403 - 1200, have a severity type `HIGH` because this error would likely mean that the UPP is corrected in some way, which can be a red flag.
 - The error codes, ND400 - 2300, have a severity type `MEDIUM` as if the payload of a UPP is null, then no Hash can be processed. This is of course controlled, but it is very strange if the UPP is empty.
 - The rest of the errors have a severity type `UNKNOWN`.
+### create-sample-incidents
+
+***
+Create a list of sample incidents.
+
+#### Base Command
+
+`create-sample-incidents`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
