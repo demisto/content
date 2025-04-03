@@ -128,7 +128,7 @@ def test_remediate_command(client, requests_mock):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "CybelAngel.Remediation"
-    assert result.readable_output == "Remediation Status test-report-id : 200"
+    assert result.readable_output == "Remediation Status test-report-id : Successful"
 
 
 def test_get_comments_command(client, requests_mock):
@@ -293,7 +293,7 @@ def test_update_status_command(client, requests_mock):
         'status': 'resolved'
     })
     assert result.outputs_prefix == 'CybelAngel.StatusUpdate'
-    assert 'updated' in result.raw_response[0]
+    assert "updated" in result.raw_response 
 
 
 def test_update_status_error(client, requests_mock):
