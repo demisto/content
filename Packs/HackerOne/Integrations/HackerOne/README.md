@@ -43,6 +43,7 @@ Retrieves all the reports based on program handle and provided arguments.
 
 `hackerone-report-list`
 #### Input
+<!-- markdownlint-disable MD052 -->
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -55,6 +56,8 @@ Retrieves all the reports based on program handle and provided arguments.
 | state | The state filter to retrieve the reports by current report state.<br/><br/>Possible values: new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam, retesting.<br/><br/>Note: Supports comma separated values. | Optional | 
 | severity | The severity filter to retrieve the reports by the severity ratings.<br/><br/>Possible values: none, low, medium, high, critical.<br/><br/>Note: Supports comma separated values. | Optional | 
 | limit | Number of reports to retrieve. | Optional |
+
+<!-- markdownlint-enable MD052 -->
 
 #### Context Output
 

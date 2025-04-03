@@ -2,28 +2,37 @@ category: IT Services
 commonfields:
   id: AnsibleCiscoIOS
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: The credentials to associate with the instance. SSH keys can be configured using the credential manager.
   display: Username
   name: creds
   required: true
   type: 9
+  section: Connect
 - display: Enable Password
   name: enable_password
   required: true
   type: 4
+  section: Connect
 - additionalinfo: The default port to use if one is not specified in the commands `host` argument.
   defaultvalue: 22
   display: Default SSH Port
   name: port
   required: true
   type: 0
+  section: Connect
+
 - additionalinfo: If multiple hosts are specified in a command, how many hosts should be interacted with concurrently.
   defaultvalue: '4'
   display: Concurrency Factor
   name: concurrency
   required: true
   type: 0
+  section: Connect
+
 description: Cisco IOS Platform management over SSH.
 display: Ansible Cisco IOS
 fromversion: 6.0.0
