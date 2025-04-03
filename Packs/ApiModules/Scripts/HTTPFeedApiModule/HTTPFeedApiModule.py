@@ -16,7 +16,8 @@ TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
-CIDR_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
+CIDR_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))" \
+                     r"\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
 
 
 class Client(BaseClient):
@@ -477,7 +478,7 @@ def fetch_indicators_command(client,
 
                 if indicator_values and len(indicator_values) == 1:
                     indicators.append(process_indicator_data(
-                        client, 
+                        client,
                         indicator_values[0],
                         attributes,
                         url,
@@ -489,7 +490,7 @@ def fetch_indicators_command(client,
                 elif indicator_values:
                     for indicator_value in indicator_values:
                         indicators.append(process_indicator_data(
-                            client, 
+                            client,
                             indicator_value,
                             attributes,
                             url,
@@ -524,6 +525,8 @@ def process_indicator_data(client,
     Returns:
         _type_: _description_
     """
+    attributes = attributes if attributes else {}
+    attributes['value'] = value
     if 'lastseenbysource' in attributes:
         attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
 
@@ -534,7 +537,7 @@ def process_indicator_data(client,
     indicator_data = {
         'value': value,
         'type': indicator_type,
-        'rawJSON': attributes,
+        'rawJSON': attributes.copy(),
     }
     if enrichment_excluded:
         indicator_data['enrichmentExcluded'] = enrichment_excluded
