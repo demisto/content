@@ -396,7 +396,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -438,7 +438,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "marketplaces": [
-        "xsoar"
-    ]
+    "marketplaces": ["xsoar"]
 }
