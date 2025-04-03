@@ -363,6 +363,7 @@ def test_connection(client: Client) -> str:  # pragma: no cover
     return "✅ Success!"
 
 
+
 def list_directory_roles(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """Lists all service principals
 
