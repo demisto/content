@@ -17,7 +17,7 @@ from xml.etree import ElementTree
 import requests
 
 """ GLOBALS/PARAMS """
-BASE_URL = demisto.params().get("baseUrl") 
+BASE_URL = demisto.params().get("baseUrl")
 ACCESS_KEY = demisto.params().get("accessKey")
 
 SECRET_KEY = demisto.params().get("secretKey") or demisto.params().get("secretKey_creds")
