@@ -2,7 +2,7 @@ McAfee Network Security Manager gives you real-time visibility and control over 
 This integration was integrated and tested with version 9.1 of McAfeeNSMv2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mcafee-nsm-v2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---mcafee-nsm-v2).
 
 ## Configure McAfee NSM v2 in Cortex
 

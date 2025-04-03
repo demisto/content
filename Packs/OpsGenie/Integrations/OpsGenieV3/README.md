@@ -2,7 +2,7 @@ Integration with Atlassian OpsGenie. OpsGenie is a cloud-based service that enab
 This integration was integrated and tested with OpsGenie.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-opsgenie-v3).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---opsgenie-v3).
 
 ## Configure OpsGenie v3 in Cortex
 

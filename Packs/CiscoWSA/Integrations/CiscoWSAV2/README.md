@@ -1,8 +1,11 @@
 Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
 This integration was integrated and tested with version 14.0.3-014 of Cisco WSA V2
 
+
+<!-- markdownlint-disable MD051 --> 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-cisco-wsa-v2).
+<!-- markdownlint-enable MD051 -->
 
 ## Configure Cisco WSA V2 in Cortex
 
