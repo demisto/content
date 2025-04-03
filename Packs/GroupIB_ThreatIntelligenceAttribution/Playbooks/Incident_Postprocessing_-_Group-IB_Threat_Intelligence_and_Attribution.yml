@@ -1,4 +1,5 @@
-description: Obtains additional information on the threat actor involved in the incident and associates related indicators to the incident.
+description: Obtains additional information on the threat actor involved in the incident
+  and associates related indicators to the incident.
 id: Incident Postprocessing - Group-IB Threat Intelligence & Attribution
 inputs: []
 name: Incident Postprocessing - Group-IB Threat Intelligence & Attribution
@@ -142,7 +143,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
+      description: Command performs Group IB event lookup in hi/threat_actor (or in
+        apt/threat_actor if the APT flag is true) collection with provided ID.
       id: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
       iscommand: true
       name: gibtia-get-threat-actor-info
@@ -181,7 +183,8 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
+      description: Command performs Group IB event lookup in hi/threat (or in apt/threat
+        if the APT flag is true) collection with provided ID.
       id: 5701ade1-4390-4c6f-859e-e9a8a70758ae
       iscommand: true
       name: gibtia-get-threat-info
