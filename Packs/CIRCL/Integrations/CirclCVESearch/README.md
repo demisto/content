@@ -18,7 +18,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cve-latest
 
 ***
-Returns the latest updated CVEs.
+Returns the latest updated CVEs. - this command is deprecated, use NVD feed 2.0 instead.
 
 #### Base Command
 

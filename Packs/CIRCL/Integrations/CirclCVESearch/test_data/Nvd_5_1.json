@@ -1,0 +1,112 @@
+{
+  "id": "CVE-2025-24176",
+  "sourceIdentifier": "product-security@apple.com",
+  "published": "2025-01-27T22:15:20.643",
+  "lastModified": "2025-03-24T14:59:58.437",
+  "vulnStatus": "Analyzed",
+  "cveTags": [],
+  "descriptions": [
+    {
+      "lang": "en",
+      "value": "A permissions issue was addressed with improved validation. This issue is fixed in macOS Ventura 13.7.3, macOS Sequoia 15.3, macOS Sonoma 14.7.3. A local attacker may be able to elevate their privileges."
+    },
+    {
+      "lang": "es",
+      "value": "Se solucion\u00f3 un problema de permisos mejorando la validaci\u00f3n. Este problema se solucion\u00f3 en macOS Ventura 13.7.3, macOS Sequoia 15.3 y macOS Sonoma 14.7.3. Un atacante local podr\u00eda elevar sus privilegios."
+    }
+  ],
+  "metrics": {
+    "cvssMetricV31": [
+      {
+        "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+        "type": "Secondary",
+        "cvssData": {
+          "version": "3.1",
+          "vectorString": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+          "baseScore": 7.1,
+          "baseSeverity": "HIGH",
+          "attackVector": "LOCAL",
+          "attackComplexity": "LOW",
+          "privilegesRequired": "LOW",
+          "userInteraction": "NONE",
+          "scope": "UNCHANGED",
+          "confidentialityImpact": "HIGH",
+          "integrityImpact": "HIGH",
+          "availabilityImpact": "NONE"
+        },
+        "exploitabilityScore": 1.8,
+        "impactScore": 5.2
+      }
+    ]
+  },
+  "weaknesses": [
+    {
+      "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+      "type": "Secondary",
+      "description": [
+        {
+          "lang": "en",
+          "value": "CWE-276"
+        }
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      "nodes": [
+        {
+          "operator": "OR",
+          "negate": false,
+          "cpeMatch": [
+            {
+              "vulnerable": true,
+              "criteria": "cpe:2.3:o:apple:macos:*:*:*:*:*:*:*:*",
+              "versionEndExcluding": "13.7.3",
+              "matchCriteriaId": "A12642CB-69CC-4C6E-A2C2-CA8AE736EE88"
+            },
+            {
+              "vulnerable": true,
+              "criteria": "cpe:2.3:o:apple:macos:*:*:*:*:*:*:*:*",
+              "versionStartIncluding": "14.0",
+              "versionEndExcluding": "14.7.3",
+              "matchCriteriaId": "9C523C7E-B1CF-454B-8AFD-B462C5120D9E"
+            },
+            {
+              "vulnerable": true,
+              "criteria": "cpe:2.3:o:apple:macos:*:*:*:*:*:*:*:*",
+              "versionStartIncluding": "15.0",
+              "versionEndExcluding": "15.3",
+              "matchCriteriaId": "33FE4A81-3E35-4934-ABBB-4531E8E249AF"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "url": "example",
+      "source": "example",
+      "tags": [
+        "Vendor Advisory",
+        "Release Notes"
+      ]
+    },
+    {
+      "url": "example",
+      "source": "example",
+      "tags": [
+        "Vendor Advisory",
+        "Release Notes"
+      ]
+    },
+    {
+      "url": "example",
+      "source": "example",
+      "tags": [
+        "Vendor Advisory",
+        "Release Notes"
+      ]
+    }
+  ]
+}
