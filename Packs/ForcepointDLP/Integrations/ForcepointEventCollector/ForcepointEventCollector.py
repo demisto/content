@@ -1750,7 +1750,11 @@ def update_incident_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(
-    client: Client, first_fetch: datetime, max_fetch: int, mirror_direction: str | None
+    client: Client,
+    last_run: dict[str, Any],
+    first_fetch: datetime,
+    max_fetch: int,
+    mirror_direction: str | None,
 ) -> tuple[list[dict], dict[str, Any]]:
     """
     Fetch Forcepoint DLP incidents.
@@ -1760,6 +1764,7 @@ def fetch_incidents(
 
     Args:
         client (Client): ForcePoint DLP client.
+        last_run (dict[str, Any]): Holds the last fetch time and the seen incident IDs in that time.
         first_fetch (datetime): If last_run is None then fetch all incidents since first_fetch.
         max_fetch (int): Maximum numbers of incidents per fetch.
         mirror_direction (str | None): Whether the incident is incoming, outgoing or both.
@@ -1767,13 +1772,11 @@ def fetch_incidents(
     Returns:
         tuple[list[dict], dict[str, Any]]: Incidents and the next fetch metadata.
     """
+    demisto.debug(f"fetch: {last_run=}")
+    last_fetch: datetime | None = arg_to_datetime(last_run.get("last_fetch"))
+    last_ids = set(last_run.get("last_ids", []))
 
-    last_run = arg_to_datetime(demisto.getLastRun().get("time"))
-    last_run_id = arg_to_number(demisto.getLastRun().get("last_run_id"))
-
-    demisto.debug(f"fetch: {last_run=} {last_run_id=}")
-
-    start_date = last_run or first_fetch
+    start_date = last_fetch or first_fetch
     start_time = start_date.strftime(DATE_FORMAT)
     end_time = get_end_time()
 
@@ -1786,73 +1789,85 @@ def fetch_incidents(
         to_date=end_time,
     )
 
-    incidents = response.get("incidents", []) or []
-    incidents.sort(key=lambda i: datetime.strptime(i["incident_time"], DATE_FORMAT))
+    data = response.get("incidents") or []
+    fetch_count = len(data)
 
-    # Update the first incident time if not exists.
+    if last_ids:
+        # filter out IDs with a lower value than last_id as the they are sorted in ascending order.
+        data = [item for item in data if item["id"] not in last_ids]
+        demisto.debug(f"fetch: {len(data)} new incidents were detected in {fetch_count} fetched incidents.")
+
+    if not data:
+        if fetch_count == API_DEFAULT_LIMIT:
+            # API limit reached for the given time-frame, update the start time by 1 second and attempt a new fetch.
+            demisto.debug(f"fetch: API limit capped out for incident time '{start_time}'.")
+            start_date += timedelta(seconds=1)
+            start_time = start_date.strftime(DATE_FORMAT)
+
+            demisto.debug(f"fetch: Re-fetching with new start time: '{start_time}'.")
+            response = client.list_incidents(
+                incident_type="INCIDENTS",
+                sort_by="INSERT_DATE",
+                from_date=start_time,
+                to_date=end_time,
+            )
+            data = response.get("incidents")
+
+            # Update last_run to avoid previous step.
+            last_run["last_fetch"] = start_time
+            last_run["last_ids"] = []
+
+        if not data:
+            # Early exit incase no new incidents were found.
+            demisto.debug("fetch: 0 incidents were fetched, exiting...")
+            return last_run, []
+
+    data.sort(key=lambda item: datetime.strptime(item["incident_time"], DATE_FORMAT))
+    data = data[:max_fetch]
+
     integration_context = get_integration_context()
-    if incidents and not integration_context.get("first_incident_time"):
-        integration_context.update({"first_incident_time": incidents[0]["incident_time"]})
+    if "first_incident_time" not in integration_context:
+        # Update the first incident time if it doesn't not exists.
+        integration_context["first_incident_time"] = data[0]["incident_time"]
         set_integration_context(integration_context)
 
-    if last_run_id:
-        new_incidents = [incident for incident in incidents if incident["id"] > last_run_id]
-        if not new_incidents:
-            demisto.debug("fetch: not found new incidents.")
-            if any(incident["id"] == last_run_id for incident in incidents):
-                demisto.debug(
-                    f"fetch: {last_run_id} exists in the response, add 1 second and request again."
-                )
-                start_date = start_date + timedelta(seconds=1)
-                response = client.list_incidents(
-                    incident_type="INCIDENTS",
-                    sort_by="INSERT_DATE",
-                    from_date=start_date.strftime(DATE_FORMAT),
-                    to_date=end_time,
-                )
-                incidents = response.get("incidents", [])
-        else:
-            demisto.debug(f"fetch: found: {len(new_incidents)} after {last_run_id}.")
-            incidents = new_incidents
+    last_run["last_fetch"] = data[-1]["incident_time"]
+    last_run["last_ids"] = set()
+    mirror_data = {"mirror_direction": mirror_direction, "mirror_instance": demisto.integrationInstance()}
+    incidents = []
 
-    incidents = incidents[:max_fetch]
+    for item in data:
+        if item["incident_time"] == last_run["last_fetch"]:
+            last_run["last_ids"].add(item["id"])
 
-    new_last_run = start_date
-    # Get the last incident time
-    if incidents and incidents[-1].get("incident_time"):
-        new_last_run = arg_to_datetime(incidents[-1]["incident_time"]) or start_date
+        item |= mirror_data
+        incidents.append(
+        {
+                "name": f"Forcepoint DLP Incident - {item['id']}",
+                "occurred": arg_to_datetime(item["incident_time"], required=True).strftime(XSOAR_DATE_FORMAT),
+                "severity": FP_XSOAR_SEVERITY_MAPPER.get(item.get("severity", "LOW")),
+                "dbotMirrorId": f"{item['event_id']}-{item['id']}",
+                "rawJSON": json.dumps(item),
+                **mirror_data,
+        }
+    )
 
-    outputs = []
-    for incident in incidents:
-        incident_time = arg_to_datetime(incident["incident_time"])
+    last_run["last_ids"] = list(last_run["last_ids"])
 
-        if incident_time:
-            event_id = incident["event_id"]
-            incident_id = incident["id"]
-            id = f"{event_id}-{incident_id}"
-            incident["mirror_direction"] = mirror_direction
-            incident["mirror_instance"] = demisto.integrationInstance()
-            outputs.append(
-                {
-                    "name": f"Forcepoint DLP Incident - {incident_id}",
-                    "occurred": incident_time.strftime(XSOAR_DATE_FORMAT),
-                    "rawJSON": json.dumps(incident),
-                    "severity": FP_XSOAR_SEVERITY_MAPPER.get(incident.get("severity", "LOW")),
-                    "dbotMirrorId": str(id),
-                    "mirror_direction": mirror_direction,
-                    "mirror_instance": demisto.integrationInstance(),
-                }
-            )
+    if len(last_run["last_ids"]) == API_DEFAULT_LIMIT:
+        # API limit reached for the given time-frame, update the last fetch time by 1 second and empty last IDs.
+        demisto.debug(f"fetch: API limit capped out for incident time '{start_time}'.")
+        start_date += timedelta(seconds=1)
+        last_run["last_fetch"] = start_date.strftime(DATE_FORMAT)
+        last_run["last_ids"] = []
 
-    return outputs, {
-        "time": new_last_run.strftime(DATE_FORMAT),
-        "last_run_id": incidents[-1]["id"] if incidents else last_run_id,
-    }
+    return last_run, incidents
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
-    Pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
+    Pulls the remote schema for the different incident types, and their associated incident fields,
+    from the remote system.
 
     Returns:
         GetMappingFieldsResponse: Dictionary with keys as field names.
@@ -2773,17 +2788,19 @@ def main():  # pragma: no cover
                 arg_to_datetime(params.get("first_fetch", "1 day"), settings=DATEPARSER_SETTINGS)
             )
 
-            incidents, last_run = fetch_incidents(
+            current_run, incidents = fetch_incidents(
                 client=client,
+                last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
                 mirror_direction=MIRROR_DIRECTION_MAPPING.get(
                     params.get("mirror_direction", "None")
                 ),
             )
-            demisto.debug(f"fetch: Update last run time to {last_run}.")
+
+            demisto.debug(f"fetch: Setting last run to {current_run}.")
             demisto.debug(f"fetch: Fetched {len(incidents)} incidents.")
-            demisto.setLastRun(last_run)
+            demisto.setLastRun(current_run)
             demisto.incidents(incidents)
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
