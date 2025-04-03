@@ -57,14 +57,18 @@ const files = process.argv.slice(2);
 (async () => {
     let hasErrors = false;
 
-    for (const file of files) {
-        const success = await parseMDX(file);
-        if (!success) {
-            hasErrors = true;
-        }
+    const promises = [];
+
+    // For loop calling parseMDX without await
+    for (let i = 0; i < files.length; i++) {
+        const promise = parseMDX(files[i]); // Call async function that returns boolean
+        promises.push(promise); // Store the promise
     }
 
-    if (hasErrors) {
+    // Wait for all promises to resolve and get boolean results
+    const results = await Promise.all(promises);
+
+    if (results.includes(false)) {
         process.exit(1);
     }
 })();
