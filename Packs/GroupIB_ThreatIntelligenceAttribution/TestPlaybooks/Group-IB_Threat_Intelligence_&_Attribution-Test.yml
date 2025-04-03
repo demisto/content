@@ -20,7 +20,6 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: 631167a0-5f24-43e6-8a44-9860568c5711
     timertriggers: []
     type: start
@@ -111,7 +110,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in compromised/imei collection with provided ID.
+      description: Command performs Group IB event lookup in compromised/imei collection
+        with provided ID.
       id: d48cf365-e7b0-4ad7-82d8-782747c49da6
       iscommand: true
       name: gibtia-get-compromised-imei-info
@@ -143,7 +143,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in compromised/mule collection with provided ID.
+      description: Command performs Group IB event lookup in compromised/mule collection
+        with provided ID.
       id: c0f7f60e-df38-4279-8962-a776b7acc0f9
       iscommand: true
       name: gibtia-get-compromised-mule-info
@@ -175,7 +176,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in attacks/ddos collection with provided ID.
+      description: Command performs Group IB event lookup in attacks/ddos collection
+        with provided ID.
       id: 8a87b580-33e0-41ff-88ff-901d8cf7291c
       iscommand: true
       name: gibtia-get-attacks-ddos-info
@@ -207,7 +209,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in attacks/deface collection with provided ID.
+      description: Command performs Group IB event lookup in attacks/deface collection
+        with provided ID.
       id: 3ec6978b-6346-4b2c-8612-79070afce502
       iscommand: true
       name: gibtia-get-attacks-deface-info
@@ -239,7 +242,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID.
+      description: Command performs Group IB event lookup in bp/phishing and attacks/phishing
+        collections with provided ID.
       id: 1599062a-59a1-4fc8-8813-e6eb7e22a3fd
       iscommand: true
       name: gibtia-get-phishing-info
@@ -271,7 +275,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit collections with provided ID.
+      description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit
+        collections with provided ID.
       id: 724bd9b1-9dae-4775-8ee4-1df068d6fbb6
       iscommand: true
       name: gibtia-get-phishing-kit-info
@@ -305,7 +310,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
+      description: Command performs Group IB event lookup in hi/threat (or in apt/threat
+        if the APT flag is true) collection with provided ID.
       id: eae8cd79-0648-40d4-8148-036d84f9ec45
       iscommand: true
       name: gibtia-get-threat-info
@@ -338,7 +344,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
+      description: Command performs Group IB event lookup in hi/threat_actor (or in
+        apt/threat_actor if the APT flag is true) collection with provided ID.
       id: 0e714742-8a8e-4e2f-8095-dae0748e3890
       iscommand: true
       name: gibtia-get-threat-actor-info
@@ -370,7 +377,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in suspicious_ip/open_proxy collection with provided ID.
+      description: Command performs Group IB event lookup in suspicious_ip/open_proxy
+        collection with provided ID.
       id: 98e99b45-424a-4ae0-837c-db1f6dd6d4f0
       iscommand: true
       name: gibtia-get-suspicious-ip-open-proxy-info
@@ -402,7 +410,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
+      description: Command performs Group IB event lookup in suspicious_ip/socks_proxy
+        collection with provided ID.
       id: af6be76b-bb06-44b7-894e-74d0113fa744
       iscommand: true
       name: gibtia-get-suspicious-ip-socks-proxy-info
@@ -434,7 +443,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in suspicious_ip/tor_node collection with provided ID.
+      description: Command performs Group IB event lookup in suspicious_ip/tor_node
+        collection with provided ID.
       id: 593ee8bc-3791-4a57-8170-9c69fe966e28
       iscommand: true
       name: gibtia-get-suspicious-ip-tor-node-info
@@ -466,7 +476,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in osi/vulnerability collection with provided ID.
+      description: Command performs Group IB event lookup in osi/vulnerability collection
+        with provided ID.
       id: 42c3d3b3-c343-478f-8b62-e298df041864
       iscommand: true
       name: gibtia-get-osi-vulnerability-info
@@ -498,7 +509,8 @@ tasks:
     skipunavailable: false
     task:
       brand: Group-IB Threat Intelligence & Attribution
-      description: Command performs Group IB event lookup in malware/cnc collection by provided ID.
+      description: Command performs Group IB event lookup in malware/cnc collection
+        by provided ID.
       id: bffdb353-f903-4e5a-8a8a-1206a8b08230
       iscommand: true
       name: gibtia-get-malware-cnc-info
@@ -613,7 +625,6 @@ tasks:
       name: Done
       type: title
       version: -1
-      description: ''
     taskid: 5a806a99-0da7-4bb9-8507-1c9851220a7e
     timertriggers: []
     type: title
@@ -1239,7 +1250,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks that suspicious_ip/tor_node collection available for the client.
+      description: Checks that suspicious_ip/tor_node collection available for the
+        client.
       id: 83e372d2-713d-428e-8663-83d71df66f5e
       iscommand: false
       name: Is suspicious_ip/tor_node collection available?
@@ -1323,7 +1335,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks that suspicious_ip/open_proxy collection available for the client.
+      description: Checks that suspicious_ip/open_proxy collection available for the
+        client.
       id: e9229b64-131e-4835-8ab7-bd65180cc255
       iscommand: false
       name: Is suspicious_ip/open_proxy collection available?
@@ -1407,7 +1420,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks that suspicious_ip/socks_proxy collection available for the client.
+      description: Checks that suspicious_ip/socks_proxy collection available for
+        the client.
       id: c241afe9-a4ea-4ca6-898f-bca3b504a9be
       iscommand: false
       name: Is suspicious_ip/socks_proxy collection available?
