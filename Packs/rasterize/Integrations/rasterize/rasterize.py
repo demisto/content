@@ -22,8 +22,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
-
-
+from functools import lru_cache
+from urllib.parse import urlparse
+import ipaddress
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -111,7 +112,11 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
 
-
+# Define constants
+PRIVATE_NETWORKS = {
+    ipaddress.ip_network('0.0.0.0/8'),     # "This" Network
+    ipaddress.ip_network('127.0.0.0/8'),   # Loopback Network
+}
 class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
@@ -209,6 +214,7 @@ class PychromeEventHandler:
         self.tab_ready_event = tab_ready_event
         self.start_frame = None
         self.is_mailto = False
+        self.is_private_network_url = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
@@ -240,6 +246,7 @@ class PychromeEventHandler:
         """Triggered when a request is sent by the browser, catches mailto URLs."""
         demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}")
         self.is_mailto = documentURL.lower().startswith("mailto:")
+        self.is_private_network_url = is_private_network(documentURL)
 
         request_url = kwargs.get("request", {}).get("url", "")
 
@@ -722,6 +729,11 @@ def screenshot_image(
 
     if tab_event_handler.is_mailto:
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
+    if tab_event_handler.is_private_network_url:
+        return None, (
+            'URLs that belong to the "This" Network (0.0.0.0/8), or'
+            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+        )
 
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
@@ -893,6 +905,34 @@ def kill_zombie_processes():
         demisto.debug(f"Failed to iterate over processes. Error: {e}")
 
 
+@lru_cache(maxsize=1024)
+def is_private_network(url: str) -> bool:
+    """
+    Check if a URL's hostname belongs to a private network.
+    
+    Args:
+        url (str): The URL to check
+        
+    Returns:
+        bool: True if the hostname is in a private network, False otherwise
+    """
+    try:
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url
+        parsed = urlparse(url)
+        hostname = parsed.netloc.split(':')[0]  # Remove port if exists
+        
+        if not hostname:  # Handle cases where netloc is empty
+            return False
+            
+        ip = ipaddress.ip_address(hostname)
+        return any(ip in network for network in PRIVATE_NETWORKS)
+            
+    except (ValueError, AttributeError):
+        # ValueError: Invalid IP address
+        # AttributeError: Invalid URL format
+        return False
+
 def perform_rasterize(
     path: str | list[str],
     rasterize_type: RasterizeType = RasterizeType.PNG,
@@ -918,19 +958,24 @@ def perform_rasterize(
     """
 
     # convert the path param to list in case we have only one string
-    paths = argToList(path)
+    paths: list[str] = argToList(path)
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith("mailto:")]
+    private_network_paths = [path_value for path_value in paths if is_private_network(path_value)]
 
-    if mailto_paths:
-        # remove the mailto from the paths to rasterize
+    if private_network_paths or mailto_paths:
         paths = list(set(paths) - set(mailto_paths))
-        demisto.error(f"Not rasterizing the following invalid paths: {mailto_paths}")
+        paths = list(set(paths) - set(private_network_paths))
+        demisto.error(f"Not rasterizing the following invalid paths: {private_network_paths + mailto_paths}")
         return_results(
-            CommandResults(readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_paths}')
+            CommandResults(
+                readable_output=(
+                    "The following paths were skipped as they are not valid for rasterization:"
+                    f" {private_network_paths + mailto_paths}"
+                )
+            )
         )
-
     if not paths:
         message = "There are no valid paths to rasterize"
         demisto.error(message)
