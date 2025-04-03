@@ -1,17 +1,9 @@
-
 API_KEY = "API-KEY"
 SERVER = "https://10.11.80.21:9443"
-BASE_URL = SERVER + '/api/v2/'
+BASE_URL = SERVER + "/api/v2/"
 
 
-INTEGRATION_PARAMS = {
-    'apikey': API_KEY,
-    'url': SERVER,
-    'insecure': False,
-    'issuetype': [
-        'PANSecurityVulnerabilityChecks'
-    ]
-}
+INTEGRATION_PARAMS = {"apikey": API_KEY, "url": SERVER, "insecure": False, "issuetype": ["PANSecurityVulnerabilityChecks"]}
 
 NETWORK_PORT_DOWN_ISSUE = {
     "headline": "Network port(s) down",
@@ -23,38 +15,17 @@ NETWORK_PORT_DOWN_ISSUE = {
     "acknowledged": False,
     "id": "b45bf800-acf6-45aa-92cd-9c977f7b7829",
     "alert_blocks": [
-        {
-            "header": "Description",
-            "body": "One or more ports are down.",
-            "type": "text",
-            "position": 0
-        },
-        {
-            "header": "Ports Affected",
-            "items": [],
-            "type": "items",
-            "position": 1
-        },
-        {
-            "header": "Remediation Steps",
-            "body": "Review the cause for the ports being down.",
-            "type": "text",
-            "position": 2
-        }
+        {"header": "Description", "body": "One or more ports are down.", "type": "text", "position": 0},
+        {"header": "Ports Affected", "items": [], "type": "items", "position": 1},
+        {"header": "Remediation Steps", "body": "Review the cause for the ports being down.", "type": "text", "position": 2},
     ],
     "resolved": False,
     "revalidated_at": "2020-01-22T13:47:23.180Z",
-    "evidence": {
-        "ts": [],
-        "snapshot": []
-    },
-    "severity": {
-        "level": 0,
-        "description": "CRITICAL"
-    },
+    "evidence": {"ts": [], "snapshot": []},
+    "severity": {"level": 0, "description": "CRITICAL"},
     "notes": [],
     "create_at": "2019-10-07T19:55:39.177Z",
-    "updated_at": "2020-01-28T06:52:26.875Z"
+    "updated_at": "2020-01-28T06:52:26.875Z",
 }
 
 PAN_VULNERABILITY_ISSUE = {
@@ -70,35 +41,29 @@ PAN_VULNERABILITY_ISSUE = {
         {
             "header": "Remediation Steps",
             "body": "Palo Alto Networks recommends disabling DNS Proxy for those customers who are affected and are "
-                    "unable to apply the update.\nFor more information please review: "
-                    "https://securityadvisories.paloaltonetworks.com/Home/Detail/91",
+            "unable to apply the update.\nFor more information please review: "
+            "https://securityadvisories.paloaltonetworks.com/Home/Detail/91",
             "type": "text",
-            "position": 1
+            "position": 1,
         },
         {
             "header": "Description",
             "body": "A Remote Code Execution vulnerability exists in the PAN-OS DNS Proxy. This issue affects "
-                    "customers who have DNS Proxy enabled in PAN-OS. This issue affects both the Data and Management "
-                    "planes of the firewall. When DNS Proxy processes a specially crafted fully qualified domain "
-                    "names (FQDN), it is possible to execute code on the firewall. (Ref # PAN-77516 / CVE-2017-8390)."
-                    "\nVendor Severity Rating: Critical",
+            "customers who have DNS Proxy enabled in PAN-OS. This issue affects both the Data and Management "
+            "planes of the firewall. When DNS Proxy processes a specially crafted fully qualified domain "
+            "names (FQDN), it is possible to execute code on the firewall. (Ref # PAN-77516 / CVE-2017-8390)."
+            "\nVendor Severity Rating: Critical",
             "type": "text",
-            "position": 0
-        }
+            "position": 0,
+        },
     ],
     "resolved": False,
     "revalidated_at": "2020-02-08T19:08:14.373Z",
-    "evidence": {
-        "ts": [],
-        "snapshot": []
-    },
-    "severity": {
-        "level": 1,
-        "description": "ERROR"
-    },
+    "evidence": {"ts": [], "snapshot": []},
+    "severity": {"level": 1, "description": "ERROR"},
     "notes": [],
     "create_at": "2019-10-07T19:55:41.344Z",
-    "updated_at": "2020-02-04T21:25:03.289Z"
+    "updated_at": "2020-02-04T21:25:03.289Z",
 }
 
 NO_NTP_SERVERS_ISSUE = {
@@ -113,37 +78,31 @@ NO_NTP_SERVERS_ISSUE = {
     "alert_blocks": [
         {
             "header": "Remediation Steps",
-            "body": "A workaround to get it to work can be to restart the routeD daemon by running \"cpstop;cpstart\""
-                    " or restarting the device. However since this should not happen a case can also be opened with "
-                    "your technical support provider. In the case of devices in a cluster it is possible that the "
-                    "issue happens only for one of the nodes and a failover to the other node could lessen the "
-                    "impact of the issue. Configure one or more NTP servers to be used by this device for clock "
-                    "synchronization. Log into the Web interface and navigate to System -> Configuration -> Device "
-                    "-> NTP. Add the desired NTP servers and click \"update\".",
+            "body": 'A workaround to get it to work can be to restart the routeD daemon by running "cpstop;cpstart"'
+            " or restarting the device. However since this should not happen a case can also be opened with "
+            "your technical support provider. In the case of devices in a cluster it is possible that the "
+            "issue happens only for one of the nodes and a failover to the other node could lessen the "
+            "impact of the issue. Configure one or more NTP servers to be used by this device for clock "
+            "synchronization. Log into the Web interface and navigate to System -> Configuration -> Device "
+            '-> NTP. Add the desired NTP servers and click "update".',
             "type": "text",
-            "position": 1
+            "position": 1,
         },
         {
             "header": "Description",
             "body": "This system does not have an NTP server configured. Many odd and complicated outages occur due to"
-                    " lack of clock synchronization between devices. In addition, logs may have the wrong time stamps.",
+            " lack of clock synchronization between devices. In addition, logs may have the wrong time stamps.",
             "type": "text",
-            "position": 0
-        }
+            "position": 0,
+        },
     ],
     "resolved": False,
     "revalidated_at": "2020-02-08T18:33:36.788Z",
-    "evidence": {
-        "ts": [],
-        "snapshot": []
-    },
-    "severity": {
-        "level": 2,
-        "description": "WARN"
-    },
+    "evidence": {"ts": [], "snapshot": []},
+    "severity": {"level": 2, "description": "WARN"},
     "notes": [],
     "create_at": "2019-10-07T19:55:42.284Z",
-    "updated_at": "2019-10-07T19:55:42.284Z"
+    "updated_at": "2019-10-07T19:55:42.284Z",
 }
 
 MISSING_CREDENTIALS_ISSUE = {
@@ -159,22 +118,16 @@ MISSING_CREDENTIALS_ISSUE = {
             "header": "Description",
             "body": "Missing privileged-command-level credentials, some commands will not be executed.",
             "type": "text",
-            "position": 0
+            "position": 0,
         }
     ],
     "resolved": True,
     "revalidated_at": "2019-10-16T18:11:40.750Z",
-    "evidence": {
-        "ts": [],
-        "snapshot": []
-    },
-    "severity": {
-        "level": 3,
-        "description": "INFO"
-    },
+    "evidence": {"ts": [], "snapshot": []},
+    "severity": {"level": 3, "description": "INFO"},
     "notes": [],
     "create_at": "2019-10-07T19:57:14.058Z",
-    "updated_at": "2019-10-16T19:37:35.255Z"
+    "updated_at": "2019-10-16T19:37:35.255Z",
 }
 
 PAN_VULNERABILITY_ISSUE_2 = {
@@ -190,35 +143,29 @@ PAN_VULNERABILITY_ISSUE_2 = {
         {
             "header": "Remediation Steps",
             "body": "Palo Alto Networks recommends disabling DNS Proxy for those customers who are affected and are "
-                    "unable to apply the update.\nFor more information please review: "
-                    "https://securityadvisories.paloaltonetworks.com/Home/Detail/91",
+            "unable to apply the update.\nFor more information please review: "
+            "https://securityadvisories.paloaltonetworks.com/Home/Detail/91",
             "type": "text",
-            "position": 1
+            "position": 1,
         },
         {
             "header": "Description",
             "body": "A Remote Code Execution vulnerability exists in the PAN-OS DNS Proxy. This issue affects "
-                    "customers who have DNS Proxy enabled in PAN-OS. This issue affects both the Data and Management "
-                    "planes of the firewall. When DNS Proxy processes a specially crafted fully qualified domain "
-                    "names (FQDN), it is possible to execute code on the firewall. (Ref # PAN-77516 / CVE-2017-8390)."
-                    "\nVendor Severity Rating: Critical",
+            "customers who have DNS Proxy enabled in PAN-OS. This issue affects both the Data and Management "
+            "planes of the firewall. When DNS Proxy processes a specially crafted fully qualified domain "
+            "names (FQDN), it is possible to execute code on the firewall. (Ref # PAN-77516 / CVE-2017-8390)."
+            "\nVendor Severity Rating: Critical",
             "type": "text",
-            "position": 0
-        }
+            "position": 0,
+        },
     ],
     "resolved": False,
     "revalidated_at": "2020-02-08T19:08:14.373Z",
-    "evidence": {
-        "ts": [],
-        "snapshot": []
-    },
-    "severity": {
-        "level": 1,
-        "description": "ERROR"
-    },
+    "evidence": {"ts": [], "snapshot": []},
+    "severity": {"level": 1, "description": "ERROR"},
     "notes": [],
     "create_at": "2019-10-07T19:55:41.344Z",
-    "updated_at": "2020-02-04T21:25:03.289Z"
+    "updated_at": "2020-02-04T21:25:03.289Z",
 }
 
 DEVICE_RESPONSE = {
@@ -242,38 +189,22 @@ DEVICE_RESPONSE = {
         "role-firewall": "true",
         "vendor": "checkpoint",
         "os.name": "gaia",
-        "nice-path": "/bin/nice"
+        "nice-path": "/bin/nice",
     },
     "disable_type": "MANUAL",
     "id": "d28d0ecc-68c6-4045-9a17-826f6877ed9b",
-    "labels": [
-        {
-            "id": 14,
-            "name": "system-all"
-        },
-        {
-            "id": 15,
-            "name": "system-checkpoint"
-        },
-        {
-            "id": 121,
-            "name": "system-radware"
-        }
-    ],
+    "labels": [{"id": 14, "name": "system-all"}, {"id": 15, "name": "system-checkpoint"}, {"id": 121, "name": "system-radware"}],
     "ip_address": "10.11.94.50",
     "last_interrogation": None,
-    "alert_statistics": {
-        "ERROR": 9,
-        "WARN": 3,
-        "INFO": 1
-    },
+    "alert_statistics": {"ERROR": 9, "WARN": 3, "INFO": 1},
     "monitoring_enabled": True,
-    "last_seen": "20200212T071943Z"
+    "last_seen": "20200212T071943Z",
 }
 
 
 def test_get_all_active_issues(requests_mock):
     from Indeni import get_all_active_issues
+
     page_1 = []
     page_1.append(PAN_VULNERABILITY_ISSUE)
     page_2 = []
@@ -288,33 +219,35 @@ def test_get_all_active_issues(requests_mock):
 
 def test_item_to_incident():
     from Indeni import item_to_incident
+
     incident = item_to_incident(NETWORK_PORT_DOWN_ISSUE)
-    assert incident.get('severity') == 4
-    assert incident.get('occurred') == "2019-10-07T19:55:39.177Z"
-    assert incident.get('updated') == "2020-01-28T06:52:26.875Z"
-    assert incident.get('name') == "Network port(s) down"
+    assert incident.get("severity") == 4
+    assert incident.get("occurred") == "2019-10-07T19:55:39.177Z"
+    assert incident.get("updated") == "2020-01-28T06:52:26.875Z"
+    assert incident.get("name") == "Network port(s) down"
 
     incident = item_to_incident(PAN_VULNERABILITY_ISSUE)
-    assert incident.get('severity') == 3
-    assert incident.get('occurred') == "2019-10-07T19:55:41.344Z"
-    assert incident.get('updated') == "2020-02-04T21:25:03.289Z"
-    assert incident.get('name') == "Vulnerability in the PAN-OS DNS Proxy PAN-SA-2017-0021"
+    assert incident.get("severity") == 3
+    assert incident.get("occurred") == "2019-10-07T19:55:41.344Z"
+    assert incident.get("updated") == "2020-02-04T21:25:03.289Z"
+    assert incident.get("name") == "Vulnerability in the PAN-OS DNS Proxy PAN-SA-2017-0021"
 
     incident = item_to_incident(NO_NTP_SERVERS_ISSUE)
-    assert incident.get('severity') == 2
-    assert incident.get('occurred') == "2019-10-07T19:55:42.284Z"
-    assert incident.get('updated') == "2019-10-07T19:55:42.284Z"
-    assert incident.get('name') == "No NTP servers configured"
+    assert incident.get("severity") == 2
+    assert incident.get("occurred") == "2019-10-07T19:55:42.284Z"
+    assert incident.get("updated") == "2019-10-07T19:55:42.284Z"
+    assert incident.get("name") == "No NTP servers configured"
 
     incident = item_to_incident(MISSING_CREDENTIALS_ISSUE)
-    assert incident.get('severity') == 1
-    assert incident.get('occurred') == "2019-10-07T19:57:14.058Z"
-    assert incident.get('updated') == "2019-10-16T19:37:35.255Z"
-    assert incident.get('name') == "Missing Privileged Credentials"
+    assert incident.get("severity") == 1
+    assert incident.get("occurred") == "2019-10-07T19:57:14.058Z"
+    assert incident.get("updated") == "2019-10-16T19:37:35.255Z"
+    assert incident.get("name") == "Missing Privileged Credentials"
 
 
 def test_issue_severiy_to_issue_level():
     from Indeni import issue_severity_to_issue_level
+
     assert issue_severity_to_issue_level("CRITICAL") == 0
     assert issue_severity_to_issue_level("ERROR") == 1
     assert issue_severity_to_issue_level("WARN") == 2
@@ -323,14 +256,16 @@ def test_issue_severiy_to_issue_level():
 
 def test_get_device_request(requests_mock):
     from Indeni import get_device_request
+
     device_id = "d28d0ecc-68c6-4045-9a17-826f6877ed9b"
     requests_mock.get(BASE_URL + "devices/" + device_id, json=DEVICE_RESPONSE)
     test_result = get_device_request(device_id, BASE_URL)
-    assert test_result.get('name') == "CP-R80.20-GW8-2"
+    assert test_result.get("name") == "CP-R80.20-GW8-2"
 
 
 def test_get_limited_active_issues(requests_mock):
     from Indeni import get_limited_active_issues
+
     page_0 = []
     page_0.append(NETWORK_PORT_DOWN_ISSUE)
     page_1 = []
@@ -363,6 +298,7 @@ def test_get_limited_active_issues(requests_mock):
 
 def test_get_limited_active_issues_filter(requests_mock):
     from Indeni import get_limited_active_issues
+
     page_0 = []
     page_0.append(NETWORK_PORT_DOWN_ISSUE)
     page_1 = []
@@ -397,6 +333,7 @@ def test_get_limited_active_issues_filter(requests_mock):
 
 def test_get_limited_active_issues_size_filter(requests_mock):
     from Indeni import get_limited_active_issues
+
     page_0 = []
     page_0.append(NETWORK_PORT_DOWN_ISSUE)
     page_0.append(PAN_VULNERABILITY_ISSUE)

@@ -1,6 +1,7 @@
 """
 Script to check if a domain or a sub domain is part of a given domain
 """
+
 from CommonServerPython import *
 
 MAXIMUM_NUMBER_OF_RECORDS = 10
@@ -50,17 +51,11 @@ def check_sub_domains_in_domain(domains_to_compare: list, sub_domains_to_check: 
     for sub_domain in sub_domains_to_check:
         # in case sub domain is in at least one of the given main domains
         is_in_domain = any(is_sub_domain_contained(main_domain, sub_domain) for main_domain in domains_to_compare)
-        context_entry.append({
-            'DomainToTest': sub_domain,
-            'DomainToCompare': domains_to_compare,
-            'IsInternal': is_in_domain
-        })
-        markdown.append({"DomainToTest": sub_domain,
-                         "DomainToCompare": domains_to_compare,
-                         "IsInternal": is_in_domain})
+        context_entry.append({"DomainToTest": sub_domain, "DomainToCompare": domains_to_compare, "IsInternal": is_in_domain})
+        markdown.append({"DomainToTest": sub_domain, "DomainToCompare": domains_to_compare, "IsInternal": is_in_domain})
 
     table = tableToMarkdown("", markdown[:MAXIMUM_NUMBER_OF_RECORDS], headers)
-    return CommandResults(outputs={'IsInternalDomain': context_entry}, readable_output=table)
+    return CommandResults(outputs={"IsInternalDomain": context_entry}, readable_output=table)
 
 
 def validate_args(domains_to_compare, sub_domains_to_check):
@@ -72,11 +67,11 @@ def validate_args(domains_to_compare, sub_domains_to_check):
 
 def main():
     args = demisto.args()
-    domains_to_compare = argToList(args.get('main_domains'))
-    sub_domains_to_check = argToList(args.get('possible_sub_domains_to_test'))
+    domains_to_compare = argToList(args.get("main_domains"))
+    sub_domains_to_check = argToList(args.get("possible_sub_domains_to_test"))
     validate_args(domains_to_compare, sub_domains_to_check)
     return_results(check_sub_domains_in_domain(domains_to_compare, sub_domains_to_check))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -2,7 +2,7 @@
     "name": "Postmark Spamcheck",
     "description": "Postmark’s spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "NVISO",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
@@ -14,12 +14,19 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "soar-engineering@nviso.eu"
     ],
     "githubUser": [
         "wstinkens"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
