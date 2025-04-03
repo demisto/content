@@ -8355,7 +8355,7 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
         return reponse_obj
 
 
-def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
+def  parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
 

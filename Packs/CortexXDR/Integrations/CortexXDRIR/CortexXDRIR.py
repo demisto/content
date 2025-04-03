@@ -12,7 +12,7 @@ from CoreIRApiModule import *
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
-FETCH_LOOKBACK = 10_000
+FETCH_LOOK_BACK = timedelta(minutes=1)
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
@@ -233,7 +233,7 @@ class Client(CoreClient):
                 raise
 
         # XSOAR -> XDR
-        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
+        validate_custom_close_reasons_mapping(mapping=s elf._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
                                               direction=XSOAR_TO_XDR)
 
         # XDR -> XSOAR
@@ -1159,6 +1159,20 @@ def update_related_alerts(client: Client, args: dict):
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
+def to_xsoar_incident(incident_data: dict) -> dict:
+    description = incident_data.get('description')
+    occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
+    incident_id = incident_data.get('incident_id')
+    incident: dict[str, Any] = {
+        'name': f'XDR Incident {incident_id} - {description}',
+        'occurred': occurred,
+        'rawJSON': json.dumps(incident_data),
+    }
+    if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
+        incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
+    return incident
+
+
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool,
                     last_run: dict, max_fetch: int = 10, statuses: list = [],
                     starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
@@ -1168,7 +1182,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
 
-    fetched_incidents = last_run.get('dedup_incidents') or []
+    next_dedup_incidents = dedup_incidents = last_run.get('dedup_incidents') or []
 
     demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
@@ -1181,6 +1195,8 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         demisto.debug(
             f"starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
 
+    new_last_fetch = int((datetime.now() - FETCH_LOOK_BACK).timestamp() * 1000)
+
     if incidents_from_previous_run:
         demisto.debug('Using incidents from last run')
         raw_incidents = incidents_from_previous_run
@@ -1192,16 +1208,23 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             gte_creation_time_milliseconds=last_fetch,
             # adding len of deduped events so that we don't loop on the same incidents infinitely.
             # There might be a case where deduped incident doesn't come back and we are returning more than the limit.
-            statuses=statuses, limit=max_fetch + len(fetched_incidents), starred=starred,
+            statuses=statuses, limit=max_fetch + len(dedup_incidents), starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
             exclude_artifacts=exclude_artifacts, excluded_alert_fields=excluded_alert_fields,
             remove_nulls_from_alerts=remove_nulls_from_alerts
         )
 
+    if raw_incidents:
+        last_fetch = max(new_last_fetch, last_fetch)
+        next_dedup_incidents = sorted(
+            get_incident_id(incident) for incident in raw_incidents
+            if incident.get('creation_time', 0) >= last_fetch
+        )
+
     # remove duplicate incidents
     raw_incidents = [
         inc for inc in raw_incidents
-        if get_incident_id(inc) not in fetched_incidents
+        if get_incident_id(inc) not in dedup_incidents
     ]
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
@@ -1229,25 +1252,22 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
                 'mirror_instance': integration_instance,
                 'last_mirrored_in': int(datetime.now().timestamp() * 1000),
             }
-            description = incident_data.get('description')
-            occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
-            incident: dict[str, Any] = {
-                'name': f'XDR Incident {incident_id} - {description}',
-                'occurred': occurred,
-                'rawJSON': json.dumps(incident_data),
-            }
-            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
-            # Update last run and add incident if the incident is newer than last fetch
-            creation_time = incident_data.get('creation_time', 0)
-            demisto.debug(f'creation time for {incident_id=} {creation_time=}')
-            if creation_time > last_fetch:
-                demisto.debug(f'updating last_fetch,  {incident_id=}')
-                last_fetch = incident_data['creation_time']
-            else:
-                demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
 
-            incidents.append(incident)
+            # Update last run and add incident if the incident is newer than last fetch
+            # creation_time = incident_data.get('creation_time', 0)
+            # demisto.debug(f'creation time for {incident_id=} {creation_time=}')
+            # if creation_time > last_fetch:
+            #     demisto.debug(f'updating last_fetch,  {incident_id=}')
+            #     last_fetch = incident_data['creation_time']
+            #     next_dedup_incidents = [incident_id]
+            # elif creation_time == last_fetch:
+            #     demisto.debug(f'got incident at same time for dedup, {incident_id=}')
+            #     next_dedup_incidents.append(incident_id)
+            # else:
+            #     demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
+
+
+            incidents.append(incident_data)
             non_created_incidents.remove(raw_incident)
 
     except Exception as e:
@@ -1259,15 +1279,15 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
 
     next_run = {
         'incidents_from_previous_run': non_created_incidents,
-        'time': last_fetch - FETCH_LOOKBACK,
-        'dedup_incidents': list(map(get_incident_id, fetched_incidents))
+        'time': last_fetch,
+        'dedup_incidents': next_dedup_incidents
     }
 
     if non_created_incidents:
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
 
     demisto.debug(f'{next_run=}')
-    return next_run, incidents
+    return next_run, list(map(to_xsoar_incident, incidents))
 
 
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
