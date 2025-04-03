@@ -88,8 +88,10 @@ ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     ASSET_ENRICHMENT: "successful_asset_enrichment",
     IDENTITY_ENRICHMENT: "successful_identity_enrichment",
 }
-COMMENT_MIRRORED_FROM_XSOAR = "Mirrored from Cortex XSOAR"
-USER_RELATED_FIELDS = ["user", "src_user"]
+COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
+USER_RELATED_FIELDS = params.get('user_related_fields', 'user,src_user').replace(' ', '').split(',')
+ASSET_RELATED_FIELDS = params.get('asset_related_fields', 'src,dest,dvc,src_ip,dst_ip,dest_ip,dvc_ip').replace(' ', '').split(',')
+CASE_INSENSITIVE_ASSET_IDENTITY = bool(params.get('case_insensitive_asset_identity'))
 
 # =========== Not Missing Events Mechanism Globals ===========
 CUSTOM_ID = "custom_id"
@@ -1005,7 +1007,7 @@ class Cache:
         set_integration_context(integration_context)
 
 
-def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backslash=False):
+def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backslash=False, to_lower=False):
     """Given the fields to search for in the notables and the prefix, creates the query part for splunk search.
     For example: if fields are ["user"], and the value of the "user" fields in the notable is ["u1", "u2"], and the
     prefix is "identity", the function returns: (identity="u1" OR identity="u2")
@@ -1025,8 +1027,10 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backs
     for field in fields:
         raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
     if add_backslash:
-        raw_list = [item.replace("\\", "\\\\") for item in raw_list]
-    raw_list = [f"""{prefix}="{item.strip('"')}\"""" for item in raw_list]
+        raw_list = [item.replace('\\', '\\\\') for item in raw_list]
+    if to_lower:
+        raw_list = [item.lower() for item in raw_list]
+    raw_list = sorted({f"""{prefix}="{item.strip('"')}\"""" for item in raw_list})
 
     if not raw_list:
         return ""
@@ -1310,6 +1314,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
         prefix="identity",
         fields=USER_RELATED_FIELDS,
         add_backslash=True,
+        to_lower=CASE_INSENSITIVE_ASSET_IDENTITY,
     ):
         tables = argToList(demisto.params().get("identity_enrich_lookup_tables", DEFAULT_IDENTITY_ENRICH_TABLE))
         query = ""
@@ -1342,7 +1347,8 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
     if assets := get_fields_query_part(
         notable_data=notable_data,
         prefix="asset",
-        fields=["src", "dest", "src_ip", "dst_ip"],
+        fields=ASSET_RELATED_FIELDS,
+        to_lower=CASE_INSENSITIVE_ASSET_IDENTITY,
     ):
         tables = argToList(demisto.params().get("asset_enrich_lookup_tables", DEFAULT_ASSET_ENRICH_TABLES))
 
