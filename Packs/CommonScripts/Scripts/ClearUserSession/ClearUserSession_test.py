@@ -1,18 +1,20 @@
+from pytest_mock import MockerFixture
+
 import demistomock as demisto
+from CommonServerPython import *
+
 from ClearUserSession import (
     Command,
-    clear_user_sessions,
-    extract_usernames_with_ids,
+    prepare_human_readable,
     get_output_key,
+    run_execute_command,
+    remove_system_user,
+    extract_usernames_with_ids,
     get_user_data,
     get_user_id,
+    clear_user_sessions,
     main,
-    prepare_human_readable,
-    remove_system_user,
-    run_execute_command,
 )
-from CommonServerPython import *
-from pytest_mock import MockerFixture
 
 
 def test_is_valid_args_with_valid_args():
@@ -90,7 +92,9 @@ def test_is_valid_args_with_all_empty_values(mocker: MockerFixture):
     result = Command.is_valid_args(command)
 
     assert result is False
-    mock_debug.assert_called_once_with("Skipping command 'test-command' since no required arguments were provided.")
+    mock_debug.assert_called_once_with(
+        "Skipping command 'test-command' since no required arguments were provided."
+    )
 
 
 def test_prepare_human_readable_success():
@@ -112,7 +116,10 @@ def test_prepare_human_readable_success():
 
     assert len(result) == 1
     assert isinstance(result[0], CommandResults)
-    assert result[0].readable_output == "#### Result for test-command arg1=value1 arg2=value2\nTest output"
+    assert (
+        result[0].readable_output
+        == "#### Result for test-command arg1=value1 arg2=value2\nTest output"
+    )
     assert result[0].mark_as_note is True
 
 
@@ -134,7 +141,10 @@ def test_prepare_human_readable_error():
 
     assert len(result) == 1
     assert isinstance(result[0], CommandResults)
-    assert result[0].readable_output == "#### Error for test-command arg1=value1\nError occurred"
+    assert (
+        result[0].readable_output
+        == "#### Error for test-command arg1=value1\nError occurred"
+    )
     assert result[0].entry_type == EntryType.ERROR
     assert result[0].mark_as_note is True
 
@@ -235,7 +245,9 @@ def test_get_output_key_no_match(mocker: MockerFixture):
     result = get_output_key("Account", raw_context)
 
     assert result == ""
-    mock_debug.assert_called_once_with("Output key Account not found in entry context keys: ['User']")
+    mock_debug.assert_called_once_with(
+        "Output key Account not found in entry context keys: ['User']"
+    )
 
 
 def test_run_execute_command_success(mocker: MockerFixture):
@@ -266,7 +278,9 @@ def test_run_execute_command_success(mocker: MockerFixture):
     )
 
     # Call the function
-    entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
+    entry_context, human_readable, errors = run_execute_command(
+        "test-command", {"arg1": "value1"}
+    )
 
     # Assert the results
     assert entry_context == [{"ContextKey": "ContextValue"}]
@@ -312,14 +326,18 @@ def test_run_execute_command_error(mocker: MockerFixture):
     )
 
     # Call the function
-    entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
+    entry_context, human_readable, errors = run_execute_command(
+        "test-command", {"arg1": "value1"}
+    )
 
     # Assert the results
     assert entry_context == [{}]
     assert human_readable == ""
     assert len(errors) == 1
     assert isinstance(errors[0], CommandResults)
-    mock_prepare_human_readable.assert_called_once_with("test-command", {"arg1": "value1"}, "Error occurred", is_error=True)
+    mock_prepare_human_readable.assert_called_once_with(
+        "test-command", {"arg1": "value1"}, "Error occurred", is_error=True
+    )
     demisto.debug.assert_called_with("Finished executing command: test-command")
 
 
@@ -358,7 +376,9 @@ def test_run_execute_command_multiple_entries(mocker: MockerFixture):
     )
 
     # Call the function
-    entry_context, human_readable, errors = run_execute_command("test-command", {"arg1": "value1"})
+    entry_context, human_readable, errors = run_execute_command(
+        "test-command", {"arg1": "value1"}
+    )
 
     # Assert the results
     assert entry_context == [{"Context1": "Value1"}, {"Context2": "Value2"}]
@@ -383,7 +403,11 @@ def test_main_successful_execution(mocker: MockerFixture):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={"user_name": "user1, user2", "verbose": "false", "brands": "Okta v2,Microsoft Graph User"},
+        return_value={
+            "user_name": "user1, user2",
+            "verbose": "false",
+            "brands": "Okta v2,Microsoft Graph User"
+        },
     )
 
     # Mock get_user_data
@@ -402,7 +426,10 @@ def test_main_successful_execution(mocker: MockerFixture):
     )
 
     # Mock clear_user_sessions
-    mock_clear_user_sessions = mocker.patch("ClearUserSession.clear_user_sessions", return_value=([CommandResults()], "", ""))
+    mock_clear_user_sessions = mocker.patch(
+        "ClearUserSession.clear_user_sessions",
+        return_value=([CommandResults()], "", "")
+    )
 
     # Mock return_results
     mock_return_results = mocker.patch("ClearUserSession.return_results")
@@ -429,7 +456,9 @@ def test_main_user_not_found(mocker: MockerFixture):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={"user_name": "user1, system"},
+        return_value={
+            "user_name": "user1, system"
+        },
     )
 
     # Mock all user data retrieval functions to return empty results
@@ -448,7 +477,9 @@ def test_main_user_not_found(mocker: MockerFixture):
     assert len(args[0]) == 1
     assert isinstance(args[0][0], CommandResults)
     assert "Skipping session clearing: User is a system user." in args[0][0].readable_output
-    assert "user1" in args[0][0].readable_output
+    assert (
+        "user1" in args[0][0].readable_output
+    )
 
 
 def test_remove_system_user_with_system_users():
@@ -461,14 +492,14 @@ def test_remove_system_user_with_system_users():
             "UserName": "administrator",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Source": [],
+            "Brand": "",
         },
         {
             "UserName": "system",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Source": [],
-        },
+            "Brand": "",
+        }
     ]
 
     filtered_users, data_user = remove_system_user(users)
@@ -496,20 +527,20 @@ def test_extract_usernames_with_ids():
         "Account(val.Username && val.Username == obj.Username)": [
             {
                 "ID": [{"Source": "Okta v2", "Value": "1234"}],
-                "Username": "user1@test.com",
+                "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}],
             },
             {
                 "ID": [{"Source": "Microsoft Graph User", "Value": "5678"}],
-                "Username": "user2@demistodev.onmicrosoft.com",
+                "Username": [{"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}],
             },
             {
                 "ID": [{"Source": "Okta v2", "Value": "789"}],
-                "Username": "user3@example.com",
+                "Username": [{"Source": "Okta v2", "Value": "user3@example.com"}],
             },
             {
                 "ID": [],
-                "Username": "user4@example.com",
-            },
+                "Username": [{"Source": "", "Value": "user4@example.com"}]
+            }
         ]
     }
     output_key = "Account(val.Username && val.Username == obj.Username)"
@@ -528,24 +559,20 @@ def test_extract_usernames_with_ids():
 def test_get_user_data(mocker: MockerFixture):
     command = Command(name="get-user-data", args={"user_name": ["user1", "user2"], "brands": "brand_name"})
 
-    expected_entry_context = [
-        {
-            "Account(val.Username && val.Username == obj.Username)": [
-                {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": "user1@test.com"},
-                {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": "user2@demistodev.onmicrosoft.com"},
-            ]
-        }
-    ]
+    expected_entry_context = [{"Account(val.Username && val.Username == obj.Username)": [
+        {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}]},
+        {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": [
+            {"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}]}
+    ]}]
+
     expected_id_info = {
         "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
-        "user2@demistodev.onmicrosoft.com": [{"Source": "Microsoft Graph User", "Value": "5678"}],
+        "user2@demistodev.onmicrosoft.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]
     }
 
     # Mocking the functions
-    mocker.patch(
-        "ClearUserSession.run_execute_command",
-        return_value=(expected_entry_context, "Human-readable output", [CommandResults(), CommandResults()]),
-    )
+    mocker.patch("ClearUserSession.run_execute_command", return_value=(expected_entry_context, "Human-readable output",
+                                                                       [CommandResults(), CommandResults()]))
 
     # Calling the function
     _, id_info = get_user_data(command)
@@ -556,7 +583,10 @@ def test_get_user_data(mocker: MockerFixture):
 def test_get_user_id():
     users_ids = {
         "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
-        "user2@test.com": [{"Source": "Microsoft Graph User", "Value": "5678"}, {"Source": "Okta v2", "Value": "91011"}],
+        "user2@test.com": [
+            {"Source": "Microsoft Graph User", "Value": "5678"},
+            {"Source": "Okta v2", "Value": "91011"}
+        ],
     }
     brand_name = "Okta v2"
     user_name = "user1@test.com"
@@ -585,3 +615,49 @@ def test_clear_user_sessions(mocker: MockerFixture):
 
     _, _, error_message = clear_user_sessions(command)
     assert error_message == expected_error_message
+
+
+def test_final_context_format(mocker: MockerFixture):
+    """
+    Given:
+        Valid user name and brand with active session.
+    When:
+        The main function is called.
+    Then:
+        The function should clear the session and construct valid context.
+    """
+    expected_id_info = [
+        {"Message": "", "Result": "Success", "Brand": "Okta v2", "UserName": "user1@test.com"},
+    ]
+
+    # Mock clear_user_sessions
+    mocker.patch("ClearUserSession.clear_user_sessions", return_value=("", "", None))
+
+    # Mock get_user_data to return expected entry context
+    get_user_data_context = {"user1@test.com": [{"Source": "Okta v2", "Value": "1234"}]}
+    mocker.patch("ClearUserSession.get_user_data", return_value=([], get_user_data_context))
+
+    # Mock get_user_id based on input
+    def mock_get_user_id(users_ids: dict, brand_name: str, user_name: str):
+        if brand_name == "Okta v2" and user_name == "user1@test.com":
+            return get_user_data_context['user1@test.com']
+        return ""
+
+    mocker.patch("ClearUserSession.get_user_id", side_effect=mock_get_user_id)
+
+    # Mock demisto.args()
+    mocker.patch.object(demisto, "args", return_value={
+        "user_name": ["user1@test.com"],
+        "brands": ["Okta v2"],
+    })
+
+    # Mock return_results to capture its arguments
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    main()
+
+    # Message
+    # Validate the output
+    assert mock_return_results.called, "return_results should have been called"
+    result = mock_return_results.call_args[0][0]
+    assert result[0].outputs == expected_id_info
