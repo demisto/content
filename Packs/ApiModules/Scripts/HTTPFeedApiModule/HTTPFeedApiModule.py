@@ -425,7 +425,8 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
             if cidr_match := re.fullmatch(CIDR_REGEX_PATTERN, extracted_indicator):
                 ip_start, ip_end = cidr_match.groups()
                 if cidr_list := ip_range_to_cidr(ip_start, ip_end):
-                    demisto.debug(f"Found IP range in extracted indicator \"{extracted_indicator}\", converting to CIDR - {cidr_list}")
+                    demisto.debug(f"Found IP range in extracted indicator \"{extracted_indicator}\", "
+                                  f"converting to CIDR - {cidr_list}")
                     extracted_indicator = cidr_list
             if not isinstance(extracted_indicator, list):
                 extracted_indicator = [extracted_indicator]
