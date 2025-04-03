@@ -3070,7 +3070,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
             # These ticket types are closed by changing their state.
             if closure_case == "closed" and ticket_type == INCIDENT:
                 parsed_args.delta["state"] = "7"  # Closing incident ticket.
-            elif closure_case == 'resolved' and ticket_type == INCIDENT:
+            elif closure_case == "resolved" and ticket_type == INCIDENT:
                 parsed_args.delta["state"] = "6"  # resolving incident ticket.
             if close_custom_state:  # Closing by custom state
                 demisto.debug(f"Closing by custom state = {close_custom_state}")
