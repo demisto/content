@@ -2470,6 +2470,8 @@ def get_incidents_long_running_execution(
         print_debug_msg("empty raw_offenses")
 
     new_highest_offense_id = raw_offenses[-1].get("id") if raw_offenses else offense_highest_id
+    offenses_ids_list = [offense.get("id") for offense in raw_offenses] if raw_offenses else offense_highest_id
+    print_debug_msg(f'[test] printing {offenses_ids_list=}')
     print_debug_msg(f"New highest ID returned from QRadar offenses: {new_highest_offense_id}")
 
     offenses: list[dict] = []
