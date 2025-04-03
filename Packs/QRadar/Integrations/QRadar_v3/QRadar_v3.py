@@ -1306,6 +1306,7 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> L
     if not isinstance(outputs, list):
         outputs = [outputs]
     outputs = [remove_empty_elements(output) for output in outputs]
+    demisto.info(f"[test] in sanitize_outputs, got {outputs=}")
     outputs = add_iso_entries_to_dict(outputs)
     return build_final_outputs(outputs, key_replace_dict) if key_replace_dict else outputs
 
@@ -1326,11 +1327,14 @@ def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: boo
         - (str): If 'arg' is exists and parse_format is true, returns ISO format of the date time object.
         - (int): If 'arg' is exists and epoch_format is true, returns epoch format of the date time object.
     """
+    demisto.info(f"[test] in get_time_parameter, got {arg=}")
     maybe_unaware_date = arg_to_datetime(arg, is_utc=True)
     if not maybe_unaware_date:
         return None
+    demisto.info(f"[test] in get_time_parameter, got {maybe_unaware_date=}")
 
     aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(maybe_unaware_date)
+    demisto.info(f"[test] in get_time_parameter, got {aware_time_date=} and {iso_format=} and {epoch_format=}")
 
     if iso_format:
         return aware_time_date.isoformat()
