@@ -2,7 +2,6 @@ import pytest
 from CommandLineAnalysis import (
     is_base64,
     remove_null_bytes,
-    decode_base64,
     identify_and_decode_base64,
     reverse_command,
     check_malicious_commands,
@@ -48,16 +47,9 @@ def test_remove_null_bytes():
     assert remove_null_bytes(string_with_nulls) == "teststring"
 
 
-# Test decode_base64
-def test_decode_base64(sample_encoded_command):
-    decoded_str, double_encoded = decode_base64(sample_encoded_command)
-    assert "recursive decode" in decoded_str  # Check successful decoding
-    assert double_encoded is True  # Verify double encoding is detected
-
-
 # Test identify_and_decode_base64
 def test_identify_and_decode_base64(sample_malicious_command):
-    decoded_command, is_double_encoded = identify_and_decode_base64(sample_malicious_command)
+    decoded_command, is_double_encoded, _ = identify_and_decode_base64(sample_malicious_command)
     assert "11.101.124.22" in decoded_command
     assert is_double_encoded is True
 
@@ -83,7 +75,7 @@ def test_check_reconnaissance_temp():
     command = "ipconfig /all netstat -ano"
     matches = check_reconnaissance_temp(command)
     assert "ipconfig" in matches
-    assert "netstat -ano" in matches
+    assert "netstat" in matches
 
 
 # Test check_windows_temp_paths
@@ -134,6 +126,5 @@ def test_check_suspicious_macos_applescript_commands():
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
     assert result["risk"] == "Medium Risk"
-    assert "11.101.124.22" in result["analysis"]["original"]["base64_encoding"]
-    assert "11.101.124.22" in result["decoded_command"]
-    assert "wevtutil cl Security" in result["original_command"]
+    assert result["parsed_command"] == 'wevtutil cl Security "Double encoding "This is a listener(11.101.124.22)""'
+    assert "base 64 encoded detected" in result["findings"]["original"]

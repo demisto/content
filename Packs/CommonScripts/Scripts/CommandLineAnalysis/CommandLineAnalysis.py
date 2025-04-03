@@ -90,6 +90,7 @@ def detect_final_powershell_script(data: str) -> bool:
         "ForEach-Object",
         "powershell",
         "New-Object",
+        " "
     ]
 
     for command in known_powershell_commands:
@@ -106,16 +107,20 @@ def try_decode(data: bytes) -> str:
     """Try decoding the data with UTF-8 first, then UTF-16-LE."""
 
     try:
-        if b"\x00" in data:
+        
+        if data.startswith(b"MZ"):
+            decoded_str = data.replace(b"\x00", b"").decode("utf-8", errors="ignore")
+            
+        elif b"\x00" in data:
             # If they remain the same, try UTF-16-LE
             decoded_str = data.decode("utf-16-le")
-
+        
         else:
             decoded_str = data.decode("utf-8")
 
         return decoded_str
 
-    except (UnicodeDecodeError, AttributeError):
+    except (UnicodeDecodeError, AttributeError) as e:
         # If decoding fails, return None
         return ""
 
@@ -195,8 +200,11 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
     num_of_encodings = 0
     result = command_line
     powershell_encoded_base64 = re.compile(
-        r'-(?:encodedCommand|e)\s+["\']?([A-Za-z0-9+/]{4,}(?:={0,2}))["\']?',
-        re.IGNORECASE,
+        r'''
+        -(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)\s+
+        ["']?([A-Za-z0-9+/]{4,}(?:={0,2}))["']?
+        ''',
+        re.IGNORECASE | re.VERBOSE
     )
 
     while matches := powershell_encoded_base64.findall(result):
@@ -216,7 +224,7 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
             if decoded_segment:
                 escaped_match = match.replace("+", "\\+")
                 encoded_param = re.compile(
-                    f"(?i)-(?:encodedCommand|e)\\s+[\"']?{escaped_match}"
+                    f"(?i)-(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)\\s+[\"']?{escaped_match}"
                 )
                 result = encoded_param.sub(r"%%TEMP%%", result)
                 result = result.replace(r"%%TEMP%%", f'"{decoded_segment}"')
@@ -239,11 +247,15 @@ def handle_general_base64(command_line: str) -> tuple[str, bool, bool]:
     base64_pattern = r"[A-Za-z0-9+/]{4,}(?:={0,2})"
     num_of_encodings = 0
     double_encoded_detected = False
+    previous_matches = []
 
     while matches := re.findall(base64_pattern, result):
         valid_matches = [match for match in matches if is_base64(match)]
 
-        if not valid_matches:
+        if not valid_matches or set(valid_matches).issubset(set(previous_matches)):
+            if valid_matches and set(valid_matches).issubset(set(previous_matches)):
+                num_of_encodings -= 1
+            
             if num_of_encodings > 1:
                 double_encoded_detected = True
                 return result, True, double_encoded_detected
@@ -263,6 +275,8 @@ def handle_general_base64(command_line: str) -> tuple[str, bool, bool]:
             if decoded_segment:
                 result = result.replace(match, f'"{decoded_segment}"')
     
+        previous_matches = valid_matches
+        
     return result, False, double_encoded_detected
 
 
@@ -986,15 +1000,9 @@ def main():
     Entry point for analyzing command lines for suspicious activities and patterns.
     """
     args = demisto.args()
-    command_lines = args.get("command_line", [])
-    custom_patterns = args.get("custom_patterns", [])
+    command_lines = argToList(args.get("command_line", []))
+    custom_patterns = argToList(args.get("custom_patterns", []))
     readable_output = ""
-
-    if isinstance(command_lines, str):
-        command_lines = [command_lines]
-
-    if isinstance(custom_patterns, str):
-        custom_patterns = [custom_patterns]
 
     # Analyze each command line
     results = [analyze_command_line(cmd, custom_patterns) for cmd in command_lines]
