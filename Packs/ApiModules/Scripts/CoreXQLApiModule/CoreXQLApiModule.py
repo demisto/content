@@ -422,7 +422,7 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         raise ValueError(f"Invalid timeframe: {time_to_convert}")
     except Exception as exc:
         raise DemistoException(
-            f"Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, " f"years, between).\n{exc!s}"
+            f"Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, years, between).\n{exc!s}"
         )
 
 

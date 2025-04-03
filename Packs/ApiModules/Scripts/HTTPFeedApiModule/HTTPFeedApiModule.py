@@ -261,7 +261,7 @@ class Client(BaseClient):
                 try:
                     r.raise_for_status()
                 except Exception:
-                    LOG(f"{self.feed_name!r} - exception in request:" f" {r.status_code!r} {r.content!r}")
+                    LOG(f"{self.feed_name!r} - exception in request: {r.status_code!r} {r.content!r}")
                     raise
                 no_update = get_no_update_value(r, url) if is_demisto_version_ge("6.5.0") else True
                 url_to_response_list.append({url: {"response": r, "no_update": no_update}})
@@ -352,7 +352,7 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
-        demisto.debug("Last-Modified and Etag headers are not exists," "createIndicators will be executed with noUpdate=False.")
+        demisto.debug("Last-Modified and Etag headers are not exists,createIndicators will be executed with noUpdate=False.")
         return False
 
     last_run = demisto.getLastRun()
@@ -540,7 +540,7 @@ def test_module(client: Client, args):
                 if not key.startswith("__") and isinstance(val, str):
                     indicator_types.append(val)
             supported_values = ", ".join(indicator_types)
-            raise ValueError(f"Indicator type of {indicator_type} is not supported. Supported values are:" f" {supported_values}")
+            raise ValueError(f"Indicator type of {indicator_type} is not supported. Supported values are: {supported_values}")
     client.build_iterator()
     return "ok", {}, {}
 

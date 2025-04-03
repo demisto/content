@@ -311,7 +311,7 @@ class CoreClient(BaseClient):
         }
 
         if sort_by_creation_time and sort_by_modification_time:
-            raise ValueError("Should be provide either sort_by_creation_time or " "sort_by_modification_time. Can't provide both")
+            raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
         if sort_by_creation_time:
             request_data["sort"] = {"field": "creation_time", "keyword": sort_by_creation_time}
         elif sort_by_modification_time:
@@ -351,12 +351,12 @@ class CoreClient(BaseClient):
 
         if lte_modification_time and lte_modification_time_milliseconds:
             raise ValueError(
-                "Either lte_modification_time or " "lte_modification_time_milliseconds should be provided . Can't provide both"
+                "Either lte_modification_time or lte_modification_time_milliseconds should be provided . Can't provide both"
             )
 
         if gte_modification_time and gte_modification_time_milliseconds:
             raise ValueError(
-                "Either gte_modification_time or " "gte_modification_time_milliseconds should be provide. Can't provide both"
+                "Either gte_modification_time or gte_modification_time_milliseconds should be provide. Can't provide both"
             )
 
         if lte_modification_time:
@@ -1767,7 +1767,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
 
 
 def get_missing_files_description(missing_files):
-    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):   # noqa: RET503
         return missing_files[0].get("description")
 
 
@@ -2886,7 +2886,7 @@ def endpoint_scan_abort_command(client, args):
     return CommandResults(
         readable_output=tableToMarkdown("Endpoint abort scan", {"Action Id": action_id}, ["Action Id"]),
         outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}.' f'endpointScan(val.actionId == obj.actionId)': context
+            f'{args.get("integration_context_brand", "CoreApiModule")}.endpointScan(val.actionId == obj.actionId)': context
         },
         raw_response=reply,
     )
@@ -3169,7 +3169,7 @@ def retrieve_file_details_command(client: CoreClient, args, add_to_context):
         f'{endpoints_count} endpoints. \n To get the exact action status run the core-action-status-get command'
     )
     context = {
-        f'{args.get("integration_context_brand", "CoreApiModule")}' f'.RetrievedFiles(val.action_id == obj.action_id)': result
+        f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)': result
     }
     return_entry = {
         "Type": entryTypes["note"],
@@ -3295,7 +3295,7 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
                 outputs_key_field="action_id",
                 outputs=reply,
                 raw_response=response,
-                readable_output=f"Waiting for the script to finish running " f"on the following endpoints: {endpoint_ids}...",
+                readable_output=f"Waiting for the script to finish running on the following endpoints: {endpoint_ids}...",
             ),
             args_for_next_run=args,
         )
@@ -3946,7 +3946,7 @@ def enrich_error_message_id_group_role(
             error_message = f"Error: {match[1]} {match[2]} was not found. "
 
         return (
-            f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}' f'Full error message: {e}'
+            f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}Full error message: {e}'
         )
     return None
 

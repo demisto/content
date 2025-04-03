@@ -510,7 +510,7 @@ class XSOAR2STIXParser:
         self.server_version = server_version
         if server_version not in ALLOWED_VERSIONS:
             raise Exception(
-                f'Wrong TAXII 2 Server version: {server_version}. ' f'Possible values: {", ".join(ALLOWED_VERSIONS)}.'
+                f'Wrong TAXII 2 Server version: {server_version}. Possible values: {", ".join(ALLOWED_VERSIONS)}.'
             )
         self.namespace_uuid = namespace_uuid
         self.fields_to_present = fields_to_present
@@ -2709,7 +2709,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :return: Cortex indicators list
         """
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
-            raise DemistoException("Could not find a collection to fetch from. " "Please make sure you provided a collection.")
+            raise DemistoException("Could not find a collection to fetch from. Please make sure you provided a collection.")
         if limit is None:
             limit = -1
 

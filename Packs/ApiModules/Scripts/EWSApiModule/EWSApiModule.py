@@ -92,7 +92,7 @@ class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
         self.ad_base_url = azure_cloud.endpoints.active_directory or "https://login.microsoftonline.com"
         self.exchange_online_scope = azure_cloud.endpoints.exchange_online or "https://outlook.office365.com"
         demisto.debug(
-            f"Initializing {self.__class__}: " f"{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}"
+            f"Initializing {self.__class__}: {azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}"
         )
         super().__init__(**kwargs)
 

@@ -28,7 +28,7 @@ COMMON_MESSAGES: dict[str, str] = {
     "UNKNOWN_ERROR": "An error occurred. Status: {}. Reason: {}",
     "PROXY_ERROR": "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is"
     " selected, try clearing the checkbox.",
-    "REFRESH_ERROR": "Failed to generate/refresh token. Subject email or service account credentials" " are invalid. Reason: {}",
+    "REFRESH_ERROR": "Failed to generate/refresh token. Subject email or service account credentials are invalid. Reason: {}",
     "BOOLEAN_ERROR": "The argument {} must be either true or false.",
     "INTEGER_ERROR": "The argument {} must be a positive integer.",
     "UNEXPECTED_ERROR": "An unexpected error occurred.",

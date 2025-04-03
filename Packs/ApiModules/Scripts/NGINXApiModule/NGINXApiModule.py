@@ -310,7 +310,7 @@ def run_long_running(params: dict = None, is_test: bool = False):
         demisto.debug("done setting demisto handler for logging")
         server = WSGIServer(
             ("0.0.0.0", server_port),
-            APP,    # type: ignore[name-defined]
+            APP,    # type: ignore[name-defined]    # pylint: disable=E0602
             log=DEMISTO_LOGGER,  # type: ignore[name-defined] # pylint: disable=E0602
             error_log=ERROR_LOGGER,
         )

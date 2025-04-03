@@ -1129,7 +1129,7 @@ class MicrosoftClient(BaseClient):
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
                 return_error(
-                    f"Error in Microsoft authorization. Status: {response.status_code}," f" body: {self.error_parser(response)}"
+                    f"Error in Microsoft authorization. Status: {response.status_code}, body: {self.error_parser(response)}"
                 )
             response_json = response.json()
         except Exception as e:
@@ -1181,7 +1181,7 @@ class MicrosoftClient(BaseClient):
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
                 return_error(
-                    f"Error in Microsoft authorization. Status: {response.status_code}," f" body: {self.error_parser(response)}"
+                    f"Error in Microsoft authorization. Status: {response.status_code}, body: {self.error_parser(response)}"
                 )
             response_json = response.json()
         except Exception as e:
@@ -1247,7 +1247,7 @@ class MicrosoftClient(BaseClient):
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
                 return_error(
-                    f"Error in Microsoft authorization. Status: {response.status_code}," f" body: {self.error_parser(response)}"
+                    f"Error in Microsoft authorization. Status: {response.status_code}, body: {self.error_parser(response)}"
                 )
             response_json = response.json()
         except Exception as e:
@@ -1397,7 +1397,7 @@ class MicrosoftClient(BaseClient):
                 enc_key = base64.b64decode(enc_key)
             except Exception as err:
                 return_error(
-                    f"Error in Microsoft authorization: {err!s}" f" Please check authentication related parameters.",
+                    f"Error in Microsoft authorization: {err!s} Please check authentication related parameters.",
                     error=traceback.format_exc(),
                 )
 
@@ -1435,7 +1435,7 @@ class MicrosoftClient(BaseClient):
             )
             if not response.ok:
                 return_error(
-                    f"Error in Microsoft authorization. Status: {response.status_code}," f" body: {self.error_parser(response)}"
+                    f"Error in Microsoft authorization. Status: {response.status_code}, body: {self.error_parser(response)}"
                 )
             response_json = response.json()
         except Exception as e:

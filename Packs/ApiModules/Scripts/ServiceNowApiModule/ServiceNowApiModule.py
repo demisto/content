@@ -101,7 +101,7 @@ class ServiceNowClient(BaseClient):
                         err_msg = f"Unauthorized request: \n{res!s}"
                     raise DemistoException(err_msg)
                 else:
-                    raise Exception(f"Authorization failed. Please verify that the username and password are correct." f"\n{res}")
+                    raise Exception(f"Authorization failed. Please verify that the username and password are correct.\n{res}")
 
         except Exception as e:
             if self._verify and "SSL Certificate Verification Failed" in e.args[0]:
@@ -139,7 +139,7 @@ class ServiceNowClient(BaseClient):
                 set_integration_context(refresh_token)
         except Exception as e:
             return_error(
-                f"Login failed. Please check the instance configuration and the given username and password.\n" f"{e.args[0]}"
+                f"Login failed. Please check the instance configuration and the given username and password.\n{e.args[0]}"
             )
 
     def get_access_token(self):
@@ -162,7 +162,7 @@ class ServiceNowClient(BaseClient):
                 data["grant_type"] = "refresh_token"
             else:
                 raise Exception(
-                    "Could not create an access token. User might be not logged in. Try running the" " oauth-login command first."
+                    "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
                 )
 
             try:
@@ -192,5 +192,5 @@ class ServiceNowClient(BaseClient):
                     return res.get("access_token")
             except Exception as e:
                 return_error(
-                    f"Error occurred while creating an access token. Please check the instance configuration." f"\n\n{e.args[0]}"
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
                 )

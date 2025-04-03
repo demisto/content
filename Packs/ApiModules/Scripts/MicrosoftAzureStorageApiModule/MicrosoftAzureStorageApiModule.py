@@ -3,7 +3,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 MANAGED_IDENTITIES_TOKEN_URL = (
-    "http://169.254.169.254/metadata/identity/oauth2/token?" "api-version=2018-02-01&resource=https://storage.azure.com/"
+    "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://storage.azure.com/"
 )
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = "SYSTEM_ASSIGNED"
 

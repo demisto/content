@@ -229,4 +229,4 @@ def reset_integration_context():
     integration_context["token"] = "XXX"
 
     set_integration_context({})
-    demisto.debug("Integration context reset successfully.\n" f"Integration context before reset: {integration_context=}")
+    demisto.debug(f"Integration context reset successfully.\nIntegration context before reset: {integration_context=}")

@@ -18,7 +18,7 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
         raise DemistoException("You must specify AWS default region.")
 
     if bool(aws_access_key_id) != bool(aws_secret_access_key):
-        raise DemistoException("You must provide Access Key id and Secret key id to configure the instance with " "credentials.")
+        raise DemistoException("You must provide Access Key id and Secret key id to configure the instance with credentials.")
     if bool(aws_role_arn) != bool(aws_role_session_name):
         raise DemistoException("Role session name is required when using role ARN.")
 

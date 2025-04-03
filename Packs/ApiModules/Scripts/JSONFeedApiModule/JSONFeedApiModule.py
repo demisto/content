@@ -205,7 +205,7 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
-        demisto.debug("Last-Modified and Etag headers are not exists, " "createIndicators will be executed with noUpdate=False.")
+        demisto.debug("Last-Modified and Etag headers are not exists, createIndicators will be executed with noUpdate=False.")
         return False
 
     last_run = demisto.getLastRun()
