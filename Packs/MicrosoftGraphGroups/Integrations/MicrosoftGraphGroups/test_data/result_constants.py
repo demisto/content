@@ -15,12 +15,10 @@ EXPECTED_LIST_GROUPS = {
             "OnPremisesDomainName": None,
             "OnPremisesLastSyncDateTime": None,
             "OnPremisesSyncEnabled": None,
-            "ProxyAddresses": [
-                "SMTP:testdist@demistodev.onmicrosoft.com"
-            ],
+            "ProxyAddresses": ["SMTP:testdist@demistodev.onmicrosoft.com"],
             "RenewedDateTime": "2018-12-26T09:51:32Z",
             "SecurityEnabled": False,
-            "Visibility": None
+            "Visibility": None,
         },
         {
             "Classification": None,
@@ -28,9 +26,7 @@ EXPECTED_LIST_GROUPS = {
             "DeletedDateTime": None,
             "Description": "DemistoTeam",
             "DisplayName": "DemistoTeam",
-            "GroupTypes": [
-                "Unified"
-            ],
+            "GroupTypes": ["Unified"],
             "ID": "DemistoTeam",
             "IsAssignableToRole": None,
             "Mail": "DemistoTeam@demistodev.onmicrosoft.com",
@@ -41,12 +37,12 @@ EXPECTED_LIST_GROUPS = {
             "OnPremisesSyncEnabled": None,
             "ProxyAddresses": [
                 "SPO:SPO_6450fabe-0048-4804-8503-9f0f0694662f@SPO_ebac1a16-81bf-449b-8d43-5732c3c1d999",
-                "SMTP:DemistoTeam@demistodev.onmicrosoft.com"
+                "SMTP:DemistoTeam@demistodev.onmicrosoft.com",
             ],
             "RenewedDateTime": "2019-08-24T09:39:03Z",
             "SecurityEnabled": False,
-            "Visibility": "Public"
-        }
+            "Visibility": "Public",
+        },
     ]
 }
 EXPECTED_GET_GROUP = {
@@ -56,9 +52,7 @@ EXPECTED_GET_GROUP = {
         "DeletedDateTime": None,
         "Description": "DemistoTeam",
         "DisplayName": "DemistoTeam",
-        "GroupTypes": [
-            "Unified"
-        ],
+        "GroupTypes": ["Unified"],
         "ID": "DemistoTeam",
         "IsAssignableToRole": None,
         "Mail": "DemistoTeam@demistodev.onmicrosoft.com",
@@ -69,11 +63,11 @@ EXPECTED_GET_GROUP = {
         "OnPremisesSyncEnabled": None,
         "ProxyAddresses": [
             "SPO:SPO_6450fabe-0048-4804-8503-9f0f0694662f@SPO_ebac1a16-81bf-449b-8d43-5732c3c1d999",
-            "SMTP:DemistoTeam@demistodev.onmicrosoft.com"
+            "SMTP:DemistoTeam@demistodev.onmicrosoft.com",
         ],
         "RenewedDateTime": "2019-08-24T09:39:03Z",
         "SecurityEnabled": False,
-        "Visibility": "Public"
+        "Visibility": "Public",
     }
 }
 EXPECTED_CREATE_GROUP = {
@@ -95,53 +89,47 @@ EXPECTED_CREATE_GROUP = {
         "ProxyAddresses": [],
         "RenewedDateTime": "2019-11-05T10:15:55Z",
         "SecurityEnabled": True,
-        "Visibility": None
+        "Visibility": None,
     }
 }
 EXPECTED_LIST_MEMBERS = [
     {
         "ID": "ID1",
-        "BusinessPhones": [
-
-        ],
+        "BusinessPhones": [],
         "DisplayName": "mock1",
         "GivenName": "mock1",
         "JobTitle": "test",
         "Mail": "mock1@demistodev.onmicrosoft.com",
-                "MobilePhone": "None",
-                "OfficeLocation": "None",
-                "PreferredLanguage": "en-US",
-                "Surname": "mock1",
-                "UserPrincipalName": "mock1@demistodev.onmicrosoft.com"
+        "MobilePhone": "None",
+        "OfficeLocation": "None",
+        "PreferredLanguage": "en-US",
+        "Surname": "mock1",
+        "UserPrincipalName": "mock1@demistodev.onmicrosoft.com",
     },
     {
         "ID": "ID2",
-        "BusinessPhones": [
-
-        ],
+        "BusinessPhones": [],
         "DisplayName": "mock2",
         "GivenName": "mock2",
         "JobTitle": "None",
         "Mail": "mock2@demistodev.onmicrosoft.com",
-                "MobilePhone": "050505050",
-                "OfficeLocation": "None",
-                "PreferredLanguage": "en-US",
-                "Surname": "mock2",
-                "UserPrincipalName": "mock2@demistodev.onmicrosoft.com"
+        "MobilePhone": "050505050",
+        "OfficeLocation": "None",
+        "PreferredLanguage": "en-US",
+        "Surname": "mock2",
+        "UserPrincipalName": "mock2@demistodev.onmicrosoft.com",
     },
     {
         "ID": "ID3",
-        "BusinessPhones": [
-
-        ],
+        "BusinessPhones": [],
         "DisplayName": "mock3",
         "GivenName": "mock3",
         "JobTitle": "None",
         "Mail": "None",
-                "MobilePhone": "None",
-                "OfficeLocation": "None",
-                "PreferredLanguage": "None",
-                "Surname": "mock3",
-                "UserPrincipalName": "mock3@demistodev.onmicrosoft.com"
-    }
+        "MobilePhone": "None",
+        "OfficeLocation": "None",
+        "PreferredLanguage": "None",
+        "Surname": "mock3",
+        "UserPrincipalName": "mock3@demistodev.onmicrosoft.com",
+    },
 ]

@@ -1,14 +1,14 @@
-from more_itertools import always_iterable
+from enum import Enum
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from enum import Enum
+from more_itertools import always_iterable
 
 ALL_OPTION = "All"
 NO_CAMPAIGN_INCIDENTS_MSG = "There is no Campaign Incidents in the Context"
 COMMAND_SUCCESS = "The following incidents was successfully {action}: {ids}"
 COMMAND_ERROR_MSG = (
-    'Error occurred while trying to perform "{action}" on the selected incident ids: {ids}\n'
-    "Error details: {error}"
+    'Error occurred while trying to perform "{action}" on the selected incident ids: {ids}\nError details: {error}'
 )
 ACTION_ON_CAMPAIGN_FIELD_NAME = "actionsoncampaignincidents"
 ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = "actionsonlowsimilarityincidents"
@@ -25,8 +25,8 @@ FIELDS_TO_DISPLAY = ["id", "name", "similarity", "emailfrom", "recipients", "sev
 
 
 class ACTIONS(Enum):
-    REMOVE = 'remove',
-    ADD = 'add'
+    REMOVE = ("remove",)
+    ADD = "add"
 
 
 def _set_involved_incidents_count(campaign_id: str, count: int) -> None:
@@ -59,13 +59,9 @@ def _set_part_of_campaign_field(incident_id: str, campaign_id: str | None) -> No
         campaign_id (str | None): The ID of the campaign to set on the incident,
             or None to clear the field. Required.
     """
-    res = demisto.executeCommand(
-        "setIncident", {"id": incident_id, "partofcampaign": campaign_id}
-    )
+    res = demisto.executeCommand("setIncident", {"id": incident_id, "partofcampaign": campaign_id})
     if isError(res):
-        return_error(
-            f"Error occurred while trying to set the partofcampaign field on the incident: {get_error(res)}"
-        )
+        return_error(f"Error occurred while trying to set the partofcampaign field on the incident: {get_error(res)}")
 
 
 def _set_removed_from_campaigns_field(incident_id: str, campaign_id: str, action: ACTIONS) -> None:
@@ -94,9 +90,7 @@ def _set_removed_from_campaigns_field(incident_id: str, campaign_id: str, action
     else:
         set_campaign_ids_removed.discard(campaign_id)
 
-    res = demisto.executeCommand(
-        "setIncident", {"id": incident_id, "removedfromcampaigns": sorted(set_campaign_ids_removed)}
-    )
+    res = demisto.executeCommand("setIncident", {"id": incident_id, "removedfromcampaigns": sorted(set_campaign_ids_removed)})
     if isError(res):
         raise DemistoException(
             f"Error occurred while trying to set the removedfromcampaigns field on the incident: {get_error(res)}"
@@ -149,9 +143,7 @@ def _set_incidents_to_campaign(campaign_id: str, incidents_context: list | dict,
     )
 
     if isError(res):
-        return_error(
-            f"Error occurred while trying to set incidents to campaign with ID {campaign_id}. Error: {get_error(res)}"
-        )
+        return_error(f"Error occurred while trying to set incidents to campaign with ID {campaign_id}. Error: {get_error(res)}")
 
 
 def _get_context(incident_id: str):
@@ -165,9 +157,7 @@ def _get_context(incident_id: str):
     res = demisto.executeCommand("getContext", {"id": incident_id})
 
     if isError(res):
-        return_error(
-            f"Error occurred while trying to get context for incident with ID {incident_id}. Error: {get_error(res)}"
-        )
+        return_error(f"Error occurred while trying to get context for incident with ID {incident_id}. Error: {get_error(res)}")
 
     return res
 
@@ -183,9 +173,7 @@ def _get_incident(incident_id: str):
     res = demisto.executeCommand("getIncidents", {"id": incident_id})
 
     if isError(res):
-        return_error(
-            f"Error occurred while trying to get incident with ID {incident_id}. Error: {get_error(res)}"
-        )
+        return_error(f"Error occurred while trying to get incident with ID {incident_id}. Error: {get_error(res)}")
 
     return res
 
@@ -314,16 +302,14 @@ def _parse_incident_context_to_valid_incident_campaign_context(incident_id: str,
     data = _extract_incident_fields(incident_context, recipients)
 
     additional_requested_fields = {
-        field: _get_data_from_incident(incident_context, field)
-        for field in fields_to_display
-        if field not in data
+        field: _get_data_from_incident(incident_context, field) for field in fields_to_display if field not in data
     }
 
     data.update(additional_requested_fields)
 
     # Ensure 'emailfromdomain' is in the results when 'emailfrom' is requested, and same with 'recipients'.
-    for key in ('emailfrom', 'recipients'):
-        if key in fields_to_display and (with_domain := f'{key}domain') not in fields_to_display:
+    for key in ("emailfrom", "recipients"):
+        if key in fields_to_display and (with_domain := f"{key}domain") not in fields_to_display:
             fields_to_display.append(with_domain)
 
     data = {field: data[field] for field in fields_to_display}
@@ -400,8 +386,9 @@ def perform_add_to_campaign(ids: list[str], action: str) -> str:
         _set_removed_from_campaigns_field(id_, campaign_id, ACTIONS.REMOVE)
         _set_part_of_campaign_field(id_, campaign_id)
 
-    campaign_incidents_context = [_parse_incident_context_to_valid_incident_campaign_context(
-        id, fields_to_display) for id in ids_to_add_to_campaign]
+    campaign_incidents_context = [
+        _parse_incident_context_to_valid_incident_campaign_context(id, fields_to_display) for id in ids_to_add_to_campaign
+    ]
     _set_incidents_to_campaign(campaign_id, campaign_incidents_context, True)
     _link_or_unlink_between_incidents(campaign_id, ids_to_add_to_campaign, "link")
     _set_involved_incidents_count(campaign_id, involved_incidents_count)
@@ -438,7 +425,8 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
     involved_incidents_count = int(demisto.dt(campaign_context, "Contents.context.EmailCampaign.involvedIncidentsCount")[0])
     involved_incidents_count -= len(ids_to_remove_from_campaign)
     campaign_incidents_context = [
-        incident for incident in campaign_incidents_context if incident['id'] not in ids_to_remove_from_campaign]
+        incident for incident in campaign_incidents_context if incident["id"] not in ids_to_remove_from_campaign
+    ]
 
     for id_ in ids_to_remove_from_campaign:
         _set_removed_from_campaigns_field(id_, campaign_id, ACTIONS.ADD)
@@ -454,11 +442,7 @@ def perform_reopen(ids: list[str], action: str) -> str:
     for incident_id in ids:
         res = demisto.executeCommand("reopenInvestigation", {"id": incident_id})
         if isError(res):
-            return_error(
-                COMMAND_ERROR_MSG.format(
-                    action=action, ids=",".join(ids), error=get_error(res)
-                )
-            )
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=",".join(ids), error=get_error(res)))
 
     return COMMAND_SUCCESS.format(action="reopened", ids=",".join(ids))
 
@@ -485,15 +469,9 @@ def get_close_notes():
 def perform_close(ids: list[str], action: str) -> str:
     close_notes = get_close_notes()
     for incident_id in ids:
-        res = demisto.executeCommand(
-            "closeInvestigation", {"id": incident_id, "closeNotes": close_notes}
-        )
+        res = demisto.executeCommand("closeInvestigation", {"id": incident_id, "closeNotes": close_notes})
         if isError(res):
-            return_error(
-                COMMAND_ERROR_MSG.format(
-                    action=action, ids=",".join(ids), error=get_error(res)
-                )
-            )
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=",".join(ids), error=get_error(res)))
 
     return COMMAND_SUCCESS.format(action="closed", ids=",".join(ids))
 
@@ -505,22 +483,14 @@ def set_incident_owners(incident_ids: list, action: str, user_name):
     incident_ids.append(demisto.incident()["id"])
 
     for incident_id in incident_ids:
-        res = demisto.executeCommand(
-            "setIncident", {"id": incident_id, "owner": user_name}
-        )
+        res = demisto.executeCommand("setIncident", {"id": incident_id, "owner": user_name})
 
         if isError(res):
-            return_error(
-                COMMAND_ERROR_MSG.format(
-                    action=action, ids=",".join(incident_ids), error=get_error(res)
-                )
-            )
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=",".join(incident_ids), error=get_error(res)))
 
 
 def perform_take_ownership(ids: list, action: str) -> str:
-    current_user_name = (
-        demisto.callingContext.get("context", {}).get("ParentEntry", {}).get("user")
-    )
+    current_user_name = demisto.callingContext.get("context", {}).get("ParentEntry", {}).get("user")
 
     if not current_user_name:
         return_error("Could not find the current user.")
@@ -545,15 +515,9 @@ def main():
     try:
         similarity: str = demisto.args().get("similarity", "High")
 
-        action_field_name = (
-            ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME
-            if similarity.lower() == "low"
-            else ACTION_ON_CAMPAIGN_FIELD_NAME
-        )
+        action_field_name = ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME if similarity.lower() == "low" else ACTION_ON_CAMPAIGN_FIELD_NAME
         select_field_name = (
-            SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME
-            if similarity.lower() == "low"
-            else SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME
+            SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME if similarity.lower() == "low" else SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME
         )
 
         action = get_custom_field(action_field_name).lower()

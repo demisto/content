@@ -2,6 +2,9 @@ category: Utilities
 commonfields:
   id: AzureDevOps
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: App Registration Client ID
   defaultvalue: '8f8ed6e7-3207-4ebd-885d-6413b601088c'
@@ -2987,7 +2990,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.117163
+  dockerimage: demisto/crypto:1.0.0.2787132
   isremotesyncout: true
   ismappable: true
   isfetch: true

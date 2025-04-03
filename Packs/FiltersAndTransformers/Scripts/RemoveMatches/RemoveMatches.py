@@ -1,6 +1,6 @@
-from CommonServerPython import *  # noqa: F401
-
 import re
+
+from CommonServerPython import *  # noqa: F401
 
 
 def filter_items(values: list, filter_list: list, ignore_case: bool, match_exact: bool):
@@ -42,32 +42,29 @@ def filter_items(values: list, filter_list: list, ignore_case: bool, match_exact
     return filtered_items
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():  # pragma: no cover
     try:
         args = demisto.args()
-        ignore_case = argToBoolean(args.get('ignore_case', 'True'))
-        match_exact = argToBoolean(args.get('match_exact', 'False'))
-        values = argToList(args.get('value'))
-        delimiter = args.get('delimiter', '\n')
-        list: str = args.get('filters', '')
+        ignore_case = argToBoolean(args.get("ignore_case", "True"))
+        match_exact = argToBoolean(args.get("match_exact", "False"))
+        values = argToList(args.get("value"))
+        delimiter = args.get("delimiter", "\n")
+        list: str = args.get("filters", "")
         if not list:
             filtered_items = values
         else:
             filters = re.split(delimiter, list)
-            filtered_items = filter_items(values=values,
-                                          filter_list=filters,
-                                          ignore_case=ignore_case,
-                                          match_exact=match_exact)
+            filtered_items = filter_items(values=values, filter_list=filters, ignore_case=ignore_case, match_exact=match_exact)
         return_results(filtered_items)
     except Exception as ex:
-        return_error(f'Failed to execute FilterByListTransformer. Error: {str(ex)}')
+        return_error(f"Failed to execute FilterByListTransformer. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
