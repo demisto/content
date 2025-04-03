@@ -448,6 +448,7 @@ To determine the appropriate field type value, use the `archer-get-application-f
 | --- | --- | --- |
 | applicationId | The application ID. | Required | 
 | fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field names are case sensitive. | Required | 
+| levelId | The Level ID to use to update the record. If empty, the command by default takes the first level ID. | Optional |
 
 #### Context Output
 
