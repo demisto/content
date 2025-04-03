@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Brand Protection Phishing",
-        "GIB Attacks Deface"
+        "GIB Brand Protection Phishing"
     ],
     "caseInsensitive": true,
     "cliName": "gibtargetdomain",
@@ -26,11 +25,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "itemVersion": "1.4.2",
-    "openEnded": false,
-    "systemAssociatedTypes": [
-        "GIB Brand Protection Phishing",
-        "GIB Attacks Deface"
-    ]
+    "fromVersion": "6.0.0"
 }
