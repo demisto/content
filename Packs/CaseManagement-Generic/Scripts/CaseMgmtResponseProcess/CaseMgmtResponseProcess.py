@@ -16,11 +16,11 @@ def main():
 
     # get the list for the IncidentType
     # list name must be formatted as follows: IncidentType Response Process
-    response_process = demisto.executeCommand("getList", {"listName": f"{incident_type}ResponseProcess"})[0]['Contents']
+    response_process = demisto.executeCommand("getList", {"listName": f"{incident_type}ResponseProcess"})[0]["Contents"]
 
     # check if the list exists and return it's contents, if not get or create the Default list and return it's contents.
     if "Item not found" in response_process:
-        response_process = demisto.executeCommand("getList", {"listName": default_response_process_list})[0]['Contents']
+        response_process = demisto.executeCommand("getList", {"listName": default_response_process_list})[0]["Contents"]
         if "Item not found" in response_process:
             result = CommandResults(readable_output=default_contents, ignore_auto_extract=True)
         else:

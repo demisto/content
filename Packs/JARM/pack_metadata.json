@@ -2,7 +2,7 @@
     "name": "JARM",
     "description": "This pack introduces the JARM indicator type and commands for generating new JARM fingerprints of servers using TLS.",
     "support": "developer",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.17",
     "author": "Palo Alto Networks Developer Relations",
     "url": "",
     "email": "devrel@paloaltonetworks.com",
