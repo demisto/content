@@ -15,7 +15,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "CommonScripts": {
@@ -53,10 +54,7 @@
             "certification": "certified",
             "author": "Cortex XSOAR"
         }
-    }
-        "marketplacev2",
-        "platform"
-    ],
+    },
     "supportedModules": [
         "X1",
         "X3",
