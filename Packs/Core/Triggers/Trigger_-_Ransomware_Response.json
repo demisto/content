@@ -6,7 +6,7 @@
   "trigger_name": "Ransomware Response",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
             "SEARCH_FIELD": "mitre_technique_id_and_name",
             "SEARCH_TYPE": "CONTAINS",
