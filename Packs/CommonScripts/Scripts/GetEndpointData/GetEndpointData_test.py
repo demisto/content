@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto
+import pytest
 from CommonServerPython import CommandResults, EntryType
 from GetEndpointData import *
 
@@ -17,7 +17,6 @@ def setup_for_test_module_manager():
 
 
 class TestModuleManager:
-
     def test_is_brand_in_brands_to_run(self, setup_for_test_module_manager):
         """
         Given:
@@ -94,12 +93,12 @@ class TestEndpointCommandRunner:
         assert command_runner.is_command_runnable(command, {}) is False
 
         # No args provided but command has arg mapping
-        command.args_mapping = {'arg1': 'endpoint_arg1'}
+        command.args_mapping = {"arg1": "endpoint_arg1"}
         assert command_runner.is_command_runnable(command, {}) is False
 
         # Args are provided, command has args mapping, but brand is not available.
-        args = {'endpoint_arg1': 'value_1'}
-        command.args_mapping = {'arg1': 'endpoint_arg1'}
+        args = {"endpoint_arg1": "value_1"}
+        command.args_mapping = {"arg1": "endpoint_arg1"}
         assert command_runner.is_command_runnable(command, {}) is False
 
         # Args are provided, command has args mapping, and brand is available.
@@ -124,18 +123,21 @@ class TestEndpointCommandRunner:
         command_results = [
             {"EntryContext": {"key": "value"}, "HumanReadable": "Readable output", "Type": EntryType.NOTE},
             {"EntryContext": {}, "HumanReadable": "Another output", "Type": EntryType.NOTE},
-            {"EntryContext": {}, "Contents": "Error output", "Type": EntryType.ERROR}  # An entry with error
+            {"EntryContext": {}, "Contents": "Error output", "Type": EntryType.ERROR},  # An entry with error
         ]
         expected_context_outputs = [{"key": "value"}, {}]
         expected_human_readable = f"#### Result for !{command.name} \nReadable output\nAnother output"
-        expected_error_outputs = [CommandResults(
-            readable_output=f"#### Error for !{command.name} \nError output",
-            entry_type=EntryType.ERROR,
-            mark_as_note=True,
-        )]
+        expected_error_outputs = [
+            CommandResults(
+                readable_output=f"#### Error for !{command.name} \nError output",
+                entry_type=EntryType.ERROR,
+                mark_as_note=True,
+            )
+        ]
 
         context_outputs, human_readable_command_results, error_outputs = command_runner.get_command_results(
-            "test-command", command_results, {})
+            "test-command", command_results, {}
+        )
         human_readable = human_readable_command_results[0].readable_output
         assert context_outputs == expected_context_outputs
         assert human_readable == expected_human_readable
@@ -170,10 +172,10 @@ class TestEndpointCommandRunner:
         """
         command_runner, module_manager, command = setup
         endpoint_args = {"arg1": "value1"}
-        mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
+        mocker.patch("GetEndpointData.prepare_args", return_value={"arg1": "value1"})
 
-        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command', return_value=[])
-        mock_get_commands_outputs = mocker.patch.object(command_runner, 'get_command_results', return_value=([], [], []))
+        mock_run_execute_command = mocker.patch.object(command_runner, "run_execute_command", return_value=[])
+        mock_get_commands_outputs = mocker.patch.object(command_runner, "get_command_results", return_value=([], [], []))
         hr, endpoints = command_runner.run_command(command, endpoint_args)
         assert hr == []
         assert endpoints == []
@@ -192,23 +194,21 @@ class TestEndpointCommandRunner:
         """
         command_runner, module_manager, command = setup
         endpoint_args = {"arg1": "value1"}
-        mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
+        mocker.patch("GetEndpointData.prepare_args", return_value={"arg1": "value1"})
 
         mock_run_execute_command = mocker.patch.object(
-            command_runner,
-            'run_execute_command',
-            return_value=[{"Type": 1, "Contents": "result"}]
+            command_runner, "run_execute_command", return_value=[{"Type": 1, "Contents": "result"}]
         )
         mock_get_commands_outputs = mocker.patch.object(
             command_runner,
-            'get_command_results',
-            return_value=([{"output_key": {"key": "value"}}], [{"readable_output": "Readable output"}], [])
+            "get_command_results",
+            return_value=([{"output_key": {"key": "value"}}], [{"readable_output": "Readable output"}], []),
         )
 
         hr, endpoints = command_runner.run_command(command, endpoint_args)
 
         assert hr == [{"readable_output": "Readable output"}]
-        assert endpoints == [{'key': {'Source': 'TestBrand', 'Value': 'value'}}]
+        assert endpoints == [{"key": {"Source": "TestBrand", "Value": "value"}}]
 
         # mock_prepare_args.assert_called_with(command, endpoint_args)
         mock_run_execute_command.assert_called()
@@ -225,12 +225,10 @@ class TestEndpointCommandRunner:
         """
         command_runner, module_manager, command = setup
         endpoint_args = {"arg1": "value1"}
-        mocker.patch('GetEndpointData.prepare_args', return_value={"arg1": "value1"})
-        mock_run_execute_command = mocker.patch.object(command_runner, 'run_execute_command', return_value=['Error output'])
+        mocker.patch("GetEndpointData.prepare_args", return_value={"arg1": "value1"})
+        mock_run_execute_command = mocker.patch.object(command_runner, "run_execute_command", return_value=["Error output"])
         mock_get_commands_outputs = mocker.patch.object(
-            command_runner,
-            'get_command_results',
-            return_value=([], [{"readable_output": "Readable output"}], ["Error output"])
+            command_runner, "get_command_results", return_value=([], [{"readable_output": "Readable output"}], ["Error output"])
         )
 
         mock_get_commands_outputs.return_value = ([], [{"readable_output": "Readable output"}], ["Error output"])
@@ -261,13 +259,10 @@ def test_run_single_args_commands(mocker, setup_command_runner):
     command_runner = setup_command_runner
 
     # Mock inputs
-    zipped_args = [
-        ("agent1", "192.168.1.1", "hostname1"),
-        ("agent2", "192.168.1.2", "hostname2")
-    ]
+    zipped_args = [("agent1", "192.168.1.1", "hostname1"), ("agent2", "192.168.1.2", "hostname2")]
     single_args_commands = [
         Command(brand="BrandA", name="command1", output_keys=[], args_mapping={}, output_mapping={}),
-        Command(brand="BrandB", name="command2", output_keys=[], args_mapping={}, output_mapping={})
+        Command(brand="BrandB", name="command2", output_keys=[], args_mapping={}, output_mapping={}),
     ]
     verbose = True
     endpoint_outputs_list = []
@@ -282,7 +277,7 @@ def test_run_single_args_commands(mocker, setup_command_runner):
 
     # Mock the merge_endpoint_outputs function
     # Returning the first element of every list to get a list of dictionaries
-    mock_merge_endpoint_outputs = mocker.patch('GetEndpointData.merge_endpoint_outputs', side_effect=lambda x: x[0])
+    mock_merge_endpoint_outputs = mocker.patch("GetEndpointData.merge_endpoint_outputs", side_effect=lambda x: x[0])
 
     # Call the function
     results = run_single_args_commands(
@@ -321,7 +316,7 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     # Example data
     list_args_commands = [
         Command(brand="BrandA", name="command1", output_keys=[], args_mapping={}, output_mapping={}),
-        Command(brand="BrandB", name="command2", output_keys=[], args_mapping={}, output_mapping={})
+        Command(brand="BrandB", name="command2", output_keys=[], args_mapping={}, output_mapping={}),
     ]
     agent_ids = ["id1", "id2"]
     agent_ips = ["192.168.1.1", "192.168.1.2"]
@@ -333,20 +328,14 @@ def test_run_list_args_commands(mocker, setup_command_runner):
     # Mock command runner behavior
     command_runner.run_command.side_effect = [
         (["Output1"], {"result": "data1"}),  # First command returns data
-        ([], None)  # Second command returns no data
+        ([], None),  # Second command returns no data
     ]
     # Mock the merge_endpoint_outputs function
-    mock_merge_endpoint_outputs = mocker.patch('GetEndpointData.merge_endpoint_outputs', return_value=[{"merged": "data"}])
+    mock_merge_endpoint_outputs = mocker.patch("GetEndpointData.merge_endpoint_outputs", return_value=[{"merged": "data"}])
 
     # Call the function
     result_outputs, result_readable = run_list_args_commands(
-        list_args_commands,
-        command_runner,
-        agent_ids,
-        agent_ips,
-        agent_hostnames,
-        endpoint_outputs_list,
-        verbose
+        list_args_commands, command_runner, agent_ids, agent_ips, agent_hostnames, endpoint_outputs_list, verbose
     )
 
     # Assertions
@@ -355,12 +344,7 @@ def test_run_list_args_commands(mocker, setup_command_runner):
 
     # Verify command_runner was called with correct arguments
     command_runner.run_command.assert_any_call(
-        list_args_commands[0],
-        {
-            "agent_id": "id1,id2",
-            "agent_ip": "192.168.1.1,192.168.1.2",
-            "agent_hostname": "host1,host2"
-        }
+        list_args_commands[0], {"agent_id": "id1,id2", "agent_ip": "192.168.1.1,192.168.1.2", "agent_hostname": "host1,host2"}
     )
 
     # Verify merge_endpoint_outputs was called correctly
@@ -377,23 +361,15 @@ def test_create_endpoint(setup_command_runner):
         An enpoint of the correct structure is created and returned.
     """
     # Example data
-    command_output = {
-        "key1": "value1",
-        "key2": "value2"
-    }
-    output_mapping = {
-        "key1": "mapped_key1"
-    }
+    command_output = {"key1": "value1", "key2": "value2"}
+    output_mapping = {"key1": "mapped_key1"}
     source = "test_source"
 
     # Call the function
     result = create_endpoint(command_output, output_mapping, source)
 
     # Expected result
-    expected = {
-        "mapped_key1": {"Value": "value1", "Source": "test_source"},
-        "key2": {"Value": "value2", "Source": "test_source"}
-    }
+    expected = {"mapped_key1": {"Value": "value1", "Source": "test_source"}, "key2": {"Value": "value2", "Source": "test_source"}}
 
     # Assertions
     assert result == expected
@@ -415,28 +391,22 @@ def test_prepare_args():
         brand="BrandA",
         name="command1",
         output_keys=[],
-        args_mapping={
-            "cmd_arg1": "endpoint_arg1",
-            "cmd_arg2": "endpoint_arg2"
-        },
-        output_mapping={}
+        args_mapping={"cmd_arg1": "endpoint_arg1", "cmd_arg2": "endpoint_arg2"},
+        output_mapping={},
     )
 
     # Example data
     endpoint_args = {
         "endpoint_arg1": "value1",
         "endpoint_arg2": "value2",
-        "endpoint_arg3": "value3"  # Not in args_mapping
+        "endpoint_arg3": "value3",  # Not in args_mapping
     }
 
     # Call the function
     result = prepare_args(command, endpoint_args)
 
     # Expected result
-    expected = {
-        "cmd_arg1": "value1",
-        "cmd_arg2": "value2"
-    }
+    expected = {"cmd_arg1": "value1", "cmd_arg2": "value2"}
 
     # Assertions
     assert result == expected
@@ -445,16 +415,14 @@ def test_prepare_args():
     endpoint_args = {
         "endpoint_arg1": "value1",
         "endpoint_arg2": "",  # Empty value
-        "endpoint_arg3": None  # None value
+        "endpoint_arg3": None,  # None value
     }
 
     # Call the function again
     result = prepare_args(command, endpoint_args)
 
     # Expected result
-    expected = {
-        "cmd_arg1": "value1"
-    }
+    expected = {"cmd_arg1": "value1"}
 
     # Assertions
     assert result == expected
@@ -478,7 +446,7 @@ def test_hr_to_command_results():
     args = {
         "arg1": "value1",
         "arg2": "value2",
-        "arg3": None  # None value should be ignored
+        "arg3": None,  # None value should be ignored
     }
     human_readable = "This is a human-readable result."
 
@@ -527,11 +495,7 @@ def test_get_output_key(mocker):
         d. We get an empty string.
     """
     # Example raw context with keys
-    raw_context = {
-        "key1": "value1",
-        "key2(subkey)": "value2",
-        "key3": "value3"
-    }
+    raw_context = {"key1": "value1", "key2(subkey)": "value2", "key3": "value3"}
 
     # Test case 1: Direct match
     output_key = "key1"
@@ -567,11 +531,7 @@ def test_get_outputs():
         c. We get an empty dictionary.
         d. We get an empty dictionary.
     """
-    raw_context = {
-        "key1": "value1",
-        "key2(subkey)": "value2",
-        "key3": "value3"
-    }
+    raw_context = {"key1": "value1", "key2(subkey)": "value2", "key3": "value3"}
 
     # Test case 1: Direct match
     output_key = "key1"
@@ -596,9 +556,9 @@ def test_get_outputs():
 @pytest.fixture
 def setup_endpoints():
     return [
-        {'Hostname': {'Value': 'host1'}, 'Port': {'Value': 8080}},
-        {'Hostname': {'Value': 'host2'}, 'Port': {'Value': 9090}},
-        {'Hostname': {'Value': 'host1'}, 'Protocol': {'Value': 'http'}},
+        {"Hostname": {"Value": "host1"}, "Port": {"Value": 8080}},
+        {"Hostname": {"Value": "host2"}, "Port": {"Value": 9090}},
+        {"Hostname": {"Value": "host1"}, "Protocol": {"Value": "http"}},
     ]
 
 
@@ -613,9 +573,9 @@ def test_merge_no_conflicts(mocker, setup_endpoints):
     """
     endpoints = [setup_endpoints[0], setup_endpoints[2]]
     expected_result = {
-        'Hostname': [{'Value': 'host1'}, {'Value': 'host1'}],
-        'Port': {'Value': 8080},
-        'Protocol': {'Value': 'http'},
+        "Hostname": [{"Value": "host1"}, {"Value": "host1"}],
+        "Port": {"Value": 8080},
+        "Protocol": {"Value": "http"},
     }
     result = merge_endpoints(endpoints)
     assert result == expected_result
@@ -632,17 +592,18 @@ def test_merge_with_hostname_conflict(setup_endpoints, mocker):
     """
     endpoints = setup_endpoints
     # Using pytest mocker fixture for mocking the logging functions
-    mock_error = mocker.patch.object(demisto, 'error')
+    mock_error = mocker.patch.object(demisto, "error")
 
     result = merge_endpoints(endpoints)
 
     # Verify that the error is logged when hostname conflict occurs
     mock_error.assert_called_once_with(
-        "Conflict detected for 'Hostname'. Conflicting dictionaries: {'Value': 'host1'}, {'Value': 'host2'}")
+        "Conflict detected for 'Hostname'. Conflicting dictionaries: {'Value': 'host1'}, {'Value': 'host2'}"
+    )
 
     # Check that the Hostname key is present in the result
-    assert 'Hostname' in result  # Hostname will not merge but error out
-    assert result['Hostname'] == [{'Value': 'host1'}, {'Value': 'host1'}]
+    assert "Hostname" in result  # Hostname will not merge but error out
+    assert result["Hostname"] == [{"Value": "host1"}, {"Value": "host1"}]
 
 
 def test_merge_empty_endpoints():
@@ -670,27 +631,15 @@ def test_get_raw_endpoints_single_entry(mocker):
     """
     raw_context = [
         {
-            "Device": [
-                {"data from Device for object_1": "value1"},
-                {"data from Device for object_2": "value3"}
-            ],
-            "Endpoint": [
-                {"data from Endpoint for object_1": "value2"},
-                {"data from Endpoint for object_2": "value4"}
-            ]
+            "Device": [{"data from Device for object_1": "value1"}, {"data from Device for object_2": "value3"}],
+            "Endpoint": [{"data from Endpoint for object_1": "value2"}, {"data from Endpoint for object_2": "value4"}],
         }
     ]
 
-    mock_get_outputs = mocker.patch('GetEndpointData.get_outputs')
+    mock_get_outputs = mocker.patch("GetEndpointData.get_outputs")
     mock_get_outputs.side_effect = [
-        [
-            {"data from Endpoint for object_1": "value2"},
-            {"data from Endpoint for object_2": "value4"}
-        ],
-        [
-            {"data from Device for object_1": "value1"},
-            {"data from Device for object_2": "value3"}
-        ]
+        [{"data from Endpoint for object_1": "value2"}, {"data from Endpoint for object_2": "value4"}],
+        [{"data from Device for object_1": "value1"}, {"data from Device for object_2": "value3"}],
     ]
 
     expected_output = [
@@ -698,7 +647,7 @@ def test_get_raw_endpoints_single_entry(mocker):
         {"data from Endpoint for object_2": "value4", "data from Device for object_2": "value3"},
     ]
 
-    result = get_raw_endpoints(['Endpoint', 'Device'], raw_context)
+    result = get_raw_endpoints(["Endpoint", "Device"], raw_context)
     assert result == expected_output, f"Expected {expected_output}, got {result}"
 
 
@@ -712,21 +661,15 @@ def test_get_raw_endpoints_multiple_entries(mocker):
         A list of the two endpoints, in raw structure, is returned.
     """
     raw_context = [
-        {
-            "Endpoint": {"data from Endpoint for object_1": "value1"},
-            "Device": [{"data from Device for object_1": "value2"}]
-        },
-        {
-            "Endpoint": {"data from Endpoint for object_2": "value3"},
-            "Device": [{"data from Device for object_2": "value4"}]
-        },
+        {"Endpoint": {"data from Endpoint for object_1": "value1"}, "Device": [{"data from Device for object_1": "value2"}]},
+        {"Endpoint": {"data from Endpoint for object_2": "value3"}, "Device": [{"data from Device for object_2": "value4"}]},
     ]
-    mock_get_outputs = mocker.patch('GetEndpointData.get_outputs')
+    mock_get_outputs = mocker.patch("GetEndpointData.get_outputs")
     mock_get_outputs.side_effect = [
         {"data from Endpoint for object_1": "value1"},
         [{"data from Device for object_1": "value2"}],
         {"data from Endpoint for object_2": "value3"},
-        [{"data from Device for object_2": "value4"}]
+        [{"data from Device for object_2": "value4"}],
     ]
 
     expected_output = [
@@ -734,7 +677,7 @@ def test_get_raw_endpoints_multiple_entries(mocker):
         {"data from Endpoint for object_2": "value3", "data from Device for object_2": "value4"},
     ]
 
-    result = get_raw_endpoints(['Endpoint', 'Device'], raw_context)
+    result = get_raw_endpoints(["Endpoint", "Device"], raw_context)
     assert result == expected_output, f"Expected {expected_output}, got {result}"
 
 
@@ -753,48 +696,35 @@ def test_create_endpoints(mocker):
         {"key1": "value4", "key2": "value3"},
     ]
     output_mapping = {"key1": "KEY_1", "key2": "KEY_2"}
-    mock_create_endopint = mocker.patch('GetEndpointData.create_endpoint')
+    mock_create_endopint = mocker.patch("GetEndpointData.create_endpoint")
     mock_create_endopint.side_effect = [
-        {'KEY_1': {'Value': 'value1'}, 'KEY_2': {'Value': 'value2'}},
-        {'KEY_1': {'Value': 'value3'}, 'KEY_2': {'Value': 'value4'}},
-        {'key1_from_callable': {'Value': 'value1'}, 'key2_from_callable': {'Value': 'value2'}},
-        {'key1_from_callable': {'Value': 'value3'}, 'key2_from_callable': {'Value': 'value4'}},
+        {"KEY_1": {"Value": "value1"}, "KEY_2": {"Value": "value2"}},
+        {"KEY_1": {"Value": "value3"}, "KEY_2": {"Value": "value4"}},
+        {"key1_from_callable": {"Value": "value1"}, "key2_from_callable": {"Value": "value2"}},
+        {"key1_from_callable": {"Value": "value3"}, "key2_from_callable": {"Value": "value4"}},
     ]
 
-    result = create_endpoints(raw_endpoints, output_mapping, 'brand')
+    result = create_endpoints(raw_endpoints, output_mapping, "brand")
     assert result == [
-        {'KEY_1': {'Value': 'value1'}, 'KEY_2': {'Value': 'value2'}},
-        {'KEY_1': {'Value': 'value3'}, 'KEY_2': {'Value': 'value4'}},
+        {"KEY_1": {"Value": "value1"}, "KEY_2": {"Value": "value2"}},
+        {"KEY_1": {"Value": "value3"}, "KEY_2": {"Value": "value4"}},
     ]
 
     def output_mapping(x):
         return {"key1": "key1_from_callable", "key2": "key2_from_callable"}
-    create_endpoints(raw_endpoints, output_mapping, 'brand')
-    mock_create_endopint.assert_has_calls([
-        mocker.call(
-            raw_endpoints[0],
-            {'key1': 'KEY_1', 'key2': 'KEY_2'},
-            'brand'
-        ),
-        mocker.call(
-            raw_endpoints[1],
-            {'key1': 'KEY_1', 'key2': 'KEY_2'},
-            'brand'
-        ),
-        mocker.call(
-            raw_endpoints[0],
-            {'key1': 'key1_from_callable', 'key2': 'key2_from_callable'},
-            'brand'
-        ),
-        mocker.call(
-            raw_endpoints[1],
-            {'key1': 'key1_from_callable', 'key2': 'key2_from_callable'},
-            'brand'
-        ),
-    ])
+
+    create_endpoints(raw_endpoints, output_mapping, "brand")
+    mock_create_endopint.assert_has_calls(
+        [
+            mocker.call(raw_endpoints[0], {"key1": "KEY_1", "key2": "KEY_2"}, "brand"),
+            mocker.call(raw_endpoints[1], {"key1": "KEY_1", "key2": "KEY_2"}, "brand"),
+            mocker.call(raw_endpoints[0], {"key1": "key1_from_callable", "key2": "key2_from_callable"}, "brand"),
+            mocker.call(raw_endpoints[1], {"key1": "key1_from_callable", "key2": "key2_from_callable"}, "brand"),
+        ]
+    )
 
     raw_endpoints = []
-    result = create_endpoints(raw_endpoints, output_mapping, 'brand')
+    result = create_endpoints(raw_endpoints, output_mapping, "brand")
     assert result == []
 
 
@@ -808,22 +738,23 @@ def test_merge_endpoint_outputs(mocker):
         A zipped list of the merged endpoints is returned.
     """
     # Mock the `merge_endpoints` function
-    mock_merge_endpoints = mocker.patch('GetEndpointData.merge_endpoints', side_effect=lambda x: {"merged": x})
+    mock_merge_endpoints = mocker.patch("GetEndpointData.merge_endpoints", side_effect=lambda x: {"merged": x})
     # Mock the `safe_list_get` function
-    mock_safe_list_get = mocker.patch('GetEndpointData.safe_list_get',
-                                      side_effect=lambda lst, idx, default: lst[idx] if idx < len(lst) else default)
+    mock_safe_list_get = mocker.patch(
+        "GetEndpointData.safe_list_get", side_effect=lambda lst, idx, default: lst[idx] if idx < len(lst) else default
+    )
 
     # Example input
     endpoint_outputs = [
-        [{'a': 1}, {'b': 2}],  # First endpoint list
-        [{'c': 3}, {'d': 4}],  # Second endpoint list
-        [{'e': 5}],  # Third endpoint list (shorter)
+        [{"a": 1}, {"b": 2}],  # First endpoint list
+        [{"c": 3}, {"d": 4}],  # Second endpoint list
+        [{"e": 5}],  # Third endpoint list (shorter)
     ]
 
     # Expected output
     expected_merged = [
-        {"merged": [{'a': 1}, {'c': 3}, {'e': 5}]},
-        {"merged": [{'b': 2}, {'d': 4}, {}]},
+        {"merged": [{"a": 1}, {"c": 3}, {"e": 5}]},
+        {"merged": [{"b": 2}, {"d": 4}, {}]},
     ]
 
     result = merge_endpoint_outputs(endpoint_outputs)
@@ -837,8 +768,8 @@ def test_merge_endpoint_outputs(mocker):
     mock_safe_list_get.assert_any_call(endpoint_outputs[2], 1, {})
 
     # Verify `merge_endpoints` was called with the right arguments
-    mock_merge_endpoints.assert_any_call([{'a': 1}, {'c': 3}, {'e': 5}])
-    mock_merge_endpoints.assert_any_call([{'b': 2}, {'d': 4}, {}])
+    mock_merge_endpoints.assert_any_call([{"a": 1}, {"c": 3}, {"e": 5}])
+    mock_merge_endpoints.assert_any_call([{"b": 2}, {"d": 4}, {}])
 
 
 def test_endpoints_not_found_all_found():
@@ -851,10 +782,10 @@ def test_endpoints_not_found_all_found():
         It should return an empty list
     """
     endpoints = [
-        {'Hostname': [{'Value': 'host1'}], 'ID': [{'Value': 'id1'}], 'IPAddress': [{'Value': 'ip1'}]},
-        {'Hostname': [{'Value': 'host2'}], 'ID': [{'Value': 'id2'}], 'IPAddress': [{'Value': 'ip2'}]}
+        {"Hostname": [{"Value": "host1"}], "ID": [{"Value": "id1"}], "IPAddress": [{"Value": "ip1"}]},
+        {"Hostname": [{"Value": "host2"}], "ID": [{"Value": "id2"}], "IPAddress": [{"Value": "ip2"}]},
     ]
-    zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
+    zipped_args = [("id1", "ip1", "host1"), ("id2", "ip2", "host2")]
     result = create_endpoints_not_found_list(endpoints, zipped_args)
     assert result == []
 
@@ -868,12 +799,10 @@ def test_endpoints_not_found_some_found():
     Then:
         It should return a list with the missing endpoints.
     """
-    endpoints = [
-        {'Hostname': [{'Value': 'host1'}], 'ID': [{'Value': 'id1'}], 'IPAddress': [{'Value': 'ip1'}]}
-    ]
-    zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
+    endpoints = [{"Hostname": [{"Value": "host1"}], "ID": [{"Value": "id1"}], "IPAddress": [{"Value": "ip1"}]}]
+    zipped_args = [("id1", "ip1", "host1"), ("id2", "ip2", "host2")]
     result = create_endpoints_not_found_list(endpoints, zipped_args)
-    assert result == [{'Key': 'id2, ip2, host2'}]
+    assert result == [{"Key": "id2, ip2, host2"}]
 
 
 def test_endpoints_not_found_nothing_found(mocker):
@@ -886,6 +815,6 @@ def test_endpoints_not_found_nothing_found(mocker):
         It should return a list with the missing endpoints.
     """
     endpoints = []
-    zipped_args = [('id1', 'ip1', 'host1'), ('id2', 'ip2', 'host2')]
+    zipped_args = [("id1", "ip1", "host1"), ("id2", "ip2", "host2")]
     result = create_endpoints_not_found_list(endpoints, zipped_args)
-    assert result == [{'Key': 'id1, ip1, host1'}, {'Key': 'id2, ip2, host2'}]
+    assert result == [{"Key": "id1, ip1, host1"}, {"Key": "id2, ip2, host2"}]
