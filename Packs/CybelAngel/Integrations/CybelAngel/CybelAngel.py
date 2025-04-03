@@ -209,9 +209,10 @@ class Client(BaseClient):
 
         return response.text, response.status_code
 
-    def update_status(self, status: str, report_id: str): 
-    """ Retrieve CBA Reports using the polling interval Statuses: open, resolved """
-        self.check_token() url = f"{self.base_url}api/v1/reports/{report_id}/status"
+    def update_status(self, status: str, report_id: str):
+        """ Retrieve CBA Reports using the polling interval Statuses: open, resolved """
+        self.check_token()
+        url = f"{self.base_url}api/v1/reports/{report_id}/status"
         headers = {'Content-Type': "application/json",
                    'Authorization': str(self.token)}
 
@@ -367,8 +368,8 @@ def remediate_command(client: Client, args: dict[str, Any]) -> CommandResults:
         returnMessage = ""
         if status_code == 200:
             returnMessage = "Successful"
-        else: 
-            returnMessage = "Failed" 
+        else:
+            returnMessage = "Failed"
 
         return CommandResults(
             outputs_prefix='CybelAngel.Remediation',
@@ -425,8 +426,8 @@ def update_status_command(client: Client, args: dict[str, Any]) -> CommandResult
         returnMessage = ""
         if status_code == 200:
             returnMessage = "Successful"
-        else: 
-            returnMessage = "Failed" 
+        else:
+            returnMessage = "Failed"
 
 
         return CommandResults(
