@@ -7,8 +7,6 @@ from datetime import datetime
 import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Akamai WAF, pack version = 2.1.1')
-
 
 """ IMPORTS """
 # Std imports
