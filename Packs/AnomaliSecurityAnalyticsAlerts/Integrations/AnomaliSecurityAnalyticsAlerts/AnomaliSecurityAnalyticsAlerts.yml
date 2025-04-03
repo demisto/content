@@ -30,7 +30,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: "The Anomali Security Analytics pack allows users to manage security alerts by interacting directly with the Anomali Security Analytics platform. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR."
+description: The Anomali Security Analytics pack allows users to manage security alerts by interacting directly with the Anomali Security Analytics platform. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR.
 display: Anomali Security Analytics Alerts
 name: AnomaliSecurityAnalyticsAlerts
 script:
@@ -46,7 +46,7 @@ script:
       required: false
     - name: from
       defaultValue: 1 day
-      description: Timerange - start time, e.g., 1 hour, 30 minutes. Default value is 1 day
+      description: Timerange - start time, e.g., 1 hour, 30 minutes. Default value is 1 day.
       required: false
     - name: to
       defaultValue: 0 minutes
@@ -101,19 +101,19 @@ script:
         description: Total number of records retrieved by the search.
         type: Number
       - contextPath: ThreatstreamAlerts.SearchJobResults.search_end_time
-        description: "End timestamp of the search (UNIX timestamp in milliseconds)."
+        description: End timestamp of the search (UNIX timestamp in milliseconds).
         type: Number
       - contextPath: ThreatstreamAlerts.SearchJobResults.search_start_time
-        description: "Start timestamp of the search (UNIX timestamp in milliseconds)."
+        description: Start timestamp of the search (UNIX timestamp in milliseconds).
         type: Number
       - contextPath: ThreatstreamAlerts.SearchJobResults.status
-        description: "Status of the search job."
+        description: Status of the search job.
         type: String
       - contextPath: ThreatstreamAlerts.SearchJobResults.types
-        description: "Data types of the search record attributes."
+        description: Data types of the search record attributes.
         type: Array
   - name: anomali-security-analytics-update-alert
-    description: "Update alert's comment or status."
+    description: Update alert's comment or status.
     arguments:
     - name: uuid
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
@@ -127,7 +127,7 @@ script:
     execution: false
     outputs:
       - contextPath: ThreatstreamAlerts.UpdateAlert.message
-        description: "Confirmation message returned after updating the alert status."
+        description: Confirmation message returned after updating the alert status.
         type: String
   isfetch: false
   runonce: false
