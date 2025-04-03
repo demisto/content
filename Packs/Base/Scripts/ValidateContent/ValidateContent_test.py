@@ -1,9 +1,18 @@
 import json
-from unittest import mock
 from io import BytesIO
-from ValidateContent import (ValidationResult, read_validate_results, resolve_entity_type,
-                             HOOK_ID_TO_PATTERN, get_pack_name, strip_ansi_codes, extract_hook_id, parse_pre_commit_output)
+from unittest import mock
+
 import demistomock as demisto
+from ValidateContent import (
+    HOOK_ID_TO_PATTERN,
+    ValidationResult,
+    extract_hook_id,
+    get_pack_name,
+    parse_pre_commit_output,
+    read_validate_results,
+    resolve_entity_type,
+    strip_ansi_codes,
+)
 
 
 def create_mock_zip_file_with_metadata(metadata_content):
@@ -18,10 +27,10 @@ def create_mock_zip_file_with_metadata(metadata_content):
     """
 
     mock_zip = mock.MagicMock()
-    mock_metadata_file = BytesIO(json.dumps(metadata_content).encode('utf-8'))
+    mock_metadata_file = BytesIO(json.dumps(metadata_content).encode("utf-8"))
 
     def mock_open(name, *args, **kwargs):
-        if name == 'metadata.json':
+        if name == "metadata.json":
             return mock_metadata_file
         raise KeyError(f"No such file: {name}")
 
@@ -37,7 +46,7 @@ def test_strip_ansi_codes():
 def test_extract_hook_id():
     output = "Running hook: check-ast\n- hook id: check-ast\nAn error occurred"
     assert extract_hook_id(output) == "check-ast"
-    assert extract_hook_id("No hook id") == ''
+    assert extract_hook_id("No hook id") == ""
 
 
 def test_parse_pre_commit_output_check_ast():
@@ -59,9 +68,9 @@ Packs/TmpPack/Integrations/HelloWorldTest/HelloWorldTest.py: failed parsing with
  ^
  SyntaxError: unterminated string literal (detected at line 1413)"""
 
-    pattern_obj = HOOK_ID_TO_PATTERN['check-ast']
+    pattern_obj = HOOK_ID_TO_PATTERN["check-ast"]
     result = parse_pre_commit_output(output, pattern_obj)
-    assert result == [{'file': 'Packs/TmpPack/Integrations/HelloWorldTest/HelloWorldTest.py', 'line': '1413'}]
+    assert result == [{"file": "Packs/TmpPack/Integrations/HelloWorldTest/HelloWorldTest.py", "line": "1413"}]
 
 
 def test_parse_pre_commit_output_mypy():
@@ -82,33 +91,33 @@ Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py:794: error: Name
         by({'arrrr': 'rrrrra', 'rrrraa': 'rapapapu'})
         ^
 Found 3 errors in 1 file (checked 1 source file)"""
-    pattern_obj = HOOK_ID_TO_PATTERN['mypy']
+    pattern_obj = HOOK_ID_TO_PATTERN["mypy"]
     result = parse_pre_commit_output(output, pattern_obj)
     assert result == [
         {
-            'file': 'Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py',
-            'line': '791',
-            'details': '''Name
+            "file": "Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py",
+            "line": "791",
+            "details": """Name
 "greet" is not defined  [name-defined]
         greet(inp)
-        ^'''
+        ^""",
         },
         {
-            'file': 'Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py',
-            'line': '791',
-            'details': '''Name
+            "file": "Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py",
+            "line": "791",
+            "details": """Name
 "inp" is not defined  [name-defined]
         greet(inp)
-              ^'''
+              ^""",
         },
         {
-            'file': 'Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py',
-            'line': '794',
-            'details': '''Name
+            "file": "Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.py",
+            "line": "794",
+            "details": """Name
 "by" is not defined  [name-defined]
         by({'arrrr': 'rrrrra', 'rrrraa': 'rapapapu'})
-        ^'''
-        }
+        ^""",
+        },
     ]
 
 
@@ -129,7 +138,7 @@ def test_get_pack_name_success(mocker):
     Then:
         The function should return the correct pack name from the metadata.json file.
     """
-    mock_metadata = {'name': 'TestPack'}
+    mock_metadata = {"name": "TestPack"}
     mock_metadata_json = json.dumps(mock_metadata)
 
     mock_zipfile = mocker.MagicMock()
@@ -138,11 +147,11 @@ def test_get_pack_name_success(mocker):
     # Simulate behaviour of nested context managers.
     mock_zipfile.__enter__.return_value.open.return_value.__enter__.return_value = mock_metadata_file
 
-    mocker.patch('zipfile.ZipFile', return_value=mock_zipfile)
+    mocker.patch("zipfile.ZipFile", return_value=mock_zipfile)
 
-    result = get_pack_name('test_pack.zip')
+    result = get_pack_name("test_pack.zip")
 
-    assert result == 'TestPack'
+    assert result == "TestPack"
 
 
 def test_get_pack_name_no_name(mocker):
@@ -162,12 +171,12 @@ def test_get_pack_name_no_name(mocker):
     mock_metadata_file.read.return_value = mock_metadata_json
     mock_zipfile.__enter__.return_value.open.return_value.__enter__.return_value = mock_metadata_file
 
-    mocker.patch('zipfile.ZipFile', return_value=mock_zipfile)
-    mock_error = mocker.patch.object(demisto, 'error')
+    mocker.patch("zipfile.ZipFile", return_value=mock_zipfile)
+    mock_error = mocker.patch.object(demisto, "error")
 
-    result = get_pack_name('test_pack.zip')
-    assert result == 'TmpPack'
-    mock_error.assert_called_with('Could not find pack name in metadata.json')
+    result = get_pack_name("test_pack.zip")
+    assert result == "TmpPack"
+    mock_error.assert_called_with("Could not find pack name in metadata.json")
 
 
 def test_read_validate_results(tmp_path):
@@ -180,13 +189,21 @@ def test_read_validate_results(tmp_path):
         The function should return a list of ValidationResult objects.
     """
     json_file = tmp_path / "validation_results.json"
-    json_file.write_text(json.dumps([{
-        "validations": [{
-            "file path": "Packs/TestPack/Scripts/TestScript/TestScript.yml",
-            "error code": "ST001",
-            "message": "Test error message"
-        }]
-    }]))
+    json_file.write_text(
+        json.dumps(
+            [
+                {
+                    "validations": [
+                        {
+                            "file path": "Packs/TestPack/Scripts/TestScript/TestScript.yml",
+                            "error code": "ST001",
+                            "message": "Test error message",
+                        }
+                    ]
+                }
+            ]
+        )
+    )
 
     results = read_validate_results(json_file)
 

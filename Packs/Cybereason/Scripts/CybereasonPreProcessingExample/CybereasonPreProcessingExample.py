@@ -15,8 +15,11 @@ incident = demisto.incidents()
 for inc in incident:
     res = True
     malop_guid = get_guid_from_system_incident(inc)
-    response = execute_command("getIncidents", {"query": f'name:"Cybereason Malop {malop_guid}"'})
-    malop_incident = response["data"]
+    response = execute_command(
+        'getIncidents',
+        {'query': f'name:"Cybereason Malop {malop_guid}"'}
+    )
+    malop_incident = response.get('data', {})
     demisto.debug(f"malop incident - {malop_incident}")
     if malop_incident:
         # Malop was already fetched - updating the relevant incident
@@ -26,8 +29,8 @@ for inc in incident:
         entries.append({"Contents": f'Duplicate incident from cybereason: {inc.get("name")}'})
         entries.append({"Type": EntryType.NOTE, "ContentsFormat": "json", "Contents": json.dumps(inc)})
         entries_str = json.dumps(entries)
-        execute_command("addEntries", {"id": malop_incident["id"], "entries": entries_str})
-        malop_incident_id = malop_incident["id"]
-        malop_incident_status = inc["status"]
+        execute_command('addEntries', {'id': malop_incident['id'], 'entries': entries_str})
+        malop_incident_id = malop_incident.get('id', '')
+        malop_incident_status = inc.get('status', '')
         demisto.debug(f"Updating incident status to : {malop_incident_status}")
         execute_command("setIncident", {"id": malop_incident_id, "status": malop_incident_status})
