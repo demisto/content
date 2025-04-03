@@ -1298,7 +1298,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1",
+            "instance_names": "palo_alto_panorama_11",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000,
@@ -1306,7 +1306,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.1",
+            "instance_names": "palo_alto_firewall_11",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000,
@@ -1314,7 +1314,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1",
+            "instance_names": "palo_alto_panorama_11",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
             "timeout": 2400,
@@ -5159,7 +5159,7 @@
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
             "marketplaces": "xsoar_saas",
-            "timeout": 170
+            "timeout": 300
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -6036,7 +6036,11 @@
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
         "Mail Sender (New) Test": "Creds not working CRTX-160174",
-        "Mail-Listener Test Playbook": "Creds not working CRTX-160174"
+        "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
+        "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+
+
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",

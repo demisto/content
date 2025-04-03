@@ -10,6 +10,6 @@ HTML_TEXT = """<!doctype html>
 
 
 def test_ads():
-    term_list = '  \n||ad_url\n##another_url\n'
+    term_list = "  \n||ad_url\n##another_url\n"
     res = ads(HTML_TEXT, term_list)
-    assert res == {'ad_ur': 1}
+    assert res == {"ad_ur": 1}
