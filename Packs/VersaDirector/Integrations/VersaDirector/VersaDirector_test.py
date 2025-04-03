@@ -1,8 +1,8 @@
 import pytest
 from CommonServerPython import DemistoException
-from VersaDirector import Client
-from test_data import input_data
 from requests import Response
+from test_data import input_data
+from VersaDirector import Client
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
     Then:
         - Raise DemistoException with valid message
     """
-    from VersaDirector import handle_auth_token_command, BASIC_CREDENTIALS_COULD_NOT_START
+    from VersaDirector import BASIC_CREDENTIALS_COULD_NOT_START, handle_auth_token_command
 
     client._auth = ()
     with pytest.raises(DemistoException) as e:
@@ -255,10 +255,7 @@ def test_template_list_by_datastore_command(mocker, client):
     args = {"organization": "org_name"}
     template_list_by_datastore_command(client, args)
     http_request.assert_called_with(
-        "GET",
-        url_suffix="api/config/devices/template/org_name-DataStore/config/orgs/org",
-        params={},
-        headers={}
+        "GET", url_suffix="api/config/devices/template/org_name-DataStore/config/orgs/org", params={}, headers={}
     )
 
 
@@ -308,7 +305,6 @@ def test_template_custom_url_category_list_command(mocker, client):
         + "/org_name/url-filtering/user-defined-url-categories/url-category",
         params={"offset": 0},
         headers={},
-
     )
 
 
@@ -581,7 +577,6 @@ def test_appliance_custom_url_category_list_command(mocker, client, url_category
         + suffix,
         params={},
         headers={},
-
     )
 
 
@@ -717,7 +712,6 @@ def test_appliance_access_policy_rule_list_command(mocker, client):
         + "/access-policy-group/access_policy_name/rules/access-policy",
         params={},
         headers={},
-
     )
 
 
@@ -821,7 +815,6 @@ def test_template_sdwan_policy_list_command(mocker, client):
         + "org-services/org_name/sd-wan/policies/sdwan-policy-group",
         params={},
         headers={},
-
     )
 
 
@@ -853,7 +846,6 @@ def test_template_sdwan_policy_rule_list_command(mocker, client):
         + "organization/sd-wan/policies/sdwan-policy-group/sdwan_policy_name/rules/rule",
         params={},
         headers={},
-
     )
 
 
@@ -965,7 +957,6 @@ def test_appliance_sdwan_policy_list_command(mocker, client):
         + "/organization/sd-wan/policies/sdwan-policy-group",
         params={},
         headers={},
-
     )
 
 
@@ -996,7 +987,6 @@ def test_appliance_sdwan_policy_rule_list_command(mocker, client):
         + "organization/sd-wan/policies/sdwan-policy-group/sdwan_policy_name/rules/rule",
         params={},
         headers={},
-
     )
 
 
@@ -1108,7 +1098,6 @@ def test_template_address_object_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/organization/objects/addresses/address",
         params={},
         headers={},
-
     )
 
 
@@ -1410,7 +1399,6 @@ def test_template_user_defined_application_list_command(mocker, client):
         + "application-identification/user-defined-applications/user-defined-application",
         params={},
         headers={},
-
         ok_codes=(200, 201, 204),
     )
 
@@ -1441,7 +1429,6 @@ def test_appliance_user_defined_application_list_command(mocker, client):
         + "application-identification/user-defined-applications/user-defined-application",
         params={},
         headers={},
-
         ok_codes=(200, 201),
     )
 
@@ -1472,7 +1459,6 @@ def test_template_user_modified_application_list_command(mocker, client):
         + "application-identification/application-specific-options/app-specific-option-list",
         params={},
         headers={},
-
         ok_codes=(200, 201),
     )
 
@@ -1503,7 +1489,6 @@ def test_appliance_user_modified_application_list_command(mocker, client):
         + "application-identification/application-specific-options/app-specific-option-list",
         params={},
         headers={},
-
         ok_codes=(200, 201),
     )
 

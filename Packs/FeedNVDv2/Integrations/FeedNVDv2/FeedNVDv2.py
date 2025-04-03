@@ -6,9 +6,8 @@ for threat intelligence management
 """
 
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import urllib3
+from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 
 # Disable insecure warnings
@@ -18,18 +17,20 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    """
+    """Client class to interact with the service API"""
 
-    def __init__(self, base_url: str,
-                 proxy: bool,
-                 api_key: str,
-                 tlp_color: str,
-                 has_kev: bool,
-                 first_fetch: str,
-                 feed_tags: list[str],
-                 cvssv3severity: list[str],
-                 keyword_search: str):
+    def __init__(
+        self,
+        base_url: str,
+        proxy: bool,
+        api_key: str,
+        tlp_color: str,
+        has_kev: bool,
+        first_fetch: str,
+        feed_tags: list[str],
+        cvssv3severity: list[str],
+        keyword_search: str,
+    ):
         super().__init__(base_url=base_url, proxy=proxy)
         self._base_url = base_url
         self.tlp_color = tlp_color
@@ -47,17 +48,18 @@ class Client(BaseClient):
         """
 
         if self.api_key:
-            headers = {'apiKey': self.api_key}
+            headers = {"apiKey": self.api_key}
 
         else:
             headers = {}
 
         param_string = self.build_param_string(params)
 
-        demisto.debug(f'Calling NIST NVD with the following parameters {param_string}')
+        demisto.debug(f"Calling NIST NVD with the following parameters {param_string}")
 
-        return self._http_request('GET', url_suffix=path, headers=headers, params=param_string, resp_type='json', timeout=300,
-                                  retries=3)
+        return self._http_request(
+            "GET", url_suffix=path, headers=headers, params=param_string, resp_type="json", timeout=300, retries=3
+        )
 
     def build_param_string(self, params: dict) -> str:
         """Builds a string out of the URL parameters to allow duplication of Severity keys.
@@ -69,12 +71,12 @@ class Client(BaseClient):
             str: The parameters needed as a string.
         """
 
-        param_string: str = '&'.join([f'{key}={value}' for key, value in params.items()])
-        param_string = param_string.replace('noRejected=None', 'noRejected')
-        param_string = param_string.replace('hasKev=True', 'hasKev')
+        param_string: str = "&".join([f"{key}={value}" for key, value in params.items()])
+        param_string = param_string.replace("noRejected=None", "noRejected")
+        param_string = param_string.replace("hasKev=True", "hasKev")
 
         for value in self.cvssv3severity:
-            param_string += f'&cvssV3Severity={value}'
+            param_string += f"&cvssV3Severity={value}"
 
         return param_string
 
@@ -100,47 +102,47 @@ def build_indicators(client: Client, raw_cves: List[dict]):
         cpes: list[dict] = []
         refs: list[dict] = []
 
-        indicator = {"value": raw_cve.get('id')}
-        fields = {"description": raw_cve.get('descriptions')[0].get('value')}
-        fields["cvemodified"] = raw_cve.get('lastModified')
-        fields["published"] = raw_cve.get('published')
-        fields["updateddate"] = raw_cve.get('lastModified')
-        fields["vulnerabilities"] = raw_cve.get('weaknesses')
+        indicator = {"value": raw_cve.get("id")}
+        fields = {"description": raw_cve.get("descriptions")[0].get("value")}
+        fields["cvemodified"] = raw_cve.get("lastModified")
+        fields["published"] = raw_cve.get("published")
+        fields["updateddate"] = raw_cve.get("lastModified")
+        fields["vulnerabilities"] = raw_cve.get("weaknesses")
 
         # Process references
 
-        for ref in raw_cve.get('references'):
-            refs.append({'title': indicator['value'], 'source': ref.get('source'), 'link': ref.get('url')})
+        for ref in raw_cve.get("references"):
+            refs.append({"title": indicator["value"], "source": ref.get("source"), "link": ref.get("url")})
 
         fields["publications"] = refs
 
         # Process CPEs
-        for conf in raw_cve.get('configurations', []):
-            for node in conf['nodes']:
+        for conf in raw_cve.get("configurations", []):
+            for node in conf["nodes"]:
                 if "cpeMatch" in node:
-                    cpes.extend({"CPE": cpe['criteria']} for cpe in node['cpeMatch'])
+                    cpes.extend({"CPE": cpe["criteria"]} for cpe in node["cpeMatch"])
         fields["vulnerableproducts"] = cpes
 
         # Check for which CVSS Metric scoring data is available in the CVE response
         # Use the newest CVSS standard to set the CVSS Version, vector, severity, and score
-        if "cvssMetricV2" in raw_cve.get('metrics'):
-            cvss_metric = 'cvssMetricV2'
+        if "cvssMetricV2" in raw_cve.get("metrics"):
+            cvss_metric = "cvssMetricV2"
             fields["cvssversion"] = "2"
-        elif "cvssMetricV30" in raw_cve.get('metrics'):
-            cvss_metric = 'cvssMetricV30'
+        elif "cvssMetricV30" in raw_cve.get("metrics"):
+            cvss_metric = "cvssMetricV30"
             fields["cvssversion"] = "3"
-        elif "cvssMetricV31" in raw_cve.get('metrics'):
-            cvss_metric = 'cvssMetricV31'
+        elif "cvssMetricV31" in raw_cve.get("metrics"):
+            cvss_metric = "cvssMetricV31"
             fields["cvssversion"] = "3.1"
 
         if cvss_metric:
-            fields["cvssscore"] = raw_cve.get('metrics').get(cvss_metric)[0].get('impactScore')
-            fields["cvssvector"] = raw_cve.get('metrics').get(cvss_metric)[0].get('cvssData').get('vectorString')
-            fields["sourceoriginalseverity"] = raw_cve.get('metrics').get(cvss_metric)[0].get('impactScore')
+            fields["cvssscore"] = raw_cve.get("metrics").get(cvss_metric)[0].get("impactScore")
+            fields["cvssvector"] = raw_cve.get("metrics").get(cvss_metric)[0].get("cvssData").get("vectorString")
+            fields["sourceoriginalseverity"] = raw_cve.get("metrics").get(cvss_metric)[0].get("impactScore")
 
-            for key, value in raw_cve.get('metrics').get(cvss_metric)[0].items():
+            for key, value in raw_cve.get("metrics").get(cvss_metric)[0].items():
                 if key == "cvssData":
-                    cvss = raw_cve.get('metrics').get(cvss_metric)[0]['cvssData']
+                    cvss = raw_cve.get("metrics").get(cvss_metric)[0]["cvssData"]
                     for new_item in cvss:
                         metrics.append({"metrics": str(new_item), "value": cvss[new_item]})
                 else:
@@ -149,7 +151,7 @@ def build_indicators(client: Client, raw_cves: List[dict]):
             fields["cvsstable"] = metrics
 
         if cpes:
-            tags, relationships = parse_cpe_command([d['CPE'] for d in cpes], raw_cve.get('id'))
+            tags, relationships = parse_cpe_command([d["CPE"] for d in cpes], raw_cve.get("id"))
             if client.feed_tags:
                 tags.append(str(client.feed_tags))
 
@@ -205,44 +207,40 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
 
     """
 
-    cpe_parts = {
-        "a": "Application",
-        "o": "Operating-System",
-        "h": "Hardware"
-    }
+    cpe_parts = {"a": "Application", "o": "Operating-System", "h": "Hardware"}
 
     vendors = set()
     products = set()
     parts = set()
 
     for cpe in cpes:
-        cpe_split = re.split(r'(?<!\\):', cpe)
+        cpe_split = re.split(r"(?<!\\):", cpe)
 
         try:
             parts.add(cpe_parts[cpe_split[2]])
 
-            if (vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " ")):
+            if vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
                 vendors.add(vendor)
 
-            if (product := cpe_split[4].capitalize().replace("\\", "").replace("_", " ")):
+            if product := cpe_split[4].capitalize().replace("\\", "").replace("_", " "):
                 products.add(product)
 
         except IndexError:
             pass
 
-    relationships = [EntityRelationship(name="targets",
-                                        entity_a=cve_id,
-                                        entity_a_type="cve",
-                                        entity_b=vendor,
-                                        entity_b_type="identity") for vendor in vendors]
+    relationships = [
+        EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve", entity_b=vendor, entity_b_type="identity")
+        for vendor in vendors
+    ]
 
-    relationships.extend([EntityRelationship(name="targets",
-                                             entity_a=cve_id,
-                                             entity_a_type="cve",
-                                             entity_b=product,
-                                             entity_b_type="software") for product in products])
+    relationships.extend(
+        [
+            EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve", entity_b=product, entity_b_type="software")
+            for product in products
+        ]
+    )
 
-    demisto.debug(f'{len(relationships)} relationships found for {cve_id}')
+    demisto.debug(f"{len(relationships)} relationships found for {cve_id}")
 
     return list(vendors | products | parts), relationships
 
@@ -268,27 +266,28 @@ def cves_to_war_room(raw_cves):
             continue
 
         cve = raw_cve.get("cve")
-        fields = {"description": cve.get('descriptions', [])[0].get('value')}
-        fields["modified"] = cve.get('lastModified')
-        fields["published"] = cve.get('published')
-        fields["id"] = cve.get('id')
+        fields = {"description": cve.get("descriptions", [])[0].get("value")}
+        fields["modified"] = cve.get("lastModified")
+        fields["published"] = cve.get("published")
+        fields["id"] = cve.get("id")
         fields["score"] = 0
         try:
             fields["cvssversion"], fields["score"] = get_cvss_version_and_score(cve.get("metrics"))
         except Exception:
-            demisto.debug(f'Cant find CVSS score for {raw_cve}')
+            demisto.debug(f"Cant find CVSS score for {raw_cve}")
 
         output_list.append(fields)
 
     return CommandResults(
         outputs=output_list,
-        outputs_prefix='NistNVDv2.Indicators',
+        outputs_prefix="NistNVDv2.Indicators",
         readable_output=tableToMarkdown(
             "CVEs",
-            [{'ID': cve["id"], 'Score': cve["score"], 'Description': cve["description"]} for cve in output_list],
-            headers=['ID', 'Score', 'Description']
+            [{"ID": cve["id"], "Score": cve["score"], "Description": cve["description"]} for cve in output_list],
+            headers=["ID", "Score", "Description"],
         ),
-        outputs_key_field='Name')
+        outputs_key_field="Name",
+    )
 
 
 def get_cvss_version_and_score(metrics):
@@ -297,7 +296,7 @@ def get_cvss_version_and_score(metrics):
     if cvss_metrics and cvss_metrics[0]:
         return cvss_metrics[0]["cvssData"]["version"], cvss_metrics[0]["cvssData"]["baseScore"]
 
-    return '', ''
+    return "", ""
 
 
 def test_module(client: Client):
@@ -313,14 +312,13 @@ def test_module(client: Client):
 
     """
     try:
-        interval = parse_date_range('1 day', DATE_FORMAT)
+        interval = parse_date_range("1 day", DATE_FORMAT)
         parse_date_range(client.first_fetch, DATE_FORMAT)
-        client.get_cves("/rest/json/cves/2.0/", params={'pubStartDate': interval[0], 'pubEndDate': interval[1]})
-        return_results('ok')
+        client.get_cves("/rest/json/cves/2.0/", params={"pubStartDate": interval[0], "pubEndDate": interval[1]})
+        return_results("ok")
 
     except Exception as e:  # pylint: disable=broad-except
-        return_error("Invalid API key specified in integration instance configuration"
-                     + "\nError Message: " + str(e))
+        return_error("Invalid API key specified in integration instance configuration" + "\nError Message: " + str(e))
 
 
 def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
@@ -338,43 +336,45 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
     """
     url_suffix = "/rest/json/cves/2.0/"
     results_per_page = 2000
-    param: dict[str, str | int] = {'startIndex': 0, 'resultsPerPage': results_per_page, 'noRejected': ''}
+    param: dict[str, str | int] = {"startIndex": 0, "resultsPerPage": results_per_page, "noRejected": ""}
     raw_cves = []  # type: ignore
     more_to_process = True
 
     if publish_date:
-        param['pubStartDate'] = start_date.strftime(DATE_FORMAT)
-        param['pubEndDate'] = end_date.strftime(DATE_FORMAT)
+        param["pubStartDate"] = start_date.strftime(DATE_FORMAT)
+        param["pubEndDate"] = end_date.strftime(DATE_FORMAT)
 
     else:
-        param['lastModStartDate'] = start_date.strftime(DATE_FORMAT)
-        param['lastModEndDate'] = end_date.strftime(DATE_FORMAT)
+        param["lastModStartDate"] = start_date.strftime(DATE_FORMAT)
+        param["lastModEndDate"] = end_date.strftime(DATE_FORMAT)
 
     if client.has_kev:
-        param['hasKev'] = True
+        param["hasKev"] = True
 
     if client.keyword_search:
-        param['keywordSearch'] = client.keyword_search
+        param["keywordSearch"] = client.keyword_search
 
     # Collect all the indicators together
     while more_to_process:
         try:
             res = client.get_cves(url_suffix, param)
-            total_results = res.get('totalResults', 0)
+            total_results = res.get("totalResults", 0)
 
             if total_results:
-                demisto.debug(f'Fetching {param["startIndex"]}-{int(param["startIndex"])+results_per_page}'
-                              'out of {total_results} results.')
+                demisto.debug(
+                    f'Fetching {param["startIndex"]}-{int(param["startIndex"])+results_per_page}'
+                    'out of {total_results} results.'
+                )
 
-                raw_cves += res.get('vulnerabilities')
+                raw_cves += res.get("vulnerabilities")
 
-                param['startIndex'] += int(results_per_page)  # type: ignore
+                param["startIndex"] += int(results_per_page)  # type: ignore
 
-            if (param['startIndex'] >= total_results):
+            if param["startIndex"] >= total_results:
                 more_to_process = False
 
         except Exception as e:  # pylint: disable=broad-except
-            demisto.debug(f'{e}')
+            demisto.debug(f"{e}")
 
         # finally:
         #    time.sleep(.5)
@@ -402,7 +402,7 @@ def fetch_indicators_command(client: Client) -> list[dict]:
     last_run_data = demisto.getLastRun()
     end_date = datetime.now(timezone.utc)
 
-    if command == 'nvd-get-indicators':
+    if command == "nvd-get-indicators":
         history = parse_date_range(f'{demisto.getArg("history")}', DATE_FORMAT)
         client.keyword_search = f'{demisto.getArg("keyword")}'
         start_date: datetime | None = parse(history[0])  # type: ignore
@@ -418,7 +418,7 @@ def fetch_indicators_command(client: Client) -> list[dict]:
         first_fetch: tuple[Any, Any] = parse_date_range(client.first_fetch, DATE_FORMAT)
         start_date = parse(first_fetch[0])  # type: ignore
         publish_date = True
-        demisto.debug(f'Running Feed NVD for the first time catching CVEs since {first_fetch}')
+        demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
 
     start_index = start_date
 
@@ -431,13 +431,15 @@ def fetch_indicators_command(client: Client) -> list[dict]:
         delta = (end_date - start_index).days
 
         if delta > 120:
-            demisto.debug(f'Fetching CVEs over a span of {delta} days, will run in 120 days batches')
+            demisto.debug(f"Fetching CVEs over a span of {delta} days, will run in 120 days batches")
             end_date = start_index + timedelta(days=120)
         else:
             exceeds_span = False
 
-        demisto.debug(f'Fetching CVEs from {start_index:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
-                      f'Using {"Publish date" if publish_date else "Updated date"}')
+        demisto.debug(
+            f'Fetching CVEs from {start_index:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
+            f'Using {"Publish date" if publish_date else "Updated date"}'
+        )
 
         raw_cves = retrieve_cves(client, start_index, end_date, publish_date=publish_date)
 
@@ -451,8 +453,10 @@ def fetch_indicators_command(client: Client) -> list[dict]:
 
     set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT)})
 
-    demisto.debug(f'({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), '  # type: ignore
-                  f'Fetched {total_results} indicators.')
+    demisto.debug(
+        f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), "  # type: ignore
+        f"Fetched {total_results} indicators."
+    )
     demisto.debug(f'Setting lastRun to "{end_date.strftime(DATE_FORMAT)}"')
 
     return raw_cves
@@ -473,14 +477,14 @@ def main():  # pragma: no cover
 
     params = demisto.params()
     base_url: str = "https://services.nvd.nist.gov"  # disable-secrets-detection
-    proxy = params.get('proxy', False)
-    api_key = params.get('apiKey', {}).get('password', '')
-    tlp_color = params.get('tlp_color', '')
-    has_kev = params.get('hasKev', False)
-    first_fetch = params.get('first_fetch', '')
-    feed_tags = params.get('feedTags', [])
+    proxy = params.get("proxy", False)
+    api_key = params.get("apiKey", {}).get("password", "")
+    tlp_color = params.get("tlp_color", "")
+    has_kev = params.get("hasKev", False)
+    first_fetch = params.get("first_fetch", "")
+    feed_tags = params.get("feedTags", [])
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
@@ -490,11 +494,11 @@ def main():  # pragma: no cover
             has_kev=has_kev,
             first_fetch=first_fetch,
             feed_tags=feed_tags,
-            cvssv3severity=params.get('cvssv3severity', []),
-            keyword_search=params.get('keyword_search', '')
+            cvssv3severity=params.get("cvssv3severity", []),
+            keyword_search=params.get("keyword_search", ""),
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module(client)
         elif command == "fetch-indicators":
             fetch_indicators_command(client)
@@ -502,8 +506,8 @@ def main():  # pragma: no cover
             return_results(cves_to_war_room(fetch_indicators_command(client)))
 
     except Exception as e:  # pylint: disable=broad-except
-        return_error(f'Failed to execute {demisto.command()} command.\nError: \n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError: \n{e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
