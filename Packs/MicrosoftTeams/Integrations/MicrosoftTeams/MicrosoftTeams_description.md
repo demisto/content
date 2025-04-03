@@ -18,7 +18,7 @@ There are two different authentication methods for [self-deployed configuration]
 - [Client Credentials flow](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#client-credentials-flow)
 - [Authorization Code flow](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#authorization-code-flow)
 
-In order to use ***microsoft-teams-ring-user***, you must use the **Client Credentials flow**.
+***microsoft-teams-ring-user*** always uses **Client Credentials flow**. If **Authorization Code flow** is configured, the integration will seemlessly authenticate using **Client Credentials** when the command is called. This should have no effect on other commands.
 
 In order to use the following commands, you must use the **Authorization Code flow**:
   - ***microsoft-teams-chat-create***
