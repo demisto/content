@@ -656,6 +656,7 @@ def test_final_context_format(mocker: MockerFixture):
 
     main()
 
+    # Message
     # Validate the output
     assert mock_return_results.called, "return_results should have been called"
     result = mock_return_results.call_args[0][0]
