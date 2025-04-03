@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-''' IMPORTS '''
+""" IMPORTS """
 
 import base64
 import datetime as dt
@@ -15,32 +15,32 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 # IdentityIQ OAuth token endpoint
-IIQ_OAUTH_EXT = '/oauth2/token'
-IIQ_SCIM_PREFIX = '/scim/v2'
+IIQ_OAUTH_EXT = "/oauth2/token"
+IIQ_SCIM_PREFIX = "/scim/v2"
 
 # SCIM core endpoints
-IIQ_SCIM_SERVICE_PROVIDER_CONFIG_EXT = f'{IIQ_SCIM_PREFIX}/ServiceProviderConfig'
-IIQ_SCIM_RESOURCE_TYPES_EXT = f'{IIQ_SCIM_PREFIX}/ResourceTypes'
-IIQ_SCIM_SCHEMAS_EXT = f'{IIQ_SCIM_PREFIX}/Schemas'
+IIQ_SCIM_SERVICE_PROVIDER_CONFIG_EXT = f"{IIQ_SCIM_PREFIX}/ServiceProviderConfig"
+IIQ_SCIM_RESOURCE_TYPES_EXT = f"{IIQ_SCIM_PREFIX}/ResourceTypes"
+IIQ_SCIM_SCHEMAS_EXT = f"{IIQ_SCIM_PREFIX}/Schemas"
 
 # SCIM resource endpoints
-IIQ_SCIM_USERS_EXT = f'{IIQ_SCIM_PREFIX}/Users'
-IIQ_SCIM_ACCOUNTS_EXT = f'{IIQ_SCIM_PREFIX}/Accounts'
-IIQ_SCIM_ENTITLEMENTS_EXT = f'{IIQ_SCIM_PREFIX}/Entitlements'
-IIQ_SCIM_ROLES_EXT = f'{IIQ_SCIM_PREFIX}/Roles'
-IIQ_SCIM_POLICY_VIOLATIONS_EXT = f'{IIQ_SCIM_PREFIX}/PolicyViolations'
-IIQ_SCIM_LAUNCHED_WORKFLOWS_EXT = f'{IIQ_SCIM_PREFIX}/LaunchedWorkflows'
-IIQ_SCIM_TASK_RESULTS_EXT = f'{IIQ_SCIM_PREFIX}/TaskResults'
-IIQ_SCIM_ALERTS_EXT = f'{IIQ_SCIM_PREFIX}/Alerts'
+IIQ_SCIM_USERS_EXT = f"{IIQ_SCIM_PREFIX}/Users"
+IIQ_SCIM_ACCOUNTS_EXT = f"{IIQ_SCIM_PREFIX}/Accounts"
+IIQ_SCIM_ENTITLEMENTS_EXT = f"{IIQ_SCIM_PREFIX}/Entitlements"
+IIQ_SCIM_ROLES_EXT = f"{IIQ_SCIM_PREFIX}/Roles"
+IIQ_SCIM_POLICY_VIOLATIONS_EXT = f"{IIQ_SCIM_PREFIX}/PolicyViolations"
+IIQ_SCIM_LAUNCHED_WORKFLOWS_EXT = f"{IIQ_SCIM_PREFIX}/LaunchedWorkflows"
+IIQ_SCIM_TASK_RESULTS_EXT = f"{IIQ_SCIM_PREFIX}/TaskResults"
+IIQ_SCIM_ALERTS_EXT = f"{IIQ_SCIM_PREFIX}/Alerts"
 
 # From ServiceProviderConfig (filter.maxResults) for IdentityIQ SCIM API
 MAX_INCIDENTS_TO_FETCH = 1000
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -73,12 +73,19 @@ class Client(BaseClient):
         """
         if url_suffix is None or method is None:
             return None
-        return self._http_request(url_suffix=url_suffix, method=method, json_data=json_data, params=params,
-                                  timeout=self.request_timeout, resp_type='response',
-                                  ok_codes=(200, 201, 202, 204, 400, 401, 404, 409, 500), proxies=handle_proxy())
+        return self._http_request(
+            url_suffix=url_suffix,
+            method=method,
+            json_data=json_data,
+            params=params,
+            timeout=self.request_timeout,
+            resp_type="response",
+            ok_codes=(200, 201, 202, 204, 400, 401, 404, 409, 500),
+            proxies=handle_proxy(),
+        )
 
 
-''' HELPER/UTILITY FUNCTIONS '''
+""" HELPER/UTILITY FUNCTIONS """
 
 
 def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: str, verify: bool):
@@ -104,25 +111,26 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
         return None
 
     if grant_type is None:
-        grant_type = 'client_credentials'
+        grant_type = "client_credentials"
 
-    auth_cred = client_id + ':' + client_secret
-    iiq_oauth_body = f'grant_type={grant_type}'
+    auth_cred = client_id + ":" + client_secret
+    iiq_oauth_body = f"grant_type={grant_type}"
     iiq_oauth_headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic %s' % base64.b64encode(auth_cred.encode()).decode()
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Basic {base64.b64encode(auth_cred.encode()).decode()}",
     }
-    oauth_response = requests.request("POST", url=f'{base_url}{IIQ_OAUTH_EXT}', data=iiq_oauth_body,
-                                      headers=iiq_oauth_headers, verify=verify)
+    oauth_response = requests.request(
+        "POST", url=f"{base_url}{IIQ_OAUTH_EXT}", data=iiq_oauth_body, headers=iiq_oauth_headers, verify=verify
+    )
     if oauth_response is not None and 200 <= oauth_response.status_code < 300:
         return {
-            'Authorization': 'Bearer %s' % oauth_response.json().get('access_token', None),
-            'Content-Type': 'application/json'
+            "Authorization": f"Bearer {oauth_response.json().get('access_token', None)}",
+            "Content-Type": "application/json",
         }
     else:
-        err_msg = 'Failed to get response'
+        err_msg = "Failed to get response"
         if oauth_response is not None:
-            err_msg += f' {oauth_response.status_code}'
+            err_msg += f" {oauth_response.status_code}"
         raise DemistoException(err_msg)
 
 
@@ -164,17 +172,17 @@ def transform_object(object_type: str, object=None):
     if not isinstance(object, dict):
         return None
 
-    if object_type == 'IdentityIQ.Identity':
-        if 'urn:ietf:params:scim:schemas:sailpoint:1.0:User' in object:
-            object['sailpointUser'] = object.pop('urn:ietf:params:scim:schemas:sailpoint:1.0:User')
-        if 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User' in object:
-            object['extendedUser'] = object.pop('urn:ietf:params:scim:schemas:extension:enterprise:2.0:User')
-    elif object_type == 'IdentityIQ.Workflow':
-        if 'urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow' in object:
-            object['launchedWorkflow'] = object.pop('urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow')
-    elif object_type == 'IdentityIQ.Alert':
-        if 'urn:ietf:params:scim:schemas:sailpoint:1.0:AlertInput' in object:
-            object['alertInput'] = object.pop('urn:ietf:params:scim:schemas:sailpoint:1.0:AlertInput')
+    if object_type == "IdentityIQ.Identity":
+        if "urn:ietf:params:scim:schemas:sailpoint:1.0:User" in object:
+            object["sailpointUser"] = object.pop("urn:ietf:params:scim:schemas:sailpoint:1.0:User")
+        if "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User" in object:
+            object["extendedUser"] = object.pop("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
+    elif object_type == "IdentityIQ.Workflow":
+        if "urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow" in object:
+            object["launchedWorkflow"] = object.pop("urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow")
+    elif object_type == "IdentityIQ.Alert":
+        if "urn:ietf:params:scim:schemas:sailpoint:1.0:AlertInput" in object:
+            object["alertInput"] = object.pop("urn:ietf:params:scim:schemas:sailpoint:1.0:AlertInput")
     return object
 
 
@@ -190,40 +198,116 @@ def get_markdown(object_type: str, objects=None):
 
     :return: Markdown for each object type.
     """
-    markdown = ''
-    if object_type == 'IdentityIQ.Identity':
-        headers = ['id', 'userName', 'displayName', 'name', 'emails', 'sailpointUser', 'extendedUser', 'entitlements',
-                   'roles', 'capabilities', 'active']
-        markdown = tableToMarkdown('Identity(Identities)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.PolicyViolation':
-        headers = ['id', 'policyName', 'constraintName', 'status', 'description', 'identity', 'owner']
-        markdown = tableToMarkdown('PolicyViolation(s)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.TaskResult':
-        headers = ['id', 'name', 'type', 'host', 'progress', 'completionStatus', 'launched', 'taskDefinition',
-                   'pendingSignoffs', 'launcher', 'completed', 'taskSchedule', 'partitioned', 'terminated', 'messages',
-                   'attributes']
-        markdown = tableToMarkdown('TaskResult(s)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.Account':
-        headers = ['id', 'displayName', 'identity', 'hasEntitlements', 'application', 'nativeIdentity', 'active',
-                   'lastRefresh', 'manuallyCorrelated', 'application', 'locked']
-        markdown = tableToMarkdown('Account(s)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.Workflow':
-        headers = ['id', 'name', 'workflowName', 'identityRequestId', 'workflowCaseId', 'launched', 'targetClass',
-                   'targetName', 'type', 'completionStatus', 'launcher', 'terminated', 'attributes', 'partitioned',
-                   'completed', 'pendingSignoffs', 'taskDefinition', 'launchedWorkflow']
-        markdown = tableToMarkdown('Workflow(s)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.Role':
-        headers = ['id', 'name', 'owner', 'active', 'displayableName', 'permits', 'type', 'descriptions',
-                   'requirements']
-        markdown = tableToMarkdown('Role(s)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.Entitlement':
-        headers = ['id', 'displayableName', 'type', 'attribute', 'value', 'owner', 'application', 'descriptions',
-                   'requestable', 'aggregated', 'created']
-        markdown = tableToMarkdown('Entitlement(s)', objects, headers=headers)
-    elif object_type == 'IdentityIQ.Alert':
-        headers = ['id', 'name', 'displayName', 'type', 'targetId', 'targetDisplayName', 'targetType', 'alertInput',
-                   'actions', 'application', 'attributes', 'lastProcessed']
-        markdown = tableToMarkdown('Alert(s)', objects, headers=headers)
+    markdown = ""
+    if object_type == "IdentityIQ.Identity":
+        headers = [
+            "id",
+            "userName",
+            "displayName",
+            "name",
+            "emails",
+            "sailpointUser",
+            "extendedUser",
+            "entitlements",
+            "roles",
+            "capabilities",
+            "active",
+        ]
+        markdown = tableToMarkdown("Identity(Identities)", objects, headers=headers)
+    elif object_type == "IdentityIQ.PolicyViolation":
+        headers = ["id", "policyName", "constraintName", "status", "description", "identity", "owner"]
+        markdown = tableToMarkdown("PolicyViolation(s)", objects, headers=headers)
+    elif object_type == "IdentityIQ.TaskResult":
+        headers = [
+            "id",
+            "name",
+            "type",
+            "host",
+            "progress",
+            "completionStatus",
+            "launched",
+            "taskDefinition",
+            "pendingSignoffs",
+            "launcher",
+            "completed",
+            "taskSchedule",
+            "partitioned",
+            "terminated",
+            "messages",
+            "attributes",
+        ]
+        markdown = tableToMarkdown("TaskResult(s)", objects, headers=headers)
+    elif object_type == "IdentityIQ.Account":
+        headers = [
+            "id",
+            "displayName",
+            "identity",
+            "hasEntitlements",
+            "application",
+            "nativeIdentity",
+            "active",
+            "lastRefresh",
+            "manuallyCorrelated",
+            "application",
+            "locked",
+        ]
+        markdown = tableToMarkdown("Account(s)", objects, headers=headers)
+    elif object_type == "IdentityIQ.Workflow":
+        headers = [
+            "id",
+            "name",
+            "workflowName",
+            "identityRequestId",
+            "workflowCaseId",
+            "launched",
+            "targetClass",
+            "targetName",
+            "type",
+            "completionStatus",
+            "launcher",
+            "terminated",
+            "attributes",
+            "partitioned",
+            "completed",
+            "pendingSignoffs",
+            "taskDefinition",
+            "launchedWorkflow",
+        ]
+        markdown = tableToMarkdown("Workflow(s)", objects, headers=headers)
+    elif object_type == "IdentityIQ.Role":
+        headers = ["id", "name", "owner", "active", "displayableName", "permits", "type", "descriptions", "requirements"]
+        markdown = tableToMarkdown("Role(s)", objects, headers=headers)
+    elif object_type == "IdentityIQ.Entitlement":
+        headers = [
+            "id",
+            "displayableName",
+            "type",
+            "attribute",
+            "value",
+            "owner",
+            "application",
+            "descriptions",
+            "requestable",
+            "aggregated",
+            "created",
+        ]
+        markdown = tableToMarkdown("Entitlement(s)", objects, headers=headers)
+    elif object_type == "IdentityIQ.Alert":
+        headers = [
+            "id",
+            "name",
+            "displayName",
+            "type",
+            "targetId",
+            "targetDisplayName",
+            "targetType",
+            "alertInput",
+            "actions",
+            "application",
+            "attributes",
+            "lastProcessed",
+        ]
+        markdown = tableToMarkdown("Alert(s)", objects, headers=headers)
     return markdown
 
 
@@ -244,29 +328,24 @@ def build_results(prefix: str, key_field: str, response=None):
     """
     if response is not None and 200 <= response.status_code < 300:
         data = response.json()
-        if 'Resources' in data:
-            outputs = transform_object_list(prefix, data.get('Resources'))
-            markdown = '### Results:\nTotal: ' + str(data.get('totalResults')) + '\n'
+        if "Resources" in data:
+            outputs = transform_object_list(prefix, data.get("Resources"))
+            markdown = "### Results:\nTotal: " + str(data.get("totalResults")) + "\n"
         else:
             outputs = transform_object(prefix, data)
-            markdown = '### Results:\n'
+            markdown = "### Results:\n"
         markdown += get_markdown(prefix, outputs)
 
-        return CommandResults(
-            readable_output=markdown,
-            outputs_prefix=prefix,
-            outputs_key_field=key_field,
-            outputs=outputs
-        )
+        return CommandResults(readable_output=markdown, outputs_prefix=prefix, outputs_key_field=key_field, outputs=outputs)
     else:
-        if 'status' in response.json() and 'detail' in response.json():
-            return ''.join((response.json().get('status'), ' : ', response.json().get('detail')))
-        elif 'status' in response.json():
-            return response.json().get('status')
+        if "status" in response.json() and "detail" in response.json():
+            return "".join((response.json().get("status"), " : ", response.json().get("detail")))
+        elif "status" in response.json():
+            return response.json().get("status")
     return None
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_connection(client: Client):
@@ -281,9 +360,9 @@ def test_connection(client: Client):
     # Service provider config url may not be behind any auth, hence test resource types URL
     response = client.send_request(IIQ_SCIM_RESOURCE_TYPES_EXT, "GET", None)
     if response is not None and 200 <= response.status_code < 300:
-        return 'ok'
+        return "ok"
     else:
-        return 'Unable to connect to IdentityIQ!'
+        return "Unable to connect to IdentityIQ!"
 
 
 def fetch_incidents(client: Client, last_run, first_fetch_str):
@@ -308,31 +387,30 @@ def fetch_incidents(client: Client, last_run, first_fetch_str):
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
     first_fetch_date = dateparser.parse(first_fetch_str)
-    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
+    assert first_fetch_date is not None, f"could not parse {first_fetch_str}"
     first_fetch = first_fetch_date.strftime(DATE_FORMAT)
-    last_processed = last_run.get('last_fetch', first_fetch)
+    last_processed = last_run.get("last_fetch", first_fetch)
     now = dt.datetime.now().strftime(DATE_FORMAT)
 
     incidents = []
-    filter_string = ''.join(
-        ('(lastProcessed gt "', last_processed, '" and lastProcessed le "', now, '")'))
-    params = {'filter': filter_string}
+    filter_string = "".join(('(lastProcessed gt "', last_processed, '" and lastProcessed le "', now, '")'))
+    params = {"filter": filter_string}
     response = client.send_request(IIQ_SCIM_ALERTS_EXT, "GET", params, None)
     if response is not None and 200 <= response.status_code < 300:
-        alerts = transform_object_list('IdentityIQ.Alert', response.json().get('Resources'))
+        alerts = transform_object_list("IdentityIQ.Alert", response.json().get("Resources"))
         for alert in alerts:
-            if 'displayName' in alert:
-                incident_name = alert.get('displayName', None)
+            if "displayName" in alert:
+                incident_name = alert.get("displayName", None)
             else:
-                incident_name = alert.get('name', None)
+                incident_name = alert.get("name", None)
             incident = {
-                'name': incident_name,
-                'details': alert.get('name', None),
-                'occurred': alert.get('meta', {}).get('created', None),
-                'rawJSON': json.dumps(alert)
+                "name": incident_name,
+                "details": alert.get("name", None),
+                "occurred": alert.get("meta", {}).get("created", None),
+                "rawJSON": json.dumps(alert),
             }
             incidents.append(incident)
-    next_run = {'last_fetch': now}
+    next_run = {"last_fetch": now}
     return next_run, incidents
 
 
@@ -362,7 +440,7 @@ def search_identities(client: Client, id: str, email: str, risk: int, active: bo
     """
     params = None
     if id is not None:
-        url = ''.join((IIQ_SCIM_USERS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_USERS_EXT, "/", id))
     else:
         url = IIQ_SCIM_USERS_EXT
         filter_list = []
@@ -372,15 +450,15 @@ def search_identities(client: Client, id: str, email: str, risk: int, active: bo
             filter_list.append(filter)
         else:
             if email is not None:
-                filter_list.append(''.join(('emails.value eq "', email, '"')))
+                filter_list.append("".join(('emails.value eq "', email, '"')))
             if risk is not None:
-                filter_list.append(''.join(('urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore ge ', str(risk))))
+                filter_list.append("".join(("urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore ge ", str(risk))))
             if active is not None:
-                filter_list.append(''.join(('active eq ', str(active).lower())))
+                filter_list.append("".join(("active eq ", str(active).lower())))
         # Combine the filters
         if filter_list is not None and len(filter_list) > 0:
-            filter_string = ' and '.join(filter_list)
-            params = {'filter': filter_string}
+            filter_string = " and ".join(filter_list)
+            params = {"filter": filter_string}
     return client.send_request(url, "GET", params, None)
 
 
@@ -398,7 +476,7 @@ def get_policy_violations(client: Client, id: str):
     :return: Policy violation object (JSON) corresponding to the id or list of policy violation objects if id was None.
     """
     if id is not None:
-        url = ''.join((IIQ_SCIM_POLICY_VIOLATIONS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_POLICY_VIOLATIONS_EXT, "/", id))
     else:
         url = IIQ_SCIM_POLICY_VIOLATIONS_EXT
     return client.send_request(url, "GET", None, None)
@@ -418,15 +496,22 @@ def get_task_results(client: Client, id: str):
     :return: Task result object (JSON) corresponding to the id or list of task result objects if id was None.
     """
     if id is not None:
-        url = ''.join((IIQ_SCIM_TASK_RESULTS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_TASK_RESULTS_EXT, "/", id))
     else:
         url = IIQ_SCIM_TASK_RESULTS_EXT
     return client.send_request(url, "GET", None, None)
 
 
-def get_accounts(client: Client, id: str, display_name: str, last_refresh: str, native_identity: str,
-                 last_target_agg: str,
-                 identity_name: str, application_name: str):
+def get_accounts(
+    client: Client,
+    id: str,
+    display_name: str,
+    last_refresh: str,
+    native_identity: str,
+    last_target_agg: str,
+    identity_name: str,
+    application_name: str,
+):
     """
     Get accounts by search/filter parameters (id, display_name, last_refresh, native_identity,
     last_target_agg, identity_name & application_name) using IdentityIQ SCIM API's.
@@ -461,27 +546,28 @@ def get_accounts(client: Client, id: str, display_name: str, last_refresh: str, 
     """
     params = None
     if id is not None:
-        url = ''.join((IIQ_SCIM_ACCOUNTS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_ACCOUNTS_EXT, "/", id))
     else:
         url = IIQ_SCIM_ACCOUNTS_EXT
         filter_list = []
         if display_name is not None:
-            filter_list.append(''.join(('displayName eq "', display_name, '"')))
+            filter_list.append("".join(('displayName eq "', display_name, '"')))
         if last_refresh is not None:
-            filter_list.append(''.join(('lastRefresh ge "', last_refresh, '"')))
+            filter_list.append("".join(('lastRefresh ge "', last_refresh, '"')))
         if native_identity is not None:
-            filter_list.append(''.join(('nativeIdentity eq "', native_identity, '"')))
+            filter_list.append("".join(('nativeIdentity eq "', native_identity, '"')))
         if last_target_agg is not None:
-            filter_list.append(''.join(('lastTargetAggregation ge "', last_target_agg, '"')))
+            filter_list.append("".join(('lastTargetAggregation ge "', last_target_agg, '"')))
         if identity_name is not None:
-            filter_list.append(''.join(
-                ('(identity.userName eq "', identity_name, '"', ' or identity.displayName eq "', identity_name, '")')))
+            filter_list.append(
+                "".join(('(identity.userName eq "', identity_name, '"', ' or identity.displayName eq "', identity_name, '")'))
+            )
         if application_name is not None:
-            filter_list.append(''.join(('application.displayName eq "', application_name, '"')))
+            filter_list.append("".join(('application.displayName eq "', application_name, '"')))
         # Combine the filters
         if filter_list is not None and len(filter_list) > 0:
-            filter_string = ' and '.join(filter_list)
-            params = {'filter': filter_string}
+            filter_string = " and ".join(filter_list)
+            params = {"filter": filter_string}
     return client.send_request(url, "GET", params, None)
 
 
@@ -505,11 +591,11 @@ def change_account_status(client: Client, id: str, status: bool):
         return None
 
     # Get the user account (we need several fields to update as this is not a PATCH HTTP call).
-    url = ''.join((IIQ_SCIM_ACCOUNTS_EXT, '/', id))
+    url = "".join((IIQ_SCIM_ACCOUNTS_EXT, "/", id))
     response = client.send_request(url, "GET", None)
     if response is not None and 200 <= response.status_code < 300:
         data = response.json()
-        data['active'] = str(status).lower()
+        data["active"] = str(status).lower()
         return client.send_request(url, "PUT", None, data)
     else:
         return response.json()
@@ -530,15 +616,15 @@ def delete_account(client: Client, id: str):
     """
     if id is None:
         return None
-    url = ''.join((IIQ_SCIM_ACCOUNTS_EXT, '/', id))
+    url = "".join((IIQ_SCIM_ACCOUNTS_EXT, "/", id))
     response = client.send_request(url, "DELETE", None, None)
     if response is not None and 200 <= response.status_code < 300:
-        return 'Account deleted successfully!'
+        return "Account deleted successfully!"
     else:
-        if 'status' in response.json() and 'detail' in response.json():
-            return ''.join((response.json().get('status'), ' : ', response.json().get('detail')))
-        elif 'status' in response.json():
-            return response.json().get('status')
+        if "status" in response.json() and "detail" in response.json():
+            return "".join((response.json().get("status"), " : ", response.json().get("detail")))
+        elif "status" in response.json():
+            return response.json().get("status")
     return None
 
 
@@ -556,7 +642,7 @@ def get_launched_workflows(client: Client, id: str):
     :return: Launched workflow object (JSON) corresponding to the id or list of launched workflows objects if id was None.
     """
     if id is not None:
-        url = ''.join((IIQ_SCIM_LAUNCHED_WORKFLOWS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_LAUNCHED_WORKFLOWS_EXT, "/", id))
     else:
         url = IIQ_SCIM_LAUNCHED_WORKFLOWS_EXT
     return client.send_request(url, "GET", None, None)
@@ -576,7 +662,7 @@ def get_roles(client: Client, id: str):
     :return: Role object (JSON) corresponding to the id or list of role objects if id was None.
     """
     if id is not None:
-        url = ''.join((IIQ_SCIM_ROLES_EXT, '/', id))
+        url = "".join((IIQ_SCIM_ROLES_EXT, "/", id))
     else:
         url = IIQ_SCIM_ROLES_EXT
     return client.send_request(url, "GET", None, None)
@@ -596,7 +682,7 @@ def get_entitlements(client: Client, id: str):
     :return: Entitlement object (JSON) corresponding to the id or list of entitlement objects if id was None.
     """
     if id is not None:
-        url = ''.join((IIQ_SCIM_ENTITLEMENTS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_ENTITLEMENTS_EXT, "/", id))
     else:
         url = IIQ_SCIM_ENTITLEMENTS_EXT
     return client.send_request(url, "GET", None, None)
@@ -616,7 +702,7 @@ def get_alerts(client: Client, id: str):
     :return: Alert object (JSON) corresponding to the id or list of alert objects if id was None.
     """
     if id is not None:
-        url = ''.join((IIQ_SCIM_ALERTS_EXT, '/', id))
+        url = "".join((IIQ_SCIM_ALERTS_EXT, "/", id))
     else:
         url = IIQ_SCIM_ALERTS_EXT
     return client.send_request(url, "GET", None, None)
@@ -651,15 +737,11 @@ def create_alert(client: Client, display_name: str, attributes=None):
     if attributes is None:
         attributes = []
 
-    data = {
-        'displayName': display_name,
-        'type': 'PAN XSOAR',
-        'attributes': attributes
-    }
+    data = {"displayName": display_name, "type": "PAN XSOAR", "attributes": attributes}
     return client.send_request(IIQ_SCIM_ALERTS_EXT, "POST", None, data)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -668,26 +750,26 @@ def main():
     """
 
     # IdentityIQ Base URL (https://identityiq-server.com/identityiq)
-    base_url = demisto.params().get('identityiq_url')
+    base_url = demisto.params().get("identityiq_url")
 
     # OAuth 2.0 Credentials
-    client_id = demisto.params().get('client_id')
-    client_secret = demisto.params().get('client_secret')
-    grant_type = 'client_credentials'
+    client_id = demisto.params().get("client_id")
+    client_secret = demisto.params().get("client_secret")
+    grant_type = "client_credentials"
 
     # Convert the argument to an int or set to MAX_INCIDENTS_TO_FETCH
-    max_results = int(demisto.params().get('max_fetch'))
+    max_results = int(demisto.params().get("max_fetch"))
     if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
 
-    first_fetch_str = demisto.params().get('first_fetch', '3 days')
+    first_fetch_str = demisto.params().get("first_fetch", "3 days")
 
     # Other configs
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not demisto.params().get("insecure", False)
     proxy = handle_proxy()
-    request_timeout = 120   # increased timeout to 2 min from 10 sec to fix timeout error.
+    request_timeout = 120  # increased timeout to 2 min from 10 sec to fix timeout error.
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
         headers = get_headers(base_url, client_id, client_secret, grant_type, verify_certificate)
         client = Client(
@@ -696,98 +778,99 @@ def main():
             proxy=proxy,
             headers=headers,
             max_results=max_results,
-            request_timeout=request_timeout)
+            request_timeout=request_timeout,
+        )
         results = None
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             results = test_connection(client)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             next_run, incidents = fetch_incidents(client, demisto.getLastRun(), first_fetch_str)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'identityiq-search-identities':
-            id = demisto.args().get('id', None)
-            email = demisto.args().get('email', None)
-            risk = demisto.args().get('risk', 0)
-            active = demisto.args().get('active', True)
-            filter = demisto.args().get('filter', None)
+        elif demisto.command() == "identityiq-search-identities":
+            id = demisto.args().get("id", None)
+            email = demisto.args().get("email", None)
+            risk = demisto.args().get("risk", 0)
+            active = demisto.args().get("active", True)
+            filter = demisto.args().get("filter", None)
             response = search_identities(client, id, email, risk, active, filter)
-            results = build_results('IdentityIQ.Identity', 'id', response)
+            results = build_results("IdentityIQ.Identity", "id", response)
 
-        elif demisto.command() == 'identityiq-get-policyviolations':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-get-policyviolations":
+            id = demisto.args().get("id", None)
             response = get_policy_violations(client, id)
-            results = build_results('IdentityIQ.PolicyViolation', 'policyName', response)
+            results = build_results("IdentityIQ.PolicyViolation", "policyName", response)
 
-        elif demisto.command() == 'identityiq-get-taskresults':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-get-taskresults":
+            id = demisto.args().get("id", None)
             response = get_task_results(client, id)
-            results = build_results('IdentityIQ.TaskResult', 'id', response)
+            results = build_results("IdentityIQ.TaskResult", "id", response)
 
-        elif demisto.command() == 'identityiq-get-accounts':
-            id = demisto.args().get('id', None)
-            display_name = demisto.args().get('display_name', None)
-            last_refresh = demisto.args().get('last_refresh', None)
-            native_identity = demisto.args().get('native_identity', None)
-            last_target_agg = demisto.args().get('last_target_agg')
-            identity_name = demisto.args().get('identity_name', None)
-            application_name = demisto.args().get('application_name', None)
-            response = get_accounts(client, id, display_name, last_refresh, native_identity, last_target_agg,
-                                    identity_name,
-                                    application_name)
-            results = build_results('IdentityIQ.Account', 'id', response)
+        elif demisto.command() == "identityiq-get-accounts":
+            id = demisto.args().get("id", None)
+            display_name = demisto.args().get("display_name", None)
+            last_refresh = demisto.args().get("last_refresh", None)
+            native_identity = demisto.args().get("native_identity", None)
+            last_target_agg = demisto.args().get("last_target_agg")
+            identity_name = demisto.args().get("identity_name", None)
+            application_name = demisto.args().get("application_name", None)
+            response = get_accounts(
+                client, id, display_name, last_refresh, native_identity, last_target_agg, identity_name, application_name
+            )
+            results = build_results("IdentityIQ.Account", "id", response)
 
-        elif demisto.command() == 'identityiq-disable-account':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-disable-account":
+            id = demisto.args().get("id", None)
             response = change_account_status(client, id, False)
-            results = build_results('IdentityIQ.Account', 'id', response)
+            results = build_results("IdentityIQ.Account", "id", response)
 
-        elif demisto.command() == 'identityiq-enable-account':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-enable-account":
+            id = demisto.args().get("id", None)
             response = change_account_status(client, id, True)
-            results = build_results('IdentityIQ.Account', 'id', response)
+            results = build_results("IdentityIQ.Account", "id", response)
 
-        elif demisto.command() == 'identityiq-delete-account':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-delete-account":
+            id = demisto.args().get("id", None)
             results = delete_account(client, id)
 
-        elif demisto.command() == 'identitytiq-get-launched-workflows':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identitytiq-get-launched-workflows":
+            id = demisto.args().get("id", None)
             response = get_launched_workflows(client, id)
-            results = build_results('IdentityIQ.Workflow', 'id', response)
+            results = build_results("IdentityIQ.Workflow", "id", response)
 
-        elif demisto.command() == 'identityiq-get-roles':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-get-roles":
+            id = demisto.args().get("id", None)
             response = get_roles(client, id)
-            results = build_results('IdentityIQ.Role', 'name', response)
+            results = build_results("IdentityIQ.Role", "name", response)
 
-        elif demisto.command() == 'identityiq-get-entitlements':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-get-entitlements":
+            id = demisto.args().get("id", None)
             response = get_entitlements(client, id)
-            results = build_results('IdentityIQ.Entitlement', 'id', response)
+            results = build_results("IdentityIQ.Entitlement", "id", response)
 
-        elif demisto.command() == 'identityiq-get-alerts':
-            id = demisto.args().get('id', None)
+        elif demisto.command() == "identityiq-get-alerts":
+            id = demisto.args().get("id", None)
             response = get_alerts(client, id)
-            results = build_results('IdentityIQ.Alert', 'id', response)
+            results = build_results("IdentityIQ.Alert", "id", response)
 
-        elif demisto.command() == 'identityiq-create-alert':
-            display_name = demisto.args().get('display_name', None)
-            attribute = demisto.args().get('attribute', None)
+        elif demisto.command() == "identityiq-create-alert":
+            display_name = demisto.args().get("display_name", None)
+            attribute = demisto.args().get("attribute", None)
             response = create_alert(client, display_name, attribute)
-            results = build_results('IdentityIQ.Alert', 'id', response)
+            results = build_results("IdentityIQ.Alert", "id", response)
 
         return_results(results)
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

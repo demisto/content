@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ExabeamSecOpsPlatform
   version: -1
@@ -8,6 +11,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   name: credentials
   required: true
@@ -18,10 +22,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
@@ -43,9 +49,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
 description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
@@ -59,7 +67,7 @@ script:
       description: The ending date for the search range.
       name: end_time
     - defaultValue: ""
-      description: Query, using Lucene syntax, filters log data for precise analysis.
+      description: 'Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High".'
       name: query
       required: false
     - description: Comma-separated list of fields to be returned from the search.
@@ -515,7 +523,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
 fromversion: 6.10.0
 tests:

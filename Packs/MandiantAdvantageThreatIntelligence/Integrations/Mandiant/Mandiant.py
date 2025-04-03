@@ -19,10 +19,7 @@ class MandiantClient(BaseClient):
         self.api_key = conf.get("api_key")
         self.secret_key = conf.get("secret_key")
 
-        self.headers = {
-            "X-App-Name": "content.xsoar.cortex.mandiant.enrichment.v1.1",
-            "Accept": "application/json"
-        }
+        self.headers = {"X-App-Name": "content.xsoar.cortex.mandiant.enrichment.v1.1", "Accept": "application/json"}
         self.timeout = int(conf.get("timeout", 60))
         self.tlp_color = conf.get("tlp_color", "")
         self.tags = argToList(conf.get("tags", []))
@@ -31,15 +28,27 @@ class MandiantClient(BaseClient):
 
     def _get(self, url: str, params: Dict = {}) -> Dict:
         try:
-            return self._http_request(method="GET", url_suffix=url, auth=(self.api_key, self.secret_key),
-                                      headers=self.headers, timeout=self.timeout, params=params)
+            return self._http_request(
+                method="GET",
+                url_suffix=url,
+                auth=(self.api_key, self.secret_key),
+                headers=self.headers,
+                timeout=self.timeout,
+                params=params,
+            )
         except DemistoException as ex:
             raise DemistoException(str(ex))
 
     def _post(self, url: str, post_body: dict) -> Dict:
         try:
-            return self._http_request(method="POST", url_suffix=url, auth=(self.api_key, self.secret_key),
-                                      headers=self.headers, timeout=self.timeout, json_data=post_body)
+            return self._http_request(
+                method="POST",
+                url_suffix=url,
+                auth=(self.api_key, self.secret_key),
+                headers=self.headers,
+                timeout=self.timeout,
+                json_data=post_body,
+            )
         except DemistoException as ex:
             raise DemistoException(str(ex))
 
@@ -52,7 +61,7 @@ class MandiantClient(BaseClient):
             "include_campaigns": True,
             "include_threat_rating": True,
             "include_reports": True,
-            "exclude_misp": True
+            "exclude_misp": True,
         }
         url = "/v4/indicator"
         response = self._post(url, post_body)
@@ -86,9 +95,9 @@ class MandiantClient(BaseClient):
         if not self.map_to_mitre_attack:
             return {}
 
-        response = demisto.searchIndicators(**{"query": "type:\"Attack Pattern\" and sourceBrands:\"MITRE ATT&CK v2\"",
-                                               "populateFields": "name, tags",
-                                               "size": 1000})
+        response = demisto.searchIndicators(
+            **{"query": 'type:"Attack Pattern" and sourceBrands:"MITRE ATT&CK v2"', "populateFields": "name, tags", "size": 1000}
+        )
         res_dict = {}
 
         for ioc in response.get("iocs", []):
@@ -128,13 +137,29 @@ class MatiIndicator:
             entity_b = association.get("name", "")
 
             if association_type == "threat-actor":
-                relationships.append(EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.ioc_value,
-                                                        entity_a_type=self.ioc_type, entity_b=entity_b,
-                                                        entity_b_type="Threat Actor"))
+                relationships.append(
+                    EntityRelationship(
+                        name="uses",
+                        reverse_name="used-by",
+                        brand="Mandiant",
+                        entity_a=self.ioc_value,
+                        entity_a_type=self.ioc_type,
+                        entity_b=entity_b,
+                        entity_b_type="Threat Actor",
+                    )
+                )
             elif association_type == "malware":
-                relationships.append(EntityRelationship(name="indicates", reverse_name="indicated-by",
-                                                        entity_a=self.ioc_value, entity_a_type=self.ioc_type,
-                                                        entity_b=entity_b, entity_b_type="Malware"))
+                relationships.append(
+                    EntityRelationship(
+                        name="indicates",
+                        reverse_name="indicator-of",
+                        brand="Mandiant",
+                        entity_a=self.ioc_value,
+                        entity_a_type=self.ioc_type,
+                        entity_b=entity_b,
+                        entity_b_type="Malware",
+                    )
+                )
         return relationships
 
     def calculate_dbot_score(self) -> int:
@@ -155,7 +180,7 @@ class MatiIndicator:
             indicator_type=self.dbot_score_type,
             integration_name="Mandiant",
             reliability=self.client.reliability,
-            score=self.calculate_dbot_score()
+            score=self.calculate_dbot_score(),
         )
 
     def build_campaigns(self) -> str:
@@ -194,9 +219,14 @@ class MatiIndicator:
             if not title or not report_id or not published:
                 continue
 
-            publications.append(Common.Publications(source="Mandiant", title=f"{title} ({report_id})",
-                                                    link=f"{ADV_BASE_URL}/reports/{report_id}",
-                                                    timestamp=published))
+            publications.append(
+                Common.Publications(
+                    source="Mandiant",
+                    title=f"{title} ({report_id})",
+                    link=f"{ADV_BASE_URL}/reports/{report_id}",
+                    timestamp=published,
+                )
+            )
         return publications
 
     def get_stix_id(self) -> str:
@@ -209,8 +239,7 @@ class MatiIndicator:
         threat_types = []
         for source in self.sources:
             for c in source.get("category", []):
-                t = Common.ThreatTypes(threat_category=c,
-                                       threat_category_confidence=str(self.ioc_data.get("mscore", 0)))
+                t = Common.ThreatTypes(threat_category=c, threat_category_confidence=str(self.ioc_data.get("mscore", 0)))
                 threat_types.append(t)
 
         return threat_types
@@ -234,7 +263,6 @@ class MatiIndicator:
         return indicator_object
 
     def build_markdown(self) -> str:
-        ioc_type = self.ioc_data.get("type", "")
         categories = set()
         for t in self.build_threat_types():
             categories.add(t.threat_category)
@@ -247,12 +275,14 @@ class MatiIndicator:
             "Malware": self.build_malware_families(),
             "Campaigns": self.build_campaigns(),
             "Categories": ", ".join(list(categories)) if categories else "-",
-            "Reports": ", ".join(reports_list) if reports_list else "-"
+            "Reports": ", ".join(reports_list) if reports_list else "-",
         }
 
-        return tableToMarkdown(f"Mandiant Advantage Threat Intelligence information for {self.ioc_value}\n"
-                               f"[View on Mandiant Advantage]({ADV_BASE_URL}/indicator/"
-                               f"{ioc_type}/{self.get_stix_id()})", table)
+        return tableToMarkdown(
+            f"Mandiant Advantage Threat Intelligence information for {self.ioc_value}\n"
+            f"[View on Mandiant Advantage]({ADV_BASE_URL}/indicator/{self.get_stix_id()})",
+            table,
+        )
 
     def build_indicator_command_result(self) -> CommandResults:
         return CommandResults(
@@ -261,7 +291,7 @@ class MatiIndicator:
             outputs_prefix=self.outputs_prefix,
             relationships=self.relationships,
             outputs=self.ioc_data,
-            indicator=self.indicator_object
+            indicator=self.indicator_object,
         )
 
 
@@ -330,12 +360,14 @@ class MatiThreatActor:
         reports = []
 
         for report in self.client.get_associated_reports("actor", self.actor_id).get("reports", []):
-            reports.append({
-                "source": "Mandiant",
-                "title": report.get("title", "-"),
-                "link": "{}/reports/{}".format(ADV_BASE_URL, report.get("report_id")),
-                "timestamp": datetime.strptime(report.get("published_date"), "%B %d, %Y %I:%M:%S %p").timestamp()
-            })
+            reports.append(
+                {
+                    "source": "Mandiant",
+                    "title": report.get("title", "-"),
+                    "link": "{}/reports/{}".format(ADV_BASE_URL, report.get("report_id")),
+                    "timestamp": datetime.strptime(report.get("published_date"), "%B %d, %Y %I:%M:%S %p").timestamp(),
+                }
+            )
 
         return reports
 
@@ -371,7 +403,7 @@ class MatiThreatActor:
             "Influence": "",
             "Espionage": "Cyber Espionage",
             "Hacktivism": "Hacktivism",
-            "Unknown": ""
+            "Unknown": "",
         }
 
         motivations = [m.get("name") for m in self.actor_data.get("motivations", [])]
@@ -399,39 +431,59 @@ class MatiThreatActor:
             "Associated Tools": self.build_associated_tools(),
             "Associated Vulnerabilities": self.build_associated_vulnerabilities(),
             "Last Activity Time": self.get_last_activity_time(),
-            "Last Updated": self.get_last_updated()
+            "Last Updated": self.get_last_updated(),
         }
         return tableToMarkdown("Threat Actor Attributes", attribute_table, url_keys=["Link"])
 
     def build_report_md(self) -> str:
         earliest_report = time.time() - (86400 * 90)
-        report_table = [{"Title": r.get("title", ""), "Link": r.get("link", "")}
-                        for r in self.reports_list if int(r.get("timestamp", 1)) > earliest_report]
+        report_table = [
+            {"Title": r.get("title", ""), "Link": r.get("link", "")}
+            for r in self.reports_list
+            if int(r.get("timestamp", 1)) > earliest_report
+        ]
         return tableToMarkdown("Recent Associated Reports", report_table, url_keys=["Link"])
 
     def build_actor_markdown(self) -> str:
-        return (f"## {self.actor_name}\n\n"
-                + f"{self.description}\n\n"
-                + f"{self.build_attribute_md()}\n\n"
-                + self.build_report_md())
+        return (
+            f"## {self.actor_name}\n\n" + f"{self.description}\n\n" + f"{self.build_attribute_md()}\n\n" + self.build_report_md()
+        )
 
     def build_malware_relationships(self) -> Generator:
         for malware in self.actor_data.get("malware", []):
-            yield EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=malware.get("name", ""),
-                                     entity_b_type="Malware").to_indicator()
+            yield EntityRelationship(
+                name="uses",
+                reverse_name="used-by",
+                brand="Mandiant",
+                entity_a=self.actor_name,
+                entity_a_type="Threat Actor",
+                entity_b=malware.get("name", ""),
+                entity_b_type="Malware",
+            ).to_indicator()
 
     def build_vulnerbility_relationships(self) -> Generator:
         for vuln in self.actor_data.get("cve", []):
-            yield EntityRelationship(name="exploits", reverse_name="exploited-by", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=vuln.get("cve_id", ""),
-                                     entity_b_type="CVE").to_indicator()
+            yield EntityRelationship(
+                name="exploits",
+                reverse_name="used-by",
+                brand="Mandiant",
+                entity_a=self.actor_name,
+                entity_a_type="Threat Actor",
+                entity_b=vuln.get("cve_id", ""),
+                entity_b_type="CVE",
+            ).to_indicator()
 
     def build_unc_relationships(self) -> Generator:
         for unc in self.actor_data.get("associated_uncs", []):
-            yield EntityRelationship(name="related-to", reverse_name="related-to", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=unc.get("name", ""),
-                                     entity_b_type="Threat Actor").to_indicator()
+            yield EntityRelationship(
+                name="related-to",
+                reverse_name="related-to",
+                brand="Mandiant",
+                entity_a=self.actor_name,
+                entity_a_type="Threat Actor",
+                entity_b=unc.get("name", ""),
+                entity_b_type="Threat Actor",
+            ).to_indicator()
 
     def build_attack_pattern_relationships(self) -> Generator:
         attack_patterns = self.client.get_attack_patterns("actor", self.actor_id).get("attack-patterns", {})
@@ -441,17 +493,29 @@ class MatiThreatActor:
             ap_title = attack_patterns.get(ap).get("name", "")
             mitre_ap = mitre_attack_patterns.get(ap_id, "")
             entity_b = mitre_ap if mitre_ap else f"{ap_id}: {ap_title}"
-            yield EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=entity_b,
-                                     entity_b_type="Attack Pattern").to_indicator()
+            yield EntityRelationship(
+                name="uses",
+                reverse_name="used-by",
+                brand="Mandiant",
+                entity_a=self.actor_name,
+                entity_a_type="Threat Actor",
+                entity_b=entity_b,
+                entity_b_type="Attack Pattern",
+            ).to_indicator()
 
     def build_campaign_relationships(self) -> Generator:
         for c in self.client.get_associated_campaigns("actor", self.actor_id).get("campaigns", []):
             campaign_id = c.get("short_name", "")
             campaign_title = c.get("name", "")
-            yield EntityRelationship(name="related-to", reverse_name="related-to", entity_a=self.actor_name,
-                                     entity_a_type="Threat Actor", entity_b=f"{campaign_title} ({campaign_id})",
-                                     entity_b_type="Campaign").to_indicator()
+            yield EntityRelationship(
+                name="related-to",
+                reverse_name="related-to",
+                brand="Mandiant",
+                entity_a=self.actor_name,
+                entity_a_type="Threat Actor",
+                entity_b=f"{campaign_title} ({campaign_id})",
+                entity_b_type="Campaign",
+            ).to_indicator()
 
     def build_actor_relationships(self) -> List:
         relationships = []
@@ -487,14 +551,19 @@ class MatiThreatActor:
                 "Primary Motivation": self.build_primary_motivation(),
                 "Tags": self.build_target_industries_str(),
                 "Publications": self.reports_list,
-                "Industry sectors": self.target_industries
+                "Industry sectors": self.target_industries,
             },
-            "relationships": self.build_actor_relationships()
+            "relationships": self.build_actor_relationships(),
         }
 
     def build_threat_actor_command_result(self):
-        return CommandResults(outputs=self.actor_data, ignore_auto_extract=False, outputs_prefix="Mandiant.Actor",
-                              readable_output=self.build_actor_markdown(), tags=self.target_industries)
+        return CommandResults(
+            outputs=self.actor_data,
+            ignore_auto_extract=False,
+            outputs_prefix="Mandiant.Actor",
+            readable_output=self.build_actor_markdown(),
+            tags=self.target_industries,
+        )
 
 
 class MatiMalware:
@@ -514,26 +583,40 @@ class MatiMalware:
         reports = []
 
         for report in self.client.get_associated_reports("malware", self.malware_id).get("reports", []):
-            reports.append({
-                "source": "Mandiant",
-                "title": report.get("title", "-"),
-                "link": "{}/reports/{}".format(ADV_BASE_URL, report.get("report_id")),
-                "timestamp": datetime.strptime(report.get("published_date"), "%B %d, %Y %I:%M:%S %p").timestamp()
-            })
+            reports.append(
+                {
+                    "source": "Mandiant",
+                    "title": report.get("title", "-"),
+                    "link": "{}/reports/{}".format(ADV_BASE_URL, report.get("report_id")),
+                    "timestamp": datetime.strptime(report.get("published_date"), "%B %d, %Y %I:%M:%S %p").timestamp(),
+                }
+            )
 
         return reports
 
     def build_actor_relationships(self) -> Generator:
         for actor in self.malware_data.get("actors", []):
-            yield EntityRelationship(name="used-by", reverse_name="uses", entity_a=self.malware_name,
-                                     entity_a_type="Malware", entity_b=actor.get("name", ""),
-                                     entity_b_type="Threat Actor").to_indicator()
+            yield EntityRelationship(
+                name="used-by",
+                reverse_name="uses",
+                brand="Mandiant",
+                entity_a=self.malware_name,
+                entity_a_type="Malware",
+                entity_b=actor.get("name", ""),
+                entity_b_type="Threat Actor",
+            ).to_indicator()
 
     def build_vulnerability_relationships(self) -> Generator:
         for vuln in self.malware_data.get("cve", []):
-            yield EntityRelationship(name="exploits", reverse_name="exploited-by", entity_a=self.malware_name,
-                                     entity_a_type="Malware", entity_b=vuln.get("cve_id", ""),
-                                     entity_b_type="CVE").to_indicator()
+            yield EntityRelationship(
+                name="exploits",
+                reverse_name="used-by",
+                brand="Mandiant",
+                entity_a=self.malware_name,
+                entity_a_type="Malware",
+                entity_b=vuln.get("cve_id", ""),
+                entity_b_type="CVE",
+            ).to_indicator()
 
     def build_attack_pattern_relationships(self) -> Generator:
         attack_patterns = self.client.get_attack_patterns("malware", self.malware_id).get("attack-patterns", {})
@@ -543,17 +626,29 @@ class MatiMalware:
             ap_title = attack_patterns.get(ap).get("name", "")
             mitre_ap = mitre_attack_patterns.get(ap_id, "")
             entity_b = mitre_ap if mitre_ap else f"{ap_id}: {ap_title}"
-            yield EntityRelationship(name="uses", reverse_name="used-by", entity_a=self.malware_name,
-                                     entity_a_type="Malware", entity_b=entity_b,
-                                     entity_b_type="Attack Pattern").to_indicator()
+            yield EntityRelationship(
+                name="uses",
+                reverse_name="used-by",
+                brand="Mandiant",
+                entity_a=self.malware_name,
+                entity_a_type="Malware",
+                entity_b=entity_b,
+                entity_b_type="Attack Pattern",
+            ).to_indicator()
 
     def build_campaign_relationships(self) -> Generator:
         for c in self.client.get_associated_campaigns("malware", self.malware_id).get("campaigns", []):
             campaign_id = c.get("short_name", "")
             campaign_title = c.get("name", "")
-            yield EntityRelationship(name="related-to", reverse_name="related-to", entity_a=self.malware_name,
-                                     entity_a_type="Malware", entity_b=f"{campaign_title} ({campaign_id})",
-                                     entity_b_type="Campaign").to_indicator()
+            yield EntityRelationship(
+                name="related-to",
+                reverse_name="related-to",
+                brand="Mandiant",
+                entity_a=self.malware_name,
+                entity_a_type="Malware",
+                entity_b=f"{campaign_title} ({campaign_id})",
+                entity_b_type="Campaign",
+            ).to_indicator()
 
     def build_malware_relationships(self) -> List:
         relationships = []
@@ -580,10 +675,10 @@ class MatiMalware:
             "fields": {
                 "Tags": self.build_target_industries(),
                 "Publications": self.reports_list,
-                "Industry sectors": self.target_industries
+                "Industry sectors": self.target_industries,
             },
             "score": ThreatIntel.ObjectsScore.MALWARE,
-            "relationships": self.build_malware_relationships()
+            "relationships": self.build_malware_relationships(),
         }
 
     def build_roles(self) -> str:
@@ -624,16 +719,18 @@ class MatiMalware:
             "Associated Threat Actors": self.build_associated_actors(),
             "Associated Vulnerabilities": self.build_associated_vulnerabilities(),
             "Last Activity Time": self.get_last_activity_time(),
-            "Last Updated": self.get_last_updated()
+            "Last Updated": self.get_last_updated(),
         }
 
         return tableToMarkdown("Malware Family Attributes", attribute_table, url_keys=["Link"])
 
     def build_report_table_md(self) -> str:
         earliest_report = time.time() - (86400 * 90)
-        report_table = [{"Title": r.get("title", ""), "Link": r.get("link", "")}
-                        for r in self.reports_list
-                        if int(r.get("timestamp", 1)) > earliest_report]
+        report_table = [
+            {"Title": r.get("title", ""), "Link": r.get("link", "")}
+            for r in self.reports_list
+            if int(r.get("timestamp", 1)) > earliest_report
+        ]
         return tableToMarkdown("Recent Associated Reports", report_table, url_keys=["Link"])
 
     def build_malware_markdown(self) -> str:
@@ -645,8 +742,13 @@ class MatiMalware:
         )
 
     def build_malware_command_result(self):
-        return CommandResults(outputs=self.malware_data, ignore_auto_extract=False, outputs_prefix="Mandiant.Malware",
-                              readable_output=self.build_malware_markdown(), tags=self.target_industries)
+        return CommandResults(
+            outputs=self.malware_data,
+            ignore_auto_extract=False,
+            outputs_prefix="Mandiant.Malware",
+            readable_output=self.build_malware_markdown(),
+            tags=self.target_industries,
+        )
 
 
 class MatiCve:
@@ -672,17 +774,29 @@ class MatiCve:
     def strip_html_tags(content: str, replace_line_breaks: bool, trim_result: bool) -> str:
         text = ""
         if content:
-            text = re.sub(r'<\/?br\s?\/?>', '\n', content, flags=re.I) if replace_line_breaks else content
+            text = re.sub(r"<\/?br\s?\/?>", "\n", content, flags=re.I) if replace_line_breaks else content
 
-            text = re.sub(r'<.*?>', '', text)
-            entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
-                        'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
+            text = re.sub(r"<.*?>", "", text)
+            entities = {
+                "quot": '"',
+                "amp": "&",
+                "apos": "'",
+                "lt": "<",
+                "gt": ">",
+                "nbsp": " ",
+                "copy": "(C)",
+                "reg": "(R)",
+                "tilde": "~",
+                "ldquo": '"',
+                "rdquo": '"',
+                "hellip": "...",
+            }
             for e in entities:
-                text = text.replace(f'&{e};', entities[e])
+                text = text.replace(f"&{e};", entities[e])
 
             if trim_result:
-                text = re.sub(r'[ \t]{2,}', ' ', text)
-                text = re.sub(r'(\s*\r?\n){3,}', '\n\n', text)
+                text = re.sub(r"[ \t]{2,}", " ", text)
+                text = re.sub(r"(\s*\r?\n){3,}", "\n\n", text)
                 text = text.strip()
         return text
 
@@ -690,14 +804,30 @@ class MatiCve:
         relationships = []
 
         for a in self.cve_data.get("associated_actors", []):
-            relationships.append(EntityRelationship(name="exploited-by", reverse_name="exploits", entity_a=self.cve_id,
-                                                    entity_a_type="Indicator", entity_b=a.get("name", ""),
-                                                    entity_b_type="Threat Actor"))
+            relationships.append(
+                EntityRelationship(
+                    name="used-by",
+                    reverse_name="exploits",
+                    brand="Mandiant",
+                    entity_a=self.cve_id,
+                    entity_a_type="Indicator",
+                    entity_b=a.get("name", ""),
+                    entity_b_type="Threat Actor",
+                )
+            )
 
         for m in self.cve_data.get("associated_malware", []):
-            relationships.append(EntityRelationship(name="exploited-by", reverse_name="exploits", entity_a=self.cve_id,
-                                                    entity_a_type="Indicator", entity_b=m.get("name", ""),
-                                                    entity_b_type="Malware"))
+            relationships.append(
+                EntityRelationship(
+                    name="used-by",
+                    reverse_name="exploits",
+                    brand="Mandiant",
+                    entity_a=self.cve_id,
+                    entity_a_type="Indicator",
+                    entity_b=m.get("name", ""),
+                    entity_b_type="Malware",
+                )
+            )
         return relationships
 
     def build_cpe_objects(self):
@@ -712,7 +842,12 @@ class MatiCve:
             return "0.0"
 
     def build_exploitation_vectors(self):
-        return ", ".join(self.cve_data.get("exploitation_vectors", ""))
+        exploitation_vectors = self.cve_data.get("exploitation_vectors", [])
+
+        if not exploitation_vectors:
+            return ""
+
+        return ", ".join(exploitation_vectors)
 
     def build_markdown(self) -> str:
         details_table_dict = {
@@ -721,29 +856,28 @@ class MatiCve:
             "Last Modified": self.last_modified_date,
             "Risk Rating": self.risk_rating,
             "Exploitation Vectors": self.build_exploitation_vectors(),
-            "Vulnerable Products": self.vulnerable_products
+            "Vulnerable Products": self.vulnerable_products,
         }
-        markdown_sections = [
-            f"## {self.cve_id}",
-            self.executive_summary,
-            tableToMarkdown("Details", details_table_dict)
-        ]
+        markdown_sections = [f"## {self.cve_id}", self.executive_summary, tableToMarkdown("Details", details_table_dict)]
 
         return "\n\n".join(markdown_sections)
 
     def get_cvss_score(self):
-        return str(self.cvss_data.get(self.cvss_version).get("base_score", "0.0"))
+        return str(self.cvss_data.get(self.cvss_version, {}).get("base_score", "0.0"))
 
     def get_cvss_vector(self) -> str:
-        return self.cvss_data.get(self.cvss_version).get("vector_string", "")
+        return self.cvss_data.get(self.cvss_version, {}).get("vector_string", "")
 
     def build_publications(self) -> List:
         publications = []
         for r in self.cve_data.get("associated_reports", []):
             publications.append(
-                Common.Publications(source="Mandiant", title=r.get("title", ""),
-                                    link="{}/reports/{}".format(ADV_BASE_URL, r.get("report_id", "")),
-                                    timestamp=r.get("published_date", ""))
+                Common.Publications(
+                    source="Mandiant",
+                    title=r.get("title", ""),
+                    link="{}/reports/{}".format(ADV_BASE_URL, r.get("report_id", "")),
+                    timestamp=r.get("published_date", ""),
+                )
             )
         return publications
 
@@ -771,7 +905,7 @@ class MatiCve:
             indicator_type=DBotScoreType.CVE,
             integration_name="Mandiant",
             reliability=self.reliability,
-            score=self.calculate_cve_dbot_score()
+            score=self.calculate_cve_dbot_score(),
         )
 
     def build_cve_object(self) -> Common.CVE:
@@ -791,7 +925,7 @@ class MatiCve:
             publications=self.build_publications(),
             dbot_score=self.create_dbot_score(),
             vulnerable_products=self.cpe_objects,
-            vulnerable_configurations=self.cpe_objects
+            vulnerable_configurations=self.cpe_objects,
         )
 
     def build_cve_command_result(self) -> CommandResults:
@@ -801,7 +935,7 @@ class MatiCve:
             outputs_prefix="Mandiant.CVE",
             relationships=self.relationships,
             outputs=self.cve_data,
-            indicator=self.build_cve_object()
+            indicator=self.build_cve_object(),
         )
 
 
@@ -821,10 +955,12 @@ class MatiCampaign:
         return [i.get("name", "") for i in self.campaign_data.get("industries", [])]
 
     def build_markdown(self) -> str:
-        return (f"## {self.campaign_name}\n\n"
-                + f"**Short Name:** {self.short_name} | **Last Active:** {self.last_active}\n\n"
-                + f"{self.description}\n\n"
-                + f"**Link:** {ADV_BASE_URL}/campaigns/{self.campaign_id}")
+        return (
+            f"## {self.campaign_name}\n\n"
+            + f"**Short Name:** {self.short_name} | **Last Active:** {self.last_active}\n\n"
+            + f"{self.description}\n\n"
+            + f"**Link:** {ADV_BASE_URL}/campaigns/{self.campaign_id}"
+        )
 
     def build_publications(self):
         publications = []
@@ -837,25 +973,44 @@ class MatiCampaign:
             if not title or not report_id or not published:
                 continue
 
-            publications.append(Common.Publications(source="Mandiant", title=f"{title} ({report_id})",
-                                                    link=f"{ADV_BASE_URL}/reports/{report_id}",
-                                                    timestamp=published).to_context())
+            publications.append(
+                Common.Publications(
+                    source="Mandiant",
+                    title=f"{title} ({report_id})",
+                    link=f"{ADV_BASE_URL}/reports/{report_id}",
+                    timestamp=published,
+                ).to_context()
+            )
         return publications
 
     def build_relationships(self) -> List:
         relationships = []
 
         for actor in self.campaign_data.get("actors", []):
-            relationships.append(EntityRelationship(name="related-to", reverse_name="related-to",
-                                                    entity_a=self.campaign_name, entity_a_type="Campaign",
-                                                    entity_b=actor.get("name"),
-                                                    entity_b_type="Campaign").to_indicator())
+            relationships.append(
+                EntityRelationship(
+                    name="related-to",
+                    reverse_name="related-to",
+                    brand="Mandiant",
+                    entity_a=self.campaign_name,
+                    entity_a_type="Campaign",
+                    entity_b=actor.get("name"),
+                    entity_b_type="Campaign",
+                ).to_indicator()
+            )
 
         for malware in self.campaign_data.get("malware", []):
-            relationships.append(EntityRelationship(name="related-to", reverse_name="related-to",
-                                                    entity_a=self.campaign_name, entity_a_type="Campaign",
-                                                    entity_b=malware.get("name"),
-                                                    entity_b_type="Campaign").to_indicator())
+            relationships.append(
+                EntityRelationship(
+                    name="related-to",
+                    reverse_name="related-to",
+                    brand="Mandiant",
+                    entity_a=self.campaign_name,
+                    entity_a_type="Campaign",
+                    entity_b=malware.get("name"),
+                    entity_b_type="Campaign",
+                ).to_indicator()
+            )
 
         return relationships
 
@@ -869,15 +1024,20 @@ class MatiCampaign:
                 "Publications": self.build_publications(),
                 "STIX ID": self.campaign_id,
                 "Traffic Light Protocol": self.client.tlp_color,
-                "Industry sectors": self.target_industries
+                "Industry sectors": self.target_industries,
             },
             "score": ThreatIntel.ObjectsScore.CAMPAIGN,
-            "relationships": self.build_relationships()
+            "relationships": self.build_relationships(),
         }
 
     def build_campaign_command_result(self):
-        return CommandResults(outputs=self.campaign_data, ignore_auto_extract=False, outputs_prefix="Mandiant.Campaign",
-                              readable_output=self.build_markdown(), tags=self.target_industries)
+        return CommandResults(
+            outputs=self.campaign_data,
+            ignore_auto_extract=False,
+            outputs_prefix="Mandiant.Campaign",
+            readable_output=self.build_markdown(),
+            tags=self.target_industries,
+        )
 
 
 def ip_reputation_command(client: MandiantClient, args: Dict) -> List:
@@ -1034,7 +1194,7 @@ def main() -> None:
             "cve": cve_reputation_command,
             "mati-get-actor": fetch_threat_actor_command,
             "mati-get-malware": fetch_malware_family_command,
-            "mati-get-campaign": fetch_campaign_command
+            "mati-get-campaign": fetch_campaign_command,
         }
 
         if command in command_map:

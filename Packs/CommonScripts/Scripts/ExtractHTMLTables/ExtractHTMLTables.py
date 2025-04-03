@@ -4,18 +4,18 @@ from CommonServerPython import *  # noqa: F401
 
 
 def extract_html_table(html, indexes):
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, "html.parser")
     tables = []
-    for index, tab in enumerate(soup.find_all('table')):
+    for index, tab in enumerate(soup.find_all("table")):
         if len(indexes) > 0 and index not in indexes and str(index) not in indexes:
             continue
         table = []
         headers = []
         # Check if there are headers and use them
-        for th in tab.find_all('th'):
+        for th in tab.find_all("th"):
             headers.append(th.text)
-        for tr in tab.find_all('tr'):
-            tds = tr.find_all('td')
+        for tr in tab.find_all("tr"):
+            tds = tr.find_all("td")
             # This is a data row and not header row
             if len(tds) > 0:
                 # Single value in a table - just create an array of strings ignoring header
@@ -33,26 +33,26 @@ def extract_html_table(html, indexes):
                             row[headers[i]] = td.text
                     else:
                         for i, td in enumerate(tds):
-                            row['cell' + str(i)] = td.text
+                            row["cell" + str(i)] = td.text
                     table.append(row)
         if len(table) > 0:
             tables.append(table)
     if len(tables) > 0:
-        return ({
-            'Type': entryTypes['note'],
-            'Contents': 'Found {} tables in HTML.'.format(len(tables)),
-            'ContentsFormat': formats['text'],
-            'EntryContext': {'HTMLTables': tables if len(tables) > 1 else tables[0]}
-        })
+        return {
+            "Type": entryTypes["note"],
+            "Contents": f"Found {len(tables)} tables in HTML.",
+            "ContentsFormat": formats["text"],
+            "EntryContext": {"HTMLTables": tables if len(tables) > 1 else tables[0]},
+        }
     else:
-        return 'Did not find tables in HTML.'
+        return "Did not find tables in HTML."
 
 
 def main():
-    html = demisto.getArg('html')
-    indexes = argToList(demisto.getArg('indexes'))
+    html = demisto.getArg("html")
+    indexes = argToList(demisto.getArg("indexes"))
     demisto.results(extract_html_table(html, indexes))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

@@ -1,9 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import base64
-import re
 import ipaddress
 import json
+import re
 from typing import Any
 from collections.abc import Callable
 
@@ -307,10 +305,7 @@ def reverse_command(command_line: str) -> tuple[str, bool]:
 # 2) PATTERN-CHECKING FUNCTIONS
 # -----------------------------------------------------------------------------
 
-
-def check_suspicious_macos_applescript_commands(
-    command_line: str,
-) -> dict[str, list[list[str]]]:
+def check_suspicious_macos_applescript_commands(command_line: str) -> dict[str, list[list[str]]]:
     """
     Checks for suspicious macOS/AppleScript commands by grouping multiple sets
     of required substrings under a category. If all required substrings appear,
@@ -326,10 +321,13 @@ def check_suspicious_macos_applescript_commands(
             ["chflags hidden"],
             ["osascript -e", "system_profiler", "hidden answer"],
             ["tell application finder", "duplicate"],
+            ["tell application finder", "duplicate"],
         ],
         "possible_exfiltration": [
             ["display dialog", "curl -"],
             ["osascript -e", "curl -x", "system_profiler"],
+            ["osascript -e", "curl -"],
+        ],
             ["osascript -e", "curl -"],
         ],
     }
@@ -497,6 +495,10 @@ def check_amsi(command_line: str) -> list[str]:
         r"\bamsiInitFailed\b",
         r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
         r"\bAmsiScanBuffer\(\)\b",
+        r"\bSystem\.Management\.Automation\.AmsiUtils\b",
+        r"\bamsiInitFailed\b",
+        r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
+        r"\bAmsiScanBuffer\(\)\b",
     ]
 
     demisto.debug("Checking for amsi patterns.")
@@ -590,9 +592,28 @@ def check_credential_dumping(command_line: str) -> list[str]:
         r"\bsekurlsa\:\:",
         r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
         r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
+        r"\brundll32.*comsvcs\.dll\b",
+        r"\bprocdump.*lsass\b",
+        r"\bwmic\s+process\s+call\s+create.*lsass\b",
+        r"\bInvoke\-Mimikatz\b",
+        r"\btasklist.*lsass\b",
+        r"\bProcessHacker\b",
+        r"\bMiniDumpWriteDump\b",
+        r"\bGet\-Credential\b",
+        r"\blsass\.dmp\b",
+        r"\bntds\.dit\b",
+        r"\bntdsutil\.exe.*ntds.*create\b",
+        r"\bsekurlsa\:\:",
+        r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
+        r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
         r'\bwmic\s+process\s+call\s+create\s+".*mimikatz.*"',
         r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
+        r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
         r'\bntdsutil(\.exe)?\s+".*ac i ntds.*" "ifm" "create full\s+[a-zA-Z]:\\.*"',
+        r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
+        r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
+        r"\bwce(\.exe)?\s+-o",
+        r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
         r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
         r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
         r"\bwce(\.exe)?\s+-o",
@@ -626,10 +647,26 @@ def check_lateral_movement(command_line: str) -> list[str]:
         r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
         r"\bEnter-PSSession\b",
         r"\bpowershell.*Enter-PSSession\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-Credential\b",
+        r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
+        r"\bpsexec(\.exe)?",
+        r"\bpsexesvc\.exe\b",
+        r"\bpsexesvc\.log\b",
+        r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
+        r"\bmstsc(\.exe)?",
+        r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
+        r"\bnet use \\\\.*\\IPC\$\b",
+        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
+        r"\bEnter-PSSession\b",
+        r"\bpowershell.*Enter-PSSession\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-Credential\b",
         r'\bschtasks\s+/create\s+/tn\s+[a-zA-Z0-9_.-]+\s+/tr\s+".*"\s+/sc\s+[a-zA-Z]+\b',
         r"\bpowershell.*Invoke\-Command\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-ScriptBlock\b",
         r"\bmstsc(\.exe)?\s+/v\s+[a-zA-Z0-9_.-]+\b",
+        r"\bpowershell.*Invoke\-Command\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-ScriptBlock\b",
+        r"\bmstsc(\.exe)?\s+/v\s+[a-zA-Z0-9_.-]+\b",
         r'\bwmiexec\.py\s+[a-zA-Z0-9_.-]+\s+".*"\b',
+        r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
+        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\\.*\s+[a-zA-Z]:\\.*\b",
+        r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
         r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
         r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\\.*\s+[a-zA-Z]:\\.*\b",
         r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
@@ -649,6 +686,16 @@ def check_data_exfiltration(command_line: str) -> list[str]:
     Detects potential data exfiltration techniques from a given command line.
     """
     patterns = [
+        r"\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+        r"\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
+        r"\bscp\s+-i\s+[a-zA-Z0-9_.-]+\.pem\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
+        r"\bftp\s+-n\s+[a-zA-Z0-9_.-]+\s+<<END_SCRIPT.*put\s+.*END_SCRIPT\b",
+        r"\bnc\s+[a-zA-Z0-9_.-]+\s+\d+\s+<\s+[a-zA-Z0-9_.-]+\b",
+        r"\baws\s+s3\s+cp\s+[a-zA-Z0-9_.-]+\s+s3://[a-zA-Z0-9_.-]+/.*\b",
+        r"\bgsutil\s+cp\s+[a-zA-Z0-9_.-]+\s+gs://[a-zA-Z0-9_.-]+/.*\b",
+        r"\baz\s+storage\s+blob\s+upload\s+-f\s+[a-zA-Z0-9_.-]+\s+-c\s+[a-zA-Z0-9_.-]+.*\b",
+        r"\bpowershell.*System\.Net\.WebClient.*UploadFile.*https?://[a-zA-Z0-9_.-]+/.*\b",
+        r"\brsync\s+-avz\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
         r"\bcurl\s+-X\s+(POST|PUT)\s+-d\s+@[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
         r"\bwget\s+--post-file=[a-zA-Z0-9_.-]+\s+https?://[a-zA-Z0-9_.-]+/.*\b",
         r"\bscp\s+-i\s+[a-zA-Z0-9_.-]+\.pem\s+[a-zA-Z0-9_.-]+\s+[a-zA-Z0-9_.-]+:/.*\b",
@@ -727,13 +774,7 @@ def check_custom_patterns(
 def is_reserved_ip(ip_str: str) -> bool:
     try:
         ip_obj = ipaddress.ip_address(ip_str)
-        return (
-            ip_obj.is_private
-            or ip_obj.is_loopback
-            or ip_obj.is_reserved
-            or ip_obj.is_multicast
-            or ip_obj.is_link_local
-        )
+        return ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_reserved or ip_obj.is_multicast or ip_obj.is_link_local
     except ValueError:
         return False
 
@@ -772,7 +813,7 @@ def extract_indicators(command_line: str) -> dict[str, list[str]]:
                             extracted_by_type[indicator_type].append(value)
 
     except Exception as e:
-        demisto.debug(f"Failed to extract indicators: {str(e)}")
+        demisto.debug(f"Failed to extract indicators: {e!s}")
 
     return extracted_by_type
 
@@ -780,7 +821,6 @@ def extract_indicators(command_line: str) -> dict[str, list[str]]:
 # -----------------------------------------------------------------------------
 # 4) SCORING FUNCTION
 # -----------------------------------------------------------------------------
-
 
 def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     """
@@ -838,6 +878,10 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     }
 
     low_risk_keys = {
+        "suspicious_parameters",
+        "windows_temp_path",
+        "reconnaissance",
+        "base64_encoding",
         "suspicious_parameters",
         "windows_temp_path",
         "reconnaissance",
@@ -931,8 +975,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
 
 
 def analyze_command_line(
-    command_line: str, custom_patterns: list[str] | None = None
-) -> dict[str, Any]:
+    command_line: str, custom_patterns: list[str] | None = None) -> dict[str, Any]:
     """
     Analyzes the given command line for suspicious patterns, indicators, and encodings.
     Returns a dictionary containing:
