@@ -564,6 +564,7 @@ def test_get_user_data(mocker: MockerFixture):
         {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": [
             {"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}]}
     ]}]
+
     expected_id_info = {
         "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
         "user2@demistodev.onmicrosoft.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]

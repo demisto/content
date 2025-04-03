@@ -245,6 +245,7 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
     )
     id_info = {}
 
+
     for entry in entry_context:
         if entry:
             output_key = get_output_key("Account", entry)
@@ -432,6 +433,7 @@ def main():
                     "UserName": user_name,
                 }
                 outputs.append(user_output)
+
 
         ##############################
         ### Complete for all users ###
