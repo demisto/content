@@ -262,12 +262,21 @@ class PychromeEventHandler:
 # endregion
 
 
-def count_running_chromes(port):
+def count_running_chromes(port: str) -> int:
+    """
+    Count the number of running Chrome processes on a specified port.
+
+    Args:
+        port (str): The port number to check for running Chrome processes.
+
+    Returns:
+        int: The number of running Chrome processes on the specified port.
+    """
     try:
         processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
 
-        chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
-        chrome_renderer_identifiers = ["--type=renderer"]
+        chrome_identifiers = {"chrom", "headless", f"--remote-debugging-port={port}"}
+        chrome_renderer_identifiers = {"--type=renderer"}
         chrome_processes = [
             process
             for process in processes
@@ -286,32 +295,55 @@ def count_running_chromes(port):
         return 0
 
 
-def get_chrome_browser(port: str) -> pychrome.Browser | None:
-    # Verify that the process has started
+def wait_for_chrome_startup(port: str) -> bool:
+    """
+    Wait for Chrome process to start up within retry limits.
+
+    Args:
+        port (str): Port number to check
+
+    Returns:
+        bool: True if Chrome started, False otherwise
+    """
     for attempt in range(DEFAULT_RETRIES_COUNT):
-        running_chromes_count = count_running_chromes(port)
-        if running_chromes_count < 1:
-            demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
-            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
-        else:
-            break
-    else:
-        # Even if the process hasn't started, attempt connection in case it starts meanwhile.
-        demisto.debug(f"Process did not start after {DEFAULT_RETRIES_COUNT} attempts. Moving on to try to connect.")
+        if count_running_chromes(port) >= 1:
+            return True
 
-    # connect to the Chrome browser instance
+        demisto.debug(f"Attempt {attempt + 1}/{DEFAULT_RETRIES_COUNT}: Process not started yet, sleeping...")
+        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + attempt * 2)
+
+    demisto.debug(f"Process did not start after {DEFAULT_RETRIES_COUNT} attempts. Moving on to try to connect.")
+    return False
+
+
+def get_chrome_browser(port: str) -> Optional[pychrome.Browser]:
+    """
+    Get a Chrome browser instance on the specified port.
+
+    Args:
+        port (str): The port number on which the Chrome browser instance is expected to be running.
+
+    Returns:
+        Optional[pychrome.Browser]: The connected Chrome browser instance, or None if the connection fails.
+    """
+    # Verify that the process has started
+    wait_for_chrome_startup(port)
+
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
-    for i in range(DEFAULT_RETRIES_COUNT):
-        try:
-            demisto.debug(f"Trying to connect to {browser_url=}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
-            browser = pychrome.Browser(url=browser_url)
 
+    # Connect to the Chrome browser instance
+    for i in range(DEFAULT_RETRIES_COUNT):
+        demisto.debug(f"Trying to connect to {browser_url}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
+
+        try:
+            browser = pychrome.Browser(url=browser_url)
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
-            demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
+
+            demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
-            demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
+
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
             connection_refused = "connection refused"
@@ -597,28 +629,41 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get("context", {}).get("IntegrationInstanceID", "None") or "None"
     chrome_options = demisto.params().get("chrome_options", "None")
+    demisto.debug(f"Starting chrome_manager_one_port with instance_id: {instance_id}, chrome_options: {chrome_options}")
+
     chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-    demisto.debug(f" chrome_manager {chrome_instances_contents=} {chrome_options=} {instance_id=}")
+    demisto.debug(f"Existing chrome instances: {chrome_instances_contents}")
+
+    # If no instances exist, generate new one
+    if not chrome_instances_contents:
+        demisto.debug("No existing Chrome instances found. Generating new instance.")
+        return generate_new_chrome_instance(instance_id, chrome_options)
+
     chrome_options_dict = {
         options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
     }
     chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
-    if not chrome_instances_contents:  # or instance_id not in chrome_options_dict.keys():
-        demisto.debug("chrome_manager: condition chrome_instances_contents is empty")
-        return generate_new_chrome_instance(instance_id, chrome_options)
+
     if chrome_options in chrome_options_dict:
-        demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true {chrome_options in chrome_options_dict}"
-        )
-        browser = get_chrome_browser(chrome_port)
-        return browser, chrome_port
-    for chrome_port_ in chrome_instances_contents:
-        if chrome_port_ == "None":
-            terminate_port_chrome_instances_file(chrome_port_)
-            demisto.debug(f"chrome_manager {chrome_port_=}, removing the port from chrome_instances file")
-            continue
-        demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
-        terminate_chrome(chrome_port=chrome_port_)
+        demisto.debug(f"chrome_manager_one_port: Reusing existing Chrome instance with the specified options {chrome_port}.")
+        if browser := get_chrome_browser(chrome_port):
+            demisto.debug("Successfully connected to existing Chrome instance")
+            return browser, chrome_port
+
+        # Handle failed connection to existing browser
+        demisto.debug(f"Failed to connect to existing Chrome instance on port {chrome_port}. Cleaning up.")
+        terminate_chrome(chrome_port=chrome_port)
+    else:
+        demisto.debug("No matching Chrome options found. Cleaning up existing instances.")
+        for chrome_port_ in chrome_instances_contents:
+            if chrome_port_ == "None":
+                terminate_port_chrome_instances_file(chrome_port_)
+                demisto.debug(f"chrome_manager {chrome_port_=}, removing the port from chrome_instances file")
+                continue
+            demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
+            terminate_chrome(chrome_port=chrome_port_)
+    # Generate new instance
+    demisto.debug("Generating new Chrome instance")
     return generate_new_chrome_instance(instance_id, chrome_options)
 
 
@@ -633,7 +678,7 @@ def generate_chrome_port() -> str | None:
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
-        len_running_chromes = count_running_chromes(chrome_port)
+        len_running_chromes = count_running_chromes(str(chrome_port))
         demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
@@ -977,7 +1022,7 @@ def perform_rasterize(
                 f"active tabs len: {len(browser.list_tab())}"
             )
 
-            chrome_instances_file_content: dict = read_json_file()  # CR fix name
+            chrome_instances_file_content: dict = read_json_file()
 
             rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads
