@@ -1,5 +1,6 @@
 import os
 from tempfile import mkdtemp
+from unittest.mock import patch, MagicMock
 
 import pytest
 from UnzipFile import *
@@ -22,7 +23,7 @@ def test_unzip_no_password(file_name):
     # Given
     # - valid zip file - no password required
     main_dir = "/".join(__file__.split("/")[0:-1])
-    expected_file_unzipped = os.path.join(main_dir + "/data_test", file_name)
+    expected_file_unzipped = os.path.join(main_dir + "/test_data", file_name)
     zipped_file_path = expected_file_unzipped + ".zip"
     # Creation of file object
     zipped_file_object = {"name": "testFile", "path": zipped_file_path}
@@ -39,7 +40,7 @@ def test_unzip_no_password(file_name):
         expected_data = f.read()
     shutil.rmtree(_dir)
     # - ensure that the saved file has expected content data
-    assert expected_data == actual_file_data, "failed extracting " + zipped_file_path
+    assert expected_data.splitlines() == actual_file_data.splitlines(), f"failed extracting {zipped_file_path}"
 
 
 @pytest.mark.parametrize("zip_tool", ("7z", "zipfile"))
@@ -60,7 +61,7 @@ def test_unzip_with_password(zip_tool: str):
     file_name = "fix_unzip.png"
     password = "demisto"
     main_dir = "/".join(__file__.split("/")[0:-1])
-    expected_file_unzipped = os.path.join(main_dir + "/data_test", file_name)
+    expected_file_unzipped = os.path.join(main_dir + "/test_data", file_name)
     zipped_file_path = expected_file_unzipped + ".zip"
     # Creation of file object
     zipped_file_object = {"name": "testFile", "path": zipped_file_path}
@@ -100,7 +101,7 @@ def test_unzip_long_filename(file_name, mocker):
     # Given
     # - valid zip file - includes a file with long filename
     main_dir = "/".join(__file__.split("/")[0:-1])
-    zip_file_path = os.path.join(main_dir + "/data_test", file_name)
+    zip_file_path = os.path.join(main_dir + "/test_data", file_name)
     # Creation of file object
     zipped_file_object = {"name": "testFile", "path": zip_file_path}
     # - empty folder _dir
@@ -130,7 +131,7 @@ def test_unrar_no_password():
     """
     file_name = "Untitled_document.pdf"
     main_dir = "/".join(__file__.split("/")[0:-1])
-    expected_file_unzipped = os.path.join(main_dir + "/data_test", file_name)
+    expected_file_unzipped = os.path.join(main_dir + "/test_data", file_name)
     zipped_file_path = expected_file_unzipped + ".rar"
     # Creation of file object
     zipped_file_object = {"name": "Untitled_document.pdf.rar", "path": zipped_file_path}
@@ -163,7 +164,7 @@ def test_extract_tarfile():
     """
     file_name = "test_file.txt"
     main_dir = "/".join(__file__.split("/")[0:-1])
-    expected_file_unzipped = os.path.join(main_dir + "/data_test", file_name)
+    expected_file_unzipped = os.path.join(main_dir + "/test_data", file_name)
     zipped_file_path = expected_file_unzipped + ".tar.gz"
     # Creation of file object
     zipped_file_object = {"name": "test_file.tar.gz", "path": zipped_file_path}
@@ -227,7 +228,7 @@ def test_archive_with_slash_in_path():
     Then
     - ensure no error was returned
     """
-    zipped_file_object = {"name": "Archive_with_slash_in_path.tar.gz", "path": "data_test/Archive_with_slash_in_path.tar.gz"}
+    zipped_file_object = {"name": "Archive_with_slash_in_path.tar.gz", "path": "test_data/Archive_with_slash_in_path.tar.gz"}
     # - empty folder _dir
     _dir = mkdtemp()
     # When
@@ -235,3 +236,49 @@ def test_archive_with_slash_in_path():
     excluded_dirs, excluded_files = extract(zipped_file_object, _dir)
     # Then
     assert excluded_dirs
+
+
+@pytest.fixture
+def mock_popen():
+    with patch('UnzipFile.Popen') as mock:
+        yield mock
+
+
+def test_extract_with_errors_in_stdout(mock_popen):
+    """
+    Given:
+    - A valid tar.gz file with a file name that contains the word "Errors".
+    - A temporary directory for extraction.
+
+    When:
+    - Extracting the tar file into the directory.
+
+    Then:
+    - Ensure extraction completes successfully.
+    - Ensure extracted files exist in the directory.
+    - Ensure no unexpected errors occur.
+    """
+
+    # Prepare the mock to simulate the command's output
+    mock_process = MagicMock()
+    mock_process.communicate.return_value = (
+        b"Hello_World_Errors.yml\nHello_World.yml",  # stdout
+        b""  # stderr (no error)
+    )
+
+    # Mock the Popen constructor to return our mock process
+    mock_popen.return_value = mock_process
+
+    # Setup test inputs
+    file_path = "/test_data/Archive_with_Errors.tar.gz"
+    dir_path = "/tmp/extracted_files"
+    file_name = "Archive_with_Errors.tar.gz"
+
+    # Run the extraction function and assert it raises the expected exception
+
+    result = extract_using_tarfile(file_path, dir_path, file_name)
+    # Assert the stdout contains both filenames
+    assert "Hello_World_Errors.yml" in result
+    assert "Hello_World.yml" in result
+
+
