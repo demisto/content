@@ -1,5 +1,5 @@
 Pack helps to integrate Group-IB Digital Risk Protection and get violations incidents directly into Cortex XSOAR.
-This integration was integrated and tested with version xx of Group-IB Digital Risk Protection.
+This integration was integrated and tested with version 1.0 of Group-IB Digital Risk Protection.
 
 ## Configure Group-IB Digital Risk Protection in Cortex
 
@@ -56,7 +56,7 @@ Receive all configured brands.
             "brands": [
                 {
                     "id": "PvY1BZUBSFbLZGo2x8TA",
-                    "name": "Hrvatska Posta"
+                    "name": "Example Brand"
                 }
             ]
         }
@@ -69,7 +69,7 @@ Receive all configured brands.
 >### Installed Brands
 >|Name|Id|
 >|---|---|
->| Hrvatska Posta | PvY1BZUBSFbLZGo2x8TA |
+>| Example Brand | PvY1BZUBSFbLZGo2x8TA |
 
 
 ### gibdrp-get-subscriptions

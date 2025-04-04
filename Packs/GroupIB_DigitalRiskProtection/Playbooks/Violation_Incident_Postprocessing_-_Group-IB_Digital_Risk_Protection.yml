@@ -5,6 +5,7 @@ contentitemexportablefields:
 name: Violation Incident Postprocessing - Group-IB Digital Risk Protection
 description: Handles postprocessing of violation incidents detected by Group-IB Digital Risk Protection.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
@@ -115,7 +116,7 @@ tasks:
     nexttasks:
       "No":
       - "6"
-      Yes, i want:
+      "Yes":
       - "5"
     separatecontext: false
     continueonerrortype: ""
@@ -320,7 +321,6 @@ view: |-
     }
   }
 inputs: []
-outputs:
-- type: unknown
+outputs: []
 tests:
 - No tests (auto formatted)
