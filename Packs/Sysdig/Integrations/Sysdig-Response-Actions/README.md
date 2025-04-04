@@ -16,23 +16,21 @@ This integration was integrated and tested with version xx of SysdigResponseActi
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### call-response-api
+### execute-response-action
 
 ***
-Calling the Sysdig response-actions API
+Execute response actions through the Sysdig API
 
 #### Base Command
 
-`call-response-api`
+`execute-response-action`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| method | API metthod to perform i.e POST, GET. Default is GET. | Required | 
-| url_suffix | The API suffix. Default is /secure/response-actions/v1alpha1/action-executions. | Required | 
-| actionType | Action type to perform. Possible values are: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, FILE_QUARANTINE. | Optional | 
-| callerId | The caller ID, it must be unique every time. | Optional | 
+| actionType | Action type to perform. Possible values are: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, FILE_QUARANTINE. | Required | 
+| callerId | The caller ID, it must be unique every time. | Required | 
 | container_id | The container ID to apply the action. Example "container.id": "123456789123". | Optional | 
 | path_absolute | The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action. | Optional | 
 | host_id | The host ID. Example "laksjdf1923u90snca893". | Optional | 
@@ -42,7 +40,7 @@ Calling the Sysdig response-actions API
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| call_response_api.Output | String | Output of the response-actions API | 
+| execute_response_action.Output | String | Output of the response-actions API | 
 
 ### create-system-capture
 
@@ -57,14 +55,14 @@ Command to trigger a system capture, it will record all system calls at the host
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| method | API metthod to perform i.e POST, GET. Default is GET. | Required | 
-| url_suffix | The API suffix. Default is /api/v1/captures. | Required | 
 | container_id | The container ID to apply the action. Example "container.id": "123456789123". | Required | 
 | host_name | The host name. Example "ip-1-1-1-1.us-west-1.compute.internal". | Required | 
 | capture_name | The capture name. | Required | 
 | agent_id | The agent ID. | Required | 
 | customer_id | The customer ID. | Required | 
 | machine_id | The machine ID/MAC. Example "01:aa:02:bb:03:cc". | Required | 
+| scap_duration | Capture duration in seconds. | Required | 
+| scap_filter | Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi). | Optional | 
 
 #### Context Output
 
@@ -72,14 +70,14 @@ Command to trigger a system capture, it will record all system calls at the host
 | --- | --- | --- |
 | create_system_capture.Output | String | Output of the system capture created | 
 
-### download-capture-file
+### get-capture-file
 
 ***
-Command to download a system capture based on the capture ID.
+Command to get a system capture based on the capture ID.
 
 #### Base Command
 
-`download-capture-file`
+`get-capture-file`
 
 #### Input
 
@@ -91,4 +89,25 @@ Command to download a system capture based on the capture ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| download_capture_file.Output | String | Output of the system capture downloaded | 
+| get_capture_file.Output | String | Output of the system capture downloaded | 
+
+### get-action-execution
+
+***
+Get the status and information of a triggered action execution
+
+#### Base Command
+
+`get-action-execution`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_execution_id | The action exection ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| get_action_execution.Output | String | Output of the action execution info | 

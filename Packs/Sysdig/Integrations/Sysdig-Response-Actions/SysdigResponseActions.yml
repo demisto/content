@@ -27,19 +27,10 @@ name: SysdigResponseActions
 script:
   commands:
   - arguments:
-    - defaultValue: GET
-      description: API metthod to perform i.e POST, GET
-      name: method
-      type: String
-      required: true
-    - defaultValue: /secure/response-actions/v1alpha1/action-executions
-      description: The API suffix
-      name: url_suffix
-      required: true
     - auto: PREDEFINED
       description: Action type to perform
       name: actionType
-      required: false
+      required: true
       predefined:
       - KILL_PROCESS
       - KILL_CONTAINER
@@ -48,7 +39,7 @@ script:
       - FILE_QUARANTINE
     - description: The caller ID, it must be unique every time
       name: callerId
-      required: false
+      required: true
     - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
       name: container_id
       type: String
@@ -61,22 +52,13 @@ script:
     - description: 'The process ID. Example "1234". Required for the `KILL_PROCESS` action'
       name: process_id
       type: Number
-    description: Calling the Sysdig response-actions API
-    name: call-response-api
+    description: Execute response actions through the Sysdig API
+    name: execute-response-action
     outputs:
-    - contextPath: call_response_api.Output
+    - contextPath: execute_response_action.Output
       description: Output of the response-actions API
       type: String
   - arguments:
-    - defaultValue: GET
-      description: API metthod to perform i.e POST, GET
-      name: method
-      type: String
-      required: true
-    - defaultValue: /api/v1/captures
-      description: The API suffix
-      name: url_suffix
-      required: true
     - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
       name: container_id
       type: String
@@ -101,6 +83,15 @@ script:
       name: machine_id
       type: String
       required: true
+    - defaultvalue: 15
+      description: 'Capture duration in seconds'
+      name: scap_duration
+      type: Number
+      required: true
+    - description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi)'
+      name: scap_filter
+      type: String
+      required: false
     description: Command to trigger a system capture, it will record all system calls at the host level.
     name: create-system-capture
     outputs:
@@ -112,20 +103,31 @@ script:
       name: capture_id
       type: String
       required: true
-    description: Command to download a system capture based on the capture ID.
-    name: download-capture-file
+    description: Command to get a system capture based on the capture ID.
+    name: get-capture-file
     outputs:
-    - contextPath: download_capture_file.Output
+    - contextPath: get_capture_file.Output
       description: Output of the system capture downloaded
+      type: String
+  - arguments:
+    - description: The action exection ID
+      name: action_execution_id
+      type: String
+      required: true
+    description: Get the status and information of a triggered action execution
+    name: get-action-execution
+    outputs:
+    - contextPath: get_action_execution.Output
+      description: Output of the action execution info
       type: String
   dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
 marketplaces:
 - xsoar
 - marketplacev2
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

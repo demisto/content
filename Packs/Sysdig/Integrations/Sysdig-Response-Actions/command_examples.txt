@@ -1,3 +1,4 @@
-!call-response-api method=POST url_suffix=/secure/response-actions/v1alpha1/action-executions actionType=KILL_CONTAINER callerId=test_kill_container_07 container_id=123456789012
+!execute-response-action method=POST url_suffix=/secure/response-actions/v1alpha1/action-executions actionType=KILL_CONTAINER callerId=test_kill_container_07 container_id=123456789012
 !create-system-capture method=POST url_suffix=/api/v1/captures agent_id=123456 capture_name=test_capture container_id=123456789012 customer_id=223344 host_name=ip-1-2-3-4.us-west-1.compute.internal machine_id=aa:bb:cc:11:22:33
-!download-capture-file capture_id=123456
+!get-capture-file capture_id=123456
+!get-action-execution action_execution_id=987654321

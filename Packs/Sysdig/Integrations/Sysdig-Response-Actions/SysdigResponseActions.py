@@ -6,9 +6,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 import re
-from urllib.parse import urljoin
-from typing import Any, Dict, Optional, Tuple
-import urllib3, traceback, json
+from typing import Any, Dict, Tuple
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,6 +15,12 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
+SYSTEM_CAPTURES_REQUIRED_FIELDS = ["container_id", "host_name", "capture_name", "agent_id", "customer_id", "machine_id"]
+RESPONSE_ACTIONS_REQUIRED_FIELDS = ["actionType", "callerId"]
+RESPONSE_ACTIONS_PARAMS = {
+    "FILE_QUARANTINE": ["path.absolute", "container.id"],
+    "KILL_PROCESS": ["process.id", "host.id"]
+}
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 """ CLIENT CLASS """
@@ -69,125 +74,88 @@ class Client(BaseClient):
 
 """ HELPER FUNCTIONS """
 
-def _build_data_payload(args : Dict[str, Any]) -> Dict[str, Any]:
+def _build_data_payload(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Parse the input parameters to the data payload to execute an action
     """
-    actionType = args.get("actionType", None)
-    callerId = args.get("callerId", None)
-    container_id = args.get("container_id", None)
-    host_id = args.get("host_id", None)
-    path_absolute = args.get("path_absolute", None)
-    process_id = args.get("process_id", None)
+    data = {field: args.get(field) for field in RESPONSE_ACTIONS_REQUIRED_FIELDS}
 
-    parameters = {}
-    if container_id:
-        parameters['container.id'] = container_id
-    if host_id:
-        parameters['host.id'] = host_id
-    if path_absolute:
-        parameters['path.absolute'] = path_absolute
-    if process_id:
-        parameters['process.id'] = int(process_id)
-        parameters['startTime'] = -1 # To search from the beginning time
+    if not all(data.values()):
+        missing_fields = [field for field in RESPONSE_ACTIONS_REQUIRED_FIELDS if not data.get(field)]
+        raise ValueError(f"The following fields are required and cannot be null: {', '.join(missing_fields)}")
 
-    data = {
-        'actionType': actionType,
-        'callerId': callerId,
-        'parameters': parameters
+    parameters = {
+        key: value for key, value in {
+            'container.id': args.get("container_id"),
+            'host.id': args.get("host_id") if args.get("host_id") else None,
+            'path.absolute': args.get("path_absolute") if args.get("path_absolute") else None,
+            'process.id': int(args["process_id"]) if args.get("process_id") else None,
+            'startTime': -1 if args.get("process_id") else None
+        }.items() if value is not None
     }
 
+    data['parameters'] = parameters
     _validate_response_actions_params(data)
 
     return data
 
-def _build_capture_payload(args : Dict[str, Any]) -> Dict[str, Any]:
-    '''
-    Parse the input parameters to the data payload to create a system capture
-    '''
+def _build_capture_payload(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Parse the input parameters to the data payload to create a system capture.
+    """
     _validate_captures_params(args)
 
-    container_id = args.get("container_id", None)
-    host_name = args.get("host_name", None)
-    capture_name = args.get("capture_name", None)
-    agent_id = args.get("agent_id", None)
-    customer_id = args.get("customer_id", None)
-    machine_id = args.get("machine_id", None)
-
+    # Extract required and optional fields with defaults
     data = {
-        'containerId': container_id,
-        'duration': 15,
-        'hostName': host_name,
-        'name': capture_name,
-        'filters': "",
+        'containerId': args.get("container_id"),
+        'duration': args.get("scap_duration", 15),  # Default duration is 15 seconds
+        'hostName': args.get("host_name"),
+        'name': args.get("capture_name"),
+        'filters': args.get("scap_filter", ""),
         'bucketName': "",
         'agent': {
-            'id': agent_id,
-            'customer': customer_id,
-            'machineID': machine_id,
-            'hostName': host_name
+            'id': args.get("agent_id"),
+            'customer': args.get("customer_id"),
+            'machineID': args.get("machine_id"),
+            'hostName': args.get("host_name")
         },
         'annotations': {'manual': 'true'},
         'source': 'SDS',
         'storageType': 'S3',
         'folder': '/'
     }
+
     return data
 
 def _validate_captures_params(args: Dict[str, Any]) -> None:
     """
     Validate the input parameters to create a system capture. Raise ValueError if any required parameter is missing
     """
-    container_id = args.get("container_id", None)
-    host_name = args.get("host_name", None)
-    capture_name = args.get("capture_name", None)
-    agent_id = args.get("agent_id", None)
-    customer_id = args.get("customer_id", None)
-    machine_id = args.get("machine_id", None)
+    missing_fields = [field for field in SYSTEM_CAPTURES_REQUIRED_FIELDS if not args.get(field) or args.get(field) == "null"]
 
-    if not container_id or args.get("container_id") == "null":
-        raise ValueError("container_id is required")
-    if not host_name or args.get("host_name") == "null":
-        raise ValueError("host_name is required")
-    if not capture_name or args.get("capture_name") == "null":
-        raise ValueError("capture_name is required")
-    if not agent_id or args.get("agent_id") == "null":
-        raise ValueError("agent_id is required")
-    if not customer_id or args.get("customer_id") == "null":
-        raise ValueError("customer_id is required")
-    if not machine_id or args.get("machine_id") == "null":
-        raise ValueError("machine_id is required")
+    if missing_fields:
+        raise ValueError(f"The following fields are required and cannot be null: {', '.join(missing_fields)}")
 
 def _validate_response_actions_params(args: Dict[str, Any]) -> None:
     """
     Validate the input parameters to execute an action. Raise ValueError if any required parameter is missing
     """
-    actionType = args.get("actionType", None)
-    callerId = args.get("callerId", None)
-    parameters = args.get("parameters", None)
-    # Validate required parameters
-    if not actionType:
-        raise ValueError("actionType is required")
-    if not callerId:
-        raise ValueError("callerId is required")
-    if not parameters:
-        raise ValueError("parameters is required")
-    
-    # Validate parameters values and set to None if value is "null"
-    if parameters.get('path.absolute', None) == "null":
-        parameters['path.absolute'] = None
-    if parameters.get('process.id', None) == "null":
-        parameters['process.id'] = None
-    if parameters.get('container.id', None) == "null":
-        parameters['container.id'] = None
-    if parameters.get('host.id', None) == "null":
-        parameters['host.id'] = None
+    actionType = args.get("actionType")
+    parameters = args.get("parameters", {})
+
+    # Normalize parameter values
+    for key in ["path.absolute", "process.id", "container.id", "host.id"]:
+        if parameters.get(key) in ["null", ""]:
+            parameters[key] = None
 
     # Validate required parameters based on the actionType
-    if actionType == "FILE_QUARANTINE" and not 'path.absolute' in parameters and not 'container.id' in parameters:
-        raise ValueError("path.absolute and container.id are required for actionType FILE_QUARANTINE")
-    if actionType == "KILL_PROCESS" and not 'process.id' in parameters and not 'host.id' in parameters:
-        raise ValueError("process.id and host.id are required for actionType KILL_PROCESS")
+    missing_params = [
+        param for param in RESPONSE_ACTIONS_PARAMS.get(actionType, [])
+        if not parameters.get(param)
+    ]
+
+    if missing_params:
+        raise ValueError(f"{', '.join(missing_params)} are required for actionType {actionType}")
 
 def _get_public_api_url(base_url: str) -> str:
     """
@@ -206,44 +174,53 @@ def _get_public_api_url(base_url: str) -> str:
 
 """ COMMAND FUNCTIONS """
 
-def call_response_api_command(
+def execute_response_action_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
     Call the Actions Response API
     """
-    method = args.get("method")
-    url_suffix = args.get("url_suffix")
-    full_url = _get_public_api_url(client.base_url) + url_suffix
-    data = None
-    if method == "POST" or method == "PUT":
-        data = _build_data_payload(args)
+    full_url = _get_public_api_url(client.base_url) + '/secure/response-actions/v1alpha1/action-executions'
+    data = _build_data_payload(args)
 
-    result = client.call_sysdig_api(method = method, full_url = full_url, json_data = data)
+    result = client.call_sysdig_api(method = 'POST', full_url = full_url, json_data = data)
 
     return CommandResults(
-        outputs_prefix="call_response_api.Output",
+        outputs_prefix="execute_response_action.Output",
+        outputs=result
+    )
+
+def get_action_execution_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    '''
+    Get the status of an action execution
+    '''
+    action_execution_id = args.get("action_execution_id")
+    full_url = _get_public_api_url(client.base_url) + f'/secure/response-actions/v1alpha1/action-executions/{action_execution_id}'
+
+    result = client.call_sysdig_api(method = 'GET', full_url = full_url)
+
+    return CommandResults(
+        outputs_prefix="get_action_execution.Output",
         outputs=result
     )
 
 def create_system_capture_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
-    """
+    ''''
     Trigger a sysdig system capture
-    """
-    method = args.get("method")
-    url_suffix = args.get("url_suffix")
+    '''
     data = _build_capture_payload(args)
-
-    result = client.call_sysdig_api(method = method, url_suffix = url_suffix, json_data = data)
+    result = client.call_sysdig_api(method = 'POST', url_suffix = '/api/v1/captures', json_data = data)
 
     return CommandResults(
         outputs_prefix="create_system_capture.Output",
         outputs=result
     )
 
-def download_capture_file_command(
+def get_capture_file_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
@@ -253,7 +230,6 @@ def download_capture_file_command(
     capture_id = args.get("capture_id") 
     if not capture_id:
         raise ValueError("capture_id is required")
-    capture_id = int(capture_id)
     url_suffix = f"/api/v1/captures/{capture_id}/download"
 
     # The response is a binary file, so we set the resp_type to 'content'
@@ -270,10 +246,6 @@ def download_capture_file_command(
         readable_output=readable_output,
         outputs_prefix="download_capture_file.Output",
     )
-
-
-def print_exc(exception):
-    traceback.print_exception(type(exception), exception, exception.__traceback__)
 
 def main():
     """main function, parses params and runs command functions"""
@@ -311,12 +283,14 @@ def main():
         )
         args = demisto.args()
 
-        if command == "call-response-api":
-            result = call_response_api_command(client, args)
+        if command == "execute-response-action":
+            result = execute_response_action_command(client, args)
         elif command == "create-system-capture":
             result = create_system_capture_command(client, args)
-        elif command == "download-capture-file":
-            result = download_capture_file_command(client, args)
+        elif command == "get-capture-file":
+            result = get_capture_file_command(client, args)
+        elif command == "get-action-execution":
+            result = get_action_execution_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
         return_results(

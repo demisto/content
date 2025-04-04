@@ -1,8 +1,8 @@
 id: Sysdig Response Action
-version: 4
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Sysdig Response Action
-description: Manage different response actions based on incident fields
+description: Example playbook on how to manage different response actions based on incident fields
 tags:
 - Runtime
 - Sysdig
@@ -46,7 +46,7 @@ tasks:
       version: -1
       name: Kill Container
       description: Calling the Sysdig response-actions API
-      script: 'SysdigResponseActions|||call-response-api'
+      script: 'SysdigResponseActions|||execute-response-action'
       type: regular
       iscommand: true
       brand: "SysdigResponseActions"
@@ -73,14 +73,10 @@ tasks:
                {
                   "container.id": "${inputs.container_ID}"
                 }
-      method:
-        simple: POST
       path_absolute:
         simple: ${incident.filepath}
       process_id:
         simple: ${incident.processid}
-      url_suffix:
-        simple: /secure/response-actions/v1alpha1/action-executions
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -239,7 +235,7 @@ tasks:
       version: -1
       name: File quarantine
       description: Calling the Sysdig response-actions API
-      script: 'SysdigResponseActions|||call-response-api'
+      script: 'SysdigResponseActions|||execute-response-action'
       type: regular
       iscommand: true
       brand: "SysdigResponseActions"
@@ -266,14 +262,10 @@ tasks:
                {
                   "container.id": "${inputs.container_ID}"
                 }
-      method:
-        simple: POST
       path_absolute:
         simple: ${incident.filepath}
       process_id:
         simple: ${incident.processid}
-      url_suffix:
-        simple: /secure/response-actions/v1alpha1/action-executions
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -299,7 +291,7 @@ tasks:
       version: -1
       name: Kill Process
       description: Calling the Sysdig response-actions API
-      script: 'SysdigResponseActions|||call-response-api'
+      script: 'SysdigResponseActions|||execute-response-action'
       type: regular
       iscommand: true
       brand: "SysdigResponseActions"
@@ -326,14 +318,10 @@ tasks:
                {
                   "container.id": "${inputs.container_ID}"
                 }
-      method:
-        simple: POST
       path_absolute:
         simple: ${incident.filepath}
       process_id:
         simple: ${incident.processid}
-      url_suffix:
-        simple: /secure/response-actions/v1alpha1/action-executions
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -420,10 +408,10 @@ tasks:
         simple: ${incident.hostname}
       machine_id:
         simple: ${incident.macaddress}
-      method:
-        simple: POST
-      url_suffix:
-        simple: /api/v1/captures
+      scap_duration:
+        simple: "15"
+      scap_filter:
+        simple: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -449,7 +437,7 @@ tasks:
       version: -1
       name: Save Capture
       description: Command to download a system capture based on the capture ID.
-      script: SysdigResponseActions|||download-capture-file
+      script: SysdigResponseActions|||get-capture-file
       type: regular
       iscommand: true
       brand: SysdigResponseActions
@@ -501,3 +489,7 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 dirtyInputs: true
+fromversion: 6.0.0
+tests:
+- No tests
+
