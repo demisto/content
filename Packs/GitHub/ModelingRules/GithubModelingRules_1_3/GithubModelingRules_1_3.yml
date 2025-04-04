@@ -3,4 +3,9 @@ id: github_modeling_rule
 name: Github Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 tags: github

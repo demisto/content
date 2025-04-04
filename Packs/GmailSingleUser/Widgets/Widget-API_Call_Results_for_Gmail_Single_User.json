@@ -91,5 +91,11 @@
     "id": "eff19897-4635-44c4-889c-f106373be355",
     "widgetType": "line",
     "fromVersion": "6.10.0",
-    "description": ""
+    "description": "",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
