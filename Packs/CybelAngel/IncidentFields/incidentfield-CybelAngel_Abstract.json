@@ -1,0 +1,33 @@
+{
+	"id": "incident_cybelangelabstract",
+	"version": -1,
+	"name": "CybelAngel Abstract",
+	"ownerOnly": false,
+	"type": "shortText",
+	"closeForm": true,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"caseInsensitive": true,
+	"sla": 0,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": true,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"openEnded": false,
+	"description": "Description of the CybelAngel incident",
+	"cliName": "cybelangelabstract",
+	"threshold": 72,
+	"placeholder": "",
+	"selectValues": [],
+	"columns": null,
+	"defaultRows": null,
+	"fromVersion": "6.2.0"
+}
