@@ -1,0 +1,91 @@
+{
+    "Type": 1,
+    "Contents": {
+        "product": "Test Product",
+        "hash": -123456789,
+        "os": "Test OS",
+        "transport": "tcp",
+        "timestamp": "2025-04-02T12:21:25.747042",
+        "isp": "Test ISP",
+        "cpe23": [
+            "cpe:2.3:h:company:device_model",
+            "cpe:2.3:o:company:os_type:3"
+        ],
+        "cpe": [
+            "cpe:/h:company:device_model",
+            "cpe:/o:company:os_type:3"
+        ],
+        "_shodan": {
+            "region": "na",
+            "ptr": true,
+            "module": "auto",
+            "id": "12345678-abcd-1234-1234-1234a5bb5678",
+            "options": {
+                "scan": "WWStLR7PTc7hhz61"
+            },
+            "crawler": "96tn5k5ERbrZEETCdPyw0wGytPqu3rr7pLiTLKUA"
+        },
+        "asn": "AS12345",
+        "hostnames": [
+            "test-host.example.com"
+        ],
+        "devicetype": "router",
+        "location": {
+            "city": "Test City",
+            "region_code": "CA",
+            "area_code": null,
+            "longitude": -12.34567,
+            "latitude": 12.34567,
+            "country_code": "US",
+            "country_name": "United States"
+        },
+        "ip": 167904004,
+        "domains": [
+            "example.com"
+        ],
+        "org": "Test Org",
+        "data": "\\xff\\xfd\\x18\\xff\\xfd \\xff\\xfd#\\xff\\xfd\\'\\xff\\xfd$\\xff\\xfd!",
+        "port": 23,
+        "ip_str": "10.2.3.4"
+    },
+    "ContentsFormat": "json",
+    "HumanReadable": "### Search results for query \"port:3389 ip:10.2.3.4\" - page 1, facets: \n|Asn|CPE23|Data|DeviceType|Domains|Hash|Hostnames|IP|Isp|Location|OS|Org|Port|Product|Ssl|Timestamp|Transport|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| AS12345 | cpe:2.3:h:company:device_model,<br>cpe:2.3:o:company:os_type:3 | \\xff\\xfd\\x18\\xff\\xfd \\xff\\xfd#\\xff\\xfd\\'\\xff\\xfd$\\xff\\xfd! | router | example.com | -123456789 | test-host.example.com | 10.2.3.4 | Test ISP | City: Test City<br>Longitude: -12.34567<br>Latitude: 12.34567<br>Country: United States | Test OS | Test Org | 23 | Test Product | versions:  | 2025-04-02T12:21:25.747042 | tcp |\n",
+    "HumanReadableFormat": "markdown",
+    "EntryContext": {
+        "Shodan": {
+            "Banner": {
+                "Org": "Test Org",
+                "Isp": "Test ISP",
+                "Transport": "tcp",
+                "Asn": "AS12345",
+                "IP": "10.2.3.4",
+                "Port": 23,
+                "Ssl": {
+                    "versions": []
+                },
+                "Hostnames": [
+                    "test-host.example.com"
+                ],
+                "Location": {
+                    "City": "Test City",
+                    "Longitude": -12.34567,
+                    "Latitude": 12.34567,
+                    "Country": "United States"
+                },
+                "Timestamp": "2025-04-02T12:21:25.747042",
+                "Domains": [
+                    "example.com"
+                ],
+                "OS": "Test OS",
+                "Data": "\\xff\\xfd\\x18\\xff\\xfd \\xff\\xfd#\\xff\\xfd\\'\\xff\\xfd$\\xff\\xfd!",
+                "Hash": -123456789,
+                "CPE23": [
+                    "cpe:2.3:h:company:device_model",
+                    "cpe:2.3:o:company:os_type:3"
+                ],
+                "DeviceType": "router",
+                "Product": "Test Product"
+            }
+        }
+    }
+}

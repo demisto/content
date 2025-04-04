@@ -94,6 +94,13 @@ script:
     - defaultValue: '1'
       description: The page number of the fetched results. Each page contains a maximum of 100 results.
       name: page
+    - name: return_json
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No
+      description: Whether to return a JSON file containing the full search results for further processing.
+      defaultValue: No
     description: Searches Shodan using facets to get summary information on properties.
     name: search
     outputs:
@@ -142,6 +149,120 @@ script:
     - contextPath: Shodan.Banner.OS
       description: The operating system that powers the searched device.
       type: String
+    - contextPath: Shodan.Banner.Product
+      description: Name of the software that powers the service.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.OSBuild
+      description: OS build reported by the service.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.DNSForestName
+      description: DNS Forest Name reported by the service.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.Timestamp
+      description: Timestamp.
+      type: Number
+    - contextPath: Shodan.Banner.Ntlm.FQDN
+      description: FQDN
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.NetBIOSDomainName
+      description: Netbios Domain Name.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.NetBIOSComputerName
+      description: Netbios Computer Name.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.TargetRealm
+      description: Target Realm.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.OS
+      description: OS.
+      type: String
+    - contextPath: Shodan.Banner.Ntlm.DNSDomainName
+      description: DNS Domain Name.
+      type: String
+    - contextPath: Shodan.Banner.Hash
+      description: Numeric hash of the "data" property which is helpful for finding other IPs with the exact same information.
+      type: Number
+    - contextPath: Shodan.Banner.Tags
+      description: Tag applied by Shodan analysis.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.SigAlg
+      description: Certificate Signature Algorithm.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Issued
+      description: Timestamp of the beginning of certificate validity (Not Valid Before).
+      type: Date
+    - contextPath: Shodan.Banner.Ssl.Cert.Expires
+      description: Timestamp of the end of certificate validity (Not Valid After).
+      type: Date
+    - contextPath: Shodan.Banner.Ssl.Cert.Version
+      description: X.509 Certificate Version.
+      type: Number
+    - contextPath: Shodan.Banner.Ssl.Cert.Serial
+      description: Serial Number assigned by the issuer.
+      type: Number
+    - contextPath: Shodan.Banner.Ssl.Cert.Subject.CN
+      description: Subject Common Name.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Subject.O
+      description: Subject Organization.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Subject.L
+      description: Subject Locality or City.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Subject.ST
+      description: Subject State or Province.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Subject.C
+      description: Subject Country Name.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Expired
+      description: Boolean indicating whether the certificate is expired.
+      type: Boolean
+    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.CN
+      description: Issuer Certificate Common Name.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.O
+      description: Issuer Organization.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.OU
+      description: Issuer Organizational Unit.
+      type: String 
+    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.L
+      description: Issuer Locality or City.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.ST
+      description: Issuer State or Province.
+      type: String
+    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.C
+      description: Issuer Country Name.
+      type: String
+    - contextPath: Shodan.Banner.Data
+      description: The raw data returned fro the service.
+      type: String
+    - contextPath: Shodan.Banner.CPE23
+      description: CPE information in the 2.3 format.
+      type: String
+    - contextPath: Shodan.Banner.Device
+      description: Device identified by Shodan.
+      type: String
+    - contextPath: Shodan.Banner.DeviceType
+      description: The Device Type identified by Shodan.
+      type: String
+    - contextPath: Shodan.Banner.Info
+      description: Additional information provided by Shodan.
+      type: String
+    - contextPath: Shodan.Banner.IPv6
+      description: The IPv6 address of the host as a string.
+      type: String
+    - contextPath: Shodan.Banner.Link
+      description: The Link identified by Shodan.
+      type: String
+    - contextPath: Shodan.Banner.Platform
+      description: The Platform identified by Shodan.
+      type: String
+    - contextPath: Shodan.Banner.Product
+      description: The Product identified by Shodan.
+      type: String
   - arguments:
     - default: true
       description: The IP addresses of the host.
@@ -173,7 +294,7 @@ script:
       description: The relationships between the ip and it's CVEs.
       type: Unknown
     - contextPath: Shodan.IP.Tags
-      description: The tags associated with the IP address.
+      description: The Shodan tags associated with the IP address.
       type: String
     - contextPath: Shodan.IP.Latitude
       description: The latitude of the geolocation of the searched device.

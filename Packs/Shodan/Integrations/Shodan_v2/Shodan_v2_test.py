@@ -2,6 +2,12 @@ import json
 from datetime import datetime
 import pytest
 from pytest_mock import MockerFixture
+import demistomock as demisto
+
+
+def util_load_json(path):
+    with open(path) as f:
+        return json.loads(f.read())
 
 
 with open("./test_data/response.json") as f:
@@ -68,3 +74,54 @@ def test_fetch_events(mocker):
     assert len(filtered_events) == 2
     assert last_run == {'last_fetch_time': '2024-08-12T08:46:18.012000', 'last_event_ids': ['6789']}
     mock_http_request.assert_called_once_with("GET", "/shodan/alert/info")
+
+
+@pytest.mark.parametrize(
+    'api_response_data, expected_demistoresults_args', [
+        (
+            util_load_json('./test_data/searchresults_NoSSL.json'),
+            util_load_json('./test_data/expected_return_results_NoSSL.json')
+        ),
+        (
+            util_load_json('./test_data/searchresults_SSL_NoNTLM.json'),
+            util_load_json('./test_data/expected_return_results_SSL_NoNTLM.json')
+        ),
+        (
+            util_load_json('./test_data/searchresults_SSL_WithNTLM.json'),
+            util_load_json('./test_data/expected_return_results_SSL_WithNTLM.json')
+        )
+    ]
+)
+def test_search_command(api_response_data: dict, expected_demistoresults_args: dict, mocker: MockerFixture):
+    """
+    Test the search_command function.
+
+    This test verifies that the search_command function correctly processes the API response
+    and produces the expected demisto results. It mocks the necessary dependencies and
+    compares the output with the expected results.
+
+    Args:
+        api_response_data (dict): The mocked API response data.
+        expected_demistoresults_args (dict): The expected arguments for demisto.results.
+        mocker (MockerFixture): Pytest fixture for mocking.
+
+    The test checks various aspects of the results, including Type, Contents, ContentsFormat,
+    HumanReadable, HumanReadableFormat, and EntryContext.
+    """
+    from Shodan_v2 import search_command
+    mocker.patch.object(demisto, 'args', return_value={
+        'query': 'port:3389 ip:10.2.3.4',
+        'facets': '',
+        'page': 1,
+        'return_json': 'No'
+    })
+    mocker.patch('Shodan_v2.http_request', return_value=api_response_data)
+    mock_results = mocker.patch('Shodan_v2.demisto.results', return_value=True)
+    search_command()
+    results_call_args = mock_results.call_args[0][0]
+    assert results_call_args['Type'] == expected_demistoresults_args['Type']
+    assert results_call_args['Contents'] == expected_demistoresults_args['Contents']
+    assert results_call_args['ContentsFormat'] == expected_demistoresults_args['ContentsFormat']
+    assert results_call_args['HumanReadable'] == expected_demistoresults_args['HumanReadable']
+    assert results_call_args['HumanReadableFormat'] == expected_demistoresults_args['HumanReadableFormat']
+    assert results_call_args['EntryContext'] == expected_demistoresults_args['EntryContext']

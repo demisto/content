@@ -1,0 +1,216 @@
+{
+    "Type": 1,
+    "Contents": {
+        "hash": 1234567890,
+        "asn": "AS123456",
+        "os": "Windows Server 2022 (build 10.0.20348)",
+        "tags": [
+            "cloud"
+        ],
+        "timestamp": "2025-03-12T10:59:19.768166",
+        "isp": "Test ISP",
+        "transport": "tcp",
+        "_shodan": {
+            "region": "",
+            "module": "https",
+            "ptr": true,
+            "options": {},
+            "id": "11111111-aaaa-2222-bbbb-33333333333333",
+            "crawler": "91597136eb9b132d7cc954511e0d9cbe7ce2e377"
+        },
+        "ssl": {
+            "chain_sha256": [
+                "hash1",
+                "hash2",
+                "hash3"
+            ],
+            "jarm": "736f6d657465737464617461",
+            "tlsext": [
+                {
+                    "id": 51,
+                    "name": "key_share"
+                },
+                {
+                    "id": 43,
+                    "name": "supported_versions"
+                }
+            ],
+            "chain": [
+                "cert1",
+                "cert2",
+                "cert3"
+            ],
+            "versions": [
+                "-TLSv1",
+                "-SSLv2",
+                "-SSLv3",
+                "-TLSv1.1",
+                "TLSv1.2",
+                "TLSv1.3"
+            ],
+            "acceptable_cas": [],
+            "alpn": [],
+            "cert": {
+                "sig_alg": "sha256WithRSAEncryption",
+                "issued": "20250303070056Z",
+                "expires": "20250601075349Z",
+                "pubkey": {
+                    "bits": 2048,
+                    "type": "rsa"
+                },
+                "version": 2,
+                "extensions": [
+                    {},
+                    {}
+                ],
+                "fingerprint": {
+                    "sha256": "10ba28f2395f43928e1fcc3dd482dc2f1b6a9cef7334d1afda11369f2a1a5486",
+                    "sha1": "aed778c38291611dc2b607ed1ac8181ccf9895e3"
+                },
+                "serial": 1234,
+                "issuer": {
+                    "C": "US",
+                    "CN": "T1",
+                    "O": "Test Trust Services"
+                },
+                "expired": false,
+                "subject": {
+                    "CN": "www.example.com"
+                }
+            },
+            "cipher": {
+                "version": "TLSv1.3",
+                "bits": 256,
+                "name": "TLS_AES_256_GCM_SHA384"
+            },
+            "trust": {
+                "revoked": false,
+                "browser": null
+            },
+            "handshake_states": [
+                "before SSL initialization",
+                "SSLv3/TLS write client hello",
+                "SSLv3/TLS read server hello",
+                "TLSv1.3 read encrypted extensions",
+                "SSLv3/TLS read server certificate",
+                "TLSv1.3 read server certificate verify",
+                "SSLv3/TLS read finished",
+                "SSLv3/TLS write change cipher spec",
+                "SSLv3/TLS write finished",
+                "SSL negotiation finished successfully"
+            ],
+            "ja3s": "736f6d657465737464617461616e646e6f77736",
+            "ocsp": {}
+        },
+        "cloud": {
+            "region": "global",
+            "service": null,
+            "provider": "Example"
+        },
+        "hostnames": [
+            "www.example.com"
+        ],
+        "location": {
+            "city": "Santa Clara",
+            "region_code": "CA",
+            "area_code": null,
+            "longitude": -121.983586,
+            "latitude": 37.383038,
+            "country_code": "US",
+            "country_name": "United States"
+        },
+        "ip": 4948465046514652,
+        "ntlm": {
+            "target_realm": "test-host",
+            "timestamp": 133880762199299918,
+            "netbios_domain_name": "test-host",
+            "dns_domain_name": "test-host",
+            "fqdn": "test-host",
+            "netbios_computer_name": "test_host",
+            "os": [
+                "Windows Server 2022"
+            ],
+            "os_build": "10.0.20348"
+        },
+        "domains": [
+            "example.com"
+        ],
+        "org": "Example LLC",
+        "data": "Remote Desktop Protocol\n\\x03\\x00\\x00\\x13\\x0e\\xd0\\x00\\x00\\x124\\x00\\x02\\x1f\\x08\\x00\\x02\\x00\\x00\\x00\nRemote Desktop Protocol NTLM Info:\n  OS: Windows Server 2022\n  OS Build: 10.0.20348\n  Target Name: test-host\n  NetBIOS Domain Name: test-host\n  NetBIOS Computer Name: test-host\n  DNS Domain Name: test-host\n  FQDN: test-host",
+        "port": 3389,
+        "ip_str": "10.2.3.4"
+    },
+    "ContentsFormat": "json",
+    "HumanReadable": "### Search results for query \"port:3389 ip:10.2.3.4\" - page 1, facets: \n|Asn|Data|Domains|Hash|Hostnames|IP|Isp|Location|Ntlm|OS|Org|Port|Ssl|Tags|Timestamp|Transport|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| AS123456 | Remote Desktop Protocol<br>\\x03\\x00\\x00\\x13\\x0e\\xd0\\x00\\x00\\x124\\x00\\x02\\x1f\\x08\\x00\\x02\\x00\\x00\\x00<br>Remote Desktop Protocol NTLM Info:<br>  OS: Windows Server 2022<br>  OS Build: 10.0.20348<br>  Target Name: test-host<br>  NetBIOS Domain Name: test-host<br>  NetBIOS Computer Name: test-host<br>  DNS Domain Name: test-host<br>  FQDN: test-host | example.com | 1234567890 | www.example.com | 10.2.3.4 | Test ISP | City: Santa Clara<br>Longitude: -121.983586<br>Latitude: 37.383038<br>Country: United States | DNSDomainName: test-host<br>DNSForestName: <br>FQDN: test-host<br>NetBIOSComputerName: test_host<br>NetBIOSDomainName: test-host<br>OS: Windows Server 2022<br>OSBuild: 10.0.20348<br>TargetRealm: test-host<br>Timestamp: 133880762199299918 | Windows Server 2022 (build 10.0.20348) | Example LLC | 3389 | versions: -TLSv1,<br>-SSLv2,<br>-SSLv3,<br>-TLSv1.1,<br>TLSv1.2,<br>TLSv1.3<br>Cert: {<br>    \"Expired\": false,<br>    \"Expires\": \"2025-06-01T07:53:49.000000\",<br>    \"Issued\": \"2025-03-03T07:00:56.000000\",<br>    \"Issuer\": {<br>        \"C\": \"US\",<br>        \"CN\": \"T1\",<br>        \"O\": \"Test Trust Services\"<br>    },<br>    \"Serial\": 1234,<br>    \"SigAlg\": \"sha256WithRSAEncryption\",<br>    \"Subject\": {<br>        \"CN\": \"www.example.com\"<br>    },<br>    \"Version\": 2<br>} | cloud | 2025-03-12T10:59:19.768166 | tcp |\n",
+    "HumanReadableFormat": "markdown",
+    "EntryContext": {
+        "Shodan": {
+            "Banner": {
+                "Org": "Example LLC",
+                "Isp": "Test ISP",
+                "Transport": "tcp",
+                "Asn": "AS123456",
+                "IP": "10.2.3.4",
+                "Port": 3389,
+                "Ssl": {
+                    "versions": [
+                        "-TLSv1",
+                        "-SSLv2",
+                        "-SSLv3",
+                        "-TLSv1.1",
+                        "TLSv1.2",
+                        "TLSv1.3"
+                    ],
+                    "Cert": {
+                        "Expired": false,
+                        "Expires": "2025-06-01T07:53:49.000000",
+                        "Issued": "2025-03-03T07:00:56.000000",
+                        "Issuer": {
+                            "C": "US",
+                            "CN": "T1",
+                            "O": "Test Trust Services"
+                        },
+                        "Serial": 1234,
+                        "SigAlg": "sha256WithRSAEncryption",
+                        "Subject": {
+                            "CN": "www.example.com"
+                        },
+                        "Version": 2
+                    }
+                },
+                "Hostnames": [
+                    "www.example.com"
+                ],
+                "Location": {
+                    "City": "Santa Clara",
+                    "Longitude": -121.983586,
+                    "Latitude": 37.383038,
+                    "Country": "United States"
+                },
+                "Timestamp": "2025-03-12T10:59:19.768166",
+                "Domains": [
+                    "example.com"
+                ],
+                "OS": "Windows Server 2022 (build 10.0.20348)",
+                "Data": "Remote Desktop Protocol\n\\x03\\x00\\x00\\x13\\x0e\\xd0\\x00\\x00\\x124\\x00\\x02\\x1f\\x08\\x00\\x02\\x00\\x00\\x00\nRemote Desktop Protocol NTLM Info:\n  OS: Windows Server 2022\n  OS Build: 10.0.20348\n  Target Name: test-host\n  NetBIOS Domain Name: test-host\n  NetBIOS Computer Name: test-host\n  DNS Domain Name: test-host\n  FQDN: test-host",
+                "Hash": 1234567890,
+                "Tags": [
+                    "cloud"
+                ],
+                "Ntlm": {
+                    "DNSDomainName": "test-host",
+                    "DNSForestName": "",
+                    "FQDN": "test-host",
+                    "NetBIOSComputerName": "test_host",
+                    "NetBIOSDomainName": "test-host",
+                    "OS": [
+                        "Windows Server 2022"
+                    ],
+                    "OSBuild": "10.0.20348",
+                    "TargetRealm": "test-host",
+                    "Timestamp": 133880762199299918
+                }
+            }
+        }
+    }
+}

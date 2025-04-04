@@ -30,6 +30,47 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 handle_proxy()
 
+optional_general_properties_map = {
+    'cpe23': ('CPE23', []),
+    'device': ('Device', ''),
+    'devicetype': ('DeviceType', ''),
+    'info': ('Info', ''),
+    'ipv6': ('IPv6', ''),
+    'link': ('Link', ''),
+    'platform': ('Platform', ''),
+    'product': ('Product', ''),
+    'tags': ('Tags', []),
+    'transport': ('Transport', ''),
+    'vendor': ('Vendor', ''),
+    'version': ('Version', ''),
+}
+
+
+ntlm_properties_map = {
+    'dns_domain_name': ('DNSDomainName', ''),
+    'dns_forest_name': ('DNSForestName', ''),
+    'fqdn': ('FQDN', ''),
+    'netbios_computer_name': ('NetBIOSComputerName', ''),
+    'netbios_domain_name': ('NetBIOSDomainName', ''),
+    'os': ('OS', []),
+    'os_build': ('OSBuild', ''),
+    'target_realm': ('TargetRealm', ''),
+    'timestamp': ('Timestamp', 0)
+}
+
+
+ssl_cert_properties_map = {
+    'expired': ('Expired', False),
+    'expires': ('Expires', ''),
+    'issued': ('Issued', ''),
+    'issuer': ('Issuer', {}),
+    'serial': ('Serial', 0),
+    'sig_alg': ('SigAlg', ''),
+    'subject': ('Subject', {}),
+    'version': ('Version', 0)
+}
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -193,6 +234,7 @@ def search_command():
     query = demisto.args()['query']
     facets = demisto.args().get('facets')
     page = int(demisto.args().get('page', 1))
+    return_json = demisto.args().get('return_json', 'No')
 
     params = {'query': query}
     if facets:
@@ -203,8 +245,17 @@ def search_command():
     res = http_request('GET', '/shodan/host/search', params)
 
     matches = res.get('matches', [])
+
+    # Return the full list of match data as a JSON file if requested
+    if return_json == 'Yes':
+        formatted_json = json.dumps(matches).encode("utf-8")
+        file_entry = fileResult(filename=f'shodan_search_matches_page{page}.json',
+                                data=formatted_json, file_type=EntryType.ENTRY_INFO_FILE)
+        return_results(file_entry)
+
     for match in matches:
         location = match.get('location', {'city': '', 'country_name': '', 'longitude': 0, 'latitude': 0})
+        # Build context entry with commonly used properties and others listed as Required in Shodan Banner API spec
         ec = {
             'Shodan': {
                 'Banner': {
@@ -226,17 +277,40 @@ def search_command():
                     },
                     'Timestamp': match.get('timestamp', ''),
                     'Domains': match.get('domains', []),
-                    'OS': match.get('os', '')
+                    'OS': match.get('os', ''),
+                    'Data': match.get('data', ''),
+                    'Hash': match.get('hash', 0)
                 }
             }
         }
 
+        # Add any available optional Banner properties to the entry context object
+        for optional_property, (ec_key, default_value) in optional_general_properties_map.items():
+            if optional_property in match:
+                ec['Shodan']['Banner'][ec_key] = match[optional_property] or default_value
+
+        # Add SSL certificate properties, if present
+        if match.get('ssl', {}).get('cert', {}):
+            ec['Shodan']['Banner']['Ssl']['Cert'] = {}
+
+            for cert_property, (ec_key, default_value) in ssl_cert_properties_map.items():
+                value = match['ssl']['cert'].get(cert_property, default_value)
+                if cert_property in ['issued', 'expires']:
+                    cert_datetime = datetime.strptime(value, '%Y%m%d%H%M%SZ')
+                    value = cert_datetime.strftime(DATE_FORMAT)
+
+                ec['Shodan']['Banner']['Ssl']['Cert'][ec_key] = value
+
+        # Add NTLM properties, if present
+        if match.get('ntlm', {}):
+            ec['Shodan']['Banner']['Ntlm'] = {}
+
+            for ntlm_property, (ec_key, default_value) in ntlm_properties_map.items():
+                ec['Shodan']['Banner']['Ntlm'][ec_key] = match['ntlm'].get(ntlm_property, default_value)
+
+        # Format returned data as markdown table
         human_readable = tableToMarkdown(f'Search results for query "{query}" - page {page}, facets: {facets}',
-                                         {
-                                             'IP': ec['Shodan']['Banner']['IP'],
-                                             'Port': ec['Shodan']['Banner']['Port'],
-                                             'Timestamp': ec['Shodan']['Banner']['Timestamp']
-                                         })
+                                         flattenRow(rowDict=ec['Shodan']['Banner']))
 
         demisto.results({
             'Type': entryTypes['note'],
