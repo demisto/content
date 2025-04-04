@@ -1,0 +1,815 @@
+{
+	"definitionId": "",
+	"description": "",
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 26,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 26,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 26,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 26,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 26,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 26,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 26,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 26,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 26,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 26,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 26,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 26,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 26,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 26,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 26,
+								"id": "incident-details-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"hidden": false,
+				"id": "chtyrfjhpp",
+				"name": "Doppel Alert Data",
+				"sections": [
+					{
+						"description": "Details about the alert fetched from the Doppel platform",
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "chtyrfjhpp-6cccc2bd-1312-44b7-8ab4-2e23aae407a7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "alertid",
+								"height": 26,
+								"id": "e151a0ab-11d1-4667-a874-2fbeb823cebe",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertsource",
+								"height": 26,
+								"id": "7b939b5f-faa3-4505-9c58-334062803188",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 26,
+								"id": "2feff9ff-9c80-4aed-8866-abf3892a2fa6",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelbrand",
+								"height": 26,
+								"id": "31921aa2-3b76-4b3a-a6d3-5f1e43968dcb",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppellink",
+								"height": 26,
+								"id": "128d659a-5c63-458c-a96b-0240bbeae842",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelnotes",
+								"height": 26,
+								"id": "a144e1c1-b303-4dcb-b56d-d89508e3ccd1",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelplatform",
+								"height": 26,
+								"id": "30e0153f-6343-44eb-b9ca-c4dea0e82161",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelproduct",
+								"height": 26,
+								"id": "edcef656-d794-4f5c-9fed-5b583384d3ea",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelqueuestate",
+								"height": 26,
+								"id": "820d34e6-33ef-4990-9345-865772efc7a1",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "occurred",
+								"height": 26,
+								"id": "270e7ec6-6db4-43ce-9f88-6d16e08649f9",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 26,
+								"id": "661bd421-ccb4-401f-9354-754d2f414d08",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppeluploadedby",
+								"height": 26,
+								"id": "baaf1629-2c6e-4f54-9970-16aac380b407",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"columns": [
+							{
+								"displayName": "domain",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "domain",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 182
+							},
+							{
+								"displayName": "registrar",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "registrar",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 208
+							},
+							{
+								"displayName": "ip_address",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "ip_address",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 154
+							},
+							{
+								"displayName": "contact_email",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "contact_email",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 224
+							},
+							{
+								"displayName": "country_code",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "country_code",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 122
+							},
+							{
+								"displayName": "hosting_provider",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "hosting_provider",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "shortText",
+								"width": 151
+							},
+							{
+								"displayName": "mx_records",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "mx_records",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": [],
+								"type": "longText",
+								"width": 382
+							},
+							{
+								"displayName": "nameservers",
+								"fieldCalcScript": "",
+								"isDefault": true,
+								"isReadOnly": false,
+								"key": "nameservers",
+								"orgType": "",
+								"required": false,
+								"script": "",
+								"selectValues": null,
+								"type": "longText",
+								"width": 451
+							}
+						],
+						"description": "Details about the entity received from Doppel",
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "chtyrfjhpp-db82b87b-a67c-4e81-8e33-29dae245ea1b",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "doppelentity",
+								"height": 26,
+								"id": "1bfc1bbf-f0cd-4b97-af72-0c2dc7db87e6",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelentitystate",
+								"height": 26,
+								"id": "f36bf862-77df-4d6d-be09-9079492ef44c",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "doppelentitycontent",
+								"height": 106,
+								"id": "4c377f5a-6dcf-4122-8112-4fb557f4642b",
+								"index": 2,
+								"listId": "chtyrfjhpp-db82b87b-a67c-4e81-8e33-29dae245ea1b",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Entity Content",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "Shows the Audit log history for the particular Alert",
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "chtyrfjhpp-07b54ffa-28e8-4216-b4d2-1d0590a0affe",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Audit Log History",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"description": "Provides the Action buttons to Modify the Queue_State value with a suitable comment",
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
+						"items": [
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": "  ",
+										"userMarkedRequired": true
+									},
+									"entity_state": {
+										"simple": "${incident.doppelentitystate}",
+										"userMarkedRequired": false
+									},
+									"queue_state": {
+										"simple": "actioned",
+										"userMarkedRequired": false
+									}
+								},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "5519ca81-081e-4b00-9d88-fadabc959528",
+								"index": 0,
+								"name": "Request Takedown",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": "Safelist this Asset, We own it.",
+										"userMarkedRequired": true
+									},
+									"entity_state": {
+										"simple": "${incident.doppelentitystate}"
+									},
+									"queue_state": {
+										"simple": "doppel_review"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "5d2778f2-8950-47da-a023-4f81bf3c5d41",
+								"index": 1,
+								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
+								"name": "Safelist the Asset",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": "Throw out this Alert later as this is a Noise.",
+										"userMarkedRequired": true
+									},
+									"entity_state": {
+										"simple": "${incident.doppelentitystate}",
+										"userMarkedRequired": false
+									},
+									"queue_state": {
+										"simple": "doppel_review"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "78e9d1ce-d4b5-46bc-908a-200338c3dc97",
+								"index": 2,
+								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
+								"name": "False Positive",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": " ",
+										"userMarkedRequired": true
+									},
+									"entity_state": {
+										"simple": "${incident.doppelentitystate}",
+										"userMarkedRequired": false
+									},
+									"queue_state": {
+										"simple": "archived"
+									}
+								},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "1c5f3d2d-8098-42b7-bfb1-d7fb61f3438e",
+								"index": 3,
+								"name": "Archive",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": " ",
+										"userMarkedRequired": true
+									},
+									"entity_state": {
+										"simple": "${incident.doppelentitystate}",
+										"userMarkedRequired": false
+									},
+									"queue_state": {
+										"simple": "monitoring"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "e4c1e702-00ca-4e8d-8c92-dfc2a2d8bec9",
+								"index": 4,
+								"listId": "chtyrfjhpp-46dd786d-8134-4c56-ab8e-f630302f49ee",
+								"name": "Monitor",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"alert_id": {
+										"simple": "${incident.alertid}"
+									},
+									"comment": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "3c802f06-c14f-4b70-baea-3a19d22749bb",
+								"index": 5,
+								"name": "Add Comment",
+								"scriptId": "Doppel|||doppel-update-alert",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Actions",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"group": "incident",
+	"id": "Doppel Incident Layout",
+	"name": "Doppel Incident Layout",
+	"system": false,
+	"version": -1,
+	"fromVersion": "6.10.0"
+}
