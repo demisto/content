@@ -1178,7 +1178,6 @@ def to_xsoar_incident(incident_data: dict) -> dict:
 
 
 def get_look_back_vars(raw_incidents, last_minute) -> tuple[int, list[str]]:
-    demisto.debug(f'{last_minute=}')
     last_fetch = min(
         get_incident_creation_time(raw_incidents[-1]),
         last_minute
@@ -1187,7 +1186,7 @@ def get_look_back_vars(raw_incidents, last_minute) -> tuple[int, list[str]]:
         get_incident_id(incident) for incident in raw_incidents
         if get_incident_creation_time(incident) >= last_fetch
     ]
-    demisto.debug(f'{last_fetch=}, {next_dedup_incidents=}')
+    demisto.debug(f'{last_minute=}, {last_fetch=}, {next_dedup_incidents=}')
     return last_fetch, next_dedup_incidents
 
 
