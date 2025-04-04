@@ -1177,6 +1177,19 @@ def to_xsoar_incident(incident_data: dict) -> dict:
     return incident
 
 
+def get_look_back_vars(raw_incidents, last_minute) -> tuple[int, list[str]]:
+    last_fetch = min(
+        get_incident_creation_time(raw_incidents[-1]),
+        last_minute
+    )
+    next_dedup_incidents = [
+        get_incident_id(incident) for incident in raw_incidents
+        if get_incident_creation_time(incident) >= last_fetch
+    ]
+    demisto.debug(f'{last_fetch=}, {next_dedup_incidents=}')
+    return last_fetch, next_dedup_incidents
+
+
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool,
                     last_run: dict, max_fetch: int = 10, statuses: list = [],
                     starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
@@ -1219,15 +1232,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         )
 
     if raw_incidents:
-        last_fetch = min(
-            get_incident_creation_time(raw_incidents[-1]),
-            max(last_minute, last_fetch)
-        )
-        next_dedup_incidents = [
-            get_incident_id(incident) for incident in raw_incidents
-            if get_incident_creation_time(incident) >= last_fetch
-        ]
-        demisto.debug(f'{last_fetch=}, {next_dedup_incidents=}')
+        last_fetch, next_dedup_incidents = get_look_back_vars(raw_incidents, last_minute)
 
     # remove duplicate incidents
     raw_incidents = [
