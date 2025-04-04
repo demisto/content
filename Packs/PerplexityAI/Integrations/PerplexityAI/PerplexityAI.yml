@@ -1,0 +1,92 @@
+category: Utilities
+commonfields:
+  id: Perplexity AI
+  version: -1
+configuration:
+- defaultvalue: https://api.perplexity.ai
+  display: URL for Perplexity AI
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Perplexity AI API Key
+  displaypassword: Perplexity AI API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Connect
+  type: 9
+- display: Cloudflare Access Client Id
+  displaypassword: Cloudflare Access Client Secret
+  name: cf_auth
+  required: false
+  section: Connect
+  type: 9
+- additionalinfo: 'Available models are: sonar,sonar-pro,sonar-deep-research,sonar-reasoning,sonar-reasoning-pro,r1-1776'
+  defaultvalue: sonar-deep-research
+  display: Perplexity AI Model
+  name: model
+  required: true
+  type: 0
+description: Perplexity AI is a web search engine that uses a large language model to process queries and synthesize responses based on web search results.  With a conversational approach, Perplexity AI allows users to ask follow-up questions and receive answers with citations to its sources from the internet.
+display: Perplexity AI
+name: Perplexity AI
+script:
+  commands:
+  - arguments:
+    - defaultValue: Be precise and concise.
+      description: The system message to influence how the user message is handled - used in the "system" role.
+      name: systemmessage
+    - description: The user's question - used in the "users" role.
+      name: usermessage
+      required: true
+    - auto: PREDEFINED
+      description: Limit search to recent hour, day, week, month.
+      name: recentfilter
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+    - description: Limit search to these domains. CSV list of domains of up to 3 domains. A '-' in front of the domain excludes it.
+      name: domainfilter
+    - auto: PREDEFINED
+      defaultValue: no
+      description: Include JSON output in context if yes, with markdown in war room.
+      name: jsonout
+      predefined:
+      - yes
+      - no
+    - auto: PREDEFINED
+      defaultValue: no
+      description: Include research citations in the output.
+      name: citations
+      predefined:
+      - yes
+      - no
+    - auto: PREDEFINED
+      defaultValue: no
+      description: Include thinking in the output.
+      name: thinking
+      predefined:
+      - yes
+      - no
+    - auto: PREDEFINED
+      default: true
+      defaultValue: medium
+      description: How much context is returned as results.
+      name: contextsize
+      predefined:
+      - low
+      - medium
+      - high
+    description: Send a chat message.  You may need to increase the command timeout in "advanced settings" from the default 5 minutes.
+    name: deepresearch-chat
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
