@@ -557,6 +557,20 @@ def main():  # pragma: no cover
         elif command == "core-get-asset-details":
             return_results(get_asset_details_command(client, args))
 
+        elif command == "core-execute-command":
+            commands = args.get('command')
+            if not commands:
+                raise DemistoException("command is a required field")
+            # the value of script_uid is the Unique identifier of execute_commands script.
+            args |= {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
+            is_raw_command = argToBoolean(args.get('is_raw_command', False))
+            commands_list = [commands] if is_raw_command else argToList(commands)
+            if args.get('command_type') == 'powershell':
+                commands_list = [form_powershell_command(command) for command in commands_list]
+            args['parameters'] = json.dumps({'commands_list': commands_list})
+            statuses = ('PENDING', 'IN_PROGRESS', 'PENDING_ABORT')
+            return_results(script_run_polling_command(args, client, statuses))
+
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 

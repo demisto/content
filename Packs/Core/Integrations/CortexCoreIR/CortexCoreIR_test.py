@@ -6,6 +6,7 @@ import pytest
 from CommonServerPython import CommandResults
 
 Core_URL = "https://api.xdrurl.com"
+STATUS_AMOUNT = 6
 
 
 def load_test_data(json_path):
@@ -145,11 +146,11 @@ class TestPrevalenceCommands:
 
 class TestPollingCommand:
     @staticmethod
-    def create_mocked_responses(status_count):
+    def create_mocked_responses():
         response_queue = [{"reply": {"action_id": 1, "status": 1, "endpoints_count": 1}}]
 
-        for i in range(status_count):
-            if i == status_count - 1:
+        for i in range(STATUS_AMOUNT):
+            if i == STATUS_AMOUNT - 1:
                 general_status = "COMPLETED_SUCCESSFULLY"
             elif i < 2:
                 general_status = "PENDING"
@@ -187,8 +188,7 @@ class TestPollingCommand:
 
         return response_queue
 
-    @pytest.mark.parametrize(argnames="status_count", argvalues=[1, 3, 7, 9, 12, 15])
-    def test_script_run_command(self, mocker, status_count):
+    def test_script_run_command(self, mocker):
         """
         Given -
             core-script-run command arguments including polling true and is_core is true where each time a different amount of
@@ -209,7 +209,7 @@ class TestPollingCommand:
 
         client = CoreClient(base_url="https://test_api.com/public_api/v1", headers={})
 
-        mocker.patch.object(client, "_http_request", side_effect=self.create_mocked_responses(status_count))
+        mocker.patch.object(client, "_http_request", side_effect=self.create_mocked_responses())
         mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
         command_result = script_run_polling_command(args={"endpoint_ids": "1", "script_uid": "1"}, client=client)

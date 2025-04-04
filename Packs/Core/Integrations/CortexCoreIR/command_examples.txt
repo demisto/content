@@ -41,3 +41,4 @@
 !core-terminate-causality agent_id=1 causality_id=1 incident_id=1 interval_in_seconds=1 timeout_in_seconds=1!core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
 !core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
 !core-get-asset-details asset_id=123
+!core-execute-command command=dir endpoint_ids=5jhgu74i6bnh41mk45127413k4
