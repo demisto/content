@@ -293,8 +293,7 @@ def test_update_status_command(client, requests_mock):
         'status': 'resolved'
     })
     assert result.outputs_prefix == 'CybelAngel.StatusUpdate'
-    assert "updated" in result.raw_response 
-
+    assert "updated" in result.raw_response
 
 def test_update_status_error(client, requests_mock):
     requests_mock.put(f"{BASE_URL}api/v1/reports/test-id/status", exc=Exception("Update failed"))
