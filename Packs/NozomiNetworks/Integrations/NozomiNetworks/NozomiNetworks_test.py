@@ -103,13 +103,13 @@ def test_parse_incidents():
         "name": "Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c",
         "severity": 2,
         "rawJSON": '{"id": "1af93f46-65c1-4f52-a46a-2a181597fb0c", '
-        '"type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", '
-        '"description": "The slave 10.197.23.139 sent a RST of the connection to the master.", '
-        '"severity": 10, "mac_src": "00:02:3e:99:c9:5d", "mac_dst": "00:c0:c9:30:04:f1", '
-        '"ip_src": "10.197.23.182", "ip_dst": "10.197.23.139", "risk": "4.5", "protocol": "iec104", '
-        '"src_roles": "master", "dst_roles": "slave", "record_created_at": 1392048082242, "ack": false, '
-        '"port_src": 1097, "port_dst": 2404, "status": "open", "threat_name": "", '
-        '"type_name": "Link RST sent by Slave", "zone_src": "RemoteRTU", "zone_dst": "RemoteRTU"}',
+                   '"type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", '
+                   '"description": "The slave 10.197.23.139 sent a RST of the connection to the master.", '
+                   '"severity": 10, "mac_src": "00:02:3e:99:c9:5d", "mac_dst": "00:c0:c9:30:04:f1", '
+                   '"ip_src": "10.197.23.182", "ip_dst": "10.197.23.139", "risk": "4.5", "protocol": "iec104", '
+                   '"src_roles": "master", "dst_roles": "slave", "record_created_at": 1392048082242, "ack": false, '
+                   '"port_src": 1097, "port_dst": 2404, "status": "open", "threat_name": "", '
+                   '"type_name": "Link RST sent by Slave", "zone_src": "RemoteRTU", "zone_dst": "RemoteRTU"}',
     }
 
 
@@ -152,7 +152,7 @@ def test_incidents_filtered(requests_mock):
                 {
                     "json": __load_test_data("./test_data/incidents_better_than_time.json"),
                     "path": "/api/open/query/do?query=alerts | sort record_created_at asc "
-                    "| where record_created_at > 1392048082000 | where risk >= 4&page=1&count=100",
+                            "| where record_created_at > 1392048082000 | where risk >= 4&page=1&count=100",
                 }
             ],
             requests_mock,
@@ -164,6 +164,69 @@ def test_incidents_filtered(requests_mock):
         {"name": "Link RST sent by Slave", "severity": 2},
         {"name": "New Node", "severity": 4},
     ]
+
+
+def test_incidents_equal_to_time_returns_data(requests_mock):
+    import urllib.parse
+
+    st = "1392048082000"
+    risk = "4"
+    also_n2os_incidents = True
+
+    query = f"alerts | sort record_created_at asc | where record_created_at == {st} | where risk >= 4"
+    request_path = f"/api/open/query/do?query={urllib.parse.quote(query)}&page=1&count=100"
+
+    client = __get_client(
+        [
+            {
+                "json": {
+                    "result": [
+                        {"id": 1, "name": "Exact Time Incident 1", "record_created_at": int(st), "risk": 5.0},
+                        {"id": 2, "name": "Exact Time Incident 2", "record_created_at": int(st), "risk": 4.0},
+                    ],
+                    "total": 2,
+                },
+                "path": request_path,
+            }
+        ],
+        requests_mock,
+    )
+
+    incidents_result = incidents_equal_to_time(st, page=1, risk=risk, also_n2os_incidents=also_n2os_incidents, client=client)
+
+    assert requests_mock.called
+    assert len(incidents_result) == 2
+    assert incidents_result[0]["name"] == "Exact Time Incident 1"
+    assert incidents_result[1]["name"] == "Exact Time Incident 2"
+
+
+def test_incidents_calls_equal_to_time_when_max_page_reached():
+    st = "1392048082000"
+    last_run = {"last_fetch": st, "page": MAX_PAGE_NUMBER_REACHABLE}
+    risk = "4"
+    also_n2os_incidents = True
+
+    mock_ibtt = [
+        {"id": 1, "name": "From Better Than", "record_created_at": int(st), "risk": 5.0}
+    ]
+    mock_iett = [
+        {"id": 1, "name": "From Better Than", "record_created_at": int(st), "risk": 5.0},
+        {"id": 2, "name": "From Equal To", "record_created_at": int(st), "risk": 4.0},
+    ]
+
+    client = MagicMock()
+
+    with patch("NozomiNetworks.incidents_better_than_time", return_value=mock_ibtt) as mock_btt, \
+            patch("NozomiNetworks.incidents_equal_to_time", return_value=mock_iett) as mock_ett:
+
+        results, lft = incidents(st, last_run, risk, also_n2os_incidents, client)
+
+        assert mock_btt.called
+        assert mock_ett.called
+        assert len(results) == 2
+        names = [i["name"].split("_")[0] for i in results]  # remove incident ID suffix
+        assert "From Better Than" in names
+        assert "From Equal To" in names
 
 
 def test_nozomi_alerts_ids_from_demisto_incidents():
