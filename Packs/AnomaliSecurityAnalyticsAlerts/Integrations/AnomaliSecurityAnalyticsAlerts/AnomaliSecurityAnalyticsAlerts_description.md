@@ -1,0 +1,1 @@
+To access Anomali Security Analysis Alerts using the API, you need an Anomali Security Analytics username and password.
