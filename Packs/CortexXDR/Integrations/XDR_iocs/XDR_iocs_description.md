@@ -1,27 +1,27 @@
-## Cortex XDR - IOC
-Use the Cortex XDR - IOCs feed integration to sync indicators from XSOAR to XDR.
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+### Configurations
 
-**Note: Only one instance of this integration is supported at a time. If more than one is configured, instances will interrupt one another.**
+---
 
-### Generate an API Key and API Key ID
-1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **(+) New Key** button in the top-right corner.
-3. Generate a key of type **Advanced** with an **Administrator** role.
-4. Copy and paste the key.
-5. From the ID column, copy the Key ID.
+#### Generate an API Key and Key ID
 
-### URL
-1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **Copy URL** button in the top right corner.
+To enable secure communication with Cortex XDR, you need to generate an API Key and Key ID. Follow these steps:
 
-### Severity
-The integration sync the severity field (indicator field, set as parameter) between XSOAR and XDR.
+1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys**.
+2. Click the **+New Key** button in the top right corner.
+3. Set the **Security Level** to **Advanced** and select a **Role** appropriate for your permissions.
+4. Copy the API Key displayed in the **Generated Key** field.
+5. From the **ID** column, copy the Key ID.
 
-The severity field must be one of the following: 
-- a textual field, or 
-- a single-select field, accepting the following values: `INFO`,`LOW`,`MEDIUM`,`HIGH`,`CRITICAL`. 
+#### Notes:
 
-Using an invalid field (or one that is not present in the indicator) may cause fetching to stop working.
+1. When configuring a role for the API Key's permission you can create a custom role or use a built-in role. The highest privileged built-in role is the Instance Admin. To use a built-in role with less permission but maximum command capabilities, use the Privileged Responder role.
 
-**Note: Due to XSOAR system limitations, once the severity is manually changed within XSOAR, it is excluded from being updated by the fetching process.**
+2. Securely store the API Key, as it will not be displayed again.
+
+#### Retrieve API URL
+
+1. In the Cortex XDR platform, go to **Settings**> **Configurations** > **API Keys**.
+2. Click the **Copy API URL** button in the top-right corner.
+
+**General Notes**: Only a single instance of this integration can be supported at a time. Configuring multiple instances will cause conflicts and disrupt proper functionality.
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ioc)
