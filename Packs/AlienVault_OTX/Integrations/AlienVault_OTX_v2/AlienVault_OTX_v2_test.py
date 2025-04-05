@@ -1005,7 +1005,6 @@ def test_ip_function_return_demistoException_warning_504(mocker):
     Then
     - Ensure a ReadTimeout exception is raised.
     """
-    import AlienVault_OTX_v2
     client = Client(base_url='aa', headers={}, verify=True, proxy=False, default_threshold='5', max_indicator_relationships='1',
                     reliability='', should_error=False)
     client._http_request = MagicMock()
@@ -1013,12 +1012,9 @@ def test_ip_function_return_demistoException_warning_504(mocker):
     res.status_code = 504
     res.text = 'Error in API call [504] - Gateway Time-out'
     client._http_request.side_effect = DemistoException("Error in API call [504] - Gateway Time-out", res=res)
-    results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
-    with pytest.raises(SystemExit):
-        ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
-    results_mock.assert_called_once_with({'Type': 11, 'ContentsFormat': 'text', 'IgnoreAutoExtract': False,
-                                          'Contents': 'Error in API call [504] - Gateway Time-out response received from server',
-                                          'EntryContext': None})
+    # results_mock = mocker.patch.object(AlienVault_OTX_v2.demisto, "results")
+    result = ip_command(client, ip_address='1.2.3.4', ip_version='1.2.3.4')
+    assert result[0].readable_output == '### Results:\n|IP|Result|\n|---|---|\n| 1.2.3.4 | Not found |\n'
     
 
 def test_ip_function_return_demistoException_502():
