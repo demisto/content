@@ -93,9 +93,9 @@ class Client(BaseClient):
             demisto.debug("DemistoException was raised")
             if hasattr(e.res, "status_code"):
                 res_status = e.res.status_code
-                if res_status in (404, 504):
-                    demisto.debug(f"The status code is {res_status}")
-                    result = 404 if res_status == 404 else {}
+                if res_status == 404:
+                    demisto.debug("The status code is 404")
+                    result = 404
                 elif res_status == 400:
                     demisto.debug("The status code is 400")
                     demisto.debug(f"{e.res.text} response received from server when trying to get api:{e.res.url}")
@@ -107,6 +107,11 @@ class Client(BaseClient):
                     if self.should_error:
                         raise e
                     return_warning(f"{e.res.text} response received from server", exit=True)
+                elif res_status == 504:
+                    demisto.debug("The status code is 504")
+                    if self.should_error:
+                        raise e
+                    result = {}
                 else:
                     demisto.debug("A DemistoException was raised but no status code was caught.")
                     raise
