@@ -16,7 +16,7 @@ from urllib.error import HTTPError
 from xml.etree import ElementTree
 
 
-''' GLOBALS/PARAMS '''
+''' GLOBALS/PARAMS ''' 
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
 
