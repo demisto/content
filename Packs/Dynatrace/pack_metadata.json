@@ -1,0 +1,18 @@
+{
+    "name": "Dynatrace",
+    "description": "Dynatrace is a revolutionary platform that delivers analytics and automation for unified observability and security.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
