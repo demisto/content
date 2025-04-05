@@ -1768,7 +1768,7 @@ class Main:
             for path in paths:
                 pit = iter(path)
                 nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
-                if parent == ''.join(iter(lambda: next(nit), '')):  # noqa
+                if parent == ''.join(iter(lambda: next(nit), '')):
                     cpaths.append(''.join(list(pit)))
             return cpaths
 
