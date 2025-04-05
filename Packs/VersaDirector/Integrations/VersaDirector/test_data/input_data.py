@@ -3,7 +3,7 @@
 
 # Test function: test_handle_auth_token_fail
 # Arguments: (status_code, args, expected_output)
-from VersaDirector import AUTH_EXISTING_TOKEN, AUTH_EXCEEDED_MAXIMUM, AUTH_INVALID_ACCESS_TOKEN, AUTH_BAD_CREDENTIALS
+from VersaDirector import AUTH_BAD_CREDENTIALS, AUTH_EXCEEDED_MAXIMUM, AUTH_EXISTING_TOKEN, AUTH_INVALID_ACCESS_TOKEN
 
 case_500 = (500, {"token_name": "token_name_mock"}, AUTH_EXISTING_TOKEN)
 case_400 = (400, {"token_name": "token_name_mock"}, AUTH_EXCEEDED_MAXIMUM)
@@ -250,8 +250,10 @@ case_basic_auth = (
     "",
     "",
     "",
-    (("username", "password"), {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
-                                'Accept': 'application/json', 'Content-Type': 'application/json'}),
+    (
+        ("username", "password"),
+        {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=", "Accept": "application/json", "Content-Type": "application/json"},
+    ),
 )
 case_auth_token_only = (
     "",
@@ -260,7 +262,7 @@ case_auth_token_only = (
     "",
     "",
     "access_token",
-    (None, {"Authorization": "Bearer access_token", 'Accept': 'application/json', 'Content-Type': 'application/json'}),
+    (None, {"Authorization": "Bearer access_token", "Accept": "application/json", "Content-Type": "application/json"}),
 )
 case_context_args_already_created = (
     "",
@@ -269,6 +271,6 @@ case_context_args_already_created = (
     "client_id",
     "client_secret",
     "access_token",
-    (None, {"Authorization": "Bearer access_token", 'Accept': 'application/json', 'Content-Type': 'application/json'}),
+    (None, {"Authorization": "Bearer access_token", "Accept": "application/json", "Content-Type": "application/json"}),
 )
 create_client_header_args = [case_basic_auth, case_auth_token_only, case_context_args_already_created]
