@@ -2,7 +2,7 @@
     "name": "Microsoft Defender for Cloud Apps",
     "description": "Microsoft Cloud App Security Integration, a Cloud Access Security Broker that supports various deployment modes",
     "support": "xsoar",
-    "currentVersion": "2.2.10",
+    "currentVersion": "2.2.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,7 +15,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Microsoft Defender for Cloud Apps Event Collector"
+    "defaultDataSource": "Microsoft Defender for Cloud Apps Event Collector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

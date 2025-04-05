@@ -1,10 +1,7 @@
-
 import pytest
-from pytest_mock import MockerFixture
-
+from AtlassianConfluenceCloud import DEFAULT_GET_EVENTS_LIMIT, MESSAGES, URL_SUFFIX, Client, fetch_events, get_events
 from CommonServerPython import *
-from AtlassianConfluenceCloud import (Client, URL_SUFFIX, MESSAGES, DEFAULT_GET_EVENTS_LIMIT,
-                                      fetch_events, get_events)
+from pytest_mock import MockerFixture
 from test_data import input_data
 
 BASE_URL = "https://dummy.atlassian.com"
@@ -13,11 +10,11 @@ client = Client(BASE_URL, True, False, headers={"Accept": "application/json"}, a
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-collector_test_data = util_load_json('./test_data/collector/api_responses.json')
+collector_test_data = util_load_json("./test_data/collector/api_responses.json")
 
 
 def test_test_module_when_valid_response_is_returned(requests_mock):
@@ -33,7 +30,7 @@ def test_test_module_when_valid_response_is_returned(requests_mock):
     from AtlassianConfluenceCloud import test_module
 
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], status_code=200)
-    assert test_module(client) == 'ok'
+    assert test_module(client) == "ok"
 
 
 @pytest.mark.parametrize("status_code, error_msg", input_data.exception_handler_params)
@@ -50,7 +47,7 @@ def test_exception_handler(status_code, error_msg, requests_mock):
     requests_mock.get(BASE_URL, status_code=status_code)
 
     with pytest.raises(DemistoException) as ve:
-        Client.http_request(client, method='GET')
+        Client.http_request(client, method="GET")
 
     assert str(ve.value) == error_msg
 
@@ -68,7 +65,7 @@ def test_exception_handler_when_403_error_occurred(status_code, error_msg, reque
     requests_mock.get(BASE_URL, json=api_error_msg, status_code=status_code)
     with capfd.disabled():
         with pytest.raises(DemistoException) as de:
-            Client.http_request(client, method='GET')
+            Client.http_request(client, method="GET")
 
         assert str(de.value) == error_msg
 
@@ -108,13 +105,10 @@ def test_confluence_cloud_group_list_command_when_valid_response_is_returned(req
     with open(os.path.join("test_data", "group/group_list_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "limit": "2",
-        "access_type": "site-admin"
-    }
+    args = {"limit": "2", "access_type": "site-admin"}
     response = confluence_cloud_group_list_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Group'
+    assert response.outputs_prefix == "ConfluenceCloud.Group"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -132,6 +126,7 @@ def test_confluence_cloud_group_list_command_when_invalid_args_are_provided(args
         - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_group_list_command
+
     with pytest.raises(ValueError) as de:
         confluence_cloud_group_list_command(client, args)
     assert str(de.value) == err_msg
@@ -148,6 +143,7 @@ def test_confluence_cloud_group_list_command_when_empty_response_is_returned(req
         - Returns no records for the given input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_group_list_command
+
     requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json={"results": []}, status_code=200)
     command_results = confluence_cloud_group_list_command(client, {"limit": "0"})
     assert command_results.readable_output == "No group(s) were found for the given argument(s)."
@@ -167,9 +163,7 @@ def test_confluence_cloud_content_delete_command_when_valid_response_is_returned
 
     requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", status_code=204)
 
-    args = {
-        "content_id": "123"
-    }
+    args = {"content_id": "123"}
     response = confluence_cloud_content_delete_command(client, args)
 
     assert response.readable_output == MESSAGES["HR_DELETE_CONTENT"].format("123")
@@ -208,10 +202,7 @@ def test_confluence_cloud_content_delete_command_when_api_returns_error(requests
     api_error_msg = util_load_json("test_data/content_delete/content_delete_command_bad_request_error.json")
     requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", json=api_error_msg, status_code=400)
 
-    args = {
-        "content_id": "123",
-        "status": "draft"
-    }
+    args = {"content_id": "123", "status": "draft"}
     with capfd.disabled():
         with pytest.raises(DemistoException) as de:
             confluence_cloud_content_delete_command(client, args)
@@ -233,20 +224,15 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_create"
-                                                                       "/content_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_command_context.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "title": "XSOAR_Page",
-        "type": "page",
-        "space_key": "XSOAR"
-    }
+    args = {"title": "XSOAR_Page", "type": "page", "space_key": "XSOAR"}
     response = confluence_cloud_content_create_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Content'
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -264,6 +250,7 @@ def test_confluence_cloud_content_create_command_when_invalid_args_are_provided(
         - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import validate_create_content_args
+
     with pytest.raises(ValueError) as de:
         validate_create_content_args(args, is_update=False)
     assert str(de.value) == err_msg
@@ -281,23 +268,17 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_create_command
 
-    expected_response = util_load_json(
-        os.path.join("test_data", "content_create/content_create_object_not_present.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
-    expected_context_output = util_load_json(os.path.join("test_data", "content_create"
-                                                                       "/content_create_object_not_present.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "title": "XSOAR_Page",
-        "type": "page",
-        "space_key": "XSOAR"
-    }
+    args = {"title": "XSOAR_Page", "type": "page", "space_key": "XSOAR"}
     response = confluence_cloud_content_create_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Content'
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output[1]
     assert response.readable_output == expected_readable_output
@@ -317,20 +298,15 @@ def test_confluence_cloud_comment_create_command_when_valid_response_is_returned
 
     expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_response.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
-                                                                       "/comment_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_context.json"))
 
     with open(os.path.join("test_data", "comment_create/comment_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "container_id": "2031630",
-        "body_value": "hello",
-        "body_representation": "storage"
-    }
+    args = {"container_id": "2031630", "body_value": "hello", "body_representation": "storage"}
     response = confluence_cloud_comment_create_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Comment'
+    assert response.outputs_prefix == "ConfluenceCloud.Comment"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -348,6 +324,7 @@ def test_confluence_cloud_comment_create_command_when_invalid_args_provided(args
         - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_comment_create_command
+
     with pytest.raises(ValueError) as de:
         confluence_cloud_comment_create_command(client, args)
     assert str(de.value) == err_msg
@@ -372,13 +349,10 @@ def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requ
     with open("test_data/User/user_list_command.md") as f:
         expected_readable_output = f.read()
 
-    args = {
-        "limit": "2",
-        "start": "1"
-    }
+    args = {"limit": "2", "start": "1"}
     response = confluence_cloud_user_list_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.User'
+    assert response.outputs_prefix == "ConfluenceCloud.User"
     assert response.outputs_key_field == "accountId"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -418,7 +392,7 @@ def test_confluence_cloud_user_list_command_when_empty_response_is_returned(requ
 
     command_results = confluence_cloud_user_list_command(client, {"limit": "0"})
 
-    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('user(s)')
+    assert command_results.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("user(s)")
 
 
 def test_confluence_cloud_content_search_command_when_valid_response_is_returned(requests_mock):
@@ -431,21 +405,16 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
     Then:
         - Returns the response data
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_search_command, DEFAULT_EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_search_command
 
     expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_command_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_search/"
-                                                                       "content_search_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_search/content_search_command_context.json"))
 
     with open(os.path.join("test_data", "content_search/content_search_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "query": "type=page",
-        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
-        "next_token": "1223344resfdczcxdvcdsv"
-    }
+    args = {"query": "type=page", "expand": DEFAULT_EXPANDED_FIELD_CONTENT, "next_token": "1223344resfdczcxdvcdsv"}
     response = confluence_cloud_content_search_command(client, args)
 
     assert response.outputs == expected_context_output
@@ -471,8 +440,7 @@ def test_confluence_cloud_content_search_command_when_invalid_arguments_are_prov
 
 
 @pytest.mark.parametrize("args, err_msg", input_data.content_search_invalid_arg_value)
-def test_confluence_cloud_content_search_command_when_invalid_argument_value_are_provided(args, err_msg,
-                                                                                          requests_mock, capfd):
+def test_confluence_cloud_content_search_command_when_invalid_argument_value_are_provided(args, err_msg, requests_mock, capfd):
     """
     To test confluence_cloud_content_search command when invalid argument value are provided.
     Given:
@@ -484,8 +452,7 @@ def test_confluence_cloud_content_search_command_when_invalid_argument_value_are
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_search_command
 
-    expected_response = util_load_json(os.path.join("test_data", "content_search"
-                                                                 "/content_search_invalid_query_argument.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_invalid_query_argument.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], status_code=400, json=expected_response)
 
     with capfd.disabled():
@@ -508,10 +475,7 @@ def test_confluence_cloud_content_search_command_when_empty_response_is_returned
 
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json={"results": []}, status_code=200)
 
-    args = {
-        "query": "type=page",
-        "limit": 0
-    }
+    args = {"query": "type=page", "limit": 0}
     response = confluence_cloud_content_search_command(client, args)
 
     assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("content(s)")
@@ -527,12 +491,11 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
     Then:
         - Returns the response data
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_list_command, DEFAULT_EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_list_command
 
     expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_command_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
-                                                                       "content_list_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "content_list/content_list_command_context.json"))
 
     with open(os.path.join("test_data", "content_list/content_list_command.md")) as f:
         expected_readable_output = f.read()
@@ -544,11 +507,11 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
         "sort_order": "asc",
         "sort_key": "id",
         "status": "current",
-        "creation_date": "6 Aug 2021"
+        "creation_date": "6 Aug 2021",
     }
     response = confluence_cloud_content_list_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Content'
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -568,9 +531,7 @@ def test_confluence_cloud_content_list_command_when_empty_response_is_returned(r
 
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json={"results": []}, status_code=200)
 
-    args = {
-        "limit": "0"
-    }
+    args = {"limit": "0"}
     response = confluence_cloud_content_list_command(client, args)
 
     assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("content(s)")
@@ -608,8 +569,7 @@ def test_confluence_cloud_space_create_command_when_valid_response_is_returned(r
 
     expected_response = util_load_json(os.path.join("test_data", "space_create/space_create_command_response.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "space_create"
-                                                                       "/space_create_command_context.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "space_create/space_create_command_context.json"))
 
     with open(os.path.join("test_data", "space_create/space_create_command.md")) as f:
         expected_readable_output = f.read()
@@ -620,7 +580,7 @@ def test_confluence_cloud_space_create_command_when_valid_response_is_returned(r
     }
     response = confluence_cloud_space_create_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Space'
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -673,9 +633,8 @@ def test_confluence_cloud_space_create_command_when_valid_permission_are_provide
         - Returns the response
     """
     from AtlassianConfluenceCloud import validate_permissions
-    args = {"permission_account_id": "123",
-            "permission_group_name": "abc",
-            "permission_operations": "read:space"}
+
+    args = {"permission_account_id": "123", "permission_group_name": "abc", "permission_operations": "read:space"}
     expected_result = util_load_json(os.path.join("test_data", "space_create/space_create_valid_permission.json"))
 
     actual_result = validate_permissions(args)
@@ -691,7 +650,7 @@ def test_confluence_cloud_space_list_command_when_valid_response_is_returned(req
         - Calling `confluence-cloud-space-list` command
     Then:
         - Returns the response data
-     """
+    """
     from AtlassianConfluenceCloud import confluence_cloud_space_list_command
 
     expected_response = util_load_json(os.path.join("test_data", "space_list/space_list_command_response.json"))
@@ -701,15 +660,10 @@ def test_confluence_cloud_space_list_command_when_valid_response_is_returned(req
     with open(os.path.join("test_data", "space_list/space_list_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "limit": "2",
-        "status": "current",
-        "favourite": "false",
-        "type": "global"
-    }
+    args = {"limit": "2", "status": "current", "favourite": "false", "type": "global"}
     response = confluence_cloud_space_list_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Space'
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -729,9 +683,7 @@ def test_confluence_cloud_space_list_command_when_empty_response_is_returned(req
 
     requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json={"results": []}, status_code=200)
 
-    args = {
-        "limit": "0"
-    }
+    args = {"limit": "0"}
     response = confluence_cloud_space_list_command(client, args)
 
     assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("space(s)")
@@ -768,22 +720,16 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
     from AtlassianConfluenceCloud import confluence_cloud_content_update_command
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
-    requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + '/2097159', json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_create"
-                                                                       "/content_create_command_context.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_command_context.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "content_id": "2097159",
-        "title": "XSOAR_Page",
-        "type": "page",
-        "version": 2
-    }
+    args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Content'
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -819,24 +765,17 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_update_command
 
-    expected_response = util_load_json(
-        os.path.join("test_data", "content_create/content_create_object_not_present.json"))
-    requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + '/2097159', json=expected_response[0])
-    expected_context_output = util_load_json(os.path.join("test_data", "content_create"
-                                                                       "/content_create_object_not_present.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX["CONTENT"] + "/2097159", json=expected_response[0])
+    expected_context_output = util_load_json(os.path.join("test_data", "content_create/content_create_object_not_present.json"))
 
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "content_id": "2097159",
-        "title": "XSOAR_Page",
-        "type": "page",
-        "version": 2
-    }
+    args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Content'
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output[1]
     assert response.readable_output == expected_readable_output
@@ -854,23 +793,17 @@ def test_confluence_cloud_comment_create_command_when_object_not_present(request
     """
     from AtlassianConfluenceCloud import confluence_cloud_comment_create_command
 
-    expected_response = util_load_json(
-        os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
+    expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
     requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response[0])
-    expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
-                                                                       "/comment_create_object_not_present.json"))
+    expected_context_output = util_load_json(os.path.join("test_data", "comment_create/comment_create_object_not_present.json"))
 
     with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "container_id": "2031630",
-        "body_value": "hello",
-        "body_representation": "storage"
-    }
+    args = {"container_id": "2031630", "body_value": "hello", "body_representation": "storage"}
     response = confluence_cloud_comment_create_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Comment'
+    assert response.outputs_prefix == "ConfluenceCloud.Comment"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output[1]
     assert response.readable_output == expected_readable_output
@@ -888,25 +821,19 @@ def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock)
     """
     from AtlassianConfluenceCloud import confluence_cloud_space_list_command
 
-    expected_response = util_load_json(
-        os.path.join("test_data", "space_list/space_list_command_key_not_present_response.json"))
+    expected_response = util_load_json(os.path.join("test_data", "space_list/space_list_command_key_not_present_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "space_list"
-                                                                       "/space_list_command_key_not_present_context"
-                                                                       ".json"))
+    expected_context_output = util_load_json(
+        os.path.join("test_data", "space_list/space_list_command_key_not_present_context.json")
+    )
 
     with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "limit": "2",
-        "status": "current",
-        "favourite": "false",
-        "type": "global"
-    }
+    args = {"limit": "2", "status": "current", "favourite": "false", "type": "global"}
     response = confluence_cloud_space_list_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Space'
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -922,22 +849,20 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
     Then:
         - Returns the response data with some missing values
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_search_command, DEFAULT_EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_search_command
 
     expected_response = util_load_json(
-        os.path.join("test_data", "content_search/content_search_object_not_present_response.json"))
+        os.path.join("test_data", "content_search/content_search_object_not_present_response.json")
+    )
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_search"
-                                                                       "/content_search_object_not_present_context.json"))
+    expected_context_output = util_load_json(
+        os.path.join("test_data", "content_search/content_search_object_not_present_context.json")
+    )
 
     with open(os.path.join("test_data", "content_search/content_search_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {
-        "query": "type=page",
-        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
-        "next_token": "1223344resfdczcxdvcdsv"
-    }
+    args = {"query": "type=page", "expand": DEFAULT_EXPANDED_FIELD_CONTENT, "next_token": "1223344resfdczcxdvcdsv"}
     response = confluence_cloud_content_search_command(client, args)
 
     assert response.outputs == expected_context_output
@@ -954,13 +879,13 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     Then:
         - Returns the response data with some missing values
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_list_command, DEFAULT_EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import DEFAULT_EXPANDED_FIELD_CONTENT, confluence_cloud_content_list_command
 
-    expected_response = util_load_json(os.path.join("test_data", "content_list"
-                                                                 "/content_list_object_not_present_response.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_object_not_present_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
-    expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
-                                                                       "content_list_object_not_present_context.json"))
+    expected_context_output = util_load_json(
+        os.path.join("test_data", "content_list/content_list_object_not_present_context.json")
+    )
 
     with open(os.path.join("test_data", "content_list/content_list_object_not_present.md")) as f:
         expected_readable_output = f.read()
@@ -972,11 +897,11 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
         "sort_order": "asc",
         "sort_key": "id",
         "status": "current",
-        "date": "6 Aug 2021"
+        "date": "6 Aug 2021",
     }
     response = confluence_cloud_content_list_command(client, args)
 
-    assert response.outputs_prefix == 'ConfluenceCloud.Content'
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -994,13 +919,13 @@ def test_fetch_events_empty_last_run(mocker: MockerFixture):
         - Ensure client.search_events is called with the correct arguments
     """
     fetch_limit = 100
-    response = collector_test_data['get-audit-records-no-links']
+    response = collector_test_data["get-audit-records-no-links"]
 
     # mock values
     mock_time = 1680000000
-    mocker.patch('demistomock.getLastRun', return_value={})
-    mocker.patch('time.time', return_value=mock_time)
-    mock_search = mocker.patch.object(client, 'search_events', return_value=response)
+    mocker.patch("demistomock.getLastRun", return_value={})
+    mocker.patch("time.time", return_value=mock_time)
+    mock_search = mocker.patch.object(client, "search_events", return_value=response)
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
@@ -1010,8 +935,8 @@ def test_fetch_events_empty_last_run(mocker: MockerFixture):
     actual_events, last_run = fetch_events(client, fetch_limit, {})
     # assertions
     mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
-    assert actual_events == response['results']
-    assert last_run == {'next_link': None, 'end_date': expected_end_date}
+    assert actual_events == response["results"]
+    assert last_run == {"next_link": None, "end_date": expected_end_date}
 
 
 def test_fetch_events_with_partial_last_run(mocker: MockerFixture):
@@ -1025,13 +950,13 @@ def test_fetch_events_with_partial_last_run(mocker: MockerFixture):
     """
     fetch_limit = 100
     last_run = {"end_date": 1670000000}
-    first_page_response = collector_test_data['get-audit-records-no-links']
+    first_page_response = collector_test_data["get-audit-records-no-links"]
 
     # mock values
     mock_time = 1680000000
-    mocker.patch('time.time', return_value=mock_time)
-    mocker.patch('demistomock.getLastRun', return_value=last_run)
-    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+    mocker.patch("time.time", return_value=mock_time)
+    mocker.patch("demistomock.getLastRun", return_value=last_run)
+    mock_search = mocker.patch.object(client, "search_events", return_value=first_page_response)
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
@@ -1039,8 +964,8 @@ def test_fetch_events_with_partial_last_run(mocker: MockerFixture):
 
     actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
     mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
-    assert actual_events == first_page_response['results']
-    assert actual_last_run == {'end_date': expected_end_date, 'next_link': None}
+    assert actual_events == first_page_response["results"]
+    assert actual_last_run == {"end_date": expected_end_date, "next_link": None}
 
 
 def test_fetch_events_with_full_last_run(mocker: MockerFixture):
@@ -1056,27 +981,30 @@ def test_fetch_events_with_full_last_run(mocker: MockerFixture):
     """
     fetch_limit = 100
     last_run = {"end_date": 1670000000, "next_link": "https://example.com/next-page"}
-    first_page_response = collector_test_data['get-audit-records-no-links']
-    first_page_results = first_page_response['results']
+    first_page_response = collector_test_data["get-audit-records-no-links"]
+    first_page_results = first_page_response["results"]
 
     # mock values
     mock_time = 1680000000
-    mocker.patch('time.time', return_value=mock_time)
-    mocker.patch('demistomock.getLastRun', return_value=last_run)
-    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+    mocker.patch("time.time", return_value=mock_time)
+    mocker.patch("demistomock.getLastRun", return_value=last_run)
+    mock_search = mocker.patch.object(client, "search_events", return_value=first_page_response)
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
     expected_start_date = last_run["end_date"] + 1
 
     actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
-    assert actual_events == first_page_response['results'] * 2
-    assert actual_last_run == {'end_date': int(expected_end_date), 'next_link': None}
-    mock_search.assert_has_calls([
-        mocker.call(limit=fetch_limit, next_link=last_run["next_link"]),
-        mocker.call(limit=fetch_limit - len(first_page_results),
-                    start_date=str(expected_start_date), end_date=str(expected_end_date))
-    ])
+    assert actual_events == first_page_response["results"] * 2
+    assert actual_last_run == {"end_date": int(expected_end_date), "next_link": None}
+    mock_search.assert_has_calls(
+        [
+            mocker.call(limit=fetch_limit, next_link=last_run["next_link"]),
+            mocker.call(
+                limit=fetch_limit - len(first_page_results), start_date=str(expected_start_date), end_date=str(expected_end_date)
+            ),
+        ]
+    )
 
 
 def test_fetch_events_fetch_limit_reached_with_link(mocker: MockerFixture):
@@ -1091,14 +1019,14 @@ def test_fetch_events_fetch_limit_reached_with_link(mocker: MockerFixture):
         - The returned last_run object contains a next_link property with the value from the response, indicating there are more
           pages to fetch
     """
-    first_page_response = collector_test_data['get-audit-records-with-links']
-    first_page_events = first_page_response['results']
+    first_page_response = collector_test_data["get-audit-records-with-links"]
+    first_page_events = first_page_response["results"]
     fetch_limit = len(first_page_events)
 
     # mock values
     mock_time = 1680000000
-    mocker.patch('time.time', return_value=mock_time)
-    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+    mocker.patch("time.time", return_value=mock_time)
+    mock_search = mocker.patch.object(client, "search_events", return_value=first_page_response)
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
@@ -1123,8 +1051,8 @@ def test_fetch_events_limit_is_0(mocker: MockerFixture):
     last_run = {"end_date": 1670000000, "next_link": "https://example.com/next-page"}
 
     # mock values
-    mocker.patch('demistomock.getLastRun', return_value=last_run)
-    mock_search = mocker.patch.object(client, 'search_events')
+    mocker.patch("demistomock.getLastRun", return_value=last_run)
+    mock_search = mocker.patch.object(client, "search_events")
 
     actual_events, actual_last_run = fetch_events(client, 0, last_run)
 
@@ -1147,13 +1075,13 @@ def test_get_events_default_values(mocker: MockerFixture):
     """
     # mock values
     mock_time = 1680000000
-    mocker.patch('time.time', return_value=mock_time)
-    mocked_response = collector_test_data['get-audit-records-with-links']
-    mock_search = mocker.patch.object(client, 'search_events', return_value=mocked_response)
+    mocker.patch("time.time", return_value=mock_time)
+    mocked_response = collector_test_data["get-audit-records-with-links"]
+    mock_search = mocker.patch.object(client, "search_events", return_value=mocked_response)
 
     # expected value
     expected_events = (mocked_response.get("results")) * 2
-    expected_next_link = mocked_response['_links']['next']
+    expected_next_link = mocked_response["_links"]["next"]
     expected_end_date = (mock_time - 5) * 1000
     expected_start_date = expected_end_date - 60000
     expected_first_page_size = int(DEFAULT_GET_EVENTS_LIMIT)
@@ -1164,10 +1092,12 @@ def test_get_events_default_values(mocker: MockerFixture):
 
     # assertions
     assert actual_events == expected_events
-    mock_search.assert_has_calls([
-        mocker.call(limit=expected_first_page_size, start_date=str(expected_start_date), end_date=str(expected_end_date)),
-        mocker.call(limit=expected_second_page_size, next_link=expected_next_link)
-    ])
+    mock_search.assert_has_calls(
+        [
+            mocker.call(limit=expected_first_page_size, start_date=str(expected_start_date), end_date=str(expected_end_date)),
+            mocker.call(limit=expected_second_page_size, next_link=expected_next_link),
+        ]
+    )
 
 
 def test_get_events_with_arguments(mocker: MockerFixture):
@@ -1183,9 +1113,9 @@ def test_get_events_with_arguments(mocker: MockerFixture):
         - Ensure client.search_events is called with the correct arguments
     """
     args = {"start_date": 1670000000, "end_date": 1680000000, "limit": 50}
-    mocked_response = collector_test_data['get-audit-records-no-links']
-    mocked_search = mocker.patch.object(client, 'search_events', return_value=mocked_response)
+    mocked_response = collector_test_data["get-audit-records-no-links"]
+    mocked_search = mocker.patch.object(client, "search_events", return_value=mocked_response)
     actual_events, _ = get_events(client, args)
 
-    assert actual_events == mocked_response['results']
+    assert actual_events == mocked_response["results"]
     mocked_search.assert_called_once_with(limit=int(DEFAULT_GET_EVENTS_LIMIT), start_date="1670000000", end_date="1680000000")
