@@ -40,6 +40,10 @@
             "type": "string",
             "is_array": false
         },
+        "SubscriptionId": {
+            "type": "string",
+            "is_array": false
+        },
         "identity": {
             "type": "string",
             "is_array": false
@@ -59,6 +63,163 @@
         "properties": {
             "type": "string",
             "is_array": false
-        }              
+        },
+        "TimeGenerated": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "Resource": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResourceGroup": {
+            "type": "string",
+            "is_array": false
+        },
+        "ResourceType": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientIP_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientPort_d": {
+            "type": "int",
+            "is_array": false
+        },
+        "clientPort_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "socketIP_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestUri_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "trackingReference_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "errorInfo_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "originIp_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "endpoint_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "originName_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "originUrl_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "domain_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "sni_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpStatusDetails_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpStatusCode_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpStatusCode_d": {
+            "type": "int",
+            "is_array": false
+        },
+        "requestProtocol_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestBytes_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "responseBytes_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "securityCipher_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "referer_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpMethod_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "timeTaken_d": {
+            "type": "float",
+            "is_array": false
+        },
+        "timeTaken_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "TimeTaken": {
+            "type": "string",
+            "is_array": false
+        },
+        "userAgent_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientCountry_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "securityProtocol_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "originCryptProtocol_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "routingRuleName_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "host_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "ruleName_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "details_data_s": {
+            "type": "string",
+            "is_array": false
+        }
+            
     }
 }
