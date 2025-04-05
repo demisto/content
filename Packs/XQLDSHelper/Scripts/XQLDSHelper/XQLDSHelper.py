@@ -1627,7 +1627,7 @@ class EntryBuilder:
         entry_params: dict[Hashable, Any],
     ) -> dict[Hashable, Any]:
         query_params = query.query_params
-        extra_context = {
+        extra_context: dict[str, Any] = {
             "query": {
                 "string": query_params.query_string,
                 "timeframe": {
@@ -1644,7 +1644,7 @@ class EntryBuilder:
                             "to": int(query_params.latest_time.timestamp() * 1000),
                         })
                     )
-                ) 
+                )
             }
         }
 
@@ -1768,7 +1768,7 @@ class Main:
             for path in paths:
                 pit = iter(path)
                 nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
-                if parent == ''.join(iter(lambda: next(nit), '')):
+                if parent == ''.join(iter(lambda: next(nit), '')):  # noqa
                     cpaths.append(''.join(list(pit)))
             return cpaths
 
