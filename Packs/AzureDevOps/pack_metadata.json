@@ -2,22 +2,37 @@
     "name": "AzureDevOps",
     "description": "Create and manage Git repositories in Azure DevOps Services.",
     "support": "xsoar",
-    "currentVersion": "1.4.6",
+    "currentVersion": "1.4.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Utilities"
+        "IT Services",
+        "Utilities",
+        "Cloud Service Provider",
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
-        "Microsoft"
+        "Microsoft",
+        "azure",
+        "devops",
+        "devops services"
     ],
     "githubUser": [],
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

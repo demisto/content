@@ -5159,7 +5159,7 @@
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
             "marketplaces": "xsoar_saas",
-            "timeout": 170
+            "timeout": 300
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5528,6 +5528,7 @@
                 "legacy_context_output"
             ],
             "memory_threshold": 300,
+            "timeout": 600,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
         },

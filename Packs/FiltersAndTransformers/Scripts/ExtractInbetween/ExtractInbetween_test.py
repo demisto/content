@@ -1,5 +1,5 @@
-import pytest
 import demistomock as demisto  # noqa: F401
+import pytest
 from CommonServerPython import *  # noqa: F401
 from ExtractInbetween import extract_inbetween
 
@@ -36,6 +36,6 @@ def test_extract_inbetween_on_invalid_input_types(mocker, value):
     Then:
         Validate that return error is raised.
     """
-    mocker.patch('CommonServerPython.return_error', return_value=Exception("ERROR: The input value must be a string"))
+    mocker.patch("CommonServerPython.return_error", return_value=Exception("ERROR: The input value must be a string"))
     with pytest.raises(Exception, match="ERROR: The input value must be a string"):
-        extract_inbetween(value, '<', '>')
+        extract_inbetween(value, "<", ">")
