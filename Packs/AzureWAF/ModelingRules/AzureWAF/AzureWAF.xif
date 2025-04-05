@@ -48,6 +48,7 @@ filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
     xdm.source.host.ipv4_addresses = source_socket_ipv4,
     xdm.source.host.ipv6_addresses = source_socket_ipv6;
 
+    
 
 /*
 Handles Front Door WAF Logs
