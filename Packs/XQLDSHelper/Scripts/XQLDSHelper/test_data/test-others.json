@@ -51,7 +51,7 @@
       }
     }
   },
-  "######### cache_type: recordset - hit",
+  "######### cache_type: recordset - hit (recordset)",
   {
     "args": {
       "templates_type": "raw",
@@ -78,6 +78,49 @@
         "test": {
           "CacheDataset": {
             "data": "ABzY8#`t?@0{@GyR*Fw4ElMoO%+FJ@QZO_!HmQvT0KfN@nH2y400",
+            "type": "gz+b85"
+          },
+          "QueryHash": "663b242503dc8fe5a3e4b76f5b35d669a236c0346d60d878d8e357e6ad04a44d"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### cache_type: recordset - hit (recordset with execution_id)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "recordset"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheDataset": {
+            "data": "ABzY8PuK5f0{^R4O07suE-lH-&x_AYQL<91fB_{PrJ~g2{GycN)Dk7D=xU|-l+vO^kU}LZ1w$ialiJu?0Ghkz?LGhi00",
             "type": "gz+b85"
           },
           "QueryHash": "663b242503dc8fe5a3e4b76f5b35d669a236c0346d60d878d8e357e6ad04a44d"
@@ -3410,6 +3453,39 @@
         "Contents": {
           "stats": 1234
         }
+      }
+    }
+  },
+  "######### Extended variables",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "markdown",
+            "markdown": {
+              "text": "query.string=${.query.string} query.timeframe.from=${.query.timeframe.from} query.timeframe.to=${.query.timeframe.to} query.execution_id=${.query.execution_id} query.request_url=${.query.request_url} query.result_url=${.query.result_url}"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "query.string=Dummy XQL query.timeframe.from=2024-12-14T15:33:34.000Z query.timeframe.to=2024-12-15T15:33:34.000Z query.execution_id=xxxxxxxxx query.request_url=/xql/xql-search?phrase=Dummy%20XQL&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D query.result_url=/xql/xql-search/xxxxxxxxx",
+        "Contents": null
       }
     }
   }
