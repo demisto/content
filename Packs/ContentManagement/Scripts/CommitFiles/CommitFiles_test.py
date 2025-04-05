@@ -25,6 +25,7 @@ def test_does_file_exist(mocker):
     """
     from CommitFiles import does_file_exist
 
+    #test
     mocker.patch.object(demisto, "executeCommand", return_value=[])
     flag = does_file_exist("demisto", content_file)
     assert not flag
