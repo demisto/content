@@ -842,12 +842,37 @@ def test_handle_request_paused(mocker):
     mock_fetch.disable = MagicMock()
     mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
     mock_tab.Fetch = mock_fetch
-    tab_event_handler = PychromeEventHandler(None, mock_tab, None)
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
 
     tab_event_handler.handle_request_paused(**kwargs)
 
     assert mock_fail_request.call_args[1]["requestId"] == "1"
     assert mock_fail_request.call_args[1]["errorReason"] == "Aborted"
+
+
+def test_retry_loading(mocker: MockerFixture):
+    """
+    Test the retry_loading method of PychromeEventHandler
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.Page.navigate = mocker.Mock()
+    mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
+
+    mock_event = mocker.Mock()
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "http://test.com", 30)
+
+    mocker.patch('time.sleep')
+
+    handler.retry_loading()
+
+    assert mock_tab.Page.navigate.call_count == 4
+    assert mock_tab.Page.getFrameTree.call_count == DEFAULT_RETRIES_COUNT
+    assert not mock_event.set.called
+
+    # Test successful retry
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "http://test.com"}}}
+    handler.retry_loading()
+    assert mock_event.set.called
 
 
 def test_chrome_manager_one_port_use_same_port(mocker):
