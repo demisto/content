@@ -99,14 +99,14 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
         try:
             res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
             if not res or isError(res[0]):
-                raise ValueError(f'Invalid response: {res}')
+                raise DemistoException(f'Invalid response: {res}')
 
             demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} successful: "core-api-get"')
             break
 
         except Exception as e:
             demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" Error: {e}')
-            safe_sleep(2 ** attempt)
+            time.sleep(2 ** attempt)
     else:
         demisto.error(f'All {RETRY_ATTEMPTS} attempts to execute "core-api-get" have failed.')
         raise Exception(res)
