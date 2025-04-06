@@ -15,7 +15,7 @@ Volume audit logs.
    - Set `Output Type` to **Syslog**.
 4. Go to: `Filers > Syslog Export Settings`.
 5. Select the Edge Appliance(s) and click `Edit Filers`.
-6. In the `Servers` text box enter the IP or Hostname of your Broker VM in the following format - IP:port (example - 192.168.1.100:10514).
+6. In the `Servers` text box enter the IP or Hostname of your Broker VM in the following format - IP:port (example - `<your-broker-ip>:<port>`).
    If no port is specified it will default to UDP 514 (the system support log forwarding via UDP only).
 7. Set the following settings:
    - `Send Auditing Messages`: **On**.
