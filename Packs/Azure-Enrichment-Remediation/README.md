@@ -1,10 +1,10 @@
 ##### What does this pack do?
 
-The pack contains Azure playbooks and scripts that conduct enrichment and/or remediation and can use multiple other Azure 
+The pack contains Azure playbooks and scripts that conduct enrichment and/or remediation and can use multiple other Azure
 content packs.
 
-There are multiple Azure content packs for multiple Azure products (Compute, MSGraphUsers, etc).  The intent was so that 
-users can install and use only the packs they need.  However, if an Azure playbook uses multiple pack integrations (such 
+There are multiple Azure content packs for multiple Azure products (Compute, MSGraphUsers, etc).  The intent was so that
+users can install and use only the packs they need.  However, if an Azure playbook uses multiple pack integrations (such
 as Compute and MSGraphUsers), they can't reside in one of the current packs because they include content from multiple integrations.  This pack was created as a place to put Azure playbooks that use Azure integrations from multiple packs with a focus on enrichment and remediation.
 
 ### Scripts
@@ -33,7 +33,6 @@ This content pack includes the following playbook:
 #### Cloud Credentials Rotation - Azure
 
 ![Cloud Credentials Rotation - Azure](doc_files/Cloud_Credentials_Rotation_-_Azure.png)
-
 
 #### Cloud Response - Azure
 
