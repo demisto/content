@@ -1,25 +1,21 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
-import re
-import time
-import urllib3
 import base64
 import hashlib
+import re
+import time
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def upload_file(self, incident_id: str,
-                    file_content,
-                    file_name: str,
-                    as_incident_attachment: bool = True):
+    def upload_file(self, incident_id: str, file_content, file_name: str, as_incident_attachment: bool = True):
         """Upload file
         Arguments:
             client: (Client) The client class.
@@ -31,13 +27,11 @@ class Client(BaseClient):
             json -- return of the API
         """
 
-        service_name = 'incident' if as_incident_attachment else 'entry'
+        service_name = "incident" if as_incident_attachment else "entry"
         response = self._http_request(
-            method='POST',
-            url_suffix=f'/{service_name}/upload/{incident_id}',
-            files={
-                "file": (file_name, file_content, 'application/octet-stream')
-            }
+            method="POST",
+            url_suffix=f"/{service_name}/upload/{incident_id}",
+            files={"file": (file_name, file_content, "application/octet-stream")},
         )
         return response
 
@@ -56,13 +50,9 @@ class Client(BaseClient):
             "investigationId": incident_id,
             "data": f"!DeleteContext key={key_to_delete}",
             "args": None,
-            "markdown": False
+            "markdown": False,
         }
-        response = self._http_request(
-            method='POST',
-            url_suffix='/entry',
-            json_data=body_content
-        )
+        response = self._http_request(method="POST", url_suffix="/entry", json_data=body_content)
         return response
 
     def delete_file(self, incident_id, entry_id: str, delete_artifact=True):
@@ -74,17 +64,8 @@ class Client(BaseClient):
         Returns:
             json -- return of the API
         """
-        body_content = {
-            "id": entry_id,
-            "deleteArtifact": delete_artifact,
-            "version": 0,
-            "investigationId": incident_id
-        }
-        response = self._http_request(
-            method='POST',
-            url_suffix='/entry/delete/v2',
-            json_data=body_content
-        )
+        body_content = {"id": entry_id, "deleteArtifact": delete_artifact, "version": 0, "investigationId": incident_id}
+        response = self._http_request(method="POST", url_suffix="/entry/delete/v2", json_data=body_content)
         return response
 
     def create_attachment_data_json(self, file_path: str, field_name: str):
@@ -121,7 +102,8 @@ class Client(BaseClient):
                     # "showMediaFile": attachment_media_file,
                     # "type": attachment_type
                 }
-            ]}
+            ],
+        }
         return file_data
 
     def delete_attachment(self, incident_id: str, file_path: str, field_name: str = "attachment"):
@@ -135,9 +117,9 @@ class Client(BaseClient):
             json -- return of the API
         """
         response = self._http_request(
-            method='POST',
-            url_suffix=f'/incident/remove/{incident_id}',
-            json_data=self.create_attachment_data_json(file_path, field_name)
+            method="POST",
+            url_suffix=f"/incident/remove/{incident_id}",
+            json_data=self.create_attachment_data_json(file_path, field_name),
         )
         return response
 
@@ -150,8 +132,8 @@ class Client(BaseClient):
             json -- return of the API
         """
         response = self._http_request(
-            method='GET',
-            url_suffix=f'/entry/download/{entry_id}',
+            method="GET",
+            url_suffix=f"/entry/download/{entry_id}",
         )
         return response
 
@@ -163,7 +145,7 @@ class Client(BaseClient):
         Returns:
             json -- return of the API
         """
-        response = requests.get(f'{self._base_url}/markdown/image/{entry_id}', headers=self._headers, verify=self._verify)
+        response = requests.get(f"{self._base_url}/markdown/image/{entry_id}", headers=self._headers, verify=self._verify)
         return response
 
     def get_current_user(self):
@@ -173,10 +155,7 @@ class Client(BaseClient):
         Returns:
             json -- return of the API
         """
-        self._http_request(
-            method='GET',
-            url_suffix='/user'
-        )
+        self._http_request(method="GET", url_suffix="/user")
 
 
 def test_module(client: Client) -> str:
@@ -188,10 +167,10 @@ def test_module(client: Client) -> str:
     """
     try:
         client.get_current_user()
-        return 'ok'
+        return "ok"
     except DemistoException as error:
-        if 'Forbidden' in str(error):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(error):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise error
 
@@ -219,12 +198,12 @@ def rename_file_command(client: Client, args: dict) -> CommandResults:
     Note:
         This command should not be use in loop, I/O consumming
     """
-    entry_id = args.get('entryID', '')
-    file_name = args.get('newFileName', '')
+    entry_id = args.get("entryID", "")
+    file_name = args.get("newFileName", "")
 
     res_path, res_name = get_entry_file_path_name(entry_id)
     # read file
-    file_binary = open(res_path, 'rb')
+    file_binary = open(res_path, "rb")
     # create new file new name
     incident_id = get_incident_id(entry_id)
     response = client.upload_file(incident_id, file_binary, file_name, False)
@@ -234,9 +213,11 @@ def rename_file_command(client: Client, args: dict) -> CommandResults:
     # delete old file
     new_files = delete_file(client, entry_id)
     new_files.append(nfu)
-    return CommandResults(readable_output=f'File {res_name} was renamed to {file_name} under the new entry id {nfu["EntryID"]}',
-                          outputs=new_files,
-                          outputs_prefix="File")
+    return CommandResults(
+        readable_output=f'File {res_name} was renamed to {file_name} under the new entry id {nfu["EntryID"]}',
+        outputs=new_files,
+        outputs_prefix="File",
+    )
 
 
 def check_file_command(client: Client, args: dict) -> CommandResults:
@@ -246,26 +227,28 @@ def check_file_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults -- Readable output
     """
-    entry_id = args.get('entryID')
-    output_content = demisto.context().get('IsFileExists', {})
+    entry_id = args.get("entryID")
+    output_content = demisto.context().get("IsFileExists", {})
     if len(output_content) > 0:
         client.delete_context(demisto.incident()["id"], "IsFileExists")
         time.sleep(1)  # to let the API execute the request
     try:
         path_res = demisto.getFilePath(entry_id)
         # file_path = path_res.get("path")
-        file_name = path_res.get('name')
+        file_name = path_res.get("name")
         output_tmp = {entry_id: True}
         output_content = {**output_content, **output_tmp}
-        return CommandResults(readable_output=f"File {entry_id} exist under the name {file_name} !",
-                              outputs_prefix="IsFileExists",
-                              outputs=output_content)
+        return CommandResults(
+            readable_output=f"File {entry_id} exist under the name {file_name} !",
+            outputs_prefix="IsFileExists",
+            outputs=output_content,
+        )
     except Exception as err:
         output_tmp = {entry_id: False}
         output_content = {**output_content, **output_tmp}
-        return CommandResults(readable_output=f"File {entry_id} does not exist ! {err}",
-                              outputs_prefix="IsFileExists",
-                              outputs=output_content)
+        return CommandResults(
+            readable_output=f"File {entry_id} does not exist ! {err}", outputs_prefix="IsFileExists", outputs=output_content
+        )
 
 
 def delete_attachment_command(client: Client, args: dict) -> CommandResults:
@@ -281,9 +264,9 @@ def delete_attachment_command(client: Client, args: dict) -> CommandResults:
         This command delete file on the disk
     """
     inc = demisto.incident()
-    incident_id = args.get('incidentID', inc.get("investigationId") if not inc.get("id") else inc.get("id"))
-    file_path = args.get('filePath', "")
-    field_name = args.get('fieldName', "attachment")
+    incident_id = args.get("incidentID", inc.get("investigationId") if not inc.get("id") else inc.get("id"))
+    file_path = args.get("filePath", "")
+    field_name = args.get("fieldName", "attachment")
 
     if not incident_id:
         return_error("Please provide an incident id")
@@ -292,19 +275,19 @@ def delete_attachment_command(client: Client, args: dict) -> CommandResults:
     try:
         client.delete_attachment(incident_id, file_path, field_name)
     except DemistoException as error:
-        return_error(f"File already deleted or not found !\n{str(error)}")
+        return_error(f"File already deleted or not found !\n{error!s}")
     return CommandResults(readable_output=f"Attachment {file_path} deleted !")
 
 
 def delete_file(client: Client, entry_id: str):
-    files = demisto.context().get('File', [])
+    files = demisto.context().get("File", [])
     files = [files] if not isinstance(files, list) else files
     incident_id = get_incident_id(entry_id)
     # delete old file
     try:
         client.delete_file(incident_id, entry_id)
     except DemistoException as error:
-        return_error(f"File already deleted or not found !\n{str(error)}")
+        return_error(f"File already deleted or not found !\n{error!s}")
     # output
     client.delete_context(incident_id, "File")
     time.sleep(1)  # to let the API execute the request
@@ -321,7 +304,7 @@ def delete_file_command(client: Client, args: dict) -> CommandResults:
     Note:
         This command delete file on the disk
     """
-    entry_id = args.get('entryID', "")
+    entry_id = args.get("entryID", "")
 
     if not entry_id:
         return_error("Argument entry_id is empty.")
@@ -341,7 +324,7 @@ def get_entry_file_path_name(file_input: str) -> tuple[str, str]:
     try:
         path_res = demisto.getFilePath(file_input)
         file_path = path_res.get("path")
-        file_name = path_res.get('name')
+        file_name = path_res.get("name")
         return file_path, file_name
     except Exception:
         res = re.findall("_(.*)_(.*)", file_input)
@@ -369,54 +352,46 @@ def upload_file_command(client: Client, args: dict) -> CommandResults:
         fileName have to contain the extension if you want one
     """
     inc = demisto.incident()
-    incident_id = args.get('incidentID', inc.get("investigationId") if not inc.get("id") else inc.get("id"))
-    file_content = args.get('fileContent', '')
-    file_content_b64 = args.get('fileContentB64', '')
-    entry_id = args.get('entryID', '')
-    file_path = args.get('filePath', '')
-    file_name = args.get('fileName', '')
-    target = args.get('target', 'war room entry')
+    incident_id = args.get("incidentID", inc.get("investigationId") if not inc.get("id") else inc.get("id"))
+    file_content = args.get("fileContent", "")
+    file_content_b64 = args.get("fileContentB64", "")
+    entry_id = args.get("entryID", "")
+    file_path = args.get("filePath", "")
+    file_name = args.get("fileName", "")
+    target = args.get("target", "war room entry")
 
     if not incident_id:
         return_error("Please provide an incident id")
     # check if some content is given and not too many
     if len(list(filter(None, [file_content, file_content_b64, entry_id, file_path]))) != 1:
-        return_error("You have to give either the content of the file using the arg 'fileContent'"
-                     "or 'fileContentB64' or an entryID or a file path !")
+        return_error(
+            "You have to give either the content of the file using the arg 'fileContent'"
+            "or 'fileContentB64' or an entryID or a file path !"
+        )
     # if file_name is not set when using content of the file
     if (file_content or file_content_b64) and not file_name:
         return_error("You have to choose a name for your file !")
 
     response = {}
     if file_content:
-        response = client.upload_file(incident_id,
-                                      file_content,
-                                      file_name,
-                                      target == 'incident attachment')
+        response = client.upload_file(incident_id, file_content, file_name, target == "incident attachment")
     elif file_content_b64:
         file_content_tmp = base64.b64decode(file_content_b64)
-        response = client.upload_file(incident_id,
-                                      file_content_tmp,
-                                      file_name,
-                                      target == 'incident attachment')
+        response = client.upload_file(incident_id, file_content_tmp, file_name, target == "incident attachment")
     else:
         arg_path: str = list(filter(None, [entry_id, file_path]))[0]
         res_path, res_name = get_entry_file_path_name(arg_path)
         # file name override by user
         file_name = file_name if file_name else res_name
         if not file_name:
-            return_error("Impossible to detect a filename in the path, "
-                         "use the argument 'fileName' to set one !")
-        file_binary = open(res_path, 'rb')
-        response = client.upload_file(incident_id,
-                                      file_binary,
-                                      file_name,
-                                      target == 'incident attachment')
+            return_error("Impossible to detect a filename in the path, use the argument 'fileName' to set one !")
+        file_binary = open(res_path, "rb")
+        response = client.upload_file(incident_id, file_binary, file_name, target == "incident attachment")
         file_binary.close()
     # create output
-    readable = f'File {file_name} uploaded successfully to incident {incident_id}.'
+    readable = f"File {file_name} uploaded successfully to incident {incident_id}."
     # in case the file uploaded as war room entry
-    if target == 'war room entry':
+    if target == "war room entry":
         readable += f' Entry ID is {response["entries"][0]["id"]}'
 
     return CommandResults(readable_output=readable)
@@ -434,7 +409,7 @@ def struct_file_upload(response):
         "Info": response["entries"][0]["fileMetadata"]["type"],
         "Type": response["entries"][0]["fileMetadata"]["info"],
         "MD5": response["entries"][0]["fileMetadata"]["md5"],
-        "Extension": response["entries"][0]["file"]
+        "Extension": response["entries"][0]["file"],
     }
     res = nfu.get("Name", "").split(".")
     if len(res) > 1:
@@ -453,10 +428,10 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
         CommandResults -- Readable output
     """
     inc = demisto.incident()
-    incident_id = args.get('incidentID', inc.get("investigationId") if not inc.get("id") else inc.get("id"))
+    incident_id = args.get("incidentID", inc.get("investigationId") if not inc.get("id") else inc.get("id"))
     file_name = args.get("fileName", "")
     file_uri = re.sub(".*\/markdown\/image\/", "", args.get("fileURI", ""))
-    target = args.get('target', 'war room entry')
+    target = args.get("target", "war room entry")
 
     if not incident_id:
         return_error("Please provide an incident id")
@@ -469,22 +444,20 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     # extract file_name from URL or reponse header
     if not file_name:
         headers = response.headers
-        if "Content-Disposition" in headers.keys():
+        if "Content-Disposition" in headers:
             file_name = re.findall("filename=(.+)", headers["Content-Disposition"])[0]
         else:
             file_name = file_uri.split("/")[-1]
     if not file_name:
         return_error("Please provide file name")
-    response = client.upload_file(incident_id, response.content, file_name, target == 'incident attachment')
+    response = client.upload_file(incident_id, response.content, file_name, target == "incident attachment")
 
     # create output
-    readable = f'File {file_name} uploaded successfully to incident {incident_id}.'
+    readable = f"File {file_name} uploaded successfully to incident {incident_id}."
     # in case the file uploaded as war room entry
-    if target == 'war room entry':
+    if target == "war room entry":
         readable += f' Entry ID is {response["entries"][0]["id"]}'
-    return CommandResults(readable_output=readable,
-                          outputs=struct_file_upload(response),
-                          outputs_prefix="File")
+    return CommandResults(readable_output=readable, outputs=struct_file_upload(response), outputs_prefix="File")
 
 
 def get_file_hash_command(client: Client, args: dict) -> CommandResults:
@@ -502,28 +475,26 @@ def get_file_hash_command(client: Client, args: dict) -> CommandResults:
     if response.status_code != 200:
         return_error(f"HTTP error {response.status_code}")
     file_name = ""
-    if "Content-Disposition" in response.headers.keys():
+    if "Content-Disposition" in response.headers:
         file_name = re.findall("filename=(.+)", response.headers["Content-Disposition"])[0]
 
     # structure to return
     nfu = {
-        "Size": response.headers['Content-length'],
+        "Size": response.headers["Content-length"],
         "SHA1": hashlib.sha1(response.content, usedforsecurity=False).hexdigest(),
         "SHA256": hashlib.sha256(response.content, usedforsecurity=False).hexdigest(),
         "SHA512": hashlib.sha512(response.content, usedforsecurity=False).hexdigest(),
         "Name": file_name,
-        "MD5": hashlib.md5(response.content, usedforsecurity=False).hexdigest()
+        "MD5": hashlib.md5(response.content, usedforsecurity=False).hexdigest(),
     }
     res = nfu.get("Name", "").split(".")
     if len(res) > 1:
         nfu["Extension"] = res[-1]
 
-    return CommandResults(readable_output="Hash save under the key 'File_Hash'.",
-                          outputs=nfu,
-                          outputs_prefix="File_Hash")
+    return CommandResults(readable_output="Hash save under the key 'File_Hash'.", outputs=nfu, outputs_prefix="File_Hash")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -535,56 +506,49 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = demisto.get(demisto.params(), 'creds_apikey.password')
+    api_key = demisto.get(demisto.params(), "creds_apikey.password")
     api_key_id = demisto.params().get("creds_apikey_id", {}).get("password")
     server_url = demisto.demistoUrls()["server"]
-    base_url = params.get('url', server_url)
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    base_url = params.get("url", server_url)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     try:
-        headers = {
-            'Authorization': api_key,
-            'x-xdr-auth-id': api_key_id
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        headers = {"Authorization": api_key, "x-xdr-auth-id": api_key_id}
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client)
             return_results(result)
-        elif command == 'file-management-upload-file-to-incident':
+        elif command == "file-management-upload-file-to-incident":
             return_results(upload_file_command(client, args))
-        elif command == 'file-management-delete-file':
+        elif command == "file-management-delete-file":
             return_results(delete_file_command(client, args))
-        elif command == 'file-management-delete-attachment':
+        elif command == "file-management-delete-attachment":
             return_results(delete_attachment_command(client, args))
-        elif command == 'file-management-delete-custom-attachment':
-            if args.get('fieldName', "") != "attachment":
+        elif command == "file-management-delete-custom-attachment":
+            if args.get("fieldName", "") != "attachment":
                 return_results(delete_attachment_command(client, args))
             else:
                 return_error("Use command file-management-delete-attachment instead")
-        elif command == 'file-management-check-file':
+        elif command == "file-management-check-file":
             return_results(check_file_command(client, args))
-        elif command == 'file-management-rename-file':
+        elif command == "file-management-rename-file":
             return_results(rename_file_command(client, args))
-        elif command == 'file-management-download-file':
+        elif command == "file-management-download-file":
             return_results(download_file_command(client, args))
-        elif command == 'file-management-get-file-hash':
+        elif command == "file-management-get-file-hash":
             return_results(get_file_hash_command(client, args))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented')
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as error:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(error)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{error!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

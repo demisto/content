@@ -65,6 +65,7 @@ configuration:
   type: 8
   required: false
   display: Use Azure Managed Identities
+  section: Connect
 - name: managed_identities_client_id
   type: 9
   section: Connect
@@ -864,7 +865,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Normal.'
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Low.'
       name: importance
       predefined:
       - Low
@@ -1149,7 +1150,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.2005673
   isfetch: true
   runonce: false
   script: '-'

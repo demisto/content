@@ -15,15 +15,11 @@ def add_new_comment(context_results: dict):
     """
     args = demisto.args()
 
-    incident_id = args.get("incident_id") or dict_safe_get(
-        context_results, ["CustomFields", "sourceid"], ""
-    )
+    incident_id = args.get("incident_id") or dict_safe_get(context_results, ["CustomFields", "sourceid"], "")
     instance_name = context_results.get("sourceInstance") or args.get("using")
     new_comment = args.get("new_comment")
     if not instance_name:
-        return_error(
-            "Please provide a not empty 'using' as an argument when executing the script from the War Room."
-        )
+        return_error("Please provide a not empty 'using' as an argument when executing the script from the War Room.")
     if not new_comment:
         return_error(
             "New comment not provided. Please provide the 'new_comment' argument when running the script from the War Room."

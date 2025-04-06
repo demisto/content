@@ -1,8 +1,7 @@
+from datetime import datetime, timedelta
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-from datetime import datetime, timedelta
 
 
 def buildWidget(totalDropped):
@@ -60,7 +59,7 @@ if demisto_version.startswith("6"):  # xsoar 6
         "core-api-post",
         {
             "uri": f"{accountName}settings/audits",
-            "body": {"size": 10000, "query": "type:notcreated and modified:>%s" % str(daysAgo.strftime("%Y-%m-%d"))},
+            "body": {"size": 10000, "query": f"type:notcreated and modified:>{str(daysAgo.strftime('%Y-%m-%d'))}"},
         },
     )
 
