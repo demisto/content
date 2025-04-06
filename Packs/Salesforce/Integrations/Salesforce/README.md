@@ -1676,23 +1676,24 @@ Returns a comment through the case number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| oid | Returns information of a case. | Optional | 
-| caseNumber | The case number of the case. | Optional | 
+| oid | Returns information of a case. | Optional |
+| caseNumber | The case number of the case. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ID | string | The ID of the case. | 
-| ParentId | string | The ID of the parent case of the case comment. Required. | 
-| IsPublished | boolean | Whether the case comment is visible to customers in the Self-Service portal \(true\). The label is published. This is the only CaseComment field that can be updated through the API. | 
-| CommentBody | string | The text of the case body. Maximum size is 4,000 bytes. The label is Body. | 
-| CreatedById | unknown | The created date by ID. | 
-| CreatedDate | string | The created date. | 
-| SystemModstamp | string | The SystemMod stamp. | 
-| LastModifiedDate | string | The last modified date.  | 
-| LastModifiedById | string | The last modified date by ID. | 
-| IsDeleted | boolean | Whether the object has been moved to the Recycle Bin \(true\). Label is Deleted. | 
+| ID | string | The ID of the case. |
+| ParentId | string | The ID of the parent case of the case comment. Required. |
+| IsPublished | boolean | Whether the case comment is visible to customers in the Self-Service portal \(true\). The label is published. This is the only CaseComment field that can be updated through the API. |
+| CommentBody | string | The text of the case body. Maximum size is 4,000 bytes. The label is Body. |
+| CreatedById | unknown | The created date by ID. |
+| CreatedDate | string | The created date. |
+| SystemModstamp | string | The SystemMod stamp. |
+| LastModifiedDate | string | The last modified date.  |
+| LastModifiedById | string | The last modified date by ID. |
+| IsDeleted | boolean | Whether the object has been moved to the Recycle Bin \(true\). Label is Deleted. |
+
 ### salesforce-post-casecomment
 
 ***
@@ -1706,13 +1707,14 @@ The post comment through the case number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| oid | The Object ID of the case. | Optional | 
-| caseNumber | The case number of the case. | Optional | 
-| text | Added Text to context. | Optional | 
+| oid | The Object ID of the case. | Optional |
+| caseNumber | The case number of the case. | Optional |
+| text | Added Text to context. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### salesforce-get-user
 
 ***
@@ -1726,28 +1728,29 @@ Returns the UserName through the case number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| oid | The Object ID of the case. | Optional | 
-| caseNumber | The case number of the case. | Optional | 
+| oid | The Object ID of the case. | Optional |
+| caseNumber | The case number of the case. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ID | string | The ID of the case. | 
-| Alias | string | The user’s alias. Required. For example, jsmith. | 
-| CommunityNickname | string | The name used to identify the user in the Community application, which includes the ideas and answers features. | 
-| CreatedById | string | Created by the ID. | 
-| Email | string | The user’s email address. Required. | 
-| LastLoginDate | string | The time and date when the user last successfully logged in. This value is updated if 60 seconds have elapsed since the user’s last login. | 
-| LastModifiedDate | string | The last modified date. | 
-| LastName | string | The user’s last name. Required. | 
-| Name | string | Concatenation of FirstName and LastName. Limited to 121 characters. | 
-| Username | string | Contains the name that a user enters to log in to the API or the user interface. Required. Must be in the form of an email address, all characters should be lowercase, and unique across all organizations. Each added user counts as a license. Every organization has a maximum number of licenses. If you attempt to exceed the maximum number of licenses by inserting user records, the attempt to create a user is rejected. | 
-| UserRoleId | string | The ID of the user’s UserRole. Label is Role ID. | 
+| ID | string | The ID of the case. |
+| Alias | string | The user’s alias. Required. For example, jsmith. |
+| CommunityNickname | string | The name used to identify the user in the Community application, which includes the ideas and answers features. |
+| CreatedById | string | Created by the ID. |
+| Email | string | The user’s email address. Required. |
+| LastLoginDate | string | The time and date when the user last successfully logged in. This value is updated if 60 seconds have elapsed since the user’s last login. |
+| LastModifiedDate | string | The last modified date. |
+| LastName | string | The user’s last name. Required. |
+| Name | string | Concatenation of FirstName and LastName. Limited to 121 characters. |
+| Username | string | Contains the name that a user enters to log in to the API or the user interface. Required. Must be in the form of an email address, all characters should be lowercase, and unique across all organizations. Each added user counts as a license. Every organization has a maximum number of licenses. If you attempt to exceed the maximum number of licenses by inserting user records, the attempt to create a user is rejected. |
+| UserRoleId | string | The ID of the user’s UserRole. Label is Role ID. |
+
 ### salesforce-get-org
 
 ***
-Returns organization details from the case number. 
+Returns organization details from the case number.
 
 #### Base Command
 
@@ -1757,11 +1760,11 @@ Returns organization details from the case number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| caseNumber | The case number of the case. | Optional | 
+| caseNumber | The case number of the case. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ID | string | The unique ID of the case. | 
-| Name | string | Name of the account. Required. Label is Account Name. Maximum size is 255 characters. If the account has a record type of Person Account, this value is the concatenation of the FirstName, MiddleName, LastName, and Suffix of the associated person contact. You cannot modify this value. | 
+| ID | string | The unique ID of the case. |
+| Name | string | Name of the account. Required. Label is Account Name. Maximum size is 255 characters. If the account has a record type of Person Account, this value is the concatenation of the FirstName, MiddleName, LastName, and Suffix of the associated person contact. You cannot modify this value. |
