@@ -104,81 +104,6 @@ def format_data_fields(events: list[dict], evnet_type: str | None):
         event['source_log_type'] = evnet_type
 
 
-def fetch_events(client, last_run):
-    end_time = int(time.time() * 1000)
-    start_time = last_run.get('last_fetch_events', end_time-2)+1
-    continue_fetch_events = last_run.get('continue_fetch_events', None)
-    skip = 0
-    if continue_fetch_events:
-        end_time = continue_fetch_events.get('end_time')
-        start_time = continue_fetch_events.get('start_time')
-        skip = continue_fetch_events.get('fetched_events')
-
-    demisto.debug(f'RadwareCloudDDoS: {start_time=}, {end_time=}, {skip=}')
-    response = client.get_events(start_time, end_time, skip, PAGE_SIZE)
-    documents = response.get("documents")
-    demisto.debug(f'RadwareCloudDDoS: {len(documents)=}')
-    new_continue_fetch_events = {}
-
-    if documents:
-        latest_event_timestamp = documents[0]["endTimestamp"]
-        demisto.debug(f'RadwareCloudDDoS: {latest_event_timestamp=}')
-        if len(documents) == PAGE_SIZE:
-            demisto.debug('RadwareCloudDDoS: found next page')
-            new_continue_fetch_events = {'end_time': end_time, 'start_time': start_time, 'fetched_events': len(documents)+skip}
-
-        if not continue_fetch_events:
-            last_run['last_fetch_events'] = latest_event_timestamp
-            demisto.debug(f'RadwareCloudDDoS: saved {latest_event_timestamp=}')
-
-        if new_continue_fetch_events:
-            last_run['nextTrigger'] = '0'
-
-        last_run['continue_fetch_events'] = new_continue_fetch_events
-        demisto.debug(f'RadwareCloudDDoS: set {new_continue_fetch_events=}')
-        format_data_fields(documents, 'security_events')
-
-    return documents, last_run
-
-
-def fetch_alerts(client, last_run):
-    end_time = int(time.time() * 1000)
-    start_time = last_run.get('last_fetch_alerts', end_time-2)+1
-    continue_fetch_alerts = last_run.get('continue_fetch_alerts', None)
-    skip = 0
-
-    if continue_fetch_alerts:
-        end_time = continue_fetch_alerts.get('end_time')
-        start_time = continue_fetch_alerts.get('start_time')
-        skip = continue_fetch_alerts.get('fetched_alerts')
-
-    demisto.debug(f'RadwareCloudDDoS: {start_time=}, {end_time=},  {skip=}')
-    response = client.get_alerts(start_time, end_time, skip, PAGE_SIZE)
-    documents = response.get("documents")
-    demisto.debug(f'RadwareCloudDDoS: {len(documents)=}')
-    new_continue_fetch_alerts = {}
-
-    if documents:
-        latest_timestamp_alerts = documents[0].get('context', {}).get("_timestamp")
-        demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_alerts=}')
-        if len(documents) == PAGE_SIZE:
-            demisto.debug('RadwareCloudDDoS: found next page')
-            new_continue_fetch_alerts = {'end_time': end_time, 'start_time': start_time, 'fetched_alerts': len(documents)+skip}
-
-        if not continue_fetch_alerts:
-            last_run['last_fetch_alerts'] = latest_timestamp_alerts
-            demisto.debug(f'RadwareCloudDDoS: saved {latest_timestamp_alerts=}')
-
-        if new_continue_fetch_alerts:
-            last_run['nextTrigger'] = '0'
-
-        last_run['continue_fetch_alerts'] = new_continue_fetch_alerts
-        demisto.debug(f'RadwareCloudDDoS: set {new_continue_fetch_alerts=}')
-        format_data_fields(documents, 'operational_alerts')
-
-    return documents, last_run
-
-
 def fetch_data(client, last_run, data_type):
     """
     Fetch data of a specified type (either 'events' or 'alerts') from the client.
@@ -280,9 +205,9 @@ def main() -> None:
             events = []
             alerts = []
             if 'Events' in event_types:
-                events, last_run = fetch_events(client, last_run=last_run)
+                events, last_run = fetch_data(client, last_run=last_run, data_type='events')
             if 'Alerts' in event_types:
-                alerts, last_run = fetch_alerts(client, last_run=last_run)
+                alerts, last_run = fetch_data(client, last_run=last_run, data_type='alerts')
 
             demisto.setLastRun(last_run)
             send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
