@@ -34,7 +34,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 List alerts according to parameters
 
-
 #### Base Command
 
 `cyberint-alerts-fetch`
@@ -58,7 +57,6 @@ List alerts according to parameters
 | statuses | Status of the alert. Can be more than one. Possible values are: open, acknowledged, closed. | Optional |
 | severities | Severity of the alert. Can be more than one. Possible values are: low, medium, high, very_high. | Optional |
 | types | Type of the alert, can be more than one. Possible values are: refund_fraud, carding, coupon_fraud, money_laundering, victim_report, malicious_insider, extortion, phishing_email, phishing_kit, phishing_website, lookalike_domain, phishing_target_list, malicious_file, reconnaissance, automated_attack_tools, business_logic_bypass, target_list, official_social_media_profile, impersonation, intellectual_property_infringement, unauthorized_trading, negative_sentiment, fake_job_posting, defacement, compromised_pii, internal_information_disclosure, compromised_payment_cards, compromised_employee_credentials, compromised_customer_credentials, compromised_access_token, ransomware, exposed_web_interfaces, hijackable_subdomains, website_vulnerabilities, exposed_cloud_storage, exploitable_ports, mail_servers_in_blacklist, server_connected_to_botnet, email_security_issues, certificate_authority_issues, other. | Optional |
-
 
 #### Context Output
 
@@ -122,7 +120,6 @@ List alerts according to parameters
 | Cyberint.Alert.recommendation | String | Recommendation for the alert                         |
 | Cyberint.Alert.tags | String | Tags related to the alert                            |
 | Cyberint.Alert.attachments | String | Attachments related to the alert                     |
-
 
 #### Command Example
 
@@ -677,7 +674,7 @@ List alerts according to parameters
 >Total alerts: 9
 >Current page: 1
 
->### CyberInt alerts:
+>### CyberInt alerts
 
 >|ref_id|title|status|severity|created_date|type|environment|
 >|---|---|---|---|---|---|---|
@@ -691,12 +688,10 @@ List alerts according to parameters
 >| ARG-1 | Company Customer Payment Cards Offered for Sale | acknowledged | medium | 2021-04-06T00:01:12 | compromised_payment_cards | Argos Demo |
 >| ARG-5 | Company Customer Credentials Offered for Sale | acknowledged | medium | 2021-04-06T00:01:12 | compromised_customer_credentials | Argos Demo |
 
-
 ### cyberint-alerts-status-update
 
 ***
 Update the status of one or more alerts.
-
 
 #### Base Command
 
@@ -710,7 +705,6 @@ Update the status of one or more alerts.
 | status | Desired status to update for the alert(s). Possible values are: open, acknowledged, closed. | Required |
 | closure_reason | Reason for updating the alerts status to closed. Required when status is closed. Possible values are: resolved, irrelevant, false_positive. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -718,7 +712,6 @@ Update the status of one or more alerts.
 | Cyberint.Alert.ref_id | String | Reference ID of the alert. |
 | Cyberint.Alert.status | String | Status of the alert. |
 | Cyberint.Alert.closure_reason | String | Reason for updating the alert to closed if closed. |
-
 
 #### Command Example
 
@@ -740,18 +733,16 @@ Update the status of one or more alerts.
 
 #### Human Readable Output
 
->### CyberInt alerts updated information:
+>### CyberInt alerts updated information
 
 >|ref_id|status|
 >|---|---|
 >| ADS10-3 | acknowledged |
 
-
 ### cyberint-alerts-get-attachment
 
 ***
 Get alert attachment.
-
 
 #### Base Command
 
@@ -764,7 +755,6 @@ Get alert attachment.
 | alert_ref_id | Reference ID of the alert. | Required |
 | attachment_id | Attachment ID. | Required |
 | attachment_name | Attachment file name. | Required |
-
 
 #### Context Output
 
@@ -780,7 +770,6 @@ Get alert attachment.
 | File.Type | String | The file type. |
 | File.MD5 | String | The MD5 hash of the file. |
 | File.Extension | String | The file extension. |
-
 
 #### Command Example
 
@@ -806,14 +795,10 @@ Get alert attachment.
 }
 ```
 
-
-
-
 ### cyberint-alerts-analysis-report
 
 ***
 Get alert analysis report.
-
 
 #### Base Command
 
@@ -825,7 +810,6 @@ Get alert analysis report.
 | --- | --- | --- |
 | alert_ref_id | Reference ID of the alert. | Required |
 | report_name | Analysis report file name. | Required |
-
 
 #### Context Output
 
@@ -841,7 +825,6 @@ Get alert analysis report.
 | File.Type | String | The file type. |
 | File.MD5 | String | The MD5 hash of the file. |
 | File.Extension | String | The file extension. |
-
 
 #### Command Example
 
