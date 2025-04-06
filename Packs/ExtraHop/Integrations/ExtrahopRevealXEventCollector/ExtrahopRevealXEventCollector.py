@@ -4,6 +4,8 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from Packs.BitSight.Integrations.BitSightForSecurityPerformanceManagement.BitSightForSecurityPerformanceManagement import \
+    MAX_FETCH_LIMIT
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,9 +15,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'Extrahop'
 PRODUCT = 'RevealX'
-PAGE_SIZE = 200
-PAGE_NUMBER = 0
 FIRST_FETCH = "3 days"
+MAX_FETCH_LIMIT = 25000
 DEFAULT_FETCH_LIMIT = 5000 # TODO Niv: make sure with dar this is the correct value
 BASE_TIME_CHECK_VERSION_PARAM = 1581852287000
 EXTRAHOP_MARKDOWN_REGEX = r"(\[[^\]]+\]\(\#\/[^\)]+\))+"
@@ -81,7 +82,7 @@ class Client(BaseClient):
         token, expires_in = self.authenticate(client_id=self._client_id, client_secret=self._client_secret)
         integration_context = {
             "access_token": token,
-            "valid_until": time_now + expires_in,  # Token expiration time - 30 mins
+            "valid_until": time_now + expires_in,  # Token expiration time
         }
         set_integration_context(integration_context)
 
@@ -358,25 +359,19 @@ def append_participant_device_data(client: Client, detections: CommandResults) -
     return detections
 
 
-def get_mirroring() -> Dict:
-    """Add mirroring related keys in an incident.
-
-    Returns:
-        A dictionary containing required key-value pairs for mirroring.
+def fetch_extrahop_detections(
+    client: Client,
+    advanced_filter: Dict,
+    last_run: Dict,
+    max_events: int,
+) -> tuple[List, Dict]:
     """
-    return {
-        'mirror_direction': "In",
-        'mirror_instance': demisto.integrationInstance(),
-    }
-
-def fetch_extrahop_detections(client: Client, advanced_filter: Dict, last_run: Dict) -> \
-        tuple[List, Dict]:
-    """Fetch detections from ExtraHop according to the given filter.
+    Fetch detections from ExtraHop according to the given filter.
 
     Args:
-        client:ExtraHop client to be used.
+        client: ExtraHop client to be used.
         advanced_filter: The advanced_filter given by the user to filter out the required detections.
-        last_run: Last run returned by function demisto.getLastRun
+        last_run: Last run returned by function demisto.getLastRun.
 
     Returns:
         List of incidents to be pushed into XSIAM.
@@ -384,33 +379,52 @@ def fetch_extrahop_detections(client: Client, advanced_filter: Dict, last_run: D
     try:
         already_fetched: Set[str] = set(last_run.get('already_fetched', []))
         detection_start_time = advanced_filter["mod_time"]
+        limit = advanced_filter["limit"]
+        events = []
 
-        events = get_detections_list(client, advanced_filter=advanced_filter)
+        while True:
+            detections = get_detections_list(client, advanced_filter=advanced_filter)
 
-        for detection in events:  # type: ignore
-            detection_id = detection.get("id")
-            if detection_id not in already_fetched:
-                detection.update(get_mirroring())
+            if not detections:
+                # Didn't get any detections or got all duplicates
+                break
+
+            for detection in detections:  # type: ignore
+                detection_id = detection.get("id")
+                if detection_id in already_fetched:
+                    demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
+                    continue
+
                 already_fetched.add(detection_id)
-            else:
-                demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
+                events.append(detection)
 
-        # TODO: Change it to while loop? maybe the while loop should be outside in the big function
-        if len(events) < advanced_filter["limit"]:
-            offset = 0
-            detection_start_time = \
-                events[-1]["mod_time"] + 1 if events else detection_start_time  # type: ignore
-        else:
-            offset = advanced_filter["offset"] + len(events)
+                if len(events) == max_events:
+                    break
+
+            if len(events) >= max_events:
+                break
+
+            # edge case where we got same mod_time #limit times
+            if detections[-1]["mod_time"] == detections[0]["mod_time"]:
+                advanced_filter["offset"] = advanced_filter["offset"] + limit
+            else:
+                # Prepare for the next batch of detections
+                detection_start_time = events[-1]["mod_time"] + 1  # type: ignore
+                advanced_filter["mod_time"] = detection_start_time
+                advanced_filter["offset"] = 0
+
 
     except Exception as error:
         raise DemistoException(f"extrahop: exception occurred {str(error)}")
 
-    demisto.info(f"Extrahop fetched {len(events)} events where the advanced filter is {advanced_filter}")
+    demisto.info(f"Extrahop fetched {len(events)} events with the advanced filter: {advanced_filter}")
 
-    last_run["detection_start_time"] = int(detection_start_time)
-    last_run["offset"] = offset
-    last_run["already_fetched"] = already_fetched
+    last_run.update({
+        "detection_start_time": int(detection_start_time),
+        "offset": advanced_filter["offset"],
+        "already_fetched": already_fetched
+    })
+
     return events, last_run
 
 
@@ -425,11 +439,7 @@ def validate_fetch_events_params(params: dict, last_run: dict) -> Dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
-    first_fetch_from_params = params.get("first_fetch_from", None)
-
-    if first_fetch_from_params:
-        detection_start_time = int(first_fetch_from_params.timestamp() * 1000)  # type: ignore
-    elif last_run and 'detection_start_time' in last_run:
+    if last_run and 'detection_start_time' in last_run:
         detection_start_time = last_run.get('detection_start_time')  # type: ignore
     else:
         # First Fetch
@@ -439,12 +449,10 @@ def validate_fetch_events_params(params: dict, last_run: dict) -> Dict:
     if last_run and 'offset' in last_run:
         offset = last_run.get("offset")  # type: ignore
 
-    limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
-
     return {
         'detection_start_time': detection_start_time,
         'offset': offset,
-        'limit': limit
+        'limit': DEFAULT_FETCH_LIMIT
     }
 
 
@@ -459,7 +467,22 @@ def fetch_events(client: Client, params: Dict, last_run: Dict):
     demisto.info(f"Extrahop fetch_events invoked"
                  f"first_fetch: {params.get('first_fetch', '')} and last_run: {last_run}")
     fetch_params = validate_fetch_events_params(params, last_run)
+    max_events = arg_to_number(params.get('max_events_per_fetch')) or MAX_FETCH_LIMIT
 
+    validate_version(client, last_run)
+
+    _filter = {"categories": ["sec.attack"]}
+
+    advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"],
+                       "limit": fetch_params["limit"], "offset": fetch_params["offset"],
+                       "sort": [{"direction": "asc", "field": "mod_time"}]}
+
+    events, next_run = fetch_extrahop_detections(client, advanced_filter, last_run, max_events)
+    demisto.info(f"Extrahop next_run is {next_run}")
+    return events, next_run
+
+
+def validate_version(client, last_run):
     now = datetime.now()
     next_day = now + timedelta(days=1)
     if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
@@ -468,16 +491,6 @@ def fetch_events(client: Client, params: Dict, last_run: Dict):
         if version < "9.3.0":
             raise DemistoException(
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
-
-    _filter = {"categories": ["sec.attack"]}
-
-    advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"], "until": 0,
-                       "limit": fetch_params["limit"], "offset": fetch_params["offset"],
-                       "sort": [{"direction": "asc", "field": "mod_time"}]}
-
-    events, next_run = fetch_extrahop_detections(client, advanced_filter, last_run)
-    demisto.info(f"Extrahop next_run is {next_run}")
-    return events, next_run
 
 
 def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
@@ -517,7 +530,6 @@ def main():
         client_id = params.get("client_id", "")
         client_secret = params.get("client_secret", "")
         use_proxy: bool = params.get('proxy', False)
-        # TODO : Not using the fetch limit
 
         client = Client(base_url=base_url,
                         verify=verify_certificate,
