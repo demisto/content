@@ -1,6 +1,7 @@
 Decodes an input in Base64 format.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Decodes an input in Base64 format.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Decodes an input in Base64 format.
 | value | The value to decode in Base64 format. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -25,9 +28,13 @@ Decodes an input in Base64 format.
 | Base64.originalValue | The passed value that was decoded. | string |
 
 ## Script Examples
+
 ### Example command
+
 ```!Base64Decode value=VGhpcyBpcyBhIHRlc3Q```
+
 ### Context Example
+
 ```json
 {
     "Base64": {
