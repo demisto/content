@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2.2.5 of Camlytics.
 
 ## Configure Camlytics in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |
@@ -11,16 +10,19 @@ This integration was integrated and tested with version 2.2.5 of Camlytics.
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### camlytics-get-channels
+
 ***
 Retrieve video channels
-
 
 #### Base Command
 
 `camlytics-get-channels`
+
 #### Input
 
 There are no input arguments for this command.
@@ -29,19 +31,22 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Camlytics.Channels.channel_id | String | The channel ID. | 
-| Camlytics.Channels.name | String | The channel name. | 
-| Camlytics.Channels.type | String | The channel type. | 
-| Camlytics.Channels.stream_uri | String | The channel stream_ur. | 
-| Camlytics.Channels.login | String | The channel login. | 
-| Camlytics.Channels.password | String | The channel password. | 
-| Camlytics.Channels.uri | String | The channel uri. | 
-| Camlytics.Channels.profile_name | String | The channel profile. | 
-| Camlytics.Channels.profile_token | String | The channel profile token. | 
+| Camlytics.Channels.channel_id | String | The channel ID. |
+| Camlytics.Channels.name | String | The channel name. |
+| Camlytics.Channels.type | String | The channel type. |
+| Camlytics.Channels.stream_uri | String | The channel stream_ur. |
+| Camlytics.Channels.login | String | The channel login. |
+| Camlytics.Channels.password | String | The channel password. |
+| Camlytics.Channels.uri | String | The channel uri. |
+| Camlytics.Channels.profile_name | String | The channel profile. |
+| Camlytics.Channels.profile_token | String | The channel profile token. |
 
 #### Command example
+
 ```!camlytics-get-channels```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -76,42 +81,45 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|login|name|password|profile_name|profile_token|stream_uri|type|uri|
 >|---|---|---|---|---|---|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | Springs |  | none |  | C:\Users\hussain\Desktop\Test Video.mp4 | File | http://localhost/ |
 >| 8c27e658-cfee-4801-b1f7-29626ce45afc |  | Video file |  | none |  | C:\Users\hussain\Desktop\Test Video - Copy.mp4 | File | http://localhost/ |
 
-
 ### camlytics-get-events-totals-by-rule
+
 ***
 Retrieve video analytics events totals grouped by calibration rules, these rules can be defined using zones and lines to set areas where different camera events will be generated. For example, you can add zone where you want signalize all of all entered objects, line where you want to count people, etc.
-
 
 #### Base Command
 
 `camlytics-get-events-totals-by-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channelid | The channel ID. | Optional | 
-| sincetime | The since time. | Optional | 
-| untiltime | The until time. | Optional | 
-| origin | The origin that generated the events. For example, if you want to display only vehicles events and skip pedestrians in your report, choose Vehicle. Possible values are: Pedestrians, Vehicle, Uknown. | Optional | 
-
+| channelid | The channel ID. | Optional |
+| sincetime | The since time. | Optional |
+| untiltime | The until time. | Optional |
+| origin | The origin that generated the events. For example, if you want to display only vehicles events and skip pedestrians in your report, choose Vehicle. Possible values are: Pedestrians, Vehicle, Uknown. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Camlytics.EventsTotalsRule.channel_id | String | The channel ID. | 
-| Camlytics.EventsTotalsRule.rule_count | Number | The rule count. | 
-| Camlytics.EventsTotalsRule.rule_id | String | The rule ID. | 
-| Camlytics.EventsTotalsRule.rule_name | String | The rule name. | 
+| Camlytics.EventsTotalsRule.channel_id | String | The channel ID. |
+| Camlytics.EventsTotalsRule.rule_count | Number | The rule count. |
+| Camlytics.EventsTotalsRule.rule_id | String | The rule ID. |
+| Camlytics.EventsTotalsRule.rule_name | String | The rule name. |
 
 #### Command example
+
 ```!camlytics-get-events-totals-by-rule```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -148,6 +156,7 @@ Retrieve video analytics events totals grouped by calibration rules, these rules
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|rule_count|rule_id|rule_name|
 >|---|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | 47 | -1 |  |
@@ -155,36 +164,38 @@ Retrieve video analytics events totals grouped by calibration rules, these rules
 >| 8c27e658-cfee-4801-b1f7-29626ce45afc | 9 | -1 |  |
 >| 8c27e658-cfee-4801-b1f7-29626ce45afc | 1 | 2ec821ed-3fb5-4b0b-aab9-3f600c05914c | Motion detection |
 
-
 ### camlytics-get-events-totals-by-type
+
 ***
 Retrieve video analytics events totals grouped by analytics event type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed.
-
 
 #### Base Command
 
 `camlytics-get-events-totals-by-type`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channelid | The channel ID. | Optional | 
-| sincetime | The since time. | Optional | 
-| untiltime | The until time. | Optional | 
-| origin | The origin that generated the events. For example, if you want to display only vehicles events and skip pedestrians in your report, choose Vehicle. Possible values are: Pedestrians, Vehicle, Uknown. | Optional | 
-
+| channelid | The channel ID. | Optional |
+| sincetime | The since time. | Optional |
+| untiltime | The until time. | Optional |
+| origin | The origin that generated the events. For example, if you want to display only vehicles events and skip pedestrians in your report, choose Vehicle. Possible values are: Pedestrians, Vehicle, Uknown. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Camlytics.EventsTotalsType.channel_id | String | The channel ID. | 
-| Camlytics.EventsTotalsType.type | String | The event type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed. | 
-| Camlytics.EventsTotalsType.type_count | Number | The type count. | 
+| Camlytics.EventsTotalsType.channel_id | String | The channel ID. |
+| Camlytics.EventsTotalsType.type | String | The event type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed. |
+| Camlytics.EventsTotalsType.type_count | Number | The type count. |
 
 #### Command example
+
 ```!camlytics-get-events-totals-by-type channelid=09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 origin=Pedestrian```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -207,56 +218,59 @@ Retrieve video analytics events totals grouped by analytics event type. For exam
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|type|type_count|
 >|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | ObjectAppear | 4 |
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | ObjectDisappear | 3 |
 
-
 ### camlytics-get-events
+
 ***
 Retrieve video analytics events ordered by event id.
-
 
 #### Base Command
 
 `camlytics-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| channelid | The channel ID. | Optional | 
-| sinceid | The since ID. | Optional | 
-| sincetime | The since time. | Optional | 
-| untilid | The until ID. | Optional | 
-| untiltime | The until time. | Optional | 
-| limit | The limit. | Optional | 
-| order | The order. | Optional | 
-| timeout | The timeout. | Optional | 
-
+| channelid | The channel ID. | Optional |
+| sinceid | The since ID. | Optional |
+| sincetime | The since time. | Optional |
+| untilid | The until ID. | Optional |
+| untiltime | The until time. | Optional |
+| limit | The limit. | Optional |
+| order | The order. | Optional |
+| timeout | The timeout. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Camlytics.Events.event_id | String | The event ID. | 
-| Camlytics.Events.type | String | The event type. | 
-| Camlytics.Events.time | String | The event time. | 
-| Camlytics.Events.timestamp | String | The event timestamp. | 
-| Camlytics.Events.channel_id | String | The event channel id. | 
-| Camlytics.Events.channel_name | String | The event channel name. | 
-| Camlytics.Events.object_id | String | The event object id. | 
-| Camlytics.Events.origin | String | The event origin. | 
-| Camlytics.Events.rule_id | String | The event rule id. | 
-| Camlytics.Events.rule_name | String | The event rule name. | 
-| Camlytics.Events.snapshot_path | String | The event snapshot path. | 
-| Camlytics.Events.recording_path | String | The event recording path. | 
-| Camlytics.Events.video_file_name | String | The event video file name. | 
-| Camlytics.Events.video_file_time | Date | The event video file time. | 
+| Camlytics.Events.event_id | String | The event ID. |
+| Camlytics.Events.type | String | The event type. |
+| Camlytics.Events.time | String | The event time. |
+| Camlytics.Events.timestamp | String | The event timestamp. |
+| Camlytics.Events.channel_id | String | The event channel id. |
+| Camlytics.Events.channel_name | String | The event channel name. |
+| Camlytics.Events.object_id | String | The event object id. |
+| Camlytics.Events.origin | String | The event origin. |
+| Camlytics.Events.rule_id | String | The event rule id. |
+| Camlytics.Events.rule_name | String | The event rule name. |
+| Camlytics.Events.snapshot_path | String | The event snapshot path. |
+| Camlytics.Events.recording_path | String | The event recording path. |
+| Camlytics.Events.video_file_name | String | The event video file name. |
+| Camlytics.Events.video_file_time | Date | The event video file time. |
 
 #### Command example
+
 ```!camlytics-get-events channelid="09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9" limit="10"```
+
 #### Context Example
+
 ```json
 {
     "Camlytics": {
@@ -429,6 +443,7 @@ Retrieve video analytics events ordered by event id.
 #### Human Readable Output
 
 >### Results
+>
 >|channel_id|channel_name|event_id|object_id|origin|recording_path|rule_id|rule_name|snapshot_path|time|timestamp|type|video_file_name|video_file_time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 70 | -1 | Unknown |  | -1 |  |  | 2022-01-19T16:22:25.4330000 | 1.877 | Sabotage | Test Video.mp4 | 2022-01-19T16:21:11.8770000 |
