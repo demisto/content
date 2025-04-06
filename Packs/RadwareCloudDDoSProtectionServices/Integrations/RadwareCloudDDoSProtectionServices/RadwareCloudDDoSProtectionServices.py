@@ -217,9 +217,9 @@ def main() -> None:
             events = []
             alerts = []
             if 'Events' in event_types:
-                events, _ = fetch_events(client, last_run=last_run)
+                events, _ = fetch_data(client, last_run=last_run, data_type='events')
             if 'Alerts' in event_types:
-                alerts, _ = fetch_alerts(client, last_run=last_run)
+                alerts, _ = fetch_data(client, last_run=last_run, data_type='alerts')
             return_results(events+alerts)
 
     except Exception as e:
