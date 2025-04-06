@@ -478,7 +478,7 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
     ignore_errors = argToBoolean(ignore_errors)
 
     result = []
-    printable_result = {}
+    context = []
     readable_output = ''
     headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
                'last-modifier', 'ipv4-address', 'ipv6-address', 'read-only', 'groups']
@@ -494,11 +494,12 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
                                                       removeNull=True)
             readable_output = readable_output + current_readable_output
             result.append(current_result)
+            context.append(printable_result)
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Host',
         outputs_key_field='uid',
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=context,
         raw_response=result
     )
     return command_results

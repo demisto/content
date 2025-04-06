@@ -1,11 +1,8 @@
 import ast
-import datetime
-from time import sleep
-from typing import Any, Dict
 
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
 
 POLLING = False
 
@@ -94,7 +91,16 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
     return context
 
 # TODO think about adding the command name to the human readable.
-def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose, rule_name: str, ip_list_arr: list[str]) -> list:  # a list of command results
+def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose: bool, rule_name: str, ip_list_arr: list[str]) -> list:  # a list of command results
+    """ Creates the relevant context and human readable in case of multiple command executions.
+    Args:
+        responses (list[list[dict]]): The responses returned from the execute command.
+        verbose (bool): Whether to print the all the human readable from the executions of all the commands or just the summary.
+        rule_name (str): The name of the security rule.
+        ip_list_arr (list[str]): The list of ips.
+    Returns:
+        A list containing the relevant Command results.
+    """
     demisto.debug(f"In prepare_context_and_hr_multiple_executions, {len(responses)=} {responses=}")
     results = []
     failed_messages = []
@@ -109,7 +115,7 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
             if command_hr and command_hr != str(None):
                 demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
                 results.append(CommandResults(readable_output=command_hr))
-            elif (message and 'Failed' in message) or is_error(entry):
+            elif is_error(entry):  # (message and 'Failed' in message) or
                 demisto.debug(f"A failure was found {message=}")
                 failed_messages.append(message)
             elif message and isinstance(message, str):
@@ -130,7 +136,15 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
     return results
 
 
-def prepare_context_and_hr(response: list[dict], verbose, ip_list: list[str]) -> list[CommandResults]:
+def prepare_context_and_hr(response: list[dict], verbose: bool, ip_list: list[str]) -> list[CommandResults]:
+    """ Creates the relevant context and human readable in case of a single command execution.
+    Args:
+        response (list[dict]): The response returned from the execute command.
+        verbose (bool): Whether to print the all the human readable from the executions of all the commands or just the summary.
+        ip_list (list[str]): The list of ips.
+    Returns:
+        A list containing the relevant Command results.
+    """
     results = []
     entry = {}
     failed_message = ''
@@ -155,6 +169,13 @@ def prepare_context_and_hr(response: list[dict], verbose, ip_list: list[str]) ->
 
 
 def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | list:
+    """ Get the relevant context object from the execute_command response.
+    Args:
+        original_context (dict[str, Any]): The original context ('EntryContext') returned in the execute_command response.
+        key (str): The key to extract from the original_context.
+    Returns:
+        A dict or a list that are the relevant command context.
+    """
     if not original_context:
         return {}
     if relevant_context := original_context.get(key, {}):
@@ -169,6 +190,14 @@ def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | l
 
 
 def check_value_exist_in_context(value: str, context: list[dict], key: str) -> bool:
+    """ Verify if a specific value of a specific key is present in the context.
+    Args:
+        value (str): The value we want to verify its existence.
+        context (list[dict]): The command context.
+        key (str): The key to extract from the context.
+    Returns:
+        A boolean representing the existence of the value (True) or False.
+    """
     for item in context:
         match = item.get(key, '')
         demisto.debug(f"The {match=}")
@@ -185,7 +214,14 @@ def check_value_exist_in_context(value: str, context: list[dict], key: str) -> b
     return False
 
 
-def get_match_by_name(name: str, context: list | dict):
+def get_match_by_name(name: str, context: list | dict) -> str:
+    """ Get the relevant "Match" value where the address_group_name == name.
+    Args:
+        name (str): The name of the relevant address group.
+        context (list | dict): The original context ('EntryContext') returned in the execute_command response.
+    Returns:
+        The match value.
+    """
     for item in context:
         address_group_name = item.get('Name', '')
         if address_group_name and address_group_name == name:
@@ -198,6 +234,13 @@ def get_match_by_name(name: str, context: list | dict):
 
 
 def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
+    """ Delete the brands that were executed already from the list of brands_to_run.
+        Would be used in a case that at least one brand finished its execution before the polling of the other brand is over.
+    Args:
+        brands_to_run (list): The list of brands that should be executed.
+    Returns:
+        The list of brands that were executed in previous runs and a set of the brands that should be executed in the current run.
+    """
     incident_context = demisto.context()
     executed_brands = incident_context.get('executed_brands', '')
     executed_brands = ast.literal_eval(incident_context.get('executed_brands', '')) if executed_brands else []
@@ -206,10 +249,37 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
     return executed_brands, updated_brands_to_run
 
 
+def checkpoint_object_names_to_members(context: list[dict], ips: list) -> list:
+    """ Return the list of names of the ipv4-address object in checkpoint.
+    Args:
+        context (list): The command context.
+        ips (list): The list of input ips.
+    Returns:
+        The list of the object names.
+    """
+    output_names = []
+    for obj in context:
+        ipv4_address = obj.get('ipv4-address', '')
+        if ipv4_address and ipv4_address in ips:
+            obj_name = obj.get('name')
+            output_names.append(obj_name)
+            demisto.debug(f"Added the name {obj_name} to the list of object names since {ipv4_address=} is in the input ips.")
+    return output_names
+
+
 """ COMMAND FUNCTION """
 
 
 def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> tuple[list[dict], CommandResults]:
+    """ Execute the command prisma-sase-candidate-config-push if needed.
+    Args:
+        auto_commit (bool): Whether to execute the command prisma-sase-candidate-config-push.
+        responses (list): The list of current responses from the previous execute command executions of prisma-sase.
+    Returns:
+        A tuple of
+        1. The response of the execution of the command prisma-sase-candidate-config-push or None if wasn't executed
+        2. None or the command result created in case the auto_commit == false.
+    """
     res_auto_commit, auto_commit_message = None, None
     if auto_commit:
         res_auto_commit = run_execute_command("prisma-sase-candidate-config-push",
@@ -304,6 +374,13 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
    requires_polling_arg=True,
 )
 def pan_os_commit_status(args: dict, responses: list) -> PollResult:
+    """ Check the status of the commit process in pan-os.
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     commit_job_id = args['commit_job_id']
     res_commit_status = run_execute_command("pan-os-commit-status", {'job_id': commit_job_id})
     demisto.debug(f"Before adding the new response {len(responses)=}")
@@ -332,6 +409,12 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
 
 
 def pan_os_check_trigger_push_to_device(responses: list) -> bool:
+    """ Verify if this is a Panorama instance.
+    Args:
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     res_pan_os = run_execute_command("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
     responses.append(res_pan_os)
     context = get_relevant_context(res_pan_os[0].get('EntryContext', {}), 'Panorama.Command')
@@ -347,11 +430,15 @@ def pan_os_check_trigger_push_to_device(responses: list) -> bool:
    timeout=600,
    requires_polling_arg=True,
 )
-def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
+def pan_os_push_to_device(responses: list) -> PollResult:
+    """ Execute pan-os-push-to-device-group.
+    Args:
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     res_push_to_device = run_execute_command("pan-os-push-to-device-group", {'polling': True})
-    demisto.debug(f"Before adding the new response {len(responses)=}")
     responses.append(res_push_to_device)
-    demisto.debug(f"After adding the new response {len(responses)=}")
     polling_args = res_push_to_device[0].get('Metadata', {}).get('pollingArgs', {})
     job_id = polling_args.get('push_job_id')
     device_group = polling_args.get('device-group')
@@ -393,6 +480,13 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
    requires_polling_arg=True,
 )
 def pan_os_push_status(args: dict, responses: list):
+    """ Check the status of the push operation in pan-os.
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     push_job_id = args['push_job_id']
     res_push_device_status = run_execute_command("pan-os-push-status", {'job_id': push_job_id})
     demisto.debug(f"Before adding the new response {len(responses)=}")
@@ -424,16 +518,35 @@ def pan_os_push_status(args: dict, responses: list):
 
 
 def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
+    """ Execute the final part of the pan-os flow.
+    1. Initialize all the context values.
+    2. Create the list of Command Results.
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the previous command.
+    Returns:
+        The list of Command Results.
+    """
     tag = args.get('tag')
     ip_list = args.get('ip_list')
     demisto.setContext('push_job_id', '')  # delete any previous value if exists
+    demisto.setContext('commit_job_id', '')  # delete any previous value if exists
     demisto.setContext('panorama_responses', '')  # delete any previous value if exists
     responses.append(run_execute_command('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list}))
-    results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], '', ip_list)
+    results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], args['rule_name'], ip_list)
     return results
 
 
 def start_pan_os_flow(args: dict) -> tuple[list, bool]:
+    """ Start the flow of pan-os.
+    Args:
+        args (dict): The arguments of the function.
+    Returns:
+        A tuple that can be one of 2 options:
+        1. A list of the responses of all the command executions until this point, a boolean represents whether to commit the changes to pan-os.
+            This option will take effect if the input tag doesn't exist in pan-os.
+        2. A list of command results, and a "False" representing the fact that a commit to pan-os shouldn't be performed since the tag already exists.
+    """
     responses = []
     tag = args['tag']
     address_group = args['address_group']
@@ -467,6 +580,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
         responses.append(run_execute_command("pan-os-move-rule", {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
         return responses, auto_commit  # should perform the commit section
     else:
+        args['rule_name'] = ''
         demisto.debug(f"The {tag=} does exist in the address groups, registering the ip.")
         results = final_part_pan_os(args, responses)
         return results, False
@@ -479,6 +593,13 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
    #requires_polling_arg=True,
 )
 def pan_os_commit(args: dict, responses: list) -> PollResult:
+    """ Execute pan-os-commit.
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the command executions so far.
+    Returns:
+        A PollResult object.
+    """
     res_commit = run_execute_command("pan-os-commit", {'polling': True})
     polling_args = res_commit[0].get('Metadata', {}).get('pollingArgs', {})
     job_id = polling_args.get('commit_job_id')
@@ -493,6 +614,7 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
             readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
         )
         demisto.debug(f"Initiated a commit execution {continue_to_poll=} {job_id=}")
+        demisto.setContext('commit_job_id', job_id)
 
     else:  # nothing to commit in pan-os, no reason to poll.
         commit_output = res_commit[0].get('Contents') or 'There are no changes to commit.'  # type: ignore[assignment]
@@ -521,13 +643,20 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     )
     return poll_result
 
-def manage_pan_os_flow(args: dict):
+def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | PollResult:
+    """ Manage the different states of the pan-os flow.
+    Args:
+        args (dict): The arguments of the function.
+    Returns:
+        The relevant result of the current state. If it is a polling state than a PollResult object will be returned, otherwise
+        a Command Result or a list of Command Results, depends on the commands that were executed.
+    """
     incident_context = demisto.context()
     demisto.debug(f"The context in the beginning of manage_pan_os_flow {incident_context=}")
     auto_commit = args['auto_commit']
-    commit_job_id = None
     res_push_status = None
     responses = []
+    commit_job_id = args.get('commit_job_id') or demisto.get(incident_context, 'commit_job_id')
     if push_job_id := demisto.get(incident_context, 'push_job_id'):
         demisto.debug(f"Has a {push_job_id=}")
         responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
@@ -540,8 +669,9 @@ def manage_pan_os_flow(args: dict):
             demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
             demisto.setContext('panorama_responses', str(responses))
             return res_push_status
-    elif commit_job_id := args.get('commit_job_id'):
+    elif commit_job_id:
         demisto.debug(f"Has a {commit_job_id=}")
+        args['commit_job_id'] = commit_job_id
         responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
         poll_commit_status = pan_os_commit_status(args, responses)
         if not POLLING:
@@ -588,6 +718,325 @@ def manage_pan_os_flow(args: dict):
         result = final_part_pan_os(args, responses)
         result.append(cr_should_commit)
         return result
+
+
+@polling_function(
+   name='block-external-ip',
+   interval=60,
+   timeout=600,
+)
+def checkpoint_publish(args: dict, responses: list, next_command: str) -> PollResult:
+    """ Execute the checkpoint-publish command.
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the command executions so far.
+        next_command (str): The command that should be executed after the publish process.
+    Returns:
+        A PollResult object.
+    """
+    session_id = args['session_id']
+    res_checkpoint_publish = run_execute_command("checkpoint-publish", {"session_id": session_id})
+    responses.append(res_checkpoint_publish)
+    task_id = get_relevant_context(res_checkpoint_publish[0].get('EntryContext', {}), "CheckPoint.Publish").get('task-id')
+    if task_id:
+        context_output = {
+            'JobID': task_id,
+            'Status': 'Pending'
+        }
+        continue_to_poll = True
+        publish_output = CommandResults(
+            outputs=context_output,
+            readable_output=tableToMarkdown('Publish Status:', context_output, removeNull=True)
+        )
+        demisto.debug(f"Initiated a publish execution {continue_to_poll=} {task_id=}")
+        demisto.setContext("publish_job_id", task_id)
+        demisto.setContext("next_command", next_command)
+    else:
+        publish_output = res_checkpoint_publish[0].get('Contents') or 'There are no changes to publish.'
+        demisto.debug(f"No task_id, {publish_output}")
+        continue_to_poll = False
+    global POLLING
+    POLLING = continue_to_poll
+
+    args_for_next_run = {
+        'publish_job_id': task_id,
+        'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 60)),
+        'timeout': arg_to_number(args.get('timeout', 600)),
+        'polling': True,
+    }
+    args_for_next_run = args | args_for_next_run
+    demisto.debug(f"After adding the original args {args_for_next_run=}")
+    return PollResult(
+        response=publish_output,
+        continue_to_poll=continue_to_poll,
+        args_for_next_run=args_for_next_run,
+        partial_result=CommandResults(
+            readable_output=f'Waiting for commit job ID {task_id} to finish...'
+        )
+    )
+
+
+@polling_function(
+   name='block-external-ip',
+   interval=60,
+   timeout=600,
+)
+def checkpoint_show_task(args: dict, responses: list) -> PollResult:
+    """ Execute the checkpoint-show-task command to check the status of the publish process.
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the command executions so far.
+    Returns:
+        A PollResult object.
+    """
+    session_id = args['session_id']
+    task_id = args['publish_job_id']
+    res_show_task = run_execute_command("checkpoint-show-task", {"session_id": session_id, 'task_id': task_id})
+    responses.append(res_show_task)
+    context = get_relevant_context(res_show_task[0].get('EntryContext', {}), 'CheckPoint.ShowTask')
+    status_show_task = context[0].get('status', '') if isinstance(context, list) else context.get('status', '')
+    progress_percentage_show_task = context[0].get('progress-percentage', '') if isinstance(context, list) else context.get('progress-percentage', '')
+    show_task_output = {
+        'JobID': task_id,
+        'Status': 'Success' if status_show_task == 'succeeded' else 'Failure',
+    }
+    continue_to_poll = progress_percentage_show_task != 100
+    global POLLING
+    POLLING = continue_to_poll
+    demisto.debug(f"after checkpoint-show-task {continue_to_poll=} {task_id=}")
+    return PollResult(
+        response=CommandResults(
+            outputs=show_task_output,
+            outputs_key_field='JobID',
+            readable_output=tableToMarkdown('Publish Status:', show_task_output, removeNull=True)
+        ),
+        args_for_next_run=args,
+        continue_to_poll=continue_to_poll,  # continue polling if job isn't done
+    )
+
+
+def checkpoint_get_session_id() -> str:
+    """ Execute the checkpoint-login-and-get-session-id command to get a session_id.
+    Returns:
+        The session_id.
+    """
+    res_login = run_execute_command("checkpoint-login-and-get-session-id", {})
+    context_login = get_relevant_context(res_login[0].get('EntryContext', {}), 'CheckPoint.Login')
+    session_id = context_login.get('session-id')
+    demisto.setContext("session_id", session_id)
+    return session_id
+
+
+def checkpoint_get_group_members(context: dict, key: str) -> list:
+    """ Get the current members of a specific address_group in checkpoint.
+    Args:
+        context (dict): The checkpoint-group-get context.
+        key (str): The relevant information of the member, for example the name or the related ip.
+    Returns:
+        A list of the asked information about the current group members.
+    """
+    demisto.debug(f"in checkpoint_get_group_members {context=}")
+    group_members = context.get('members', [])
+    group_members_name = []
+    for member in group_members:
+        demisto.debug(f"Getting the {key=} from {member=}")
+        group_members_name.append(member.get(key))
+    return group_members_name
+
+
+def start_checkpoint_flow(args: dict, responses: list) -> PollResult | None:
+    """ Execute the first part of the checkpoint flow (up until the first publish, and trigger it if needed).
+    Args:
+        args (dict): the function arguments.
+        responses (list): The object that will be used for saving the different execute_command responses.
+    Returns:
+        A PollResult if a publish process was triggered or None.
+    """
+    session_id = args['session_id']
+    ip_list = args['ip_list']
+    address_group = args['address_group']
+    res_show_object = run_execute_command("checkpoint-show-objects",
+                                          {'session_id': session_id, 'filter_search': ip_list, 'ip_only': True})
+    responses.append(res_show_object)
+    res_group_get = run_execute_command("checkpoint-group-get", {'identifier': address_group, 'session_id': session_id})
+    res_group_get[0]['Type'] = 1  # updating the entry type so it won't reflect an error in case the group wasn't found.
+    responses.append(res_group_get)
+    contents_group_get = res_group_get[0].get('Contents')
+
+    if contents_group_get and isinstance(contents_group_get, str) and 'Not Found' in contents_group_get:
+        demisto.debug(f"The {address_group=} wasn't found, creating it.")
+        res_group_add = run_execute_command("checkpoint-group-add", {'name': address_group, 'session_id': session_id})
+        responses.append(res_group_add)
+
+    demisto.debug(f"The {address_group=} exists, check if there are missing ips.")
+    context_show_obj = get_relevant_context(res_show_object[0].get('EntryContext', {}), 'CheckPoint.Objects')
+    group_members = checkpoint_get_group_members(
+        get_relevant_context(res_group_get[0].get('EntryContext', {}), 'CheckPoint.Group'), 'member-name')
+    demisto.debug(f"{group_members=}")
+    args['current_members'] = group_members
+    demisto.setContext('currentMembers', str(group_members))
+    checkpoint_ips = [obj.get('ipv4-address') for obj in context_show_obj if obj.get('ipv4-address')]
+    demisto.debug(f"{checkpoint_ips=}")
+    missing_ips = [ip for ip in ip_list if ip not in checkpoint_ips]
+    if missing_ips:
+        demisto.debug(f"There are {missing_ips=}. Adding a host.")
+        res_host_add = run_execute_command("checkpoint-host-add",
+                                           {'session_id': session_id, 'name': missing_ips, 'ip_address': missing_ips})
+        responses.append(res_host_add)
+        return checkpoint_publish(args, responses, "checkpoint-show-objects")
+    else:
+        demisto.debug("There aren't any missing ips.")
+    return None
+
+
+def checkpoint_middle_part(args: dict, responses: list):
+    """ Execute the middle part of the checkpoint flow (between the 2 publish processes).
+    Args:
+        args (dict): the function arguments.
+        responses (list): The object that will be used for saving the different execute_command responses.
+    Returns:
+        A PollResult if a publish process was triggered or None.
+    """
+    session_id = args['session_id']
+    ip_list = args['ip_list']
+    address_group = args['address_group']
+    current_members = args.get('current_members')
+    res_show_object = run_execute_command("checkpoint-show-objects", {'session_id': session_id, 'filter_search': ip_list, 'ip_only': True})
+    responses.append(res_show_object)
+
+    context_show_obj = get_relevant_context(res_show_object[0].get('EntryContext', {}), "CheckPoint.Objects")
+    objects_names = checkpoint_object_names_to_members(context_show_obj, ip_list)
+    if current_members:
+        demisto.debug(f"The {current_members=}")
+        objects_names.extend(current_members)
+        objects_names = list(set(objects_names))
+    res_group_update = run_execute_command("checkpoint-group-update", {'session_id': session_id, 'identifier': address_group, 'members': objects_names})
+    responses.append(res_group_update)
+    if is_error(res_group_update):
+        global POLLING
+        POLLING = False
+        return None
+    else:
+        return checkpoint_publish(args, responses, "checkpoint-group-get")
+
+
+def verify_group_added_successfully(args: dict, responses: list) -> bool:
+    """ Verify that the group was added successfully.
+    Args:
+        args (dict): the function arguments.
+        responses (list): The object that will be used for saving the different execute_command responses.
+    Returns:
+        A boolean that represents whether the group was added successfully (True) or not (False).
+    """
+    session_id = args['session_id']
+    address_group = args['address_group']
+    res_group_get = run_execute_command('checkpoint-group-get', {'session_id': session_id, 'identifier': address_group})
+    responses.append(res_group_get)
+    context = get_relevant_context(res_group_get[0].get('EntryContext', {}), 'CheckPoint.Group')
+    ip_address = checkpoint_get_group_members(context, 'member-ipv4-address')
+    demisto.debug(f"in verify_group_added_successfully {ip_address=}")
+    if ip_address:
+        return True
+    else:
+        return False
+
+
+def checkpoint_rule_name_part(args: dict, responses: list):
+    """ Verify if the rule_name was given as an argument (is different from the default value) and adds it.
+    Args:
+        args (dict): the function arguments.
+        responses (list): The object that will be used for saving the different execute_command responses.
+    """
+    rule_name = args['rule_name']
+    session_id = args['session_id']
+    address_group = args['address_group']
+    if rule_name != 'XSIAM - Block IP':
+        run_execute_command("checkpoint-logout", {'session_id': session_id})
+        new_session_id = checkpoint_get_session_id()
+        args['session_id'] = new_session_id
+        command_args = {
+            'destination': address_group,
+            'layer': 'Network',
+            'position': 'top',
+            'name': rule_name,
+            'session_id': new_session_id
+        }
+        res_access_rule_add = run_execute_command("checkpoint-access-rule-add", command_args)
+        responses.append(res_access_rule_add)
+        run_execute_command("checkpoint-logout", {'session_id': new_session_id})
+
+
+def checkpoint_logout(args: dict, responses: list) -> list[CommandResults]:
+    """ Logout from the current checkpoint session, clean the context, and create the relevant command results.
+    Args:
+        args (dict): the function arguments.
+        responses (list): The object that will be used for saving the different execute_command responses.
+    Returns:
+        A list of CommandResults.
+    """
+    session_id = args['session_id']
+    ip_list = args['ip_list']
+    run_execute_command("checkpoint-logout", {'session_id': session_id})
+    demisto.setContext('next_command', '')
+    demisto.setContext('publish_job_id', '')
+    demisto.setContext('session_id', '')
+    demisto.setContext('currentMembers', '[]')
+    demisto.setContext('checkpoint_responses', '[]')
+    results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], '', ip_list)
+    return results
+
+
+def manage_checkpoint_flow(args: dict) -> PollResult | list[CommandResults]:
+    """ Manage the different stages of the checkpoint flow.
+    Args:
+        args (dict): the function arguments.
+    Returns:
+        A PollResult if a publish process was triggered or a list of CommandResults in case the flow is finished.
+    """
+    incident_context = demisto.context()
+    publish_job_id = incident_context.get('publish_job_id')
+    next_command = incident_context.get('next_command')
+    demisto.debug(f"The info about {publish_job_id=} , {next_command=}")
+    responses = ast.literal_eval(incident_context.get('checkpoint_responses', '[]'))
+    session_id = incident_context.get('session_id', '')
+    args['session_id'] = session_id
+    global POLLING
+    if publish_job_id:
+        result = checkpoint_show_task(args, responses)
+        if POLLING:
+            demisto.setContext("checkpoint_responses", str(responses))
+            return result
+        else:
+            demisto.setContext("publish_job_id", '')
+    if not next_command:
+        session_id = checkpoint_get_session_id()
+        args['session_id'] = session_id
+        result = start_checkpoint_flow(args, responses)
+        if POLLING:
+            demisto.setContext("checkpoint_responses", str(responses))
+            return result
+
+    if not next_command or next_command == "checkpoint-show-objects":
+        if not args.get('current_members', []):
+            demisto.debug(f"{incident_context.get('currentMembers', '[]')=}")
+            current_members = incident_context.get('currentMembers', '[]')
+            args['current_members'] = ast.literal_eval(current_members) if current_members else []
+        result_middle_part = checkpoint_middle_part(args, responses)
+        if POLLING:
+            demisto.setContext("checkpoint_responses", str(responses))
+            return result_middle_part
+        elif not result_middle_part: # There was an error, finish the process
+            return checkpoint_logout(args, responses)
+        else: # nothing to publish
+            if verify_group_added_successfully(args, responses):
+                demisto.debug("The group was added successfully.")
+                checkpoint_rule_name_part(args, responses)
+            return checkpoint_logout(args, responses)
+    else:  # next_command == "checkpoint-group-get"
+        if verify_group_added_successfully(args, responses):
+            demisto.debug("The group was added successfully.")
+            checkpoint_rule_name_part(args, responses)
+        return checkpoint_logout(args, responses)
 
 
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
@@ -713,6 +1162,24 @@ def main():
                         executed_brands.append(brand)
                     demisto.setContext('executed_brands', str(executed_brands))
                     demisto.debug(f"Before returning {result=} in panorama")
+                    results.append(result)
+
+                elif brand == "CheckPointFirewall_v2":
+                    brand_args = {
+                        'ip_list': ip_list_arr,
+                        'address_group': address_group,
+                        'auto_commit': auto_commit,
+                        'verbose': verbose,
+                        'brands': brands_to_run,
+                        'polling': True,
+                        'publish_job_id': args.get('publish_job_id'),
+                        'rule_name': rule_name
+                    }
+                    result = manage_checkpoint_flow(brand_args)
+                    if not POLLING:
+                        demisto.debug("Not in a polling mode, adding Panorama to the executed_brands.")
+                        executed_brands.append(brand)
+                    demisto.setContext('executed_brands', str(executed_brands))
                     results.append(result)
 
                 else:

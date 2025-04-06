@@ -57,6 +57,9 @@ args:
 - description: commit job ID to use in polling commands. (automatically filled by polling).
   name: commit_job_id
   hidden: true
+- description: publish job ID to use in polling commands. (automatically filled by polling).
+  name: publish_job_id
+  hidden: true
 comment: The scrip blocks a list of IPs in supported integrations.
 commonfields:
   id: block-external-ip
