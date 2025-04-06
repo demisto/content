@@ -249,7 +249,7 @@ def handle_general_base64(command_line: str) -> tuple[str, bool, bool]:
     base64_pattern = r"[A-Za-z0-9+/]{4,}(?:={0,2})"
     num_of_encodings = 0
     double_encoded_detected = False
-    previous_matches = []
+    previous_matches: list[str] = []
 
     while matches := re.findall(base64_pattern, result):
         valid_matches = [match for match in matches if is_base64(match)]
@@ -987,7 +987,7 @@ def analyze_command_line(
       - "score", "findings", "risk"
     """
 
-    checks: dict[str, Callable[[str]]] = {
+    checks: dict[str, Callable] = {
         "malicious_commands": check_malicious_commands,
         "windows_temp_path": check_windows_temp_paths,
         "suspicious_parameters": check_suspicious_content,
