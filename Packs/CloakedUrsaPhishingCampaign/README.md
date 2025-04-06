@@ -1,4 +1,5 @@
 This pack is part of the [Rapid Breach Response](https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/) pack.
+
 ## Cloaked Ursa: Targeting Diplomatic Missions with Phishing Lures
 
 **Summary:**
@@ -15,18 +16,22 @@ Recently, Unit42 researchers observed a shift in their strategy, with a focus on
 **The playbook includes the following tasks:**
 
 **IoCs Collection**
+
 - Blog IoCs download
 
 **Hunting:**
+
 - Cortex XDR XQL exploitation patterns hunting
 - Advanced SIEM exploitation patterns hunting
 - Indicators hunting
 
 The hunting queries are searching for the following activities:
-  - Related LNK files execution command line
-  - Dropped file names
+
+- Related LNK files execution command line
+- Dropped file names
 
 **Mitigations:**
+
 - Unit42 mitigation measures
 
 **References:**
