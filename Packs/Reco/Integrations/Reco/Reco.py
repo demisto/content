@@ -1587,7 +1587,7 @@ def main() -> None:
             result = get_assets_by_id(reco_client, demisto.args()["asset_id"])
             return_results(result)
         elif command == "reco-get-alert-ai-summary":
-            result = get_alert_ai_summary(reco_client, demisto.args().get("alert_id"))
+            result = get_alert_ai_summary(reco_client, demisto.args().get("alert_id", ""))
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
