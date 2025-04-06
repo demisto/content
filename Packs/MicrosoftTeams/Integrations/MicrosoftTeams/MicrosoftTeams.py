@@ -802,12 +802,13 @@ def get_refresh_token_from_auth_code_param() -> str:
     return ""
 
 
-def get_graph_access_token(auth_type: str = AUTH_TYPE) -> str:
+def get_graph_access_token(auth_type: str = '') -> str:
     """
     Retrieves Microsoft Graph API access token, either from cache or from Microsoft
     :param auth_type (str): Authentication type to use (Client credentials / Authorization code)
     :return: The Microsoft Graph API access token
     """
+    auth_type = auth_type or AUTH_TYPE # Default to integration configuration
     integration_context: dict = get_integration_context()
     if 'graph_access_token' in integration_context:
         # Migrate cached tokens to new format to avoid requiring reauthentication of existing instances
