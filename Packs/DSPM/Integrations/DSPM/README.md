@@ -1,12 +1,12 @@
 # Overview
 The Prisma Cloud DSPM(Data Security Posture Management) integration enhances the management and remediation of DSPM risks. The integration provides users with actionable data, insights and a seamless workflow for addressing potential security threats.
 
-# Use Cases
+## Use Cases
 - Remediation of DSPM out-of-the-box risks based on automated playbooks.
 - Close or update risks by interacting with DSPM API using a dedicated list of building blocks.
 - Distribute DSPM risks to other systems.
 
-# Prerequisites
+## Prerequisites
  1. An active Prisma Cloud DSPM account
  2. Slack V3 Pack
  3. AWS-S3 Pack
