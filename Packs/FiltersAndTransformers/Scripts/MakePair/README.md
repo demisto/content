@@ -31,13 +31,12 @@ The one is given by `value` (with `array1_key`), another is given by `array2` (w
 ---
 There are no outputs for this script.
 
-
 ---
+
 ## Examples
 
 ---
 Simply create a list of dictionary by aggregating elements from two arrays.
-
 
 > value:
 
@@ -71,7 +70,7 @@ Simply create a list of dictionary by aggregating elements from two arrays.
 
 > merge_dict:
 
-#### Output:
+#### Output
 
     [
       {
@@ -139,7 +138,7 @@ Aggregate each of value from the keys given.
 
 > merge_dict:
 
-#### Output:
+#### Output
 
     [
       {
@@ -155,7 +154,6 @@ Aggregate each of value from the keys given.
         "yyy": null
       }
     ]
-
 
 ---
 Truncate remaining elements of array2 which is longer than array1.
@@ -206,7 +204,7 @@ Truncate remaining elements of array2 which is longer than array1.
 
 > merge_dict:
 
-#### Output:
+#### Output
 
     [
       {
@@ -218,7 +216,6 @@ Truncate remaining elements of array2 which is longer than array1.
         "yyy": "y"
       }
     ]
-
 
 ---
 array2 is longer than array1. fill in shorten elements with null.
@@ -269,7 +266,7 @@ array2 is longer than array1. fill in shorten elements with null.
 
 > merge_dict:
 
-#### Output:
+#### Output
 
     [
       {
@@ -285,7 +282,6 @@ array2 is longer than array1. fill in shorten elements with null.
         "yyy": "z"
       },
     ]
-
 
 ---
 Merge each of dictionary element.
@@ -328,11 +324,11 @@ Merge each of dictionary element.
 
 > output_name2: yyy
 
-> determine_output_length_by: 
+> determine_output_length_by:
 
 > merge_dict: array1&lt;2
 
-#### Output:
+#### Output
 
     [
       {
@@ -348,7 +344,6 @@ Merge each of dictionary element.
         "key4": "Y"
       }
     ]
-
 
 ---
 Merge each of element into a dictionary.
@@ -385,11 +380,11 @@ Merge each of element into a dictionary.
 
 > output_name2: yyy
 
-> determine_output_length_by: 
+> determine_output_length_by:
 
 > merge_dict: array1
 
-#### Output:
+#### Output
 
     [
       {
@@ -403,4 +398,3 @@ Merge each of element into a dictionary.
         "yyy": 2
       }
     ]
-
