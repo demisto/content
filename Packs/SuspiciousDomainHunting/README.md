@@ -4,7 +4,7 @@ The Suspicious Domain Hunting pack equips analysts with automation to proactivel
 
 This pack includes playbooks that:
 
-- Ingest and enrich certificate transparency events in real-time. 
+- Ingest and enrich certificate transparency events in real-time.
 - Correlate new SSL certs with WHOIS domain registration data.
 - Check domain reputation against threat intel feeds.  
 - Prioritize incidents for high risk domains impersonating the organization.
@@ -17,9 +17,9 @@ Analysts also get out-of-the-box incident views and layouts tailored for Suspici
 - Monitors certificate transparency logs via CertStream.  
 - Ingests and enriches SSL cert events as incidents.
 - Checks domain WHOIS records for matches against organization brand.
-- Correlates SSL data with WHOIS data to identify phishing domains. 
+- Correlates SSL data with WHOIS data to identify phishing domains.
 - Queries domain reputation against threat intel feeds.  
-- Prioritizes incidents using criticality score if org domain is spoofed. 
+- Prioritizes incidents using criticality score if org domain is spoofed.
 - Includes playbooks to automatically suspend domains via registrar.
 - Provides domain hunting views and layout for efficient analyst response.
 
@@ -27,6 +27,6 @@ Analysts also get out-of-the-box incident views and layouts tailored for Suspici
 
 _Leverages the CertStream integration - configure your API key before installation_.
 
-_Works best with Domain Reputation and Domain Enrichment integrations enabled_. 
+_Works best with Domain Reputation and Domain Enrichment integrations enabled_.
 
 _For takedown automation, API access to domain registrar required_.
