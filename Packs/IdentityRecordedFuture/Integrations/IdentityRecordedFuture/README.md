@@ -129,7 +129,7 @@ Search for identities in the Recorded Future dataset.
 
 #### Human Readable Output
 
-> ##### This is search results for fakeyahoo.com, fake.com :
+> ##### This is search results for fakeyahoo.com, fake.com
 >
 >- **30fake**  in domain fakeyahoo.com
 >- **3072882fake**  in domain fakeyahoo.com
@@ -356,11 +356,17 @@ Get detailed information regarding identities.
 #### Human Readable Output
 
 > ## Credentials Lookup
+>
 >*****
->## Results for **fake1@fake.com**:
->## We found 1 passwords that were leaked for this identity:
+>
+>## Results for **fake1@fake.com**
+>
+>## We found 1 passwords that were leaked for this identity
+>
 >*****
->## Password 1:
+>
+>## Password 1
+>
 >Rank: TopMillionCommonPasswords
 >
 >Properties: Letter, Number, LowerCase, AtLeast8Characters
@@ -395,7 +401,8 @@ Get detailed information regarding identities.
 >
 >Malware Family: RedLine Stealer
 >
->## Information about dumps where we found for Password 1:
+>## Information about dumps where we found for Password 1
+>
 >*****
 > Stealer Malware Logs 2022-11-03, Nov 2022
 >
@@ -405,17 +412,17 @@ Get detailed information regarding identities.
 >Compromised Host
 > Operating System: Windows 10 Enterprise x64
 >
->    OS User Name: gabi2
+> OS User Name: gabi2
 >
->    File Path Location: C:\Windows\Microsoft.NET\Framework\v4.0.30319\AppLaunch.exe
+> File Path Location: C:\Windows\Microsoft.NET\Framework\v4.0.30319\AppLaunch.exe
 >
->    Time Zone: UTC+01:00
+> Time Zone: UTC+01:00
 >
->    Name of the Machine: N/A
+> Name of the Machine: N/A
 >
->    User Account Control Setting: AllowAll
+> User Account Control Setting: AllowAll
 >
->    Antivirus: Windows Defender
+> Antivirus: Windows Defender
 >
 >IP Address: 138.255.250.246
 >
@@ -481,7 +488,8 @@ Lookup for password in Recorded Future Dataset.
 
 #### Human Readable Output
 
-> ## This is search results for password you provided:
+> ## This is search results for password you provided
+>
 >Password hash: 0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a4927
 >
 >Password hash algorithm: SHA256
@@ -714,7 +722,6 @@ Update the status of one or multiple Playbook alerts.
 | remove_actions_taken | Remove 'actions taken' from all alerts in alert_ids. You can specify multiple values by providing a quoted string with values separated by commas. Possible values: enforced_password_reset, placed_in_risky_group, reviewed_incident_report, account_disabled_or_terminated, account_remediated, other. | Optional     |
 | comment              | Add a comment to all alerts in alert_ids.                                                                                                                                                                                                                                                                | Optional     |
 | reopen               | Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved.                                                                                                                      | Optional     |
-
 
 #### Context Output
 
