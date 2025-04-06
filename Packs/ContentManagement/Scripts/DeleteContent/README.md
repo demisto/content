@@ -1,6 +1,7 @@
 Delete content to keep XSOAR tidy.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Delete content to keep XSOAR tidy.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Delete content to keep XSOAR tidy.
 | skip_proxy | If true, skip system proxy settings. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
