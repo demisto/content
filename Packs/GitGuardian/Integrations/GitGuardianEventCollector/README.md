@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.0 of GitGuardianEven
 
 ## Configure GitGuardian Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | False |
@@ -11,7 +10,6 @@ This integration was integrated and tested with version 1.0.0 of GitGuardianEven
 | Max number of events per fetch | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -31,9 +29,9 @@ Gets events from GitGuardian.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. | Required |
+| from_date | Date from which to get events. | Optional |
 
 #### Context Output
 
