@@ -1,6 +1,7 @@
 Executes a command on a remote machine (without installing a D2 agent).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Executes a command on a remote machine (without installing a D2 agent).
 | Script Type | javascript |
 | Tags | endpoint |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * ssh
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,5 +26,6 @@ This script uses the following commands and scripts.
 | cmd | The command to run. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
