@@ -711,15 +711,8 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     ]
 
     # sent to "fileResult", original headers from content with matched casing, with additional header
-    expected_data = (
-        "MIME-Version: 1.0\r\n"
-        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
-        "X-FAKE-Header: HVALue\r\n"
-        "X-Who-header: whovALUE\r\n"
-        "DATE: 2023-12-16T12:04:45\r\n"
-        "X-EXTRA-Missed-Header: EXTRA\r\n"
-        "\r\nHello"
-    )
+    expected_data = ('MIME-Version: 1.0\r\nMessage-ID: <message-test-idRANDOMVALUES@testing.com>\r\nX-FAKE-Header: HVALue\r\nX-'
+                     'Who-header: whovALUE\r\nDATE: 2023-12-16T12:04:45\r\nX-EXTRA-Missed-Header: EXTRA\r\n\r\nHello')
 
     message = Message(
         datetime_received=EWSDate(year=2021, month=1, day=25),
@@ -869,15 +862,8 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
         # This is an extra header logged by exchange in the item -> add to the output
         MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA"),
     ]
-    expected_data = (
-        "MIME-Version: 1.0\r\n"
-        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
-        "X-FAKE-Header: HVALue\r\n"
-        "X-Who-header: whovALUE\r\n"
-        "DATE: 2023-12-16T12:04:45\r\n"
-        "X-EXTRA-Missed-Header: EXTRA\r\n"
-        "\r\nHello"
-    )
+    expected_data = ('MIME-Version: 1.0\r\nMessage-ID: <message-test-idRANDOMVALUES@testing.com>\r\nX-FAKE-Header: HVALue\r\nX-'
+                     'Who-header: whovALUE\r\nDATE: 2023-12-16T12:04:45\r\nX-EXTRA-Missed-Header: EXTRA\r\n\r\nHello')
 
     class MockEWSClient:
         def __init__(self, *args, **kwargs):
