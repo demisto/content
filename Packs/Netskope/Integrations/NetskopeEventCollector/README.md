@@ -2,7 +2,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Netskope Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -11,10 +10,9 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings |  | False |
 | Max events per fetch | The maximum amount of events to retrieve per each event type. For more information about event types see the help section. | False |
 
-
 ## Fetch Events Limitation
 
-The collector can handle up to 35K events per minute on average. 
+The collector can handle up to 35K events per minute on average.
 
 ## Commands
 
@@ -26,7 +24,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Returns events extracted from SaaS traffic and or logs.
 
-
 #### Base Command
 
 `netskope-get-events`
@@ -35,9 +32,8 @@ Returns events extracted from SaaS traffic and or logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts to return (maximum value - 10000). | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional | 
-
+| limit | The maximum number of alerts to return (maximum value - 10000). | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional |
 
 #### Context Output
 
@@ -268,7 +264,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Events List:
+>### Events List
 
 >|Id|Timestamp|Type|Access Method|App|Traffic Type|
 >|---|---|---|---|---|---|
