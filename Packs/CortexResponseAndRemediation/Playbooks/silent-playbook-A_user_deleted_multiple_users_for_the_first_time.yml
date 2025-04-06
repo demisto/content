@@ -1,0 +1,1113 @@
+id: silent-A user deleted multiple users for the first time
+version: -1
+name: silent-A user deleted multiple users for the first time
+description: "This playbook addresses the following alerts:\n\n- A user deleted multiple users for the first time\n\nPlaybook Stages:\n\nTriage:\n\n- Collect initial alert data regarding the event.\n- Check the user type of the source user.\n- Host enrichment. \n\nInvestigation:\n\n- Check if an admin user initiated the operation and whether the deleted users are disabled. \n- Correlate recent user activity with related security alerts.\n- Assess user's and host's risk level in Cortex XDR.\n- Check the type of the user target. \n\nRemediation:\n\n- Evaluate investigation findings, if TP, the playbook will display the findings to an analyst for review and suggest user/host account disablement.\n\n\nRequirements:\n\nFor response actions, you need the following integrations:\n\n- Cortex Core - Investigation and Response\n- Active Directory Query v2."
+tags:
+- T1078 - Valid Accounts
+- TA0001 - Initial Access
+starttaskid: "0"
+issilent: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 983470ce-f1b2-4eac-8adb-35845fc4d515
+    type: start
+    task:
+      id: 983470ce-f1b2-4eac-8adb-35845fc4d515
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 49
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 728ac4f4-74e6-427a-88ab-dfbf04e61d8b
+    type: title
+    task:
+      id: 728ac4f4-74e6-427a-88ab-dfbf04e61d8b
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+      - "23"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ab5a58c3-1318-461e-a3a9-802d71f624c1
+    type: regular
+    task:
+      id: ab5a58c3-1318-461e-a3a9-802d71f624c1
+      version: -1
+      name: Get event information
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 53,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d74c0d36-56d4-429e-b27a-96c188a16e66
+    type: title
+    task:
+      id: d74c0d36-56d4-429e-b27a-96c188a16e66
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 414
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ee96e441-f7ec-465f-a037-6566bd26c3f7
+    type: regular
+    task:
+      id: ee96e441-f7ec-465f-a037-6566bd26c3f7
+      version: -1
+      name: Check event time
+      description: Checks whether the given value is within the specified time (hour) range.
+      scriptName: BetweenHours
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      begin_time:
+        simple: "22:00:00"
+      end_time:
+        simple: "06:00:00"
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: event_timestamp
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8eff1570-f014-4803-b8e0-ab4cb1219e02
+    type: regular
+    task:
+      id: 8eff1570-f014-4803-b8e0-ab4cb1219e02
+      version: -1
+      name: |
+        Get host risk level
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1066,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 59d877e2-d1cb-4309-80c2-7609ffde746c
+    type: regular
+    task:
+      id: 59d877e2-d1cb-4309-80c2-7609ffde746c
+      version: -1
+      name: Get user risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      user_id:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 244,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: cea5d54c-955a-4551-a5b1-b6c213424e7d
+    type: condition
+    task:
+      id: cea5d54c-955a-4551-a5b1-b6c213424e7d
+      version: -1
+      name: Source user an administrator and users are disabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      - "4"
+      - "6"
+      - "13"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: ${Core.OriginalAlert.raw_abioc.event.is_norm_evtlog_subject_user_administrator}
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: ActiveDirectory.Users.servicePrincipalName
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.is_norm_evtlog_target_user_disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 523
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: eacbc745-45a8-4978-8390-24c632ab996d
+    type: title
+    task:
+      id: eacbc745-45a8-4978-8390-24c632ab996d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 1848
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f4f1edf5-eff9-4031-84c5-29105a923ebf
+    type: regular
+    task:
+      id: f4f1edf5-eff9-4031-84c5-29105a923ebf
+      version: -1
+      name: Close alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook " A user deleted multiple users for the first time"
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: alert.id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1718
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d2b88be0-914a-451d-ba68-3dd4892c2f82
+    type: condition
+    task:
+      id: d2b88be0-914a-451d-ba68-3dd4892c2f82
+      version: -1
+      name: Ensure the host is not a server
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint.endpoint_id
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.endpoint_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AGENT_TYPE_SERVER
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 55da7b12-ac83-48df-bad7-e2942a327d6d
+    type: title
+    task:
+      id: 55da7b12-ac83-48df-bad7-e2942a327d6d
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 912
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d4013791-a6e5-43b9-a808-f55c0b36d5e9
+    type: regular
+    task:
+      id: d4013791-a6e5-43b9-a808-f55c0b36d5e9
+      version: -1
+      name: Search for suspicious-related alerts
+      description: "This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.\n\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1055 - Process Injection \n- T1059 - Command and Scripting Interpreter"
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(name:"Abnormal short-lived user account" or name:"Multiple suspicious user accounts were created" or name:"Double Base64 Encoded PowerShell Command Execution" or name:"WildFire Malware" or name:"Excessive user account lockouts" or name:"Behavioral Threat" or name:"Successful External Login Password Spray on a Domain Controller") and caseid:'
+              suffix:
+                value:
+                  simple: ' and username:"'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: alert.username.[0]
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '" and agentid:"'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: alert.agentid
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -162,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 292117fc-eaa4-4a7f-9d30-17e532bbf501
+    type: regular
+    task:
+      id: 292117fc-eaa4-4a7f-9d30-17e532bbf501
+      version: -1
+      name: Check the type of the target user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.SpecialTargetUser
+      value:
+        complex:
+          root: Core.OriginalAlert
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Core.OriginalAlert Core.OriginalAlert.stateful_raw_data.count_distinct_target_user_administrator
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Core.OriginalAlert.stateful_raw_data.count_distinct_target_user_sensitive
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Core.OriginalAlert.stateful_raw_data.count_distinct_target_user_service_account
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: _all_events.normalized_evtlog_target_user
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 783
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 5a1c3674-24e0-4673-8ff5-f8cccc20b8e7
+    type: regular
+    task:
+      id: 5a1c3674-24e0-4673-8ff5-f8cccc20b8e7
+      version: -1
+      name: Disable the user account
+      description: Disables an Active Directory user account.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.stateful_raw_data.normalized_evtlog_subject_user}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1077,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9b7484ec-8561-4f5c-8a6a-e447014bffbe
+    type: condition
+    task:
+      id: 9b7484ec-8561-4f5c-8a6a-e447014bffbe
+      version: -1
+      name: Evaluate investigation findings
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      True Possitive:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: True Possitive
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: DT
+                  args:
+                    dt:
+                      value:
+                        simple: '.=Array.isArray(val) ? val : Object.values(val)'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1013
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: db53c176-f9d8-4677-ad2e-2107e9c24a69
+    type: regular
+    task:
+      id: db53c176-f9d8-4677-ad2e-2107e9c24a69
+      version: -1
+      name: Set risky host
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.RiskyHost
+      value:
+        complex:
+          root: Core.RiskyHost
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: NONE
+              ignorecase: true
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1066,
+          "y": 783
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 45c52b9c-5aaa-437d-8591-58456da410cc
+    type: regular
+    task:
+      id: 45c52b9c-5aaa-437d-8591-58456da410cc
+      version: -1
+      name: Set risky user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.RiskyUser
+      value:
+        complex:
+          root: Core.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: NONE
+              ignorecase: true
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 244,
+          "y": 783
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 49bef78d-075f-47f0-bcd3-662e5a33cbd8
+    type: regular
+    task:
+      id: 49bef78d-075f-47f0-bcd3-662e5a33cbd8
+      version: -1
+      name: Isolate the endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      endpoint_id:
+        simple: ${Core.Endpoint.endpoint_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 601a3c58-0064-4a0e-8cf3-472d00f1cac6
+    type: collection
+    task:
+      id: 601a3c58-0064-4a0e-8cf3-472d00f1cac6
+      version: -1
+      name: Manual Task - User Action Decision
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1143
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "The investigation shows a combination of suspicious indicators that require your attention.\n\nReview the following findings and decide whether you want to disable the user.\n\n#### User Information\nUsername: `${alert.username.[0]}`\n\n---\n\n**Risky User:** \n### Risky Host\nDetected (Core IR): `${.=val.Evidence && val.Evidence.RiskyUser ? \"Risky\" : \"Not risky\"}`\n\n---\n\n### Risky Host\nDetected (Core IR): `${.=val.Evidence && val.Evidence.RiskHost? \"Risky\" : \"Not risky\"}`\n\n---\n\n### **Related Alerts**\nDetected Related Alerts: `${.=val.Evidence && val. Evidence.RelatedAlerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\n---\n\n### Deleted Users\n\n${Core.OriginalAlert=val._all_events.map(e => e.normalized_evtlog_target_user).filter((v, i, a) => v && a.indexOf(v) === i).map(u => \"- \" + u).join(\"\\n\")}\n\n---\n### User Type\n\nUser Type: `${.=val.Evidence && val.Evidence.SpecialTargetUser ? \"User Type\" : \"User is not sensitive/administrator/service account\"}`\n\n---\n\n### **🔍 Analyst Action Required**   \n\n- **Review and take action if needed:**  \n  - It is recommended to review the information displayed in this task and if needed, disable the user by choosing `Disable User` or \"Isolate host\" below. If no action is required, choose `No Action`."
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: No Action
+        - simple: Disable User
+        - simple: Disable Host
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Action
+      description: Analyst Review
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 95753c25-9a20-43b1-8975-e45351bb0771
+    type: condition
+    task:
+      id: 95753c25-9a20-43b1-8975-e45351bb0771
+      version: -1
+      name: Evaluate Analyst Response
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      Disable Host:
+      - "10"
+      Disable User:
+      - "16"
+      No Action:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: No Action
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: No Action
+          ignorecase: true
+    - label: Disable User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable User
+          ignorecase: true
+    - label: Disable Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable Host
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1266
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d2942774-21d6-4be7-ba44-e40c0fdf5c4f
+    type: regular
+    task:
+      id: d2942774-21d6-4be7-ba44-e40c0fdf5c4f
+      version: -1
+      name: Enrich host
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hostname:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 841,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c381257c-0a58-4320-98a2-d6e880faf550
+    type: regular
+    task:
+      id: c381257c-0a58-4320-98a2-d6e880faf550
+      version: -1
+      name: Check user type
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes:
+        simple: servicePrincipalName
+      name:
+        simple: ${alert.username.[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 775ea220-61af-46ae-87e4-ea13dd0823a3
+    type: regular
+    task:
+      id: 775ea220-61af-46ae-87e4-ea13dd0823a3
+      version: -1
+      name: Set related alerts
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.RelatedAlerts
+      value:
+        complex:
+          root: foundIncidents.id
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: foundIncidents.id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -162,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_20_yes": 0.49,
+      "17_21_True Possitive": 0.83,
+      "17_8_#default#": 0.17,
+      "22_10_Disable Host": 0.51,
+      "22_16_Disable User": 0.64,
+      "22_8_No Action": 0.3,
+      "7_4_#default#": 0.54,
+      "7_5_#default#": 0.54,
+      "7_8_yes": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1859,
+        "width": 1620,
+        "x": -162,
+        "y": 49
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
