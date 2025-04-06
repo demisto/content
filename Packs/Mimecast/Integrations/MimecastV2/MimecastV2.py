@@ -32,7 +32,7 @@ USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = bool(demisto.params().get("proxy"))
 # Flags to control which type of incidents are being fetched
 FETCH_PARAMS = argToList(demisto.params().get("incidentsToFetch"))
-FETCH_ALL = "All" in FETCH_PARAMS 
+FETCH_ALL = "All" in FETCH_PARAMS
 FETCH_URL = "Url" in FETCH_PARAMS or FETCH_ALL
 FETCH_ATTACHMENTS = "Attachments" in FETCH_PARAMS or FETCH_ALL
 FETCH_IMPERSONATIONS = "Impersonation" in FETCH_PARAMS or FETCH_ALL
