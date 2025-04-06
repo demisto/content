@@ -1,11 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """ IMPORTS """
 
 
 import traceback
+
 import paramiko
 
 
@@ -32,7 +32,7 @@ def main():
             demisto.results("ok")
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f"Failed to connect Error: {str(ex)}")
+            return_error(f"Failed to connect Error: {ex!s}")
 
     if demisto.command() == "sftp-listdir":
         try:
@@ -46,18 +46,14 @@ def main():
                 "ContentsFormat": formats["text"],
                 "Contents": res,
                 "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": tableToMarkdown(
-                    "The directory files:", res, ["Directory Files"]
-                ),
+                "HumanReadable": tableToMarkdown("The directory files:", res, ["Directory Files"]),
                 "EntryContext": {"SFTP.ListDir": res},
             }
             demisto.results(entry)
             sftp.close()  # type: ignore
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(
-                f"Error occurred - Error: {str(ex)}. Please verify directory path to list files"
-            )
+            return_error(f"Error occurred - Error: {ex!s}. Please verify directory path to list files")
 
     elif demisto.command() == "sftp-copyfrom":
         try:
@@ -65,16 +61,12 @@ def main():
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
             file_path = demisto.args()["file_path"]
-            sftp.get(file_path, "/tmp/" + file_path[file_path.rindex("/") + 1:])  # type: ignore
+            sftp.get(file_path, "/tmp/" + file_path[file_path.rindex("/") + 1 :])  # type: ignore
             sftp.close()  # type: ignore
-            with open("/tmp/" + file_path[file_path.rindex("/") + 1:]) as f:
+            with open("/tmp/" + file_path[file_path.rindex("/") + 1 :]) as f:
                 data = f.read()
                 if demisto.args()["return_file"] == "True":
-                    demisto.results(
-                        fileResult(
-                            filename=file_path[file_path.rindex("/") + 1:], data=data
-                        )
-                    )
+                    demisto.results(fileResult(filename=file_path[file_path.rindex("/") + 1 :], data=data))
                 else:
                     entry = {
                         "Type": entryTypes["note"],
@@ -87,7 +79,7 @@ def main():
                     demisto.results(entry)
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f"Error occurred - Error: {str(ex)}")
+            return_error(f"Error occurred - Error: {ex!s}")
 
     elif demisto.command() == "sftp-upload-file":
         try:
@@ -101,7 +93,7 @@ def main():
             demisto.results("File uploaded successfully")
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f"Error occurred - Error: {str(ex)}")
+            return_error(f"Error occurred - Error: {ex!s}")
 
 
 """ ENTRY POINT """
