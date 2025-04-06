@@ -33,18 +33,31 @@ The following debugging commands are entered by editing the *Simple Debugger Cmd
 - log
 
 #### stop
+
 The *stop* command halts debugging and exits the automation
+
 #### step
+
 Once a breakpoint is reached, the *step* command is used to step through the automation one line at a time. The *continue* command clears the single step mode
+
 #### continue
+
 The *continue* command continues execution after a breakpoint or if using *step*
-#### print 
+
+#### print
+
 The *print* command is used to print local variables, either all the local variables in a function when the function name is by itself, or specified local variables using dot notation **{function name}.{variable name}**
+
 #### break  
+
 The *break* command sets a breakpoint by function name when calling a function or by line number.  Break points are set on the automation's absolute line number, not the function's relative line number. In an example line **11485:[9] main()**,  11485 is the absolute line number and 9 is the function relative line number. When a breakpoint is reached, the functions local variables are printed
+
 #### nolog
+
 The *nolog* command is used to disable logging in large or long running automations with substantial looping to eliminate field updates messages being sent to the *War Room*
+
 #### log
+
 The *log* command is used to re-enable logging once an area of interest in the code is reached
 
 ### Debugger Inputs
@@ -60,18 +73,31 @@ Debugger inputs are commands used to configure the debugger's operating mode pri
 - silent {func1}, {func2}, ...
 
 #### quiet
-The *quiet* command places the debugger in a the quiet mode where a line of code is displayed only the first time in the *Simple Debugger Code* field.  Dynamic tracing of the currently executing line is disabled. This minimizes field changes echoed to the *War Room* speeding execution and preventing consumption of excessive browser memory but senables visibility of the code for setting breakpoints 
+
+The *quiet* command places the debugger in a the quiet mode where a line of code is displayed only the first time in the *Simple Debugger Code* field.  Dynamic tracing of the currently executing line is disabled. This minimizes field changes echoed to the *War Room* speeding execution and preventing consumption of excessive browser memory but senables visibility of the code for setting breakpoints
+
 #### profile
+
 The *profile* command provides execution time profile of python functions with the number of times the function is called and the average execution duration. The profile results are displayed in the *Simple Debugger Data* field when ```main()``` returns. It is best used with the *quiet* and *nolog* mode to minimize performance impacts during profiling
+
 #### print  
-The *print* command prints out the local variables specified each time the function returns. It supports the same syntax as in Debugger Commands 
+
+The *print* command prints out the local variables specified each time the function returns. It supports the same syntax as in Debugger Commands
+
 #### break
+
 The *break* command is the same as in Debugger Commands
+
 #### nolog
+
 The *nolog* command is the same as in Debugger Commands
+
 #### exclude
-The *exclude* command allows adding a comma seperated list of functions to the *exclude list* to prevent them from being traced in the debugger 
+
+The *exclude* command allows adding a comma seperated list of functions to the *exclude list* to prevent them from being traced in the debugger
+
 #### silent
+
 The *silent* command allows adding a comma seperated list of functions to the *silent list* to skip tracing them line by line
 
 ### Caveats
@@ -109,9 +135,11 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 ### Objects Included in the Content Pack
 
 #### Incident Types
+
 - **SimpleDebugger**
 
 #### Incident Layouts
+
 - **SimpleDebugger**
 
 #### Incident Fields
@@ -127,6 +155,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 - **SimpleDebugger**
 
 #### SimpleDebugger
+
 This automation provides the *SimpleDebugger* class and is appended to your **CommonServerUserPython**. It is not executed directly as an automation.
 
 ##### Inputs
@@ -136,4 +165,3 @@ None
 ##### Outputs
 
 None
-
