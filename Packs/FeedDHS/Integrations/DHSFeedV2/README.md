@@ -1,11 +1,10 @@
 The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 Use this version if your certificate supports TAXII 2 protocol.
 
-Some changes have been made that might affect your existing content. 
+Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes).
 
 ## Configure DHS Feed v2 in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -29,18 +28,17 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". For example, \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
 | Tags | Supports CSV values. | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### dhs-get-indicators
 
 ***
-Allows you to test your feed and to make sure you can fetch indicators successfully. 
-Due to API limitations, running this command may take longer than the default 5 minutes. 
+Allows you to test your feed and to make sure you can fetch indicators successfully.
+Due to API limitations, running this command may take longer than the default 5 minutes.
 To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/docs/playbooks/playbooks-field-reference#advanced-fields) from 300 seconds to a higher value, the recommended value is 1800 seconds.
-
 
 #### Base Command
 
@@ -50,17 +48,17 @@ To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/do
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| raw | Will return only the rawJSON of the indicator object. Possible values are: true, false. Default is false. | Optional | 
-| limit | Maximum number of indicators to return. Default is 10. | Optional | 
+| raw | Will return only the rawJSON of the indicator object. Possible values are: true, false. Default is false. | Optional |
+| limit | Maximum number of indicators to return. Default is 10. | Optional |
 | added_after | Fetch only indicators that were added to the server after the given time. Provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. Limited to 48 hours. Default is 24 hours. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DHS.Indicators.value | String | Indicator value. | 
-| DHS.Indicators.type | String | Indicator type. | 
-| DHS.Indicators.rawJSON | String | Indicator rawJSON. | 
+| DHS.Indicators.value | String | Indicator value. |
+| DHS.Indicators.type | String | Indicator type. |
+| DHS.Indicators.rawJSON | String | Indicator rawJSON. |
 
 #### Command Example
 
@@ -171,7 +169,9 @@ To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/do
 #### Human Readable Output
 
 > Found 3 results added after 2022-12-07T10:29:13.079493Z UTC:
+>
 >### DHS Indicators
+>
 >|value|type|
 >|---|---|
 >| coronashop.jp | Domain |
@@ -195,8 +195,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DHS.Collections.ID | String | Collection ID. | 
-| DHS.Collections.Name | String | Collection name. | 
+| DHS.Collections.ID | String | Collection ID. |
+| DHS.Collections.Name | String | Collection name. |
 
 #### Command Example
 
@@ -218,6 +218,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### DHS Server Collections
+>
 >|Name|ID|
 >|---|---|
 >| Public Collection | 3 |
@@ -228,17 +229,17 @@ The following are the breaking changes from the previous version of this integra
 
 ### Arguments
 
-#### The following argument was removed in this version:
+#### The following argument was removed in this version
 
 In the ***dhs-get-indicators*** command, *tlp_color*was removed.
 
-#### The behavior of the following arguments was changed:
+#### The behavior of the following arguments was changed
 
 In the ***dhs-get-indicators*** command, the default value of the *limit* argument was changed to '10'.
 
 ### Outputs
 
-#### The following outputs were removed in this version:
+#### The following outputs were removed in this version
 
 In the *dhs-get-indicators* command:
 
@@ -251,5 +252,6 @@ In the *dhs-get-indicators* command:
 Use this version if your certificate supports TAXII 2 protocol.
 
 ## Known Limitations
-"First Fetch Time" parameter can be configured for a maximum of 48 hours, due to limitations in DHS TAXII2 API. 
+
+"First Fetch Time" parameter can be configured for a maximum of 48 hours, due to limitations in DHS TAXII2 API.
 Therefore, it is not possible to fetch indicators that last appeared in the feed more than 48 hours ago.
