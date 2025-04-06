@@ -1,16 +1,17 @@
 ## Overview
+
 ---
 
-Fetch indicators stored in an Elasticsearch database. 
-1. The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. 
-2. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. 
+Fetch indicators stored in an Elasticsearch database.
+
+1. The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index.
+2. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment.
 3. The Generic Feed contains a feed in a format specified by the user.
 
 Supports version 6 and later.
 This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
 ## Configure Elasticsearch Feed in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -37,7 +38,6 @@ This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of El
 | Time Field Type |  | False |
 | Index Time Field | Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only. | False |
 | Query | Elasticsearch query to execute when fetching indicators from Elasticsearch | False |
-
 
 ## Commands
 
