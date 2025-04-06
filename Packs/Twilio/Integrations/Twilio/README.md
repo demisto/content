@@ -12,9 +12,9 @@ send an SMS
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | Phone number of SMS reciever (e.g. +123456789101). | Required | 
-| body | Message body. | Required | 
-| from | Phone number of SMS sender (e.g. +123456789101). | Optional | 
+| to | Phone number of SMS reciever (e.g. +123456789101). | Required |
+| body | Message body. | Required |
+| from | Phone number of SMS sender (e.g. +123456789101). | Optional |
 
 #### Context Output
 
