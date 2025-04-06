@@ -3,14 +3,12 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 
 ## Configure Abnormal Security in Cortex
 
-
 | **Parameter**                                         | **Required** |
 | ----------------------------------------------------- | ------------ |
 | Server URL (e.g. https://api.abnormalplatform.com/v1) | True         |
 | API Key                                               | True         |
 | Trust any certificate (not secure)                    | False        |
 | Use system proxy settings                             | False        |
-
 
 ## Commands
 
