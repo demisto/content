@@ -9,7 +9,7 @@ Volume audit logs.
 ## Configuration on Nasuni File Services Side
 
 1. Log in to the Nasuni Management Console (NMC) with admin rights.
-2.  Go to: `Volumes`.
+2. Go to: `Volumes`.
 3. For each relevant volume:
    - Ensure `File System Auditing` is enabled.
    - Set `Output Type` to **Syslog**.
