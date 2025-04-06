@@ -32,7 +32,7 @@ DEFAULT_FIRST_FETCH_INTERVAL = "3 days"
 DEFAULT_FETCH_INTERVAL = 1  # Unit is in minutes
 DEFAULT_PAGE = 0
 DEFAULT_PAGE_SIZE = 50
-DEFAULT_FETCH_TIMEZONE = 'UTC'  # for normalizing Jira created and updated issue times
+DEFAULT_FETCH_TIMEZONE = "UTC"  # for normalizing Jira created and updated issue times
 # Errors
 ID_OR_KEY_MISSING_ERROR = "Please provide either an issue ID or issue key."
 ID_AND_KEY_GIVEN = "Please provide only one, either an issue Id or issue key."
@@ -3456,14 +3456,14 @@ def parse_issue_times(
 
     normalized_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
     demisto.debug(
-        f'Converted created time of issue with ID: {issue_id} from: {issue_created_time} '
-        f'to: {normalized_created_time}. Converted to timezone: {fetch_timezone}'
+        f"Converted created time of issue with ID: {issue_id} from: {issue_created_time} "
+        f"to: {normalized_created_time}. Converted to timezone: {fetch_timezone}"
     )
 
     normalized_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
     demisto.debug(
-        f'Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} '
-        f'to: {normalized_updated_time}. Converted to timezone: {fetch_timezone}'
+        f"Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} "
+        f"to: {normalized_updated_time}. Converted to timezone: {fetch_timezone}"
     )
 
     return normalized_created_time, normalized_updated_time
@@ -3522,18 +3522,21 @@ def fetch_incidents(
         if not smallest_id_offset:
             raise DemistoException("The fetch query configured returned no Jira issues, please update it.")
         last_fetch_id = smallest_id_offset
-        demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
-                      'No smallest ID found since the fetch query returns 0 results')
+        demisto.debug(
+            f"The smallest ID offset with respect to the fetch query is {last_fetch_id}"
+            if last_fetch_id
+            else "No smallest ID found since the fetch query returns 0 results"
+        )
 
-    new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
-    new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
+    new_fetch_created_time = last_fetch_created_time = last_run.get("created_date", "")
+    new_fetch_updated_time = last_fetch_updated_time = last_run.get("updated_date", "")
     # To keep backwards compatibility, if last run is not empty and has no timezone, do not do any timezone conversion
-    if last_run and not last_run.get('timezone'):
+    if last_run and not last_run.get("timezone"):
         new_fetch_timezone = None
-        demisto.debug('Created and updated fields will not be converted to another timezone for setting next run')
+        demisto.debug("Created and updated fields will not be converted to another timezone for setting next run")
     else:
-        new_fetch_timezone = last_run.get('timezone', DEFAULT_FETCH_TIMEZONE)
-        demisto.debug(f'Created and updated fields will be converted to {new_fetch_timezone} timezone for setting next run')
+        new_fetch_timezone = last_run.get("timezone", DEFAULT_FETCH_TIMEZONE)
+        demisto.debug(f"Created and updated fields will be converted to {new_fetch_timezone} timezone for setting next run")
 
     incidents: List[Dict[str, Any]] = []
     demisto.debug("Creating the fetch query")
@@ -3559,32 +3562,38 @@ def fetch_incidents(
                 demisto.debug(f"Creating an incident for Jira issue with ID: {issue_id}")
                 new_issue_ids.append(issue_id)
                 last_fetch_id = issue_id
-                demisto.debug(f'Incidents we got so far: {new_issue_ids}')
+                demisto.debug(f"Incidents we got so far: {new_issue_ids}")
 
-                demisto.debug(f'Starting to parse created and updated fields of issue with ID: {issue_id}')
+                demisto.debug(f"Starting to parse created and updated fields of issue with ID: {issue_id}")
                 new_fetch_created_time, new_fetch_updated_time = parse_issue_times(
                     issue_id=issue_id,
-                    issue_created_time=demisto.get(issue, 'fields.created') or '',
-                    issue_updated_time=demisto.get(issue, 'fields.updated') or '',
+                    issue_created_time=demisto.get(issue, "fields.created") or "",
+                    issue_updated_time=demisto.get(issue, "fields.updated") or "",
                     fetch_timezone=new_fetch_timezone,
                 )
-                demisto.debug(f'Finished parsing created and updated fields of issue with ID: {issue_id}')
+                demisto.debug(f"Finished parsing created and updated fields of issue with ID: {issue_id}")
 
-                demisto.debug(f'Starting to parse custom fields of issue with ID: {issue_id}')
-                parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
-                demisto.debug(f'Finished parsing custom fields of issue with ID: {issue_id}. Starting to build an incident')
+                demisto.debug(f"Starting to parse custom fields of issue with ID: {issue_id}")
+                parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get("names", {}))
+                demisto.debug(f"Finished parsing custom fields of issue with ID: {issue_id}. Starting to build an incident")
 
-                incidents.append(create_incident_from_issue(
-                    client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
-                    mirror_direction=mirror_direction,
-                    comment_tag_from_jira=comment_tag_from_jira,
-                    comment_tag_to_jira=comment_tag_to_jira,
-                    attachment_tag_from_jira=attachment_tag_from_jira,
-                    attachment_tag_to_jira=attachment_tag_to_jira))
-                demisto.debug(f'Finished building incident for issue with ID: {issue_id}')
+                incidents.append(
+                    create_incident_from_issue(
+                        client=client,
+                        issue=issue,
+                        fetch_attachments=fetch_attachments,
+                        fetch_comments=fetch_comments,
+                        mirror_direction=mirror_direction,
+                        comment_tag_from_jira=comment_tag_from_jira,
+                        comment_tag_to_jira=comment_tag_to_jira,
+                        attachment_tag_from_jira=attachment_tag_from_jira,
+                        attachment_tag_to_jira=attachment_tag_to_jira,
+                    )
+                )
+                demisto.debug(f"Finished building incident for issue with ID: {issue_id}")
 
     except Exception as e:
-        demisto.debug(f'Failure detected: {e}.')
+        demisto.debug(f"Failure detected: {e}.")
 
         if "Issue does not exist" in str(e) and issue_field_to_fetch_from == "id" and str(id_offset) == str(last_fetch_id):
             # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
@@ -3611,13 +3620,13 @@ def fetch_incidents(
         new_issue_ids.extend(last_fetch_issue_ids)
 
     next_run = {
-        'issue_ids': new_issue_ids or last_fetch_issue_ids,
-        'id': last_fetch_id,
-        'created_date': new_fetch_created_time or last_fetch_created_time,
-        'updated_date': new_fetch_updated_time or last_fetch_updated_time,
-        'timezone': new_fetch_timezone,  # either 'UTC' or None to keep backwards compatibility
+        "issue_ids": new_issue_ids or last_fetch_issue_ids,
+        "id": last_fetch_id,
+        "created_date": new_fetch_created_time or last_fetch_created_time,
+        "updated_date": new_fetch_updated_time or last_fetch_updated_time,
+        "timezone": new_fetch_timezone,  # either 'UTC' or None to keep backwards compatibility
     }
-    demisto.debug(f'Setting next run: {next_run}')
+    demisto.debug(f"Setting next run: {next_run}")
     demisto.setLastRun(next_run)
 
     return incidents
