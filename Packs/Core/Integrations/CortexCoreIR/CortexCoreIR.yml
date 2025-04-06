@@ -4054,6 +4054,7 @@ script:
       type: Boolean
     - description: Type of shell command.
       name: command_type
+      auto: PREDEFINED
       required: false
       isArray: false
       type: String
