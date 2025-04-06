@@ -1,6 +1,7 @@
 After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,10 +11,12 @@ After running DeleteContext, this script can repopulate all the file entries in 
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

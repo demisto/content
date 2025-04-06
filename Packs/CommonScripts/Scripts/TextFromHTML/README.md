@@ -31,12 +31,14 @@ Extract regular text from the given HTML
 | --- | --- | --- |
 | TextFromHTML | The Text extracted from the given HTML. | string |
 
-
 ## Script Examples
+
 ### Example command
-```!TextFromHTML html="<!DOCTYPE html><html><body><h1>This is heading 1</h1></body></html>" ```
+
+```!TextFromHTML html="<!DOCTYPE html><html><body><h1>This is heading 1</h1></body></html>"```
 
 ### Context Example
+
 ```json
 {}
 ```
