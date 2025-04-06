@@ -22,10 +22,11 @@ To add the registration, refer to the following [Microsoft article](https://lear
 - Microsoft Graph - permission `offline_access` of type Delegated
 
 To add a permission:
+
 1. Navigate to **Home** > **App registrations**.
 2. Search for your app under 'all applications'.
 3. Click **API permissions** > **Add permission**.
-4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
+4. Search for the specific Microsoft API and select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
@@ -118,12 +119,12 @@ List all network security groups.
 
 | **Path**                        | **Type** | **Description**                |
 |---------------------------------|----------|--------------------------------|
-| AzureNSG.SecurityGroup.name     | String   | The security group's name.     | 
-| AzureNSG.SecurityGroup.id       | String   | The security group's ID.       | 
-| AzureNSG.SecurityGroup.etag     | String   | The security group's ETag.     | 
-| AzureNSG.SecurityGroup.type     | String   | The security group's type.     | 
-| AzureNSG.SecurityGroup.location | String   | The security group's location. | 
-| AzureNSG.SecurityGroup.tags     | String   | The security group's tags.     | 
+| AzureNSG.SecurityGroup.name     | String   | The security group's name.     |
+| AzureNSG.SecurityGroup.id       | String   | The security group's ID.       |
+| AzureNSG.SecurityGroup.etag     | String   | The security group's ETag.     |
+| AzureNSG.SecurityGroup.type     | String   | The security group's type.     |
+| AzureNSG.SecurityGroup.location | String   | The security group's location. |
+| AzureNSG.SecurityGroup.tags     | String   | The security group's tags.     |
 
 #### Command Example
 
@@ -149,6 +150,7 @@ List all network security groups.
 #### Human Readable Output
 
 > ### Network Security Groups
+>
 >|etag|id|location|name|tags|type|
 >|---|---|---|---|---|---|
 >| W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg | westeurope | alerts-nsg |  | Microsoft.Network/networkSecurityGroups |
@@ -166,31 +168,31 @@ List all rules of the specified security groups.
 
 | **Argument Name**   | **Description**                                                                                                  | **Required** |
 |---------------------|------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | A comma-separated list of the names of the security groups.                                                      | Required     | 
-| subscription_id     | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.         | Optional     | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional     | 
-| limit               | The maximum number of rules to display. Default is 50.                                                           | Optional     | 
-| offset              | The index of the first rule to display. Used for pagination. Default is 0.                                       | Optional     | 
+| security_group_name | A comma-separated list of the names of the security groups.                                                      | Required     |
+| subscription_id     | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.         | Optional     |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional     |
+| limit               | The maximum number of rules to display. Default is 50.                                                           | Optional     |
+| offset              | The index of the first rule to display. Used for pagination. Default is 0.                                       | Optional     |
 
 #### Context Output
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", or "\*"".                                                                                    | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.           | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of source ports. Note that for single ports, \`sourcePortRange\` will appear instead.                        | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be either "Allow" or "Deny".                                                                                     | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be either "Inbound" or "Outbound".                                                                            | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", or "\*"".                                                                                    |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.           |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of source ports. Note that for single ports, \`sourcePortRange\` will appear instead.                        |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be either "Allow" or "Deny".                                                                                     |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be either "Inbound" or "Outbound".                                                                            |
 
 #### Command Example
 
@@ -230,6 +232,7 @@ List all rules of the specified security groups.
 #### Human Readable Output
 
 > ### Rules in alerts-nsg
+>
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -272,7 +275,7 @@ Delete a security rule.
 
 | **Argument Name**   | **Description**                                                                                                  | **Required** |
 |---------------------|------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                                                                                  | Required     | 
+| security_group_name | The name of the security group.                                                                                  | Required     |
 | security_rule_name  | The name of the rule to be deleted.                                                                              | Required     |
 | subscription_id     | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.         | Optional     |
  resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional     |
@@ -302,16 +305,16 @@ Create a security rule.
 
 | **Argument Name**   | **Description**                                                                                                                                                                                                                                                                                         | **Required** |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                                                                                                                                                                                                                                                                         | Required     | 
-| security_rule_name  | The name of the rule to be created.                                                                                                                                                                                                                                                                     | Required     | 
-| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                                       | Required     | 
-| action              | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                                | Optional     | 
-| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                                 | Optional     | 
-| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".                                                                                      | Optional     | 
-| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".                                       | Optional     | 
-| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional     | 
-| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                                  | Optional     | 
-| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.             | Optional     | 
+| security_group_name | The name of the security group.                                                                                                                                                                                                                                                                         | Required     |
+| security_rule_name  | The name of the rule to be created.                                                                                                                                                                                                                                                                     | Required     |
+| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                                       | Required     |
+| action              | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                                | Optional     |
+| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                                 | Optional     |
+| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".                                                                                      | Optional     |
+| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".                                       | Optional     |
+| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional     |
+| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                                  | Optional     |
+| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.             | Optional     |
 | description         | A description to add to the rule.                                                                                                                                                                                                                                                                       | Optional     |
 | subscription_id     | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.                                                                                                                                                                                                | Optional     |
  resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.                                                                                                                                                                                        | Optional     |
@@ -320,21 +323,21 @@ Create a security rule.
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", or "\*".                                                                                     | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", or "\*".                                                                                     |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   |
 
 #### Command Example
 
@@ -371,6 +374,7 @@ Create a security rule.
 #### Human Readable Output
 
 > ### Rules rulerule
+>
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | * | * | Inbound | W/"276dc93a-488d-47a1-8971-19a1171242a9" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule | rulerule | 4096 | * | Updating | 1.1.1.1 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -388,17 +392,17 @@ Update a security rule. If one does not exist, it will be created.
 
 | **Argument Name**   | **Description**                                                                                                                                                                                                                                                                                         | **Required** |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                                                                                                                                                                                                                                                                         | Required     | 
-| security_rule_name  | The name of the rule to be updated.                                                                                                                                                                                                                                                                     | Required     | 
-| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                                       | Optional     | 
-| action              | Whether to allow the traffic. Possible values are "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                                 | Optional     | 
-| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                                | Optional     | 
-| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".                                                                                      | Optional     | 
-| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".                                       | Optional     | 
-| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional     | 
-| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                                  | Optional     | 
-| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.             | Optional     | 
-| description         | A description to add to the rule.                                                                                                                                                                                                                                                                       | Optional     | 
+| security_group_name | The name of the security group.                                                                                                                                                                                                                                                                         | Required     |
+| security_rule_name  | The name of the rule to be updated.                                                                                                                                                                                                                                                                     | Required     |
+| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                                       | Optional     |
+| action              | Whether to allow the traffic. Possible values are "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                                 | Optional     |
+| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                                | Optional     |
+| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".                                                                                      | Optional     |
+| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".                                       | Optional     |
+| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional     |
+| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                                  | Optional     |
+| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.             | Optional     |
+| description         | A description to add to the rule.                                                                                                                                                                                                                                                                       | Optional     |
 | subscription_id     | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.                                                                                                                                                                                                | Optional     |
  resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.                                                                                                                                                                                        | Optional     |
 
@@ -406,21 +410,21 @@ Update a security rule. If one does not exist, it will be created.
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   |
 
 #### Command Example
 
@@ -458,6 +462,7 @@ Update a security rule. If one does not exist, it will be created.
 #### Human Readable Output
 
 > ### Rules XSOAR_Rule
+>
 >|access|description|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/XSOAR_Rule | XSOAR_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -475,7 +480,7 @@ Get a specific rule.
 
 | **Argument Name**   | **Description**                                                                                                         | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                                                                                         | Optional     | 
+| security_group_name | The name of the security group.                                                                                         | Optional     |
 | security_rule_name  | A comma-separated list of the names of the rules to get.                                                                | Optional     |
 | subscription_id     | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.                | Optional     |
  resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional     |
@@ -484,21 +489,21 @@ Get a specific rule.
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   |
 
 #### Command Example
 
@@ -538,6 +543,7 @@ Get a specific rule.
 #### Human Readable Output
 
 > ### Rules wow
+>
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
@@ -561,7 +567,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!azure-nsg-auth-start ```
+```!azure-nsg-auth-start```
 
 #### Human Readable Output
 
@@ -632,8 +638,8 @@ Delete a security rule.
 
 | **Argument Name**   | **Description**                     | **Required** |
 |---------------------|-------------------------------------|--------------|
-| security_group_name | The name of the security group.     | Required     | 
-| security_rule_name  | The name of the rule to be deleted. | Required     | 
+| security_group_name | The name of the security group.     | Required     |
+| security_rule_name  | The name of the rule to be deleted. | Required     |
 
 #### Context Output
 
@@ -652,37 +658,37 @@ Create a security rule.
 
 | **Argument Name**   | **Description**                                                                                                                                                                                                                                                                             | **Required** |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                                                                                                                                                                                                                                                             | Required     | 
-| security_rule_name  | The name of the rule to be created.                                                                                                                                                                                                                                                         | Required     | 
-| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                           | Required     | 
-| action              | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                    | Optional     | 
-| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                     | Optional     | 
-| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag.                                                                                            | Optional     | 
-| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules.                                              | Optional     | 
-| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.     | Optional     | 
-| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                      | Optional     | 
-| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional     | 
-| description         | A description to add to the rule.                                                                                                                                                                                                                                                           | Optional     | 
+| security_group_name | The name of the security group.                                                                                                                                                                                                                                                             | Required     |
+| security_rule_name  | The name of the rule to be created.                                                                                                                                                                                                                                                         | Required     |
+| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                           | Required     |
+| action              | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                    | Optional     |
+| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                     | Optional     |
+| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag.                                                                                            | Optional     |
+| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules.                                              | Optional     |
+| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.     | Optional     |
+| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                      | Optional     |
+| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional     |
+| description         | A description to add to the rule.                                                                                                                                                                                                                                                           | Optional     |
 
 #### Context Output
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", or "\*".                                                                                     | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", or "\*".                                                                                     |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   |
 
 ### azure-nsg-security-rule-update
 
@@ -697,37 +703,37 @@ Update a security rule. If one does not exist, it will be created.
 
 | **Argument Name**   | **Description**                                                                                                                                                                                                                                                                             | **Required** |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                                                                                                                                                                                                                                                             | Required     | 
-| security_rule_name  | The name of the rule to be updated.                                                                                                                                                                                                                                                         | Required     | 
-| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                           | Optional     | 
-| action              | Whether to allow the traffic. Possible values are "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                     | Optional     | 
-| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                    | Optional     | 
-| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag.                                                                                            | Optional     | 
-| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules.                                              | Optional     | 
-| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.     | Optional     | 
-| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                      | Optional     | 
-| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional     | 
-| description         | A description to add to the rule.                                                                                                                                                                                                                                                           | Optional     | 
+| security_group_name | The name of the security group.                                                                                                                                                                                                                                                             | Required     |
+| security_rule_name  | The name of the rule to be updated.                                                                                                                                                                                                                                                         | Required     |
+| direction           | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound.                                                                                                                                                                           | Optional     |
+| action              | Whether to allow the traffic. Possible values are "Allow" and "Deny". Possible values are: Allow, Deny.                                                                                                                                                                                     | Optional     |
+| protocol            | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP.                                                                                                                                                    | Optional     |
+| source              | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag.                                                                                            | Optional     |
+| priority            | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules.                                              | Optional     |
+| source_ports        | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.     | Optional     |
+| destination         | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.                                                                      | Optional     |
+| destination_ports   | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional     |
+| description         | A description to add to the rule.                                                                                                                                                                                                                                                           | Optional     |
 
 #### Context Output
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   |
 
 ### azure-nsg-security-rule-get
 
@@ -742,28 +748,28 @@ Get a specific rule.
 
 | **Argument Name**   | **Description**                                          | **Required** |
 |---------------------|----------------------------------------------------------|--------------|
-| security_group_name | The name of the security group.                          | Optional     | 
-| security_rule_name  | A comma-separated list of the names of the rules to get. | Optional     | 
+| security_group_name | The name of the security group.                          | Optional     |
+| security_rule_name  | A comma-separated list of the names of the rules to get. | Optional     |
 
 #### Context Output
 
 | **Path**                               | **Type** | **Description**                                                                                                                         |
 |----------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        | 
-| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          | 
-| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        | 
-| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        | 
-| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          | 
-| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        | 
-| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         | 
-| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         | 
-| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
-| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              | 
-| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     | 
-| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                | 
-| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            | 
-| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           | 
-| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   | 
+| AzureNSG.Rule.name                     | String   | The rule's name.                                                                                                                        |
+| AzureNSG.Rule.id                       | String   | The rule's ID.                                                                                                                          |
+| AzureNSG.Rule.etag                     | String   | The rule's ETag.                                                                                                                        |
+| AzureNSG.Rule.type                     | String   | The rule's type.                                                                                                                        |
+| AzureNSG.Rule.provisioningState        | String   | The rule's provisioning state.                                                                                                          |
+| AzureNSG.Rule.protocol                 | String   | The protocol. Can be "TCP", "UDP", "ICMP", "\*".                                                                                        |
+| AzureNSG.Rule.sourcePortRange          | String   | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead.         |
+| AzureNSG.Rule.sourcePortRanges         | String   | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead.                         |
+| AzureNSG.Rule.destinationPortRange     | String   | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| AzureNSG.Rule.destinationPortRanges    | String   | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead.              |
+| AzureNSG.Rule.sourceAddressPrefix      | String   | The source address.                                                                                                                     |
+| AzureNSG.Rule.destinationAddressPrefix | String   | The destination address.                                                                                                                |
+| AzureNSG.Rule.access                   | String   | The rule's access. Can be "Allow" or "Deny".                                                                                            |
+| AzureNSG.Rule.priority                 | Number   | The rule's priority. Can be from 100 to 4096.                                                                                           |
+| AzureNSG.Rule.direction                | String   | The rule's direction. Can be "Inbound" or "Outbound".                                                                                   |
 
 ### azure-nsg-generate-login-url
 
@@ -789,6 +795,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 > ### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
     You will be automatically redirected to a link with the following structure:
     ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -812,18 +819,18 @@ There are no input arguments for this command.
 
 | **Path**                                                       | **Type** | **Description**                                                                             |
 |----------------------------------------------------------------|----------|---------------------------------------------------------------------------------------------|
-| AzureNSG.Subscription.id                                       | String   | The unique identifier of the Azure Network Security Groups subscription.                    | 
-| AzureNSG.Subscription.authorizationSource                      | String   | The source of authorization for the Azure Network Security Groups subscription.             | 
-| AzureNSG.Subscription.managedByTenants                         | Unknown  | The tenants that have access to manage the Azure Network Security Groups subscription.      | 
-| AzureNSG.Subscription.subscriptionId                           | String   | The ID of the Azure Network Security Groups subscription.                                   | 
-| AzureNSG.Subscription.tenantId                                 | String   | The ID of the tenant associated with the Azure Network Security Groups subscription.        | 
-| AzureNSG.Subscription.displayName                              | String   | The display name of the Azure Network Security Groups subscription.                         | 
-| AzureNSG.Subscription.state                                    | String   | The current state of the Azure Network Security Groups subscription.                        | 
-| AzureNSG.Subscription.subscriptionPolicies.locationPlacementId | String   | The ID of the location placement policy for the Azure Network Security Groups subscription. | 
-| AzureNSG.Subscription.subscriptionPolicies.quotaId             | String   | The ID of the quota policy for the Azure Network Security Groups subscription.              | 
-| AzureNSG.Subscription.subscriptionPolicies.spendingLimit       | String   | The spending limit policy for the Azure Network Security Groups subscription.               | 
-| AzureNSG.Subscription.count.type                               | String   | The type of the Azure Network Security Groups subscription count.                           | 
-| AzureNSG.Subscription.count.value                              | Number   | The value of the Azure Network Security Groups subscription count.                          | 
+| AzureNSG.Subscription.id                                       | String   | The unique identifier of the Azure Network Security Groups subscription.                    |
+| AzureNSG.Subscription.authorizationSource                      | String   | The source of authorization for the Azure Network Security Groups subscription.             |
+| AzureNSG.Subscription.managedByTenants                         | Unknown  | The tenants that have access to manage the Azure Network Security Groups subscription.      |
+| AzureNSG.Subscription.subscriptionId                           | String   | The ID of the Azure Network Security Groups subscription.                                   |
+| AzureNSG.Subscription.tenantId                                 | String   | The ID of the tenant associated with the Azure Network Security Groups subscription.        |
+| AzureNSG.Subscription.displayName                              | String   | The display name of the Azure Network Security Groups subscription.                         |
+| AzureNSG.Subscription.state                                    | String   | The current state of the Azure Network Security Groups subscription.                        |
+| AzureNSG.Subscription.subscriptionPolicies.locationPlacementId | String   | The ID of the location placement policy for the Azure Network Security Groups subscription. |
+| AzureNSG.Subscription.subscriptionPolicies.quotaId             | String   | The ID of the quota policy for the Azure Network Security Groups subscription.              |
+| AzureNSG.Subscription.subscriptionPolicies.spendingLimit       | String   | The spending limit policy for the Azure Network Security Groups subscription.               |
+| AzureNSG.Subscription.count.type                               | String   | The type of the Azure Network Security Groups subscription count.                           |
+| AzureNSG.Subscription.count.value                              | Number   | The value of the Azure Network Security Groups subscription count.                          |
 
 #### Command example
 
@@ -871,6 +878,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 > ### Azure Network Security Groups Subscriptions list
+>
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
 >| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
@@ -889,26 +897,26 @@ Gets all resource groups for a subscription.
 
 | **Argument Name** | **Description**                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------|--------------|
-| subscription_id   | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional     | 
-| limit             | Limit on the number of resource groups to return. Default is 50.                                         | Optional     | 
-| tag               | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.                            | Optional     | 
+| subscription_id   | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional     |
+| limit             | Limit on the number of resource groups to return. Default is 50.                                         | Optional     |
+| tag               | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.                            | Optional     |
 
 #### Context Output
 
 | **Path**                                              | **Type** | **Description**                                                                                               |
 |-------------------------------------------------------|----------|---------------------------------------------------------------------------------------------------------------|
-| AzureNSG.ResourceGroup.id                             | String   | The unique identifier of the Azure Network Security Groups resource group.                                    | 
-| AzureNSG.ResourceGroup.name                           | String   | The name of the Azure Network Security Groups resource group.                                                 | 
-| AzureNSG.ResourceGroup.type                           | String   | The type of the Azure Network Security Groups resource group.                                                 | 
-| AzureNSG.ResourceGroup.location                       | String   | The location of the Azure Network Security Groups resource group.                                             | 
-| AzureNSG.ResourceGroup.properties.provisioningState   | String   | The provisioning state of the Azure Network Security Groups resource group.                                   | 
-| AzureNSG.ResourceGroup.tags.Owner                     | String   | The owner tag of the Azure Network Security Groups resource group.                                            | 
-| AzureNSG.ResourceGroup.tags                           | Unknown  | The tags associated with the Azure Network Security Groups resource group.                                    | 
-| AzureNSG.ResourceGroup.tags.Name                      | String   | The name tag of the Azure Network Security Groups resource group.                                             | 
-| AzureNSG.ResourceGroup.managedBy                      | String   | The entity that manages the Azure Network Security Groups resource group.                                     | 
-| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-name | String   | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.           | 
-| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-rg   | String   | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. | 
-| AzureNSG.ResourceGroup.tags.type                      | String   | The type tag associated with the Azure Network Security Groups resource group.                                | 
+| AzureNSG.ResourceGroup.id                             | String   | The unique identifier of the Azure Network Security Groups resource group.                                    |
+| AzureNSG.ResourceGroup.name                           | String   | The name of the Azure Network Security Groups resource group.                                                 |
+| AzureNSG.ResourceGroup.type                           | String   | The type of the Azure Network Security Groups resource group.                                                 |
+| AzureNSG.ResourceGroup.location                       | String   | The location of the Azure Network Security Groups resource group.                                             |
+| AzureNSG.ResourceGroup.properties.provisioningState   | String   | The provisioning state of the Azure Network Security Groups resource group.                                   |
+| AzureNSG.ResourceGroup.tags.Owner                     | String   | The owner tag of the Azure Network Security Groups resource group.                                            |
+| AzureNSG.ResourceGroup.tags                           | Unknown  | The tags associated with the Azure Network Security Groups resource group.                                    |
+| AzureNSG.ResourceGroup.tags.Name                      | String   | The name tag of the Azure Network Security Groups resource group.                                             |
+| AzureNSG.ResourceGroup.managedBy                      | String   | The entity that manages the Azure Network Security Groups resource group.                                     |
+| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-name | String   | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.           |
+| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-rg   | String   | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
+| AzureNSG.ResourceGroup.tags.type                      | String   | The type tag associated with the Azure Network Security Groups resource group.                                |
 
 #### Command example
 
@@ -949,6 +957,7 @@ Gets all resource groups for a subscription.
 #### Human Readable Output
 
 > ### Resource Groups List
+>
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
@@ -967,32 +976,35 @@ Creates or updates a network interface.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| nic_name | The network interface name. | Required | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| nsg_name | Existing network security group name. Note: Use azure-nsg-security-groups-list in order to find existing network security group name. | Optional | 
-| ip_config_name | Existing IP configuration name. Note: Use azure-nsg-public-ip-adresses-list in order to find available ip configuration. | Required | 
-| private_ip | The private IP. | Optional | 
-| public_ip_address_name | The public IP address name. | Optional | 
-| vnet_name | The virtual network name. | Required | 
-| subnet_name | The subnet name. | Required | 
-| location | The resource location. | Required | 
+| nic_name | The network interface name. | Required |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional |
+| nsg_name | Existing network security group name. Note: Use azure-nsg-security-groups-list in order to find existing network security group name. | Optional |
+| ip_config_name | Existing IP configuration name. Note: Use azure-nsg-public-ip-adresses-list in order to find available ip configuration. | Required |
+| private_ip | The private IP. | Optional |
+| public_ip_address_name | The public IP address name. | Optional |
+| vnet_name | The virtual network name. | Required |
+| subnet_name | The subnet name. | Required |
+| location | The resource location. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureNSG.NetworkInterface.name | String | The network interface's name. | 
-| AzureNSG.NetworkInterface.etag | String | The network interface's etag. | 
-| AzureNSG.NetworkInterface.properties.provisioningState | String | The network interface's provisioning state. | 
-| AzureNSG.NetworkInterface.properties.ipConfigurations.name | List | The name of the resource that is unique within a resource group. | 
-| AzureNSG.NetworkInterface.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. | 
-| AzureNSG.NetworkInterface.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. | 
-| AzureNSG.NetworkInterface.subnetId | List | The subnet ID of the IP configuration. | 
+| AzureNSG.NetworkInterface.name | String | The network interface's name. |
+| AzureNSG.NetworkInterface.etag | String | The network interface's etag. |
+| AzureNSG.NetworkInterface.properties.provisioningState | String | The network interface's provisioning state. |
+| AzureNSG.NetworkInterface.properties.ipConfigurations.name | List | The name of the resource that is unique within a resource group. |
+| AzureNSG.NetworkInterface.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. |
+| AzureNSG.NetworkInterface.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. |
+| AzureNSG.NetworkInterface.subnetId | List | The subnet ID of the IP configuration. |
 
 #### Command example
+
 ```!azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=test subnet_name=default vnet_name=reso-vnet```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1111,14 +1123,17 @@ Creates or updates a network interface.
 #### Human Readable Output
 
 >### Network Interface
+>
 >|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
 >|---|---|---|---|---|---|
 >| test | 74523636-2749-426b-745f-9f41512228 | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
 
-
 #### Command example
+
 ```!azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=test subnet_name=default vnet_name=reso-vnet nsg_name=b_tdemo```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1243,10 +1258,10 @@ Creates or updates a network interface.
 #### Human Readable Output
 
 >### Network Interface
+>
 >|Name|Etag|Provisioning State|Ip Configuration Name|Ip Configuration Private IP Address|Subnet Id|
 >|---|---|---|---|---|---|
 >| test | b5266977-8529-4415-9476-5884552427dec | Succeeded | ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/virtualNetworks/reso-vnet/subnets/default |
-
 
 ### azure-nsg-virtual-networks-list
 
@@ -1261,26 +1276,29 @@ Gets virtual networks in a resource group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureNSG.VirtualNetwork.name | String | The virtual network's name. | 
-| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. | 
-| AzureNSG.VirtualNetwork.location | String | The virtual network's location. | 
-| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. | 
-| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. | 
-| AzureNSG.VirtualNetwork.subnetAdrdressPrefix | List | The virtual network's subnet address prefix. | 
-| AzureNSG.VirtualNetwork.subnetID | List | List of the virtual network's subnets ID. | 
+| AzureNSG.VirtualNetwork.name | String | The virtual network's name. |
+| AzureNSG.VirtualNetwork.etag | String | The virtual network's etag. |
+| AzureNSG.VirtualNetwork.location | String | The virtual network's location. |
+| AzureNSG.VirtualNetwork.properties.addressSpace.addressPrefixes | String | A list of address blocks reserved for this virtual network in CIDR notation. |
+| AzureNSG.VirtualNetwork.properties.subnets.name | List | The virtual network's subnet name. |
+| AzureNSG.VirtualNetwork.subnetAdrdressPrefix | List | The virtual network's subnet address prefix. |
+| AzureNSG.VirtualNetwork.subnetID | List | List of the virtual network's subnets ID. |
 
 #### Command example
+
 ```!azure-nsg-virtual-networks-list```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1466,10 +1484,10 @@ Gets virtual networks in a resource group.
 #### Human Readable Output
 
 >### Virtual Networks List
+>
 >|Name|Etag|Location|Address Prefixes|Subnet Name|Subnet Adrdress Prefix|Subnet ID|
 >|---|---|---|---|---|---|---|
 >| reso-vnet | 78562e03-4a6b-4845-dswae-ds541c4808ba5 | westeurope | 1.1.1.1/16 | default | 1.1.1.1/24 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/BAR___/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/B_TEST/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC1/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE-INTEGRATION-NIC2/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/COMPUTE/ipConfigurations/IPCONFIG1,<br/>/subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/COMPUTE-INTEGRATION/providers/Microsoft.Network/networkInterfaces/TEST/ipConfigurations/IPCONFIG1 |
-
 
 ### azure-nsg-security-group-create
 
@@ -1484,23 +1502,26 @@ Creates a network security group in the specified resource group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| security_group_name | The security group name. | Required | 
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| location | The resource location. | Required | 
+| security_group_name | The security group name. | Required |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional |
+| location | The resource location. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureNSG.SecurityGroup.name | String | The network security group's name. | 
-| AzureNSG.SecurityGroup.etag | String | The network security group's etag. | 
-| AzureNSG.SecurityGroup.location | String | The network security group's location. | 
-| AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. | 
+| AzureNSG.SecurityGroup.name | String | The network security group's name. |
+| AzureNSG.SecurityGroup.etag | String | The network security group's etag. |
+| AzureNSG.SecurityGroup.location | String | The network security group's location. |
+| AzureNSG.SecurityGroup.properties.securityRules | List | A collection of security rules of the network security group. |
 
 #### Command example
+
 ```!azure-nsg-security-group-create location=westeurope security_group_name=b_tdemo```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -1658,10 +1679,10 @@ Creates a network security group in the specified resource group.
 #### Human Readable Output
 
 >### Security Group List
+>
 >|Name|Etag|Location|
 >|---|---|---|
 >| b_tdemo | 8459e4-6553-526e-bsad-asx54dxbb7ee78 | westeurope |
-
 
 ### azure-nsg-network-interfaces-list
 
@@ -1676,33 +1697,36 @@ Gets network interfaces in a resource group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureNSG.NetworkInterfaces.name | String | The network interface's name. | 
-| AzureNSG.NetworkInterfaces.id | String | The network interface's ID. | 
-| AzureNSG.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. | 
-| AzureNSG.NetworkInterfaces.ipConfigurationName | List | The name of the resource that is unique within a resource group. | 
-| AzureNSG.NetworkInterfaces.ipConfigurationID | List | The resource ID. | 
-| AzureNSG.NetworkInterfaces.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. | 
-| AzureNSG.NetworkInterfaces.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. | 
-| AzureNSG.NetworkInterfaces.dnsServers | List | List of DNS servers IP addresses. | 
-| AzureNSG.NetworkInterfaces.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. | 
-| AzureNSG.NetworkInterfaces.internalDomainNameSuffix | String | The network interface's internal domain name suffix. | 
-| AzureNSG.NetworkInterfaces.properties.macAddress | String | The network interface's MAC address. | 
-| AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's ID. | 
-| AzureNSG.NetworkInterfaces.location | String | The network interface's location. | 
-| AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. | 
+| AzureNSG.NetworkInterfaces.name | String | The network interface's name. |
+| AzureNSG.NetworkInterfaces.id | String | The network interface's ID. |
+| AzureNSG.NetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. |
+| AzureNSG.NetworkInterfaces.ipConfigurationName | List | The name of the resource that is unique within a resource group. |
+| AzureNSG.NetworkInterfaces.ipConfigurationID | List | The resource ID. |
+| AzureNSG.NetworkInterfaces.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. |
+| AzureNSG.NetworkInterfaces.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. |
+| AzureNSG.NetworkInterfaces.dnsServers | List | List of DNS servers IP addresses. |
+| AzureNSG.NetworkInterfaces.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. |
+| AzureNSG.NetworkInterfaces.internalDomainNameSuffix | String | The network interface's internal domain name suffix. |
+| AzureNSG.NetworkInterfaces.properties.macAddress | String | The network interface's MAC address. |
+| AzureNSG.NetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's ID. |
+| AzureNSG.NetworkInterfaces.location | String | The network interface's location. |
+| AzureNSG.NetworkInterfaces.kind | String | The network interface's kind. |
 
 #### Command example
+
 ```!azure-nsg-network-interfaces-list all_results=false limit=3```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -2062,12 +2086,12 @@ Gets network interfaces in a resource group.
 #### Human Readable Output
 
 >### Network Interfaces List
+>
 >|Name|Id|Provisioning State|Ip Configuration Name|Ip Configuration ID|Ip Configuration Private IP Address|Ip Configuration Public IP Address Name|Internal Domain Name Suffix|Location|Kind|
 >|---|---|---|---|---|---|---|---|---|---|
 >| b_te | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b_te/ipConfigurations/ipconfig1 | 1.1.1.1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name | example.ax.internal.cloudapp.net | westeurope | Regular |
 >| test | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/test/ipConfigurations/ipconfig1 | 1.1.1.1 |  | example.ax.internal.cloudapp.net | westeurope | Regular |
 >| b___ | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___ | Succeeded | ipconfig1 | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/networkInterfaces/b___/ipConfigurations/ipconfig1 | 1.1.1.1 |  | example.ax.internal.cloudapp.net | westeurope | Regular |
-
 
 ### azure-nsg-public-ip-addresses-list
 
@@ -2082,27 +2106,30 @@ Gets public IP addresses in a resource group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional | 
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Optional |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureNSG.PublicIPAdress.name | String | The public IP address's name. | 
-| AzureNSG.PublicIPAdress.id | String | The public IP address's ID. | 
-| AzureNSG.PublicIPAdress.etag | String | The public IP address's etag. | 
-| AzureNSG.PublicIPAdress.provisioningState | String | The public IP address's provisioning state. | 
-| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public IP address's version. | 
-| AzureNSG.PublicIPAdress.ipAddress | String | The public IP address's IP address. | 
-| AzureNSG.PublicIPAdress.domainNameLabel | String | The public IP address's domain name label. | 
-| AzureNSG.PublicIPAdress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
+| AzureNSG.PublicIPAdress.name | String | The public IP address's name. |
+| AzureNSG.PublicIPAdress.id | String | The public IP address's ID. |
+| AzureNSG.PublicIPAdress.etag | String | The public IP address's etag. |
+| AzureNSG.PublicIPAdress.provisioningState | String | The public IP address's provisioning state. |
+| AzureNSG.PublicIPAdress.publicIPAddressVersion | String | The public IP address's version. |
+| AzureNSG.PublicIPAdress.ipAddress | String | The public IP address's IP address. |
+| AzureNSG.PublicIPAdress.domainNameLabel | String | The public IP address's domain name label. |
+| AzureNSG.PublicIPAdress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). |
 
 #### Command example
+
 ```!azure-nsg-public-ip-addresses-list```
+
 #### Context Example
+
 ```json
 {
     "AzureNSG": {
@@ -2158,8 +2185,7 @@ Gets public IP addresses in a resource group.
 #### Human Readable Output
 
 >### Public IP Addresses List
+>
 >|Name|Id|Etag|Provisioning State|Public IP Address Version|Ip Address|
 >|---|---|---|---|---|---|
 >| public-ip-name | /subscriptions/0f945ea2-bc8a-4c11-9d7e-806c1fd144fb/resourceGroups/reso/providers/Microsoft.Network/publicIPAddresses/public-ip-name | 54525785-f484-4dsa-a419-452115d9969 | Succeeded | IPv4 | 1.1.1.1 |
-
-
