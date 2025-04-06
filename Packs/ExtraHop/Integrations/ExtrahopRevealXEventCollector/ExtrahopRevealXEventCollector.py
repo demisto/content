@@ -46,22 +46,24 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, proxy=use_proxy)
 
+        self._client_id = client_id
+        self._client_secret = client_secret
+
         # Setting up access token in headers.
+        self.set_headers()
+
+    def set_headers(self):
         self._headers: Dict[str, Any] = {
-            "Authorization": f"Bearer {self.get_access_token(client_id=client_id, client_secret=client_secret)}",
-            "ExtraHop-Integration": "XSOAR-6.5.0-ExtraHop-2.0.0"
+            "Authorization": f"Bearer {self.get_access_token()}",
         }
 
-    def get_access_token(self, client_id: str, client_secret: str) -> str:
+    def get_access_token(self) -> str:
         """Return the token stored in integration context.
 
         If the token has expired or is not present in the integration context
         (in the first case), it calls the Authentication function, which
         generates a new token and stores it in the integration context.
 
-        Args:
-            client_id: The Client ID to use for authentication.
-            client_secret: The Client Secret to use for authentication.
 
         Returns:
             str: Authentication token stored in integration context.
@@ -73,11 +75,10 @@ class Client(BaseClient):
 
         # If token exists and is valid, then return it.
         if (token and valid_until) and (time_now < valid_until):
-            demisto.info("Extrahop token returned from integration context.")
             return token
 
         # Otherwise, generate a new token and store it.
-        token, expires_in = self.authenticate(client_id=client_id, client_secret=client_secret)
+        token, expires_in = self.authenticate(client_id=self._client_id, client_secret=self._client_secret)
         integration_context = {
             "access_token": token,
             "valid_until": time_now + expires_in,  # Token expiration time - 30 mins
@@ -129,6 +130,8 @@ class Client(BaseClient):
         Returns:
             Response from the API.
         """
+        # Make sure we have a valid token
+        self.set_headers()
         return self._http_request("POST", url_suffix="/api/v1/detections/search", json_data=body)
 
 
@@ -278,7 +281,7 @@ def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
 
         if mod_time:
             detection["_time"] = mod_time
-
+            # TODO: Is this how Dima in tended that this would be?
             if start_time:
                 if mod_time == start_time:
                     detection["_entery_status"] = "new"
@@ -297,20 +300,11 @@ def get_detections_list(client: Client,
     Returns:
         CommandResults object.
     """
-    version = get_extrahop_server_version(client)
-    if version < "9.3.0":
-        raise DemistoException(
-            "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
-
     body = advanced_filter
-
     trim_spaces_from_args(body)
-
     detections = list(client.detections_list(body))
-
     # Add Time Params
     update_time_values_detections(detections)
-
     return detections
 
 
@@ -385,10 +379,10 @@ def fetch_extrahop_detections(client: Client, advanced_filter: Dict, last_run: D
         last_run: Last run returned by function demisto.getLastRun
 
     Returns:
-        List of incidents to be pushed into XSOAR.
+        List of incidents to be pushed into XSIAM.
     """
     try:
-        already_fetched: List[str] = last_run.get('already_fetched', [])
+        already_fetched: Set[str] = set(last_run.get('already_fetched', []))
         detection_start_time = advanced_filter["mod_time"]
 
         events = get_detections_list(client, advanced_filter=advanced_filter)
@@ -397,11 +391,11 @@ def fetch_extrahop_detections(client: Client, advanced_filter: Dict, last_run: D
             detection_id = detection.get("id")
             if detection_id not in already_fetched:
                 detection.update(get_mirroring())
-                # TODO Niv : is that the most efficient way to do it?
-                already_fetched.append(detection_id)
+                already_fetched.add(detection_id)
             else:
                 demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
 
+        # TODO: Change it to while loop? maybe the while loop should be outside in the big function
         if len(events) < advanced_filter["limit"]:
             offset = 0
             detection_start_time = \
@@ -431,41 +425,46 @@ def validate_fetch_events_params(params: dict, last_run: dict) -> Dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
-    # Todo Niv : Not sure this is the correct value
-    first_fetch = arg_to_datetime(params.get('first_fetch', FIRST_FETCH))
-    detection_start_time = int(first_fetch.timestamp() * 1000)  # type: ignore
+    first_fetch_from_params = params.get("first_fetch_from", None)
 
-    if last_run and 'detection_start_time' in last_run:
+    if first_fetch_from_params:
+        detection_start_time = int(first_fetch_from_params.timestamp() * 1000)  # type: ignore
+    elif last_run and 'detection_start_time' in last_run:
         detection_start_time = last_run.get('detection_start_time')  # type: ignore
+    else:
+        # First Fetch
+        detection_start_time = int(FIRST_FETCH.timestamp() * 1000)  # type: ignore
 
     offset = 0
     if last_run and 'offset' in last_run:
         offset = last_run.get("offset")  # type: ignore
 
+    limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
+
     return {
         'detection_start_time': detection_start_time,
-        'offset': offset
+        'offset': offset,
+        'limit': limit
     }
 
 
 def fetch_events(client: Client, params: Dict, last_run: Dict):
-    """Fetch the specified ExtraHop entity and push into XSOAR.
+    """Fetch the specified ExtraHop entity and push into XSIAM.
 
      Args:
         client: ExtraHop client to be used.
         params: Integration configuration parameters.
         last_run: The last_run dictionary having the state of previous cycle.
     """
-    demisto.info(f"Extrahop fetch_events invoked with advanced_filter: {params.get('advanced_filter', '')}, "
+    demisto.info(f"Extrahop fetch_events invoked"
                  f"first_fetch: {params.get('first_fetch', '')} and last_run: {last_run}")
     fetch_params = validate_fetch_events_params(params, last_run)
 
-    # TODO Niv : Not sure why we need this part - verify it with ExtraHop code
     now = datetime.now()
     next_day = now + timedelta(days=1)
     if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
-        version = get_extrahop_server_version(client)
         last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
+        version = get_extrahop_server_version(client)
         if version < "9.3.0":
             raise DemistoException(
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
@@ -473,7 +472,7 @@ def fetch_events(client: Client, params: Dict, last_run: Dict):
     _filter = {"categories": ["sec.attack"]}
 
     advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"], "until": 0,
-                       "limit": DEFAULT_FETCH_LIMIT, "offset": fetch_params["offset"],
+                       "limit": fetch_params["limit"], "offset": fetch_params["offset"],
                        "sort": [{"direction": "asc", "field": "mod_time"}]}
 
     events, next_run = fetch_extrahop_detections(client, advanced_filter, last_run)
@@ -507,7 +506,6 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
 
 def main():
     """main function, parses params and runs command functions"""
-    """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -519,7 +517,7 @@ def main():
         client_id = params.get("client_id", "")
         client_secret = params.get("client_secret", "")
         use_proxy: bool = params.get('proxy', False)
-        fetch_limit = arg_to_number(params.get('max_events_per_fetch')) or DEFAULT_FETCH_LIMIT
+        # TODO : Not using the fetch limit
 
         client = Client(base_url=base_url,
                         verify=verify_certificate,
@@ -531,6 +529,7 @@ def main():
         if command == "test-module":
             # Command made to test the integration
             # This is the call made when pressing the integration Test button.
+            # todo: fill up the test-moudle
             result = test_module(client)
             return_results(result)
         elif command == "fetch-events":
@@ -544,7 +543,7 @@ def main():
         elif command == "revealx-get-events":
             events, command_results = get_events(client, args)
             if events and argToBoolean(args.get('should_push_events')):
-                demisto.debug(f'Sending {len(events)} events.')
+                demisto.debug(f'xuSending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
         else:
