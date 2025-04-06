@@ -1,4 +1,5 @@
 import contextlib
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -32,15 +33,15 @@ def main():
     unique_values: set[str] = {v.lower() for v in values}  # search query is case insensitive
 
     query = f"""value:({' '.join([f'"{escape_special_characters(value)}"' for value in unique_values])})"""
-    demisto.debug(f'{query=}')
+    demisto.debug(f"{query=}")
 
     res = demisto.searchIndicators(
         query=query,
-        populateFields='name,score,aggregatedReliability,type,expirationStatus',
+        populateFields="name,score,aggregatedReliability,type,expirationStatus",
     )
 
     return_entries = []
-    iocs = res.get('iocs') or []
+    iocs = res.get("iocs") or []
     for data in iocs:
         score = data["score"]
         vendor = "XSOAR"
@@ -55,7 +56,7 @@ def main():
             "Vendor": vendor,
             "Score": score,
             "Reliability": reliability,
-            "Expired": expirationStatus
+            "Expired": expirationStatus,
         }
 
         return_entries.append(dbotscore)
@@ -69,11 +70,11 @@ def main():
 
         entry = {
             "Type": entryTypes["note"],
-            "ReadableContentsFormat": formats['markdown'],
+            "ReadableContentsFormat": formats["markdown"],
             "ContentsFormat": formats["json"],
             "Contents": return_entries,
             "EntryContext": {"DBotScoreCache": return_entries},
-            "HumanReadable": md
+            "HumanReadable": md,
         }
 
         return_results(entry)
@@ -82,13 +83,13 @@ def main():
         return_results(f"Could not find {values_not_found[0]} in cache")
 
     elif len(values_not_found) > 1:
-        md = tableToMarkdown("Could not find in cache", values_not_found, headers=['Values'])
+        md = tableToMarkdown("Could not find in cache", values_not_found, headers=["Values"])
         not_found_values_entry = {
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
-            "ReadableContentsFormat": formats['markdown'],
+            "ReadableContentsFormat": formats["markdown"],
             "Contents": md,
-            "HumanReadable": md
+            "HumanReadable": md,
         }
         return_results(not_found_values_entry)
 
