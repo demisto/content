@@ -219,6 +219,7 @@ def main() -> None:  # pragma: no cover
             )
 
             add_time_to_events(events)
+            demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug("Sent events to XSIAM successfully")
             demisto.setLastRun(next_run)
