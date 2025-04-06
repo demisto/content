@@ -1,6 +1,7 @@
 Train a machine learning text classifier.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,12 +11,15 @@ Train a machine learning text classifier.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * DBot Create Phishing Classifier V2
 * DBot Create Phishing Classifier V2 From File
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -40,6 +44,7 @@ This script is used in the following playbooks and scripts.
 | trainingAlgorithm | The training algorithm to use for training the model. Default is "auto". If "auto" is selected, the training algorithm will be chosen automatically based on the number of incidents per each label.  Use "from_scratch" to train a new model from scratch, based on your incidents only. In general, "from_scratch" will perform better where the number of incidents is high \(500 incidents or more per each verdict\). "fine-tune" trains a model based on the out-of-the-box model. "fine-tune" will perform better when the number of incidents is relatively low. It's possible to train multiple models using different algorithms options, and compare their results. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
