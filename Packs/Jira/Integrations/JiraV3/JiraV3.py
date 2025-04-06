@@ -3456,13 +3456,13 @@ def parse_issue_times(
     converted_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
     demisto.debug(
         f"Converted created time of issue with ID: {issue_id} from: {issue_created_time} to: {converted_created_time}. "
-        f"Converted to timezone: {fetch_timezone}" if fetch_timezone else "No timezone conversion performed."
+        + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
     )
 
     converted_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
     demisto.debug(
         f"Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} to: {converted_updated_time}. "
-        f"Converted to timezone: {fetch_timezone}" if fetch_timezone else "No timezone conversion performed."
+        + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
     )
 
     return converted_created_time, converted_updated_time
