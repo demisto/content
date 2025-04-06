@@ -1,5 +1,7 @@
 This script is used to simplify the process of creating the incident in BMC Helix Remedyforce. The script will consider the ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +11,10 @@ This script is used to simplify the process of creating the incident in BMC Heli
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * bmc-remedy-urgency-details-get
 * bmc-remedy-status-details-get
 * bmc-remedy-incident-create
@@ -25,6 +29,7 @@ This script uses the following commands and scripts.
 * bmc-remedy-asset-details-get
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -60,6 +65,7 @@ This script uses the following commands and scripts.
 | outage_end | The date and time when the service outage ends. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -68,11 +74,12 @@ This script uses the following commands and scripts.
 | BmcRemedyforce.Incident.Number | Incident number. | String |
 | BmcRemedyforce.Incident.CreatedDate | Creation date &amp; time of Incident. | String |
 
-
 ## Script Example
+
 ```!BMCHelixRemedyforceCreateIncident client_id=0052w000004nuLjAAI using=BMCHelixRemedyforce_instance_jhanvi_acc```
 
 ## Context Example
+
 ```
 {
     "BmcRemedyforce": {
@@ -86,4 +93,5 @@ This script uses the following commands and scripts.
 ```
 
 ## Human Readable Output
+
 The incident 00000153 is successfully created.
