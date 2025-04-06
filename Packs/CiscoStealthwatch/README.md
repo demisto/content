@@ -1,9 +1,11 @@
 # Cisco Stealthwatch
-This pack includes Cortex XSIAM content. 
+
+This pack includes Cortex XSIAM content.
 
 Today, companies have large networks with lots of devices stretching further than ever.
 Finding the latest threat is like looking for a needle in a haystack. Stealwatch (or in its new name "Secure Network Analytics") analyzes your company's billions of network sessions, and provides analytics for your query flows and security events to enable you to determine when something looks suspicious and respond to any network threats.
 ​
+
 ## What does this pack do
 
 - Lists security events and returns the results to the context.
@@ -11,10 +13,13 @@ Finding the latest threat is like looking for a needle in a haystack. Stealwatch
 - Maps logs to "One Data Model".
 
 <~XSIAM>
+
 ## Configuration on Server Side
+
 You need to configure Cisco Stealthwatch to forward Syslog messages in custom LEEF format.
 
 ### Configure Custom syslog format
+
 1. Log in to the Stealthwatch Management Console (SMC).
 2. Go to **Configuration** > **Response Management**.
 3. Click the **Syslog Formats** tab and then click **Add New**.
@@ -33,6 +38,7 @@ LEEF:2.0|Lancope|Stealthwatch|6.8|{alarm_type_id}|0x7C|eventName={alarm_type_nam
 ```
 
 ### Configure syslog message action
+
 1. Log in to the Stealthwatch Management Console (SMC).
 2. Go to **Configuration > Response Management**.
 3. Click the **Actions** tab and then click **Add** > **Syslog Message**.
@@ -50,6 +56,7 @@ LEEF:2.0|Lancope|Stealthwatch|6.8|{alarm_type_id}|0x7C|eventName={alarm_type_nam
 5. Click **Test Action** and if everything is good, click **Save**.
 
 ### Configure Rule
+
 1. Log in to the Stealthwatch Management Console (SMC).
 2. Go to **Configuration** > **Response Management**.
 3. Click the **Rules** tab and then click **Add New Rule**.
@@ -63,6 +70,7 @@ LEEF:2.0|Lancope|Stealthwatch|6.8|{alarm_type_id}|0x7C|eventName={alarm_type_nam
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 **Note**: The name of the dataset will be assigned automatically as **lancope_stealthwatch_raw**.
