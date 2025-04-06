@@ -597,7 +597,7 @@ function doRequest(method, queryPath, body) {
             Method: method,
             Headers: {
                 Authorization: ['Basic ' + token],
-                Connecion: ['Closed'],
+                connection: ['close'],
                 'Content-Type': ['application/json']
             },
             Body: JSON.stringify(body)
@@ -639,7 +639,7 @@ function doGet(queryPath, queryParams) {
             Method: 'GET',
             Headers: {
                 Authorization: ['Basic ' + token],
-                Connecion: ['Closed'],
+                connection: ['close'],
                 'Content-Type': ['application/json']
             }
         },
