@@ -9,18 +9,10 @@ from CommandLineAnalysis import (
     check_windows_temp_paths,
     check_suspicious_content,
     check_amsi,
-    check_malicious_commands,
     check_mixed_case_powershell,
     check_powershell_suspicious_patterns,
-    check_reconnaissance_temp,
-    check_suspicious_content,
     check_suspicious_macos_applescript_commands,
-    check_windows_temp_paths,
-    decode_base64,
-    identify_and_decode_base64,
-    is_base64,
-    remove_null_bytes,
-    reverse_command,
+    analyze_command_line
 )
 
 # Test data

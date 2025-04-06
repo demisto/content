@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import base64
 import ipaddress
 import json
@@ -326,8 +329,6 @@ def check_suspicious_macos_applescript_commands(command_line: str) -> dict[str, 
         "possible_exfiltration": [
             ["display dialog", "curl -"],
             ["osascript -e", "curl -x", "system_profiler"],
-            ["osascript -e", "curl -"],
-        ],
             ["osascript -e", "curl -"],
         ],
     }
