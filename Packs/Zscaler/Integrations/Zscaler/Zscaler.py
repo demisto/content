@@ -1200,6 +1200,7 @@ def main():  # pragma: no cover
     else:
         try:
             login()
+            demisto.debug("Logged in successfully")
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
