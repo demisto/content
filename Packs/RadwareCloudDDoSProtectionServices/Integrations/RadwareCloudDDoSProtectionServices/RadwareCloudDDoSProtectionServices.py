@@ -15,6 +15,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 VENDOR = "Radware"
 PRODUCT = "cloud ddos"
 
+PAGE_SIZE = 700
+
 
 class Client(BaseClient):
 
@@ -22,7 +24,7 @@ class Client(BaseClient):
         self.account_id = account_id
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={'x-api-key': api_key, 'Context': account_id})
 
-    def get_events(self, start_time=None, end_time=None, skip=0, take=700) -> dict[str, Any] | Response:
+    def get_events(self, start_time=None, end_time=None, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
         """
         Fetches events from a specific time range with pagination support.
         Args:
@@ -57,7 +59,7 @@ class Client(BaseClient):
             json_data=params,
         )
 
-    def get_alerts(self, start_time=None, end_time=None, skip=0, take=700) -> dict[str, Any] | Response:
+    def get_alerts(self, start_time=None, end_time=None, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
         """
         Fetches alerts from a specific time range with pagination support.
         Args:
@@ -90,7 +92,7 @@ class Client(BaseClient):
         )
 
 
-def add_fields(events: list[dict], evnet_type: str | None):
+def format_data_fields(events: list[dict], evnet_type: str | None):
     """
     Gets a list of events of a specific event type and adds the `_time` & `source_log_type` fields to the event.
     Args:
@@ -113,28 +115,28 @@ def fetch_events(client, last_run):
         skip = continue_fetch_events.get('fetched_events')
 
     demisto.debug(f'RadwareCloudDDoS: {start_time=}, {end_time=}, {skip=}')
-    response = client.get_events(start_time, end_time, skip, 700)
+    response = client.get_events(start_time, end_time, skip, PAGE_SIZE)
     documents = response.get("documents")
     demisto.debug(f'RadwareCloudDDoS: {len(documents)=}')
     new_continue_fetch_events = {}
 
     if documents:
-        latest_timestamp_events = documents[0]["endTimestamp"]
-        demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_events=}')
-        if len(documents) == 700:
+        latest_event_timestamp = documents[0]["endTimestamp"]
+        demisto.debug(f'RadwareCloudDDoS: {latest_event_timestamp=}')
+        if len(documents) == PAGE_SIZE:
             demisto.debug('RadwareCloudDDoS: found next page')
             new_continue_fetch_events = {'end_time': end_time, 'start_time': start_time, 'fetched_events': len(documents)+skip}
 
         if not continue_fetch_events:
-            last_run['last_fetch_events'] = latest_timestamp_events
-            demisto.debug(f'RadwareCloudDDoS: saved {latest_timestamp_events=}')
+            last_run['last_fetch_events'] = latest_event_timestamp
+            demisto.debug(f'RadwareCloudDDoS: saved {latest_event_timestamp=}')
 
         if new_continue_fetch_events:
             last_run['nextTrigger'] = '0'
 
         last_run['continue_fetch_events'] = new_continue_fetch_events
         demisto.debug(f'RadwareCloudDDoS: set {new_continue_fetch_events=}')
-        add_fields(documents, 'security_events')
+        format_data_fields(documents, 'security_events')
 
     return documents, last_run
 
@@ -151,7 +153,7 @@ def fetch_alerts(client, last_run):
         skip = continue_fetch_alerts.get('fetched_alerts')
 
     demisto.debug(f'RadwareCloudDDoS: {start_time=}, {end_time=},  {skip=}')
-    response = client.get_alerts(start_time, end_time, skip, 700)
+    response = client.get_alerts(start_time, end_time, skip, PAGE_SIZE)
     documents = response.get("documents")
     demisto.debug(f'RadwareCloudDDoS: {len(documents)=}')
     new_continue_fetch_alerts = {}
@@ -159,7 +161,7 @@ def fetch_alerts(client, last_run):
     if documents:
         latest_timestamp_alerts = documents[0].get('context', {}).get("_timestamp")
         demisto.debug(f'RadwareCloudDDoS: {latest_timestamp_alerts=}')
-        if len(documents) == 700:
+        if len(documents) == PAGE_SIZE:
             demisto.debug('RadwareCloudDDoS: found next page')
             new_continue_fetch_alerts = {'end_time': end_time, 'start_time': start_time, 'fetched_alerts': len(documents)+skip}
 
@@ -172,7 +174,76 @@ def fetch_alerts(client, last_run):
 
         last_run['continue_fetch_alerts'] = new_continue_fetch_alerts
         demisto.debug(f'RadwareCloudDDoS: set {new_continue_fetch_alerts=}')
-        add_fields(documents, 'operational_alerts')
+        format_data_fields(documents, 'operational_alerts')
+
+    return documents, last_run
+
+
+def fetch_data(client, last_run, data_type):
+    """
+    Fetch data of a specified type (either 'events' or 'alerts') from the client.
+
+    Args:
+        client (Client): The client instance to fetch the data from.
+        last_run (dict): the last run data.
+        data_type (str): The type of data to fetch ('events' or 'alerts').
+
+    Returns:
+        tuple: Contains the fetched documents and updated last run dictionary.
+    """
+    end_time = int(time.time() * 1000)
+    last_fetch_key = f'last_fetch_{data_type}'
+    continue_fetch_key = f'continue_fetch_{data_type}'
+
+    start_time = last_run.get(last_fetch_key, end_time - 2) + 1
+    continue_fetch_data = last_run.get(continue_fetch_key, None)
+    skip = 0
+
+    if continue_fetch_data:
+        end_time = continue_fetch_data.get('end_time')
+        start_time = continue_fetch_data.get('start_time')
+        skip = continue_fetch_data.get('fetched_' + data_type)
+
+    demisto.debug(f'RadwareCloudDDoS: {data_type=} {start_time=}, {end_time=}, {skip=}')
+
+    if data_type == 'events':
+        response = client.get_events(start_time, end_time, skip, PAGE_SIZE)
+    elif data_type == 'alerts':
+        response = client.get_alerts(start_time, end_time, skip, PAGE_SIZE)
+    else:
+        raise ValueError("Invalid data_type. Expected 'events' or 'alerts'.")
+
+    documents = response.get("documents")
+    demisto.debug(f'RadwareCloudDDoS: {data_type=} {len(documents)=}')
+    new_continue_fetch_data = {}
+
+    if documents:
+        if data_type == 'events':
+            latest_timestamp = documents[0].get("endTimestamp")
+        elif data_type == 'alerts':
+            latest_timestamp = documents[0].get('context', {}).get("_timestamp")
+
+        demisto.debug(f'RadwareCloudDDoS: {data_type=} {latest_timestamp=}')
+
+        if len(documents) == PAGE_SIZE:
+            demisto.debug(f'RadwareCloudDDoS: {data_type=} found next page')
+            new_continue_fetch_data = {'end_time': end_time, 'start_time': start_time,
+                                       'fetched_' + data_type: len(documents) + skip}
+
+        if not continue_fetch_data:
+            last_run[last_fetch_key] = latest_timestamp
+            demisto.debug(f'RadwareCloudDDoS: {data_type=} saved {latest_timestamp=}')
+
+        if new_continue_fetch_data:
+            last_run['nextTrigger'] = '0'
+
+        last_run[continue_fetch_key] = new_continue_fetch_data
+        demisto.debug(f'RadwareCloudDDoS: {data_type=} set {new_continue_fetch_data=}')
+
+        if data_type == 'events':
+            format_data_fields(documents, 'security_events')
+        elif data_type == 'alerts':
+            format_data_fields(documents, 'operational_alerts')
 
     return documents, last_run
 
@@ -215,15 +286,16 @@ def main() -> None:
 
             demisto.setLastRun(last_run)
             send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
-            demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
+            demisto.debug(f'Successfully sent {len(events)}events and {len(alerts)}alerts to XSIAM')
+
         elif command == "radware-cloud-ddos-protection-services-get-events":
+            events = []
+            alerts = []
             if 'Events' in event_types:
                 events, _ = fetch_events(client, last_run=last_run)
             if 'Alerts' in event_types:
                 alerts, _ = fetch_alerts(client, last_run=last_run)
-            events, _ = fetch_events(client, last_run=demisto.getLastRun())
-            return_results(events)
+            return_results(events+alerts)
 
     except Exception as e:
         demisto.error(traceback.format_exc())

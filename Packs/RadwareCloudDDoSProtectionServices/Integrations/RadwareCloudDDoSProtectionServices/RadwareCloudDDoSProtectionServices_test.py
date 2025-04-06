@@ -1,5 +1,6 @@
 import pytest
-from RadwareCloudDDoSProtectionServices import Client, fetch_events, fetch_alerts
+from RadwareCloudDDoSProtectionServices import Client, fetch_data
+
 
 @pytest.fixture()
 def client() -> Client:
@@ -24,8 +25,10 @@ def test_fetch_events_no_last_run(mocker, client):
      - running the fetch_events function.
 
     Then:
-     - make sure events are fetched and processed correctly.
-     - make sure last_run is updated correctly.
+     - make sure 2 events are fetched.
+     - make sure each event has a '_time' field.
+     - make sure each event has a 'source_log_type' field.
+     - make sure 'last_fetch_events' in last_run is updated correctly to the latest event timestamp.
     """
     last_run = {}
     response = {
@@ -35,7 +38,8 @@ def test_fetch_events_no_last_run(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    events, new_last_run = fetch_events(client, last_run)
+    events, new_last_run = fetch_data(client, last_run, 'events')
+
     assert len(events) == 2
     assert "_time" in events[0]
     assert "source_log_type" in events[0]
@@ -52,8 +56,10 @@ def test_fetch_events_with_pagination(mocker, client):
      - running the fetch_events function with pagination.
 
     Then:
-     - make sure all 700 events are fetched and processed correctly.
-     - make sure last_run is updated to indicate more events need to be fetched.
+     - make sure all 700 events are fetched.
+     - make sure each event has a '_time' field.
+     - make sure each event has a 'source_log_type' field.
+     - make sure last_run is updated to indicate that more events need to be fetched.
     """
     last_run = {
         "last_fetch_events": 1602323123456,
@@ -63,14 +69,17 @@ def test_fetch_events_with_pagination(mocker, client):
         "documents": documents
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    events, new_last_run = fetch_events(client, last_run)
+    events, new_last_run = fetch_data(client, last_run, 'events')
+
     assert len(events) == 700
     assert "_time" in events[0]
     assert "source_log_type" in events[0]
-    assert new_last_run.get("continue_fetch_events")
+    assert new_last_run.get("continue_fetch_events").get('end_time')
+    assert new_last_run.get("continue_fetch_events").get('start_time')
+    assert new_last_run.get("continue_fetch_events").get('fetched_events')
 
 
-def test_fetch_events_with_less_than_700(mocker, client):
+def test_fetch_events_with_less_than_max_results(mocker, client):
     """
     Given:
      - a last_run with a specific timestamp.
@@ -80,8 +89,11 @@ def test_fetch_events_with_less_than_700(mocker, client):
      - running the fetch_events function.
 
     Then:
-     - make sure all events are fetched and processed correctly.
-     - make sure last_run is updated correctly.
+     - make sure all events are fetched.
+     - make sure each event has a '_time' field.
+     - make sure each event has a 'source_log_type' field.
+     - make sure 'last_fetch_events' in last_run is updated correctly to the latest event timestamp.
+     - make sure 'continue_fetch_events' is not set in last_run, indicating no more pages to fetch.
     """
     last_run = {
         "last_fetch_events": 1602323123456,
@@ -93,7 +105,8 @@ def test_fetch_events_with_less_than_700(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    events, new_last_run = fetch_events(client, last_run)
+    events, new_last_run = fetch_data(client, last_run, 'events')
+
     assert len(events) == 2
     assert "_time" in events[0]
     assert "source_log_type" in events[0]
@@ -110,8 +123,10 @@ def test_fetch_alerts_no_last_run(mocker, client):
      - running the fetch_alerts function.
 
     Then:
-     - make sure alerts are fetched and processed correctly.
-     - make sure last_run is updated correctly.
+     - make sure 2 alerts are fetched.
+     - make sure each alert has a '_time' field.
+     - make sure each alert has a 'source_log_type' field.
+     - make sure 'last_fetch_alerts' in last_run is updated correctly to the latest alert timestamp.
     """
     last_run = {}
     response = {
@@ -121,7 +136,8 @@ def test_fetch_alerts_no_last_run(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    alerts, new_last_run = fetch_alerts(client, last_run)
+    alerts, new_last_run = fetch_data(client, last_run, 'alerts')
+
     assert len(alerts) == 2
     assert "_time" in alerts[0]
     assert "source_log_type" in alerts[0]
@@ -138,8 +154,10 @@ def test_fetch_alerts_with_pagination(mocker, client):
      - running the fetch_alerts function with pagination.
 
     Then:
-     - make sure all 700 alerts are fetched and processed correctly.
-     - make sure last_run is updated to indicate more alerts need to be fetched.
+     - make sure all 700 alerts are fetched.
+     - make sure each alert has a '_time' field.
+     - make sure each alert has a 'source_log_type' field.
+     - make sure last_run is updated to indicate that more alerts need to be fetched.
     """
     last_run = {
         "last_fetch_alerts": 1602323123456,
@@ -149,14 +167,16 @@ def test_fetch_alerts_with_pagination(mocker, client):
         "documents": documents
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    alerts, new_last_run = fetch_alerts(client, last_run)
+    alerts, new_last_run = fetch_data(client, last_run, 'alerts')
+
     assert len(alerts) == 700
     assert "_time" in alerts[0]
     assert "source_log_type" in alerts[0]
-    assert new_last_run.get("continue_fetch_alerts")
+    assert new_last_run.get("continue_fetch_alerts").get('end_time')
+    assert new_last_run.get("continue_fetch_alerts").get('start_time')
+    assert new_last_run.get("continue_fetch_alerts").get('fetched_alerts')
 
-
-def test_fetch_alerts_with_less_than_700(mocker, client):
+def test_fetch_alerts_with_less_than_max_results(mocker, client):
     """
     Given:
      - a last_run with a specific timestamp.
@@ -166,8 +186,11 @@ def test_fetch_alerts_with_less_than_700(mocker, client):
      - running the fetch_alerts function.
 
     Then:
-     - make sure all alerts are fetched and processed correctly.
-     - make sure last_run is updated correctly.
+     - make sure all alerts are fetched.
+     - make sure each alert has a '_time' field.
+     - make sure each alert has a 'source_log_type' field.
+     - make sure 'last_fetch_alerts' in last_run is updated correctly to the latest alert timestamp.
+     - make sure 'continue_fetch_alerts' is not set in last_run, indicating no more pages to fetch.
     """
     last_run = {
         "last_fetch_alerts": 1502323411234,
@@ -179,7 +202,8 @@ def test_fetch_alerts_with_less_than_700(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    alerts, new_last_run = fetch_alerts(client, last_run)
+    alerts, new_last_run = fetch_data(client, last_run, 'alerts')
+
     assert len(alerts) == 2
     assert "_time" in alerts[0]
     assert "source_log_type" in alerts[0]
