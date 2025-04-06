@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2 of BeyondTrust - Autho
 
 ## Configure BeyondTrust - Authorization Requests in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 |  | True |
@@ -29,15 +28,16 @@ approve or deny authorization requests for BT.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sys_id | sctask id. | Required | 
-| record_id | PMC record Id. | Required | 
-| decision | The decision regarding the authorization request. Possible values are: Denied, Approved, Pending. | Required | 
-| duration | action duration (once or in seconds). Possible values are: Once. | Required | 
-| user | The request's user. | Optional | 
+| sys_id | sctask id. | Required |
+| record_id | PMC record Id. | Required |
+| decision | The decision regarding the authorization request. Possible values are: Denied, Approved, Pending. | Required |
+| duration | action duration (once or in seconds). Possible values are: Once. | Required |
+| user | The request's user. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### bt-get-ticket
 
 ***
@@ -51,7 +51,7 @@ retrieves an existing ticket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sys_id | the ticket system ID. | Required | 
+| sys_id | the ticket system ID. | Required |
 
 #### Context Output
 
