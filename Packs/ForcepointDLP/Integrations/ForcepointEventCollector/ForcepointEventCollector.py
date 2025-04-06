@@ -559,7 +559,6 @@ def validate_authentication(func: Callable) -> Callable:
 
 
 class Client(BaseClient):
-
     def __init__(
         self,
         base_url: str,
@@ -863,7 +862,7 @@ class Client(BaseClient):
 
 def get_events_command(
     client: Client,
-    args: dict[str, Any]
+    args: dict[str, Any],
 ) -> tuple[CommandResults, List[dict[str, Any]]]:
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
     since_time = arg_to_datetime(args.get("since_time"), settings=DATEPARSER_SETTINGS)
@@ -2813,7 +2812,7 @@ def main():  # pragma: no cover
 
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
