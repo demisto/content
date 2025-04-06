@@ -116,7 +116,7 @@ tasks:
     task:
       id: b74c1def-9483-4db5-838d-328838a1ad30
       version: -1
-      name: Get source user risk score
+      name: Get user risk score
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -152,7 +152,7 @@ tasks:
     task:
       id: 1454580e-4f0b-45a8-8f6d-5d3a4d907508
       version: -1
-      name: Get source user Azure risk score
+      name: Get user Azure risk score
       description: Returns a list of all risky users and their properties.
       script: '|||azure-risky-users-list'
       type: regular
@@ -295,7 +295,7 @@ tasks:
     task:
       id: ed8d7b94-cdff-4057-89cd-c0857607c022
       version: -1
-      name: Check if initiating user is risky
+      name: Check if user is risky
       type: condition
       iscommand: false
       brand: ""
@@ -544,10 +544,8 @@ tasks:
     task:
       id: cf552f80-8be3-478e-828f-260d66d101a1
       version: -1
-      name: Revoke user session
-      description: |-
-        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-        Permission: Directory.AccessAsUser.All(Delegated).
+      name: Clear user session
+      description: "Revoke a user session by invalidating all refresh tokens issued to applications for a user. \nThis command requires an administrator role.\nPermission required: Directory.AccessAsUser.All (Delegated)."
       script: '|||msgraph-user-session-revoke'
       type: regular
       iscommand: true
@@ -557,23 +555,14 @@ tasks:
       - "56"
     scriptarguments:
       user:
-        complex:
-          root: Core.OriginalAlert.event
-          accessor: identity_name
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert.event.referenced_resource_name
-                iscontext: true
+        simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1060,
-          "y": 3807
+          "y": 3808
         }
       }
     note: false
