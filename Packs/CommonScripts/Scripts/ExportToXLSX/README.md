@@ -1,6 +1,7 @@
 Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +24,6 @@ Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
 | border | Whether borders should be added to table cells. If this argument is set to "true", borders are added to table cells. Default is "true". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

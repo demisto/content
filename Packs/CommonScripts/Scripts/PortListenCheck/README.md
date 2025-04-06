@@ -1,6 +1,7 @@
 Checks whether a port was open on a given host.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Checks whether a port was open on a given host.
 | Script Type | python |
 | Tags | - |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +19,7 @@ Checks whether a port was open on a given host.
 | port | The port to check. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
