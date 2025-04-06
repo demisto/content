@@ -1,13 +1,16 @@
 Integration with Okta's cloud-based identity management service.
 
 ## Configure Okta v2 in Cortex
+
 ### API Token Authentication Prerequisites
+
 1. Sign in to your Okta organization as a user with administrator privileges.
 2. On the **Admin Console**, select **Security** > **API** from the menu, and then select the **Tokens** tab.
 3. Click **Create Token**.
 4. Name your token and click **Create Token**.
 
 #### Notes
+
 - API tokens have the same permissions as the user who creates them, and if the permissions of a user change, so do the permissions of the API token.
 - If more than one certificate is assigned to the application, the Key ID parameter is required to specify which
   certificate to use for signing the JWT token.
@@ -15,19 +18,22 @@ Integration with Okta's cloud-based identity management service.
 For more information, see the '[Create an API token](https://developer.okta.com/docs/guides/create-an-api-token/main/)' official documentation article.
 
 ### OAuth 2.0 Authentication Prerequisites
+
 #### Required Scopes
+
 The following scopes are required for the Okta v2 integration to work properly:
-- okta.apps.manage 
-- okta.apps.read 
-- okta.groups.manage 
-- okta.groups.read 
-- okta.logs.read 
-- okta.networkZones.manage 
-- okta.networkZones.read 
-- okta.sessions.manage 
-- okta.sessions.read 
-- okta.users.manage 
-- okta.users.read 
+
+- okta.apps.manage
+- okta.apps.read
+- okta.groups.manage
+- okta.groups.read
+- okta.logs.read
+- okta.networkZones.manage
+- okta.networkZones.read
+- okta.sessions.manage
+- okta.sessions.read
+- okta.users.manage
+- okta.users.read
 
 1. Sign in to Okta Admin Console.
 2. In the Admin Console, go to **Applications** > **Applications**.
@@ -49,9 +55,7 @@ The following scopes are required for the Okta v2 integration to work properly:
 
 For more information, see the '[Implement OAuth for Okta](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)' official documentation article.
 
-
 ### Instance Configuration
-
 
 | **Parameter**                              | **Description**                                                                                                                                                                                  | **Required** |
 |--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -64,7 +68,6 @@ For more information, see the '[Implement OAuth for Okta](https://developer.okta
 | Key ID                                     | Required and used if more than one key is used for signing JWT tokens.                                                                                                                           | False        |
 | Trust any certificate (not secure)         |                                                                                                                                                                                                  | False        |
 | Use system proxy settings                  |                                                                                                                                                                                                  | False        |
-
 
 ## Commands
 
@@ -84,16 +87,18 @@ Unlocks a single user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to unlock. | Required | 
+| username | Username to unlock. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-unlock-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User testForDocs@test.com unlocked
 
 ### okta-deactivate-user
@@ -109,16 +114,18 @@ Deactivates a single user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to deactivate. | Required | 
+| username | Username to deactivate. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-deactivate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User testForDocs@test.com deactivated
 
 ### okta-activate-user
@@ -134,16 +141,18 @@ Activates a single user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to activate. | Required | 
+| username | Username to activate. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-activate-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >### testForDocs@test.com is active now
 
 ### okta-suspend-user
@@ -159,16 +168,18 @@ Suspends a single user. This operation can only be performed on users with an AC
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to suspend. | Required | 
+| username | Username to suspend. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-suspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >### testForDocs@test.com status is Suspended
 
 ### okta-unsuspend-user
@@ -184,16 +195,18 @@ Returns a single user to ACTIVE status. This operation can only be performed on 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to change the status to ACTIVE. | Required | 
+| username | Username to change the status to ACTIVE. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-unsuspend-user username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >### testForDocs@test.com is no longer SUSPENDED
 
 ### okta-get-user-factors
@@ -209,25 +222,26 @@ Returns all the enrolled factors for the specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username for which to return all enrolled factors. | Optional | 
-| userId | User ID of the user for which to get all enrolled factors. | Optional | 
+| username | Username for which to return all enrolled factors. | Optional |
+| userId | User ID of the user for which to get all enrolled factors. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta account ID. | 
-| Account.Factor.ID | String | Okta account factor ID. | 
-| Account.Factor.Provider | String | Okta account factor provider. | 
-| Account.Factor.Profile | String | Okta account factor profile. | 
-| Account.Factor.FactorType | String | Okta account factor type. | 
-| Account.Factor.Status | Unknown | Okta account factor status. | 
-
+| Account.ID | String | Okta account ID. |
+| Account.Factor.ID | String | Okta account factor ID. |
+| Account.Factor.Provider | String | Okta account factor provider. |
+| Account.Factor.Profile | String | Okta account factor profile. |
+| Account.Factor.FactorType | String | Okta account factor type. |
+| Account.Factor.Status | Unknown | Okta account factor status. |
 
 ##### Command Example
+
 ```!okta-get-user-factors username=factor@test.com```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -263,14 +277,16 @@ Returns all the enrolled factors for the specified user.
 ```
 
 ##### Human Readable Output
+>
 >Factors for user: 00upt1w8tgFQM2v0h7
+>
 >### Factors
+>
 >|FactorType|ID|Profile|Provider|Status|
 >|---|---|---|---|---|
 >| sms | mbgt21nffaaN5F060h7 | phoneNumber: +12025550191 | OKTA | PENDING_ACTIVATION |
 >| token:software:totp | uftptgdrDJ7fDOq0h7 | credentialId: factor@test.com | GOOGLE | PENDING_ACTIVATION |
 >| push | opfg1joeaArlg27g0h7 |  | OKTA | PENDING_ACTIVATION |
-
 
 ### okta-reset-factor
 
@@ -285,18 +301,20 @@ Un-enrolls an existing factor for the specified user. This enables the user to e
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | The user ID. | Optional | 
-| username | Username for which to un-enroll an existing factor. | Optional | 
-| factorId | The ID of the factor to reset. | Required | 
+| userId | The user ID. | Optional |
+| username | Username for which to un-enroll an existing factor. | Optional |
+| factorId | The ID of the factor to reset. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-reset-factor factorId=ufsq7cvptfbjQa72c0h7 userId=00upt1w8t40wFQM2v6t4```
 
 ##### Human Readable Output
+>
 >Factor: ufsq7cvptfbjQa72c0h7 deleted
 
 ### okta-set-password
@@ -312,18 +330,20 @@ Sets passwords without validating existing user credentials.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Okta username for which to set the password. | Required | 
-| password | The new password to set for the user. | Required | 
-| temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional | 
+| username | Okta username for which to set the password. | Required |
+| password | The new password to set for the user. | Required |
+| temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-set-password username=testForDocs@test.com password=N3wPa55word!```
 
 ##### Human Readable Output
+>
 >testForDocs@test.com password was last changed on 2020-03-26T13:57:13.000Z
 
 ### okta-add-to-group
@@ -339,19 +359,21 @@ Adds a user to a group with OKTA_GROUP type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | ID of the user to add to the group. | Optional | 
-| username | Name of the user to add to the group. | Optional | 
-| groupId | ID of the group to add the user to. | Optional | 
-| groupName | Name of the group to add the user to. | Optional | 
+| userId | ID of the user to add to the group. | Optional |
+| username | Name of the user to add to the group. | Optional |
+| groupId | ID of the group to add the user to. | Optional |
+| groupName | Name of the group to add the user to. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-add-to-group groupName=Demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User: 00uqk1qesl3k0SRbH0h7 added to group: Demisto successfully
 
 ### okta-remove-from-group
@@ -367,19 +389,21 @@ Removes a user from a group with OKTA_GROUP type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | ID of the user to remove from the group. | Optional | 
-| username | Name of the user to remove from the group. | Optional | 
-| groupId | ID of the group to remove the user from. | Optional | 
-| groupName | Name of the group to remove the user from. | Optional | 
+| userId | ID of the user to remove from the group. | Optional |
+| username | Name of the user to remove from the group. | Optional |
+| groupId | ID of the group to remove the user from. | Optional |
+| groupName | Name of the group to remove the user from. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-remove-from-group groupName=demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
+>
 >User: 00uqk1qesl3k0SRbH0h7 was removed from group: demisto successfully
 
 ### okta-get-groups
@@ -395,29 +419,30 @@ Returns all user groups associated with a specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username in Okta for which to get the associated groups. | Required | 
+| username | Username in Okta for which to get the associated groups. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Group | Unknown | Okta groups with which the account is associated. | 
-| Account.ID | String | Okta account ID. | 
-| Account.Type | String | Okta account type. | 
-| Account.Group.ID | String | Unique key for the group. | 
-| Account.Group.Created | Date | Timestamp when the group was created. | 
-| Account.Group.ObjectClass | String | The object class, which determines the group's profile. | 
-| Account.Group.LastUpdated | Date | Timestamp when the group's profile was last updated. | 
-| Account.Group.LastMembershipUpdated | Date | Timestamp when the group's memberships were last updated. | 
-| Account.Group.Type | String | Group type, which determines how a group's profile and memberships are managed. | 
-| Account.Group.Description | String | Description of the group. | 
-| Account.Group.Name | String | Name of the group. | 
-
+| Account.Group | Unknown | Okta groups with which the account is associated. |
+| Account.ID | String | Okta account ID. |
+| Account.Type | String | Okta account type. |
+| Account.Group.ID | String | Unique key for the group. |
+| Account.Group.Created | Date | Timestamp when the group was created. |
+| Account.Group.ObjectClass | String | The object class, which determines the group's profile. |
+| Account.Group.LastUpdated | Date | Timestamp when the group's profile was last updated. |
+| Account.Group.LastMembershipUpdated | Date | Timestamp when the group's memberships were last updated. |
+| Account.Group.Type | String | Group type, which determines how a group's profile and memberships are managed. |
+| Account.Group.Description | String | Description of the group. |
+| Account.Group.Name | String | Name of the group. |
 
 ##### Command Example
+
 ```!okta-get-groups username=testForDocs@test.com```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -453,13 +478,15 @@ Returns all user groups associated with a specified user.
 ```
 
 ##### Human Readable Output
+>
 >Okta groups for user: testForDocs@test.com
+>
 >### Groups
+>
 >|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckgAJpLcNc0h7 | 2020-03-26T13:56:49.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
 >| 2018-01-19T02:02:06.000Z |  | 00gdougcgzEaf7c50h7 | 2020-03-26T13:49:47.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
-
 
 ### okta-verify-push-factor
 
@@ -474,24 +501,26 @@ Enrolls and verifies a push factor for the specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | The ID of the user to enroll and verify. | Required | 
-| factorId | The push factor ID. | Required | 
+| userId | The ID of the user to enroll and verify. | Required |
+| factorId | The push factor ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta user ID. | 
-| Account.VerifyPushResult | String | Okta user push factor result. | 
-
+| Account.ID | String | Okta user ID. |
+| Account.VerifyPushResult | String | Okta user push factor result. |
 
 ##### Command Example
+
 ```!okta-verify-push-factor factorId=opfpt1joeaArlg27g0h7 userId=00upt1w8t40wFQM2v0h7```
 
 ##### Human Readable Output
+>
 >Verify push factor result for user 00upt1w8t40wgQM2v0h7: WAITING
 
 ##### Context Example
+
 ```
 {
     "factorResult": "WAITING",
@@ -547,31 +576,32 @@ Searches for Okta users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| term | Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required. | Optional | 
-| advanced_search | Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required. | Optional | 
-| limit | The maximum number of results to return. The default and maximum is 200. | Optional | 
-| verbose | Whether to return details of users that match the found term. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
+| term | Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required. | Optional |
+| advanced_search | Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required. | Optional |
+| limit | The maximum number of results to return. The default and maximum is 200. | Optional |
+| verbose | Whether to return details of users that match the found term. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta account IDs returned by the search. | 
-| Account.Username | String | Okta account usernames returned by the search. | 
-| Account.Email | String | Okta account emails returned by the search. | 
-| Account.DisplayName | String | Okta account display names returned by the search. | 
-| Account.Type | String | Okta account type returned by the search. | 
-| Account.Status | String | Okta account current status. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-
+| Account.ID | String | Okta account IDs returned by the search. |
+| Account.Username | String | Okta account usernames returned by the search. |
+| Account.Email | String | Okta account emails returned by the search. |
+| Account.DisplayName | String | Okta account display names returned by the search. |
+| Account.Type | String | Okta account type returned by the search. |
+| Account.Status | String | Okta account current status. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
 
 ##### Command Example
+
 ```!okta-search term=test verbose=true```
 
 ##### Context Example
+
 ```
 {
     "Account": [
@@ -615,34 +645,46 @@ Searches for Okta users.
 ```
 
 ##### Human Readable Output
+>
 >Okta users found:
 >User:bartest@test.com
+>
 >### Profile
+>
 >|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|
 >| bartest@test.com | bar | test | bartest@test.com |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uppjeleqJQ2kkN80h7"} |
+
 ##### User:test@that.com
+
 ##### Profile
+
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
 | test@that.com | test | that | test@that.com |  | test@that.com |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00ufufhqits3y78Ju0h7"} |
+
 ##### User:testForDocs@test.com
+
 ##### Profile
+
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
 | testForDocs@test.com | test | that | testForDocs@test.com |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
@@ -660,30 +702,32 @@ Fetches information for a single user. You must enter one or more parameters for
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Okta username for which to get information. | Optional | 
-| userId | User ID of the user for which to get information. | Optional | 
-| verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
+| username | Okta username for which to get information. | Optional |
+| userId | User ID of the user for which to get information. | Optional |
+| verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta account ID. | 
-| Account.Email | String | Okta account email. | 
-| Account.Username | String | Okta account username. | 
-| Account.DisplayName | String | Okta account display name. | 
-| Account.Status | String | Okta account status. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-| Account.Manager | String | The manager. | 
-| Account.ManagerEmail | String | The manager email. | 
+| Account.ID | String | Okta account ID. |
+| Account.Email | String | Okta account email. |
+| Account.Username | String | Okta account username. |
+| Account.DisplayName | String | Okta account display name. |
+| Account.Status | String | Okta account status. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
+| Account.Manager | String | The manager. |
+| Account.ManagerEmail | String | The manager email. |
 
 ##### Command Example
+
 ```!okta-get-user username=testForDocs@test.com verbose=true```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -704,17 +748,20 @@ Fetches information for a single user. You must enter one or more parameters for
 ```
 
 ##### Human Readable Output
+>
 >### User:testForDocs@test.com
+>
 >### Profile
+>
 >|Email|First Name|Last Name|Login|Manager|Manager Email|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|---|---|
 >| testForDocs@test.com | test | that | testForDocs@test.com | manager@test.com |  |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"} provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | links|
-
 
 ### okta-list-users
 
@@ -729,26 +776,26 @@ Lists users in your organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| after | The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag. | Optional | 
-| limit | The maximum number of results to return. Default is 200. | Optional | 
-| verbose | Whether to return extended user information. Possible values are: true, false. Default is false. | Optional | 
-| query | Searches the name property of groups for matching values. | Optional | 
-| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
+| after | The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag. | Optional |
+| limit | The maximum number of results to return. Default is 200. | Optional |
+| verbose | Whether to return extended user information. Possible values are: true, false. Default is false. | Optional |
+| query | Searches the name property of groups for matching values. | Optional |
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta account ID. | 
-| Account.Email | String | Okta account email. | 
-| Account.Username | String | Okta account username. | 
-| Account.DisplayName | String | Okta account display name. | 
-| Account.Status | String | Okta account status. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-| Okta.User.tag | String | The location of the next item, used with after param. | 
+| Account.ID | String | Okta account ID. |
+| Account.Email | String | Okta account email. |
+| Account.Username | String | Okta account username. |
+| Account.DisplayName | String | Okta account display name. |
+| Account.Status | String | Okta account status. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
+| Okta.User.tag | String | The location of the next item, used with after param. |
 
 ### okta-create-user
 
@@ -763,65 +810,66 @@ Creates a new user with an option of setting a password, recovery question, and 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firstName | First name of the user (givenName). | Required | 
-| lastName | Family name of the user (familyName). | Required | 
-| email | Primary email address of the user. | Required | 
-| login | Unique identifier for the user (username). | Required | 
-| secondEmail | Secondary email address of user. Usually used for account recovery. | Optional | 
-| middleName | Middle name(s) of the user. | Optional | 
-| honorificPrefix | A comma-separated list of honorific prefix(es) of the user, or title in most Western languages. | Optional | 
-| honorificSuffix | A comma-separated list of honorific suffix(es) of the user. | Optional | 
-| title | User's title. for example, Vice President. | Optional | 
-| displayName | Display name of the user. | Optional | 
-| nickName | Casual way to address the user (nick name). | Optional | 
-| profileUrl | URL of the user online profile. For example, a web page. | Optional | 
-| primaryPhone | Primary phone number of the user. | Optional | 
-| mobilePhone | Mobile phone number of the user. | Optional | 
-| streetAddress | Full street address component of the user's address. | Optional | 
-| city | City or locality component of the user's address (locality). | Optional | 
-| state | State or region component of the user's address (region). | Optional | 
-| zipCode | Zip code or postal code component of the user's address (postalCode). | Optional | 
-| countryCode | Country name component of the user's address (country). | Optional | 
-| postalAddress | Mailing address component of the user's address. | Optional | 
-| preferredLanguage | User's preferred written or spoken languages. | Optional | 
-| locale | User's default location, for purposes of localizing items such as currency, date-time format, numerical representations, etc. | Optional | 
-| timezone | User's time zone. | Optional | 
-| userType | The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor". | Optional | 
-| employeeNumber | Organization or company assigned unique identifier for the user. | Optional | 
-| costCenter | Name of a cost center the user is assigned to. | Optional | 
-| organization | Name of the user's organization. | Optional | 
-| division | Name of the user's division. | Optional | 
-| department | Name of the user's department. | Optional | 
-| managerId | ID of the user's manager. | Optional | 
-| manager | Display name of the user's manager. | Optional | 
-| password | Password for the new user. | Optional | 
-| passwordQuestion | Password question for the new user. | Optional | 
-| passwordAnswer | Password answer for question. | Optional | 
-| providerType | The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL". Possible values are: OKTA, ACTIVE_DIRECTORY, LDAP, FEDERATION, SOCIAL. | Optional | 
-| providerName | Name of the provider. | Optional | 
-| groupIds | IDs of groups that the user will be immediately added to at time of creation (does Not include default group). | Optional | 
-| activate | Whether to activate the lifecycle operation when creating the user. Can be "true" or "false". Possible values are: true, false. | Optional | 
+| firstName | First name of the user (givenName). | Required |
+| lastName | Family name of the user (familyName). | Required |
+| email | Primary email address of the user. | Required |
+| login | Unique identifier for the user (username). | Required |
+| secondEmail | Secondary email address of user. Usually used for account recovery. | Optional |
+| middleName | Middle name(s) of the user. | Optional |
+| honorificPrefix | A comma-separated list of honorific prefix(es) of the user, or title in most Western languages. | Optional |
+| honorificSuffix | A comma-separated list of honorific suffix(es) of the user. | Optional |
+| title | User's title. for example, Vice President. | Optional |
+| displayName | Display name of the user. | Optional |
+| nickName | Casual way to address the user (nick name). | Optional |
+| profileUrl | URL of the user online profile. For example, a web page. | Optional |
+| primaryPhone | Primary phone number of the user. | Optional |
+| mobilePhone | Mobile phone number of the user. | Optional |
+| streetAddress | Full street address component of the user's address. | Optional |
+| city | City or locality component of the user's address (locality). | Optional |
+| state | State or region component of the user's address (region). | Optional |
+| zipCode | Zip code or postal code component of the user's address (postalCode). | Optional |
+| countryCode | Country name component of the user's address (country). | Optional |
+| postalAddress | Mailing address component of the user's address. | Optional |
+| preferredLanguage | User's preferred written or spoken languages. | Optional |
+| locale | User's default location, for purposes of localizing items such as currency, date-time format, numerical representations, etc. | Optional |
+| timezone | User's time zone. | Optional |
+| userType | The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor". | Optional |
+| employeeNumber | Organization or company assigned unique identifier for the user. | Optional |
+| costCenter | Name of a cost center the user is assigned to. | Optional |
+| organization | Name of the user's organization. | Optional |
+| division | Name of the user's division. | Optional |
+| department | Name of the user's department. | Optional |
+| managerId | ID of the user's manager. | Optional |
+| manager | Display name of the user's manager. | Optional |
+| password | Password for the new user. | Optional |
+| passwordQuestion | Password question for the new user. | Optional |
+| passwordAnswer | Password answer for question. | Optional |
+| providerType | The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL". Possible values are: OKTA, ACTIVE_DIRECTORY, LDAP, FEDERATION, SOCIAL. | Optional |
+| providerName | Name of the provider. | Optional |
+| groupIds | IDs of groups that the user will be immediately added to at time of creation (does Not include default group). | Optional |
+| activate | Whether to activate the lifecycle operation when creating the user. Can be "true" or "false". Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Created Okta account ID. | 
-| Account.Email | String | Created Okta account email address. | 
-| Account.Username | String | Created okta account username. | 
-| Account.DisplayName | String | Created Okta account display name. | 
-| Account.Type | String | Type of created account - Okta. | 
-| Account.Status | String | Okta account current status. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-
+| Account.ID | String | Created Okta account ID. |
+| Account.Email | String | Created Okta account email address. |
+| Account.Username | String | Created okta account username. |
+| Account.DisplayName | String | Created Okta account display name. |
+| Account.Type | String | Type of created account - Okta. |
+| Account.Status | String | Okta account current status. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
 
 ##### Command Example
+
 ```!okta-create-user email=testForDocs@test.com firstName=test lastName=that login=testForDocs@test.com password=Pa55word! passwordQuestion="whats is your favourite integration" passwordAnswer="Okta of course"```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -840,11 +888,12 @@ Creates a new user with an option of setting a password, recovery question, and 
 ```
 
 ##### Human Readable Output
->### Okta User Created: testForDocs@test.com:
+>
+>### Okta User Created: testForDocs@test.com
+>
 >|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 >|---|---|---|---|---|---|---|
 >| test | 00uqk1qesl3k0SRbH0h7 |  | that | testForDocs@test.com |  | STAGED |
-
 
 ### okta-update-user
 
@@ -859,56 +908,58 @@ Updates a user with a given login. All fields are optional. Fields which are not
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firstName | First name of the user (given name). | Optional | 
-| lastName | Family name of the user. | Optional | 
-| email | Primary email address of the user. | Optional | 
-| username | Unique identifier for the user (login). | Required | 
-| secondEmail | Secondary email address of the user (typically used for account recovery. | Optional | 
-| middleName | Middle name(s) of the user. | Optional | 
-| honorificPrefix | Honorific prefix(es) of the user, or title in most Western languages. | Optional | 
-| honorificSuffix | Honorific suffix(es) of the user. | Optional | 
-| title | User's title. For example, Vice President. | Optional | 
-| displayName | Display name of the user. | Optional | 
-| nickName | Casual way to address the user in real life (nick name). | Optional | 
-| profileUrl | URL of the user's online profile. For example, a web page. | Optional | 
-| primaryPhone | Primary phone number of the user. | Optional | 
-| mobilePhone | Mobile phone number of the user. | Optional | 
-| streetAddress | Full street address component of the user's address. | Optional | 
-| city | City or locality component of the user's address (locality). | Optional | 
-| state | State or region component of the user's address (region). | Optional | 
-| zipCode | Zip code or postal code component of the user's address (postalCode). | Optional | 
-| countryCode | Country name component of the user's address (country). | Optional | 
-| postalAddress | Mailing address component of the user's address. | Optional | 
-| preferredLanguage | User's preferred written or spoken languages. | Optional | 
-| locale | User's default location for purposes of localizing items such as currency, date-time format, numerical representations, etc. | Optional | 
-| timezone | User time zone. | Optional | 
-| userType | The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor". | Optional | 
-| employeeNumber | Organization or company assigned unique identifier for the user. | Optional | 
-| costCenter | Name of a cost center the user is assigned to. | Optional | 
-| organization | Name of the user's organization. | Optional | 
-| division | Name of the user's division. | Optional | 
-| department | Name of the user's department. | Optional | 
-| managerId | ID of the user's manager. | Optional | 
-| manager | Display name of the user's manager. | Optional | 
-| password | New password for the specified user. | Optional | 
-| passwordQuestion | Password question for the specified user. | Optional | 
-| passwordAnswer | Password answer for the question. | Optional | 
-| providerType | The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL". Possible values are: OKTA, ACTIVE_DIRECTORY, FEDERATION, SOCIAL. | Optional | 
-| providerName | Name of the provider. | Optional | 
+| firstName | First name of the user (given name). | Optional |
+| lastName | Family name of the user. | Optional |
+| email | Primary email address of the user. | Optional |
+| username | Unique identifier for the user (login). | Required |
+| secondEmail | Secondary email address of the user (typically used for account recovery. | Optional |
+| middleName | Middle name(s) of the user. | Optional |
+| honorificPrefix | Honorific prefix(es) of the user, or title in most Western languages. | Optional |
+| honorificSuffix | Honorific suffix(es) of the user. | Optional |
+| title | User's title. For example, Vice President. | Optional |
+| displayName | Display name of the user. | Optional |
+| nickName | Casual way to address the user in real life (nick name). | Optional |
+| profileUrl | URL of the user's online profile. For example, a web page. | Optional |
+| primaryPhone | Primary phone number of the user. | Optional |
+| mobilePhone | Mobile phone number of the user. | Optional |
+| streetAddress | Full street address component of the user's address. | Optional |
+| city | City or locality component of the user's address (locality). | Optional |
+| state | State or region component of the user's address (region). | Optional |
+| zipCode | Zip code or postal code component of the user's address (postalCode). | Optional |
+| countryCode | Country name component of the user's address (country). | Optional |
+| postalAddress | Mailing address component of the user's address. | Optional |
+| preferredLanguage | User's preferred written or spoken languages. | Optional |
+| locale | User's default location for purposes of localizing items such as currency, date-time format, numerical representations, etc. | Optional |
+| timezone | User time zone. | Optional |
+| userType | The user type, which is used to identify the organization-to-user relationship such as "Employee" or "Contractor". | Optional |
+| employeeNumber | Organization or company assigned unique identifier for the user. | Optional |
+| costCenter | Name of a cost center the user is assigned to. | Optional |
+| organization | Name of the user's organization. | Optional |
+| division | Name of the user's division. | Optional |
+| department | Name of the user's department. | Optional |
+| managerId | ID of the user's manager. | Optional |
+| manager | Display name of the user's manager. | Optional |
+| password | New password for the specified user. | Optional |
+| passwordQuestion | Password question for the specified user. | Optional |
+| passwordAnswer | Password answer for the question. | Optional |
+| providerType | The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL". Possible values are: OKTA, ACTIVE_DIRECTORY, FEDERATION, SOCIAL. | Optional |
+| providerName | Name of the provider. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-update-user username=testForDocs@test.com firstName="First Name Updated"```
 
 ##### Human Readable Output
->### Okta user: testForDocs@test.com Updated:
+>
+>### Okta user: testForDocs@test.com Updated
+>
 >|email|firstName|lastName|login|mobilePhone|secondEmail|
 >|---|---|---|---|---|---|
 >| testForDocs@test.com | First Name Updated | that | testForDocs@test.com |  |  |
-
 
 ### okta-get-group-members
 
@@ -923,31 +974,32 @@ Enumerates all users that are members of a group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | ID of the group. | Optional | 
-| limit | The maximum number of results to return. | Optional | 
-| verbose | Whether to print extended user details. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
-| groupName | Name of the group. | Optional | 
+| groupId | ID of the group. | Optional |
+| limit | The maximum number of results to return. | Optional |
+| verbose | Whether to print extended user details. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional |
+| groupName | Name of the group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta account ID. | 
-| Account.Email | String | Okta account email address. | 
-| Account.Username | String | Okta account username. | 
-| Account.DisplayName | String | Okta account display name. | 
-| Account.Type | String | Account type - Okta. | 
-| Account.Status | String | Okta account current status. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-
+| Account.ID | String | Okta account ID. |
+| Account.Email | String | Okta account email address. |
+| Account.Username | String | Okta account username. |
+| Account.DisplayName | String | Okta account display name. |
+| Account.Type | String | Account type - Okta. |
+| Account.Status | String | Okta account current status. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
 
 ##### Command Example
+
 ```!okta-get-group-members groupName=Demisto limit=1 verbose=true```
 
 ##### Context Example
+
 ```
 {
     "Account": {
@@ -965,18 +1017,22 @@ Enumerates all users that are members of a group.
 ```
 
 ##### Human Readable Output
->### Users for group: Demisto:
+>
+>### Users for group: Demisto
+>
 >### User:Test@demisto.com
+>
 >### Profile
+>
 >|Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 >|---|---|---|---|---|---|
 >| XSOAR@demisto.com | Test | Demisto | XSOAR@demisto.com |  |  |
 
- ##### Additional Data
+##### Additional Data
+
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 |  | 2016-04-12T15:01:52.000Z | password: {} recovery_question: {"question": "born city"} provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uclpjidYi0h7"} |
-
 
 ### okta-list-groups
 
@@ -991,28 +1047,29 @@ Lists groups in your organization. A subset of groups can be returned that match
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Searches the name property of groups for matching values. | Optional | 
-| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
-| limit | The maximum number of results to return. The default is 200. Default is 200. | Optional | 
+| query | Searches the name property of groups for matching values. | Optional |
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional |
+| limit | The maximum number of results to return. The default is 200. Default is 200. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Group.ID | String | Unique key for the group. | 
-| Okta.Group.Created | Date | Timestamp for when the group was created. | 
-| Okta.Group.ObjectClass | Unknown | The group's profile. | 
-| Okta.Group.LastUpdated | Date | Timestamp for when the group's profile was last updated. | 
-| Okta.Group.LastMembershipUpdated | Date | Timestamp for when the group's membership was last updated. | 
-| Okta.Group.Type | String | The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN". | 
-| Okta.Group.Name | String | Name of the group. | 
-| Okta.Group.Description | String | Description of the group. | 
-
+| Okta.Group.ID | String | Unique key for the group. |
+| Okta.Group.Created | Date | Timestamp for when the group was created. |
+| Okta.Group.ObjectClass | Unknown | The group's profile. |
+| Okta.Group.LastUpdated | Date | Timestamp for when the group's profile was last updated. |
+| Okta.Group.LastMembershipUpdated | Date | Timestamp for when the group's membership was last updated. |
+| Okta.Group.Type | String | The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN". |
+| Okta.Group.Name | String | Name of the group. |
+| Okta.Group.Description | String | Description of the group. |
 
 ##### Command Example
+
 ```!okta-list-groups filter=`type eq "OKTA_GROUP" and lastUpdated lt "2019-04-30T00:00:00.000Z" and lastMembershipUpdated gt "2019-04-30T00:00:00.000Z"` query=demisto```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1032,11 +1089,12 @@ Lists groups in your organization. A subset of groups can be returned that match
 ```
 
 ##### Human Readable Output
+>
 >### Groups
+>
 >|Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2018-01-19T02:02:06.000Z |  | 00gdougctEaf7c50h7 | 2020-03-26T13:56:56.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
-
 
 ### okta-get-failed-logins
 
@@ -1051,53 +1109,54 @@ Returns failed login events.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z. | Optional | 
-| until | Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z. | Optional | 
-| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
-| limit | The maximum number of results to return. The default is 100. | Optional | 
+| since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z. | Optional |
+| until | Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z. | Optional |
+| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional |
+| limit | The maximum number of results to return. The default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. | 
-| Okta.Logs.Events.actor.displayName | String | Display name of the actor. | 
-| Okta.Logs.Events.actor.id | String | ID of the actor. | 
-| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. | 
-| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. | 
-| Okta.Logs.Events.client.userAgent.browser | String | Identifies the browser type, if relevant. For example, Chrome. | 
-| Okta.Logs.Events.client.device | String | Type of device that client operated from. For example, Computer. | 
-| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. | 
-| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. | 
-| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example Montana, Incheon. | 
-| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.displayMessage | String | The display message for an event. | 
-| Okta.Logs.Events.eventType | String | Type of event that was published. | 
-| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", "UNKNOWN". | 
-| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example, INVALID_CREDENTIALS. | 
-| Okta.Logs.Events.published | String | Timestamp when the event was published. | 
-| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". | 
-| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. | 
-| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. | 
-| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. | 
-| Okta.Logs.Events.request.ipChain.IP | String | IP address. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. | 
-| Okta.Logs.Events.target.id | String | ID of a target. | 
-| Okta.Logs.Events.target.type | String | Type of a target. | 
-| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. | 
-| Okta.Logs.Events.target.displayName | String | Display name of a target. | 
-
+| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. |
+| Okta.Logs.Events.actor.displayName | String | Display name of the actor. |
+| Okta.Logs.Events.actor.id | String | ID of the actor. |
+| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. |
+| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. |
+| Okta.Logs.Events.client.userAgent.browser | String | Identifies the browser type, if relevant. For example, Chrome. |
+| Okta.Logs.Events.client.device | String | Type of device that client operated from. For example, Computer. |
+| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. |
+| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. |
+| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example Montana, Incheon. |
+| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.displayMessage | String | The display message for an event. |
+| Okta.Logs.Events.eventType | String | Type of event that was published. |
+| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", "UNKNOWN". |
+| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example, INVALID_CREDENTIALS. |
+| Okta.Logs.Events.published | String | Timestamp when the event was published. |
+| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". |
+| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. |
+| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. |
+| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. |
+| Okta.Logs.Events.request.ipChain.IP | String | IP address. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. |
+| Okta.Logs.Events.target.id | String | ID of a target. |
+| Okta.Logs.Events.target.type | String | Type of a target. |
+| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. |
+| Okta.Logs.Events.target.displayName | String | Display name of a target. |
 
 ##### Command Example
+
 ```!okta-get-failed-logins since="2019-04-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1198,11 +1257,12 @@ Returns failed login events.
 ```
 
 ##### Human Readable Output
+>
 >### Failed Login Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| unknown (User) | admin | 127.0.0.1 | CHROME on Windows 10 Computer | User login to Okta | FAILURE: VERIFICATION_ERROR | INFO | 127.0.0.1 | - | 09/30/2019, 18:42:38 |
-
 
 ### okta-get-logs
 
@@ -1217,55 +1277,56 @@ Gets logs by providing optional filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  <br/>The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" <br/>-Events that have a specific action; eventType target.id eq ":id" <br/>- Events published with a specific target id; actor.id eq ":id"<br/>- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
-| query | The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: <br/>Events that mention a specific city: query=San Francisco; <br/>Events that mention a specific url: query=interestingURI.com; <br/>Events that mention a specific person: query=firstName lastName. | Optional | 
-| since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
-| until | Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
-| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
-| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
+| filter | Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  <br/>The following expressions are supported for events with the filter query parameter: eventType eq " :eventType" <br/>-Events that have a specific action; eventType target.id eq ":id" <br/>- Events published with a specific target id; actor.id eq ":id"<br/>- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional |
+| query | The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: <br/>Events that mention a specific city: query=San Francisco; <br/>Events that mention a specific url: query=interestingURI.com; <br/>Events that mention a specific person: query=firstName lastName. | Optional |
+| since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional |
+| until | Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional |
+| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional |
+| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. | 
-| Okta.Logs.Events.actor.displayName | String | Display name of the actor. | 
-| Okta.Logs.Events.actor.id | String | ID of the actor. | 
-| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. | 
-| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. | 
-| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. | 
-| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. | 
-| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. | 
-| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. | 
-| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.displayMessage | String | The display message for an event. | 
-| Okta.Logs.Events.eventType | String | Type of event that was published. | 
-| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". | 
-| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example, INVALID_CREDENTIALS. | 
-| Okta.Logs.Events.published | String | Timestamp when the event was published. | 
-| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". | 
-| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. | 
-| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. | 
-| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. | 
-| Okta.Logs.Events.request.ipChain.IP | String | IP address. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. | 
-| Okta.Logs.Events.target.id | String | ID of a target. | 
-| Okta.Logs.Events.target.type | String | Type of a target. | 
-| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. | 
-| Okta.Logs.Events.target.displayName | String | Display name of a target. | 
-
+| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. |
+| Okta.Logs.Events.actor.displayName | String | Display name of the actor. |
+| Okta.Logs.Events.actor.id | String | ID of the actor. |
+| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. |
+| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. |
+| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. |
+| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. |
+| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. |
+| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. |
+| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.displayMessage | String | The display message for an event. |
+| Okta.Logs.Events.eventType | String | Type of event that was published. |
+| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". |
+| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example, INVALID_CREDENTIALS. |
+| Okta.Logs.Events.published | String | Timestamp when the event was published. |
+| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". |
+| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. |
+| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. |
+| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. |
+| Okta.Logs.Events.request.ipChain.IP | String | IP address. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. |
+| Okta.Logs.Events.target.id | String | ID of a target. |
+| Okta.Logs.Events.target.type | String | Type of a target. |
+| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. |
+| Okta.Logs.Events.target.displayName | String | Display name of a target. |
 
 ##### Command Example
+
 ```!okta-get-logs filter=`actor.id eq "00u66lckvpjidYi0h7"` query=Boardman since="2020-03-03T20:23:17.573Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1381,11 +1442,12 @@ Gets logs by providing optional filters.
 ```
 
 ##### Human Readable Output
+>
 >### Okta Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Remove user from group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 03/03/2020, 20:23:17 |
-
 
 ### okta-get-group-assignments
 
@@ -1400,53 +1462,54 @@ Gets events for when a user was added to a group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
-| until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
-| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
-| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
+| since | Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional |
+| until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional |
+| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional |
+| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. | 
-| Okta.Logs.Events.actor.displayName | String | Display name of the actor. | 
-| Okta.Logs.Event.actor.id | String | ID of the actor. | 
-| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. | 
-| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. | 
-| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. | 
-| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. | 
-| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. | 
-| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. | 
-| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing in the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.displayMessage | String | The display message for an event. | 
-| Okta.Logs.Events.eventType | String | Type of event that was published. | 
-| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". | 
-| Okta.Logs.Events.outcome.reason | Unknown | Reason for the result. For example INVALID_CREDENTIALS. | 
-| Okta.Logs.Events.published | String | Timestamp when the event was published. | 
-| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". | 
-| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. | 
-| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. | 
-| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. | 
-| Okta.Logs.Events.request.ipChain.IP | String | IP address. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. | 
-| Okta.Logs.Events.target.id | String | ID of a target. | 
-| Okta.Logs.Events.target.type | String | Target type. | 
-| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. | 
-| Okta.Logs.Events.target.displayName | String | Display name of a target. | 
-
+| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. |
+| Okta.Logs.Events.actor.displayName | String | Display name of the actor. |
+| Okta.Logs.Event.actor.id | String | ID of the actor. |
+| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. |
+| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. |
+| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. |
+| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. |
+| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. |
+| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. |
+| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing in the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.displayMessage | String | The display message for an event. |
+| Okta.Logs.Events.eventType | String | Type of event that was published. |
+| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". |
+| Okta.Logs.Events.outcome.reason | Unknown | Reason for the result. For example INVALID_CREDENTIALS. |
+| Okta.Logs.Events.published | String | Timestamp when the event was published. |
+| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". |
+| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. |
+| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. |
+| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. |
+| Okta.Logs.Events.request.ipChain.IP | String | IP address. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. |
+| Okta.Logs.Events.target.id | String | ID of a target. |
+| Okta.Logs.Events.target.type | String | Target type. |
+| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. |
+| Okta.Logs.Events.target.displayName | String | Display name of a target. |
 
 ##### Command Example
+
 ```!okta-get-group-assignments since="2019-04-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1561,11 +1624,12 @@ Gets events for when a user was added to a group.
 ```
 
 ##### Human Readable Output
+>
 >### Group Assignment Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to group membership | SUCCESS | INFO | 127.0.0.1 | test this (User) test1 (UserGroup)  | 09/29/2019, 03:47:46 |
-
 
 ### okta-get-application-assignments
 
@@ -1580,53 +1644,54 @@ Returns events for when a user was assigned to an application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
-| until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
-| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
-| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
+| since | Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional |
+| until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional |
+| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional |
+| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. | 
-| Okta.Logs.Events.actor.displayName | String | Display name of the actor. | 
-| Okta.Logs.Event.actor.id | String | ID of the actor. | 
-| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. | 
-| Okta.Logs.Events.client.userAgent.os | String | The OS on which the client runs. For example, Microsoft Windows 10. | 
-| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. | 
-| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. | 
-| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. | 
-| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. | 
-| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.displayMessage | String | The display message for an event. | 
-| Okta.Logs.Events.eventType | String | Type of event that was published. | 
-| Okta.Logs.Events.outcome.result | String | Result of the action. For example, "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". | 
-| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example INVALID_CREDENTIALS. | 
-| Okta.Logs.Events.published | String | Timestamp when the event was published. | 
-| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". | 
-| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. | 
-| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. | 
-| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. | 
-| Okta.Logs.Events.request.ipChain.IP | String | IP address. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. | 
-| Okta.Logs.Events.target.id | String | ID of a target. | 
-| Okta.Logs.Events.target.type | String | Type of a target. | 
-| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. | 
-| Okta.Logs.Events.target.displayName | String | Display name of a target. | 
-
+| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. |
+| Okta.Logs.Events.actor.displayName | String | Display name of the actor. |
+| Okta.Logs.Event.actor.id | String | ID of the actor. |
+| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of the user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. |
+| Okta.Logs.Events.client.userAgent.os | String | The OS on which the client runs. For example, Microsoft Windows 10. |
+| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. |
+| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. |
+| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. |
+| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. |
+| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.displayMessage | String | The display message for an event. |
+| Okta.Logs.Events.eventType | String | Type of event that was published. |
+| Okta.Logs.Events.outcome.result | String | Result of the action. For example, "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". |
+| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example INVALID_CREDENTIALS. |
+| Okta.Logs.Events.published | String | Timestamp when the event was published. |
+| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". |
+| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. |
+| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. |
+| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. |
+| Okta.Logs.Events.request.ipChain.IP | String | IP address. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. |
+| Okta.Logs.Events.target.id | String | ID of a target. |
+| Okta.Logs.Events.target.type | String | Type of a target. |
+| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. |
+| Okta.Logs.Events.target.displayName | String | Display name of a target. |
 
 ##### Command Example
+
 ```!okta-get-application-assignments since="2019-04-30T00:00:00.000Z" until="2020-02-30T00:00:00.000Z" sortOrder=DESCENDING limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1749,11 +1814,12 @@ Returns events for when a user was assigned to an application.
 ```
 
 ##### Human Readable Output
+>
 >### Application Assignment Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | Unknown browser on Unknown OS Unknown device | Add user to application membership | SUCCESS | INFO | 127.0.0.1 | Test 1 that (AppUser) ShrikSAML (AppInstance) Test 1 that (User)  | 02/27/2020, 17:55:12 |
-
 
 ### okta-get-application-authentication
 
@@ -1768,53 +1834,54 @@ Returns logs using specified filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
-| until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
-| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
-| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
+| since | Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional |
+| until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional |
+| sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional |
+| limit | The maximum number of results to return. The default is 100. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. | 
-| Okta.Logs.Events.actor.displayName | String | Display name of the actor. | 
-| Okta.Logs.Events.actor.id | String | ID of the actor. | 
-| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. | 
-| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. | 
-| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. | 
-| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. | 
-| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. | 
-| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. | 
-| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.displayMessage | String | The display message for an event. | 
-| Okta.Logs.Events.eventType | String | Type of event that was published. | 
-| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". | 
-| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example INVALID_CREDENTIALS. | 
-| Okta.Logs.Events.published | String | Timestamp when the event was published. | 
-| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". | 
-| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. | 
-| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. | 
-| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. | 
-| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. | 
-| Okta.Logs.Events.request.ipChain.IP | String | IP address. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. | 
-| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. | 
-| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. | 
-| Okta.Logs.Events.target.id | String | ID of a target. | 
-| Okta.Logs.Events.target.type | String | Type of a target. | 
-| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. | 
-| Okta.Logs.Events.target.displayName | String | Display name of a target. | 
-
+| Okta.Logs.Events.actor.alternateId | String | Alternative ID of the actor. |
+| Okta.Logs.Events.actor.displayName | String | Display name of the actor. |
+| Okta.Logs.Events.actor.id | String | ID of the actor. |
+| Okta.Logs.Events.client.userAgent.rawUserAgent | String | A raw string representation of user agent, formatted according to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the OS fields can be derived from this field. |
+| Okta.Logs.Events.client.userAgent.os | String | The operating system on which the client runs. For example, Microsoft Windows 10. |
+| Okta.Logs.Events.client.userAgent.browser | String | Identifies the type of web browser, if relevant. For example, Chrome. |
+| Okta.Logs.Events.client.device | String | Type of device from which the client operated. For example, Computer. |
+| Okta.Logs.Events.client.id | String | For OAuth requests, the ID of the OAuth client making the request. For SSWS token requests, the ID of the agent making the request. |
+| Okta.Logs.Events.client.ipAddress | String | IP address from which the client made its request. |
+| Okta.Logs.Events.client.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.client.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.client.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.displayMessage | String | The display message for an event. |
+| Okta.Logs.Events.eventType | String | Type of event that was published. |
+| Okta.Logs.Events.outcome.result | String | Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN". |
+| Okta.Logs.Events.outcome.reason | String | Reason for the result. For example INVALID_CREDENTIALS. |
+| Okta.Logs.Events.published | String | Timestamp when the event was published. |
+| Okta.Logs.Events.severity | String | The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR". |
+| Okta.Logs.Events.securityContext.asNumber | Number | Autonomous system number associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.asOrg | String | Organization associated with the autonomous system that the event request was sourced to. |
+| Okta.Logs.Events.securityContext.isp | String | Internet service provider used to send the event's request. |
+| Okta.Logs.Events.securityContext.domain | String | The domain name associated with the IP address of the inbound event request. |
+| Okta.Logs.Events.securityContext.isProxy | String | Specifies whether an event's request is from a known proxy. |
+| Okta.Logs.Events.request.ipChain.IP | String | IP address. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.city | String | The city encompassing the area containing the geo-location coordinates, if available. For example, Seattle, San Francisco. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.state | String | Full name of the state or province encompassing the area containing the geo-location coordinates. For example, Montana, Incheon. |
+| Okta.Logs.Events.request.ipChain.geographicalContext.country | String | Full name of the country encompassing the area containing the geo-location coordinates. For example, France, Uganda. |
+| Okta.Logs.Events.request.ipChain.source | String | Details regarding the source. |
+| Okta.Logs.Events.target.id | String | ID of a target. |
+| Okta.Logs.Events.target.type | String | Type of a target. |
+| Okta.Logs.Events.target.alternateId | String | Alternative ID of a target. |
+| Okta.Logs.Events.target.displayName | String | Display name of a target. |
 
 ##### Command Example
+
 ```!okta-get-application-authentication since="2019-04-30T00:00:00.000Z" until="2020-02-30T00:00:00.000Z" limit=1```
 
 ##### Context Example
+
 ```
 {
     "Okta": {
@@ -1934,11 +2001,12 @@ Returns logs using specified filters.
 ```
 
 ##### Human Readable Output
+>
 >### Application Authentication Events
+>
 >|Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Test Demisto (User) | Test@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | BenziPermanent (AppInstance) Test Demisto (AppUser)  | 10/14/2019, 12:16:53 |
-
 
 ### okta-delete-user
 
@@ -1953,18 +2021,19 @@ Deletes the specified user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | Okta User ID. | Optional | 
-| username | Username of the user. | Optional | 
+| userId | Okta User ID. | Optional |
+| username | Username of the user. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-delete-user username=testForDocs@test.com```
 
-
 ##### Human Readable Output
+>
 >User: testForDocs@test.com was Deleted successfully
 
 ### okta-clear-user-sessions
@@ -1982,19 +2051,19 @@ https://developer.okta.com/docs/reference/api/users/#user-sessions
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | Okta User ID. | Required | 
+| userId | Okta User ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!okta-clear-user-sessions userId=00ui5brmwtJpMdoZZ0h7```
 
-
 ##### Human Readable Output
+>
 >### User session was cleared for: 00ui5brmwtJpMdoZZ0h7
-
 
 ### okta-list-zones
 
@@ -2009,29 +2078,30 @@ Get an Okta Zone object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. | Optional | 
+| limit | The maximum number of results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Zone.created | Date | Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z. | 
-| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. | 
-| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 34.103.1.108/32. | 
-| Okta.Zone.id | String | Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. | 
-| Okta.Zone.lastUpdated | Date | Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z. | 
-| Okta.Zone.name | String | Zone name. | 
-| Okta.Zone.proxies.type | String | Proxies IP entry type e.g. CIDR. | 
-| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. | 
-| Okta.Zone.status | String | Zone status, e.g., ACTIVE. | 
-| Okta.Zone.system | Number | True if this is a system zone, false if user-created. | 
-| Okta.Zone.type | String | Zone type, e.g., IP. | 
-
+| Okta.Zone.created | Date | Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z. |
+| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. |
+| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 34.103.1.108/32. |
+| Okta.Zone.id | String | Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. |
+| Okta.Zone.lastUpdated | Date | Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z. |
+| Okta.Zone.name | String | Zone name. |
+| Okta.Zone.proxies.type | String | Proxies IP entry type e.g. CIDR. |
+| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. |
+| Okta.Zone.status | String | Zone status, e.g., ACTIVE. |
+| Okta.Zone.system | Number | True if this is a system zone, false if user-created. |
+| Okta.Zone.type | String | Zone type, e.g., IP. |
 
 #### Command Example
+
 ```!okta-list-zones```
 
 #### Context Example
+
 ```
 {
     "Okta": {
@@ -2126,12 +2196,13 @@ Get an Okta Zone object.
 ```
 
 #### Human Readable Output
+>
 >### Okta Zones
+>
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| LegacyIpZone | nzo9rbw8evGOFV1VE0h7 | {'type': 'CIDR', 'value': '2.2.2.2/32'} | ACTIVE | true | 2020-04-23T08:58:55.000Z | 2017-03-03T22:05:24.000Z |
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '3.3.3.4/32'},<br/>{'type': 'CIDR', 'value': '5.5.5.3/32'},<br/>{'type': 'CIDR', 'value': '3.3.3.1/32'},<br/>{'type': 'CIDR', 'value': '2.2.2.3/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
-
 
 ### okta-update-zone
 
@@ -2146,33 +2217,34 @@ Update an Okta Zone.
 
 | **Argument Name** | **Description**                                                                                                                                         | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.                                                                                                          | Required | 
-| zoneName | Updates the zone name.                                                                                                                                  | Optional | 
-| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                   | Optional | 
-| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                      | Optional | 
-| updateType | Indicate the action of adding an IP to an existing zone or overriding the existing IPs. Possible values are: "APPEND", "OVERRIDE". Default is "OVERRIDE". | Optional | 
+| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.                                                                                                          | Required |
+| zoneName | Updates the zone name.                                                                                                                                  | Optional |
+| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                   | Optional |
+| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                      | Optional |
+| updateType | Indicate the action of adding an IP to an existing zone or overriding the existing IPs. Possible values are: "APPEND", "OVERRIDE". Default is "OVERRIDE". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Zone.created | Date | Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z. | 
-| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. | 
-| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 34.103.1.108/32. | 
-| Okta.Zone.id | String | Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. | 
-| Okta.Zone.lastUpdated | Date | Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z. | 
-| Okta.Zone.name | String | Zone name. | 
-| Okta.Zone.proxies.type | String | Proxies IP entry type, e.g., CIDR. | 
-| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. | 
-| Okta.Zone.status | String | Zone status, e.g., ACTIVE. | 
-| Okta.Zone.system | Number | True if this is a system zone, false if user-created. | 
-| Okta.Zone.type | String | Zone type, e.g., IP. | 
-
+| Okta.Zone.created | Date | Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z. |
+| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. |
+| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 34.103.1.108/32. |
+| Okta.Zone.id | String | Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. |
+| Okta.Zone.lastUpdated | Date | Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z. |
+| Okta.Zone.name | String | Zone name. |
+| Okta.Zone.proxies.type | String | Proxies IP entry type, e.g., CIDR. |
+| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. |
+| Okta.Zone.status | String | Zone status, e.g., ACTIVE. |
+| Okta.Zone.system | Number | True if this is a system zone, false if user-created. |
+| Okta.Zone.type | String | Zone type, e.g., IP. |
 
 #### Command Example
+
 ```!okta-update-zone zoneID=nzoqsmcx1qWYJ6wY33h7 zoneName=MyZone```
 
 #### Context Example
+
 ```
 {
     "Okta": {
@@ -2231,10 +2303,10 @@ Update an Okta Zone.
 #### Human Readable Output
 
 >### Okta Zones
+>
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'},<br/>{'type': 'CIDR', 'value': '1.3.1.5/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
-
 
 ### okta-get-zone
 
@@ -2249,29 +2321,30 @@ Get a Zone by its ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| zoneID | Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7. | Required | 
+| zoneID | Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Zone.created | Date | Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z. | 
-| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. | 
-| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 34.103.1.108/32. | 
-| Okta.Zone.id | String | Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. | 
-| Okta.Zone.lastUpdated | Date | Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z. | 
-| Okta.Zone.name | String | Zone name. | 
-| Okta.Zone.proxies.type | String | Proxies IP entry type, e.g., CIDR. | 
-| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. | 
-| Okta.Zone.status | String | Zone status, e.g,. ACTIVE. | 
-| Okta.Zone.system | Number | True if this is a system zone, false if user-created. | 
-| Okta.Zone.type | String | Zone type, e.g., IP. | 
-
+| Okta.Zone.created | Date | Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z. |
+| Okta.Zone.gateways.type | String | Gateways IP entry type, e.g., CIDR. |
+| Okta.Zone.gateways.value | String | Gateways IP entry value, e.g., 34.103.1.108/32. |
+| Okta.Zone.id | String | Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. |
+| Okta.Zone.lastUpdated | Date | Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z. |
+| Okta.Zone.name | String | Zone name. |
+| Okta.Zone.proxies.type | String | Proxies IP entry type, e.g., CIDR. |
+| Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. |
+| Okta.Zone.status | String | Zone status, e.g,. ACTIVE. |
+| Okta.Zone.system | Number | True if this is a system zone, false if user-created. |
+| Okta.Zone.type | String | Zone type, e.g., IP. |
 
 #### Command Example
+
 ```!okta-get-zone zoneID=nzoqsmcx1qWYJ6wY33h7```
 
 #### Context Example
+
 ```
 {
     "Okta": {
@@ -2330,49 +2403,52 @@ Get a Zone by its ID.
 #### Human Readable Output
 
 >### Okta Zones
+>
 >|name|id|gateways|status|system|lastUpdated|created|
 >|---|---|---|---|---|---|---|
 >| MyZone | nzoqsmcx1qWYJ6wY33h7 | {'type': 'CIDR', 'value': '1.3.1.3/32'},<br/>{'type': 'CIDR', 'value': '3.5.146.103/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.228/32'},<br/>{'type': 'CIDR', 'value': '3.5.1.229/32'} | ACTIVE | false | 2020-06-05T08:57:57.000Z | 2020-04-06T22:23:12.000Z |
 
 ### okta-list-users
+
 ***
 Lists users in your organization.
-
 
 #### Base Command
 
 `okta-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
-| limit | The maximum number of results to return. | Optional | 
-| query | Searches the name property of groups for matching values. | Optional | 
+| verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional |
+| limit | The maximum number of results to return. | Optional |
+| query | Searches the name property of groups for matching values. | Optional |
 | filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID.
-For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
+For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional |
 | after | The cursor in which to retrive the results from and on. If the query didn't reach the end of results, the tag will be found in the readable output under the tag key. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.ID | String | Okta account ID. | 
-| Account.Email | String | Okta account email. | 
-| Account.Username | String | Okta account username. | 
-| Account.DisplayName | String | Okta account display name. | 
-| Account.Status | String | Okta account status. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
+| Account.ID | String | Okta account ID. |
+| Account.Email | String | Okta account email. |
+| Account.Username | String | Okta account username. |
+| Account.DisplayName | String | Okta account display name. |
+| Account.Status | String | Okta account status. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
 | Okta.User.tag| String | The location of the next item, used with after param. |
 
-
 #### Command Example
+
 ```!okta-list-users```
 
 #### Context Example
+
 ```json
 {
     "Okta":
@@ -2398,13 +2474,16 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 
 #### Human Readable Output
 
->### Okta users found:
+>### Okta users found
+>
 > ### Users
+>
 >|First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 >|---|---|---|---|---|---|---|
 >| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
-> 
+>
 > ### tag: test12tag
+>
 ### okta-create-zone
 
 ***
@@ -2418,13 +2497,14 @@ Creates a Zone with the specified name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Zone name. | Required | 
-| gateway_ips | Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
-| proxies | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+| name | Zone name. | Required |
+| gateway_ips | Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional |
+| proxies | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### okta-create-group
 
 ***
@@ -2438,20 +2518,24 @@ Create a new group in Okta tenant.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the group to add. | Required | 
-| description | Description of the group to add. | Optional | 
+| name | Name of the group to add. | Required |
+| description | Description of the group to add. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OktaGroup.ID | Unknown | Group ID in Okta. | 
-| OktaGroup.Name | Unknown | Group name in Okta. | 
-| OktaGroup.Description | Unknown | Group description in Okta. | 
-| OktaGroup.Type | Unknown | Group type in Okta. | 
+| OktaGroup.ID | Unknown | Group ID in Okta. |
+| OktaGroup.Name | Unknown | Group name in Okta. |
+| OktaGroup.Description | Unknown | Group description in Okta. |
+| OktaGroup.Type | Unknown | Group type in Okta. |
+
 #### Command example
+
 ```!okta-create-group name="TestGroup" description="TestGroup description."```
+
 #### Context Example
+
 ```json
 {
     "OktaGroup": {
@@ -2480,18 +2564,22 @@ Assign a group to an application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupName | Name of the group to assign to the app. | Optional | 
-| groupId | ID of the group to assign to the app. | Optional | 
-| appName | Friendly name of the app that the group will be assigned to. | Optional | 
+| groupName | Name of the group to assign to the app. | Optional |
+| groupId | ID of the group to assign to the app. | Optional |
+| appName | Friendly name of the app that the group will be assigned to. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!okta-assign-group-to-app appName="Default-App" groupName="TestGroup"```
+
 #### Human Readable Output
 
 >Group: TestGroup added to PA App successfully
+>
 ### okta-expire-password
 
 ***
@@ -2505,8 +2593,8 @@ Expires a password for an existing Okta user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Okta username for which to expire the password. | Required | 
-| temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional | 
+| username | Okta username for which to expire the password. | Required |
+| temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional |
 | revoke_session | When true, revokes the user's existing sessions. | Optional |
 | hide_password | When true, prevents the password from being saved in the war room. | Optional |
 
@@ -2514,20 +2602,23 @@ Expires a password for an existing Okta user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account.Activated | Date | Timestamp for when the user was activated. | 
-| Account.Created | Date | Timestamp for when the user was created. | 
-| Account.DisplayName | String | Okta account display name. | 
-| Account.Email | String | Okta account email. | 
-| Account.ID | String | Created Okta account ID. | 
-| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
-| Account.Status | String | Okta account current status. | 
-| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
-| Account.Type | String | Okta account type. | 
-| Account.Username | String | Okta account usernames returned by the search. | 
+| Account.Activated | Date | Timestamp for when the user was activated. |
+| Account.Created | Date | Timestamp for when the user was created. |
+| Account.DisplayName | String | Okta account display name. |
+| Account.Email | String | Okta account email. |
+| Account.ID | String | Created Okta account ID. |
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. |
+| Account.Status | String | Okta account current status. |
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. |
+| Account.Type | String | Okta account type. |
+| Account.Username | String | Okta account usernames returned by the search. |
 
 #### Command example
+
 ```!okta-expire-password username="4x1xh5rl@test.com" temporary_password="false"```
+
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -2548,6 +2639,7 @@ Expires a password for an existing Okta user.
 #### Human Readable Output
 
 >### Okta Expired Password
+>
 >|_links|activated|created|credentials|id|lastUpdated|passwordChanged|profile|status|statusChanged|type|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| suspend: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/suspend", "method": "POST"}<br/>schema: {"href": "https://test.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br/>resetPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/reset_password", "method": "POST"}<br/>forgotPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/forgot_password", "method": "POST"}<br/>expirePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/expire_password", "method": "POST"}<br/>changeRecoveryQuestion: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_recovery_question", "method": "POST"}<br/>self: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8"}<br/>type: {"href": "https://test.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br/>changePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_password", "method": "POST"}<br/>deactivate: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/deactivate", "method": "POST"} | 2022-06-20T04:48:04.000Z | 2022-06-20T04:47:59.000Z | password: {}<br/>recovery_question: {"question": "whats the first school?"}<br/>provider: {"type": "OKTA", "name": "OKTA"} | 00u19cr5qv91HjELI0h8 | 2023-09-10T12:56:04.000Z | 2022-06-20T04:48:07.000Z | firstName: Test 1 <br/>lastName: Test1<br/>preferredLanguage: en<br/>mobilePhone: null<br/>city: Tel-Aviv<br/>displayName: Test 1 that<br/>nickName: Testush<br/>secondEmail: null<br/>login: 4x1xh5rl@test.com<br/>email: 4x1xh5rl@test.com<br/>employeeNumber: 12345 | PASSWORD_EXPIRED | 2023-09-10T12:56:04.000Z | id: oty66lckcvDyVcGzS0h7 |
