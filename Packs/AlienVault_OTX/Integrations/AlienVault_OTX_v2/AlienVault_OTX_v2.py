@@ -81,14 +81,8 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         try:
             if sub_section == "passive_dns":
-                return self._http_request("GET",
-                                        url_suffix=suffix,
-                                        params=params,
-                                        timeout=30)
-            result = self._http_request("GET",
-                                        url_suffix=suffix,
-                                        params=params,
-                                        timeout=60)
+                return self._http_request("GET", url_suffix=suffix, params=params, timeout=30)
+            result = self._http_request("GET", url_suffix=suffix, params=params, timeout=60)
         except DemistoException as e:
             demisto.debug("DemistoException was raised")
             if hasattr(e.res, "status_code"):
