@@ -547,7 +547,7 @@ def lookup_request(ioc, multiple=True):
 
 
 def category_add(category_id, data, retaining_parent_category_data, data_type):
-    demisto.debug(f"category_add {category_id=} {data=} {retaining_parent_category_data=} {data_type=}")
+    demisto.debug(f"[test] category_add {category_id=} {data=} {retaining_parent_category_data=} {data_type=}")
     if not any((data, retaining_parent_category_data)):
         return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
@@ -563,11 +563,11 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
             return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
         demisto.debug(
-            f"category_add calling add_or_remove_urls_from_category with params: {category_data=} {retaining_parent_category_data=} {data_type=}")
+            f"[test] category_add calling add_or_remove_urls_from_category with params: {category_data=} {retaining_parent_category_data=} {data_type=}")
         add_or_remove_urls_from_category(
             ADD, data_list, category_data, retaining_parent_category_data_list
         )  # add the urls to the category
-        demisto.debug("category_add returned from add_or_remove_urls_from_category successfully")
+        demisto.debug("[test] category_add returned from add_or_remove_urls_from_category successfully")
         context = {
             "ID": category_id,
             "CustomCategory": category_data.get("customCategory"),
@@ -592,7 +592,7 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
             "HumanReadable": hr,
             "EntryContext": ec,
         }
-        demisto.debug(f"category_add {entry=}")
+        demisto.debug(f"[test] category_add {entry=}")
         return entry
     else:
         return return_error("Category could not be found.")
@@ -678,9 +678,11 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
         data["configuredName"] = category_data["configuredName"]
-    demisto.debug(f"##### add_or_remove_urls_from_category {data=}")
+    demisto.debug(f"[test] ##### add_or_remove_urls_from_category {data=}")
     json_data = json.dumps(data)
+    demisto.debug("[test] ##### add_or_remove_urls_from_category preparing for http request")
     http_request("PUT", cmd_url, json_data)  # if the request is successful, it returns an empty response
+    demisto.debug("[test] ##### add_or_remove_urls_from_category after http request")
 
 
 def url_quota_command():
