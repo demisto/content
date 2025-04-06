@@ -1,23 +1,24 @@
-import freezegun
-import pytest
 import json
-import GreyNoise
+
 import demistomock as demisto
+import freezegun
+import GreyNoise
+import pytest
 from test_data.input_data import (  # type: ignore
-    parse_code_and_body_data,
-    get_ip_reputation_score_data,
-    test_module_data,
-    ip_reputation_command_data,
-    ip_quick_check_command_data,
-    generate_advanced_query_data,
-    query_command_data,
-    get_ip_context_data_data,
-    stats_command_data,
-    riot_command_response_data,
     context_command_response_data,
+    cve_command_response_data,
+    generate_advanced_query_data,
+    get_ip_context_data_data,
+    get_ip_reputation_score_data,
+    ip_quick_check_command_data,
+    ip_reputation_command_data,
+    parse_code_and_body_data,
+    query_command_data,
+    riot_command_response_data,
     similar_command_response_data,
+    stats_command_data,
+    test_module_data,
     timeline_command_response_data,
-    cve_command_response_data
 )
 
 
@@ -204,9 +205,7 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
         assert str(err.value) == expected["error_message"].format(input_data["ip"])
 
 
-@pytest.mark.parametrize(
-    "args, test_scenario, api_response, status_code, expected_output", context_command_response_data
-)
+@pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", context_command_response_data)
 def test_context_command(mocker, args, test_scenario, api_response, status_code, expected_output):
     """
     Test various inputs for context command
@@ -232,9 +231,7 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
         assert str(err.value) == expected_output
 
 
-@pytest.mark.parametrize(
-    "args, test_scenario, api_response, status_code, expected_output", similar_command_response_data
-)
+@pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", similar_command_response_data)
 def test_similar_command(mocker, args, test_scenario, api_response, status_code, expected_output):
     """
     Test various inputs for context command
@@ -259,9 +256,7 @@ def test_similar_command(mocker, args, test_scenario, api_response, status_code,
         assert str(err.value) == expected_output
 
 
-@pytest.mark.parametrize(
-    "args, test_scenario, api_response, status_code, expected_output", timeline_command_response_data
-)
+@pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", timeline_command_response_data)
 def test_timeline_command(mocker, args, test_scenario, api_response, status_code, expected_output):
     """
     Test various inputs for context command
@@ -286,9 +281,7 @@ def test_timeline_command(mocker, args, test_scenario, api_response, status_code
         assert str(err.value) == expected_output
 
 
-@pytest.mark.parametrize(
-    "args, test_scenario, api_response, status_code, expected_output", cve_command_response_data
-)
+@pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", cve_command_response_data)
 def test_cve_command(mocker, args, test_scenario, api_response, status_code, expected_output):
     """
     Test various inputs for cve command
@@ -316,9 +309,11 @@ def test_cve_command(mocker, args, test_scenario, api_response, status_code, exp
 
 @pytest.mark.parametrize(
     "demisto_params_result, expected_result",
-    [({'credentials': {'password': 'api_key'}, 'apikey': 'old_api_key'}, 'api_key'),
-     ({'credentials': {'password': ''}, 'apikey': 'old_api_key'}, 'old_api_key'),
-     ({'apikey': 'old_api_key'}, 'old_api_key')]
+    [
+        ({"credentials": {"password": "api_key"}, "apikey": "old_api_key"}, "api_key"),
+        ({"credentials": {"password": ""}, "apikey": "old_api_key"}, "old_api_key"),
+        ({"apikey": "old_api_key"}, "old_api_key"),
+    ],
 )
 def test_get_api_key(mocker, demisto_params_result, expected_result):
     """Test get API key.
@@ -331,13 +326,13 @@ def test_get_api_key(mocker, demisto_params_result, expected_result):
     Then: Ensure the API key passed to the client constructor matches the expected API key based on the input parameters.
 
     """
-    mocker.patch.object(demisto, 'params', return_value=demisto_params_result)
-    mock_client = mocker.patch('GreyNoise.Client')
+    mocker.patch.object(demisto, "params", return_value=demisto_params_result)
+    mock_client = mocker.patch("GreyNoise.Client")
     # Call main()
     GreyNoise.main()
 
     # Get the client that was instantiated
-    assert mock_client.call_args[1].get('api_key') == expected_result
+    assert mock_client.call_args[1].get("api_key") == expected_result
 
 
 def test_get_api_key_invalid_key(mocker):
@@ -350,10 +345,10 @@ def test_get_api_key_invalid_key(mocker):
     Then: Ensure that error message was raised.
 
     """
-    mocker.patch.object(demisto, 'params', return_value={'credentials': {'password': ''}, 'apikey': ''})
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "params", return_value={"credentials": {"password": ""}, "apikey": ""})
+    mocker.patch.object(demisto, "results")
 
     # Get the client that was instantiated
     with pytest.raises(SystemExit):
         GreyNoise.main()
-    assert demisto.results.call_args[0][0]['Contents'] == 'Please provide a valid API token'
+    assert demisto.results.call_args[0][0]["Contents"] == "Please provide a valid API token"
