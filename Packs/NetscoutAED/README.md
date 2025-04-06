@@ -3,6 +3,7 @@ Note: Support for this Pack was moved to Partner starting MArch 31st, 2023. In c
 The Netscout Arbor Edge Defense (AED) integration enables you to block and allow outbound and inbound traffic.
 
 ## What does this pack do?
+
 Using the Netscout AED integration you can:
 
 - Get, add, and remove hosts, countries, domains, and URLs from the inbound block list.
