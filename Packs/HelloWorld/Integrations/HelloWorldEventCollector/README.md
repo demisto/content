@@ -36,10 +36,10 @@ Gets events from Hello World.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional |
+| limit | Maximum number of results to return. | Required |
+| from_date | Date from which to get events. | Optional |
 
 #### Context Output
 
