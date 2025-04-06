@@ -1,6 +1,5 @@
 Exchange Web Services (EWS) provides the functionality to enable client applications to communicate with the Exchange server. EWS provides access to much of the same data that is made available through Microsoft Office Outlook.
 
-
 ## What does this pack do?
 
 - Monitor a specific email account and create incidents from incoming emails to the defined folder.
@@ -10,16 +9,20 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 - Manage Tenant Allow/Block Lists.
 
 ## Integrations
+
 The [EWS O365 integration](https://xsoar.pan.dev/docs/reference/integrations/ewso365) enables you to:
+
 - Retrieve information on emails and activities in a target mailbox.
 - Perform operations on the target mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
 The [EWS v2 integration](https://xsoar.pan.dev/docs/reference/integrations/ews-v2) enables you to:
+
 - Run compliance search commands as part of Office 365 to search for an email message across mailboxes and folders.
 - Retrieve information on emails and activities in a target mailbox.
-- Perform operations on the target mailbox such as deleting emails and attachments or moving emails from folder to folder. 
+- Perform operations on the target mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
 The [O365 - EWS - Extension integration](https://xsoar.pan.dev/docs/reference/integrations/ews-extension) enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR
+
 - Get junk rules for a specified mailbox.
 - Set junk rules for a specified mailbox.
 - Set junk rules for all managed accounts.
@@ -33,11 +36,12 @@ The [EWS Extension Online Powershell v2 integration](https://xsoar.pan.dev/docs/
 - Add, remove, list, and count entries in Tenant Allow/Block Lists.
 
 ## EWS Permissions
-To perform actions on mailboxes of other users, and to execute searches on the Exchange server, you need specific permissions. 
+
+To perform actions on mailboxes of other users, and to execute searches on the Exchange server, you need specific permissions.
 
 | Permission |Use Case |
 | ----- | ----|
 | Delegate | One-to-one relationship between users. |
-| Impersonation	| A single account needs to access multiple mailboxes. |
-| eDiscovery | Search the Exchange server. |	
+| Impersonation | A single account needs to access multiple mailboxes. |
+| eDiscovery | Search the Exchange server. | 
 | Compliance Search | Perform searches across mailboxes and get an estimate of the results. |
