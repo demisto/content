@@ -1,4 +1,5 @@
 Retrieves alerts based on a given query and filter arguments. It provides two operational modes:
+
  1. Trigger Associated Playbooks: If no specific playbook is provided, the script automatically triggers the playbook that is individually associated with each alert found.
  2. Override Playbook: If a specific playbook ID or name is provided, the script overrides the default playbooks of all matching alerts and uniformly applies the specified playbook to each one.
 
