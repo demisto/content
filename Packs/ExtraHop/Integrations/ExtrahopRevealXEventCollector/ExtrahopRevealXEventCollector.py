@@ -369,6 +369,7 @@ def fetch_extrahop_detections(
     Fetch detections from ExtraHop according to the given filter.
 
     Args:
+        max_events: Maximum number of events to fetch.
         client: ExtraHop client to be used.
         advanced_filter: The advanced_filter given by the user to filter out the required detections.
         last_run: Last run returned by function demisto.getLastRun.
@@ -401,7 +402,7 @@ def fetch_extrahop_detections(
                 if len(events) == max_events:
                     break
 
-            if len(events) >= max_events:
+            if len(events) == max_events:
                 break
 
             # edge case where we got same mod_time #limit times
