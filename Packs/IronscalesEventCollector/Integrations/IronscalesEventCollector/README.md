@@ -2,7 +2,6 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 
 ## Configure Ironscales Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g., <https://appapi.ironscales.com>) | True |
@@ -13,7 +12,6 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 | First fetch | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -33,8 +31,8 @@ Gets events from Ironscales.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of events to return. Default is 10. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
+| limit | The number of events to return. Default is 10. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required |
 
 #### Context Output
 
