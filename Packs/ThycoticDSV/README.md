@@ -6,4 +6,3 @@ Fetch updated data from secret for usage in owner automate process.
 What does this pack do?
 
 Allows you to get the contents of the secret data from the storage.
-
