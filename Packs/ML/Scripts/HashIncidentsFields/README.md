@@ -2,6 +2,7 @@ Hash fields from the incident list.
 Search for incidents by arguments with an option to hash some of its fields.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ Search for incidents by arguments with an option to hash some of its fields.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,6 +33,7 @@ Search for incidents by arguments with an option to hash some of its fields.
 | addRandomSalt | Random salt to the hash function |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
