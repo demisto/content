@@ -1,0 +1,31 @@
+[MODEL: dataset = nasuni_file_services_raw]
+      alter event_type = parsed_fields -> event_type
+    | alter result = to_string(parsed_fields -> result)
+    | alter is_dir = to_string(parsed_fields -> is_dir)
+    | alter path = parsed_fields -> path
+    | alter newpath = parsed_fields -> newpath
+
+    | alter xdm.event.original_event_type = event_type,
+            xdm.event.type = if(event_type ~= "AUDIT_READDIR", "FILE_READ", event_type ~="AUDIT_READ","FILE_READ",event_type ~="AUDIT_WRITE","FILE_MODIFICATION", "FILE_UNCATEGORIZED"),
+            xdm.event.id = to_string(arrayindex(regextract(_raw_log,"nasuni.[\w+|\.|-]+\s\d+\s(\d+)"), 0)),
+            xdm.event.outcome = if(result = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN),
+            xdm.event.outcome_reason = result,
+            xdm.event.description = parsed_fields -> name,
+            xdm.source.application.name = parsed_fields -> proto,
+            xdm.source.process.pid = to_integer(parsed_fields -> pid),
+            xdm.source.user.username = lowercase(parsed_fields -> username),
+            xdm.source.user.groups = arraycreate(parsed_fields -> groupname),
+            xdm.source.user.identifier = parsed_fields -> sid,
+            xdm.source.ipv4 = if(parsed_fields -> ipaddr ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", parsed_fields -> ipaddr, null),
+            xdm.source.process.thread_id = to_integer(parsed_fields -> tid),
+            xdm.target.file.file_type = if(is_dir = "true", "Directory", is_dir = "false", "File"),
+            xdm.target.resource.value = parsed_fields -> to_gid,
+            xdm.target.resource.id = parsed_fields -> volume,
+            xdm.target.file.path = if(newpath != null, coalesce(newpath, parsed_fields -> to), path),
+            xdm.target.file_before.path = if(newpath != null, path, null),
+            xdm.target.file.filename = arrayindex(regextract(path,"[\\\/]([^\\\/]+)$"),0),
+            xdm.target.file.size = to_integer(parsed_fields -> filesize),
+            xdm.target.resource.name = parsed_fields -> resource,
+            xdm.target.user.identifier = parsed_fields -> to_uid,
+            xdm.observer.name = arrayindex(regextract(_raw_log,"\s+(\w+)\s+nasuni"), 0),
+            xdm.observer.vendor = "nasuni";
