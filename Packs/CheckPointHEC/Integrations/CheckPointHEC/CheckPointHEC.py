@@ -62,11 +62,11 @@ MIS_CLASSIFICATION_OPTIONS = {
 }
 
 
-def arg_to_bool(arg: Optional[str]) -> bool:
+def arg_to_bool(arg: Optional[str]) -> bool | None:
     try:
         return argToBoolean(arg)
     except ValueError:
-        return False
+        return None
 
 
 class Client(BaseClient):
@@ -161,7 +161,9 @@ class Client(BaseClient):
     def test_api(self) -> dict[str, Any]:
         return self._call_api("GET", url_suffix="scopes")
 
-    def restore_requests(self, start_date: str, saas: str, include_denied: bool, include_accepted: bool) -> dict[str, Any]:
+    def restore_requests(
+        self, start_date: str, saas: str, include_denied: Optional[bool], include_accepted: Optional[bool]
+    ) -> dict[str, Any]:
         denied_attr_op = "is" if include_denied else "isNot"
         accepted_attr_op = "is" if include_accepted else "isNot"
         fifteen_days_ago = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=15)).isoformat()
@@ -349,10 +351,10 @@ class Client(BaseClient):
         payload = {"requestData": request_data}
         return self._call_api("POST", "report/mis-classification", json_data=payload)
 
-    def download_email(self, entity: str, original: bool = False):
+    def download_email(self, entity: str, original: Optional[bool] = False):
         return self._call_api(
             "GET",
-            f"download/entity/{entity}?original={int(original)}",
+            f"download/entity/{entity}?original={1 if original else 0}",
             resp_type="content",
         )
 
@@ -672,8 +674,8 @@ def fetch_restore_requests(client: Client, params: dict):
     counter = 0
     incidents: List[dict[str, Any]] = []
 
-    include_denied_rr = arg_to_bool(params.get("include_denied_requests"))
-    include_accepted_rr = arg_to_bool(params.get("include_accepted_requests"))
+    include_denied_rr: Optional[bool] = arg_to_bool(params.get("include_denied_requests"))
+    include_accepted_rr: Optional[bool] = arg_to_bool(params.get("include_accepted_requests"))
     for saas in saas_apps:
         result = client.restore_requests(last_fetch, saas, include_denied_rr, include_accepted_rr)
         for restore_request in result["responseData"]:
@@ -757,7 +759,7 @@ def checkpointhec_get_events(client: Client, args: dict) -> CommandResults:
 
 def checkpointhec_get_scan_info(client: Client, args: dict) -> CommandResults:
     entity: str = args["entity"]
-    include_clean: bool = arg_to_bool(args.get("include_clean"))
+    include_clean: Optional[bool] = arg_to_bool(args.get("include_clean"))
 
     result = client.get_entity(entity)
     outputs = {}
@@ -927,7 +929,7 @@ def checkpointhec_report_mis_classification(client: Client, args: dict) -> Comma
 
 def checkpointhec_download_email(client: Client, args: dict) -> dict:
     entity: str = args["entity_id"]
-    original: bool = arg_to_bool(args.get("original"))
+    original: Optional[bool] = arg_to_bool(args.get("original"))
     eml = client.download_email(entity, original)
 
     return fileResult(
