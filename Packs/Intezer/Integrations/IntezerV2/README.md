@@ -2,14 +2,12 @@ Use the Intezer v2 integration to detect and analyze malware, based on code reus
 
 ## Configure Intezer v2 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key |  | True |
 | Intezer Analyze Base URL | The API address to intezer Analyze - i.e. <https://analyze.intezer.com/api/> | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
-
 
 ## Commands
 
@@ -29,22 +27,22 @@ Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
 
 | **Argument Name** | **Description**                                           | **Required** |
 |-------------------|-----------------------------------------------------------|--------------|
-| file_hash         | Hash of the file to query. Supports SHA256, MD5 and SHA1. | Required     | 
-| wait_for_result   | Waits for analysis result, support polling                | Optional     | 
-| interval          | Number of seconds between poll requests                   | Optional     | 
-| timeout           | Number of seconds until polling timeout                   | Optional     | 
+| file_hash         | Hash of the file to query. Supports SHA256, MD5 and SHA1. | Required     |
+| wait_for_result   | Waits for analysis result, support polling                | Optional     |
+| interval          | Number of seconds between poll requests                   | Optional     |
+| timeout           | Number of seconds until polling timeout                   | Optional     |
 
 #### Context Output
 
 | **Path**                | **Type** | **Description**        |
 |-------------------------|----------|------------------------|
-| Intezer.Analysis.ID     | string   | Intezer analysis id    | 
-| Intezer.Analysis.Status | string   | status of the analysis | 
-| Intezer.Analysis.Type   | string   | type of the analysis   | 
+| Intezer.Analysis.ID     | string   | Intezer analysis id    |
+| Intezer.Analysis.Status | string   | status of the analysis |
+| Intezer.Analysis.Type   | string   | type of the analysis   |
 
 #### Command Example
 
-``` 
+```
 !intezer-analyze-by-hash file_hash="<file hash>"
 ```
 
@@ -81,23 +79,23 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 |-------------------|-----------------|--------------|
-| Url               | Url to query.   | Required     | 
+| Url               | Url to query.   | Required     |
 
 #### Context Output
 
 | **Path**                | **Type** | **Description**                                      |
 |-------------------------|----------|------------------------------------------------------|
-| Intezer.Analysis.ID     | string   | Intezer analysis id                                  | 
-| Intezer.Analysis.Status | string   | status of the analysis                               | 
-| Intezer.Analysis.Type   | string   | type of the analysis                                 | 
-| URL.Data                | string   | The submitted Url                                    | 
-| URL.Malicious.Vendor    | string   | For malicious Url, the vendor that made the decision | 
+| Intezer.Analysis.ID     | string   | Intezer analysis id                                  |
+| Intezer.Analysis.Status | string   | status of the analysis                               |
+| Intezer.Analysis.Type   | string   | type of the analysis                                 |
+| URL.Data                | string   | The submitted Url                                    |
+| URL.Malicious.Vendor    | string   | For malicious Url, the vendor that made the decision |
 | URL.Metadata            | Unknown  | Metadata returned from Intezer analysis              |
 | URL.ExistsInIntezer     | Boolean  | Does the url exists on intezer                       |
 
 #### Command Example
 
-``` 
+```
 !intezer-analyze-url url="<url>"
 ```
 
@@ -132,20 +130,20 @@ Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looki
 
 | **Argument Name** | **Description**                                           | **Required** |
 |-------------------|-----------------------------------------------------------|--------------|
-| file_hash         | Hash of the file to query. Supports SHA256, MD5 and SHA1. | Required     | 
+| file_hash         | Hash of the file to query. Supports SHA256, MD5 and SHA1. | Required     |
 
 #### Context Output
 
 | **Path**              | **Type** | **Description**                                                                                                                                                               |
 |-----------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| File.SHA256           | string   | Hash SHA256                                                                                                                                                                   | 
-| File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        | 
-| DBotScore.Indicator   | string   | The indicator we tested                                                                                                                                                       | 
-| DBotScore.Type        | string   | The type of the indicator                                                                                                                                                     | 
-| DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            | 
-| DBotScore.Score       | number   | The actual score                                                                                                                                                              | 
-| File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. | 
-| File.ExistsInIntezer  | Boolean  | Does the file exists on intezer genome database                                                                                                                               | 
+| File.SHA256           | string   | Hash SHA256                                                                                                                                                                   |
+| File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        |
+| DBotScore.Indicator   | string   | The indicator we tested                                                                                                                                                       |
+| DBotScore.Type        | string   | The type of the indicator                                                                                                                                                     |
+| DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            |
+| DBotScore.Score       | number   | The actual score                                                                                                                                                              |
+| File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. |
+| File.ExistsInIntezer  | Boolean  | Does the file exists on intezer genome database                                                                                                                               |
 
 #### Command Example
 
@@ -193,15 +191,15 @@ Family: WannaCry
 
 Analysis Report
 ---
-analysis_id	006c54ba-3159-43a0-98a0-1c5032145f47
-analysis_time	Tue, 29 Jun 2021 13:40:01 GMT
-analysis_url	https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47
-family_id	0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
-family_name	WannaCry
-is_private	false
+analysis_id 006c54ba-3159-43a0-98a0-1c5032145f47
+analysis_time Tue, 29 Jun 2021 13:40:01 GMT
+analysis_url https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47
+family_id 0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
+family_name WannaCry
+is_private false
 sha256          some-sha256
-sub_verdict	known_malicious
-verdict	        malicious
+sub_verdict known_malicious
+verdict         malicious
 ```
 
 ### intezer-analyze-by-file
@@ -217,24 +215,24 @@ Checks file reputation for uploaded file (up to 150MB)
 
 | **Argument Name** | **Description**                                            | **Required** |
 |-------------------|------------------------------------------------------------|--------------|
-| file_entry_id     | The file entry id to upload.                               | Required     | 
-| related_alert_ids | An array of alert ids to associate with the file analysis. | Required     | 
+| file_entry_id     | The file entry id to upload.                               | Required     |
+| related_alert_ids | An array of alert ids to associate with the file analysis. | Required     |
 
 #### Context Output
 
 | **Path**                | **Type** | **Description**                                                                                                                                                               |
 |-------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Intezer.Analysis.ID     | string   | Intezer analysis id                                                                                                                                                           | 
-| Intezer.Analysis.Status | string   | status of the analysis                                                                                                                                                        | 
-| Intezer.Analysis.Type   | string   | type of the analysis                                                                                                                                                          | 
-| File.SHA256             | string   | Hash SHA256                                                                                                                                                                   | 
-| File.Malicious.Vendor   | string   | For malicious files, the vendor that made the decision                                                                                                                        | 
-| File.Metadata           | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. | 
+| Intezer.Analysis.ID     | string   | Intezer analysis id                                                                                                                                                           |
+| Intezer.Analysis.Status | string   | status of the analysis                                                                                                                                                        |
+| Intezer.Analysis.Type   | string   | type of the analysis                                                                                                                                                          |
+| File.SHA256             | string   | Hash SHA256                                                                                                                                                                   |
+| File.Malicious.Vendor   | string   | For malicious files, the vendor that made the decision                                                                                                                        |
+| File.Metadata           | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. |
 | File.ExistsInIntezer    | Boolean  | Does the file exists on intezer genome database                                                                                                                               |
 
 #### Command Example
 
-``` 
+```
 intezer-analyze-by-file file_entry_id=1188@6
 ```
 
@@ -269,24 +267,24 @@ Check the endpoint analysis status and get analysis result, supports polling.
 
 | **Argument Name** | **Description**                             | **Required** |
 |-------------------|---------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get results for. | Required     | 
-| wait_for_result   | Waits for analysis result, support polling  | Optional     | 
-| interval          | Number of seconds between poll requests     | Optional     | 
-| timeout           | Number of seconds until polling timeout     | Optional     | 
+| analysis_id       | The analysis ID we want to get results for. | Required     |
+| wait_for_result   | Waits for analysis result, support polling  | Optional     |
+| interval          | Number of seconds between poll requests     | Optional     |
+| timeout           | Number of seconds until polling timeout     | Optional     |
 
 #### Context Output
 
 | **Path**            | **Type** | **Description**                                                                                                       |
 |---------------------|----------|-----------------------------------------------------------------------------------------------------------------------|
-| DBotScore.Indicator | string   | The indicator we tested                                                                                               | 
-| DBotScore.Type      | string   | The type of the indicator                                                                                             | 
-| DBotScore.Vendor    | string   | Vendor used to calculate the score                                                                                    | 
+| DBotScore.Indicator | string   | The indicator we tested                                                                                               |
+| DBotScore.Type      | string   | The type of the indicator                                                                                             |
+| DBotScore.Vendor    | string   | Vendor used to calculate the score                                                                                    |
 | DBotScore.Score     | number   | The actual score                                                                                                      |
-| Endpoint.Metadata   | Unknown  | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families, verdict, host_name\) | 
+| Endpoint.Metadata   | Unknown  | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families, verdict, host_name\) |
 
 #### Command Example
 
-``` 
+```
 intezer-get-endpoint-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398" wait_for_result="true"
 ```
 
@@ -303,27 +301,27 @@ Check the url analysis status and get analysis result, supports polling.
 
 | **Argument Name** | **Description**                             | **Required** |
 |-------------------|---------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get results for. | Required     | 
-| wait_for_result   | Waits for analysis result, support polling  | Optional     | 
-| interval          | Number of seconds between poll requests     | Optional     | 
-| timeout           | Number of seconds until polling timeout     | Optional     | 
+| analysis_id       | The analysis ID we want to get results for. | Required     |
+| wait_for_result   | Waits for analysis result, support polling  | Optional     |
+| interval          | Number of seconds between poll requests     | Optional     |
+| timeout           | Number of seconds until polling timeout     | Optional     |
 
 #### Context Output
 
 | **Path**             | **Type** | **Description**                                      |
 |----------------------|----------|------------------------------------------------------|
-| DBotScore.Indicator  | string   | The indicator we tested                              | 
-| DBotScore.Type       | string   | The type of the indicator                            | 
-| DBotScore.Vendor     | string   | Vendor used to calculate the score                   | 
+| DBotScore.Indicator  | string   | The indicator we tested                              |
+| DBotScore.Type       | string   | The type of the indicator                            |
+| DBotScore.Vendor     | string   | Vendor used to calculate the score                   |
 | DBotScore.Score      | number   | The actual score                                     |
-| URL.Data             | string   | The submitted Url                                    | 
-| URL.Malicious.Vendor | string   | For malicious Url, the vendor that made the decision | 
-| URL.Metadata         | Unknown  | Metadata returned from Intezer analysis              | 
+| URL.Data             | string   | The submitted Url                                    |
+| URL.Malicious.Vendor | string   | For malicious Url, the vendor that made the decision |
+| URL.Metadata         | Unknown  | Metadata returned from Intezer analysis              |
 | URL.ExistsInIntezer  | Boolean  | Does the url exists on intezer                       |
 
 #### Command Example
 
-``` 
+```
 intezer-get-url-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398" wait_for_result="true"
 ```
 
@@ -340,29 +338,29 @@ Check the file analysis status and get analysis result, supports polling.
 
 | **Argument Name** | **Description**                             | **Required** |
 |-------------------|---------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get results for. | Required     | 
-| wait_for_result   | Waits for analysis result, support polling  | Optional     | 
-| interval          | Number of seconds between poll requests     | Optional     | 
-| timeout           | Number of seconds until polling timeout     | Optional     | 
+| analysis_id       | The analysis ID we want to get results for. | Required     |
+| wait_for_result   | Waits for analysis result, support polling  | Optional     |
+| interval          | Number of seconds between poll requests     | Optional     |
+| timeout           | Number of seconds until polling timeout     | Optional     |
 
 #### Context Output
 
 | **Path**              | **Type** | **Description**                                                                                                                                                               |
 |-----------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DBotScore.Indicator   | string   | The indicator we tested                                                                                                                                                       | 
-| DBotScore.Type        | string   | The type of the indicator                                                                                                                                                     | 
-| DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            | 
+| DBotScore.Indicator   | string   | The indicator we tested                                                                                                                                                       |
+| DBotScore.Type        | string   | The type of the indicator                                                                                                                                                     |
+| DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            |
 | DBotScore.Score       | number   | The actual score                                                                                                                                                              |
-| File.SHA256           | string   | Hash SHA256                                                                                                                                                                   | 
-| File.SHA1             | string   | Hash SHA1                                                                                                                                                                     | 
-| File.MD5              | string   | Hash MD5                                                                                                                                                                      | 
-| File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        | 
-| File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. | 
-| File.ExistsInIntezer  | Boolean  | Does the file exists on intezer genome database                                                                                                                               |                                             | 
+| File.SHA256           | string   | Hash SHA256                                                                                                                                                                   |
+| File.SHA1             | string   | Hash SHA1                                                                                                                                                                     |
+| File.MD5              | string   | Hash MD5                                                                                                                                                                      |
+| File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        |
+| File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. |
+| File.ExistsInIntezer  | Boolean  | Does the file exists on intezer genome database                                                                                                                               |                                             |
 
 #### Command Example
 
-``` 
+```
 intezer-get-file-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398" wait_for_result="true"
 ```
 
@@ -379,37 +377,37 @@ Check the analysis status and get analysis result, support file and endpoint ana
 
 | **Argument Name** | **Description**                                                                      | **Required** |
 |-------------------|--------------------------------------------------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get results for.                                          | Optional     | 
-| analysis_type     | The type of the analysis. Possible values are: File, Endpoint, Url. Default is File. | Optional     | 
-| indicator_name    | indicator to classify.                                                               | Optional     | 
+| analysis_id       | The analysis ID we want to get results for.                                          | Optional     |
+| analysis_type     | The type of the analysis. Possible values are: File, Endpoint, Url. Default is File. | Optional     |
+| indicator_name    | indicator to classify.                                                               | Optional     |
 
 #### Context Output
 
 | **Path**              | **Type** | **Description**                                                                                                                                                               |
 |-----------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DBotScore.Indicator   | string   | The indicator we tested                                                                                                                                                       | 
-| DBotScore.Type        | string   | The type of the indicator                                                                                                                                                     | 
-| DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            | 
+| DBotScore.Indicator   | string   | The indicator we tested                                                                                                                                                       |
+| DBotScore.Type        | string   | The type of the indicator                                                                                                                                                     |
+| DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            |
 | DBotScore.Score       | number   | The actual score                                                                                                                                                              |
-| File.SHA256           | string   | Hash SHA256                                                                                                                                                                   | 
-| File.SHA1             | string   | Hash SHA1                                                                                                                                                                     | 
-| File.MD5              | string   | Hash MD5                                                                                                                                                                      | 
-| File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        | 
-| File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. | 
+| File.SHA256           | string   | Hash SHA256                                                                                                                                                                   |
+| File.SHA1             | string   | Hash SHA1                                                                                                                                                                     |
+| File.MD5              | string   | Hash MD5                                                                                                                                                                      |
+| File.Malicious.Vendor | string   | For malicious files, the vendor that made the decision                                                                                                                        |
+| File.Metadata         | Unknown  | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metadata will be returned only for supported files. |
 | File.ExistsInIntezer  | Boolean  | Does the file exists on intezer genome database                                                                                                                               |
-| URL.Data              | string   | The submitted Url                                                                                                                                                             | 
-| Url.URL               | string   | The submitted Url (deprecated)                                                                                                                                                | 
-| URL.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision                                                                                                                          | 
-| Url.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision (deprecated)                                                                                                             | 
-| URL.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       | 
-| Url.Metadata          | Unknown  | Metadata returned from Intezer analysis (deprecated)                                                                                                                          | 
+| URL.Data              | string   | The submitted Url                                                                                                                                                             |
+| Url.URL               | string   | The submitted Url (deprecated)                                                                                                                                                |
+| URL.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision                                                                                                                          |
+| Url.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision (deprecated)                                                                                                             |
+| URL.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       |
+| Url.Metadata          | Unknown  | Metadata returned from Intezer analysis (deprecated)                                                                                                                          |
 | URL.ExistsInIntezer   | Boolean  | Does the url exists on intezer                                                                                                                                                |
 | Url.ExistsInIntezer   | Boolean  | Does the url exists on intezer (deprecated)                                                                                                                                   |
-| Endpoint.Metadata     | Unknown  | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families, verdict, host_name\)                                                         | 
+| Endpoint.Metadata     | Unknown  | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families, verdict, host_name\)                                                         |
 
 #### Command Example
 
-``` 
+```
 intezer-get-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398"
 ```
 
@@ -507,15 +505,15 @@ Family: WannaCry
 
 Analysis Report
 ---
-analysis_id	006c54ba-3159-43a0-98a0-1c5032145f47
-analysis_time	Tue, 29 Jun 2021 13:40:01 GMT
-analysis_url	https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47
-family_id	0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
-family_name	WannaCry
-is_private	false
+analysis_id 006c54ba-3159-43a0-98a0-1c5032145f47
+analysis_time Tue, 29 Jun 2021 13:40:01 GMT
+analysis_url https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47
+family_id 0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
+family_name WannaCry
+is_private false
 sha256          some-sha256
-sub_verdict	known_malicious
-verdict	        malicious
+sub_verdict known_malicious
+verdict         malicious
 ```
 
 ### intezer-get-sub-analyses
@@ -531,14 +529,14 @@ Get a list of the analysis sub analyses
 
 | **Argument Name** | **Description**                                      | **Required** |
 |-------------------|------------------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get the sub analyses for. | Required     | 
+| analysis_id       | The analysis ID we want to get the sub analyses for. | Required     |
 
 #### Context Output
 
 | **Path**                        | **Type** | **Description**                               |
 |---------------------------------|----------|-----------------------------------------------|
-| Intezer.Analysis.ID             | string   | Intezer analysis id                           | 
-| Intezer.Analysis.SubAnalysesIDs | Unknown  | List of all sub analyses of the give analysis | 
+| Intezer.Analysis.ID             | string   | Intezer analysis id                           |
+| Intezer.Analysis.SubAnalysesIDs | Unknown  | List of all sub analyses of the give analysis |
 
 #### Command Example
 
@@ -585,19 +583,19 @@ Get family information from Intezer Analyze
 
 | **Argument Name** | **Description** | **Required** |
 |-------------------|-----------------|--------------|
-| family_id         | The Family ID.  | Required     | 
+| family_id         | The Family ID.  | Required     |
 
 #### Context Output
 
 | **Path**            | **Type** | **Description**                      |
 |---------------------|----------|--------------------------------------|
-| Intezer.Family.ID   | string   | Family id in intezer genome database | 
-| Intezer.Family.Name | string   | Family name                          | 
-| Intezer.Family.Type | string   | Family Type                          | 
+| Intezer.Family.ID   | string   | Family id in intezer genome database |
+| Intezer.Family.Name | string   | Family name                          |
+| Intezer.Family.Type | string   | Family Type                          |
 
 #### Command Example
 
-``` 
+```
 intezer-get-family-info family_id=006c54ba-3159-43a0-98a0-1c5032145f47
 ```
 
@@ -641,23 +639,23 @@ and got the sub analysis `456`, you need to specify both in the command
 
 | **Argument Name** | **Description**                                                                                               | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------------------|--------------|
-| analysis_id       | The analysis ID (parent analysis in case we're trying to get sub abalysis) we want to get the code reuse for. | Required     | 
-| sub_analysis_id   | The Sub Analysis we want to get the code reuse for.                                                           | Optional     | 
+| analysis_id       | The analysis ID (parent analysis in case we're trying to get sub abalysis) we want to get the code reuse for. | Required     |
+| sub_analysis_id   | The Sub Analysis we want to get the code reuse for.                                                           | Optional     |
 
 #### Context Output
 
 | **Path**                                       | **Type** | **Description**                                  |
 |------------------------------------------------|----------|--------------------------------------------------|
 | Intezer.Analysis.ID                            | string   | The composed analysis ID                         |
-| Intezer.Analysis.CodeReuse                     | Unknown  | General Code Reuse of the analysis               | 
-| Intezer.Analysis.CodeReuseFamilies             | Unknown  | List of the families appearing in the code reuse | 
-| Intezer.Analysis.SubAnalyses.CodeReuse         | Unknown  | General Code Reuse of the analysis               | 
-| Intezer.Analysis.SubAnalyses.CodeReuseFamilies | Unknown  | List of the families appearing in the code reuse | 
-| Intezer.Analysis.SubAnalyses.RootAnalysis      | string   | The Composed analysis id                         | 
+| Intezer.Analysis.CodeReuse                     | Unknown  | General Code Reuse of the analysis               |
+| Intezer.Analysis.CodeReuseFamilies             | Unknown  | List of the families appearing in the code reuse |
+| Intezer.Analysis.SubAnalyses.CodeReuse         | Unknown  | General Code Reuse of the analysis               |
+| Intezer.Analysis.SubAnalyses.CodeReuseFamilies | Unknown  | List of the families appearing in the code reuse |
+| Intezer.Analysis.SubAnalyses.RootAnalysis      | string   | The Composed analysis id                         |
 
 #### Command Example
 
-``` 
+```
 # Get the code reuse of an analysis
 intezer-get-analysis-code-reuse analysis_id=<Root analysis>
 
@@ -716,16 +714,16 @@ Families:
 ---
 
 WannaCry
-family_id	        0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
-family_name	        WannaCry
-family_type	        malware
-reused_gene_count	362
+family_id         0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
+family_name         WannaCry
+family_type         malware
+reused_gene_count 362
 
 Lazarus
-family_id	        7ae9c0f1-5e81-4ed1-928d-d966a1b1525c
-family_name	        Lazarus
-family_type	        malware
-reused_gene_count	33
+family_id         7ae9c0f1-5e81-4ed1-928d-d966a1b1525c
+family_name         Lazarus
+family_type         malware
+reused_gene_count 33
 
 ... More Families if available
 ```
@@ -747,20 +745,20 @@ and got the sub analysis `456`, you need to specify both in the command
 
 | **Argument Name** | **Description**                                   | **Required** |
 |-------------------|---------------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get the metadata for.  | Required     | 
-| sub_analysis_id   | The Sub Analysis we want to get the metadata for. | Optional     | 
+| analysis_id       | The analysis ID we want to get the metadata for.  | Required     |
+| sub_analysis_id   | The Sub Analysis we want to get the metadata for. | Optional     |
 
 #### Context Output
 
 | **Path**                              | **Type** | **Description**           |
 |---------------------------------------|----------|---------------------------|
-| Intezer.Analysis.ID                   | string   | The composed analysis ID  | 
-| Intezer.Analysis.Metadata             | Unknown  | The Analysis metadata     | 
-| Intezer.Analysis.SubAnalyses.Metadata | Unknown  | The Sub Analysis metadata | 
+| Intezer.Analysis.ID                   | string   | The composed analysis ID  |
+| Intezer.Analysis.Metadata             | Unknown  | The Analysis metadata     |
+| Intezer.Analysis.SubAnalyses.Metadata | Unknown  | The Sub Analysis metadata |
 
 #### Command Example
 
-``` 
+```
 # Get the metadata of an analysis
 intezer-get-analysis-metadata analysis_id=<Root analysis>
 
@@ -809,18 +807,18 @@ intezer-get-analysis-metadata analysis_id=<Root analysis> sub_analysis_id=<Sub A
 Analysis Metadata
 ---
 
-architecture	        i386
-company	                Microsoft Corporation
-compilation_timestamp	2009:07:13 23:19:35+00:00
-file_type	        pe
-md5	                md5
-original_filename	LODCTR.EXE
-product	                Microsoft® Windows® Operating System
-product_version	        6.1.7600.16385 ^^^
-sha1	                sha1
-sha256	                sha256
-size_in_bytes	        245760
-ssdeep	                ssdeep
+architecture         i386
+company                 Microsoft Corporation
+compilation_timestamp 2009:07:13 23:19:35+00:00
+file_type         pe
+md5                 md5
+original_filename LODCTR.EXE
+product                 Microsoft® Windows® Operating System
+product_version         6.1.7600.16385 ^^^
+sha1                 sha1
+sha256                 sha256
+size_in_bytes         245760
+ssdeep                 ssdeep
 ```
 
 ### intezer-get-analysis-iocs
@@ -836,14 +834,14 @@ Gets the list of network and files IOCs of a specific analysis id.
 
 | **Argument Name** | **Description**                              | **Required** |
 |-------------------|----------------------------------------------|--------------|
-| analysis_id       | The analysis ID we want to get the IOCs for. | Required     | 
+| analysis_id       | The analysis ID we want to get the IOCs for. | Required     |
 
 #### Context Output
 
 | **Path**              | **Type** | **Description**          |
 |-----------------------|----------|--------------------------|
-| Intezer.Analysis.ID   | string   | The composed analysis ID | 
-| Intezer.Analysis.IOCs | Dict     | The Analysis IOCs        | 
+| Intezer.Analysis.ID   | string   | The composed analysis ID |
+| Intezer.Analysis.IOCs | Dict     | The Analysis IOCs        |
 
 #### Context Example
 
@@ -914,16 +912,16 @@ Submit a new alert, including the raw alert information, to Intezer for processi
 
 | **Argument Name** | **Description**                            | **Required** |
 |-------------------|--------------------------------------------|--------------|
-| raw_alert         | The raw alert as it stored in the context. | Required     | 
-| mapping           | The mapping for the raw alert data.        | Required     | 
-| source            | The source of the alert.                   | Required     | 
+| raw_alert         | The raw alert as it stored in the context. | Required     |
+| mapping           | The mapping for the raw alert data.        | Required     |
+| source            | The source of the alert.                   | Required     |
 
 #### Context Output
 
 | **Path**             | **Type** | **Description**         |
 |----------------------|----------|-------------------------|
-| Intezer.Alert.ID     | string   | The Alert ID            | 
-| Intezer.Alert.Status | string   | The status of the Alert | 
+| Intezer.Alert.ID     | string   | The Alert ID            |
+| Intezer.Alert.Status | string   | The status of the Alert |
 
 #### Context Example
 
@@ -955,8 +953,8 @@ Submit a suspicious phishing email in a raw format (.MSG or .EML) to Intezer for
 
 | **Path**             | **Type** | **Description**         |
 |----------------------|----------|-------------------------|
-| Intezer.Alert.ID     | string   | The Alert ID            | 
-| Intezer.Alert.Status | string   | The status of the Alert | 
+| Intezer.Alert.ID     | string   | The Alert ID            |
+| Intezer.Alert.Status | string   | The status of the Alert |
 
 #### Context Example
 
@@ -982,26 +980,26 @@ Get an ingested alert triage and response information using alert ID.
 
 | **Argument Name** | **Description**                          | **Required** |
 |-------------------|------------------------------------------|--------------|
-| alert_id          | The alert id to query.                   | Required     | 
-| wait_for_result   | Waits for alert result, support polling. | Optional     | 
+| alert_id          | The alert id to query.                   | Required     |
+| wait_for_result   | Waits for alert result, support polling. | Optional     |
 
 #### Context Output
 
 | **Path**                                                       | **Type** | **Description**                                |
 |----------------------------------------------------------------|----------|------------------------------------------------|
-| Intezer.Alert.ID                                               | string   | The Alert ID                                   | 
-| Intezer.Alert.Status                                           | string   | The Alert status                               | 
-| Intezer.Alert.Result                                           | Object   | The full report of the alert                   | 
-| Intezer.Alert.Result.intezer_alert_url                         | Object   | The url for the alert result on Intezer Analyze | 
-| DBotScore.Indicator                                            | string   | The indicator we tested                        | 
-| DBotScore.Type                                                 | string   | The type of the indicator                      | 
-| DBotScore.Vendor                                               | string   | Vendor used to calculate the score             | 
+| Intezer.Alert.ID                                               | string   | The Alert ID                                   |
+| Intezer.Alert.Status                                           | string   | The Alert status                               |
+| Intezer.Alert.Result                                           | Object   | The full report of the alert                   |
+| Intezer.Alert.Result.intezer_alert_url                         | Object   | The url for the alert result on Intezer Analyze |
+| DBotScore.Indicator                                            | string   | The indicator we tested                        |
+| DBotScore.Type                                                 | string   | The type of the indicator                      |
+| DBotScore.Vendor                                               | string   | Vendor used to calculate the score             |
 | DBotScore.Score                                                | string   | The actual score                               |
 | File.SHA256                                                    | string   | Hash SHA256                                    |
-| File.SHA1                                                      | string   | Hash SHA1                                      | 
+| File.SHA1                                                      | string   | Hash SHA1                                      |
 | File.MD5                                                       | string   | Hash MD5                                       |
-| URL.Data                                                       | string   | The tested URL                                 | 
-| URL.Malicious.Vendor                                           | string   | For malicious URL, the vendor that made the decision | 
+| URL.Data                                                       | string   | The tested URL                                 |
+| URL.Malicious.Vendor                                           | string   | For malicious URL, the vendor that made the decision |
 | URL.Relationships                                              | object   | The relationships between two urls             |
 | Intezer.Alert.Result.raw_alert                                 | object   | The raw alert as submitted to Intezer          |
 | Intezer.Alert.Result.triage_result.alert_verdict_display       | string   | The verdict of the alert                       |
@@ -1011,7 +1009,7 @@ Get an ingested alert triage and response information using alert ID.
 
 #### Command Example
 
-``` 
+```
 # Get an alert result
 intezer-get-alert-result alert_id=<Alert ID> wait_for_result=true
 ```
