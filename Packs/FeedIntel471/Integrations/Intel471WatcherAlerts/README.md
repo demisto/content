@@ -1,6 +1,6 @@
 Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.
-## Configure Intel471 Watcher Alerts in Cortex
 
+## Configure Intel471 Watcher Alerts in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,6 +17,7 @@ Intel 471's watcher alerts provide a mechanism by which customers can be notifie
 | Trust any certificate (not secure) |  | False |
 
 ## Fetched Incidents Data
+
 ---
-Returns the Intel 471 Watcher Alerts. Creates incidents in Cortex XSOAR and populate the incident `details` field 
+Returns the Intel 471 Watcher Alerts. Creates incidents in Cortex XSOAR and populate the incident `details` field
 with the alert content.
