@@ -2,7 +2,7 @@
     "name": "Exabeam Advanced Analytics",
     "description": "The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.",
     "support": "xsoar",
-    "currentVersion": "2.4.2",
+    "currentVersion": "2.4.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
