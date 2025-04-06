@@ -1,15 +1,10 @@
 ﻿
-
-
-
-
-Pack helps to integrate Group-IB Threat Intelligence and get incidents directly into Cortex XSOAR. 
+Pack helps to integrate Group-IB Threat Intelligence and get incidents directly into Cortex XSOAR.
 The list of included collections:
 Compromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware.
 This integration was integrated and tested with version 1.0 of Group-IB Threat Intelligence
 
 ## Configure Group-IB Threat Intelligence in Cortex
-
 
 | **Parameter**                  | **Description** | **Required** |
 |--------------------------------| --- | --- |
@@ -21,7 +16,6 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
 | Incidents first fetch          | Date to start fetching incidents from. | False |
 | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -32,7 +26,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Command performs Group IB event lookup in compromised/account collection with provided ID.
 
-
 #### Base Command
 
 `gibtia-get-compromised-account-info`
@@ -41,37 +34,35 @@ Command performs Group IB event lookup in compromised/account collection with pr
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a. | Required | 
-
+| id | GIB event id.<br/>e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.CompromisedAccount.client.ipv4.asn | String | Victim IP address | 
-| GIBTIA.CompromisedAccount.client.ipv4.countryName | String | Country name | 
-| GIBTIA.CompromisedAccount.client.ipv4.ip | String | Victim IP address | 
-| GIBTIA.CompromisedAccount.client.ipv4.region | String | Region name | 
-| GIBTIA.CompromisedAccount.cnc.domain | String | Event CNC domain | 
-| GIBTIA.CompromisedAccount.cnc.url | String | CNC URL | 
-| GIBTIA.CompromisedAccount.cnc.ipv4.ip | String | CNC IP address | 
-| GIBTIA.CompromisedAccount.dateCompromised | Date | Date of compromise | 
-| GIBTIA.CompromisedAccount.dateDetected | Date | Date of detection | 
-| GIBTIA.CompromisedAccount.dropEmail.email | String | Email where compromised data were sent to | 
-| GIBTIA.CompromisedAccount.dropEmail.domain | String | Email domain | 
-| GIBTIA.CompromisedAccount.login | String | Compromised login | 
-| GIBTIA.CompromisedAccount.password | String | Compromised password | 
-| GIBTIA.CompromisedAccount.malware.name | String | Malware name | 
-| GIBTIA.CompromisedAccount.malware.id | String | Group IB malware ID | 
-| GIBTIA.CompromisedAccount.person.name | String | Card owner name | 
-| GIBTIA.CompromisedAccount.person.email | String | Card owner e-mail | 
-| GIBTIA.CompromisedAccount.portalLink | String | Link to GIB incident | 
-| GIBTIA.CompromisedAccount.threatActor.name | String | Associated threat actor | 
-| GIBTIA.CompromisedAccount.threatActor.isAPT | Boolean | Is threat actor APT group | 
-| GIBTIA.CompromisedAccount.threatActor.id | String | Threat actor GIB ID | 
-| GIBTIA.CompromisedAccount.id | String | Group IB incident ID | 
-| GIBTIA.CompromisedAccount.evaluation.severity | String | Event severity | 
-
+| GIBTIA.CompromisedAccount.client.ipv4.asn | String | Victim IP address |
+| GIBTIA.CompromisedAccount.client.ipv4.countryName | String | Country name |
+| GIBTIA.CompromisedAccount.client.ipv4.ip | String | Victim IP address |
+| GIBTIA.CompromisedAccount.client.ipv4.region | String | Region name |
+| GIBTIA.CompromisedAccount.cnc.domain | String | Event CNC domain |
+| GIBTIA.CompromisedAccount.cnc.url | String | CNC URL |
+| GIBTIA.CompromisedAccount.cnc.ipv4.ip | String | CNC IP address |
+| GIBTIA.CompromisedAccount.dateCompromised | Date | Date of compromise |
+| GIBTIA.CompromisedAccount.dateDetected | Date | Date of detection |
+| GIBTIA.CompromisedAccount.dropEmail.email | String | Email where compromised data were sent to |
+| GIBTIA.CompromisedAccount.dropEmail.domain | String | Email domain |
+| GIBTIA.CompromisedAccount.login | String | Compromised login |
+| GIBTIA.CompromisedAccount.password | String | Compromised password |
+| GIBTIA.CompromisedAccount.malware.name | String | Malware name |
+| GIBTIA.CompromisedAccount.malware.id | String | Group IB malware ID |
+| GIBTIA.CompromisedAccount.person.name | String | Card owner name |
+| GIBTIA.CompromisedAccount.person.email | String | Card owner e-mail |
+| GIBTIA.CompromisedAccount.portalLink | String | Link to GIB incident |
+| GIBTIA.CompromisedAccount.threatActor.name | String | Associated threat actor |
+| GIBTIA.CompromisedAccount.threatActor.isAPT | Boolean | Is threat actor APT group |
+| GIBTIA.CompromisedAccount.threatActor.id | String | Threat actor GIB ID |
+| GIBTIA.CompromisedAccount.id | String | Group IB incident ID |
+| GIBTIA.CompromisedAccount.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -245,13 +236,10 @@ Command performs Group IB event lookup in compromised/account collection with pr
 >|---|---|---|---|---|---|
 >| AS1111 | Russian Federation | Moscow | 253b9a136f0d574149fc43691eaf7ae27aff141a | red | 11.11.11.11 |
 
-
-
 ### gibtia-get-compromised-card-info
 
 ***
 Command performs Group IB event lookup in compromised/card collection with provided ID.
-
 
 #### Base Command
 
@@ -261,35 +249,33 @@ Command performs Group IB event lookup in compromised/card collection with provi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: ecda6f4dc85596f447314ce01e2152db9c9d3cbc. | Required | 
-
+| id | GIB event id.<br/>e.g.: ecda6f4dc85596f447314ce01e2152db9c9d3cbc. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.CompromisedCard.cardInfo.cvv | String | Compromised card CVV | 
-| GIBTIA.CompromisedCard.cardInfo.issuer.issuer | String | Card issuer | 
-| GIBTIA.CompromisedCard.cardInfo.number | String | Compromised card number | 
-| GIBTIA.CompromisedCard.cardInfo.system | String | Payment system | 
-| GIBTIA.CompromisedCard.cardInfo.type | String | Internal issuer card type | 
-| GIBTIA.CompromisedCard.cardInfo.validThru | String | Card expiration date | 
-| GIBTIA.CompromisedCard.client.ipv4.asn | String | Compromised client ASN | 
-| GIBTIA.CompromisedCard.client.ipv4.countryName | String | Country name | 
-| GIBTIA.CompromisedCard.client.ipv4.ip | String | Victim IP address | 
-| GIBTIA.CompromisedCard.client.ipv4.region | String | Region name | 
-| GIBTIA.CompromisedCard.dateCompromised | Date | Date of compromise | 
-| GIBTIA.CompromisedCard.dateDetected | Date | Date detected | 
-| GIBTIA.CompromisedCard.malware.name | String | Related malware name | 
-| GIBTIA.CompromisedCard.malware.id | String | Related GIB malware ID | 
-| GIBTIA.CompromisedCard.portalLink | String | Link to GIB incident | 
-| GIBTIA.CompromisedCard.threatActor.name | String | Associated  threat actor | 
-| GIBTIA.CompromisedCard.threatActor.isAPT | Boolean | Is threat actor APT group | 
-| GIBTIA.CompromisedCard.threatActor.id | String | Threat actor GIB ID | 
-| GIBTIA.CompromisedCard.id | String | Group IB incident ID | 
-| GIBTIA.CompromisedCard.sourceType | String | Information source | 
-| GIBTIA.CompromisedCard.evaluation.severity | String | Event severity | 
-
+| GIBTIA.CompromisedCard.cardInfo.cvv | String | Compromised card CVV |
+| GIBTIA.CompromisedCard.cardInfo.issuer.issuer | String | Card issuer |
+| GIBTIA.CompromisedCard.cardInfo.number | String | Compromised card number |
+| GIBTIA.CompromisedCard.cardInfo.system | String | Payment system |
+| GIBTIA.CompromisedCard.cardInfo.type | String | Internal issuer card type |
+| GIBTIA.CompromisedCard.cardInfo.validThru | String | Card expiration date |
+| GIBTIA.CompromisedCard.client.ipv4.asn | String | Compromised client ASN |
+| GIBTIA.CompromisedCard.client.ipv4.countryName | String | Country name |
+| GIBTIA.CompromisedCard.client.ipv4.ip | String | Victim IP address |
+| GIBTIA.CompromisedCard.client.ipv4.region | String | Region name |
+| GIBTIA.CompromisedCard.dateCompromised | Date | Date of compromise |
+| GIBTIA.CompromisedCard.dateDetected | Date | Date detected |
+| GIBTIA.CompromisedCard.malware.name | String | Related malware name |
+| GIBTIA.CompromisedCard.malware.id | String | Related GIB malware ID |
+| GIBTIA.CompromisedCard.portalLink | String | Link to GIB incident |
+| GIBTIA.CompromisedCard.threatActor.name | String | Associated  threat actor |
+| GIBTIA.CompromisedCard.threatActor.isAPT | Boolean | Is threat actor APT group |
+| GIBTIA.CompromisedCard.threatActor.id | String | Threat actor GIB ID |
+| GIBTIA.CompromisedCard.id | String | Group IB incident ID |
+| GIBTIA.CompromisedCard.sourceType | String | Information source |
+| GIBTIA.CompromisedCard.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -450,13 +436,10 @@ Command performs Group IB event lookup in compromised/card collection with provi
 >|---|---|---|---|---|
 >| United States | Some | ecda6f4dc85596f447314ce01e2152db9c9d3cbc | red | 11.11.11.11 |
 
-
-
 ### gibtia-get-compromised-breached-info
 
 ***
 Command performs Group IB event lookup in compromised/breached collection with provided ID.
-
 
 #### Base Command
 
@@ -466,20 +449,18 @@ Command performs Group IB event lookup in compromised/breached collection with p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 6fd344f340f4bdc08548cb36ded62bdf. | Required | 
-
+| id | GIB event id.<br/>e.g.: 6fd344f340f4bdc08548cb36ded62bdf. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.DataBreach.email | String | List of breached emails | 
-| GIBTIA.DataBreach.leakName | String | Name of the leak | 
-| GIBTIA.DataBreach.password | String | List of breached passwords | 
-| GIBTIA.DataBreach.uploadTime | Date | Date of breached data upload | 
-| GIBTIA.DataBreach.id | String | Group IB incident ID | 
-| GIBTIA.DataBreach.evaluation.severity | String | Event severity | 
-
+| GIBTIA.DataBreach.email | String | List of breached emails |
+| GIBTIA.DataBreach.leakName | String | Name of the leak |
+| GIBTIA.DataBreach.password | String | List of breached passwords |
+| GIBTIA.DataBreach.uploadTime | Date | Date of breached data upload |
+| GIBTIA.DataBreach.id | String | Group IB incident ID |
+| GIBTIA.DataBreach.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -532,13 +513,10 @@ Command performs Group IB event lookup in compromised/breached collection with p
 >|---|---|---|---|---|---|---|
 >| address: <br/> | some@gmail.com | admiraltyCode: C3<br/>credibility: 50<br/>reliability: 50<br/>severity: green<br/>tlp: amber<br/>ttl: null | 277c4112d348c91f6dabe9467f0d18ba | some.com | AC91C480FDE9D7ACB8AC4B78310EB2TD,<br/>1390DDDFA28AE085D23518A035703112 | 2021-06-12T03:02:00 |
 
-
-
 ### gibtia-get-compromised-mule-info
 
 ***
 Command performs Group IB event lookup in compromised/mule collection with provided ID.
-
 
 #### Base Command
 
@@ -548,30 +526,28 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33. | Required | 
-
+| id | GIB event id.<br/>e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.CompromisedMule.account | String | Account number \(card/phone\), which was used by threat actor to cash out | 
-| GIBTIA.CompromisedMule.cnc.ipv4.asn | String | CNC ASN | 
-| GIBTIA.CompromisedMule.cnc.ipv4.countryName | String | Country name | 
-| GIBTIA.CompromisedMule.cnc.ipv4.ip | String | Victim IP address | 
-| GIBTIA.CompromisedMule.cnc.ipv4.region | String | Region name | 
-| GIBTIA.CompromisedMule.cnc.url | String | CNC URL | 
-| GIBTIA.CompromisedMule.cnc.domain | String | CNC domain | 
-| GIBTIA.CompromisedMule.dateAdd | Date | Date of detection | 
-| GIBTIA.CompromisedMule.malware.name | String | Malware name | 
-| GIBTIA.CompromisedMule.portalLink | String | Link to GIB incident | 
-| GIBTIA.CompromisedMule.threatActor.name | String | Associated threat actor | 
-| GIBTIA.CompromisedMule.threatActor.id | String | Threat actor GIB ID | 
-| GIBTIA.CompromisedMule.threatActor.isAPT | Boolean | Is threat actor APT group | 
-| GIBTIA.CompromisedMule.id | String | Group IB incident ID | 
-| GIBTIA.CompromisedMule.sourceType | String | Information source | 
-| GIBTIA.CompromisedMule.evaluation.severity | String | Event severity | 
-
+| GIBTIA.CompromisedMule.account | String | Account number \(card/phone\), which was used by threat actor to cash out |
+| GIBTIA.CompromisedMule.cnc.ipv4.asn | String | CNC ASN |
+| GIBTIA.CompromisedMule.cnc.ipv4.countryName | String | Country name |
+| GIBTIA.CompromisedMule.cnc.ipv4.ip | String | Victim IP address |
+| GIBTIA.CompromisedMule.cnc.ipv4.region | String | Region name |
+| GIBTIA.CompromisedMule.cnc.url | String | CNC URL |
+| GIBTIA.CompromisedMule.cnc.domain | String | CNC domain |
+| GIBTIA.CompromisedMule.dateAdd | Date | Date of detection |
+| GIBTIA.CompromisedMule.malware.name | String | Malware name |
+| GIBTIA.CompromisedMule.portalLink | String | Link to GIB incident |
+| GIBTIA.CompromisedMule.threatActor.name | String | Associated threat actor |
+| GIBTIA.CompromisedMule.threatActor.id | String | Threat actor GIB ID |
+| GIBTIA.CompromisedMule.threatActor.isAPT | Boolean | Is threat actor APT group |
+| GIBTIA.CompromisedMule.id | String | Group IB incident ID |
+| GIBTIA.CompromisedMule.sourceType | String | Information source |
+| GIBTIA.CompromisedMule.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -695,7 +671,6 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 
 #### Human Readable Output
 
-
 >### Feed from compromised/mule with ID 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99
 
 >|account|cnc cnc|cnc domain|cnc ipv4 ip|cnc url|dateAdd|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|hash|id|malware id|malware name|malware stixGuid|oldId|organization name|portalLink|sourceType|stixGuid|type|
@@ -720,12 +695,10 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 >|---|---|---|
 >| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | 11.11.11.11 |
 
-
 ### gibtia-get-compromised-imei-info
 
 ***
 Command performs Group IB event lookup in compromised/imei collection with provided ID.
-
 
 #### Base Command
 
@@ -735,33 +708,31 @@ Command performs Group IB event lookup in compromised/imei collection with provi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 0c1426048474df19ada9d0089ef8b3efce906556. | Required | 
-
+| id | GIB event id.<br/>e.g.: 0c1426048474df19ada9d0089ef8b3efce906556. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.CompromisedIMEI.client.ipv4.asn | String | Compromised client ASN | 
-| GIBTIA.CompromisedIMEI.client.ipv4.countryName | String | Country name | 
-| GIBTIA.CompromisedIMEI.client.ipv4.ip | String | Victim IP address | 
-| GIBTIA.CompromisedIMEI.client.ipv4.region | String | Region name | 
-| GIBTIA.CompromisedIMEI.cnc.domain | String | CNC URL | 
-| GIBTIA.CompromisedIMEI.cnc.ipv4.asn | String | CNC ASN | 
-| GIBTIA.CompromisedIMEI.cnc.ipv4.countryName | String | CNC IP country name | 
-| GIBTIA.CompromisedIMEI.cnc.ipv4.ip | String | CNC IP address | 
-| GIBTIA.CompromisedIMEI.cnc.ipv4.region | String | CNC region name | 
-| GIBTIA.CompromisedIMEI.dateCompromised | Date | Date compromised | 
-| GIBTIA.CompromisedIMEI.dateDetected | Date | Date detected | 
-| GIBTIA.CompromisedIMEI.device.imei | String | Compromised IMEI | 
-| GIBTIA.CompromisedIMEI.device.model | String | Compromised device model | 
-| GIBTIA.CompromisedIMEI.malware.name | String | Associated malware | 
-| GIBTIA.CompromisedIMEI.threatActor.id | String | Associated threat actor ID | 
-| GIBTIA.CompromisedIMEI.threatActor.name | String | Associated threat actor | 
-| GIBTIA.CompromisedIMEI.threatActor.isAPT | Boolean |  Is threat actor APT group | 
-| GIBTIA.CompromisedIMEI.id | String | Group IB incident ID | 
-| GIBTIA.CompromisedIMEI.evaluation.severity | String | Event severity | 
-
+| GIBTIA.CompromisedIMEI.client.ipv4.asn | String | Compromised client ASN |
+| GIBTIA.CompromisedIMEI.client.ipv4.countryName | String | Country name |
+| GIBTIA.CompromisedIMEI.client.ipv4.ip | String | Victim IP address |
+| GIBTIA.CompromisedIMEI.client.ipv4.region | String | Region name |
+| GIBTIA.CompromisedIMEI.cnc.domain | String | CNC URL |
+| GIBTIA.CompromisedIMEI.cnc.ipv4.asn | String | CNC ASN |
+| GIBTIA.CompromisedIMEI.cnc.ipv4.countryName | String | CNC IP country name |
+| GIBTIA.CompromisedIMEI.cnc.ipv4.ip | String | CNC IP address |
+| GIBTIA.CompromisedIMEI.cnc.ipv4.region | String | CNC region name |
+| GIBTIA.CompromisedIMEI.dateCompromised | Date | Date compromised |
+| GIBTIA.CompromisedIMEI.dateDetected | Date | Date detected |
+| GIBTIA.CompromisedIMEI.device.imei | String | Compromised IMEI |
+| GIBTIA.CompromisedIMEI.device.model | String | Compromised device model |
+| GIBTIA.CompromisedIMEI.malware.name | String | Associated malware |
+| GIBTIA.CompromisedIMEI.threatActor.id | String | Associated threat actor ID |
+| GIBTIA.CompromisedIMEI.threatActor.name | String | Associated threat actor |
+| GIBTIA.CompromisedIMEI.threatActor.isAPT | Boolean |  Is threat actor APT group |
+| GIBTIA.CompromisedIMEI.id | String | Group IB incident ID |
+| GIBTIA.CompromisedIMEI.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -886,7 +857,6 @@ Command performs Group IB event lookup in compromised/imei collection with provi
 
 #### Human Readable Output
 
-
 >### Feed from compromised/imei with ID 0c1426048474df19ada9d0089ef8b3efce906556
 
 >|client ipv4 asn|client ipv4 countryCode|client ipv4 countryName|client ipv4 ip|client ipv4 provider|cnc cnc|cnc domain|cnc ipv4 asn|cnc ipv4 countryCode|cnc ipv4 countryName|cnc ipv4 ip|cnc ipv4 provider|cnc url|dateDetected|device iccid|device imei|device imsi|device model|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|malware id|malware name|malware stixGuid|oldId|operator number|portalLink|sourceType|stixGuid|
@@ -911,12 +881,10 @@ Command performs Group IB event lookup in compromised/imei collection with provi
 >|---|---|---|---|---|
 >| AS11111 | France | 0c1426048474df19ada9d0089ef8b3efce906556 | red | 11.11.11.11 |
 
-
 ### gibtia-get-osi-git-leak-info
 
 ***
 Command performs Group IB event lookup in osi/git_leak collection with provided ID.
-
 
 #### Base Command
 
@@ -926,25 +894,23 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7. | Required | 
-
+| id | GIB event id.<br/>e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.GitLeak.dateDetected | Date | Leak detection date | 
-| GIBTIA.GitLeak.matchesType | String | List of matches type | 
-| GIBTIA.GitLeak.name | String | GIT filename | 
-| GIBTIA.GitLeak.repository | String | GIT repository | 
-| GIBTIA.GitLeak.revisions.file | String | Leaked file link | 
-| GIBTIA.GitLeak.revisions.fileDiff | String | Leaked file diff | 
-| GIBTIA.GitLeak.revisions.info.authorName | String | Revision author | 
-| GIBTIA.GitLeak.revisions.info.authorEmail | String | Author name | 
-| GIBTIA.GitLeak.revisions.info.dateCreated | Date | Revision creation date | 
-| GIBTIA.GitLeak.source | String | Source\(github/gitlab/etc.\) | 
-| GIBTIA.GitLeak.evaluation.severity | String | Event severity | 
-
+| GIBTIA.GitLeak.dateDetected | Date | Leak detection date |
+| GIBTIA.GitLeak.matchesType | String | List of matches type |
+| GIBTIA.GitLeak.name | String | GIT filename |
+| GIBTIA.GitLeak.repository | String | GIT repository |
+| GIBTIA.GitLeak.revisions.file | String | Leaked file link |
+| GIBTIA.GitLeak.revisions.fileDiff | String | Leaked file diff |
+| GIBTIA.GitLeak.revisions.info.authorName | String | Revision author |
+| GIBTIA.GitLeak.revisions.info.authorEmail | String | Author name |
+| GIBTIA.GitLeak.revisions.info.dateCreated | Date | Revision creation date |
+| GIBTIA.GitLeak.source | String | Source\(github/gitlab/etc.\) |
+| GIBTIA.GitLeak.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1045,7 +1011,6 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
 
 #### Human Readable Output
 
-
 >### Feed from osi/git_leak with ID ead0d8ae9f2347789941ebacde88ad2e3b1ef691
 
 >|companyId|dateDetected|dateUpdated|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|file|fileId|id|matchesType|matchesTypeCount card|matchesTypeCount cisco|matchesTypeCount commonKeywords|matchesTypeCount domain|matchesTypeCount dsn|matchesTypeCount email|matchesTypeCount google|matchesTypeCount ip|matchesTypeCount keyword|matchesTypeCount login|matchesTypeCount metasploit|matchesTypeCount nmap|matchesTypeCount pgp|matchesTypeCount sha|matchesTypeCount slackAPI|matchesTypeCount ssh|name|repository|source|
@@ -1058,13 +1023,10 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
 >|---|---|---|---|---|---|---|---|---|---|
 >| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: some@gmail.ru <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
 
-
-
 ### gibtia-get-osi-public-leak-info
 
 ***
 Command performs Group IB event lookup in osi/public_leak collection with provided ID.
-
 
 #### Base Command
 
@@ -1074,26 +1036,24 @@ Command performs Group IB event lookup in osi/public_leak collection with provid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095. | Required | 
-
+| id | GIB event id.<br/>e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.PublicLeak.created | Date | Leak event detection date | 
-| GIBTIA.PublicLeak.data | String | Leaked data | 
-| GIBTIA.PublicLeak.hash | String | Leak data hash | 
-| GIBTIA.PublicLeak.linkList.author | String | Leak entry author | 
-| GIBTIA.PublicLeak.linkList.dateDetected | Date | Leak detection date | 
-| GIBTIA.PublicLeak.linkList.datePublished | Date | Leak publish date | 
-| GIBTIA.PublicLeak.linkList.hash | String | Leak hash | 
-| GIBTIA.PublicLeak.linkList.link | String | Leak link | 
-| GIBTIA.PublicLeak.linkList.source | String | Leak source | 
-| GIBTIA.PublicLeak.matches | String | Matches | 
-| GIBTIA.PublicLeak.portalLink | String | Group IB portal link | 
-| GIBTIA.PublicLeak.evaluation.severity | String | Event severity | 
-
+| GIBTIA.PublicLeak.created | Date | Leak event detection date |
+| GIBTIA.PublicLeak.data | String | Leaked data |
+| GIBTIA.PublicLeak.hash | String | Leak data hash |
+| GIBTIA.PublicLeak.linkList.author | String | Leak entry author |
+| GIBTIA.PublicLeak.linkList.dateDetected | Date | Leak detection date |
+| GIBTIA.PublicLeak.linkList.datePublished | Date | Leak publish date |
+| GIBTIA.PublicLeak.linkList.hash | String | Leak hash |
+| GIBTIA.PublicLeak.linkList.link | String | Leak link |
+| GIBTIA.PublicLeak.linkList.source | String | Leak source |
+| GIBTIA.PublicLeak.matches | String | Matches |
+| GIBTIA.PublicLeak.portalLink | String | Group IB portal link |
+| GIBTIA.PublicLeak.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1148,7 +1108,6 @@ Command performs Group IB event lookup in osi/public_leak collection with provid
 
 #### Human Readable Output
 
-
 >### Feed from osi/public_leak with ID a11f2354e52d5fa0a8697c8df0b4ed99cc956211
 
 >|created|data|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|hash|id|language|portalLink|size|updated|useful|
@@ -1161,12 +1120,10 @@ Command performs Group IB event lookup in osi/public_leak collection with provid
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-01T14:57:01+03:00 | 2021-04-01T14:50:45+03:00 | 5d9657dbdf59487a6031820add2cacbe54e86814 | api | <https://some.ru> | 709 | some.ru | 1 |
 
-
 ### gibtia-get-osi-vulnerability-info
 
 ***
 Command performs Group IB event lookup in osi/vulnerability collection with provided ID.
-
 
 #### Base Command
 
@@ -1176,27 +1133,25 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/><br/>e.g.: CVE-2021-27152. | Required | 
-
+| id | GIB event id.<br/><br/>e.g.: CVE-2021-27152. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.OSIVulnerability.affectedSoftware.name | String | Affected software name | 
-| GIBTIA.OSIVulnerability.affectedSoftware.operator | String | Affected software version operator\( ex. le=less or equal\) | 
-| GIBTIA.OSIVulnerability.affectedSoftware.version | String | Affected software version | 
-| GIBTIA.OSIVulnerability.bulletinFamily | String | Bulletin family | 
-| GIBTIA.OSIVulnerability.cvss.score | String | CVSS score | 
-| GIBTIA.OSIVulnerability.cvss.vector | String | CVSS vector | 
-| GIBTIA.OSIVulnerability.dateLastSeen | Date | Date last seen | 
-| GIBTIA.OSIVulnerability.datePublished | Date | Date published | 
-| GIBTIA.OSIVulnerability.description | String | Vulnerability description | 
-| GIBTIA.OSIVulnerability.id | String | Vulnerability ID | 
-| GIBTIA.OSIVulnerability.reporter | String | Vulnerability reporter | 
-| GIBTIA.OSIVulnerability.title | String | Vulnerability title | 
-| GIBTIA.OSIVulnerability.evaluation.severity | String | Event severity | 
-
+| GIBTIA.OSIVulnerability.affectedSoftware.name | String | Affected software name |
+| GIBTIA.OSIVulnerability.affectedSoftware.operator | String | Affected software version operator\( ex. le=less or equal\) |
+| GIBTIA.OSIVulnerability.affectedSoftware.version | String | Affected software version |
+| GIBTIA.OSIVulnerability.bulletinFamily | String | Bulletin family |
+| GIBTIA.OSIVulnerability.cvss.score | String | CVSS score |
+| GIBTIA.OSIVulnerability.cvss.vector | String | CVSS vector |
+| GIBTIA.OSIVulnerability.dateLastSeen | Date | Date last seen |
+| GIBTIA.OSIVulnerability.datePublished | Date | Date published |
+| GIBTIA.OSIVulnerability.description | String | Vulnerability description |
+| GIBTIA.OSIVulnerability.id | String | Vulnerability ID |
+| GIBTIA.OSIVulnerability.reporter | String | Vulnerability reporter |
+| GIBTIA.OSIVulnerability.title | String | Vulnerability title |
+| GIBTIA.OSIVulnerability.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1314,12 +1269,10 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 >|---|---|---|---|
 >| some_firmware | some | some | some |
 
-
 ### gibtia-get-phishing-kit-info
 
 ***
 Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit collections with provided ID.
-
 
 #### Base Command
 
@@ -1329,27 +1282,25 @@ Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_k
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 044f3f2cb599228c1882884eb77eb073f68a25f2. | Optional | 
-
+| id | GIB event id.<br/>e.g.: 044f3f2cb599228c1882884eb77eb073f68a25f2. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.PhishingKit.dateDetected | Date | Phishing kit detection date | 
-| GIBTIA.PhishingKit.dateFirstSeen | Date | Phishing kit first seen date | 
-| GIBTIA.PhishingKit.dateLastSeen | Date | Phishing kit last seen date | 
-| GIBTIA.PhishingKit.downloadedFrom.fileName | String | Phishing kit filename | 
-| GIBTIA.PhishingKit.downloadedFrom.domain | String | Phishing kit domain | 
-| GIBTIA.PhishingKit.downloadedFrom.date | Date | Downloading date | 
-| GIBTIA.PhishingKit.downloadedFrom.url | String | URL where phishing kit were downloaded from | 
-| GIBTIA.PhishingKit.hash | String | MD5 phishing kit hash | 
-| GIBTIA.PhishingKit.portalLink | String | Link to kit on GIB TI&amp;A | 
-| GIBTIA.PhishingKit.targetBrand | String | Phishing kit target brand | 
-| GIBTIA.PhishingKit.emails | String | Emails found in phishing kit | 
-| GIBTIA.PhishingKit.id | String | GIB event ID | 
-| GIBTIA.PhishingKit.evaluation.severity | String | Event severity | 
-
+| GIBTIA.PhishingKit.dateDetected | Date | Phishing kit detection date |
+| GIBTIA.PhishingKit.dateFirstSeen | Date | Phishing kit first seen date |
+| GIBTIA.PhishingKit.dateLastSeen | Date | Phishing kit last seen date |
+| GIBTIA.PhishingKit.downloadedFrom.fileName | String | Phishing kit filename |
+| GIBTIA.PhishingKit.downloadedFrom.domain | String | Phishing kit domain |
+| GIBTIA.PhishingKit.downloadedFrom.date | Date | Downloading date |
+| GIBTIA.PhishingKit.downloadedFrom.url | String | URL where phishing kit were downloaded from |
+| GIBTIA.PhishingKit.hash | String | MD5 phishing kit hash |
+| GIBTIA.PhishingKit.portalLink | String | Link to kit on GIB TI&amp;A |
+| GIBTIA.PhishingKit.targetBrand | String | Phishing kit target brand |
+| GIBTIA.PhishingKit.emails | String | Emails found in phishing kit |
+| GIBTIA.PhishingKit.id | String | GIB event ID |
+| GIBTIA.PhishingKit.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1431,13 +1382,10 @@ Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_k
 >|---|---|---|
 >| some.ru | DB | host: localhost |
 
-
-
 ### gibtia-get-phishing-info
 
 ***
 Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID.
-
 
 #### Base Command
 
@@ -1447,31 +1395,29 @@ Command performs Group IB event lookup in bp/phishing and attacks/phishing colle
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: fce7f92d0b64946cf890842d083953649b259952. | Required | 
-
+| id | GIB event id.<br/>e.g.: fce7f92d0b64946cf890842d083953649b259952. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.Phishing.dateDetected | Date | Date of phishing detection | 
-| GIBTIA.Phishing.dateBlocked | Unknown | Phishing resource block date | 
-| GIBTIA.Phishing.id | String | GIB incident ID | 
-| GIBTIA.Phishing.ipv4.asn | String | Phishing resource ASN | 
-| GIBTIA.Phishing.ipv4.countryName | String | Phishing resource country name | 
-| GIBTIA.Phishing.ipv4.ip | String | Phishing resource IP address | 
-| GIBTIA.Phishing.ipv4.region | String | Phishing resource region name | 
-| GIBTIA.Phishing.phishingDomain.domain | String | Phishing domain | 
-| GIBTIA.Phishing.phishingDomain.dateRegistered | Date | Phishing domain creation date | 
-| GIBTIA.Phishing.phishingDomain.registrar | String | Phishing domain registrar name | 
-| GIBTIA.Phishing.phishingDomain.title | String | Phishing domain title | 
-| GIBTIA.Phishing.targetBrand | String | Phishing target name | 
-| GIBTIA.Phishing.targetCategory | String | Phishing target category \(financial, government, etc.\) | 
-| GIBTIA.Phishing.targetDomain | String | Phishing target domain | 
-| GIBTIA.Phishing.status | String | Current status of phishing incident \(blocked, in response, etc.\) | 
-| GIBTIA.Phishing.url | String | Phishing URL | 
-| GIBTIA.Phishing.evaluation.severity | String | Event severity | 
-
+| GIBTIA.Phishing.dateDetected | Date | Date of phishing detection |
+| GIBTIA.Phishing.dateBlocked | Unknown | Phishing resource block date |
+| GIBTIA.Phishing.id | String | GIB incident ID |
+| GIBTIA.Phishing.ipv4.asn | String | Phishing resource ASN |
+| GIBTIA.Phishing.ipv4.countryName | String | Phishing resource country name |
+| GIBTIA.Phishing.ipv4.ip | String | Phishing resource IP address |
+| GIBTIA.Phishing.ipv4.region | String | Phishing resource region name |
+| GIBTIA.Phishing.phishingDomain.domain | String | Phishing domain |
+| GIBTIA.Phishing.phishingDomain.dateRegistered | Date | Phishing domain creation date |
+| GIBTIA.Phishing.phishingDomain.registrar | String | Phishing domain registrar name |
+| GIBTIA.Phishing.phishingDomain.title | String | Phishing domain title |
+| GIBTIA.Phishing.targetBrand | String | Phishing target name |
+| GIBTIA.Phishing.targetCategory | String | Phishing target category \(financial, government, etc.\) |
+| GIBTIA.Phishing.targetDomain | String | Phishing target domain |
+| GIBTIA.Phishing.status | String | Current status of phishing incident \(blocked, in response, etc.\) |
+| GIBTIA.Phishing.url | String | Phishing URL |
+| GIBTIA.Phishing.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1630,12 +1576,10 @@ Command performs Group IB event lookup in bp/phishing and attacks/phishing colle
 >|---|---|---|---|---|
 >| Canada | NA | fce7f92d0b64946cf890842d083953649b259952 | red | 11.11.11.11 |
 
-
 ### gibtia-get-attacks-ddos-info
 
 ***
 Command performs Group IB event lookup in attacks/ddos collection with provided ID.
-
 
 #### Base Command
 
@@ -1645,31 +1589,29 @@ Command performs Group IB event lookup in attacks/ddos collection with provided 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 26a05baa4025edff367b058b13c6b43e820538a5. | Required | 
-
+| id | GIB event id.<br/>e.g.: 26a05baa4025edff367b058b13c6b43e820538a5. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.AttacksDDoS.cnc.url | String | CNC URL | 
-| GIBTIA.AttacksDDoS.cnc.domain | String | CNC domain | 
-| GIBTIA.AttacksDDoS.cnc.ipv4.asn | String | CNC ASN | 
-| GIBTIA.AttacksDDoS.cnc.ipv4.countryName | String | CNC IP country name | 
-| GIBTIA.AttacksDDoS.cnc.ipv4.ip | String | CNC IP address | 
-| GIBTIA.AttacksDDoS.cnc.ipv4.region | String | CNC region name | 
-| GIBTIA.AttacksDDoS.target.ipv4.asn | String | DDoS target ASN | 
-| GIBTIA.AttacksDDoS.target.ipv4.countryName | String | DDoS target country name | 
-| GIBTIA.AttacksDDoS.target.ipv4.ip | String | DDoS target IP address | 
-| GIBTIA.AttacksDDoS.target.ipv4.region | String | DDoS target region name | 
-| GIBTIA.AttacksDDoS.target.category | String | DDoS target category | 
-| GIBTIA.AttacksDDoS.target.domain | String | DDoS target domain | 
-| GIBTIA.AttacksDDoS.threatActor.id | String | Associated threat actor ID | 
-| GIBTIA.AttacksDDoS.threatActor.name | String | Associated threat actor | 
-| GIBTIA.AttacksDdos.threatActor.isAPT | Boolean | Is threat actor APT | 
-| GIBTIA.AttacksDDoS.id | String | GIB incident ID | 
-| GIBTIA.AttacksDDoS.evaluation.severity | String | Event severity | 
-
+| GIBTIA.AttacksDDoS.cnc.url | String | CNC URL |
+| GIBTIA.AttacksDDoS.cnc.domain | String | CNC domain |
+| GIBTIA.AttacksDDoS.cnc.ipv4.asn | String | CNC ASN |
+| GIBTIA.AttacksDDoS.cnc.ipv4.countryName | String | CNC IP country name |
+| GIBTIA.AttacksDDoS.cnc.ipv4.ip | String | CNC IP address |
+| GIBTIA.AttacksDDoS.cnc.ipv4.region | String | CNC region name |
+| GIBTIA.AttacksDDoS.target.ipv4.asn | String | DDoS target ASN |
+| GIBTIA.AttacksDDoS.target.ipv4.countryName | String | DDoS target country name |
+| GIBTIA.AttacksDDoS.target.ipv4.ip | String | DDoS target IP address |
+| GIBTIA.AttacksDDoS.target.ipv4.region | String | DDoS target region name |
+| GIBTIA.AttacksDDoS.target.category | String | DDoS target category |
+| GIBTIA.AttacksDDoS.target.domain | String | DDoS target domain |
+| GIBTIA.AttacksDDoS.threatActor.id | String | Associated threat actor ID |
+| GIBTIA.AttacksDDoS.threatActor.name | String | Associated threat actor |
+| GIBTIA.AttacksDdos.threatActor.isAPT | Boolean | Is threat actor APT |
+| GIBTIA.AttacksDDoS.id | String | GIB incident ID |
+| GIBTIA.AttacksDDoS.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1795,12 +1737,10 @@ Command performs Group IB event lookup in attacks/ddos collection with provided 
 >|---|---|---|---|---|---|
 >| AS11111 | United States | Some | 26a05baa4025edff367b058b13c6b43e820538a5 | red | 11.11.11.11 |
 
-
 ### gibtia-get-attacks-deface-info
 
 ***
 Command performs Group IB event lookup in attacks/deface collection with provided ID.
-
 
 #### Base Command
 
@@ -1810,24 +1750,22 @@ Command performs Group IB event lookup in attacks/deface collection with provide
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 6009637a1135cd001ef46e21. | Required | 
-
+| id | GIB event id.<br/>e.g.: 6009637a1135cd001ef46e21. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.AttacksDeface.date | Date | Date of deface | 
-| GIBTIA.AttacksDeface.id | String | GIB incident ID | 
-| GIBTIA.AttacksDeface.targetIp.asn | String | Victim ASN | 
-| GIBTIA.AttacksDeface.targetIp.countryName | String | Victim country name | 
-| GIBTIA.AttacksDeface.targetIp.region | String | Victim IP region name | 
-| GIBTIA.AttacksDeface.threatActor.id | String | Associated threat actor ID | 
-| GIBTIA.AttacksDeface.threatActor.name | String | Associated threat actor | 
-| GIBTIA.AttacksDeface.threatActor.isAPT | Boolean | Is threat actor APT | 
-| GIBTIA.AttacksDeface.url | String | URL of compromised resource | 
-| GIBTIA.AttacksDeface.evaluation.severity | String | Event severity | 
-
+| GIBTIA.AttacksDeface.date | Date | Date of deface |
+| GIBTIA.AttacksDeface.id | String | GIB incident ID |
+| GIBTIA.AttacksDeface.targetIp.asn | String | Victim ASN |
+| GIBTIA.AttacksDeface.targetIp.countryName | String | Victim country name |
+| GIBTIA.AttacksDeface.targetIp.region | String | Victim IP region name |
+| GIBTIA.AttacksDeface.threatActor.id | String | Associated threat actor ID |
+| GIBTIA.AttacksDeface.threatActor.name | String | Associated threat actor |
+| GIBTIA.AttacksDeface.threatActor.isAPT | Boolean | Is threat actor APT |
+| GIBTIA.AttacksDeface.url | String | URL of compromised resource |
+| GIBTIA.AttacksDeface.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -1938,12 +1876,10 @@ Command performs Group IB event lookup in attacks/deface collection with provide
 >|---|---|---|---|
 >| Indonesia | 6009637a1135cd001ef46e21 | orange | 11.11.11.11 |
 
-
 ### gibtia-get-threat-info
 
 ***
 Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
-
 
 #### Base Command
 
@@ -1953,50 +1889,48 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 1b09d389d016121afbffe481a14b30ea995876e4. | Required | 
-| isAPT | Is threat APT. Possible values are: true, false. Default is false. | Optional | 
-
+| id | GIB event id.<br/>e.g.: 1b09d389d016121afbffe481a14b30ea995876e4. | Required |
+| isAPT | Is threat APT. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.Threat.contacts.account | String | Threat accounts found in this threat action. | 
-| GIBTIA.Threat.contacts.flag | String | Is account fake or not | 
-| GIBTIA.Threat.contacts.service | String | Account service | 
-| GIBTIA.Threat.contacts.type | String | Type of account\(social_network/email/wallet etc.\) | 
-| GIBTIA.Threat.countries | String | Affected countries | 
-| GIBTIA.Threat.createdAt | Date | Threat report creation date | 
-| GIBTIA.Threat.cveList.name | String | List of abused CVE | 
-| GIBTIA.Threat.dateFirstSeen | Date | Attack first seen date | 
-| GIBTIA.Threat.dateLastSeen | Date | Attack last seen date | 
-| GIBTIA.Threat.datePublished | Date | Date published | 
-| GIBTIA.Threat.description | String | Threat description | 
-| GIBTIA.Threat.forumsAccounts.url | String | Related forum URL | 
-| GIBTIA.Threat.forumsAccounts.nickname | String | Related forums account | 
-| GIBTIA.Threat.forumsAccounts.registeredAt | Date | Related forums account registration date | 
-| GIBTIA.Threat.forumsAccounts.messageCount | Number | Related forums messages count | 
-| GIBTIA.Threat.id | String | GIB internal threat ID | 
-| GIBTIA.Threat.indicators | String | Can be either network or file indicators | 
-| GIBTIA.Threat.langs | String | Languages actors related | 
-| GIBTIA.Threat.malwareList.name | String | Related Malware Name | 
-| GIBTIA.Threat.malwareList.id | String | Related malware GIB internal ID | 
-| GIBTIA.Threat.mitreMatrix.attackPatternId | String | MITRE attack pattern ID | 
-| GIBTIA.Threat.mitreMatrix.attackTactic | String | MITRE attack tactic name | 
-| GIBTIA.Threat.mitreMatrix.attackType | String | MITRE attack type | 
-| GIBTIA.Threat.mitreMatrix.id | String | MITRE attack id | 
-| GIBTIA.Threat.regions | String | Regions affected by attack | 
-| GIBTIA.Threat.reportNumber | String | GIB report number | 
-| GIBTIA.Threat.sectors | String | Affected sectors | 
-| GIBTIA.Threat.shortDescription | String | Short description | 
-| GIBTIA.Threat.title | String | Threat title | 
-| GIBTIA.Threat.targetedCompany | String | Targeted company name | 
-| GIBTIA.Threat.ThreatActor.name | String | Threat actor name | 
-| GIBTIA.Threat.ThreatActor.id | String | Threat actor ID | 
-| GIBTIA.Threat.ThreatActor.isAPT | Boolean | Is threat actor APT group | 
-| GIBTIA.Threat.sources | String | Sources links | 
-| GIBTIA.Threat.evaluation.severity | String | Event severity | 
-
+| GIBTIA.Threat.contacts.account | String | Threat accounts found in this threat action. |
+| GIBTIA.Threat.contacts.flag | String | Is account fake or not |
+| GIBTIA.Threat.contacts.service | String | Account service |
+| GIBTIA.Threat.contacts.type | String | Type of account\(social_network/email/wallet etc.\) |
+| GIBTIA.Threat.countries | String | Affected countries |
+| GIBTIA.Threat.createdAt | Date | Threat report creation date |
+| GIBTIA.Threat.cveList.name | String | List of abused CVE |
+| GIBTIA.Threat.dateFirstSeen | Date | Attack first seen date |
+| GIBTIA.Threat.dateLastSeen | Date | Attack last seen date |
+| GIBTIA.Threat.datePublished | Date | Date published |
+| GIBTIA.Threat.description | String | Threat description |
+| GIBTIA.Threat.forumsAccounts.url | String | Related forum URL |
+| GIBTIA.Threat.forumsAccounts.nickname | String | Related forums account |
+| GIBTIA.Threat.forumsAccounts.registeredAt | Date | Related forums account registration date |
+| GIBTIA.Threat.forumsAccounts.messageCount | Number | Related forums messages count |
+| GIBTIA.Threat.id | String | GIB internal threat ID |
+| GIBTIA.Threat.indicators | String | Can be either network or file indicators |
+| GIBTIA.Threat.langs | String | Languages actors related |
+| GIBTIA.Threat.malwareList.name | String | Related Malware Name |
+| GIBTIA.Threat.malwareList.id | String | Related malware GIB internal ID |
+| GIBTIA.Threat.mitreMatrix.attackPatternId | String | MITRE attack pattern ID |
+| GIBTIA.Threat.mitreMatrix.attackTactic | String | MITRE attack tactic name |
+| GIBTIA.Threat.mitreMatrix.attackType | String | MITRE attack type |
+| GIBTIA.Threat.mitreMatrix.id | String | MITRE attack id |
+| GIBTIA.Threat.regions | String | Regions affected by attack |
+| GIBTIA.Threat.reportNumber | String | GIB report number |
+| GIBTIA.Threat.sectors | String | Affected sectors |
+| GIBTIA.Threat.shortDescription | String | Short description |
+| GIBTIA.Threat.title | String | Threat title |
+| GIBTIA.Threat.targetedCompany | String | Targeted company name |
+| GIBTIA.Threat.ThreatActor.name | String | Threat actor name |
+| GIBTIA.Threat.ThreatActor.id | String | Threat actor ID |
+| GIBTIA.Threat.ThreatActor.isAPT | Boolean | Is threat actor APT group |
+| GIBTIA.Threat.sources | String | Sources links |
+| GIBTIA.Threat.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -2176,7 +2110,6 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 
 #### Human Readable Output
 
-
 >### Feed from threat with ID 1b09d389d016121afbffe481a14b30ea995876e4
 
 >|createdAt|dateFirstSeen|dateLastSeen|datePublished|deleted|description|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|id|isPublished|isTailored|langs|oldId|reportNumber|sectors|threatActor country|threatActor id|threatActor isAPT|threatActor name|title|type|updatedAt|
@@ -2213,12 +2146,10 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 >| false | 42a9929807fd954918f9bb603135754be7a6e11c | en | hashes: {"md4": "", "md5": "5d43baf1c9e9e3a939e5defd8f3fbd1d", "md6": "", "ripemd120": "", "sha1": "d5ff73c043f3bb75dd749636307500b60a336150", "sha224": "", "sha256": "867c8b49d29ae1f6e4a7cd31b6fe7e278753a1ba03d4be338ed11fd1efc3dd12", "sha384": "", "sha512": "", "whirlpool": ""}<br>name: 5d43baf1c9e9e3a939e5defd8f8fbd1d<br>size: null | 16107188498634 | file |
 >| false | 12cad1ca535a92a2ed306c0edf3025e7d9776612 | en | domain: some.ru <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.ru> | 16107188498908 | network |
 
-
 ### gibtia-get-threat-actor-info
 
 ***
 Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
-
 
 #### Base Command
 
@@ -2228,34 +2159,32 @@ Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_acto
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB internal threatActor ID.<br/>e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545. | Required | 
-| isAPT | Is threat actor APT group. Possible values are: true, false. Default is false. | Optional | 
-
+| id | GIB internal threatActor ID.<br/>e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545. | Required |
+| isAPT | Is threat actor APT group. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.ThreatActor.aliases | String | Threat actor aliases | 
-| GIBTIA.ThreatActor.country | String | Threat actor country | 
-| GIBTIA.ThreatActor.createdAt | Date | Threat actor record creation time | 
-| GIBTIA.ThreatActor.description | String | Threat actor description | 
-| GIBTIA.ThreatActor.goals | String | Threat actor goals sectors\(financial, diplomatic, etc.\) | 
-| GIBTIA.ThreatActor.id | String | Threat actor id | 
-| GIBTIA.ThreatActor.isAPT | Boolean | Threat actor is APT | 
-| GIBTIA.ThreatActor.labels | String | GIB internal threat actor labels\(hacker, nation-state, etc.\) | 
-| GIBTIA.ThreatActor.langs | String | Threat actor communication language | 
-| GIBTIA.ThreatActor.name | String | Threat actor name | 
-| GIBTIA.ThreatActor.roles | String | Threat actor roles | 
-| GIBTIA.ThreatActor.stat.countries | String | Threat actor countries activity found in | 
-| GIBTIA.ThreatActor.stat.dateFirstSeen | Date | Date first seen | 
-| GIBTIA.ThreatActor.stat.dateLastSeen | Date | Date last seen | 
-| GIBTIA.ThreatActor.stat.regions | String | Threat actor activity regions | 
-| GIBTIA.ThreatActor.stat.reports.datePublished | Date | Related threat report publishing date | 
-| GIBTIA.ThreatActor.stat.reports.id | String | Related threat report id | 
-| GIBTIA.ThreatActor.stat.reports.name.en | String | Related threat report language | 
-| GIBTIA.ThreatActor.stat.sectors | String | Sectors attacked by threat actor | 
-
+| GIBTIA.ThreatActor.aliases | String | Threat actor aliases |
+| GIBTIA.ThreatActor.country | String | Threat actor country |
+| GIBTIA.ThreatActor.createdAt | Date | Threat actor record creation time |
+| GIBTIA.ThreatActor.description | String | Threat actor description |
+| GIBTIA.ThreatActor.goals | String | Threat actor goals sectors\(financial, diplomatic, etc.\) |
+| GIBTIA.ThreatActor.id | String | Threat actor id |
+| GIBTIA.ThreatActor.isAPT | Boolean | Threat actor is APT |
+| GIBTIA.ThreatActor.labels | String | GIB internal threat actor labels\(hacker, nation-state, etc.\) |
+| GIBTIA.ThreatActor.langs | String | Threat actor communication language |
+| GIBTIA.ThreatActor.name | String | Threat actor name |
+| GIBTIA.ThreatActor.roles | String | Threat actor roles |
+| GIBTIA.ThreatActor.stat.countries | String | Threat actor countries activity found in |
+| GIBTIA.ThreatActor.stat.dateFirstSeen | Date | Date first seen |
+| GIBTIA.ThreatActor.stat.dateLastSeen | Date | Date last seen |
+| GIBTIA.ThreatActor.stat.regions | String | Threat actor activity regions |
+| GIBTIA.ThreatActor.stat.reports.datePublished | Date | Related threat report publishing date |
+| GIBTIA.ThreatActor.stat.reports.id | String | Related threat report id |
+| GIBTIA.ThreatActor.stat.reports.name.en | String | Related threat report language |
+| GIBTIA.ThreatActor.stat.sectors | String | Sectors attacked by threat actor |
 
 #### Command Example
 
@@ -2328,7 +2257,6 @@ Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_acto
 
 #### Human Readable Output
 
-
 >### Feed from threat_actor with ID 0d4496592ac3a0f5511cd62ef29887f48d9cb545
 
 >|aliases|country|createdAt|deleted|description|goals|id|isAPT|isPublished|labels|langs|name|roles|spokenOnLangs|stat countries|stat dateFirstSeen|stat dateLastSeen|stat regions|stat sectors|stixGuid|updatedAt|
@@ -2346,7 +2274,6 @@ Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_acto
 ***
 Command performs Group IB event lookup in suspicious_ip/tor_node collection with provided ID.
 
-
 #### Base Command
 
 `gibtia-get-suspicious-ip-tor-node-info`
@@ -2355,20 +2282,18 @@ Command performs Group IB event lookup in suspicious_ip/tor_node collection with
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 109.70.100.46. | Required | 
-
+| id | GIB event id.<br/>e.g.: 109.70.100.46. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.SuspiciousIPTorNode.ipv4.asn | String | Tor node ASN | 
-| GIBTIA.SuspiciousIPTorNode.ipv4.countryName | String | Tor node IP country name | 
-| GIBTIA.SuspiciousIPTorNode.ipv4.ip | String | Tor node IP address | 
-| GIBTIA.SuspiciousIPTorNode.ipv4.region | String | Tor node IP region name | 
-| GIBTIA.SuspiciousIPTorNode.id | String | GIB id | 
-| GIBTIA.SuspiciousIPTorNode.evaluation.severity | String | Event severity | 
-
+| GIBTIA.SuspiciousIPTorNode.ipv4.asn | String | Tor node ASN |
+| GIBTIA.SuspiciousIPTorNode.ipv4.countryName | String | Tor node IP country name |
+| GIBTIA.SuspiciousIPTorNode.ipv4.ip | String | Tor node IP address |
+| GIBTIA.SuspiciousIPTorNode.ipv4.region | String | Tor node IP region name |
+| GIBTIA.SuspiciousIPTorNode.id | String | GIB id |
+| GIBTIA.SuspiciousIPTorNode.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -2431,12 +2356,10 @@ Command performs Group IB event lookup in suspicious_ip/tor_node collection with
 >|---|---|---|
 >| 11.11.11.11 | green | 11.11.11.11 |
 
-
 ### gibtia-get-suspicious-ip-open-proxy-info
 
 ***
 Command performs Group IB event lookup in suspicious_ip/open_proxy collection with provided ID.
-
 
 #### Base Command
 
@@ -2446,23 +2369,21 @@ Command performs Group IB event lookup in suspicious_ip/open_proxy collection wi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369. | Required | 
-
+| id | GIB event id.<br/>e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.asn | String | Proxy ASN | 
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.countryName | String | Proxy IP country name | 
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.ip | String | Proxy IP address | 
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.region | String | Proxy IP region name | 
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.port | Number | Proxy port | 
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.source | String | Information source | 
-| GIBTIA.SuspiciousIPOpenProxy.ipv4.anonymous | String | Proxy anonymous level | 
-| GIBTIA.SuspiciousIPOpenProxy.id | String | GIB event ID | 
-| GIBTIA.SuspiciousIPOpenProxy.evaluation.severity | String | Event severity | 
-
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.asn | String | Proxy ASN |
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.countryName | String | Proxy IP country name |
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.ip | String | Proxy IP address |
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.region | String | Proxy IP region name |
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.port | Number | Proxy port |
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.source | String | Information source |
+| GIBTIA.SuspiciousIPOpenProxy.ipv4.anonymous | String | Proxy anonymous level |
+| GIBTIA.SuspiciousIPOpenProxy.id | String | GIB event ID |
+| GIBTIA.SuspiciousIPOpenProxy.evaluation.severity | String | Event severity |
 
 #### Command Example
 
@@ -2534,13 +2455,10 @@ Command performs Group IB event lookup in suspicious_ip/open_proxy collection wi
 >|---|---|---|---|---|---|---|
 >| Czech Republic | cc6a2856da2806b03839f81aa214f22dbcfd7369 | 11.11.11.11 | 80 | green | some.ru | 11.11.11.11 |
 
-
-
 ### gibtia-get-suspicious-ip-socks-proxy-info
 
 ***
 Command performs Group IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
-
 
 #### Base Command
 
@@ -2550,20 +2468,18 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e. | Required | 
-
+| id | GIB event id.<br/>e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.SuspiciousIPSocksProxy.ipv4.asn | String | Proxy IP ASN | 
-| GIBTIA.SuspiciousIPSocksProxy.ipv4.countryName | String | Proxy IP country name | 
-| GIBTIA.SuspiciousIPSocksProxy.ipv4.ip | String | Proxy IP address | 
-| GIBTIA.SuspiciousIPSocksProxy.ipv4.region | String | Proxy IP region name | 
-| GIBTIA.SuspiciousIPSocksProxy.id | String | GIB ID | 
+| GIBTIA.SuspiciousIPSocksProxy.ipv4.asn | String | Proxy IP ASN |
+| GIBTIA.SuspiciousIPSocksProxy.ipv4.countryName | String | Proxy IP country name |
+| GIBTIA.SuspiciousIPSocksProxy.ipv4.ip | String | Proxy IP address |
+| GIBTIA.SuspiciousIPSocksProxy.ipv4.region | String | Proxy IP region name |
+| GIBTIA.SuspiciousIPSocksProxy.id | String | GIB ID |
 | GIBTIA.SuspiciousIPSocksProxy.evaluation.severity | String | Event severity |
-
 
 #### Command Example
 
@@ -2634,12 +2550,10 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
 >|---|---|---|---|---|
 >| AS11111 | Lebanon | 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e | green | 11.11.11.11 |
 
-
 ### gibtia-get-malware-targeted-malware-info
 
 ***
 Command performs Group IB event lookup in malware/targeted_malware collection with provided ID.
-
 
 #### Base Command
 
@@ -2649,31 +2563,29 @@ Command performs Group IB event lookup in malware/targeted_malware collection wi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: 5bbd38acf0b9e4f04123af494d485f6c49221e98. | Required | 
-
+| id | GIB event id.<br/>e.g.: 5bbd38acf0b9e4f04123af494d485f6c49221e98. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.TargetedMalware.date | Date | Date malware detected | 
-| GIBTIA.TargetedMalware.fileName | String | Malware file name | 
-| GIBTIA.TargetedMalware.fileType | String | Malware file type | 
-| GIBTIA.TargetedMalware.id | String | GIB internal incident ID | 
-| GIBTIA.TargetedMalware.injectDump | String | Inject dump | 
-| GIBTIA.TargetedMalware.injectMd5 | String | MD5 hash of injection dump | 
-| GIBTIA.TargetedMalware.malware.name | String | GIB internal malware ID | 
-| GIBTIA.TargetedMalware.md5 | String | MD5 hash of malware file | 
-| GIBTIA.TargetedMalware.sha1 | String | SHA1 hash of malware file | 
-| GIBTIA.TargetedMalware.sha256 | String | SHA256 hash of malware file | 
-| GIBTIA.TargetedMalware.size | Number | Malware size in bytes | 
-| GIBTIA.TargetedMalware.source | String | Malware source | 
-| GIBTIA.TargetedMalware.portalLink | String | GIB portal incident link | 
-| GIBTIA.TargetedMalware.threatActor.name | String | Related threat actor | 
-| GIBTIA.TargetedMalware.threatActor.id | String | GIB internal threat actor ID | 
-| GIBTIA.TargetedMalware.threatActor.isAPT | Boolean | Is threat actor APT | 
+| GIBTIA.TargetedMalware.date | Date | Date malware detected |
+| GIBTIA.TargetedMalware.fileName | String | Malware file name |
+| GIBTIA.TargetedMalware.fileType | String | Malware file type |
+| GIBTIA.TargetedMalware.id | String | GIB internal incident ID |
+| GIBTIA.TargetedMalware.injectDump | String | Inject dump |
+| GIBTIA.TargetedMalware.injectMd5 | String | MD5 hash of injection dump |
+| GIBTIA.TargetedMalware.malware.name | String | GIB internal malware ID |
+| GIBTIA.TargetedMalware.md5 | String | MD5 hash of malware file |
+| GIBTIA.TargetedMalware.sha1 | String | SHA1 hash of malware file |
+| GIBTIA.TargetedMalware.sha256 | String | SHA256 hash of malware file |
+| GIBTIA.TargetedMalware.size | Number | Malware size in bytes |
+| GIBTIA.TargetedMalware.source | String | Malware source |
+| GIBTIA.TargetedMalware.portalLink | String | GIB portal incident link |
+| GIBTIA.TargetedMalware.threatActor.name | String | Related threat actor |
+| GIBTIA.TargetedMalware.threatActor.id | String | GIB internal threat actor ID |
+| GIBTIA.TargetedMalware.threatActor.isAPT | Boolean | Is threat actor APT |
 | GIBTIA.TargetedMalware.evaluation.severity | String | Event severity |
-
 
 #### Command Example
 
@@ -2762,12 +2674,10 @@ Command performs Group IB event lookup in malware/targeted_malware collection wi
 >|---|---|---|---|---|---|---|---|---|
 >| data | some.txt | 5bbd38acf0b9e4f04123af494d485f6c49221e98 | 11702f92313f5f3413d129809ca4f11d | red | 93fce6228be5557c69d8eeeab5a5a2a643e7d110 | 630c88ca1d583f05283707740da5b1f4423807cd80cab108821157ad341b1001 | 208978 | 11702f92313f5f3413d129809ca4f11d |
 
-
 ### gibtia-get-malware-cnc-info
 
 ***
 Command performs Group IB event lookup in malware/cnc collection by provided ID.
-
 
 #### Base Command
 
@@ -2777,27 +2687,25 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | GIB event id.<br/>e.g.: aeed277396e27e375d030a91533aa232444d0089. | Required | 
-
+| id | GIB event id.<br/>e.g.: aeed277396e27e375d030a91533aa232444d0089. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.MalwareCNC.dateDetected | Date | Date CNC detected | 
-| GIBTIA.MalwareCNC.dateLastSeen | Date | Date CNC last seen | 
-| GIBTIA.MalwareCNC.url | String | CNC URL | 
-| GIBTIA.MalwareCNC.domain | String | CNC domain | 
-| GIBTIA.MalwareCNC.ipv4.asn | String | CNC ASN | 
-| GIBTIA.MalwareCNC.ipv4.countryName | String | CNC IP country name | 
-| GIBTIA.MalwareCNC.ipv4.ip | String | CNC IP address | 
-| GIBTIA.MalwareCNC.ipv4.region | String | CNC region name | 
-| GIBTIA.MalwareCNC.malwareList.name | String | Associated malware | 
-| GIBTIA.MalwareCNC.threatActor.id | String | Associated threat actor ID | 
-| GIBTIA.MalwareCNC.threatActor.name | String | Associated threat actor | 
-| GIBTIA.MalwareCNC.threatActor.isAPT | Boolean | Is APT or not | 
-| GIBTIA.MalwareCNC.id | String | GIB event ID | 
-
+| GIBTIA.MalwareCNC.dateDetected | Date | Date CNC detected |
+| GIBTIA.MalwareCNC.dateLastSeen | Date | Date CNC last seen |
+| GIBTIA.MalwareCNC.url | String | CNC URL |
+| GIBTIA.MalwareCNC.domain | String | CNC domain |
+| GIBTIA.MalwareCNC.ipv4.asn | String | CNC ASN |
+| GIBTIA.MalwareCNC.ipv4.countryName | String | CNC IP country name |
+| GIBTIA.MalwareCNC.ipv4.ip | String | CNC IP address |
+| GIBTIA.MalwareCNC.ipv4.region | String | CNC region name |
+| GIBTIA.MalwareCNC.malwareList.name | String | Associated malware |
+| GIBTIA.MalwareCNC.threatActor.id | String | Associated threat actor ID |
+| GIBTIA.MalwareCNC.threatActor.name | String | Associated threat actor |
+| GIBTIA.MalwareCNC.threatActor.isAPT | Boolean | Is APT or not |
+| GIBTIA.MalwareCNC.id | String | GIB event ID |
 
 #### Command Example
 
@@ -2920,12 +2828,10 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
 >|---|---|---|---|
 >| AS1111 | United States | aeed277396e27e375d030a91533aa232444d0089 | 11.11.11.11 |
 
-
 ### gibtia-get-available-collections
 
 ***
 Returns list of available collections.
-
 
 #### Base Command
 
@@ -2939,8 +2845,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBTIA.OtherInfo.collections | String | List of availiable collections | 
-
+| GIBTIA.OtherInfo.collections | String | List of availiable collections |
 
 #### Command Example
 
@@ -2989,12 +2894,10 @@ There are no input arguments for this command.
 >|---|
 >| compromised/account,<br/>compromised/card,<br/>bp/phishing,<br/>bp/phishing_kit,<br/>osi/git_leak,<br/>osi/public_leak,<br/>malware/targeted_malware,<br/>compromised/mule,<br/>compromised/imei,<br/>attacks/ddos,<br/>attacks/deface,<br/>attacks/phishing,<br/>attacks/phishing_kit,<br/>apt/threat,<br/>hi/threat,<br/>suspicious_ip/tor_node,<br/>suspicious_ip/open_proxy,<br/>suspicious_ip/socks_proxy,<br/>malware/cnc,<br/>osi/vulnerability,<br/>hi/threat_actor,<br/>apt/threat_actor |
 
-
 ### gibtia-global-search
 
 ***
 Command performs global Group IB search
-
 
 #### Base Command
 
@@ -3004,17 +2907,15 @@ Command performs global Group IB search
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query you want to search.<br/>e.g.: 8.8.8.8. | Required | 
-
+| query | Query you want to search.<br/>e.g.: 8.8.8.8. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| apiPath | String | Name of collection in which found matches | 
-| count | Number | Count of feeds matching this query | 
-| GIBLink | String | Link to GIB TI&amp;A interface | 
-
+| apiPath | String | Name of collection in which found matches |
+| count | Number | Count of feeds matching this query |
+| GIBLink | String | Link to GIB TI&amp;A interface |
 
 #### Command Example
 
@@ -3075,12 +2976,10 @@ Command performs global Group IB search
 >| osi/git_leak | 5 | [https://bt.group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100](https://bt.group-ib.com/osi/git_leaks?searchValue=100.100.100.100&q=100.100.100.100) |
 >| osi/public_leak | 23 | [https://bt.group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100](https://bt.group-ib.com/osi/public_leak?searchValue=100.100.100.100&q=100.100.100.100) |
 
-
 ### gibtia-local-search
 
 ***
 Command performs Group IB search in selected collection.
-
 
 #### Base Command
 
@@ -3090,19 +2989,17 @@ Command performs Group IB search in selected collection.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| collection_name | Collection you want to search. Possible values are: compromised/account, compromised/card, compromised/mule, compromised/imei, attacks/ddos, attacks/deface, attacks/phishing, attacks/phishing_kit, bp/phishing, bp/phishing_kit, hi/threat, hi/threat_actor, apt/threat, apt/threat_actor, osi/git_leak, osi/vulnerability, osi/public_leak, suspicious_ip/tor_node, suspicious_ip/open_proxy, suspicious_ip/socks_proxy, malware/cnc, malware/targeted_malware. | Required | 
-| query | Query you want to search.<br/>e.g.: 8.8.8.8. | Required | 
-| date_from | Start date of search session. | Optional | 
-| date_to | End date of search session. | Optional | 
-
+| collection_name | Collection you want to search. Possible values are: compromised/account, compromised/card, compromised/mule, compromised/imei, attacks/ddos, attacks/deface, attacks/phishing, attacks/phishing_kit, bp/phishing, bp/phishing_kit, hi/threat, hi/threat_actor, apt/threat, apt/threat_actor, osi/git_leak, osi/vulnerability, osi/public_leak, suspicious_ip/tor_node, suspicious_ip/open_proxy, suspicious_ip/socks_proxy, malware/cnc, malware/targeted_malware. | Required |
+| query | Query you want to search.<br/>e.g.: 8.8.8.8. | Required |
+| date_from | Start date of search session. | Optional |
+| date_to | End date of search session. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| id | String | Id of a feed that matches a query | 
-| additional_info | String | Additional info about feed | 
-
+| id | String | Id of a feed that matches a query |
+| additional_info | String | Additional info about feed |
 
 #### Command Example
 

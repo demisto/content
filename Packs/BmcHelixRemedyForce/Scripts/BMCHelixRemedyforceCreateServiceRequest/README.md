@@ -1,5 +1,7 @@
 This script is used to simplify the process of creating a service request in BMC Helix Remedyforce. The script will consider ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +11,10 @@ This script is used to simplify the process of creating a service request in BMC
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * bmc-remedy-category-details-get
 * bmc-remedy-account-details-get
 * bmc-remedy-user-details-get
@@ -22,6 +26,7 @@ This script uses the following commands and scripts.
 * bmc-remedy-impact-details-get
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -47,6 +52,7 @@ This script uses the following commands and scripts.
 | account_id | The account ID of the specific account. Get the account ID using the 'bmc\-remedy\-account\-details\-get' command. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -55,11 +61,12 @@ This script uses the following commands and scripts.
 | BmcRemedyforce.ServiceRequest.Id | Service request Id. | String |
 | BmcRemedyforce.ServiceRequest.CreatedDate | Creation date &amp; time of service request. | String |
 
-
 ## Script Example
+
 ```!BMCHelixRemedyforceCreateServiceRequest service_request_definition_id="a3H2w000000TfAPEA0" using="BMCHelixRemedyforce_instance_jhanvi_acc"```
 
 ## Context Example
+
 ```
 {
     "BmcRemedyforce": {
@@ -73,4 +80,5 @@ This script uses the following commands and scripts.
 ```
 
 ## Human Readable Output
+
 The service request 00000154 is successfully created.

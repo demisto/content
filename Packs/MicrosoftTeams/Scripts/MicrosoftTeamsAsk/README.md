@@ -1,6 +1,7 @@
 Send a team member or channel a question with predefined response options on Microsoft Teams. The response can be used to close a task (might be conditional) in a playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Send a team member or channel a question with predefined response options on Mic
 | Cortex  XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * send-notification
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,25 +34,27 @@ This script uses the following commands and scripts.
 | team | The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Usage
+
 ---
 
 The MicrosoftTeamsAsk script sends a message, such as operation approval or information retrieval, in a question format from Cortex XSOAR to Microsoft Teams. The message must have at least two options. For example, "yes" and "no".
 
-After the question is answered in Microsoft Teams, the response is sent to the Cortex XSOAR server, which appears as a conditional task in a playbook with response options as conditions. Depending on the response, the workflow may continue. For example, you define the following arguments: 
+After the question is answered in Microsoft Teams, the response is sent to the Cortex XSOAR server, which appears as a conditional task in a playbook with response options as conditions. Depending on the response, the workflow may continue. For example, you define the following arguments:
 
 * `option1`: yes
-* `option2`: no 
+* `option2`: no
 
 If a team member responds "yes" the playbook continues running the "yes" branch.
 
 If a task ID is included in the script, and the task condition is met, the playbook closes as soon as a response is received.
 
-
 ## Notes
+
 ---
 
 * `MicrosoftTeamsAsk` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
