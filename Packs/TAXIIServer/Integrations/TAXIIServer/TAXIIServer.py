@@ -733,7 +733,7 @@ def find_indicators_loop(indicator_query: str):
     iocs: list[dict] = []
     start_time: float = time.time()
 
-    demisto.debug(f"TS1: Starting to search for indicators using query: {indicator_query} and page size: {PAGE_SIZE}.")
+    demisto.info(f"TS1: Starting to search for indicators using query: {indicator_query} and page size: {PAGE_SIZE}.")
 
     search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
     for ioc_res in search_indicators:
@@ -741,9 +741,9 @@ def find_indicators_loop(indicator_query: str):
         iocs.extend(fetched_iocs)
 
     finish_time: float = time.time()
-    demisto.debug(
-        f"TS1: Finished searching for indicators using query: {indicator_query} and page size: {PAGE_SIZE}."
-        f"Total query time: {int(finish_time - start_time)} seconds."
+    demisto.info(
+        f"TS1: Finished searching for indicators using query: {indicator_query} and page size: {PAGE_SIZE}. "
+        f"Found {len(iocs)} indicators. Total query time: {finish_time - start_time} seconds."
     )
     return iocs
 
