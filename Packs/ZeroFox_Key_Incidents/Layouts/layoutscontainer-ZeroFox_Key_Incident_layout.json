@@ -1,12 +1,7 @@
 {
-	"cacheVersn": 0,
-	"close": null,
-	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
+	"fromVersion": "6.0.0",
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -78,8 +73,12 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
+						"minH": 1,
+						"moved": false,
 						"name": "Case Details",
+						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 0
@@ -87,82 +86,16 @@
 					{
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
+						"minH": 1,
+						"moved": false,
 						"name": "Notes",
+						"static": false,
 						"type": "notes",
 						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"name": "Work Plan",
-						"type": "workplan",
-						"w": 1,
 						"x": 1,
 						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"maxW": 3,
-						"name": "Linked Incidents",
-						"type": "linkedIncidents",
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"name": "Child Incidents",
-						"type": "childInv",
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-						"maxW": 3,
-						"name": "Evidence",
-						"type": "evidence",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-						"maxW": 3,
-						"name": "Team Members",
-						"type": "team",
-						"w": 1,
-						"x": 2,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-						"maxW": 3,
-						"name": "Indicators",
-						"query": "",
-						"queryType": "input",
-						"type": "indicators",
-						"w": 2,
-						"x": 0,
-						"y": 4
 					},
 					{
 						"displayType": "CARD",
@@ -215,72 +148,14 @@
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
+						"minH": 1,
+						"moved": false,
 						"name": "Timeline Information",
+						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-dbotClosed-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closereason",
-								"height": 22,
-								"id": "incident-closeReason-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closenotes",
-								"height": 22,
-								"id": "incident-closeNotes-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"name": "Closing Information",
-						"w": 1,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "details",
-								"height": 106,
-								"id": "incident-details-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"name": "Investigation Data",
-						"w": 1,
-						"x": 1,
 						"y": 2
 					}
 				],
@@ -295,16 +170,6 @@
 				"id": "workPlan",
 				"name": "Work Plan",
 				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
 			},
 			{
 				"id": "canvas",
@@ -398,10 +263,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_additionalemailaddresses",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_additionalindicators",
 						"isVisible": true
 					},
@@ -438,10 +299,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_alertrules",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_alertsource",
 						"isVisible": true
 					},
@@ -450,19 +307,11 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_alerttags",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_app",
 						"isVisible": true
 					},
 					{
 						"fieldId": "incident_appmessage",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_assetname",
 						"isVisible": true
 					},
 					{
@@ -494,15 +343,7 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_cveid",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_cvelist",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_cvepublished",
 						"isVisible": true
 					},
 					{
@@ -666,14 +507,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_domainregistrarabuseemail",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_domainupdateddate",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_dsts",
 						"isVisible": true
 					},
@@ -715,10 +548,6 @@
 					},
 					{
 						"fieldId": "incident_externalendtime",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_externallastupdatedtime",
 						"isVisible": true
 					},
 					{
@@ -1058,10 +887,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_registrationemail",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_registryhive",
 						"isVisible": true
 					},
@@ -1099,14 +924,6 @@
 					},
 					{
 						"fieldId": "incident_reportname",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_resourceurl",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_riskname",
 						"isVisible": true
 					},
 					{
@@ -1314,10 +1131,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_useranomalycount",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_userblockstatus",
 						"isVisible": true
 					},
@@ -1327,10 +1140,6 @@
 					},
 					{
 						"fieldId": "incident_userengagementresponse",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_userrisklevel",
 						"isVisible": true
 					},
 					{
@@ -1347,10 +1156,6 @@
 					},
 					{
 						"fieldId": "incident_verdict",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_vulnerableproduct",
 						"isVisible": true
 					},
 					{
@@ -1379,23 +1184,9 @@
 			}
 		]
 	},
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "331f1c29-422d-49df-81dc-4329a2073078",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "ZeroFox Key Incident",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
+	"name": "331f1c29-422d-49df-81dc-4329a2073078",
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }
