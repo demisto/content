@@ -52,7 +52,7 @@ If you change the *Query to fetch offenses* value, it will not re-fetch offenses
 **Note:**  
 The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query.  
 
-In case of setting a query with the intent to fetch specific offenses or older offenses, make sure that the *First fetch timestamp* parameter is set to a value that covers the desired time range for the offenses to be fetched, if using an already existing instance that has performed fetch already, run the ***qradar-reset-last-run*** command to ensure before starting the fetch with the new query.
+In case of setting a query with the intent to fetch specific offenses or older offenses, make sure that the *First fetch timestamp* parameter is set to a value that covers the desired time range for the offenses to be fetched, if using an already existing instance that has performed fetch, run the ***qradar-reset-last-run*** command to ensure before starting the fetch with the new query.
 ## Migration from QRadar v2 to QRadar v3
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ### Additions and Changes from QRadar v2 to QRadar v3
