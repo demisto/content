@@ -3,6 +3,7 @@ import pytest
 from CommonServerPython import *  # noqa: F401
 from requests import Response
 from MicrosoftTeams import GraphPermissions as Perms
+from freezegun import freeze_time
 
 entryTypes["warning"] = 11
 
@@ -115,6 +116,8 @@ integration_context: dict = {
 
 CLIENT_CREDENTIALS_FLOW = "Client Credentials"
 AUTHORIZATION_CODE_FLOW = "Authorization Code"
+CREDENTIALS_TOKEN_PARAMS = 'credentials_token_params'
+AUTHCODE_TOKEN_PARAMS = 'authcode_token_params'
 ONEONONE_CHAT_ID = "19:09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038@unq.gbl.spaces"
 GROUP_CHAT_ID = "19:2da4c29f6d7041eca70b638b43d45437@thread.v2"
 
@@ -272,7 +275,6 @@ def test_mirror_investigation(mocker, requests_mock):
     )
     expected_integration_context: dict = {
         "bot_name": "DemistoBot",
-        "current_refresh_token": "",
         "tenant_id": tenant_id,
         "service_url": service_url,
         "teams": json.dumps(
@@ -302,8 +304,7 @@ def test_mirror_investigation(mocker, requests_mock):
     assert demisto.setIntegrationContext.call_count == 3
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
-    set_integration_context[0].pop("graph_access_token")
-    set_integration_context[0].pop("graph_valid_until")
+    set_integration_context[0].pop(CREDENTIALS_TOKEN_PARAMS)
     set_integration_context[0].pop("bot_access_token")
     set_integration_context[0].pop("bot_valid_until")
     assert set_integration_context[0] == expected_integration_context
@@ -2582,9 +2583,10 @@ def test_switch_auth_type_to_client_credentials(mocker):
         "MicrosoftTeams.get_integration_context",
         return_value={
             "current_auth_type": "Authorization Code",
-            "current_refresh_token": "test_refresh_token",
-            "graph_access_token": "test_graph_token",
-            "graph_valid_until": "test_valid_until",
+            AUTHCODE_TOKEN_PARAMS: json.dumps({
+                "current_refresh_token": "test_refresh_token",
+                "graph_access_token": "test_graph_token",
+                "graph_valid_until": "test_valid_until"}),
         },
     )
     set_integration_context_mocker = mocker.patch("MicrosoftTeams.set_integration_context", return_value={})
@@ -2596,9 +2598,8 @@ def test_switch_auth_type_to_client_credentials(mocker):
     assert set_integration_context_mocker.call_count == 2
     assert set_integration_context_mocker.call_args[0][0] == {
         "current_auth_type": "Client Credentials",
-        "current_refresh_token": "",
-        "graph_access_token": "",
-        "graph_valid_until": "",
+        AUTHCODE_TOKEN_PARAMS: "{}",
+        CREDENTIALS_TOKEN_PARAMS: "{}",
     }
     assert "Setting the current_auth_type in the integration context to Client Credentials" in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 4
@@ -2627,9 +2628,10 @@ def test_switch_auth_type_to_authorization_code_flow(mocker):
         "MicrosoftTeams.get_integration_context",
         return_value={
             "current_auth_type": "Client Credentials",
-            "current_refresh_token": "test_refresh_token",
-            "graph_access_token": "test_graph_token",
-            "graph_valid_until": "test_valid_until",
+            AUTHCODE_TOKEN_PARAMS: json.dumps({
+                "current_refresh_token": "test_refresh_token",
+                "graph_access_token": "test_graph_token",
+                "graph_valid_until": "test_valid_until"}),
         },
     )
     set_integration_context_mocker = mocker.patch("MicrosoftTeams.set_integration_context", return_value={})
@@ -2641,9 +2643,8 @@ def test_switch_auth_type_to_authorization_code_flow(mocker):
     assert set_integration_context_mocker.call_count == 2
     assert set_integration_context_mocker.call_args[0][0] == {
         "current_auth_type": "Authorization Code",
-        "current_refresh_token": "",
-        "graph_access_token": "",
-        "graph_valid_until": "",
+        AUTHCODE_TOKEN_PARAMS: "{}",
+        CREDENTIALS_TOKEN_PARAMS: "{}",
     }
     assert "Setting the current_auth_type in the integration context to Authorization Code" in debug_log_mocker.call_args[0][0]
     assert debug_log_mocker.call_count == 4
@@ -2790,7 +2791,11 @@ def test_insufficient_permissions_handler(mocker, command, expected_missing):
 
     mocker.patch.object(demisto, "command", return_value=command)
     mocker.patch("MicrosoftTeams.get_token_permissions", return_value=mock_permissions)
-    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"graph_access_token": "mock_token"})
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={
+        CREDENTIALS_TOKEN_PARAMS: json.dumps({
+            "graph_access_token": "mock_token"
+            })
+    })
     missing_permissions_mock = mocker.patch(
         "MicrosoftTeams.create_missing_permissions_section", side_effect=create_missing_permissions_section
     )
@@ -2923,3 +2928,132 @@ def test_get_chat_id_and_type_not_found_no_chat_creation_permission(mocker, requ
         get_chat_id_and_type(chat_name, create_dm_chat=False)
 
     assert str(e.value) == f'Could not find chat: {chat_name}'
+
+
+def test_ring_user_in_auth_code(mocker, requests_mock):
+    """
+    Given:
+      - Authentication type is set to authorization code.
+    When:
+      - Calling the ring-user command.
+    Then:
+      - Ring user is called with a token obtained from client credentials instead of auth code.
+    """
+    from MicrosoftTeams import ring_user
+
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new=AUTHORIZATION_CODE_FLOW)
+    mocker.patch.object(demisto, 'args', return_value={'username': 'test_user'})
+    mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'test_user_id', 'userType': 'Member'}])
+
+    mock_credentials_token = 'credentials_token'
+
+    requests_mock.post(
+        f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+        json={
+            'access_token': mock_credentials_token
+        },
+        status_code=200,
+        additional_matcher=lambda request: 'grant_type=client_credentials' in request.text,
+    )
+
+    requests_mock.post(
+        f'{GRAPH_BASE_URL}/v1.0/communications/calls',
+        json={},
+    )
+    integration_context.pop(CREDENTIALS_TOKEN_PARAMS)
+
+    ring_user()
+
+    assert requests_mock.last_request.headers['Authorization'] == f'Bearer {mock_credentials_token}'
+
+@freeze_time("2025-03-20")
+@pytest.mark.parametrize('auth_type', [AUTHORIZATION_CODE_FLOW, CLIENT_CREDENTIALS_FLOW])
+def test_integration_context_format_migration(mocker, auth_type):
+    """
+    Test the context migration logic from the old single graph token format to
+    handling both token types individually.
+    
+    Given:
+        - The integration context contains a cached graph token in the old format.
+    When:
+        - Requesting a graph access token.
+    Then:
+        - The integration context is updated to the new format.
+        - The existing token is migrated to the appropriate token type.
+        - The existing token is returned as expected.
+    """
+    from MicrosoftTeams import get_graph_access_token, AUTHCODE_TOKEN_PARAMS, CREDENTIALS_TOKEN_PARAMS
+
+    mock_integration_context = {
+        'current_refresh_token': 'mock_refresh_token',
+        'graph_access_token': 'mock_cached_token',
+        'graph_valid_until': 1742438800,
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=mock_integration_context)
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new=auth_type)
+    
+    token = get_graph_access_token()
+    
+    assert token == 'mock_cached_token'
+    
+    context_token_key = AUTHCODE_TOKEN_PARAMS if auth_type == AUTHORIZATION_CODE_FLOW else CREDENTIALS_TOKEN_PARAMS
+    assert json.loads(str(mock_integration_context.get(context_token_key, '{}'))) == {
+            'current_refresh_token': 'mock_refresh_token',
+            'graph_access_token': 'mock_cached_token',
+            'graph_valid_until': 1742438800,
+    }
+    assert 'current_refresh_token' not in mock_integration_context
+    assert 'graph_access_token' not in mock_integration_context
+    assert 'graph_valid_until' not in mock_integration_context
+
+@freeze_time("2025-03-20")
+def test_integration_context_format_migration_auth_override(mocker, requests_mock):
+    """
+    Test the context migration logic when the requested auth type is different from the integration configuration.
+    
+    Given:
+        - The integration context contains a cached graph token in the old format.
+    When:
+        - Requesting a graph access token.
+        - The request is made with the auth type argument overriding the integration configuration.
+    Then:
+        - The integration context is updated to the new format.
+        - The existing token is migrated to the correct token type key.
+        - A token of the requested type is created and returned as expected.
+    """
+    from MicrosoftTeams import get_graph_access_token, CREDENTIALS_TOKEN_PARAMS, AUTHCODE_TOKEN_PARAMS
+
+    mock_integration_context = {
+        'tenant_id': tenant_id,
+        'current_refresh_token': 'mock_refresh_token',
+        'graph_access_token': 'mock_cached_token',
+        'graph_valid_until': 1742438800,
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=mock_integration_context)
+    mocker.patch('MicrosoftTeams.AUTH_TYPE', new=CLIENT_CREDENTIALS_FLOW)
+    mocker.patch('MicrosoftTeams.AUTH_CODE', new='mock_auth_code')
+    requests_mock.post(
+        f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+        json={
+            'access_token': 'mock_auth_token',
+            'refresh_token': 'mock_auth_refresh_token',
+            'expires_in': 3600,
+        }
+    )
+    
+    token = get_graph_access_token(AUTHORIZATION_CODE_FLOW)
+    
+    assert token == 'mock_auth_token'
+    
+    assert json.loads(str(mock_integration_context.get(CREDENTIALS_TOKEN_PARAMS, '{}'))) == {
+            'current_refresh_token': 'mock_refresh_token',
+            'graph_access_token': 'mock_cached_token',
+            'graph_valid_until': 1742438800,
+            }
+    assert json.loads(str(mock_integration_context.get(AUTHCODE_TOKEN_PARAMS, '{}'))) == {
+            'current_refresh_token': 'mock_auth_refresh_token',
+            'graph_access_token': 'mock_auth_token',
+            'graph_valid_until': 1742432395,
+            }
+    
+    assert get_graph_access_token() == 'mock_cached_token'

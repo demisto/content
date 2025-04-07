@@ -1,0 +1,27 @@
+commonfields:
+  id: JSONDiff
+  version: -1
+name: JSONDiff
+script: ''
+type: python
+tags:
+- Utility
+comment: compares two JSON files and returns their differences, such as added, removed, or changed fields, in a structured format.
+enabled: true
+args:
+- name: old_json
+  description: The old value of the JSON.
+  required: true
+- name: new_json
+  description: The new value of the JSON.
+  required: true
+outputs:
+- contextPath: new_json
+  description: The JSON differences in a structured format.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.8.1983910
+tests:
+- JSONtoCSV-Test
+fromversion: 6.10.0

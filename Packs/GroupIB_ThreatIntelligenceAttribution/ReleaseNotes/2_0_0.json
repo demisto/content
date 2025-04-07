@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This version upgrades the integration and layouts to support new collections."
+}

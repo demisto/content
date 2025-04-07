@@ -22,8 +22,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
-
-
+from functools import lru_cache
+from urllib.parse import urlparse
+import ipaddress
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -36,6 +37,7 @@ os.environ["no_proxy"] = "localhost,127.0.0.1"
 # Needed for cases that rasterize is running with non-root user (docker hardening)
 os.environ["HOME"] = tempfile.gettempdir()
 
+CHROME_ERROR_URL = "chrome-error://chromewebdata"
 CHROME_EXE = os.getenv("CHROME_EXE", "/opt/google/chrome/google-chrome")
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
@@ -111,7 +113,11 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
 
-
+# Define constants
+PRIVATE_NETWORKS = {
+    ipaddress.ip_network('0.0.0.0/8'),     # "This" Network
+    ipaddress.ip_network('127.0.0.0/8'),   # Loopback Network
+}
 class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
@@ -203,12 +209,15 @@ class PychromeEventHandler:
     request_id = None
     screen_lock = threading.Lock()
 
-    def __init__(self, browser, tab, tab_ready_event):
+    def __init__(self, browser, tab, tab_ready_event, path: str, navigation_timeout: int):
         self.browser = browser
         self.tab = tab
         self.tab_ready_event = tab_ready_event
         self.start_frame = None
         self.is_mailto = False
+        self.path = path
+        self.navigation_timeout = navigation_timeout
+        self.is_private_network_url = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}")
@@ -232,14 +241,50 @@ class PychromeEventHandler:
 
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}")
+        # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
-            demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
-            self.tab_ready_event.set()
+            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
+            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
 
-    def network_request_will_be_sent(self, documentURL, **kwargs):
+            # Check if the loaded page is a Chrome error page, which indicates a failed load
+            if frame_url.lower().startswith(CHROME_ERROR_URL):
+                demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
+                self.retry_loading()
+            else:
+                demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+                self.tab_ready_event.set()
+
+    def retry_loading(self):
+        """
+        Attempts to reload the page multiple times.
+        """
+        for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
+            demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
+            try:
+                if self.navigation_timeout > 0:
+                    self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
+                else:
+                    self.tab.Page.navigate(url=self.path)
+            except Exception as e:
+                demisto.debug(f"Error during navigation attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}")
+
+            safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
+
+            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
+
+            if not frame_url.lower().startswith(CHROME_ERROR_URL):
+                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
+                self.tab_ready_event.set()
+                break
+        else:
+            demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
+
+    def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
         demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}")
+
         self.is_mailto = documentURL.lower().startswith("mailto:")
+        self.is_private_network_url = is_private_network(documentURL)
 
         request_url = kwargs.get("request", {}).get("url", "")
 
@@ -349,7 +394,7 @@ def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str
 
 def increase_counter_chrome_instances_file(chrome_port: str = ""):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    The function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
@@ -365,7 +410,7 @@ def increase_counter_chrome_instances_file(chrome_port: str = ""):
 
 def terminate_port_chrome_instances_file(chrome_port: str = ""):
     """
-    he function will increase the counter of the port "chrome_port"ץ
+    The function will increase the counter of the port "chrome_port"
     If the file "CHROME_INSTANCES_FILE_PATH" exists the function will increase the counter of the port "chrome_port."
 
     :param chrome_port: Port for Chrome instance.
@@ -608,7 +653,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
         demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true {chrome_options in chrome_options_dict}"
+            "chrome_manager: condition chrome_options in chrome_options_dict is true"
         )
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
@@ -647,9 +692,11 @@ def generate_chrome_port() -> str | None:
     return None
 
 
-def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
+def setup_tab_event(
+    browser: pychrome.Browser, tab: pychrome.Tab, path: str, navigation_timeout: int
+) -> tuple[PychromeEventHandler, Event]:  # pragma: no cover
     tab_ready_event = Event()
-    tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
+    tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event, path, navigation_timeout)
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
@@ -665,7 +712,7 @@ def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Pychr
 
 
 def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
-    tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
+    tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
         demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
@@ -722,6 +769,11 @@ def screenshot_image(
 
     if tab_event_handler.is_mailto:
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
+    if tab_event_handler.is_private_network_url:
+        return None, (
+            'URLs that belong to the "This" Network (0.0.0.0/8), or'
+            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+        )
 
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
@@ -893,6 +945,34 @@ def kill_zombie_processes():
         demisto.debug(f"Failed to iterate over processes. Error: {e}")
 
 
+@lru_cache(maxsize=1024)
+def is_private_network(url: str) -> bool:
+    """
+    Check if a URL's hostname belongs to a private network.
+    
+    Args:
+        url (str): The URL to check
+        
+    Returns:
+        bool: True if the hostname is in a private network, False otherwise
+    """
+    try:
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url
+        parsed = urlparse(url)
+        hostname = parsed.netloc.split(':')[0]  # Remove port if exists
+        
+        if not hostname:  # Handle cases where netloc is empty
+            return False
+            
+        ip = ipaddress.ip_address(hostname)
+        return any(ip in network for network in PRIVATE_NETWORKS)
+            
+    except (ValueError, AttributeError):
+        # ValueError: Invalid IP address
+        # AttributeError: Invalid URL format
+        return False
+
 def perform_rasterize(
     path: str | list[str],
     rasterize_type: RasterizeType = RasterizeType.PNG,
@@ -918,19 +998,24 @@ def perform_rasterize(
     """
 
     # convert the path param to list in case we have only one string
-    paths = argToList(path)
+    paths: list[str] = argToList(path)
 
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith("mailto:")]
+    private_network_paths = [path_value for path_value in paths if is_private_network(path_value)]
 
-    if mailto_paths:
-        # remove the mailto from the paths to rasterize
+    if private_network_paths or mailto_paths:
         paths = list(set(paths) - set(mailto_paths))
-        demisto.error(f"Not rasterizing the following invalid paths: {mailto_paths}")
+        paths = list(set(paths) - set(private_network_paths))
+        demisto.error(f"Not rasterizing the following invalid paths: {private_network_paths + mailto_paths}")
         return_results(
-            CommandResults(readable_output=f'URLs that start with "mailto:" cannot be rasterized.\nURL: {mailto_paths}')
+            CommandResults(
+                readable_output=(
+                    "The following paths were skipped as they are not valid for rasterization:"
+                    f" {private_network_paths + mailto_paths}"
+                )
+            )
         )
-
     if not paths:
         message = "There are no valid paths to rasterize"
         demisto.error(message)

@@ -514,8 +514,10 @@ class Client(BaseClient):
             attempts: (int) number of attempts to try with the given session extraction/method.
 
         Returns:
-            requets.Response: the response object
+            requests.Response: the response object
         """
+        demisto.debug(f"Sending {method.upper()} request to REST endpoint: {url_suffix} with params: {params} and body: {data}")
+
         for _ in range(attempts):
             headers = self.get_headers(create_new_session=create_new_session)
             res = self._http_request(
@@ -1035,13 +1037,22 @@ def extract_from_xml(xml, path):
 
 def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
-        demisto.debug(f"fields values are: {fields_values}")
-        fields_values = re.sub(r'\\(?!")', r"\\\\", fields_values)
-        demisto.debug(f"fields values after escaping: {fields_values}")
+        demisto.debug(f"Fields values string before escaping: {fields_values}")
+        # Escape backslashes if not any of the following:
+        # \" - escaped double quote        \b - backspace
+        # \f - form feed                   \n - new line
+        # \r - carriage return             \t - tab
+        # \u - unicode character
+        fields_values = re.sub(r'\\(?!["bfnrtu])', r"\\\\", fields_values)
+        demisto.debug(f"Fields values string after escaping: {fields_values}")
+
         try:
+            demisto.debug(f"Loading JSON fields values string: {fields_values}")
             fields_values = json.loads(fields_values)
-        except Exception:
-            raise Exception("Failed to parse fields-values argument")
+        except Exception as e:
+            raise Exception(f"Failed to load JSON fields values string. Error: {str(e)}")
+        else:
+            demisto.debug("Successfully loaded JSON fields values string")
 
     field_content = {}
     for field_name in fields_values:

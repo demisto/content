@@ -6,8 +6,7 @@ script: ''
 type: javascript
 tags:
 - QRadar
-comment: Deprecated. No available replacement. This Script runs a QRadar query and
-  return its results to the war-room.
+comment: Deprecated. No available replacement. This Script runs a QRadar query and return its results to the war-room.
 system: true
 deprecated: true
 args:
@@ -34,3 +33,8 @@ dependson:
 tests:
 - No test
 fromversion: 5.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

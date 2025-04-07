@@ -25,5 +25,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "x2_fields": "initial_port_protocol"
+    "x2_fields": "initial_port_protocol",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

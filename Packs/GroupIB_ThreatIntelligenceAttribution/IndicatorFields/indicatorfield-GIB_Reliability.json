@@ -7,7 +7,6 @@
         "Email",
         "Domain",
         "GIB Compromised Mule",
-        "GIB Compromised IMEI",
         "GIB Victim IP"
     ],
     "associatedToAll": false,
