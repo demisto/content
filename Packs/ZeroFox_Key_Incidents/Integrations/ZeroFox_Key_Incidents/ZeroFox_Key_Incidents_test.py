@@ -196,7 +196,7 @@ def test_get_key_incident_attachment_command(requests_mock, zerofox, mock_file_i
     ki_attachment = load_json("test_data/key_incident_attachments/ki_attachment.json")
     requests_mock.post(CTI_TOKEN_ENDPOINT, json={"access": "token"})
     requests_mock.get(
-        f"/cti/key-incident-attachments/{attachment_id}/",
+        f"/cti/key-incident-attachment/{attachment_id}/",
         json=ki_attachment,
     )
     args = {"attachment_id": attachment_id}

@@ -1,19 +1,10 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "Maps ZeroFox Key Incidents Fields to XSOAR",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "108e33e9-82ab-4ed5-8fe3-989830521c15",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
+	"fromVersion": "6.0.0",
 	"mapping": {
 		"ZeroFox Key Incident": {
 			"dontMapEventToLabels": false,
@@ -50,18 +41,7 @@
 			"internalMapping": {}
 		}
 	},
-	"name": "ZeroFox Key Incident Mapper",
-	"nameRaw": "ZeroFox Key Incident Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
+	"name": "108e33e9-82ab-4ed5-8fe3-989830521c15",
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }

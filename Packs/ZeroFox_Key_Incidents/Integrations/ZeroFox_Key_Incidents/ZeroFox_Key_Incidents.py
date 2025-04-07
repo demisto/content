@@ -10,7 +10,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from requests import Response
 
 """ GLOBALS / PARAMS  """
-FETCH_TIME_DEFAULT = "3 days"
+FETCH_TIME_DEFAULT = "7 days"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 MAX_ALERT_IDS_STORED = 300
 
@@ -126,16 +126,10 @@ class ZeroFox(BaseClient):
         headers = {}
         if cti:
             headers = self.get_cti_request_header()
-
-        if error_handler is None:
-            err_handler = self.handle_zerofox_error
-        else:
-
-            def combined_error_handler(raw_response: Response):
+        def err_handler(raw_response: Response):
+            if error_handler is not None:
                 error_handler(raw_response)
-                self.handle_zerofox_error(raw_response)
-
-            err_handler = combined_error_handler
+            self.handle_zerofox_error(raw_response)
 
         return self._http_request(
             method=method,
@@ -205,9 +199,9 @@ class ZeroFox(BaseClient):
         )
         return response_content.get("access", "")
 
-    def _parse_cursor(self, url) -> dict:
+    def _parse_cursor(self, url) -> str:
         query = parse_qs(urlparse(url).query)
-        return query.get("cursor", [None])[0]
+        return query.get("cursor", [""])[0]
 
     def get_key_incidents(self, start_time, end_time) -> list[KeyIncident]:
         """
@@ -375,7 +369,7 @@ def main():
     USE_SSL: bool = not params.get("insecure", False)
     PROXY: bool = params.get("proxy", False)
     FETCH_TIME: str = params.get(
-        "fetch_time",
+        "first_fetch",
         FETCH_TIME_DEFAULT,
     ).strip()
 

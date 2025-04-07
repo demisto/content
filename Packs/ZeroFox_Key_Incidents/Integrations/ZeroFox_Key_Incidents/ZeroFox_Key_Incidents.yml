@@ -12,11 +12,34 @@ configuration:
     required: true
     section: Connect
     type: 0
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    section: Collect
+    required: false
+    defaultvalue: 'true'
   - display: Username
     name: credentials
     required: true
     section: Connect
     type: 9
+  - defaultvalue: 7 days
+    display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+    name: first_fetch
+    type: 0
+    required: false
+    section: Collect
+  - display: Incident type
+    name: incidentType
+    type: 13
+    section: Connect
+    required: false
+  - display: Maximum number of incidents per fetch
+    name: max_fetch
+    type: 0
+    defaultvalue: '0'
+    required: false
+    hidden: true
 description: Cloud-based SaaS to detect risks found on social media and digital channels.
 display: ZeroFox_Key_Incidents
 name: ZeroFox_Key_Incidents
