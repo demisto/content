@@ -247,10 +247,12 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
-    current_time = get_current_time()
-    start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
-    end_date = current_time.strftime(DATE_FORMAT)
-    fetch_events(client, 1, {'start_date': start_date, 'end_date': end_date})
+    last_run = {
+        'detection_start_time': int(FIRST_FETCH.timestamp() * 1000) ,
+        'offset': 0,
+        'limit': 1
+    }
+    fetch_events(client, last_run, 1)
     return "ok"
 
 def get_extrahop_server_version(client: Client):
@@ -308,23 +310,6 @@ def get_detections_list(client: Client,
     update_time_values_detections(detections)
     return detections
 
-
-def prepare_detections_to_output(client: Client, detections: List[Dict[str, Any]]) -> CommandResults:
-
-    base_url = client._base_url
-    base_url = remove_api_from_base_url(base_url)
-    for detection in detections:
-        if detection.get("description"):
-            detection["description"] = modify_description(base_url, detection.get("description"))
-    readable_output = prepare_list_detections_output(detections)
-
-    return CommandResults(
-        outputs_prefix="ExtraHop.Detections",
-        outputs_key_field="id",
-        outputs=remove_empty_elements(detections),
-        readable_output=readable_output,
-        raw_response=detections,
-    )
 
 
 def append_participant_device_data(client: Client, detections: CommandResults) -> CommandResults:
@@ -429,7 +414,7 @@ def fetch_extrahop_detections(
     return events, last_run
 
 
-def validate_fetch_events_params(params: dict, last_run: dict) -> Dict:
+def validate_fetch_events_params(last_run: dict) -> Dict:
     """
     Validate the parameter list for fetch incidents.
 
@@ -440,35 +425,36 @@ def validate_fetch_events_params(params: dict, last_run: dict) -> Dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
+    detection_start_time = int(FIRST_FETCH.timestamp() * 1000)  # type: ignore
     if last_run and 'detection_start_time' in last_run:
         detection_start_time = last_run.get('detection_start_time')  # type: ignore
-    else:
-        # First Fetch
-        detection_start_time = int(FIRST_FETCH.timestamp() * 1000)  # type: ignore
 
     offset = 0
     if last_run and 'offset' in last_run:
         offset = last_run.get("offset")  # type: ignore
 
+    limit = DEFAULT_FETCH_LIMIT
+    if last_run and 'limit' in last_run:
+        limit = last_run.get("limit") # type: ignore
+
     return {
         'detection_start_time': detection_start_time,
         'offset': offset,
-        'limit': DEFAULT_FETCH_LIMIT
+        'limit': limit
     }
 
 
-def fetch_events(client: Client, params: Dict, last_run: Dict):
+def fetch_events(client: Client, last_run: Dict, max_events: int):
     """Fetch the specified ExtraHop entity and push into XSIAM.
 
      Args:
+        max_events: max events to fetch
         client: ExtraHop client to be used.
         params: Integration configuration parameters.
         last_run: The last_run dictionary having the state of previous cycle.
     """
-    demisto.info(f"Extrahop fetch_events invoked"
-                 f"first_fetch: {params.get('first_fetch', '')} and last_run: {last_run}")
-    fetch_params = validate_fetch_events_params(params, last_run)
-    max_events = arg_to_number(params.get('max_events_per_fetch')) or MAX_FETCH_LIMIT
+    demisto.info(f"Extrahop fetch_events invoked")
+    fetch_params = validate_fetch_events_params(last_run)
 
     validate_version(client, last_run)
 
@@ -494,9 +480,9 @@ def validate_version(client, last_run):
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
 
-def get_events(client: Client, params: dict) -> tuple[list, CommandResults]:
+def get_events(client: Client, max_events: int) -> tuple[list, CommandResults]:
     last_run = demisto.getLastRun()
-    output, _  = fetch_events(client, params, last_run)
+    output, _  = fetch_events(client, last_run, max_events)
 
     filtered_events = []
     for event in output:
@@ -527,6 +513,7 @@ def main():
         client_id = params.get("client_id", "")
         client_secret = params.get("client_secret", "")
         use_proxy: bool = params.get('proxy', False)
+        max_events = arg_to_number(params.get('max_events_per_fetch')) or MAX_FETCH_LIMIT
 
         client = Client(base_url=base_url,
                         verify=verify_certificate,
@@ -537,20 +524,18 @@ def main():
 
         if command == "test-module":
             # Command made to test the integration
-            # This is the call made when pressing the integration Test button.
-            # todo: fill up the test-moudle
             result = test_module(client)
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            events, next_run = fetch_events(client, params, last_run)
+            events, next_run = fetch_events(client, last_run, max_events)
             if events:
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
-            events, command_results = get_events(client, params)
+            events, command_results = get_events(client, max_events)
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'xuSending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
