@@ -508,7 +508,7 @@ def main():
 
     demisto.debug(f"Command being called is {command}")
     try:
-        base_url = params.get("server-url")
+        base_url = params.get("server_url")
         verify_certificate = not argToBoolean(params.get("insecure", False))
         client_id = params.get("client_id", "")
         client_secret = params.get("client_secret", "")

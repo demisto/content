@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Your server URL
-  name: server-url
+  name: server_url
   required: true
   type: 0
   section: Connect
@@ -43,8 +43,8 @@ configuration:
   hidden:
   - xsoar
   defaultvalue: "true"
-- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 5000.'
-  defaultvalue: "5000"
+- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 25000.'
+  defaultvalue: "25000"
   display: Maximum number of events per fetch
   name: max_events_per_fetch
   required: true
@@ -67,10 +67,6 @@ script:
           - 'true'
           - 'false'
         required: true
-    outputs:
-      - contextPath: Extrahop.RevealX.Audit
-        description: The list of audit logs events.
-        type: List
   isfetch: false
   runonce: false
   script: '-'
