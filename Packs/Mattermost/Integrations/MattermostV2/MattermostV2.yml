@@ -554,13 +554,13 @@ script:
       description: The ID of the group.
       type: String
     - contextPath: Mattermost.Groups.create_at
-      description: When was the group created.
+      description: The datetime the group was created.
       type: Unknown
     - contextPath: Mattermost.Groups.update_at
-      description: When was the group updated.
+      description: The datetime the group was updated.
       type: Unknown
     - contextPath: Mattermost.Groups.delete_at
-      description: When was the group deleted.
+      description: The datetime the group was deleted.
       type: Unknown
     - contextPath: Mattermost.Groups.display_name
       description: The display name of the group.
@@ -614,7 +614,7 @@ script:
     - name: user_ids
       required: true
       isArray: true
-      description: The ID(s) of the user(s) to add. Use the command 'mattermost-list-users'
+      description: A comma-separated list of IDs of the users to add. Use the command 'mattermost-list-users'
         to fetch the user ID(s).
     description: 'Add group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
   - name: mattermost-remove-group-member
@@ -626,7 +626,7 @@ script:
     - name: user_ids
       required: true
       isArray: true
-      description: The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users'
+      description: A comma-separated list of IDs of the users to remove. Use the command 'mattermost-list-users'
         to fetch the user ID(s).
     description: 'Remove group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
   - name: mattermost-set-channel-role

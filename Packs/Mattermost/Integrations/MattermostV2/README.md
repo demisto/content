@@ -734,9 +734,9 @@ No permissions required.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Mattermost.Groups.id | String | The ID of the group. | 
-| Mattermost.Groups.create_at | Unknown | When was the group created. | 
-| Mattermost.Groups.update_at | Unknown | When was the group updated. | 
-| Mattermost.Groups.delete_at | Unknown | When was the group deleted. | 
+| Mattermost.Groups.create_at | Unknown | The datetime the group was created. | 
+| Mattermost.Groups.update_at | Unknown | The datetime the group was updated. | 
+| Mattermost.Groups.delete_at | Unknown | The datetime the group was deleted. | 
 | Mattermost.Groups.display_name | String | The display name of the group. | 
 | Mattermost.Groups.name | String | The name of the group. | 
 | Mattermost.Groups.description | String | The description of the group. | 
@@ -853,7 +853,7 @@ Must have custom_group_manage_members permission for the given group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The group ID of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
-| user_ids | The ID(s) of the user(s) to add. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
+| user_ids | A comma-separated list of IDs of the users to add. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
 
 #### Context Output
 
@@ -885,7 +885,7 @@ Must have custom_group_manage_members permission for the given group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The group ID of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
-| user_ids | The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
+| user_ids | A comma-separated list of IDs of the users to remove. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
 
 #### Context Output
 
