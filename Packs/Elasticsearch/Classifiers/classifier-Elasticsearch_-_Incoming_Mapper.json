@@ -57,5 +57,11 @@
     "name": "Elasticsearch - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
