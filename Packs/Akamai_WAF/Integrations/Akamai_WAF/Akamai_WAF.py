@@ -2303,10 +2303,9 @@ class Client(BaseClient):
         Returns:
             <Response [200]>
         """
+        url_suffix = '/datastream-config-api/v2/log/streams'
         if group_id != 0:
-            url_suffix = f'/datastream-config-api/v2/log/streams?groupId={group_id}'
-        else:
-            url_suffix = '/datastream-config-api/v2/log/streams'
+            url_suffix = f'{url_suffix}?groupId={group_id}'
 
         all_datastreams = self._http_request(method='GET', url_suffix=url_suffix)
 
