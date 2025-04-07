@@ -1567,7 +1567,7 @@ script:
     - description: The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager.
       isArray: true
       name: properties
-    - description: The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. See Data set parameters for the complete list of the fields you can choose.
+    - description: The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines.
       isArray: true
       name: dataset_fields
     - auto: PREDEFINED
@@ -1580,9 +1580,9 @@ script:
       name: log_format
     - description: A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format.
       name: field_delimiter
-    - description: The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions.
+    - description: The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character.
       name: upload_file_prefix
-    - description: The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions.
+    - description: The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
       name: upload_file_suffix
     - description: The certification authority (CA) certificate used to verify the origin server's certificate. If the certificate is not signed by a well-known certification authority, enter the CA certificate in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it in the response as true.
       name: ca_cert
@@ -1590,11 +1590,11 @@ script:
       name: client_cert
     - description: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. If you want to use mutual authentication, you need to provide both the client certificate and the client key.
       name: client_key
-    - description: The type of the resource passed in the request's custom header. For details, see the additional options discussed in Stream logs to a HTTPS endpoint.
+    - description: The type of the resource passed in the request's custom header.
       name: content_type
-    - description: A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters. For details, see the additional options discussed in Stream logs to a HTTPS endpoint.
+    - description: A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters.
       name: custom_header_name
-    - description: The custom header's contents passed with the request that contains information about the client connection. For details, see the additional options discussed in Stream logs to a HTTPS endpoint.
+    - description: The custom header's contents passed with the request that contains information about the client connection.
       name: custom_header_value
     - auto: PREDEFINED
       description: Enables gzip compression for a log file sent to a destination. True by default.
@@ -1604,16 +1604,16 @@ script:
       - 'False'
     - auto: PREDEFINED
       defaultValue: SPLUNK
-      description: 'The destination configuration in the stream to send logs. See Destinations for details and features available for each destination. Note: "SPLUNK" and "HTTPS" are the only two types tested.'
+      description: 'The destination configuration in the stream to send logs.
       name: destination_type
       predefined:
       - HTTPS
       - SPLUNK
     - description: The name of the destination.
       name: display_name
-    - description: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs. See Stream logs to Splunk.
+    - description: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs.
       name: endpoint
-    - description: The Event Collector token for your Splunk account. See View usage of Event Collector token in the Splunk documentation.
+    - description: The Event Collector token for your Splunk account.
       name: event_collector_token
     - description: The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint URL.
       name: tls_hostname
@@ -1682,7 +1682,7 @@ script:
     - description: Unique identifer of a stream.
       name: stream_id
       required: true
-    description: Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first. See Deactivate a stream.
+    description: Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first.
     name: akamai-delete-datastream
     outputs:
     - contextPath: Akamai.DataStream
@@ -1697,7 +1697,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: A JSON Pointer that identifies the values you want to replace in the stream configuration. This member's value is / followed by any of the configuration object's top-level member name. See Edit a stream for available members.
+    - description: A JSON Pointer that identifies the values you want to replace in the stream configuration. This member's value is / followed by any of the configuration object's top-level member name.
       name: path
       required: true
     - description: Specifies the data to replace at the path location, any type of data including objects and arrays. Pass complete objects to avoid overwriting current details with default values for omitted members.
@@ -1709,7 +1709,7 @@ script:
       predefined:
       - yes
       - no
-    description: Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request. See Patching streams for details.
+    description: Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request.
     name: akamai-patch-datastream
     outputs:
     - contextPath: Akamai.DataStream
@@ -1721,7 +1721,7 @@ script:
       name: notify_emails
     - description: Unique identifier of the contract.
       name: contract_id
-    description: Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you use in this operation's request. This operation launches an asynchronous process to update properties. To check its progress, run the List bulk-activated properties operation, whose link is available in the Location header or bulkActivationLink member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
+    description: Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you use in this operation's request. This operation launches an asynchronous process to update properties. To check its progress, run the List bulk-activated properties operation, whose link is available in the Location header or bulkActivationLink member of this operation's response.
     name: akamai-bulk-property-activation
     outputs:
     - contextPath: Akamai.Property.BulkActivation
