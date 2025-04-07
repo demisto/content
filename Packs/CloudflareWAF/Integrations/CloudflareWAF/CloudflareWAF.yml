@@ -1,3 +1,6 @@
+sectionorder:
+  - Connect
+  - Collect
 category: Network Security
 commonfields:
   id: CloudflareWAF
@@ -8,34 +11,52 @@ configuration:
   defaultvalue: https://api.cloudflare.com/client/v4/
   type: 0
   required: false
+  section: Connect
 - name: credentials
-  display: The API user Token.
-  displaypassword: User Token
-  required: true
+  display: API Token
   type: 9
+  required: false
+  displaypassword: API Token
   hiddenusername: true
+  section: Connect
+- name: global_api_key
+  display: Global API Key
+  type: 9
+  required: false
+  hiddenusername: true
+  displaypassword: Global API Key
+  section: Connect
+- name: email
+  display: Email
+  type: 0
+  required: false
+  section: Connect
 - name: account_id
   display: Account ID
   required: true
   type: 0
   additionalinfo: Account identifier.
+  section: Connect
 - name: zone_id
   display: Default Zone ID
   type: 0
   additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   additionalinfo: ''
   required: false
+  section: Connect
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
 display: Cloudflare WAF
 name: CloudflareWAF
@@ -645,7 +666,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

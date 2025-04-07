@@ -1,18 +1,18 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """ IMPORTS """
 # Std imports
+import base64
+import hashlib
 import os
+import re
 from datetime import datetime
+from xml.etree import ElementTree
 
 # 3-rd party imports
 import urllib3
-import base64
-import hashlib
-from xml.etree import ElementTree
-import re
+
 """
 
 GLOBALS/PARAMS
@@ -30,9 +30,9 @@ Attributes:
 """
 
 
-INTEGRATION_NAME = 'Signum'
-INTEGRATION_COMMAND_NAME = 'signum'
-INTEGRATION_CONTEXT_NAME = 'Signum'
+INTEGRATION_NAME = "Signum"
+INTEGRATION_COMMAND_NAME = "signum"
+INTEGRATION_CONTEXT_NAME = "Signum"
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -61,10 +61,10 @@ class Client(BaseClient):
         # SOAP request URL
         nonce = os.urandom(16)
         created = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        digest = base64.b64encode(
-            hashlib.sha1(nonce + bytes(created, 'utf-8') + bytes(password, 'utf-8')).digest()
-        ).decode("ascii")
-        userToken = f'UsernameToken-{digest}'
+        digest = base64.b64encode(hashlib.sha1(nonce + bytes(created, "utf-8") + bytes(password, "utf-8")).digest()).decode(
+            "ascii"
+        )
+        userToken = f"UsernameToken-{digest}"
 
         # structured XML
         soapHeader = (
@@ -72,55 +72,52 @@ class Client(BaseClient):
             f'<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"'
             f' xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'
             f'<wsse:UsernameToken wsu:Id="{userToken}"> '
-            f'<wsse:Username>{username}</wsse:Username>'
+            f"<wsse:Username>{username}</wsse:Username>"
             f'<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0'
             f'#PasswordText">{password}</wsse:Password>'
             f'<wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0'
-            f'#Base64Binary">{str(nonce)}</wsse:Nonce>'
-            f'<wsu:Created>{created}</wsu:Created>'
-            f'</wsse:UsernameToken>'
-            f'</wsse:Security><wsa:Action>urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers</wsa:Action>'
-            f'<wsa:To>'
-            f'https://signum.fis.us.app.az.keyfactorsaas.com/RTAdminService.svc/basic</wsa:To>'
-            f'</soap:Header>'
+            f'#Base64Binary">{nonce!s}</wsse:Nonce>'
+            f"<wsu:Created>{created}</wsu:Created>"
+            f"</wsse:UsernameToken>"
+            f"</wsse:Security><wsa:Action>urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers</wsa:Action>"
+            f"<wsa:To>"
+            f"https://signum.fis.us.app.az.keyfactorsaas.com/RTAdminService.svc/basic</wsa:To>"
+            f"</soap:Header>"
         )
         payload = (
             f'<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:evolium:redtrust:'
             f'administration:ws">'
-            f'    {soapHeader}'
-            f'    <soap:Body>'
-            f'        <urn:ListDomainUsers>'
-            f'            <!--Optional:-->'
-            f'            <urn:domainId>{domain_id}</urn:domainId>'
-            f'            <!--Optional:-->'
-            f'            <urn:viewType>VIEW_ALL</urn:viewType>'
-            f'            <!--Optional:-->'
-            f'            <urn:filter></urn:filter>'
-            f'            <!--Optional:-->'
-            f'            <urn:numBlock>0</urn:numBlock>'
-            f'            <!--Optional:-->'
-            f'            <urn:orderColumn>ORDER_BY_NAME</urn:orderColumn>'
-            f'            <!--Optional:-->'
-            f'            <urn:orderType>ORDER_ASCENDING</urn:orderType>'
-            f'        </urn:ListDomainUsers>'
-            f'    </soap:Body>'
-            f'</soap:Envelope>'
+            f"    {soapHeader}"
+            f"    <soap:Body>"
+            f"        <urn:ListDomainUsers>"
+            f"            <!--Optional:-->"
+            f"            <urn:domainId>{domain_id}</urn:domainId>"
+            f"            <!--Optional:-->"
+            f"            <urn:viewType>VIEW_ALL</urn:viewType>"
+            f"            <!--Optional:-->"
+            f"            <urn:filter></urn:filter>"
+            f"            <!--Optional:-->"
+            f"            <urn:numBlock>0</urn:numBlock>"
+            f"            <!--Optional:-->"
+            f"            <urn:orderColumn>ORDER_BY_NAME</urn:orderColumn>"
+            f"            <!--Optional:-->"
+            f"            <urn:orderType>ORDER_ASCENDING</urn:orderType>"
+            f"        </urn:ListDomainUsers>"
+            f"    </soap:Body>"
+            f"</soap:Envelope>"
         )
 
         # headers
         headers = {
-            'Content-Type': 'application/soap+xml; charset=UTF-8; '
-                            'action="urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers"'
+            "Content-Type": "application/soap+xml; charset=UTF-8; "
+            'action="urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers"'
         }
 
-        raw_response = self._http_request(method='POST',
-                                          headers=headers,
-                                          data=payload,
-                                          resp_type='response')
+        raw_response = self._http_request(method="POST", headers=headers, data=payload, resp_type="response")
         return raw_response
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def xml_to_dict_recursive(root, simple_view: bool = True) -> dict:
@@ -188,7 +185,7 @@ def list_domain_users_ec(raw_response, simple_view: bool = True) -> tuple[list, 
             result = xml_dict
         for item in result:
             user_data = {}
-            for d in item.get('LU1UserView'):
+            for d in item.get("LU1UserView"):
                 user_data.update(d)
             entry_context.append(user_data)
             human_readable.append(user_data)
@@ -197,7 +194,7 @@ def list_domain_users_ec(raw_response, simple_view: bool = True) -> tuple[list, 
     return entry_context, human_readable, raw_response
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 @logger
@@ -218,16 +215,14 @@ def test_module_command(client: Client, username: str, password: str, *_) -> tup
     """
     results = client.test_module(username=username, password=password)
     if results.status_code == 200:  # type: ignore
-        return None, None, 'ok'
-    raise DemistoException(f'Test module failed, {results}')
+        return None, None, "ok"
+    raise DemistoException(f"Test module failed, {results}")
 
 
 @logger
-def list_domain_users_command(client: Client,
-                              domain_id: int,
-                              username: str,
-                              password: str,
-                              simple_view: bool = True) -> tuple[str, dict, Union[list, dict]]:
+def list_domain_users_command(
+    client: Client, domain_id: int, username: str, password: str, simple_view: bool = True
+) -> tuple[str, dict, Union[list, dict]]:
     """
         List Domain Users
 
@@ -245,11 +240,9 @@ def list_domain_users_command(client: Client,
 
     simple_view: bool = argToBoolean(simple_view)
     raw_response: dict = client.list_domain_users(domain_id=domain_id, username=username, password=password)
-    title = f'{INTEGRATION_NAME} - list domain users command'
+    title = f"{INTEGRATION_NAME} - list domain users command"
     entry_context, human_readable_ec, raw_response = list_domain_users_ec(raw_response=raw_response)
-    context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.ListDomainUsers": entry_context
-    }
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.ListDomainUsers": entry_context}
 
     human_readable = tableToMarkdown(
         name=title,
@@ -259,44 +252,33 @@ def list_domain_users_command(client: Client,
     return human_readable, context_entry, raw_response
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
-
     params = demisto.params()
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
-    verify_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy')
-    client = Client(
-        base_url=params.get('url'),
-        verify=verify_ssl,
-        proxy=proxy,
-        auth=(
-            username, password
-        )
-    )
+    username = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
+    verify_ssl = not params.get("insecure", False)
+    proxy = params.get("proxy")
+    client = Client(base_url=params.get("url"), verify=verify_ssl, proxy=proxy, auth=(username, password))
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     commands = {
-        'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-domain-users': list_domain_users_command,
+        "test-module": test_module_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-domain-users": list_domain_users_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](
-            client=client, username=username, password=password, **demisto.args())
-        results = CommandResults(
-            outputs=outputs,
-            readable_output=readable_output,
-            raw_response=raw_response
+            client=client, username=username, password=password, **demisto.args()
         )
+        results = CommandResults(outputs=outputs, readable_output=readable_output, raw_response=raw_response)
         return_results(results)
 
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ == "builtins":
     main()
