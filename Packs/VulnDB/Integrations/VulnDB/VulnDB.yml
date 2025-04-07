@@ -1,4 +1,7 @@
 category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: VulnDB
   version: -1
@@ -8,29 +11,35 @@ configuration:
   name: api_url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   name: client_id
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: Client Secret
   name: client_secret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Client ID
   name: credentials
   type: 9
   displaypassword: Client Secret
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -44,6 +53,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
+  section: Collect
   type: 15
 description: Lists all of the security vulnerabilities for various products (OS,Applications) etc).
 display: VulnDB

@@ -1,0 +1,684 @@
+{
+    "vulnerability": {
+        "authors": [
+            {
+                "author": {
+                    "id": 12345,
+                    "name": "author_name"
+                }
+            }
+        ],
+        "classifications": [
+            {
+                "classification": {
+                    "description": "classification_description_1",
+                    "id": 1,
+                    "longname": "classification_longname_1",
+                    "name": "classification_name_1"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_2",
+                    "id": 2,
+                    "longname": "classification_longname_2",
+                    "name": "classification_name_2"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_3",
+                    "id": 3,
+                    "longname": "classification_longname_3",
+                    "name": "classification_name_3"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_4",
+                    "id": 4,
+                    "longname": "classification_longname_4",
+                    "name": "classification_name_4"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_5",
+                    "id": 5,
+                    "longname": "classification_longname_5",
+                    "name": "classification_name_5"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_6",
+                    "id": 6,
+                    "longname": "classification_longname_6",
+                    "name": "classification_name_6"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_7",
+                    "id": 7,
+                    "longname": "classification_longname_7",
+                    "name": "classification_name_7"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_8",
+                    "id": 8,
+                    "longname": "classification_longname_8",
+                    "name": "classification_name_8"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_9",
+                    "id": 9,
+                    "longname": "classification_longname_9",
+                    "name": "classification_name_9"
+                }
+            },
+            {
+                "classification": {
+                    "description": "classification_description_10",
+                    "id": 10,
+                    "longname": "classification_longname_10",
+                    "name": "classification_name_10"
+                }
+            }
+        ],
+        "cvss_metrics": [
+            {
+                "access_complexity": "access_complexity",
+                "access_vector": "access_vector",
+                "authentication": "authentication",
+                "availability_impact": "availability_impact",
+                "calculated_cvss_base_score": 6.5,
+                "confidentiality_impact": "confidentiality_impact",
+                "cve_id": null,
+                "generated_on": "2023-03-12T21:19:07Z",
+                "id": 123456,
+                "integrity_impact": "integrity_impact",
+                "score": 6.5,
+                "source": "source"
+            }
+        ],
+        "description": "description",
+        "disclosure_date": "2023-03-12T00:00:00Z",
+        "discovery_date": "",
+        "epss_plus_score": 0.023,
+        "epss_score": 0.99,
+        "exploit_publish_date": "2023-03-13T00:00:00Z",
+        "exploited_in_the_wild_date": "2023-03-13T00:00:00Z",
+        "ext_references": [
+            {
+                "type": "type_1",
+                "value": "value_1"
+            },
+            {
+                "type": "type_2",
+                "value": "value_2"
+            },
+            {
+                "type": "type_3",
+                "value": "value_3"
+            },
+            {
+                "type": "type_4",
+                "value": "value_4"
+            },
+            {
+                "type": "type_5",
+                "value": "value_5"
+            },
+            {
+                "type": "type_6",
+                "value": "value_6"
+            },
+            {
+                "type": "type_7",
+                "value": "value_7"
+            },
+            {
+                "type": "type_8",
+                "value": "value_8"
+            },
+            {
+                "type": "type_9",
+                "value": "value_9"
+            },
+            {
+                "type": "type_10",
+                "value": "value_10"
+            },
+            {
+                "type": "type_11",
+                "value": "value_11"
+            }
+        ],
+        "keywords": "keywords",
+        "manual_notes": "",
+        "products": [
+            {
+                "id": 123456,
+                "name": "name_123456",
+                "versions": [
+                    {
+                        "affected": "false",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 1,
+                        "name": "name_1"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 2,
+                        "name": "name_2"
+                    },
+                    {
+                        "affected": "false",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 3,
+                        "name": "name_3"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 4,
+                        "name": "name_4"
+                    },
+                    {
+                        "affected": "false",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 5,
+                        "name": "name_5"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 6,
+                        "name": "name_6"
+                    },
+                    {
+                        "affected": "false",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 7,
+                        "name": "name_7"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 8,
+                        "name": "name_8"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 9,
+                        "name": "name_9"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 10,
+                        "name": "name_10"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 11,
+                        "name": "name_11"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 13,
+                        "name": "name_13"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 14,
+                        "name": "name_14"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 15,
+                        "name": "name_15"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 16,
+                        "name": "name_16"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 17,
+                        "name": "name_17"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 18,
+                        "name": "name_18"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 19,
+                        "name": "name_19"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 20,
+                        "name": "name_20"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 21,
+                        "name": "name_21"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 22,
+                        "name": "name_22"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 23,
+                        "name": "name_23"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 24,
+                        "name": "name_24"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 25,
+                        "name": "name_25"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 26,
+                        "name": "name_26"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 27,
+                        "name": "name_27"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 28,
+                        "name": "name_28"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 29,
+                        "name": "name_29"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 30,
+                        "name": "name_30"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 31,
+                        "name": "name_31"
+                    },
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 32,
+                        "name": "name_32"
+                    }
+                ]
+            },
+            {
+                "id": 123457,
+                "name": "name_123457",
+                "versions": [
+                    {
+                        "affected": "true",
+                        "cpe": [
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            },
+                            {
+                                "cpe": "cpe:<cpe_version>:<part>:<vendor>:<product>:<version>",
+                                "type": "Official"
+                            }
+                        ],
+                        "id": 1,
+                        "name": "name_1"
+                    }
+                ]
+            }
+        ],
+        "ransomware_likelihood": "ransomware_likelihood",
+        "solution": "solution",
+        "solution_date": "2023-03-13T00:00:00Z",
+        "t_description": "t_description",
+        "third_party_solution_date": "",
+        "title": "title",
+        "vendor_ack_date": "",
+        "vendor_informed_date": "",
+        "vendors": [
+            {
+                "vendor": {
+                    "id": 111111,
+                    "name": "vendor_111111"
+                }
+            },
+            {
+                "vendor": {
+                    "id": 222222,
+                    "name": "vendor_2222222"
+                }
+            }
+        ],
+        "vulndb_id": 111111,
+        "vulndb_last_modified": "2023-03-13T00:00:00Z",
+        "vulndb_published_date": "2023-03-13T00:00:00Z"
+    }
+}

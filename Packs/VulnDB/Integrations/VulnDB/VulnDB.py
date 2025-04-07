@@ -56,7 +56,6 @@ class Client(BaseClient):
         return res
 
     def generic_request(self, url_suffix, method="GET", params=None):
-        print(f'{type(params)}\n{params}')
         res = self._http_request(
             url_suffix=url_suffix,
             method=method,
@@ -450,7 +449,7 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
     return_results(command_results)
 
 
-def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
+def vulndb_get_vuln_report_command(args: dict, client: Client):
     '''
     Returns a PDF report summary of the vulnerability from VulnDB
 
@@ -462,9 +461,11 @@ def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
     vulndb_id = args['vuln_id']
     try:
         res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
-    except Exception as ex:
+    except Exception:
         return_error(
-            f'Could not retrieve a report for vulnerability with ID {vulndb_id}. Verify that a vulnerability with that ID exists.\n{ex}')
+            f"Could not retrieve a report for vulnerability with ID {vulndb_id}."
+            " Verify that a vulnerability with that ID exists.\n{ex}"
+        )
     # Byte data of the result file
     report_file = res.content
 
@@ -472,7 +473,7 @@ def vulndb_get_vuln_report_command(args: dict, client: Client) -> fileResult:
     return_results(file_entry)
 
 
-def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
+def vulndb_get_cpe_command(args: dict, client: Client):
     '''
     Returns a list of CPE values for the given VulnDB vulnerability.
 
@@ -502,7 +503,7 @@ def vulndb_get_cpe_command(args: dict, client: Client) -> CommandResults:
     ))
 
 
-def vulndb_generic_api_command(args: dict, client: Client) -> CommandResults:
+def vulndb_generic_api_command(args: dict, client: Client):
     '''
     Runs the specified API request as specified by the input parameters and returns the results to context data.
 
@@ -515,7 +516,8 @@ def vulndb_generic_api_command(args: dict, client: Client) -> CommandResults:
     '''
     url_suffix = args.get('url_suffix')
     method = args.get('method')
-    params = eval(args.get('params')) if args.get('params') else None
+    # params = eval(args.get('params')) if args.get('params') else None
+    params = args.get('params')
 
     try:
         res = client.generic_request(url_suffix, method, params)
@@ -590,5 +592,3 @@ def main():
 
 if __name__ in ('__main__', 'builtins'):
     main()
-
-register_module_line('VulnDB', 'end', __line__()
