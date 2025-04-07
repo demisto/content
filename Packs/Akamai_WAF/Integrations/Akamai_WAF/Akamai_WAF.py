@@ -2201,7 +2201,7 @@ class Client(BaseClient):
         }
         params = {"activate": activate}
 
-        pre_body = {
+        body = {
             "streamName": stream_name,
             "groupId": group_id,
             "contractId": contract_id,
