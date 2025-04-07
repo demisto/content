@@ -1029,7 +1029,7 @@ def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResul
 
     return CommandResults(
         readable_output=content,
-        outputs_prefix="Reco.AlertSummary.markdown",
+        outputs_prefix="Reco.AlertSummary",
         outputs_key_field="alert_id",
         outputs=response,
         raw_response=response,
