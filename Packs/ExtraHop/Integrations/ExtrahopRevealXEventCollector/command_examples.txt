@@ -1,0 +1,1 @@
+!revealx-get-events should_push_events=false limit=10 first_fetch='5 hours'
