@@ -585,7 +585,7 @@ script:
     arguments:
     - name: group_id
       required: true
-      description: The group id of the group to list members for. Use the command
+      description: The group ID of the group to list members for. Use the command
         'mattermost-list-groups' to fetch the group ID.
     - name: page
       description: The page number to retrieve. Default value is 0.
