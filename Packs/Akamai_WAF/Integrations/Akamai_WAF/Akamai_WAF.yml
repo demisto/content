@@ -1637,7 +1637,7 @@ script:
     - contextPath: Akamai.DataStream
       description: Akamai DataStream.
   - arguments: []
-    description: Lists the properties and includes for the current account.
+    description: Lists the properties in the current account.
     name: akamai-list-idam-properties
     outputs:
     - contextPath: Akamai.Idam.Properties
