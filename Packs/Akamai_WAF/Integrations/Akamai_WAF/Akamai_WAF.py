@@ -2327,10 +2327,9 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        if version == 0:
-            url_suffix = f'/datastream-config-api/v2/log/streams/{stream_id}'
-        else:
-            url_suffix = f'/datastream-config-api/v2/log/streams/{stream_id}?version={version}'
+        url_suffix = f'/datastream-config-api/v2/log/streams/{stream_id}'
+        if version != 0:
+            url_suffix = f'{url_suffix}?version={version}'
         datastream = self._http_request(method='GET', url_suffix=url_suffix)
 
         return datastream
