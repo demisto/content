@@ -212,7 +212,7 @@ script:
         name from the integration configuration.
     - name: user_id
       required: true
-      description: User id to get channel memberships for.
+      description: User ID to get channel memberships for.
     outputs:
     - contextPath: Mattermost.User.Channels
       description: List of channels where the user is a member of.
