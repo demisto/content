@@ -1758,7 +1758,7 @@ script:
     - description: For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys.
       name: account_switch_key
     - auto: PREDEFINED
-      description: 'Actions you can take for a client list: either ACTIVATE or DEACTIVATE.'
+      description: Actions you can take for a client list.
       name: action
       predefined:
       - ACTIVATE
