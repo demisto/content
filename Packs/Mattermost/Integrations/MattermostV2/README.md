@@ -741,7 +741,7 @@ No permissions required.
 | Mattermost.Groups.name | String | The name of the group. | 
 | Mattermost.Groups.description | String | The description of the group. | 
 | Mattermost.Groups.source | String | The source of the group. | 
-| Mattermost.Groups.remote_id | String | The remote id of the group. | 
+| Mattermost.Groups.remote_id | String | The remote ID of the group. | 
 | Mattermost.Groups.has_syncables | boolean | If the group has any syncables. | 
 
 #### Command example
