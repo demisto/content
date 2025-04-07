@@ -2,9 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: "This playbook isolates a given endpoint using various endpoint product\
-  \ integrations.\nMake sure to provide valid playbook inputs for the integration\
-  \ you are using."
+description: "This playbook isolates a given endpoint using various endpoint product integrations.\nMake sure to provide valid playbook inputs for the integration you are using."
 id: Isolate Endpoint - Generic V2
 inputs:
 - description: The host name of the endpoint to isolate.
@@ -186,8 +184,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook accepts an XDR endpoint ID and isolates it using
-        the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
       id: 46562ad2-14ed-4064-8ce8-9adfb791d660
       iscommand: false
       name: Cortex XDR - Isolate Endpoint
@@ -220,8 +217,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook will auto isolate endpoints by the device ID that
-        was provided in the playbook.
+      description: This playbook will auto isolate endpoints by the device ID that was provided in the playbook.
       id: 2604374d-9538-4451-8064-2f5bb5c6dd81
       iscommand: false
       name: Crowdstrike Falcon - Isolate Endpoint
@@ -256,8 +252,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: This playbook will auto isolate endpoints by the endpoint ID that
-        was provided in the playbook.
+      description: This playbook will auto isolate endpoints by the endpoint ID that was provided in the playbook.
       id: 48226108-0787-44b0-80f6-cf333758b5e8
       iscommand: false
       name: FireEye HX - Isolate Endpoint
@@ -341,10 +336,13 @@ tasks:
     type: playbook
     view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 195\n  }\n}"
 version: -1
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 385,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 385,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
 toversion: 6.7.9
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

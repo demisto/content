@@ -248,7 +248,7 @@ inputs:
       accessor: Hostname
   required: false
   description: Hostname of the endpoint for isolation.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EndpointId
   value:
     complex:
@@ -256,16 +256,15 @@ inputs:
       accessor: Endpoint.endpoint_id
   required: false
   description: Endpoint ID to isolate using Traps.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: xdr_endpoint_id
   value:
     complex:
       root: PaloAltoNetworksXDR
       accessor: Endpoint.endpoint_id
   required: false
-  description: The endpoint ID (string) to isolate using Cortex XDR. You can retrieve
-    the string from the xdr-get-endpoints command.
-  playbookInputQuery: null
+  description: The endpoint ID (string) to isolate using Cortex XDR. You can retrieve the string from the xdr-get-endpoints command.
+  playbookInputQuery:
 - key: IP
   value:
     complex:
@@ -273,7 +272,7 @@ inputs:
       accessor: Address
   required: false
   description: IP address of the endpoint for isolation.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
   description: Carbon Black Response Sensors ids that has been isolated.
@@ -312,3 +311,8 @@ outputs:
 fromversion: 5.0.0
 tests:
 - No Test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

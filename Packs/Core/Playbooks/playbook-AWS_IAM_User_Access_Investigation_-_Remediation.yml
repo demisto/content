@@ -697,3 +697,8 @@ marketplaces:
 - platform
 - marketplacev2
 
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

@@ -70,7 +70,7 @@ tasks:
       id: 906821d8-ce2c-42d6-8446-020eb9190a16
       version: -1
       name: Is WildFire enabled?
-      description: Returns 'yes' if the WildFire integration is available. 
+      description: Returns 'yes' if the WildFire integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -361,4 +361,9 @@ outputs:
   description: The Wildfire findings.
   type: string
 tests:
- -  No tests
+- No tests
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

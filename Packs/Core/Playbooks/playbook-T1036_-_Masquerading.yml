@@ -1689,11 +1689,16 @@ outputSections:
 outputs: []
 tests:
 - T1036 - Masquerading - Test
-marketplaces: 
+marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 
 

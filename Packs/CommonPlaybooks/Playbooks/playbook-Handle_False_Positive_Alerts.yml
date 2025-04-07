@@ -2,8 +2,8 @@ id: Handle False Positive Alerts
 version: -1
 name: Handle False Positive Alerts
 marketplaces:
-  - marketplacev2
-  - platform
+- marketplacev2
+- platform
 description: |
   This playbook handles false positive alerts.
   It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
@@ -921,3 +921,8 @@ tests:
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
