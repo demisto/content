@@ -933,7 +933,6 @@ Retrieves a list of members from a chat.
 
 Notes: 
 - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
-- This command will fail if the consent user is not a member of the destination chat.
 
 
 #### Base Command
@@ -995,7 +994,7 @@ Retrieves a list of chats that the consent user is a member of. If 'chat' is spe
 
 | **Argument Name** | **Description**                                                                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                         | Optional     | 
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).  Note - the consent user must be a member of the chat.                                                                       | Optional     | 
 | filter            | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional     | 
 | expand            | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview.                               | Optional     | 
 | limit             | The number of results to retrieve. Default is 50.                                                                                                        | Optional     | 

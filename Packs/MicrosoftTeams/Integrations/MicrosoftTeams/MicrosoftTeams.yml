@@ -755,7 +755,7 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic).
+    - description: The chat ID / group chat name (topic). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The new chat name. Maximum length is 250 characters. Use of ':' is not allowed.
