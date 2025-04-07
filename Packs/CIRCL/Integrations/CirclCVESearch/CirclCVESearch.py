@@ -302,8 +302,9 @@ def cve_latest_command(client: Client, limit) -> list[CommandResults]:
             )
         )
 
-    if not res:
+    if not res or not command_results:
         command_results.append(CommandResults(readable_output="No results found"))
+        
     return command_results
 
 
