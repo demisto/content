@@ -2345,10 +2345,9 @@ class Client(BaseClient):
         Returns:
             <Response [200]>
         """
+        url_suffix = 'datastream-config-api/v2/log/groups'
         if contract_id:
-            url_suffix = f'datastream-config-api/v2/log/groups?contractId={contract_id}'
-        else:
-            url_suffix = 'datastream-config-api/v2/log/groups'
+            url_suffix = f'{url_suffix}?contractId={contract_id}'
         groups = self._http_request(method='GET', url_suffix=url_suffix)
 
         return groups
