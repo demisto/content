@@ -78,7 +78,7 @@ tasks:
     task:
       id: 0547af53-c731-404f-8ad1-c44d730d29ad
       version: -1
-      name: Get Initiator Process Hash Reputation
+      name: Get Process Hash Reputation
       description: Retrieve results for a file hash using WildFire.
       script: '|||file'
       type: regular
@@ -148,8 +148,8 @@ tasks:
     task:
       id: 5268de6d-14fa-4b08-9eee-3d893efeef78
       version: -1
-      name: Check for Bad Reputation
-      description: Check if the process hash or domain has a suspicious/malicious reputation.
+      name: Check for Malicious Reputation
+      description: Check if the process hash or domain has a malicious reputation.
       type: condition
       iscommand: false
       brand: ""
@@ -797,7 +797,7 @@ tasks:
       id: a23c840c-5445-48c8-b061-80eafd2ee18f
       version: -1
       name: Calculate Now + 2 weeks in epoch
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions."
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
