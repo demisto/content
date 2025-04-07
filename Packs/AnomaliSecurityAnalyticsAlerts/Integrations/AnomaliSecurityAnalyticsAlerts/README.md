@@ -1,7 +1,7 @@
-Anomali SA Alerts
-This integration was integrated and tested with version 1.0 of Anomali_SA_Alerts.
+Anomali Security Analytics Alerts is an integrated cybersecurity solution that combines log aggregation, scalable data storage, and customizable dashboards to deliver rapid threat insights
+This integration was integrated and tested with version 1.0 of Anomali Security Analytics Alerts.
 
-## Configure Anomali_SA_Alerts in Cortex
+## Configure Anomali Security Analytics Alerts in Cortex
 
 
 | **Parameter** | **Required** |
@@ -65,14 +65,14 @@ get search job results
 | 905 | AlertTriageDemo | test@anomali.com | new    | high     | 1741867250299   | 7af7bc62c807446fa4bf7ad12dfbe64b         |
 
 
-### anomali-security-analytics-update-alert
+### anomali-security-analytics-alert-update
 
 ***
 update alert
 
 #### Base Command
 
-`anomali-security-analytics-update-alert`
+`anomali-security-analytics-alert-update`
 
 #### Input
 

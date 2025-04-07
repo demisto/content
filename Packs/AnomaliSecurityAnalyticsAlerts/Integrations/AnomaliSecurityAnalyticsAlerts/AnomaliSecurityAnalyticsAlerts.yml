@@ -40,7 +40,7 @@ script:
     arguments:
     - name: query
       description: Search expression or keyword you're looking for in logs, e.g. alerts.
-      required: false
+      required: true
     - name: source
       description: Filters results by the log source or origin system, e.g. third_party_xsoar_integration.
       required: false
@@ -58,7 +58,7 @@ script:
       required: false
     execution: false
     outputs:
-      - contextPath: ThreatstreamAlerts.SearchJob.job_id
+      - contextPath: AnomaliSecurityAnalytics.SearchJob.job_id
         description: Job ID of the search job.
         type: String
   - name: anomali-security-analytics-search-job-results
@@ -69,64 +69,66 @@ script:
       required: true
       isArray: true
     - name: offset
+      defaultValue: 0
       description: Offset of the search results. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0.
       required: false
     - name: fetch_size
+      defaultValue: 25
       description: Number of rows returned. Maximum rows is 1000. Default value is 25.
       required: false
     execution: false
     outputs:
-      - contextPath: ThreatstreamAlerts.SearchJobResults.job_id
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.job_id
         description: Job ID of the search job.
         type: String
-      - contextPath: ThreatstreamAlerts.SearchJobResults.status
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.status
         description: Status of the search.
         type: String
-      - contextPath: ThreatstreamAlerts.SearchJobResults.count
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.count
         description: Number of records returned.
         type: Number
-      - contextPath: ThreatstreamAlerts.SearchJobResults.fields
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.fields
         description: List of search fields returned.
         type: String
-      - contextPath: ThreatstreamAlerts.SearchJobResults.has_next
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.has_next
         description: Indicates if more pages are available.
         type: Boolean
-      - contextPath: ThreatstreamAlerts.SearchJobResults.is_aggregated
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.is_aggregated
         description: Indicates if the search is aggregated.
         type: Boolean
-      - contextPath: ThreatstreamAlerts.SearchJobResults.records
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.records
         description: List of records containing the fields included in the fields response attribute.
         type: Array
-      - contextPath: ThreatstreamAlerts.SearchJobResults.result_row_count
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.result_row_count
         description: Total number of records retrieved by the search.
         type: Number
-      - contextPath: ThreatstreamAlerts.SearchJobResults.search_end_time
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.search_end_time
         description: End timestamp of the search (UNIX timestamp in milliseconds).
         type: Number
-      - contextPath: ThreatstreamAlerts.SearchJobResults.search_start_time
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.search_start_time
         description: Start timestamp of the search (UNIX timestamp in milliseconds).
         type: Number
-      - contextPath: ThreatstreamAlerts.SearchJobResults.status
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.status
         description: Status of the search job.
         type: String
-      - contextPath: ThreatstreamAlerts.SearchJobResults.types
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.types
         description: Data types of the search record attributes.
         type: Array
-  - name: anomali-security-analytics-update-alert
+  - name: anomali-security-analytics-alert-update
     description: Update alert's comment or status.
     arguments:
     - name: uuid
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
     - name: comment
-      description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions.
+      description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions. Please provide either 'status' or 'comment' parameter.
       required: false
     - name: status
-      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos.
+      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide either 'status' or 'comment' parameter.
       required: false
     execution: false
     outputs:
-      - contextPath: ThreatstreamAlerts.UpdateAlert.message
+      - contextPath: AnomaliSecurityAnalytics.UpdateAlert.message
         description: Confirmation message returned after updating the alert status.
         type: String
   isfetch: false

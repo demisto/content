@@ -160,10 +160,10 @@ def test_command_get_search_job_results_invalid(mocker):
     results = command_get_search_job_results(client, args)
     assert isinstance(results, list)
     assert len(results) == 1
-    outputs = results[0].outputs
-    assert outputs == {}
     readable_output = results[0].readable_output
     assert "No results found for Job ID: invalid_job" in readable_output
+    assert "Error message: Invalid Job ID" in readable_output
+    assert "Please verify the Job ID and try again." in readable_output
 
 
 def test_command_get_search_job_results_no_fields_records(mocker):

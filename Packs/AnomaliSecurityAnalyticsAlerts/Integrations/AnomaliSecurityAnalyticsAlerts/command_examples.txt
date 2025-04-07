@@ -1,3 +1,3 @@
 !anomali-security-analytics-search-job-create query="alert" from="30 day"
 !anomali-security-analytics-search-job-results job_id="7af7bc62c807446fa4bf7ad12dfbe64b"
-!anomali-security-analytics-update-alert status="test_update" comment="test_update" uuid="19e19eabd55e4b05a505fb64a803501d"
+!anomali-security-analytics-alert-update status="test_update" comment="test_update" uuid="19e19eabd55e4b05a505fb64a803501d"

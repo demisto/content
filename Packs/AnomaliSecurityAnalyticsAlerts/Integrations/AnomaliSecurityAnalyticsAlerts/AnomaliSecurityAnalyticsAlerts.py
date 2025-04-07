@@ -125,13 +125,15 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    query = str(args.get('query', ''))
+    query = str(args.get('query'))
     source = str(args.get('source', ''))
     tz_str = str(args.get('timezone', 'UTC'))
     from_datetime = arg_to_datetime(args.get('from', '1 day'),
                                     arg_name='from',
                                     is_utc=True,
                                     required=False)
+    if query == 'None':
+        raise DemistoException("Please provide 'query' parameter, e.g. alerts")
     if from_datetime is None:
         raise ValueError("Failed to parse 'from' argument. Please provide correct value")
 
@@ -160,7 +162,7 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     }
 
     return CommandResults(
-        outputs_prefix='ThreatstreamAlerts.SearchJob',
+        outputs_prefix='AnomaliSecurityAnalytics.SearchJob',
         outputs_key_field='job_id',
         outputs=outputs,
         readable_output=tableToMarkdown(name="Search Job Created", t=outputs, removeNull=True),
@@ -181,8 +183,8 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
         list[CommandResults]: A list of command results for each job id.
     """
     job_ids = argToList(str(args.get('job_id')))
-    offset = int(args.get('offset', 0))
-    fetch_size = int(args.get('fetch_size', 25))
+    offset = arg_to_number(args.get('offset', 0)) or 0
+    fetch_size = arg_to_number(args.get('fetch_size', 25)) or 25
     command_results: list[CommandResults] = []
 
     for job_id in job_ids:
@@ -194,8 +196,8 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
                 f"Please verify the Job ID and try again."
             )
             command_result = CommandResults(
-                outputs_prefix='ThreatstreamAlerts.SearchJobResults',
-                outputs={},
+                outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
+                outputs_key_field="job_id",
                 readable_output=human_readable,
                 raw_response=status_response
             )
@@ -203,10 +205,11 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
             continue
 
         status_value = status_response.get('status')
-        if status_value is None or status_value.upper() != 'DONE':
+        if status_value and status_value.upper() != 'DONE':
             human_readable = f"Job ID: {job_id} is still running. Current status: {status_value}."
             command_result = CommandResults(
-                outputs_prefix='ThreatstreamAlerts.SearchJobResults',
+                outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
+                outputs_key_field="job_id",
                 outputs={"job_id": job_id, "status": status_value},
                 readable_output=human_readable,
                 raw_response=status_response
@@ -227,7 +230,7 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
                                                  t=results_response,
                                                  removeNull=True)
             command_result = CommandResults(
-                outputs_prefix='ThreatstreamAlerts.SearchJobResults',
+                outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
                 outputs_key_field='job_id',
                 outputs=results_response,
                 readable_output=human_readable,
@@ -250,7 +253,7 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     status = str(args.get('status'))
     comment = str(args.get('comment'))
     uuid_val = str(args.get('uuid'))
-    if not uuid_val:
+    if uuid_val == 'None':
         raise DemistoException("Please provide 'uuid' parameter.")
     if status == 'None' and comment == 'None':
         raise DemistoException("Please provide either 'status' or 'comment' parameter.")
@@ -267,7 +270,7 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     }
     response = client.update_alert(data)
     return CommandResults(
-        outputs_prefix='ThreatstreamAlerts.UpdateAlert',
+        outputs_prefix='AnomaliSecurityAnalytics.UpdateAlert',
         outputs=response,
         readable_output=tableToMarkdown(name="Update Alert", t=response, removeNull=True),
         raw_response=response
@@ -320,7 +323,7 @@ def main():
         commands = {
             'anomali-security-analytics-search-job-create': command_create_search_job,
             'anomali-security-analytics-search-job-results': command_get_search_job_results,
-            'anomali-security-analytics-update-alert': command_update_alert,
+            'anomali-security-analytics-alert-update': command_update_alert,
         }
         if command == 'test-module':
             return_results(test_module(client))
