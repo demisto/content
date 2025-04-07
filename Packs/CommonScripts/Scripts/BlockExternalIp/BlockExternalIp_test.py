@@ -99,3 +99,43 @@ def test_prepare_context_and_hr_multiple_executions():
     assert len(results) == 4
     for result, hr in zip(results, expected_hr):
         assert result.readable_output == hr
+
+
+def test_prepare_context_and_hr():
+    """
+    Given:
+       - A list containing 1 response from demosto.executeCommand
+    When:
+       - Creating the context that sums the execution of each integration flow.
+    Then:
+       - The correct context data list of dict is returned.
+    """
+    from BlockExternalIp import prepare_context_and_hr
+    response = util_load_json('test_data/cisco_asa_responses.json').get('cisco_asa_successful_block')
+    verbose = True
+    ip_list = ['1.1.2.2']
+    expected_hr = ['### Created new rule. ID: 1111111111\n|ID|Source|Dest|Permit|Interface|InterfaceType|IsActive|Position|SourceService|DestService|\n|---|---|---|---|---|---|---|---|---|---|\n| 1111111111 | 0.0.0.0 | 1.1.2.2 | false |  | Global | true | 11 | ip | ip |\n',
+                   '### The IP was blocked successfully\n|IP|Status|Result|Used integration|\n|---|---|---|---|\n| 1.1.2.2 | Done | Success | Cisco ASA |\n']
+    expected_context = [{'IP': '1.1.2.2', 'results': {'Brand': 'Cisco ASA', 'Message': '', 'Result': 'OK'}}]
+
+    results = prepare_context_and_hr(response, verbose, ip_list)
+    for result, hr in zip(results, expected_hr):
+        assert result.readable_output == hr
+    assert results[1].outputs == expected_context
+
+
+def test_get_relevant_context():
+    """
+        Given:
+           - The EntryContext of a response and a wanted key.
+        When:
+           - There is a need for an information that can be found in the context.
+        Then:
+           - Returns the relevant context from the EntryContext.
+        """
+    from BlockExternalIp import get_relevant_context
+    response = util_load_json('test_data/prisma_sase_responses.json').get('address_group_list')
+    entry_context = response[0].get('EntryContext', {})
+    result = get_relevant_context(entry_context, 'PrismaSase.Address')
+    expected_context = {'address_value': '1.1.2.2', 'folder': 'Shared', 'id': '11111111-1111-1111-1111-111111111111', 'name': '1.1.2.2', 'type': 'ip_netmask'}
+    assert result == expected_context
