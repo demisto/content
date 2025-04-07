@@ -1767,7 +1767,7 @@ script:
     - description: A brief description for the activation.
       name: comments
     - auto: PREDEFINED
-      description: 'The network environment where you activate your client list: either STAGING or PRODUCTION.'
+      description: The network environment where you activate your client list.
       name: network
       predefined:
       - STAGING
