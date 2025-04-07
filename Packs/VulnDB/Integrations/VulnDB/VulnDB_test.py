@@ -102,7 +102,7 @@ def test_vulndb_vulnerability_to_entry():
 
     from VulnDB import vulndb_vulnerability_to_entry
 
-    result = vulndb_vulnerability_to_entry(util_load_json('test_data/vulndb_get_vuln_by_id.json').get('vulnerability'))
+    result = vulndb_vulnerability_to_entry(util_load_json('test_data/vulndb_get_vuln_by_id_command.json').get('vulnerability'))
     assert result
     assert list(result.keys()) == [
         "Vulnerability",
