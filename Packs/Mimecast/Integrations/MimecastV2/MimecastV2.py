@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 from CommonServerUserPython import *
 
-""" IMPORT """
+""" IMPORTS """
 
 import base64
 import hashlib
