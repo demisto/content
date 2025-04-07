@@ -705,7 +705,7 @@ tasks:
       version: -1
       name: Get Related Alerts
       description: |-
-        Searches Cortex XSIAM alerts. A summarized version of this scrips is available with the summarizedversion argument.
+        Searches Cortex XSIAM alerts. A summarized version of this script is available with the summarizedversion argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
