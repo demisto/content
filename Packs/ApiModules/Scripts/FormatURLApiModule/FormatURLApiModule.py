@@ -307,8 +307,7 @@ class URLCheck:
                 host += self.modified_url[index]
                 index += 1
 
-        if not is_ip and not re.search(r'(?i)[^0-9a-fx.]', host):
-
+        if not is_ip and not re.search(r"(?i)[^0-9a-fx.]", host):
             try:
                 parsed_ip = parse_mixed_ip(host)
                 numerical_ip = True
@@ -678,12 +677,16 @@ class ProofPointFormatter:
 
 class URLFormatter:
     # URL Security Wrappers
-    ATP_regex = re.compile('.*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&', re.I)
-    fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url[?]u=)?(.+?)(?:&amp|&d|$)|'
-                                  'https?(?::|%3A)//urldefense[.]\\w{2,3}/v3/__(.+?)(?:__;|$))')
-    trendmicro_regex = re.compile('.*?trendmicro[.]com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
-                                  re.I)
+    ATP_regex = re.compile(".*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&", re.I)
+    fireeye_regex = re.compile(".*?fireeye[.]com.*?&u=(.*)", re.I)
+    proofpoint_regex = re.compile(
+        "(?i)(?:proofpoint.com/v[1-2]/(?:url[?]u=)?(.+?)(?:&amp|&d|$)|"
+        "https?(?::|%3A)//urldefense[.]\\w{2,3}/v3/__(.+?)(?:__;|$))"
+    )
+    trendmicro_regex = re.compile(
+        ".*?trendmicro[.]com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&",  # disable-secrets-detection
+        re.I,
+    )
 
     # Scheme slash fixer
     scheme_fix = re.compile("https?(:[/|\\\\]*)")
@@ -881,11 +884,11 @@ def parse_mixed_ip(ip_str: str) -> int:
 
     def convert_octet(octet: str) -> int:
         """Convert a single octet to decimal if it is in octal, hex, or decimal format."""
-        if octet.startswith(('0x', '0X')):
+        if octet.startswith(("0x", "0X")):
             # Hexadecimal
             return convert_hex_to_decimal(octet)
 
-        elif octet.startswith('0') and len(octet) > 1:
+        elif octet.startswith("0") and len(octet) > 1:
             # Assuming octal if it starts with '0' but more than one digit
             return convert_octal_to_decimal(octet)
 
@@ -896,7 +899,7 @@ def parse_mixed_ip(ip_str: str) -> int:
     numerical_ip: int = 0
 
     # Split the IP address into octets
-    octets: list[str] = ip_str.split('.')
+    octets: list[str] = ip_str.split(".")
 
     # Convert each octet to decimal
     decimal_octets: list[int] = [convert_octet(octet) for octet in octets]

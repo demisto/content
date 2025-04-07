@@ -170,14 +170,14 @@ FORMAT_PORT = [
 ]
 
 FORMAT_IPv4 = [
-    ('https://1.2.3.4/path/to/file.html', 'https://1.2.3.4/path/to/file.html'),  # disable-secrets-detection
-    ('1.2.3.4/path', '1.2.3.4/path'),  # disable-secrets-detection
-    ('1.2.3.4/path/to/file.html', '1.2.3.4/path/to/file.html'),  # disable-secrets-detection
-    ('http://142.42.1.1:8080/', 'http://142.42.1.1:8080/'),  # disable-secrets-detection
-    ('http://142.42.1.1:8080', 'http://142.42.1.1:8080'),  # disable-secrets-detection
-    ('http://223.255.255.254', 'http://223.255.255.254'),  # disable-secrets-detection
-    ('https://3232235777/test', 'https://192.168.1.1/test'),  # disable-secrets-detection
-    ('https://0xC0.0250.257/test', 'https://192.168.1.1/test'),  # disable-secrets-detection
+    ("https://1.2.3.4/path/to/file.html", "https://1.2.3.4/path/to/file.html"),  # disable-secrets-detection
+    ("1.2.3.4/path", "1.2.3.4/path"),  # disable-secrets-detection
+    ("1.2.3.4/path/to/file.html", "1.2.3.4/path/to/file.html"),  # disable-secrets-detection
+    ("http://142.42.1.1:8080/", "http://142.42.1.1:8080/"),  # disable-secrets-detection
+    ("http://142.42.1.1:8080", "http://142.42.1.1:8080"),  # disable-secrets-detection
+    ("http://223.255.255.254", "http://223.255.255.254"),  # disable-secrets-detection
+    ("https://3232235777/test", "https://192.168.1.1/test"),  # disable-secrets-detection
+    ("https://0xC0.0250.257/test", "https://192.168.1.1/test"),  # disable-secrets-detection
 ]
 
 FORMAT_IPv6 = [
@@ -196,11 +196,11 @@ FORMAT_IPv6 = [
 ]
 
 FORMAT_PATH = [
-    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
-    ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
-    ('https://test.com/Test\\"', 'https://test.com/Test'),  # disable-secrets-detection
-    ('https://www.test.com/a\\', 'https://www.test.com/a'),  # disable-secrets-detection
-    ('https://aaa.aaa/test', 'https://aaa.aaa/test'),  # disable-secrets-detection
+    ("https://test.co.uk/test.html", "https://test.co.uk/test.html"),  # disable-secrets-detection
+    ("www.test.com/check", "www.test.com/check"),  # disable-secrets-detection
+    ('https://test.com/Test\\"', "https://test.com/Test"),  # disable-secrets-detection
+    ("https://www.test.com/a\\", "https://www.test.com/a"),  # disable-secrets-detection
+    ("https://aaa.aaa/test", "https://aaa.aaa/test"),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
