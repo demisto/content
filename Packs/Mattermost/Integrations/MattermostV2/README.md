@@ -884,7 +884,7 @@ Must have custom_group_manage_members permission for the given group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | The group id of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
+| group_id | The group ID of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
 | user_ids | The ID(s) of the user(s) to remove. Use the command 'mattermost-list-users' to fetch the user ID(s). | Required | 
 
 #### Context Output
