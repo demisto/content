@@ -1,13 +1,15 @@
 """
 Unit testing for CiscoAMP (Advanced Malware Protection)
 """
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import json
+
 import io
+import json
 import os
+
+import demistomock as demisto  # noqa: F401
 import pytest
 from CiscoAMPEventCollector import Client
+from CommonServerPython import *  # noqa: F401
 
 API_KEY = "API_Key"
 CLIENT_ID = "Client_ID"
@@ -48,25 +50,14 @@ def mock_client() -> Client:
         (
             {
                 "last_fetch": "2022-07-18T00:00:00.000Z",
-                "previous_ids": ["6159258594551267592", "6159258594551267593", "6159258594551267594"]
+                "previous_ids": ["6159258594551267592", "6159258594551267593", "6159258594551267594"],
             },
             1,
-            ["6159258594551267595"]
+            ["6159258594551267595"],
         ),
-        (
-            {},
-            2,
-            ["6159258594551267592", "6159258594551267593"]
-        ),
-        (
-            {
-                "last_fetch": "1 day",
-                "previous_ids": ["6159258594551267592"]
-            },
-            1,
-            ["6159258594551267592", "6159258594551267593"]
-        )
-    ]
+        ({}, 2, ["6159258594551267592", "6159258594551267593"]),
+        ({"last_fetch": "1 day", "previous_ids": ["6159258594551267592"]}, 1, ["6159258594551267592", "6159258594551267593"]),
+    ],
 )
 def test_fetch_events(
     mock_client,
@@ -103,8 +94,11 @@ def test_fetch_events(
 
     from CiscoAMPEventCollector import fetch_events
 
-    next_run, incidents = fetch_events(client=mock_client, last_run=last_run,
-                                       params={'first_fetch_time': "2023-11-01T23:17:39.000Z", 'max_events_per_fetch': limit})
+    next_run, incidents = fetch_events(
+        client=mock_client,
+        last_run=last_run,
+        params={"first_fetch_time": "2023-11-01T23:17:39.000Z", "max_events_per_fetch": limit},
+    )
 
     # Validate response
     for previous_id in expeted_previous_ids:
@@ -132,14 +126,11 @@ def test_fetch_events_with_no_new_incidents(
 
     from CiscoAMPEventCollector import fetch_events
 
-    next_run, incidents = fetch_events(client=mock_client,
-                                       last_run={
-                                           "last_fatch": "2023-11-15T00:00:00.000Z",
-                                           "previous_ids": ["6159258594551267595"]
-                                       },
-                                       params={
-                                           'max_events_per_fetch': 100
-                                       })
+    next_run, incidents = fetch_events(
+        client=mock_client,
+        last_run={"last_fatch": "2023-11-15T00:00:00.000Z", "previous_ids": ["6159258594551267595"]},
+        params={"max_events_per_fetch": 100},
+    )
 
     # Validate response
     assert "6159258594551267595" in next_run["previous_ids"]
@@ -156,11 +147,12 @@ def test_test_module(mock_client, mocker):
         - Ensure it pass successfully.
     """
     mock_response = load_mock_response("incidents_response_3.json")
-    mocker.patch.object(Client, 'get_events', return_value=mock_response)
-    mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 1234, 'password': 1234},
-                                                         'url': 'https://some_url.com'})
-    mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Client, "get_events", return_value=mock_response)
+    mocker.patch.object(
+        demisto, "params", return_value={"credentials": {"identifier": 1234, "password": 1234}, "url": "https://some_url.com"}
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
     from CiscoAMPEventCollector import main
 
     main()
