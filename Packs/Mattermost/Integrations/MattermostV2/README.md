@@ -234,7 +234,7 @@ Logged in as the user, or have edit_other_users permission, and view_team permis
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | team_name | The name of the team to list channels from. Default is the team name from the integration configuration. | Optional | 
-| user_id | User id to get channel memberships for. | Required | 
+| user_id | User ID to get channel memberships for. | Required | 
 
 #### Context Output
 
