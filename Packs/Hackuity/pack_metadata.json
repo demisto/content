@@ -2,7 +2,7 @@
     "name": "Hackuity",
     "description": "From a war-room, query your Hackuity cockpit in order to seamlessly retrieve information related to your vulnerability stock.",
     "support": "partner",
-    "currentVersion": "1.0.24",
+    "currentVersion": "1.0.25",
     "author": "Hackuity",
     "url": "https://www.hackuity.io/support",
     "email": "",
@@ -14,6 +14,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

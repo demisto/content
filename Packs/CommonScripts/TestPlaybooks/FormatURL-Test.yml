@@ -340,7 +340,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://google.com:443/search?q=a*test&gs=ps
+              simple: https://google.com:443/search?q=a+test&gs=ps
     continueonerrortype: ""
   "9":
     id: "9"
@@ -417,7 +417,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://google.com:443/search?q=a*test
+              simple: https://google.com:443/search?q=a+test
     continueonerrortype: ""
   "11":
     id: "11"
