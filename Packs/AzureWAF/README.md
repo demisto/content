@@ -1,5 +1,3 @@
-<~XSIAM>
-
 # Azure Web Application Firewall 
 
 
@@ -15,6 +13,7 @@ Azure WAF integrates with Azure services like Azure Application Gateway, Azure F
 
 
 
+<~XSIAM>
 
 ### This pack includes:
 
