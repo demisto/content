@@ -215,7 +215,7 @@ script:
       description: User id to get channel memberships for.
     outputs:
     - contextPath: Mattermost.User.Channels
-      description: List of channels where the user is member of.
+      description: List of channels where the user is a member of.
       type: Unknown
     - contextPath: Mattermost.User.id
       description: The ID of the user.
