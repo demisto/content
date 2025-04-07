@@ -421,8 +421,9 @@ def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise Exception(f'No alerts were found with the given parameters :- {str(exception)}.')
     demisto.debug(f"Results received: {results}")
 
+    alerts = results.get('alerts')
     title = 'Alert Summary'
-    human_readable = tableToMarkdown(title, results, removeNull=True)
+    human_readable = tableToMarkdown(title, alerts, removeNull=True)
     return CommandResults(
         outputs_prefix='Doppel.GetAlerts',
         outputs_key_field='id',
