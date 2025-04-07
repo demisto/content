@@ -575,7 +575,7 @@ script:
       description: The source of the group.
       type: String
     - contextPath: Mattermost.Groups.remote_id
-      description: The remote id of the group.
+      description: The remote ID of the group.
       type: String
     - contextPath: Mattermost.Groups.has_syncables
       description: If the group has any syncables.
