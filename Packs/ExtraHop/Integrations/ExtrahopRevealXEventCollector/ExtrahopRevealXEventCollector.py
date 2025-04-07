@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'Extrahop'
 PRODUCT = 'RevealX'
+# TODO: Not sure if this is the correct value - ask Shelly
 FIRST_FETCH = "3 days"
 MAX_FETCH_LIMIT = 25000
 DEFAULT_FETCH_LIMIT = 5000 # TODO Niv: make sure with dar this is the correct value
@@ -248,7 +249,7 @@ def test_module(client: Client) -> str:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
     last_run = {
-        'detection_start_time': int(FIRST_FETCH.timestamp() * 1000) ,
+        'detection_start_time': int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000) ,
         'offset': 0,
         'limit': 1
     }
@@ -425,7 +426,7 @@ def validate_fetch_events_params(last_run: dict) -> Dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
-    detection_start_time = int(FIRST_FETCH.timestamp() * 1000)  # type: ignore
+    detection_start_time = int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000)  # type: ignore
     if last_run and 'detection_start_time' in last_run:
         detection_start_time = last_run.get('detection_start_time')  # type: ignore
 
@@ -480,8 +481,15 @@ def validate_version(client, last_run):
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
 
-def get_events(client: Client, max_events: int) -> tuple[list, CommandResults]:
-    last_run = demisto.getLastRun()
+def get_events(client: Client, args: dict, max_events: int) -> tuple[list, CommandResults]:
+    first_fetch = arg_to_datetime(args.get("first_fetch", FIRST_FETCH))
+    limit: int = arg_to_number(args.get("limit")) or DEFAULT_FETCH_LIMIT
+    last_run = {
+        'detection_start_time': int(first_fetch.timestamp() * 1000),
+        'offset': 0,
+        'limit': limit
+    }
+
     output, _  = fetch_events(client, last_run, max_events)
 
     filtered_events = []
@@ -496,7 +504,6 @@ def get_events(client: Client, max_events: int) -> tuple[list, CommandResults]:
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix='Extrahop.RevealX.Audit',
     )
     return output, command_results
 
@@ -535,7 +542,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
-            events, command_results = get_events(client, max_events)
+            events, command_results = get_events(client, args, max_events)
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'xuSending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
