@@ -4,8 +4,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from Packs.BitSight.Integrations.BitSightForSecurityPerformanceManagement.BitSightForSecurityPerformanceManagement import \
-    MAX_FETCH_LIMIT
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -18,7 +16,7 @@ PRODUCT = 'RevealX'
 # TODO: Not sure if this is the correct value - ask Shelly
 FIRST_FETCH = "3 days"
 MAX_FETCH_LIMIT = 25000
-DEFAULT_FETCH_LIMIT = 5000 # TODO Niv: make sure with dar this is the correct value
+DEFAULT_FETCH_LIMIT = 5000
 BASE_TIME_CHECK_VERSION_PARAM = 1581852287000
 EXTRAHOP_MARKDOWN_REGEX = r"(\[[^\]]+\]\(\#\/[^\)]+\))+"
 TICKET_SEVERITY = {
@@ -140,24 +138,6 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def iso8601_to_unix_milliseconds(iso8601_str):
-    """
-    Convert an ISO 8601 formatted date to a Unix timestamp in milliseconds.
-
-    Parameters:
-    iso8601_str (str): The ISO 8601 date string to convert.
-
-    Returns:
-    int: Unix timestamp in milliseconds.
-    """
-    # Parse the ISO 8601 date string to a datetime object
-    dt = datetime.fromisoformat(iso8601_str)
-
-    # Get the Unix timestamp in seconds and convert to milliseconds
-    unix_timestamp_ms = int(dt.timestamp() * 1000)
-
-    return unix_timestamp_ms
-
 def trim_spaces_from_args(args: Dict) -> Dict:
     """Trim spaces from values of the args dict.
 
@@ -197,43 +177,6 @@ def prepare_list_detections_output(detections) -> str:
         hr_outputs.append(hr_output)
 
     return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
-
-def remove_api_from_base_url(url: str) -> str:
-    """Prepare URL from base URL required for human-readable.
-
-    Args:
-        url: Base URL of the cloud instance.
-
-    Returns:
-        ExtraHop cloud instance URL.
-    """
-    url = url.split(".")
-    url.pop(1)
-    return ".".join(url)
-
-
-def modify_description(base_url, description):
-    """Modify descriptions of the detections list.
-
-    Args:
-        base_url: Base URL of the instance.
-        description: Detection description.
-
-    Returns:
-        Updated description.
-    """
-    new_link = f"{base_url}/extrahop/#"
-
-    markdown_data = re.findall(EXTRAHOP_MARKDOWN_REGEX, description)
-
-    for markdown in markdown_data:
-        # Replacing the '#' to the extrahop platform url
-        if "/extrahop/#" in markdown:
-            new_markdown = markdown.replace("#/extrahop", base_url)
-        else:
-            new_markdown = markdown.replace("#", new_link)
-        description = description.replace(markdown, new_markdown)
-    return description
 
 
 """ COMMAND FUNCTIONS """
@@ -491,16 +434,17 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
     }
 
     output, _  = fetch_events(client, last_run, max_events)
-
-    filtered_events = []
-    for event in output:
-        filtered_event = {"Name": str(event.get("type", "")),
-                          "ID": str(event.get("id", "")),
-                          "Modification Time": datetime.utcfromtimestamp(event["mod_time"] / 1000).strftime(DATE_FORMAT)}
-
-        filtered_events.append(filtered_event)
-
-    human_readable = tableToMarkdown(name='Audit Logs Events', t=filtered_events, removeNull=True)
+    human_readable = prepare_list_detections_output(output)
+    # TODO: ask shelly what is the correct one
+    # filtered_events = []
+    # for event in output:
+    #     filtered_event = {"Name": str(event.get("type", "")),
+    #                       "ID": str(event.get("id", "")),
+    #                       "Modification Time": datetime.utcfromtimestamp(event["mod_time"] / 1000).strftime(DATE_FORMAT)}
+    #
+    #     filtered_events.append(filtered_event)
+    #
+    # human_readable = tableToMarkdown(name='Audit Logs Events', t=filtered_events, removeNull=True)
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
