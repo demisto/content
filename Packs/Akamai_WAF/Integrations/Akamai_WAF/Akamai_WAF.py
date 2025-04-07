@@ -2229,7 +2229,7 @@ class Client(BaseClient):
                 "tlsHostname": tls_hostname
             }
         }
-        body = filter_empty_values(pre_body)
+        remove_nulls_from_dictionary(body)
         return self._http_request(method=method,
                                   url_suffix=url_suffix,
                                   headers=headers,
