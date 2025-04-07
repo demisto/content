@@ -319,7 +319,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         file_events_last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
-    send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
+    send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
     demisto.debug(
         f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
     )
