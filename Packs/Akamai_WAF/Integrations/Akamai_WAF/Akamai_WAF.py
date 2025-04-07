@@ -2374,7 +2374,7 @@ class Client(BaseClient):
         """
         Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
         that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
-        you need to deactivate it first. See Deactivate a stream.
+        you need to deactivate it first.
 
         Args:
             stream_id: Unique identifer of a stream
@@ -2399,8 +2399,7 @@ class Client(BaseClient):
         complete object to avoid overwriting current details with default values for omitted members such as
         tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
         their destinations. You need to set the activate parameter to true while patching active streams, and
-        optionally for inactive streams if you want to activate them upon request. See Patching streams for
-        details.
+        optionally for inactive streams if you want to activate them upon request.
 
         Args:
             stream_id: The unique identifier of the stream.
@@ -2433,7 +2432,7 @@ class Client(BaseClient):
         of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you
         use in this operation's request. This operation launches an asynchronous process to update properties. To check its
         progress, run the List bulk-activated properties operation, whose link is available in the Location header or
-        bulkActivationLink member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
+        bulkActivationLink member of this operation's response.
 
         Args:
             properties: Properties to be activated.
@@ -6699,8 +6698,7 @@ def new_datastream_command(client: Client,
                     A property can be activated in Property Manager.
         dataset_fields: The unique identifier of the data set fields to be included in stream logs.
                         In case of STRUCTURED format, the order of the identifiers define how the value for
-                        these fields appear in the log lines. See Data set parameters for the complete list
-                        of the fields you can choose.
+                        these fields appear in the log lines.
         interval_in_seconds: The interval in seconds (30 or 60) after which the system bundles log lines into
                              a file and sends it to a destination.
         log_format: The format in which you want to receive log files. STRUCTURED or JSON are the currently
@@ -6710,14 +6708,10 @@ def new_datastream_command(client: Client,
                          Set this only for the STRUCTURED log file format.
         upload_file_prefix: The prefix of the log file to be used when sending to a object-based destination.
                             It's a string of at most 200 characters. If unspecified, it defaults to ak. This
-                            member supports Dynamic time variables, but doesn't support the . character. See
-                            S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage
-                            object naming conventions.
+                            member supports Dynamic time variables, but doesn't support the . character.
         upload_file_suffix: The suffix of the log file that you want to send to a object-based destination.
                             It's a static string of at most 10 characters. If unspecified, it defaults to ds.
                             This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
-                            See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage
-                            object naming conventions.,
         ca_cert: The certification authority (CA) certificate used to verify the origin server's certificate.
                  If the certificate is not signed by a well-known certification authority, enter the CA certificate
                  in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it
@@ -6729,23 +6723,18 @@ def new_datastream_command(client: Client,
         client_key: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server.
                     If you want to use mutual authentication, you need to provide both the client certificate and
                     the client key.
-        content_type: The type of the resource passed in the request's custom header. For details, see the additional
-                      options discussed in Stream logs to a HTTPS endpoint.
+        content_type: The type of the resource passed in the request's custom header.
         custom_header_name: A human-readable name for the request's custom header, containing only alphanumeric,
-                            dash, and underscore characters. For details, see the additional options discussed in
-                            Stream logs to a HTTPS endpoint.
+                            dash, and underscore characters.
         custom_header_value: The custom header's contents passed with the request that contains information about
-                             the client connection. For details, see the additional options discussed in Stream logs
-                             to a HTTPS endpoint.
+                             the client connection.
         compress_logs: Enables gzip compression for a log file sent to a destination. True by default.
-        destination_type: The destination configuration in the stream to send logs. See Destinations for details and
-                          features available for each destination.
+        destination_type: The destination configuration in the stream to send logs.
                           Note: "SPLUNK" and "HTTPS" are the only two types tested.
         display_name: The name of the destination.
         endpoint: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used
-                  as endpoint URLs. See Stream logs to Splunk.
-        event_collector_token: The Event Collector token for your Splunk account. See View usage of Event Collector
-                               token in the Splunk documentation.
+                  as endpoint URLs.
+        event_collector_token: The Event Collector token for your Splunk account.
         tls_hostname: The hostname that verifies the server's certificate and matches the Subject Alternative Names
                       (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint
                       URL.
@@ -6951,7 +6940,7 @@ def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict
     """
         Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
         that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
-        you need to deactivate it first. See Deactivate a stream.
+        you need to deactivate it first.
 
     Args:
         stream_id: Unique identifer of a stream
@@ -6988,16 +6977,14 @@ def patch_datastream_command(client: Client,
         complete object to avoid overwriting current details with default values for omitted members such as
         tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
         their destinations. You need to set the activate parameter to true while patching active streams, and
-        optionally for inactive streams if you want to activate them upon request. See Patching streams for
-        details.
+        optionally for inactive streams if you want to activate them upon request.
 
     Args:
         stream_id: The unique identifier of the stream.
         activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
                   Patch a stream that is active, you need to set this member to true.
         path: A JSON Pointer that identifies the values you want to replace in the stream configuration. This
-              member's value is / followed by any of the configuration object's top-level member name. See Edit a
-              stream for available members.
+              member's value is / followed by any of the configuration object's top-level member name.
         value: Specifies the data to replace at the path location, any type of data including objects and arrays.
                Pass complete objects to avoid overwriting current details with default values for omitted members.
         value_to_json: Whether convert the value above into Json or not.
@@ -7043,7 +7030,7 @@ def bulk_property_activation_command(client: Client,
         of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you
         use in this operation's request. This operation launches an asynchronous process to update properties. To check its
         progress, run the List bulk-activated properties operation, whose link is available in the Location header or
-        bulkActivationLink member of this operation's response. See Bulk Search and Update for overall guidance on this feature.
+        bulkActivationLink member of this operation's response.
 
     Args:
         properties: Properties to be activated.
