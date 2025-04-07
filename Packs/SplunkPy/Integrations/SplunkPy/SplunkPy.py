@@ -557,6 +557,7 @@ def fetch_notables(
 
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
+    extensive_log(f"[SplunkPy] last run was updated with: {last_run_data}")
 
 
 def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
@@ -3780,6 +3781,7 @@ def main():  # pragma: no cover
     elif command == "fetch-incidents":
         demisto.info("########### FETCH #############")
         fetch_incidents(service, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        extensive_log("Fetch Incidents was successfully executed.")
     elif command == "splunk-submit-event":
         splunk_submit_event_command(service, args)
     elif command == "splunk-notable-event-edit":
