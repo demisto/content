@@ -1,6 +1,7 @@
-DNS lookup utility to provide 'A' and 'PTR' record 
+DNS lookup utility to provide 'A' and 'PTR' record
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ DNS lookup utility to provide 'A' and 'PTR' record
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ DNS lookup utility to provide 'A' and 'PTR' record
 | reverseLookup | Perform reverse lookup |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
