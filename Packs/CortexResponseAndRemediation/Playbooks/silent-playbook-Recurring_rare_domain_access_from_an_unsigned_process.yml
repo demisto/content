@@ -757,7 +757,7 @@ tasks:
       id: 47c1f3a7-df7d-43f9-9b8c-2ad2b2db84c1
       version: -1
       name: Add Suspicious Domain Monitoring
-      description: send HTTP POST request.
+      description: Send HTTP POST request.
       script: '|||core-api-post'
       type: regular
       iscommand: true
