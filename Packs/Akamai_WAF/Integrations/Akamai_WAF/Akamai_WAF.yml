@@ -1641,7 +1641,7 @@ script:
     name: akamai-list-idam-properties
     outputs:
     - contextPath: Akamai.Idam.Properties
-      description: Akamai Properties of the current account via Identity Access Management.
+      description: Akamai properties of the current account via Identity Access Management.
   - arguments:
     - description: The unique identifier of the group that has access to the product and this stream configuration.
       name: group_id
