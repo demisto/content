@@ -609,7 +609,7 @@ script:
     arguments:
     - name: group_id
       required: true
-      description: The group id of the group to add the user to. Use the command
+      description: The group ID of the group to add the user to. Use the command
         'mattermost-list-groups' to fetch the group ID.
     - name: user_ids
       required: true
