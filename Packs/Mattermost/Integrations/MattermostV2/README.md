@@ -2,7 +2,7 @@ Mattermost is an open-source, self-hostable online chat service with file sharin
 This integration was integrated and tested with version 4.0.0 of Mattermost API.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mattermost-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mattermost---v2).
 
 ## Configure Mattermost v2 in Cortex
 
