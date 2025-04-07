@@ -126,11 +126,11 @@ class Client:
             demisto.debug(f'New query: {query.dict()}')
 
         demisto.debug(
-            f'Fetched {len(file_events)} events. First: ID={file_events[0].event.id!r}, Time={file_events[0].event.inserted}. '
+            f'Fetched {len(file_events)} events. '
+            f'First: ID={file_events[0].event.id!r}, Time={file_events[0].event.inserted}. '
             f'Last: ID={file_events[-1].event.id!r}, Time={file_events[-1].event.inserted}')
 
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
-        demisto.debug(f'[TEMP] Are the events in order?: {sorted_file_events == file_events}')
         demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
         demisto.debug('[TEMP] Last 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(max(0, len(file_events) - 100), len(file_events)), file_events)))
 
