@@ -1,13 +1,4 @@
 import json
-from MattermostV2 import (get_team_command, list_channels_command, create_channel_command, add_channel_member_command,
-                          remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
-                          get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
-                          extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url,
-                          mirror_investigation, send_notification, INCIDENT_NOTIFICATION_CHANNEL,
-                          list_private_channels_for_user_command, list_groups_command, list_group_members_command,
-                          add_group_member_command, remove_group_member_command, set_channel_role_command)
-import pytest
-import demistomock as demisto
 from unittest.mock import patch
 
 import demistomock as demisto
@@ -16,6 +7,7 @@ from freezegun import freeze_time
 from MattermostV2 import (
     INCIDENT_NOTIFICATION_CHANNEL,
     add_channel_member_command,
+    add_group_member_command,
     answer_question,
     close_channel_command,
     create_channel_command,
@@ -29,11 +21,16 @@ from MattermostV2 import (
     handle_posts,
     handle_text_received_from_mm,
     list_channels_command,
+    list_groups_command,
+    list_group_members_command,
+    list_private_channels_for_user_command,
     list_users_command,
     mirror_investigation,
     remove_channel_member_command,
+    remove_group_member_command,
     send_file_command,
     send_notification,
+    set_channel_role_command,
 )
 
 
