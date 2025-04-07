@@ -1,15 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-import urllib3
 import json
-import dateparser
 import time
+
+import dateparser
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CLIENT CLASS'''
+""" CLIENT CLASS"""
 
 DEFAULT_LIMIT = 50
 MAX_LOGZIO_DOCS = 1000
@@ -22,14 +22,7 @@ BASE_URL = "https://api.logz.io/"
 TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"
 SEARCH_LOGS_API_SUFFIX = "v1/search"
 SEARCH_RULE_LOGS_API_SUFFIX = "v2/security/rules/events/logs/search"
-SEVERITIES_DICT = {
-    "UNCLASSIFIED": 0,
-    "INFO": 0.5,
-    "LOW": 1,
-    "MEDIUM": 2,
-    "HIGH": 3,
-    "SEVERE": 4
-}
+SEVERITIES_DICT = {"UNCLASSIFIED": 0, "INFO": 0.5, "LOW": 1, "MEDIUM": 2, "HIGH": 3, "SEVERE": 4}
 
 
 class Client(BaseClient):
@@ -38,84 +31,53 @@ class Client(BaseClient):
         self.op_api_token = op_api_token
         self.region = region
         self.max_fetch = max_fetch
-        super(Client, self).__init__(self.get_base_api_url(), verify, proxy)
+        super().__init__(self.get_base_api_url(), verify, proxy)
 
     def fetch_triggered_rules(self, search=None, severities=None, start_time=time.time()):
         payload = {
-            "pagination": {
-                "pageNumber": 1,
-                "pageSize": self.max_fetch
-            },
-            "sort": [
-                {
-                    "field": "DATE",
-                    "descending": False
-                }
-            ],
+            "pagination": {"pageNumber": 1, "pageSize": self.max_fetch},
+            "sort": [{"field": "DATE", "descending": False}],
             "filter": {
                 "searchTerm": search,
                 "severities": severities,
                 "timeRange": {
                     "fromDate": start_time,
-                    "toDate": time.time() - (ONE_MINUTE * 3)  # 3 Minutes delay for missing/incomplete indexing
-                }
-            }
+                    "toDate": time.time() - (ONE_MINUTE * 3),  # 3 Minutes delay for missing/incomplete indexing
+                },
+            },
         }
         remove_nulls_from_dictionary(payload["filter"])
         remove_nulls_from_dictionary(payload)
         return self.execute_api(TRIGGERED_RULES_API_SUFFIX, payload, self.security_api_token)
 
     def search_logs(self, query, size, from_time, to_time, timeout=DEFAULT_TIMEOUT_SEC):
-        payload = {
-            "query": {
-                "bool": {
-                    "must": [{
-                        "query_string": {
-                            "query": query
-                        }
-                    }]
-                }
-            },
-            "size": size
-        }
+        payload = {"query": {"bool": {"must": [{"query_string": {"query": query}}]}}, "size": size}
         if from_time is not None or to_time is not None:
             time_filter = {}
             if from_time is not None:
                 if not from_time.isdigit():
                     orig_time = from_time
-                    from_time = dateparser.parse(from_time, settings={'TIMEZONE': 'UTC'})
+                    from_time = dateparser.parse(from_time, settings={"TIMEZONE": "UTC"})
                     if from_time is None:
-                        raise Exception("Counld not parse from_time parameter: {}".format(orig_time))
+                        raise Exception(f"Counld not parse from_time parameter: {orig_time}")
                     from_time = int(time.mktime(from_time.timetuple())) * 1000
                 time_filter["from"] = from_time
                 time_filter["include_lower"] = True
             if to_time is not None:
                 if not to_time.isdigit():
                     orig_time = from_time
-                    to_time = dateparser.parse(to_time, settings={'TIMEZONE': 'UTC'})
+                    to_time = dateparser.parse(to_time, settings={"TIMEZONE": "UTC"})
                     if to_time is None:
-                        raise Exception("Counld not parse from_time parameter: {}".format(orig_time))
+                        raise Exception(f"Counld not parse from_time parameter: {orig_time}")
                     to_time = int(time.mktime(to_time.timetuple())) * 1000
                 time_filter["to"] = to_time
                 time_filter["include_upper"] = True
-            payload["query"]["bool"]["must"].append(
-                {
-                    "range": {"@timestamp": time_filter}
-                }
-            )
+            payload["query"]["bool"]["must"].append({"range": {"@timestamp": time_filter}})
         response = self.execute_api(SEARCH_LOGS_API_SUFFIX, payload, self.op_api_token, timeout)
         return response.get("hits", {}).get("hits", {})
 
     def get_rule_logs(self, id, size, page_size=MAX_LOGZIO_DOCS, timeout=DEFAULT_TIMEOUT_SEC):
-        payload = {
-            "filter": {
-                "alertEventId": id
-            },
-            "pagination": {
-                "pageNumber": 1,
-                "pageSize": page_size
-            }
-        }
+        payload = {"filter": {"alertEventId": id}, "pagination": {"pageNumber": 1, "pageSize": page_size}}
         response = self.execute_api(SEARCH_RULE_LOGS_API_SUFFIX, payload, self.security_api_token, timeout)
         total = response.get("total", 0)
         results = response.get("results", [])
@@ -127,49 +89,45 @@ class Client(BaseClient):
         return results
 
     def get_base_api_url(self):
-        return BASE_URL.replace("api.", "api{}.".format(self.get_region_code()))
+        return BASE_URL.replace("api.", f"api{self.get_region_code()}.")
 
     def get_region_code(self):
         if self.region != "us" and self.region != "":
-            return "-{}".format(self.region)
+            return f"-{self.region}"
         return ""
 
     def execute_api(self, url_suffix, payload, api_token, timeout=None):
         if timeout is None or float(timeout) > 15:
             timeout = 15
-        headers = {
-            'Content-Type': 'application/json',
-            'X-API-TOKEN': api_token
-        }
-        return BaseClient._http_request(self, "POST", url_suffix, headers=headers, data=json.dumps(payload),
-                                        ok_codes=(200,), timeout=float(timeout))
+        headers = {"Content-Type": "application/json", "X-API-TOKEN": api_token}
+        return BaseClient._http_request(
+            self, "POST", url_suffix, headers=headers, data=json.dumps(payload), ok_codes=(200,), timeout=float(timeout)
+        )
 
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+""" COMMANDS + REQUESTS FUNCTIONS """
 
 
 def test_module(client):
     try:
         client.fetch_triggered_rules()
-        client.search_logs('*', 10, None, None)
-        return 'ok'
+        client.search_logs("*", 10, None, None)
+        return "ok"
     except Exception as e:
-        return 'Test failed: {}'.format(e)
+        return f"Test failed: {e}"
 
 
 def get_formatted_logs(response):
     content = []
     for log in response:
-        if '@timestamp' in log:
-            log['timestamp'] = log["@timestamp"]
+        if "@timestamp" in log:
+            log["timestamp"] = log["@timestamp"]
         content.append(log)
     if len(content) == 0:
         context = None
-        readable = '### No logs were found'
+        readable = "### No logs were found"
     else:
-        context = {
-            'Logzio.Result': content
-        }
+        context = {"Logzio.Result": content}
         readable = tableToMarkdown("Logs", content)
     return readable, context
 
@@ -177,10 +135,10 @@ def get_formatted_logs(response):
 def search_logs_command(client, args):
     if client.op_api_token is None:
         raise Exception("Operational API Token wasn't provided, cannot perform search")
-    query = args.get('query')
-    size = args.get('size', MAX_LOGZIO_DOCS)
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    query = args.get("query")
+    size = args.get("size", MAX_LOGZIO_DOCS)
+    from_time = args.get("from_time")
+    to_time = args.get("to_time")
     timeout = args.get("timeout", DEFAULT_TIMEOUT_SEC)
     resp = [log["_source"] for log in client.search_logs(query, size, from_time, to_time, timeout)]
     readable, context = get_formatted_logs(resp)
@@ -209,8 +167,7 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=False, to_timestamp=True)
         start_query_time = start_query_time / 1000
         next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
-    raw_events = client.fetch_triggered_rules(search=search, severities=severities,
-                                              start_time=start_query_time)
+    raw_events = client.fetch_triggered_rules(search=search, severities=severities, start_time=start_query_time)
     for event in raw_events.get("results", []):
         if "groupBy" in event:
             for field in event["groupBy"]:
@@ -220,50 +177,52 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
             del event["hits"]  # this field is incorrect
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
-        event['datasource'] = 'Logz.Io'
+        event["datasource"] = "Logz.Io"
         incident = {
             "name": event.get("name", ""),
             "rawJSON": json.dumps(event),
             "occurred": event_date_string,
-            "severity": SEVERITIES_DICT[event.get("severity", "UNCLASSIFIED")]
+            "severity": SEVERITIES_DICT[event.get("severity", "UNCLASSIFIED")],
         }
         incidents.append(incident)
     if incidents:
-        last_incident = raw_events.get('results', [{}])[-1]
+        last_incident = raw_events.get("results", [{}])[-1]
         latest_event_timestamp = last_incident.get("eventDate", last_run.get("last_fetch"))
         next_run["last_fetch"] = latest_event_timestamp + 0.1  # The addition here is so we won't have duplicates
     return incidents, next_run
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
     try:
-        security_api_token = demisto.params().get('security_api_token')
-        op_api_token = demisto.params().get('operational_api_token')
+        security_api_token = demisto.params().get("security_api_token")
+        op_api_token = demisto.params().get("operational_api_token")
         if security_api_token is None and op_api_token is None:
-            raise ValueError('No tokens were provided. Please provide either Logz.io Operational API token,'
-                             ' Logz.io Security API token, or both.')
-        region = demisto.params().get('region')
-        first_fetch_time = demisto.params().get('fetch_time', '1 hours')
-        severities = demisto.params().get('severities')
-        search = demisto.params().get('search')
-        max_fetch = demisto.params().get('fetch_count', DEFAULT_LIMIT)
-        verify = not demisto.params().get('insecure', False)
-        proxy = demisto.params().get('proxy', False)
+            raise ValueError(
+                "No tokens were provided. Please provide either Logz.io Operational API token,"
+                " Logz.io Security API token, or both."
+            )
+        region = demisto.params().get("region")
+        first_fetch_time = demisto.params().get("fetch_time", "1 hours")
+        severities = demisto.params().get("severities")
+        search = demisto.params().get("search")
+        max_fetch = demisto.params().get("fetch_count", DEFAULT_LIMIT)
+        verify = not demisto.params().get("insecure", False)
+        proxy = demisto.params().get("proxy", False)
 
         client = Client(region, security_api_token, op_api_token, verify, proxy, max_fetch)
         command = demisto.command()
         # Run the commands
-        if command == 'logzio-search-logs':
+        if command == "logzio-search-logs":
             search_logs_command(client, demisto.args())
-        elif command == 'logzio-get-logs-by-event-id':
+        elif command == "logzio-get-logs-by-event-id":
             get_rule_logs_by_id_command(client, demisto.args())
-        elif demisto.command() == 'test-module':
+        elif demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_outputs(test_module(client))
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             incidents, next_run = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -275,8 +234,8 @@ def main():
             demisto.incidents(incidents)
 
     except Exception as e:
-        return_error('Failed to execute command. Error: {}'.format(str(e)))
+        return_error(f"Failed to execute command. Error: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

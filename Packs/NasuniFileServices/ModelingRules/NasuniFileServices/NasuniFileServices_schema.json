@@ -1,0 +1,32 @@
+{
+    "nasuni_file_services_raw": {
+        "parsed_fields": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "result": {
+            "type": "string",
+            "is_array": false
+        },
+        "is_dir": {
+            "type": "string",
+            "is_array": false
+        },
+        "path": {
+            "type": "string",
+            "is_array": false
+        },
+        "newpath": {
+            "type": "string",
+            "is_array": false
+        },
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+  }
