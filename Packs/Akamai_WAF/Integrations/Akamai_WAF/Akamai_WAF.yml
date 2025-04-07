@@ -1677,7 +1677,7 @@ script:
     name: akamai-list-datastream-properties-bygroup
     outputs:
     - contextPath: Akamai.DataStream.Group
-      description: List of the Active Properties within the Group.
+      description: List of the active properties within the group.
   - arguments:
     - description: Unique identifer of a stream.
       name: stream_id
