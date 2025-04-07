@@ -812,7 +812,7 @@ Must have manage_system permission.
 | page | The page number to retrieve. Default value is 0. | Optional | 
 | page_size | The size of the page to retrieve. Default value is 50. | Optional | 
 | limit | How many results to retrieve. Will override the page and page_size arguments if given. | Optional | 
-| group_id | The group id of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
+| group_id | The group ID of the user group to list members for. Use the command 'mattermost-list-groups' to fetch the group ID. | Required | 
 
 #### Context Output
 
