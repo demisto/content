@@ -2,7 +2,7 @@
 /*
 Filter ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog events
 */
-filter category = "ApplicationGatewayAccessLog" or category = "ApplicationGatewayFirewallLog"
+filter category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog")
 /*
 Supported datetime formats:
 yyyy-MM-ddThh:mm:ssZ - 2025-03-26T05:39:46Z
@@ -23,6 +23,6 @@ MMM dd yyyy hh:mm:ss - Nov 19 2024 12:50:39
 /*
 Filter FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog events
 */
-filter Category  = "FrontDoorAccessLog" or Category  =  "FrontDoorWebApplicationFirewallLog"
+filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
 | alter
     _time = TimeGenerated;
