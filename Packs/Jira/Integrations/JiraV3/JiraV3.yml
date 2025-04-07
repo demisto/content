@@ -189,7 +189,7 @@ configuration:
   section: Collect
 - display: Fetch filter timezone of issue date field
   name: fetch_timezone
-  additionalinfo: 'This optional parameter is dismissed if "id" is chosen in "Issue Field to Fetch by". This will convert the selected issue date field to the specified timezone before applying the JQL query. For example: "created >= {converted created date in last run} ORDER BY created ASC".'
+  additionalinfo: 'This optional parameter is dismissed if "id" is chosen in "Issue Field to Fetch by". This will convert the selected issue date field to the specified timezone before applying the JQL query: "created >= {converted created date in last run} ORDER BY created ASC". For example: "America/New York", "Europe/Madrid", "Asia/Jerusalem", "UTC+2", "UTC-4".'
   type: 0
   required: false
   advanced: true

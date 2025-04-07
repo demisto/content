@@ -6,6 +6,7 @@ from copy import deepcopy
 from mimetypes import guess_type
 
 import demistomock as demisto  # noqa: F401
+from pytz import UnknownTimeZoneError
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
@@ -3452,19 +3453,21 @@ def parse_issue_times(
         tuple[str, str]: Created and updated timestamps formatted and converted to the fetch timezone, if given.
     """
     dateparser_settings = assign_params(TIMEZONE=fetch_timezone)
+    try:
+        converted_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
+        demisto.debug(
+            f"Converted created time of issue with ID: {issue_id} from: {issue_created_time} to: {converted_created_time}. "
+            + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
+        )
 
-    converted_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
-    demisto.debug(
-        f"Converted created time of issue with ID: {issue_id} from: {issue_created_time} to: {converted_created_time}. "
-        + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
-    )
-
-    converted_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
-    demisto.debug(
-        f"Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} to: {converted_updated_time}. "
-        + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
-    )
-
+        converted_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
+        demisto.debug(
+            f"Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} to: {converted_updated_time}. "
+            + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
+        )
+    except UnknownTimeZoneError as e:
+        raise DemistoException(f"Invalid timezone value: {fetch_timezone}.") from e
+    
     return converted_created_time, converted_updated_time
 
 
