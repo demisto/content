@@ -149,7 +149,7 @@ tasks:
       id: 5268de6d-14fa-4b08-9eee-3d893efeef78
       version: -1
       name: Check for Malicious Reputation
-      description: Check  if the process hash or domain has a malicious reputation
+      description: Check if the process hash or domain has a malicious reputation.
       type: condition
       iscommand: false
       brand: ""
