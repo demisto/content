@@ -1773,7 +1773,7 @@ script:
       - STAGING
       - PRODUCTION
       required: true
-    - description: Comma (',') seperated String that contains the email of the Users to notify.
+    - description: Comma-separated string that contains the email of the users to notify.
       name: notification_recipients
     - description: Identifies the Siebel ticket, if the activation is linked to one.
       name: siebel_ticketid
