@@ -15,15 +15,14 @@ from enum import Enum
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 
-
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S.%fZ'
 
 MAX_FETCH_AUDIT_LOGS = 100000
 MAX_AUDIT_LOGS_PAGE_SIZE = 10000
 
-
 MAX_FETCH_FILE_EVENTS = 50000
 MAX_FILE_EVENTS_PAGE_SIZE = 10000
+FILE_EVENTS_LOOK_BACK = timedelta(seconds=45)
 
 VENDOR = "code42"
 PRODUCT = "code42"
@@ -178,7 +177,7 @@ def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[s
     return [dict_safe_get(event, keys=keys_to_id) for event in events]
 
 
-def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> tuple[List[str], str]:
+def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre_fetch_look_back: Optional[datetime] = None) -> tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
 
@@ -188,16 +187,19 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
     """
     event_type = events[0]["eventType"]
     latest_time_event = max(event["_time"] for event in events)
-
-    latest_time_rounded = latest_time_event.strftime(DATE_FORMAT)[:-4]
+    
+    next_fetch_from = datetime.fromisoformat(
+        min(latest_time_event, pre_fetch_look_back or latest_time_event).isoformat()[:-3]
+    )
+    
     latest_event_ids: List = [
         dict_safe_get(event, keys=keys_to_id)
         for event in events
-        if event["_time"].strftime(DATE_FORMAT)[:-4] == latest_time_rounded
+        if event["_time"] >= next_fetch_from
     ]
 
-    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {latest_time_rounded}')
-    return latest_event_ids, f'{latest_time_rounded}000Z'
+    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {next_fetch_from}')
+    return latest_event_ids, next_fetch_from.strftime(DATE_FORMAT)
 
 
 def datetime_to_date_string(events: List[Dict[str, Any]]):
@@ -248,15 +250,20 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         datetime.now() - timedelta(minutes=1)
     )
 
-    file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)  # type: ignore[arg-type]
     last_fetched_event_file_ids = set(
-        last_run[FileEventLastRun.FETCHED_IDS]
-    ) if FileEventLastRun.FETCHED_IDS in last_run else set()
+        last_run.get(FileEventLastRun.FETCHED_IDS, [])
+    )
+    pre_fetch_look_back = datetime.now() - FILE_EVENTS_LOOK_BACK
+    file_events = client.get_file_events(  # type: ignore[arg-type]
+        file_event_time,
+        limit=max_fetch_file_events + len(last_fetched_event_file_ids)
+    )
     file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=last_fetched_event_file_ids, keys_list_to_id=["event", "id"]
     )
     if file_events:
-        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(file_events, keys_to_id=["event", "id"])
+        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(
+            file_events, keys_to_id=["event", "id"], pre_fetch_look_back=pre_fetch_look_back)
         datetime_to_date_string(file_events)
         new_last_run.update(
             {
