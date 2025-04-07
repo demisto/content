@@ -494,27 +494,23 @@ def validate_version(client, last_run):
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
 
-def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
-    start_date = args.get('start_date')
-    end_date = args.get('end_date')
-    limit: int = arg_to_number(args.get('limit')) or DEFAULT_FETCH_LIMIT
-
-    output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
+def get_events(client: Client, params: dict) -> tuple[list, CommandResults]:
+    last_run = demisto.getLastRun()
+    output, _  = fetch_events(client, params, last_run)
 
     filtered_events = []
     for event in output:
-        filtered_event = {'User ID': event.get('userId'),
-                          'User Role': event.get('userRole'),
-                          'Event': event.get('event'),
-                          'Timestamp': event.get('timestamp')
-                          }
+        filtered_event = {"Name": str(event.get("type", "")),
+                          "ID": str(event.get("id", "")),
+                          "Modification Time": datetime.utcfromtimestamp(event["mod_time"] / 1000).strftime(DATE_FORMAT)}
+
         filtered_events.append(filtered_event)
 
     human_readable = tableToMarkdown(name='Audit Logs Events', t=filtered_events, removeNull=True)
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix='Celonis.Audit',
+        outputs_prefix='Extrahop.RevealX.Audit',
     )
     return output, command_results
 
@@ -554,7 +550,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
-            events, command_results = get_events(client, args)
+            events, command_results = get_events(client, params)
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'xuSending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
