@@ -328,7 +328,8 @@ class QueryParams:
             )
 
         self.__query_name = query_name
-        self.__query_string = "\n".join(x.strip() for x in query_string.splitlines()).strip()
+        self.__query_string = query_string
+        self.__query_string_normalized = "\n".join(x.strip() for x in query_string.splitlines()).strip()
         self.__earliest_time = earliest_time
         self.__latest_time = latest_time
 
@@ -339,20 +340,48 @@ class QueryParams:
         return self.__query_name
 
     @property
+    def normalized_query_string(
+        self,
+    ) -> str:
+        return self.__query_string_normalized
+
+    @property
     def query_string(
         self,
     ) -> str:
         return self.__query_string
 
+    @property
+    def earliest_time(
+        self,
+    ) -> datetime:
+        return self.__earliest_time
+
+    @property
+    def latest_time(
+        self,
+    ) -> datetime:
+        return self.__latest_time
+
     def get_earliest_time_iso(
         self,
+        utc: bool = False,
     ) -> str:
-        return self.__earliest_time.isoformat(timespec="milliseconds")
+        if utc:
+            t = self.__earliest_time.astimezone(pytz.UTC)
+            return t.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+        else:
+            return self.__earliest_time.isoformat(timespec="milliseconds")
 
     def get_latest_time_iso(
         self,
+        utc: bool = False,
     ) -> str:
-        return self.__latest_time.isoformat(timespec="milliseconds")
+        if utc:
+            t = self.__latest_time.astimezone(pytz.UTC)
+            return t.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+        else:
+            return self.__latest_time.isoformat(timespec="milliseconds")
 
     def query_hash(
         self,
@@ -361,7 +390,7 @@ class QueryParams:
         return hashlib.sha256(
             json.dumps(
                 {
-                    "query_string": self.query_string,
+                    "query_string": self.normalized_query_string,
                     "earliest_time": self.get_earliest_time_iso(),
                     "latest_time": self.get_latest_time_iso(),
                 }
@@ -448,12 +477,16 @@ class Cache:
     def save_recordset(
         self,
         query_params: QueryParams,
+        execution_id: str,
         recordset: list[dict[Hashable, Any]],
     ) -> None:
         self.__save_data(
             query_params=query_params,
             cache_node="CacheDataset",
-            data=recordset,
+            data={
+                "execution_id": execution_id,
+                "recordset": recordset,
+            }
         )
 
     def save_entry(
@@ -470,12 +503,19 @@ class Cache:
     def load_recordset(
         self,
         query_hash: str,
-    ) -> list[dict[Hashable, Any]] | None:
-        recordset = self.__load_data(
+    ) -> tuple[str, list[dict[Hashable, Any]]] | None:
+        data = self.__load_data(
             query_hash=query_hash,
             cache_node="CacheDataset",
         )
-        return recordset if isinstance(recordset, list) else None
+        if isinstance(data, list):
+            return "", data
+        elif isinstance(data, dict):
+            execution_id = data.get("execution_id") or ""
+            recordset = data.get("recordset") or []
+            return execution_id, recordset
+        else:
+            return None
 
     def load_entry(
         self,
@@ -547,22 +587,22 @@ class XQLQuery:
     def query(
         self,
         query_params: QueryParams,
-    ) -> list[dict[Hashable, Any]]:
+    ) -> tuple[str, list[dict[Hashable, Any]]]:
         """Execute an XQL query and get results
 
         :param query_params: The query parameters.
-        :return: List of fields retrieved.
+        :return: The execution ID ans list of fields retrieved.
         """
         # Start the query
         time_frame = f"between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}"
-        demisto.debug(f"Run XQL: {query_params.query_name} {time_frame}: {query_params.query_string}")
+        demisto.debug(f"Run XQL: {query_params.query_name} {time_frame}: {query_params.normalized_query_string}")
 
         for retry_count in range(self.__retry_max + 1):
             res = demisto.executeCommand(
                 "xdr-xql-generic-query",
                 assign_params(
                     query_name=query_params.query_name,
-                    query=query_params.query_string,
+                    query=query_params.normalized_query_string,
                     time_frame=time_frame,
                     parse_result_file_to_context="true",
                     using=self.__xql_query_instance,
@@ -595,7 +635,7 @@ class XQLQuery:
         while True:
             status = response.get("status", "")
             if status == "SUCCESS":
-                return response.get("results") or []
+                return execution_id, (response.get("results") or [])
             elif status == "PENDING":
                 current_time = time.time()
                 if timeout_time is None:
@@ -639,6 +679,12 @@ class Query:
         self.__xql_query = xql_query
         self.__cache = cache
 
+    @property
+    def query_params(
+        self,
+    ) -> QueryParams:
+        return self.__query_params
+
     def available(
         self,
     ) -> bool:
@@ -646,22 +692,22 @@ class Query:
 
     def query(
         self,
-    ) -> list[dict[Hashable, Any]]:
+    ) -> tuple[str, list[dict[Hashable, Any]]]:
         """Get the record set by running the query. It will return an empty list if the query is not available,
 
-        :return: List of fields retrieved by the query.
+        :return: The quest execution ID and list of fields retrieved by the query.
         """
-        if self.__cache:
-            recordset = self.__cache.load_recordset(self.__query_params.query_hash())
-        else:
-            recordset = None
-
-        if recordset is None and self.__xql_query:
-            recordset = self.__xql_query.query(self.__query_params)
+        if self.__cache and (
+            ret := self.__cache.load_recordset(self.__query_params.query_hash())
+        ):
+            return ret
+        elif self.__xql_query:
+            execution_id, recordset = self.__xql_query.query(self.__query_params)
             if self.__cache:
-                self.__cache.save_recordset(self.__query_params, recordset)
-
-        return recordset or []
+                self.__cache.save_recordset(self.__query_params, execution_id, recordset)
+            return execution_id, recordset
+        else:
+            return "", []
 
 
 class EntryBuilder:
@@ -1580,12 +1626,34 @@ class EntryBuilder:
         query: Query,
         entry_params: dict[Hashable, Any],
     ) -> dict[Hashable, Any]:
+        query_params = query.query_params
+        extra_context: dict[str, Any] = {
+            "query": {
+                "string": query_params.query_string,
+                "timeframe": {
+                    "from": query_params.get_earliest_time_iso(utc=True),
+                    "to": query_params.get_latest_time_iso(utc=True),
+                },
+                "request_url": (
+                    "/xql/xql-search?phrase=" +
+                    urllib.parse.quote(query_params.query_string) +
+                    "&timeframe=" +
+                    urllib.parse.quote(
+                        json.dumps({
+                            "from": int(query_params.earliest_time.timestamp() * 1000),
+                            "to": int(query_params.latest_time.timestamp() * 1000),
+                        })
+                    )
+                )
+            }
+        }
+
         if not query.available() and (
             entry := self.__get_default_entry(
                 scope=DefaultEntryScope.QUERY_SKIPPED,
                 entry_params=self.__formatter.build(
                     template=entry_params,
-                    context=self.__context,
+                    context=self.__context.inherit(extra_context)
                 ),
             )
         ):
@@ -1641,17 +1709,33 @@ class EntryBuilder:
         if not build_entry:
             raise DemistoException(f"Invalid type - {entry_type}")
 
-        recordset = query.query()
+        execution_id, recordset = query.query()
+        extra_context.update({
+            "recordset": recordset,
+            "query": dict(
+                extra_context.get("query") or {},
+                execution_id=execution_id,
+                result_url=f"/xql/xql-search/{urllib.parse.quote(execution_id)}",
+            )
+        })
+
         if not recordset and (
             entry := self.__get_default_entry(
                 scope=DefaultEntryScope.NO_RECORDSET,
-                entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit({"recordset": []})),
+                entry_params=self.__formatter.build(
+                    template=entry_params,
+                    context=self.__context.inherit(extra_context)
+                ),
             )
         ):
             return entry
         else:
             return build_entry(
-                self.__formatter.build(template=params, context=self.__context.inherit({"recordset": recordset})), recordset
+                self.__formatter.build(
+                    template=params,
+                    context=self.__context.inherit(extra_context)
+                ),
+                recordset
             )
 
 
