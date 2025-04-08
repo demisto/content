@@ -182,7 +182,6 @@ def validate_version(client, last_run):
             raise DemistoException(
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
-
 def validate_fetch_events_params(last_run: dict) -> Dict:
     """
     Validate the parameter list for fetch incidents.
@@ -287,7 +286,6 @@ def fetch_extrahop_detections(
     try:
         already_fetched: List[str] = last_run.get("already_fetched", [])
         detection_start_time = advanced_filter["mod_time"]
-        limit = advanced_filter["limit"]
         events = []
 
         while True:
@@ -445,7 +443,6 @@ def main():
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
-            demisto.debug(f'Finish.')
         elif command == "revealx-get-events":
             max_events = arg_to_number(args.get("max_events")) or max_events
             events, command_results = get_events(client, args, max_events)
