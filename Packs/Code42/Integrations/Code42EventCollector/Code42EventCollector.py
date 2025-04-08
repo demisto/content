@@ -5,7 +5,6 @@ from incydr.enums.file_events import EventSearchTerm
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 from CommonServerUserPython import *  # noqa
 
 from typing import Any
@@ -189,9 +188,9 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre
     latest_time_event = max(event["_time"] for event in events)
     
     next_fetch_from = datetime.fromisoformat(
-        min(latest_time_event, pre_fetch_look_back or latest_time_event).isoformat()[:-3]
+        min(latest_time_event, pre_fetch_look_back or latest_time_event).isoformat()[:-9] + '000+00:00'
     )
-    
+
     latest_event_ids: List = [
         dict_safe_get(event, keys=keys_to_id)
         for event in events
@@ -253,7 +252,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     last_fetched_event_file_ids = set(
         last_run.get(FileEventLastRun.FETCHED_IDS, [])
     )
-    pre_fetch_look_back = datetime.now() - FILE_EVENTS_LOOK_BACK
+    pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
     file_events = client.get_file_events(  # type: ignore[arg-type]
         file_event_time,
         limit=max_fetch_file_events + len(last_fetched_event_file_ids)
