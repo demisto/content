@@ -53,7 +53,6 @@ tasks:
     nexttasks:
       '#none#':
       - "24"
-      - "23"
       - "2"
     separatecontext: false
     continueonerrortype: ""
@@ -97,7 +96,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 53,
+          "x": 244,
           "y": 285
         }
       }
@@ -271,6 +270,7 @@ tasks:
       - "4"
       - "6"
       - "13"
+      - "23"
       "yes":
       - "8"
     separatecontext: false
@@ -280,7 +280,7 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: ${Core.OriginalAlert.raw_abioc.event.is_norm_evtlog_subject_user_administrator}
+              simple: Core.OriginalAlert.raw_abioc.event.is_norm_evtlog_subject_user_administrator
             iscontext: true
           right:
             value: {}
@@ -327,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 449,
-          "y": 1848
+          "y": 1863
         }
       }
     note: false
@@ -365,8 +365,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1718
+          "x": 659,
+          "y": 1733
         }
       }
     note: false
@@ -416,8 +416,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1430
+          "x": 659,
+          "y": 1445
         }
       }
     note: false
@@ -447,8 +447,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 912
+          "x": 660,
+          "y": 911
         }
       }
     note: false
@@ -527,7 +527,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -162,
+          "x": -187,
           "y": 669
         }
       }
@@ -628,8 +628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1077,
-          "y": 1430
+          "x": 1051,
+          "y": 1445
         }
       }
     note: false
@@ -680,8 +680,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1013
+          "x": 659,
+          "y": 1028
         }
       }
     note: false
@@ -723,7 +723,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: NONE
+                  simple: HIGH
               ignorecase: true
           accessor: id
     separatecontext: false
@@ -774,7 +774,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: NONE
+                  simple: HIGH
               ignorecase: true
           accessor: id
     separatecontext: false
@@ -782,7 +782,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 244,
+          "x": 219,
           "y": 783
         }
       }
@@ -817,8 +817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1590
+          "x": 659,
+          "y": 1605
         }
       }
     note: false
@@ -848,8 +848,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1143
+          "x": 659,
+          "y": 1158
         }
       }
     note: false
@@ -955,8 +955,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1266
+          "x": 659,
+          "y": 1281
         }
       }
     note: false
@@ -981,7 +981,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "26"
     scriptarguments:
       hostname:
         simple: ${alert.hostname}
@@ -990,8 +990,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 841,
-          "y": 285
+          "x": 1469,
+          "y": 669
         }
       }
     note: false
@@ -1027,7 +1027,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 449,
+          "x": 643,
           "y": 285
         }
       }
@@ -1073,8 +1073,58 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -162,
+          "x": -187,
           "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 7458b0d2-e73a-458a-b856-cc8cfc4f3f35
+    type: regular
+    task:
+      id: 7458b0d2-e73a-458a-b856-cc8cfc4f3f35
+      version: -1
+      name: Set OS type
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.SuspiciousOSType
+      value:
+        complex:
+          root: Core.Endpoint.operating_system
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.operating_system
+                iscontext: true
+              right:
+                value:
+                  simple: Windows 7
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1469,
+          "y": 783
         }
       }
     note: false
@@ -1091,17 +1141,17 @@ view: |-
       "17_21_True Possitive": 0.83,
       "17_8_#default#": 0.17,
       "22_10_Disable Host": 0.51,
-      "22_16_Disable User": 0.64,
-      "22_8_No Action": 0.3,
+      "22_16_Disable User": 0.52,
+      "22_8_No Action": 0.26,
       "7_4_#default#": 0.54,
-      "7_5_#default#": 0.54,
-      "7_8_yes": 0.24
+      "7_5_#default#": 0.62,
+      "7_8_yes": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 1859,
-        "width": 1620,
-        "x": -162,
+        "height": 1874,
+        "width": 2037,
+        "x": -187,
         "y": 49
       }
     }
