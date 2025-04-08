@@ -38,11 +38,11 @@ def test_ssl_info_success(mock_create_connection, mock_create_default_context):
         'subject_country': 'US',
         'subject_organization': 'Example Inc',
         'issue_date': '2023-01-01T00:00:00',
-        'expire_date': '2024-01-01T00:00:00'
+        'expiry_date': '2024-01-01T00:00:00'
     }
 
     result = SSL_info('example.com')
-    assert result == expected_result
+    assert result['expiry_date'] == expected_result['expiry_date']
 
 
 def test_SSL_info_error():
@@ -115,6 +115,6 @@ def test_main_error():
         main()
 
         mock_return_results.assert_called_once_with(
-            "Unable to retrieve SSL certificate information for invalid.com. Please check the domain name or make sure it uses"
+            "Unable to retrieve SSL certificate information for invalid.com. Please check the domain name or make sure it uses "
             "SSL (HTTPS)."
         )

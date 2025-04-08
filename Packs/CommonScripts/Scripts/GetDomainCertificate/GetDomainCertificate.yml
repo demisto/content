@@ -1,7 +1,6 @@
 commonfields:
-  id: 34238288-cd28-41b9-88c7-3ed85ee9a2e1
-  version: 56
-vcShouldKeepItemLegacyProdMachine: false
+  id: GetDomainCertificate
+  version: -1
 name: GetDomainCertificate
 script: ''
 type: python
@@ -15,11 +14,43 @@ args:
 - name: verbose
   description: When true the script will fetch the full certificate under "full_response".
   defaultValue: 'False'
+outputs:
+- contextPath: SSLInfo.domain
+  description: The domain name.
+  type: String
+- contextPath: SSLInfo.issuer_country
+  description: The country of the certificate issuer.
+  type: String
+- contextPath: SSLInfo.issuer_organization
+  description: The organization of the certificate issuer.
+  type: String
+- contextPath: SSLInfo.issuer_common_name
+  description: The common name of the certificate issuer.
+  type: String
+- contextPath: SSLInfo.subject_country
+  description: The country of the certificate subject.
+  type: String
+- contextPath: SSLInfo.subject_organization
+  description: The organization of the certificate subject.
+  type: String
+- contextPath: SSLInfo.version
+  description: The SSL/TLS version.
+  type: String
+- contextPath: SSLInfo.issue_date
+  description: The date the certificate was issued.
+  type: Date
+- contextPath: SSLInfo.expiry_date
+  description: The date the certificate expires.
+  type: Date
+- contextPath: SSLInfo.error
+  description: Error message if certificate verification fails.
+  type: String
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

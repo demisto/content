@@ -23,6 +23,8 @@ def SSL_info(domain: str, verbose: bool = False) -> dict:
     """
 
     ca_info = {}
+    issuer: Dict[str, str] = {}
+    subject: Dict[str, str] = {}
 
     try:
         context = ssl.create_default_context()
@@ -33,12 +35,19 @@ def SSL_info(domain: str, verbose: bool = False) -> dict:
 
             if cert is None:
                 return {}
+            
+            # Ensure subject items are tuples of strings
+            for pairs in cert.get('subject', []):
+                for pair in pairs:
+                    if isinstance(pair, tuple) and len(pair) == 2 and all(isinstance(i, str) for i in pair):
+                        subject[pair[0]] = pair[1]
 
-            subject = dict(x[0] for x in cert.get('subject', []))
-            issuer = dict(x[0] for x in cert.get('issuer', []))
-            issue_date = datetime.strptime(cert['notBefore'], "%b %d %H:%M:%S %Y %Z")
-            expiry_date = datetime.strptime(cert['notAfter'], "%b %d %H:%M:%S %Y %Z")
-
+            # Ensure issuer items are tuples of strings
+            for pairs in cert.get('issuer', []):
+                for pair in pairs:
+                    if isinstance(pair, tuple) and len(pair) == 2 and all(isinstance(i, str) for i in pair):
+                        subject[pair[0]] = pair[1]
+            
             ca_info = {
                 'domain': domain,
                 'issuer_country': issuer.get('countryName', ''),
@@ -46,14 +55,20 @@ def SSL_info(domain: str, verbose: bool = False) -> dict:
                 'issuer_common_name': issuer.get('commonName', ''),
                 'subject_country': subject.get('countryName', ''),
                 'subject_organization': subject.get('organizationName', ''),
-                'issue_date': issue_date.isoformat(),
-                'expire_date': expiry_date.isoformat(),
                 'version': version
             }
+            
+            issue_date = cert['notBefore']
+            
+            if isinstance(issue_date, str):
+                ca_info["issue_date"] = datetime.strptime(issue_date, "%b %d %H:%M:%S %Y %Z").isoformat()
 
-            if verbose:
-                ca_info['full_response'] = cert
-
+            expiry_date = cert['notAfter']
+            
+            if isinstance(expiry_date, str):
+                ca_info["expiry_date"] = datetime.strptime(expiry_date, "%b %d %H:%M:%S %Y %Z").isoformat()
+            
+            
     except ssl.SSLCertVerificationError as e:
         demisto.debug(f"Error verifying certificate for {domain}: {e}")
         ca_info = {
