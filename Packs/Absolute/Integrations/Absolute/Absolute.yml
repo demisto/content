@@ -63,14 +63,20 @@ script:
     - description: The system unique identifier of the device.
       name: device_id
       required: true
+    - description: Maximum number of results to return.
+      name: limit
+      defaultValue: '50'
+    - auto: PREDEFINED
+      description: Whether to retrieve all results or not.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns a list of custom device fields associated with the given device_id, based on the authorization token.
     name: absolute-custom-device-field-list
     outputs:
     - contextPath: Absolute.CustomDeviceField.DeviceUID
       description: The system-defined unique identifier of the device.
-      type: String
-    - contextPath: Absolute.CustomDeviceField.ESN
-      description: The unique ESN (identifier) assigned to the Absolute agent that is installed on a device.
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.CDFUID
       description: The unique identifier of the custom device field.
@@ -85,7 +91,7 @@ script:
       description: 'The type of custom device field. Possible values are: PREDEFINED, ESNCOLUMN, UDF.'
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.FieldValue
-      description: The current value of the custom device field.
+      description: 'The current value of the custom device field.'
       type: String
     - contextPath: Absolute.CustomDeviceField.CDFValues.Type
       description: 'The data type of the field value. Possible values are: Text, Date, Dropdown.'
@@ -122,7 +128,7 @@ script:
       predefined:
       - 'OnDemand'
       - 'Scheduled'
-      - 'Offline'
+      - 'OffLine'
       required: true
     - description: 'The date and time (in UTC) when the device should be frozen in ISO 8601 format: YYYY-MM-DDThh:mm:ss.SSSZ. Required if device_freeze_type is Scheduled. For example, 2022-01-01T00:00:00.000Z.'
       name: scheduled_freeze_date
@@ -179,7 +185,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: 'Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests.'
+    description: 'Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests. In case of removing from offline:  In addition to creating a Remove Freeze request for devices with a status of Frozen by Condition: Offline, removes Offline Freeze requests from devices with a status of Freeze Requested or Freeze Condition - Offline Set. In case of not removing from offline: a Remove Freeze request is created for the devices but the Conditional - Offline Freeze request is not deleted (deprecated).'
     name: absolute-device-remove-freeze-request
   - arguments:
     - description: The system-defined, unique identifier of the Freeze request.
@@ -203,9 +209,6 @@ script:
     - contextPath: Absolute.FreezeRequestDetail.Statuses.actionUid
       description: The system-defined, unique identifier of the Freeze action.
       type: String
-    - contextPath: Absolute.FreezeRequestDetail.Statuses.statusUid
-      description: The system-defined, unique identifier of the Freeze status.
-      type: String
     - contextPath: Absolute.FreezeRequestDetail.Statuses.messageKey
       description: The reference key for the error message or the info message. Error messages start with 'dds'. Info messages start with 'ddsui'.
       type: String
@@ -218,7 +221,7 @@ script:
     - contextPath: Absolute.FreezeRequestDetail.Statuses.updatedBy
       description: The last entity to update the Freeze request.
       type: String
-    - contextPath: Absolute.FreezeRequestDetail.Statuses.updatedUtc
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.updatedDateTimeUtc
       description: The time (in Unix epoch) when the Freeze request was last updated.
       type: Date
     - contextPath: Absolute.FreezeRequestDetail.Statuses.triggerActionUid
@@ -230,13 +233,13 @@ script:
     - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientTS
       description: The acknowledgment timestamp (in UNIX epoch local time) when the request was downloaded on the device.
       type: Number
-    - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientUtc
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientDateTimeUtc
       description: The acknowledgment timestamp (in UNIX epoch UTC) when the request was downloaded to the device.
       type: Number
     - contextPath: Absolute.FreezeRequestDetail.Statuses.instruction
       description: All action instructions which are sent from the device DFZ agent component.
       type: String
-    - contextPath: Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateTimeUtc
       description: The date and time (in Unix epoch) when a Scheduled Freeze request was scheduled to be performed.
       type: Number
     - contextPath: Absolute.FreezeRequestDetail.Configuration.messageName
@@ -290,7 +293,7 @@ script:
     - contextPath: Absolute.FreezeRequestDetail.Configuration.Conditions.scheduledFreezeDate
       description: The date and time (in UTC) when a Scheduled Freeze request is scheduled to be performed.
       type: Date
-    - contextPath: Absolute.FreezeRequestDetail.Configuration.issuedUtc
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.issuedDateTimeUTC
       description: The date and time (in UNIX epoch) when the Freeze request was created.
       type: Date
     - contextPath: Absolute.FreezeRequestDetail.Configuration.preLoginEnabled
@@ -304,9 +307,6 @@ script:
       type: String
     - contextPath: Absolute.FreezeRequestDetail.Requester
       description: The user ID of the entity that created the Freeze request.
-      type: String
-    - contextPath: Absolute.FreezeRequestDetail.RequesterUid
-      description: The system-defined unique identifier of the user who created the Freeze request.
       type: String
     - contextPath: Absolute.FreezeRequestDetail.CreatedUTC
       description: The date and time (in UNIX epoch) when the Freeze request was created.
@@ -338,6 +338,12 @@ script:
   - arguments:
     - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
+    - description: Maximum number of results to return.
+      name: limit
+      defaultValue: '50'
+    - defaultValue: '0'
+      description: The page number of the results to retrieve. Minimum value is 0.
+      name: page
     description: Gets all the Freeze messages that are configured for the account by the given message_id. If message_id is not given all the messages will be returned.
     name: absolute-device-freeze-message-list
     outputs:
@@ -385,49 +391,97 @@ script:
     - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
       required: true
-    description: Updates the content of an existing Freeze message.
+    description: Updates the content of an existing Freeze message. Use absolute-device-freeze-message-list in order to get the message_id.
     name: absolute-device-freeze-message-update
   - arguments:
     - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
       required: true
-    description: Deletes an existing Freeze message for the account.
+    description: Deletes an existing Freeze message for the account. Use absolute-device-freeze-message-list in order to get the message_id.
     name: absolute-device-freeze-message-delete
   - arguments:
     - description: A comma-separated list of device UIDs that should be unenrolled.
       isArray: true
       name: device_ids
       required: true
+    - auto: PREDEFINED
+      description: Whether to exclude missing devices or not.
+      name: exclude_missing_devices
+      predefined:
+      - 'true'
+      - 'false'
     description: Initiates an unenroll request on a list of eligible devices.
     name: absolute-device-unenroll
     outputs:
-    - contextPath: Absolute.DeviceUnenroll.DeviceUid
+    - contextPath: Absolute.DeviceUnenroll.TotalDevices
+      description: The total number of devices in the request.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Pending
+      description: The number of pending devices.
+      type: Number
+    - contextPath: Absolute.DeviceUnenroll.Processing
+      description: The number of processing devices.
+      type: Number
+    - contextPath: Absolute.DeviceUnenroll.Completed
+      description: 'The number of completed device unenroll.'
+      type: Number
+    - contextPath: Absolute.DeviceUnenroll.Canceled
+      description: The number of canceled device unenroll.
+      type: Number
+    - contextPath: Absolute.DeviceUnenroll.Failed
+      description: The number of failed device unenroll.
+      type: Number
+    - contextPath: Absolute.DeviceUnenroll.RequestId
+      description: The unique ID identifier of the request.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.RequestUid
+      description: The unique GUID identifier of the request.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.RequestStatus
+      description: The status of the request.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.UpdatedDateTimeUtc
+      description: The time (in Unix epoch) when the request was last updated.
+      type: Date
+    - contextPath: Absolute.DeviceUnenroll.CreatedDateTimeUtc
+      description: The time (in Unix epoch) when the request was created.
+      type: Date
+    - contextPath: Absolute.DeviceUnenroll.Requester
+      description: The requester of the request.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.ExcludeMissingDevices
+      description: Whether the request includes missing devices or not.
+      type: Boolean
+    - contextPath: Absolute.DeviceUnenroll.Devices.DeviceUid
       description: The unique GUID identifier of the device.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.SystemName
-      description: The name assigned to the device.
+    - contextPath: Absolute.DeviceUnenroll.Devices.ActionUid
+      description: The unique GUID identifier of the action.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.Username
-      description: The unique user name of the user who was logged into the device at the time of the agent call.
+    - contextPath: Absolute.DeviceUnenroll.Devices.RequestUid
+      description: The unique GUID identifier of the request.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.EligibleStatus
-      description: 'The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled, and 2 for stolen.'
-      type: Number
-    - contextPath: Absolute.DeviceUnenroll.Serial
-      description: The identification number that is assigned to the device by the device manufacturer.
+    - contextPath: Absolute.DeviceUnenroll.Devices.DeviceName
+      description: The unique device name of the device.
       type: String
-    - contextPath: Absolute.DeviceUnenroll.ESN
+    - contextPath: Absolute.DeviceUnenroll.Devices.ActionStatus
+      description: The status of the action.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Devices.ESN
       description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
       type: String
+    - contextPath: Absolute.DeviceUnenroll.Devices.UpdatedDateTimeUtc
+      description: The time (in Unix epoch) when the request was last updated.
+      type: Date
+    - contextPath: Absolute.DeviceUnenroll.Devices.CreatedDateTimeUtc
+      description: The time (in Unix epoch) when the request was created.
+      type: Date
   - arguments:
     - description: The query by which to filter the device applications. If this argument is set, it overrides the others. For example, appName eq 'someName' or availableVirtualMemoryBytes lt 1073741824.
       name: filter
     - description: A comma-separated list of all specific values to return. If not set, all possible values will be returned.
       isArray: true
       name: return_fields
-    - description: A comma-separated list of the unique IDs associated with this Absolute account.
-      isArray: true
-      name: account_uids
     - description: A comma-separated list of the system-defined unique identifier of the devices.
       isArray: true
       name: device_ids
@@ -449,9 +503,9 @@ script:
     - description: A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
       isArray: true
       name: esn
-    - defaultValue: '50'
-      description: Maximum number of results to return.
+    - description: Maximum number of results to return.
       name: limit
+      defaultValue: '50'
     - defaultValue: '0'
       description: The page number of the results to retrieve. Minimum value is 0.
       name: page
@@ -463,9 +517,6 @@ script:
       type: String
     - contextPath: Absolute.DeviceApplication.DeviceUid
       description: The system-defined unique identifier of the device.
-      type: String
-    - contextPath: Absolute.DeviceApplication.AccountUid
-      description: The unique ID associated with this Absolute account.
       type: String
     - contextPath: Absolute.DeviceApplication.AppId
       description: The identifier of the application.

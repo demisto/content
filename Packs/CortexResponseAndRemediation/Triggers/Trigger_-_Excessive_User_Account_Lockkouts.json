@@ -26,7 +26,12 @@
                 "SEARCH_VALUE": "Excessive user account lockouts from a suspicious source"
             }
           ]
-        }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
       ]
     }
   }

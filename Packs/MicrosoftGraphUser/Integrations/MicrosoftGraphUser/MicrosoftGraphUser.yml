@@ -61,6 +61,7 @@ configuration:
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
+  section: Connect
   hidden: true
   required: false
 - display: Certificate Thumbprint
@@ -98,6 +99,7 @@ configuration:
   required: false
 - name: creds_auth_code
   type: 9
+  section: Connect
   displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
   hiddenusername: true
   required: false
@@ -625,8 +627,9 @@ script:
       name: user
       required: true
     description: |-
-      Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-      Permission: Directory.AccessAsUser.All(Delegated).
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+      This command requires an administrator role.
+      Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-user-generate-login-url
@@ -634,7 +637,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2005673
   runonce: false
   script: '-'
   subtype: python3

@@ -2,7 +2,7 @@
     "name": "DSPM",
     "description": "Remediate data security risks with Prisma Cloud DSPM, using automated playbooks and seamless risk distribution.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Prisma by Palo Alto Networks",
     "url": "https://www.paloaltonetworks.com/prisma/cloud/cloud-data-security",
     "email": "",

@@ -1,41 +1,42 @@
 import json
+
 from CTIXv3 import (
     Client,
-    create_tag_command,
-    get_tags_command,
-    delete_tag_command,
-    whitelist_iocs_command,
-    get_whitelist_iocs_command,
-    remove_whitelisted_ioc_command,
-    get_threat_data_command,
-    get_saved_searches_command,
-    get_server_collections_command,
-    get_actions_command,
+    add_analyst_score_command,
+    add_analyst_tlp_command,
     add_indicator_as_false_positive_command,
     add_ioc_manual_review_command,
-    deprecate_ioc_command,
-    add_analyst_tlp_command,
-    add_analyst_score_command,
-    saved_result_set_command,
-    tag_indicator_updation_command,
-    search_for_tag_command,
-    get_indicator_details_command,
-    get_indicator_tags_command,
-    get_indicator_relations_command,
-    get_indicator_observations_command,
-    get_conversion_feed_source_command,
-    get_lookup_threat_data_command,
-    domain,
-    url,
-    ip,
-    file,
-    get_all_notes,
-    get_note_details,
     create_note,
-    update_note,
-    delete_note,
-    make_request,
+    create_tag_command,
     cve_command,
+    delete_note,
+    delete_tag_command,
+    deprecate_ioc_command,
+    domain,
+    file,
+    get_actions_command,
+    get_all_notes,
+    get_conversion_feed_source_command,
+    get_indicator_details_command,
+    get_indicator_observations_command,
+    get_indicator_relations_command,
+    get_indicator_tags_command,
+    get_lookup_threat_data_command,
+    get_note_details,
+    get_saved_searches_command,
+    get_server_collections_command,
+    get_tags_command,
+    get_threat_data_command,
+    get_whitelist_iocs_command,
+    ip,
+    make_request,
+    remove_whitelisted_ioc_command,
+    saved_result_set_command,
+    search_for_tag_command,
+    tag_indicator_updation_command,
+    update_note,
+    url,
+    whitelist_iocs_command,
 )
 
 """CONSTANTS"""
@@ -279,9 +280,7 @@ def test_get_whitelist_iocs_command(requests_mock):
 
 def test_remove_whitelisted_ioc_command(requests_mock):
     mock_response = util_load_json("test_data/remove_whitelist_ioc.json")
-    requests_mock.post(
-        f"{BASE_URL}conversion/whitelist/bulk-actions/", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}conversion/whitelist/bulk-actions/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -462,9 +461,7 @@ def test_add_ioc_manual_review_command(requests_mock):
 
 def test_deprecate_ioc_command(requests_mock):
     mock_response = util_load_json("test_data/deprecate_ioc.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/bulk-action/deprecate/", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/bulk-action/deprecate/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -487,9 +484,7 @@ def test_deprecate_ioc_command(requests_mock):
 
 def test_add_analyst_tlp_command(requests_mock):
     mock_response = util_load_json("test_data/add_analyst_tlp.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/analyst_tlp/", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/action/analyst_tlp/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -516,9 +511,7 @@ def test_add_analyst_tlp_command(requests_mock):
 
 def test_add_analyst_score_command(requests_mock):
     mock_response = util_load_json("test_data/add_analyst_score.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/analyst_score/", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/action/analyst_score/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -569,13 +562,8 @@ def test_saved_result_set_command(requests_mock):
 def test_add_tag_indicator_updation_command(requests_mock):
     mock_response = util_load_json("test_data/add_tag_indicator.json")
     mock_response_get = util_load_json("test_data/get_indicator_tags.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
-        json=mock_response_get,
-    )
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/", json=mock_response_get)
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -594,9 +582,7 @@ def test_add_tag_indicator_updation_command(requests_mock):
         "q": "",
     }
 
-    response = tag_indicator_updation_command(
-        client, args, operation="add_tag_indicator"
-    )
+    response = tag_indicator_updation_command(client, args, operation="add_tag_indicator")
 
     assert response.outputs == mock_response
     assert response.outputs_prefix == "CTIX.TagUpdation"
@@ -612,9 +598,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
         f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
         json=mock_response_get,
     )
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/action/remove_tag/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -633,9 +617,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
         "q": "",
     }
 
-    response = tag_indicator_updation_command(
-        client, args, operation="remove_tag_from_indicator"
-    )
+    response = tag_indicator_updation_command(client, args, operation="remove_tag_from_indicator")
 
     assert response.outputs == mock_response
     assert response.outputs_prefix == "CTIX.TagUpdation"
@@ -672,9 +654,7 @@ def test_search_for_tag_command(requests_mock):
 
 def test_get_indicator_details_command(requests_mock):
     mock_response = util_load_json("test_data/get_indicator_details.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/basic/", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/indicator/foo/basic/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -723,9 +703,7 @@ def test_get_indicator_tags_command(requests_mock):
 
 def test_get_indicator_relations_command(requests_mock):
     mock_response = util_load_json("test_data/get_indicator_relations.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/relations/", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/indicator/foo/relations/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -748,9 +726,7 @@ def test_get_indicator_relations_command(requests_mock):
 
 def test_get_indicator_observations_command(requests_mock):
     mock_response = util_load_json("test_data/get_indicator_observations.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/source-references/", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}ingestion/threat-data/source-references/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -977,9 +953,7 @@ def test_get_note_details(requests_mock):
         proxies={},
     )
 
-    args = {
-        "id": id
-    }
+    args = {"id": id}
 
     response = get_note_details(client, args)
 
@@ -1005,7 +979,7 @@ def test_create_note(requests_mock):
     args = {
         "text": "this note will have this text",
         "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
-        "object_type": "indicator"
+        "object_type": "indicator",
     }
 
     response = create_note(client, args)
@@ -1034,7 +1008,7 @@ def test_update_note(requests_mock):
         "id": id,
         "text": "this is the new text",
         "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
-        "object_type": "indicator"
+        "object_type": "indicator",
     }
 
     response = update_note(client, args)
@@ -1059,9 +1033,7 @@ def test_delete_note(requests_mock):
         proxies={},
     )
 
-    args = {
-        "id": id
-    }
+    args = {"id": id}
 
     response = delete_note(client, args)
 
@@ -1124,7 +1096,7 @@ def test_make_request_post(requests_mock):
                 \"type\": \"indicator\"
             },
             \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"
-        }"""
+        }""",
     }
 
     response = make_request(client, args)
@@ -1160,7 +1132,7 @@ def test_make_request_put(requests_mock):
                 \"type\": \"indicator\"
             },
             \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"
-        }"""
+        }""",
     }
 
     response = make_request(client, args)
@@ -1203,14 +1175,17 @@ def test_cve_command(requests_mock):
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_threat_list_response)
     obj_id = mock_threat_list_response["results"][0]["id"]
     mock_product_details_response = util_load_json("test_data/get_vulnerability_product_details.json")
-    requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/product-details/",
-                      json=mock_product_details_response)
+    requests_mock.get(
+        f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/product-details/", json=mock_product_details_response
+    )
     source_id = mock_product_details_response["results"][0]["source"]["id"]
     mock_cvss_score_response = util_load_json("test_data/get_cvss_score.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/cvss-score/", json=mock_cvss_score_response)
     mock_source_description_response = util_load_json("test_data/get_vulnerability_source_description.json")
-    requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/source-description/?source_id={source_id}",
-                      json=mock_source_description_response)
+    requests_mock.get(
+        f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/source-description/?source_id={source_id}",
+        json=mock_source_description_response,
+    )
 
     client = Client(
         base_url=BASE_URL,
