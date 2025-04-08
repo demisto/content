@@ -39,11 +39,13 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: collect
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
   type: 0
   required: false
+  section: collect
 - additionalinfo: Choose which table incidents will be fetched from.
   defaultvalue: firewall.threat
   display: Fetch Table
