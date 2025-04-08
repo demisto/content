@@ -1471,7 +1471,7 @@ class MicrosoftClient(BaseClient):
             if not response.ok:
                 if "National Cloud" in self.error_parser(response):
                     return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
-                                 f' The tenant is not supported by GCC-High. body: {self.error_parser(response)}')
+                                 f' The tenant is not supported by the chosen endpoint type. body: {self.error_parser(response)}')
                 return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
             response_json = response.json()
