@@ -35,6 +35,7 @@ Searches Shodan using facets to get summary information on properties.
 | query | The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany. | Required |
 | facets | A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries. | Optional |
 | page | The page number of the fetched results. Each page contains a maximum of 100 results. Default is 1. | Optional |
+| return_json | Whether to return a JSON file containing the full search results for further processing. Possible values are: Yes, No. Default is No. | Optional | 
 
 
 #### Context Output
