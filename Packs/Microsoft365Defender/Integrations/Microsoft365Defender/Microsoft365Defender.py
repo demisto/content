@@ -63,6 +63,11 @@ class Client:
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
+    def get_suffix_by_endpoint_type(self):
+        if self.endpoint in ['gcc', 'gcc-high', 'dod']:
+            # When using 'gcc', 'gcc-high', 'dod', we are using graph endpoint.
+            return 'v1.0/security'
+        return 'api'
     @logger
     def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
@@ -114,12 +119,7 @@ class Client:
             if skip:
                 params['$skip'] = skip
 
-        if self.endpoint in ['gcc', 'gcc-high', 'dod']:
-            # Using graph endpoint and suffix
-            url_suffix = 'v1.0/security/incidents'
-        else:
-            # Using defender suffix
-            url_suffix = 'api/incidents'
+        url_suffix = f'{self.get_suffix_by_endpoint_type()}/incidents'
         return self.ms_client.http_request(method='GET', url_suffix=url_suffix, timeout=timeout,
                                            params=params)
 
@@ -151,7 +151,9 @@ class Client:
                              determination=determination, tags=tags, comment=comment)
         if assigned_to == "":
             body['assignedTo'] = ""
-        updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'api/incidents/{incident_id}',
+
+        url_suffix = f'{self.get_suffix_by_endpoint_type()}/incidents/{incident_id}'
+        updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=url_suffix,
                                                        json_data=body, timeout=timeout)
         return updated_incident
 
@@ -170,8 +172,9 @@ class Client:
                     }
 
         """
+        url_suffix = f'{self.get_suffix_by_endpoint_type()}/incidents/{incident_id}'
         incident = self.ms_client.http_request(
-            method='GET', url_suffix=f'api/incidents/{incident_id}', timeout=timeout)
+            method='GET', url_suffix=url_suffix, timeout=timeout)
         return incident
 
     @logger
@@ -190,7 +193,12 @@ class Client:
                 Schema - The schema of the response, a list of Name-Type pairs for each column.
                 Results - A list of advanced hunting events.
         """
-        return self.ms_client.http_request(method='POST', url_suffix='api/advancedhunting/run',
+        if self.endpoint in ['gcc', 'gcc-high', 'dod']:
+            # When using 'gcc', 'gcc-high', 'dod', we are using graph endpoint.
+            url_suffix = 'v1.0/security/runHuntingQuery'
+        else:
+            url_suffix = 'api/advancedhunting/run'
+        return self.ms_client.http_request(method='POST', url_suffix=url_suffix,
                                            json_data={"Query": query}, timeout=timeout)
 
 
