@@ -1,287 +1,287 @@
 {
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "Classifies Microsoft 365 Defender's events",
-	"feed": false,
+    "defaultIncidentType": "",
+    "definitionId": "",
+    "description": "Classifies Microsoft 365 Defender's events",
+    "feed": false,
     "fromVersion": "6.0.0",
     "id": "Microsoft 365 Defender - Incoming Mapper",
-	"mapping": {
-		"Microsoft 365 Defender Incident": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Assigned User": {
-					"simple": "assignedTo"
-				},
-				"Event Type": {
-					"simple": "determination"
-				},
-				"Microsoft 365 Defender Comments": {
-					"complex": {
-						"filters": [],
-						"root": "comments",
-						"transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
-				"Microsoft 365 Defender Active": {
-					"simple": "Active alerts"
-				},
-				"Microsoft 365 Defender A": {
-					"complex": {
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
-				"Microsoft 365 Defender Categories count": {
-					"complex": {
-						"filters": [],
-						"root": "Categories",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"isContext": false,
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							},
-							{
-								"operator": "MS365DefenderCountIncidentCategories"
-							}
-						]
-					}
-				},
-				"Microsoft 365 Defender Classification": {
-					"complex": {
-						"filters": [],
-						"root": "classification",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"simple": " - "
-										}
-									}
-								},
-								"operator": "concat"
-							},
-							{
-								"args": {
-									"prefix": {
-										"isContext": false
-									},
-									"suffix": {
-										"isContext": true,
-										"value": {
-											"simple": "determination"
-										}
-									}
-								},
-								"operator": "concat"
-							}
-						]
-					}
-				},
-				"Microsoft 365 Defender Devices": {
-					"complex": {
-						"filters": [],
-						"root": "Devices",
-						"transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
-				"Microsoft 365 Defender Display Name": {
-					"simple": "incidentName"
-				},
-				"Microsoft 365 Defender First activity": {
-					"simple": "First activity"
-				},
-				"Microsoft 365 Defender ID": {
-					"simple": "incidentId"
-				},
-				"Microsoft 365 Defender Last activity": {
-					"simple": "Last activity"
-				},
-				"Microsoft 365 Defender Mailboxes": {
-					"complex": {
-						"filters": [],
-						"root": "Mailboxes",
-						"transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
-				"Microsoft 365 Defender Status": {
-					"simple": "status"
-				},
-				"Microsoft 365 Defender Tags": {
-					"complex": {
-						"filters": [],
-						"root": "tags",
-						"transformers": []
-					}
-				},
-				"Microsoft 365 Defender Users": {
-					"complex": {
-						"filters": [],
-						"root": "Impacted entities",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"isContext": false,
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							},
-							{
-								"operator": "MS365DefenderUserListToTable"
-							},
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
-				"category": {
-					"complex": {
-						"accessor": "[2].category",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"impacted devices": {
-					"complex": {
-						"filters": [],
-						"root": "Devices",
-						"transformers": [
-							{
-								"operator": "uniq"
-							},
-							{
-								"operator": "count"
-							}
-						]
-					}
-				},
-				"impacted entities": {
-					"complex": {
-						"filters": [],
-						"root": "Impacted entities",
-						"transformers": [
-							{
-								"operator": "uniq"
-							},
-							{
-								"operator": "count"
-							}
-						]
-					}
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Assigned User": {
-					"simple": "assignedTo"
-				},
-				"Classification": {
-					"complex": {
-						"filters": [],
-						"root": "classification",
-						"transformers": []
-					}
-				},
-				"Event Type": {
-					"simple": "determination"
-				},
-				"File Name": {
-					"complex": {
-						"accessor": "[4].entities.[1].fileName",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"Incident Link": {
-					"simple": "incidentUri"
-				},
-				"Microsoft 365 Defender Classification": {
-					"simple": "classification"
-				},
-				"Microsoft 365 Defender Display Name": {
-					"simple": "incidentName"
-				},
-				"Microsoft 365 Defender Status": {
-					"simple": "status"
-				},
-				"Microsoft 365 Defender Tags": {
-					"complex": {
-						"filters": null,
-						"root": "tags",
-						"transformers": null
-					}
-				},
-				"State": {
-					"complex": {
-						"accessor": "[0].investigationState",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"Verdict": {
-					"complex": {
-						"accessor": "[0].entities.[0].verdict",
-						"filters": [],
-						"root": "alerts",
-						"transformers": []
-					}
-				},
-				"category": {
-					"complex": {
-						"accessor": "[2].category",
-						"filters": null,
-						"root": "alerts",
-						"transformers": null
-					}
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "incidentId"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                 "dbotMirrorTags": {
+    "mapping": {
+        "Microsoft 365 Defender Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Assigned User": {
+                    "simple": "assignedTo"
+                },
+                "Event Type": {
+                    "simple": "determination"
+                },
+                "Microsoft 365 Defender Comments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Microsoft 365 Defender Active": {
+                    "simple": "Active alerts"
+                },
+                "Microsoft 365 Defender A": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Microsoft 365 Defender Categories count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Categories",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            },
+                            {
+                                "operator": "MS365DefenderCountIncidentCategories"
+                            }
+                        ]
+                    }
+                },
+                "Microsoft 365 Defender Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "classification",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "determination"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "Microsoft 365 Defender Devices": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Devices",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Microsoft 365 Defender Display Name": {
+                    "simple": "incidentName"
+                },
+                "Microsoft 365 Defender First activity": {
+                    "simple": "First activity"
+                },
+                "Microsoft 365 Defender ID": {
+                    "simple": "incidentId"
+                },
+                "Microsoft 365 Defender Last activity": {
+                    "simple": "Last activity"
+                },
+                "Microsoft 365 Defender Mailboxes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Mailboxes",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Microsoft 365 Defender Status": {
+                    "simple": "status"
+                },
+                "Microsoft 365 Defender Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Microsoft 365 Defender Users": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Impacted entities",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            },
+                            {
+                                "operator": "MS365DefenderUserListToTable"
+                            },
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "[2].category",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "impacted devices": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Devices",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            },
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "impacted entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Impacted entities",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            },
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assigned User": {
+                    "simple": "assignedTo"
+                },
+                "Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "classification",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "simple": "determination"
+                },
+                "File Name": {
+                    "complex": {
+                        "accessor": "[4].entities.[1].fileName",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "simple": "incidentUri"
+                },
+                "Microsoft 365 Defender Classification": {
+                    "simple": "classification"
+                },
+                "Microsoft 365 Defender Display Name": {
+                    "simple": "incidentName"
+                },
+                "Microsoft 365 Defender Status": {
+                    "simple": "status"
+                },
+                "Microsoft 365 Defender Tags": {
+                    "complex": {
+                        "filters": null,
+                        "root": "tags",
+                        "transformers": null
+                    }
+                },
+                "State": {
+                    "complex": {
+                        "accessor": "[0].investigationState",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "Verdict": {
+                    "complex": {
+                        "accessor": "[0].entities.[0].verdict",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "[2].category",
+                        "filters": null,
+                        "root": "alerts",
+                        "transformers": null
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "incidentId"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
 				"details": {
@@ -405,5 +405,11 @@
 	},
 	"name": "Microsoft 365 Defender - Incoming Mapper",
 	"type": "mapping-incoming",
-	"version": -1
+	"version": -1,
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
