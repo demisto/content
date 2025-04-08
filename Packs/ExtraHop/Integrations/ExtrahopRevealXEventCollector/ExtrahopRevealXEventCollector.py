@@ -18,13 +18,6 @@ FIRST_FETCH = "3 days"
 MAX_FETCH_LIMIT = 25000
 DEFAULT_FETCH_LIMIT = 5000
 BASE_TIME_CHECK_VERSION_PARAM = 1581852287000
-EXTRAHOP_MARKDOWN_REGEX = r"(\[[^\]]+\]\(\#\/[^\)]+\))+"
-TICKET_SEVERITY = {
-    "0-39": 1,  # low
-    "40-69": 2,  # medium
-    "70-89": 3,  # high
-    "90-100": 4  # critical
-}
 
 """ CLIENT CLASS """
 
@@ -153,6 +146,7 @@ def trim_spaces_from_args(args: Dict) -> Dict:
 
     return args
 
+
 def prepare_list_detections_output(detections) -> str:
     """Prepare human-readable output for list-detections command.
 
@@ -179,25 +173,44 @@ def prepare_list_detections_output(detections) -> str:
     return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
 
 
-""" COMMAND FUNCTIONS """
+def validate_version(client, last_run):
+    now = datetime.now()
+    next_day = now + timedelta(days=1)
+    if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
+        last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
+        version = get_extrahop_server_version(client)
+        if version < "9.3.0":
+            raise DemistoException(
+                "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
 
-
-def test_module(client: Client) -> str:
+def validate_fetch_events_params(last_run: dict) -> Dict:
     """
-    Tests the connection to the service by creating an access token.
+    Validate the parameter list for fetch incidents.
+
     Args:
-        client (Client): The client object used to interact with the service.
+        last_run: last run returned by function demisto.getLastRun
+
     Returns:
-        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
+        Dictionary containing validated configuration parameters in proper format.
     """
-    last_run = {
-        'detection_start_time': int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000) ,
-        'offset': 0,
-        'limit': 1
+    detection_start_time = int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000)  # type: ignore
+    if last_run and 'detection_start_time' in last_run:
+        detection_start_time = last_run.get('detection_start_time')  # type: ignore
+
+    offset = 0
+    if last_run and 'offset' in last_run:
+        offset = last_run.get("offset")  # type: ignore
+
+    limit = DEFAULT_FETCH_LIMIT
+    if last_run and 'limit' in last_run:
+        limit = last_run.get("limit") # type: ignore
+
+    return {
+        'detection_start_time': detection_start_time,
+        'offset': offset,
+        'limit': limit
     }
-    fetch_events(client, last_run, 1)
-    return "ok"
 
 def get_extrahop_server_version(client: Client):
     """Retrieve and parse the extrahop server version.
@@ -216,11 +229,11 @@ def get_extrahop_server_version(client: Client):
 
 
 def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
-    '''
+    """
     Add Requested Time Fields to detections list.
     Args:
         detections: Detections that came from Reveal(X).
-    '''
+    """
     for detection in detections:
         mod_time = detection.get("mod_time")
         start_time = detection.get("start_time")
@@ -252,39 +265,6 @@ def get_detections_list(client: Client,
     detections = list(client.detections_list(body))
     # Add Time Params
     update_time_values_detections(detections)
-    return detections
-
-
-
-def append_participant_device_data(client: Client, detections: CommandResults) -> CommandResults:
-    """Append the device data of the participants present in the detection.
-
-    Args:
-        client: ExtraHop client to be used.
-        detections: The command result object of detection data fetched from ExtraHop.
-
-    Returns:
-        CommandResult object with device data of the participants.
-    """
-    for detection in detections.outputs:  # type: ignore
-        detection["device_data"] = []
-        for participant in detection.get("participants", []):
-            if participant.get("object_type") == "device":
-                if not participant.get("object_id"):
-                    continue
-                object_id = participant.get("object_id")
-                device_data = client.get_device_by_id(object_id, (404, 200, 204, 201))
-
-            else:
-                if not participant.get("object_value"):
-                    continue
-                ip = participant.get("object_value")
-                device_data = client.device_search(name=None, ip=ip, mac=None, role=None, software=None, vendor=None,
-                                                   tag=None, discover_time=None, vlan=None, activity=None, operator="=",
-                                                   match_type="and", active_from=None, active_until=None, limit=None,
-                                                   l3_only=True)
-            if device_data:
-                detection["device_data"].append(device_data)
     return detections
 
 
@@ -358,34 +338,23 @@ def fetch_extrahop_detections(
     return events, last_run
 
 
-def validate_fetch_events_params(last_run: dict) -> Dict:
-    """
-    Validate the parameter list for fetch incidents.
+""" COMMAND FUNCTIONS """
 
+def test_module(client: Client) -> str:
+    """
+    Tests the connection to the service by creating an access token.
     Args:
-        params: Dictionary containing demisto configuration parameters
-        last_run: last run returned by function demisto.getLastRun
-
+        client (Client): The client object used to interact with the service.
     Returns:
-        Dictionary containing validated configuration parameters in proper format.
+        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
-    detection_start_time = int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000)  # type: ignore
-    if last_run and 'detection_start_time' in last_run:
-        detection_start_time = last_run.get('detection_start_time')  # type: ignore
-
-    offset = 0
-    if last_run and 'offset' in last_run:
-        offset = last_run.get("offset")  # type: ignore
-
-    limit = DEFAULT_FETCH_LIMIT
-    if last_run and 'limit' in last_run:
-        limit = last_run.get("limit") # type: ignore
-
-    return {
-        'detection_start_time': detection_start_time,
-        'offset': offset,
-        'limit': limit
+    last_run = {
+        'detection_start_time': int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000) ,
+        'offset': 0,
+        'limit': 1
     }
+    fetch_events(client, last_run, 1)
+    return "ok"
 
 
 def fetch_events(client: Client, last_run: Dict, max_events: int):
@@ -394,7 +363,6 @@ def fetch_events(client: Client, last_run: Dict, max_events: int):
      Args:
         max_events: max events to fetch
         client: ExtraHop client to be used.
-        params: Integration configuration parameters.
         last_run: The last_run dictionary having the state of previous cycle.
     """
     demisto.info(f"Extrahop fetch_events invoked")
@@ -413,18 +381,16 @@ def fetch_events(client: Client, last_run: Dict, max_events: int):
     return events, next_run
 
 
-def validate_version(client, last_run):
-    now = datetime.now()
-    next_day = now + timedelta(days=1)
-    if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
-        last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
-        version = get_extrahop_server_version(client)
-        if version < "9.3.0":
-            raise DemistoException(
-                "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
-
-
 def get_events(client: Client, args: dict, max_events: int) -> tuple[list, CommandResults]:
+    """
+    Inner Test Function to make sure the integration works
+    Args:
+        client: ExtraHop client to be used.
+        args: command arguments.
+        max_events: Max events to fetch.
+
+    Returns: Tuple that contains events that been fetched and the Command results.
+    """
     first_fetch = arg_to_datetime(args.get("first_fetch", FIRST_FETCH))
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_FETCH_LIMIT
     last_run = {
@@ -450,6 +416,7 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
         outputs=output,
     )
     return output, command_results
+
 
 def main():
     """main function, parses params and runs command functions"""
