@@ -16,7 +16,7 @@ TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
-CIDR_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))" \
+IP_RANGE_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))" \
                      r"\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
 
 
@@ -390,7 +390,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     :param client: The client
     :param feed_tags: The indicator tags.
     :param tlp_color: Traffic Light Protocol color.
-    :return: The indicator
+    :return: Indicator list
     """
     attributes = None
     indicator = None
@@ -422,12 +422,11 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                 return attributes, []
             if 'transform' in indicator:
                 extracted_indicator = extracted_indicator.expand(indicator['transform'])
-            if cidr_match := re.fullmatch(CIDR_REGEX_PATTERN, extracted_indicator):
-                ip_start, ip_end = cidr_match.groups()
+            if ip_range_match := re.fullmatch(IP_RANGE_REGEX_PATTERN, extracted_indicator):
+                ip_start, ip_end = ip_range_match.groups()
                 if cidr_list := ip_range_to_cidr(ip_start, ip_end):
-                    demisto.debug(f"Found IP range in extracted indicator \"{extracted_indicator}\", "
-                                  f"converting to CIDR - {cidr_list}")
                     extracted_indicator = cidr_list
+
             if not isinstance(extracted_indicator, list):
                 extracted_indicator = [extracted_indicator]
 
@@ -477,10 +476,10 @@ def fetch_indicators_command(client,
                 attributes, indicator_values = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 demisto.debug(f"Got the following indicator values - {indicator_values}")
 
-                if indicator_values and len(indicator_values) == 1:
+                for indicator_value in indicator_values:
                     indicators.append(process_indicator_data(
                         client,
-                        indicator_values[0],
+                        indicator_value,
                         attributes,
                         url,
                         itype,
@@ -488,18 +487,7 @@ def fetch_indicators_command(client,
                         create_relationships,
                         enrichment_excluded
                     ))
-                elif indicator_values:
-                    for indicator_value in indicator_values:
-                        indicators.append(process_indicator_data(
-                            client,
-                            indicator_value,
-                            attributes,
-                            url,
-                            itype,
-                            auto_detect,
-                            create_relationships,
-                            enrichment_excluded
-                        ))
+
     return indicators, no_update
 
 

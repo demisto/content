@@ -516,7 +516,7 @@ def test_fetch_indicators_exclude_enrichment():
 def test_fetch_indicators_ip_ranges_to_cidrs():
     """
     Given:
-        - IP ranges in text.
+        - Text containing incidicators as IP ranges.
     When:
         - Calling the fetch_indicators_command
     Then:
