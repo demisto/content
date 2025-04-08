@@ -750,6 +750,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Removed service "1.1.1.1:80" for trigger any in alert 0EKRH38BBQEHTQ3E from the allow list
+
 ### shodan-get-events
 
 ***
