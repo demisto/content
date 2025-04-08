@@ -66,6 +66,10 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) 
             demisto.error(f"Failed checking for zombie processes: {ex}. Trace: {traceback.format_exc()}")
 
 
+def make_sha(file_path):
+    return None
+
+
 def main():
     entry_id = demisto.args()["entry_id"]
     out_format = demisto.args().get("format", "pdf")
@@ -95,9 +99,13 @@ def main():
                 demisto.results(
                     {"Contents": "", "ContentsFormat": formats["text"], "Type": entryTypes["file"], "File": name, "FileID": temp}
                 )
+                sha1 = make_sha(f)
+                return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'FileSHA1': sha1, 'Convertable': 'yes'}))
     except subprocess.CalledProcessError as e:
+        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no'}))
         return_error(f"Failed converting file. Output: {e.output}. Error: {e}")
     except Exception as e:
+        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no'}))
         return_error(f"Failed converting file. General exception: {e}.\n\nTrace:\n{traceback.format_exc()}")
 
 
