@@ -30,7 +30,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 handle_proxy()
 
-optional_general_properties_map = {
+optional_general_properties_map: dict[str, tuple[str, Any]] = {
     'cpe23': ('CPE23', []),
     'device': ('Device', ''),
     'devicetype': ('DeviceType', ''),
@@ -46,7 +46,7 @@ optional_general_properties_map = {
 }
 
 
-ntlm_properties_map = {
+ntlm_properties_map: dict[str, tuple[str, Any]] = {
     'dns_domain_name': ('DNSDomainName', ''),
     'dns_forest_name': ('DNSForestName', ''),
     'fqdn': ('FQDN', ''),
@@ -59,7 +59,7 @@ ntlm_properties_map = {
 }
 
 
-ssl_cert_properties_map = {
+ssl_cert_properties_map: dict[str, tuple[str, Any]] = {
     'expired': ('Expired', False),
     'expires': ('Expires', ''),
     'issued': ('Issued', ''),

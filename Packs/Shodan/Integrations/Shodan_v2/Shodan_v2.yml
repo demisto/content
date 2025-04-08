@@ -162,7 +162,7 @@ script:
       description: Timestamp.
       type: Number
     - contextPath: Shodan.Banner.Ntlm.FQDN
-      description: FQDN
+      description: FQDN.
       type: String
     - contextPath: Shodan.Banner.Ntlm.NetBIOSDomainName
       description: Netbios Domain Name.
@@ -226,7 +226,7 @@ script:
       type: String
     - contextPath: Shodan.Banner.Ssl.Cert.Issuer.OU
       description: Issuer Organizational Unit.
-      type: String 
+      type: String
     - contextPath: Shodan.Banner.Ssl.Cert.Issuer.L
       description: Issuer Locality or City.
       type: String
@@ -492,7 +492,7 @@ script:
     - name: max_fetch
       description: The maximum amount of events to return.
       defaultValue: 50000
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3
