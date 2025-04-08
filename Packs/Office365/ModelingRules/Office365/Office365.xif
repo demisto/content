@@ -281,7 +281,7 @@ alter
 	xdm.source.user.upn = from -> emailAddress.address,
 	xdm.target.user.upn = mailboxOwner,
 	xdm.email.sender = sender -> emailAddress.address,
-	xdm.email.return_path = replyTo -> emailAddress.address,
+	xdm.email.return_path = arrayindex(arraymap(replyTo -> [], "@element" -> emailAddress.address), 0),
 	xdm.observer.unique_identifier = webLink,
 	xdm.alert.original_alert_id = if(is_itemAttachment and is_itemAttachment_contentType_message, get_attachment -> id),
 	xdm.alert.name = if(is_itemAttachment and is_itemAttachment_contentType_message, get_attachment -> name),
