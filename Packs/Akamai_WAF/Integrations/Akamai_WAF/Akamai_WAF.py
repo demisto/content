@@ -1,18 +1,19 @@
+from akamai.edgegrid import EdgeGridAuth
+import json
+import urllib3
+import requests
+import time
+from datetime import datetime
+import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 # Std imports
-import re
-import time
-from datetime import datetime
 
 # 3-rd party imports
-import requests
-import urllib3
 
 # Local imports
-from akamai.edgegrid import EdgeGridAuth
 
 """
 
@@ -1983,7 +1984,149 @@ class Client(BaseClient):
             params=params,
         )
 
+
+    def new_datastream(self,
+                       stream_name: str,
+                       group_id: int,
+                       contract_id: str,
+                       properties: list,
+                       dataset_fields: list,
+                       interval_in_seconds: int = 30,
+                       log_format: str = "JSON",
+                       field_delimiter: str = "",
+                       upload_file_prefix: str = "",
+                       upload_file_suffix: str = "",
+                       ca_cert: str = "",
+                       client_cert: str = "",
+                       client_key: str = "",
+                       content_type: str = "",
+                       custom_header_name: str = "",
+                       custom_header_value: str = "",
+                       compress_logs: bool = True,
+                       destination_type: str = "SPLUNK",
+                       display_name: str = "",
+                       endpoint: str = "",
+                       event_collector_token: str = "",
+                       tls_hostname: str = "",
+                       notification_emails: list = [],
+                       collect_midgress: bool = False,
+                       activate: bool = True,) -> dict:
+        """
+            Creates a stream configuration. Within a stream configuration,
+            you can select properties to monitor in the stream, data set fields to collect in logs,
+            and a destination to send these log files to. Get the streamId value from the response
+            to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+            Apart from the log and delivery frequency configurations, you can decide whether to activate
+            the stream on making the request or later using the activate parameter.
+            Note that only active streams collect and send logs to their destinations.
+
+        Args:
+          stream_name: The name of the stream.
+          group_id: The unique identifier of the group that has access to the product and this stream
+                    configuration.
+          contract_id: The unique identifier of the contract that has access to the product.
+          properties: The unique identifier of the properties that belong to the same product and to be monitored
+                      in the stream. Note that a stream can only log data for active properties.
+                      A property can be activated in Property Manager.
+          dataset_fields: The unique identifier of the data set fields to be included in stream logs.
+                          In case of STRUCTURED format, the order of the identifiers define how the value for
+                          these fields appear in the log lines.
+          interval_in_seconds: The interval in seconds (30 or 60) after which the system bundles log lines into
+                               a file and sends it to a destination.
+          log_format: The format in which you want to receive log files. STRUCTURED or JSON are the currently
+                      available formats. When the delimiter is present in the request, STRUCTURED format needs
+                      to be defined.
+          field_delimiter: A delimiter that separates data set fields in the log lines, either SPACE or TAB.
+                           Set this only for the STRUCTURED log file format.
+          upload_file_prefix: The prefix of the log file to be used when sending to a object-based destination.
+                              It's a string of at most 200 characters. If unspecified, it defaults to ak. This
+                              member supports Dynamic time variables, but doesn't support the . character.
+          upload_file_suffix: The suffix of the log file that you want to send to a object-based destination.
+                              It's a static string of at most 10 characters. If unspecified, it defaults to ds.
+                              This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
+          ca_cert: The certification authority (CA) certificate used to verify the origin server's certificate.
+                   If the certificate is not signed by a well-known certification authority, enter the CA certificate
+                   in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it
+                   in the response as true.
+          client_cert: The PEM-formatted digital certificate you want to authenticate requests to your destination
+                       with. If you want to use mutual authentication, you need to provide both the client certificate
+                       and the client key. If you pass this member, the mTlsEnabled member replaces it in the response
+                       as true.
+          client_key: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server.
+                      If you want to use mutual authentication, you need to provide both the client certificate and
+                      the client key.
+          content_type: The type of the resource passed in the request's custom header.
+          custom_header_name: A human-readable name for the request's custom header, containing only alphanumeric,
+                              dash, and underscore characters.
+          custom_header_value: The custom header's contents passed with the request that contains information about
+                               the client connection.
+          compress_logs: Enables gzip compression for a log file sent to a destination. True by default.
+          destination_type: The destination configuration in the stream to send logs.
+                            Note: "SPLUNK" and "HTTPS" are the only two types tested.
+          display_name: The name of the destination.
+          endpoint: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used
+                    as endpoint URLs.
+          event_collector_token: The Event Collector token for your Splunk account.
+          tls_hostname: The hostname that verifies the server's certificate and matches the Subject Alternative Names
+                        (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint
+                        URL.
+          notification_emails: A list of e-mail addresses where you want to send notifications about activations and
+                               deactivations of the stream. You can omit this member and activate or deactivate the
+                               stream without notifications.
+          collect_midgress: Indicates if you've opted to capture midgress traffic within the Akamai platform, such as
+                            between two edge servers.
+          activate: Activates the stream at the time of the request, false by default. When Edit a stream or Patch a
+                    stream that is active, set this value to true.
+
+        Returns:
+            The response confirms the stream has been created and returns its details.
+        """
+        method = 'post'
+        url_suffix = 'datastream-config-api/v2/log/streams'
+        headers = {
+            "Content-Type": "application/json",
+            "accept": "application/json"
+        }
+        params = {"activate": activate}
+
+        body = {
+            "streamName": stream_name,
+            "groupId": group_id,
+            "contractId": contract_id,
+            "notificationEmails": notification_emails,
+            "properties": properties,
+            "datasetFields": dataset_fields,
+            "deliveryConfiguration": {
+                "frequency": {
+                    "intervalInSeconds": interval_in_seconds
+                },
+                "format": log_format,
+                "fieldDelimiter": field_delimiter,
+            },
+            "destination": {
+                "destinationType": destination_type,
+                "compressLogs": compress_logs,
+                "displayName": display_name,
+                "endpoint": endpoint,
+                "eventCollectorToken": event_collector_token,
+                "caCert": ca_cert,
+                "clientCert": client_cert,
+                "clientKey": client_key,
+                "customHeaderName": custom_header_name,
+                "customHeaderValue": custom_header_value,
+                "tlsHostname": tls_hostname
+            }
+        }
+        remove_nulls_from_dictionary(body)
+        return self._http_request(method=method,
+                                  url_suffix=url_suffix,
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params,
+                                  )
+
     def get_cps_enrollment_by_id(self, enrollment_id: int) -> dict:
+
         """
             Returns the Enarollment by enrollment id
         Args:
@@ -2017,7 +2160,6 @@ class Client(BaseClient):
         )
 
     # created by D.S.
-
     def list_dns_zone_recordsets(self, zone: str):
         """
         List Edge DNS zone recordsets
@@ -2032,6 +2174,334 @@ class Client(BaseClient):
             method="Get",
             url_suffix=f"config-dns/v2/zones/{zone}/recordsets?showAll=true",
         )
+
+    def list_idam_properties(self):
+        """
+        List properties or includes via Identify and Access Managment (IDAM) API
+
+        Returns:
+            <Response [200]>
+        """
+
+        all_properties = self._http_request(method='GET', url_suffix='/identity-management/v3/user-admin/properties')
+
+        return all_properties
+
+    def list_datastreams(self, group_id: int = 0):
+        """
+        Returns the latest versions of the stream configurations for all groups within the account.
+
+        Returns:
+            <Response [200]>
+        """
+        url_suffix = '/datastream-config-api/v2/log/streams'
+        if group_id != 0:
+            url_suffix = f'{url_suffix}?groupId={group_id}'
+
+        all_datastreams = self._http_request(method='GET', url_suffix=url_suffix)
+
+        return all_datastreams
+
+    def get_datastream(self, stream_id: int, version: int):
+        """
+        Returns information about any version of a stream, including details about the monitored properties,
+        logged data set fields, and log delivery destination. If you omit the version query parameter,
+        this operation returns the last version of the stream.
+
+        Args:
+            stream_id: integer. Uniquely identifies the stream.
+            version: integer. Identifies the version of the stream. If omitted, the operation returns the latest version of the
+            stream.
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = f'/datastream-config-api/v2/log/streams/{stream_id}'
+        if version != 0:
+            url_suffix = f'{url_suffix}?version={version}'
+        datastream = self._http_request(method='GET', url_suffix=url_suffix)
+
+        return datastream
+
+    def list_datastream_groups(self, contract_id: str = ""):
+        """
+        Returns access groups with contracts on your account. You can later use the groupId and contractId values
+        to create and view streams or list properties by group. Set the contractId query parameter to get groups
+        for a specific contract.
+
+        Args:
+            contract_id: Uniquely identifies the contract that belongs to a group.
+
+        Returns:
+            <Response [200]>
+        """
+        url_suffix = 'datastream-config-api/v2/log/groups'
+        if contract_id:
+            url_suffix = f'{url_suffix}?contractId={contract_id}'
+        groups = self._http_request(method='GET', url_suffix=url_suffix)
+
+        return groups
+
+    def list_datastream_properties_bygroup(self, group_id: int):
+        """
+        Returns properties that are active on the production and staging network and available within a specific group.
+        Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+        Args:
+            group_id: integer,required. Uniquely identifies the group that can access the product.
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = f'datastream-config-api/v2/log/groups/{group_id}/properties'
+        properties = self._http_request(method='GET', url_suffix=url_suffix)
+
+        return properties
+
+    def delete_datastream(self, stream_id: int):
+        """
+        Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
+        that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
+        you need to deactivate it first.
+
+        Args:
+            stream_id: Unique identifer of a stream
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = f'datastream-config-api/v2/log/streams/{stream_id}'
+        output = self._http_request(method='DELETE', url_suffix=url_suffix, resp_type="response")
+        return output
+
+    def patch_datastream(self,
+                         stream_id: int,
+                         body: list,
+                         activate: str,
+                         ) -> dict:
+        """
+        Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
+        a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
+        operation. When updating configuration objects such as destination or deliveryConfiguration, pass a
+        complete object to avoid overwriting current details with default values for omitted members such as
+        tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
+        their destinations. You need to set the activate parameter to true while patching active streams, and
+        optionally for inactive streams if you want to activate them upon request.
+
+        Args:
+            stream_id: The unique identifier of the stream.
+            activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
+                      Patch a stream that is active, you need to set this member to true.
+            body: Json data used to patch the datastream.
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json-patch+json"
+        }
+
+        return self._http_request(method='PATCH',
+                                  url_suffix=f'datastream-config-api/v2/log/streams/{stream_id}?activate={activate}',
+                                  headers=headers,
+                                  json_data=body)
+
+    def bulk_property_activation(self,
+                                 properties: str,
+                                 notify_emails: str,
+                                 contract_id: str,
+                                 ) -> dict:
+        """
+        Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour
+        of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you
+        use in this operation's request. This operation launches an asynchronous process to update properties. To check its
+        progress, run the List bulk-activated properties operation, whose link is available in the Location header or
+        bulkActivationLink member of this operation's response.
+
+        Args:
+            properties: Properties to be activated.
+            notify_emails: list of the emails for notification.
+            contract_id: Unique identifier of the contract
+
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+
+        body = json.loads(properties)
+
+        payload = {
+            "activatePropertyVersions": body,
+            "defaultActivationSettings": {
+                "acknowledgeAllWarnings": True,
+                "fastPush": True,
+                "useFastFallback": True,
+                "notifyEmails": [notify_emails]
+            }
+        }
+
+        headers = {
+            "accept": "application/json",
+            "PAPI-Use-Prefixes": "false",
+            "content-type": "application/json"
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'papi/v1/bulk/activations?contractId={contract_id}',
+                                  headers=headers,
+                                  json_data=payload)
+
+    def activate_datastream(self,
+                            stream_id: int,
+                            option: str,
+                            ) -> dict:
+        """
+        Activate/Deactivate the latest version of a DataStream.
+
+        Args:
+            stream_id: Uniquely identifies the stream.
+            action: "activate" or "deactivate"
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created datastream.
+        """
+
+        headers = {
+            "accept": "application/json"
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'datastream-config-api/v2/log/streams/{stream_id}/{option}',
+                                  headers=headers
+                                  )
+
+    def update_client_list_entries(self,
+                                   list_id: str,
+                                   account_switch_key: str = "",
+                                   ) -> dict:
+        """
+            Update client list entries. Append, delete, and update entries in a single batch.
+        Args:
+            list_id: Unique identifier of client list.
+            account_switch_key: For customers who manage more than one account,
+                this runs the operation from another account. The Identity and Access Management
+                API provides a list of available account switch keys.
+
+        Returns:
+            <Response [200]>
+            Json response as dictionary
+        """
+
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json"
+        }
+        if account_switch_key == "":
+            url_suffix = f'client-list/v1/lists/{list_id}/items'
+        else:
+            url_suffix = f'client-list/v1/lists/{list_id}/items?accountSwitchKey={account_switch_key}'
+
+        return self._http_request(method='POST',
+                                  url_suffix=url_suffix,
+                                  headers=headers
+                                  )
+
+    def activate_a_client_list(self,
+                               list_id: str,
+                               action: str,
+                               comments: str,
+                               network: str,
+                               notification_recipients: list,
+                               account_switch_key: str = "",
+                               siebel_ticketid: str = "",
+                               ) -> dict:
+        """
+            Activates a client list on the staging or production network.
+        Args:
+            list_id: Unique identifier of client list.
+            account_switch_key: For customers who manage more than one account,
+                this runs the operation from another account. The Identity and Access Management
+                API provides a list of available account switch keys.
+            action: Actions you can take for a client list: either ACTIVATE or DEACTIVATE.
+            comments: A brief description for the activation.
+            network: The network environment where you activate your client list: either STAGING or PRODUCTION.
+            notification_recipients: Users to notify via email.
+            siebel_ticketid: Identifies the Siebel ticket, if the activation is linked to one.
+
+        Returns:
+            <Response [200]>
+            Json response as dictionary
+        """
+
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json"
+        }
+
+        pre_body = {
+            "action": action,
+            "network": network,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticketid
+        }
+
+        body = filter_empty_values(pre_body)
+
+        if account_switch_key == "":
+            url_suffix = f'client-list/v1/lists/{list_id}/activations'
+        else:
+            url_suffix = f'client-list/v1/lists/{list_id}/activations?accountSwitchKey={account_switch_key}'
+
+        return self._http_request(method='POST',
+                                  url_suffix=url_suffix,
+                                  headers=headers,
+                                  json_data=body,
+                                  )
+
+    def get_client_lists(self):
+        """
+        Get accessible client lists.
+
+        Args:
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = 'client-list/v1/lists'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def list_edgehostname(self, contract_id: str, group_id: str):
+        """
+        Lists all edge hostnames available under a contract.
+
+        Args:
+            contract_id: Unique identifier of a contract.
+            group_id: Unique identifier of a group.
+
+        Args:
+
+        Returns:
+            <Response [200]>
+        """
+        headers = {
+            "accept": "application/json",
+            "PAPI-Use-Prefixes": "true"
+        }
+        if group_id == "na":
+            url_suffix = f'papi/v1/edgehostnames?contractId={contract_id}&options=mapDetails'
+        else:
+            url_suffix = f'papi/v1/edgehostnames?contractId={contract_id}&groupId={group_id}&options=mapDetails'
+        return self._http_request(method='GET', url_suffix=url_suffix, headers=headers)
 
 
 """ HELPER FUNCTIONS """
@@ -2821,11 +3291,10 @@ def try_parsing_date(date: str, arr_fmt: list):
             pass
     raise ValueError(f"The date you provided does not match the wanted format {arr_fmt}")
 
-
+    
 """ COMMANDS """
+
 # Created by C.L.
-
-
 @logger
 def check_group_command(client: Client, checking_group_name: str) -> tuple[object, dict, Union[list, dict]]:
     raw_response: dict = client.list_groups()
@@ -5822,7 +6291,7 @@ def list_cps_active_certificates_command(
 
     Args:
         client:
-        contract_id: Unique Identifier of the contract on which to operate or view.
+        contract_id: Unique Identifier of a contract on which to operate or view.
 
     Returns:
         human readable (markdown format), entry context and raw response
@@ -5843,7 +6312,598 @@ def list_cps_active_certificates_command(
     return human_readable, context_entry, raw_response
 
 
-""" COMMANDS MANAGER / SWITCH PANEL """
+@logger
+def new_datastream_command(client: Client,
+                           stream_name: str,
+                           group_id: int,
+                           contract_id: str,
+                           properties: str,
+                           dataset_fields: str,
+                           interval_in_seconds: int = 30,
+                           log_format: str = "JSON",
+                           field_delimiter: str = "",
+                           upload_file_prefix: str = "",
+                           upload_file_suffix: str = "",
+                           ca_cert: str = "",
+                           client_cert: str = "",
+                           client_key: str = "",
+                           content_type: str = "",
+                           custom_header_name: str = "",
+                           custom_header_value: str = "",
+                           compress_logs: bool = True,
+                           destination_type: str = "SPLUNK",
+                           display_name: str = "",
+                           endpoint: str = "",
+                           event_collector_token: str = "",
+                           tls_hostname: str = "",
+                           notification_emails: str = "",
+                           collect_midgress: bool = False,
+                           activate: bool = True
+                           ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Creates a stream configuration. Within a stream configuration,
+        you can select properties to monitor in the stream, data set fields to collect in logs,
+        and a destination to send these log files to. Get the streamId value from the response
+        to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+        Apart from the log and delivery frequency configurations, you can decide whether to activate
+        the stream on making the request or later using the activate parameter.
+        Note that only active streams collect and send logs to their destinations.
+        NOTE: "SPLUNK" and "HTTPS" are the only two types tested
+
+    Args:
+        client:
+        stream_name: The name of the stream.
+        group_id: The unique identifier of the group that has access to the product and this stream
+                  configuration.
+        contract_id: The unique identifier of the contract that has access to the product.
+        properties: The unique identifier of the properties that belong to the same product and to be monitored
+                    in the stream. Note that a stream can only log data for active properties.
+                    A property can be activated in Property Manager.
+        dataset_fields: The unique identifier of the data set fields to be included in stream logs.
+                        In case of STRUCTURED format, the order of the identifiers define how the value for
+                        these fields appear in the log lines.
+        interval_in_seconds: The interval in seconds (30 or 60) after which the system bundles log lines into
+                             a file and sends it to a destination.
+        log_format: The format in which you want to receive log files. STRUCTURED or JSON are the currently
+                    available formats. When the delimiter is present in the request, STRUCTURED format needs
+                    to be defined.
+        field_delimiter: A delimiter that separates data set fields in the log lines, either SPACE or TAB.
+                         Set this only for the STRUCTURED log file format.
+        upload_file_prefix: The prefix of the log file to be used when sending to a object-based destination.
+                            It's a string of at most 200 characters. If unspecified, it defaults to ak. This
+                            member supports Dynamic time variables, but doesn't support the . character.
+        upload_file_suffix: The suffix of the log file that you want to send to a object-based destination.
+                            It's a static string of at most 10 characters. If unspecified, it defaults to ds.
+                            This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
+        ca_cert: The certification authority (CA) certificate used to verify the origin server's certificate.
+                 If the certificate is not signed by a well-known certification authority, enter the CA certificate
+                 in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it
+                 in the response as true.
+        client_cert: The PEM-formatted digital certificate you want to authenticate requests to your destination
+                     with. If you want to use mutual authentication, you need to provide both the client certificate
+                     and the client key. If you pass this member, the mTlsEnabled member replaces it in the response
+                     as true.
+        client_key: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server.
+                    If you want to use mutual authentication, you need to provide both the client certificate and
+                    the client key.
+        content_type: The type of the resource passed in the request's custom header.
+        custom_header_name: A human-readable name for the request's custom header, containing only alphanumeric,
+                            dash, and underscore characters.
+        custom_header_value: The custom header's contents passed with the request that contains information about
+                             the client connection.
+        compress_logs: Enables gzip compression for a log file sent to a destination. True by default.
+        destination_type: The destination configuration in the stream to send logs.
+                          Note: "SPLUNK" and "HTTPS" are the only two types tested.
+        display_name: The name of the destination.
+        endpoint: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used
+                  as endpoint URLs.
+        event_collector_token: The Event Collector token for your Splunk account.
+        tls_hostname: The hostname that verifies the server's certificate and matches the Subject Alternative Names
+                      (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint
+                      URL.
+        notification_emails: A list of e-mail addresses where you want to send notifications about activations and
+                             deactivations of the stream. You can omit this member and activate or deactivate the
+                             stream without notifications.
+        collect_midgress: Indicates if you've opted to capture midgress traffic within the Akamai platform, such as
+                          between two edge servers.
+        activate: Activates the stream at the time of the request, false by default. When Edit a stream or Patch a
+                  stream that is active, set this value to true.
+
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    notification_emails_list: list = argToList(notification_emails)
+    properties_list: list = argToList(properties)
+    properties_list_dict: list = []
+    for item in properties_list:
+        properties_list_dict.append({"propertyId": int(item)})
+    dataset_fields_list: list = argToList(dataset_fields)
+    dataset_fields_list_dict: list = []
+    for item in dataset_fields_list:
+        dataset_fields_list_dict.append({"datasetFieldId": int(item)})
+    raw_response: dict = client.new_datastream(stream_name=stream_name,
+                                               group_id=group_id,
+                                               contract_id=contract_id,
+                                               properties=properties_list_dict,
+                                               dataset_fields=dataset_fields_list_dict,
+                                               interval_in_seconds=interval_in_seconds,
+                                               log_format=log_format,
+                                               field_delimiter=field_delimiter,
+                                               upload_file_prefix=upload_file_prefix,
+                                               upload_file_suffix=upload_file_suffix,
+                                               ca_cert=ca_cert,
+                                               client_cert=client_cert,
+                                               client_key=client_key,
+                                               content_type=content_type,
+                                               custom_header_name=custom_header_name,
+                                               custom_header_value=custom_header_value,
+                                               compress_logs=compress_logs,
+                                               destination_type=destination_type,
+                                               display_name=display_name,
+                                               endpoint=endpoint,
+                                               event_collector_token=event_collector_token,
+                                               tls_hostname=tls_hostname,
+                                               notification_emails=notification_emails_list,
+                                               collect_midgress=collect_midgress,
+                                               activate=activate)
+
+    title = f'{INTEGRATION_NAME} - new datastream'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStream": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastreams_command(client: Client, group_id: int = 0) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Get the latest versions of the stream configurations for all groups within the account.
+
+    Args:
+        client:
+        group_id: The unique identifier of the group that has access to the product and this stream configuration.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_datastreams(group_id=group_id)
+    title = f'{INTEGRATION_NAME} - list datastreams command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStreams": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_datastream_command(client: Client, stream_id: int, version: int = 0) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns information about any version of a stream, including details about the monitored properties,
+        logged data set fields, and log delivery destination. If you omit the version query parameter,
+        this operation returns the last version of the stream.
+
+    Args:
+        client:
+        stream_id: The uniquely identifier of the stream.
+        version: The uniquely identifier of the version of the stream.
+                 If omitted, the operation returns the latest version of the stream.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_datastream(stream_id=stream_id, version=version)
+    title = f'{INTEGRATION_NAME} - get datastream command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStreamDetails": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_idam_properties_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists the properties and includes for the current account via Identity Access Management Module
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_idam_properties()
+    title = f'{INTEGRATION_NAME} - list idam properties command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Idam.Properties": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastream_groups_command(client: Client, contract_id: str = "") -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns access groups with contracts on your account. You can later use the groupId and contractId values
+        to create and view streams or list properties by group. Set the contractId query parameter to get groups
+        for a specific contract.
+
+    Args:
+        client:
+        contract_id: Uniquely identifies the contract that belongs to a group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_datastream_groups(contract_id=contract_id)
+    title = f'{INTEGRATION_NAME} - list datastream groups command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStreamGroups": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastream_properties_bygroup_command(client: Client, group_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+         Get properties that are active on the production and staging network and available within a specific group.
+         Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+    Args:
+        client:
+        group_id: The unique identifier of the group that has access to the product and this stream configuration.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: dict = client.list_datastream_properties_bygroup(group_id=group_id)
+    title = f'{INTEGRATION_NAME} - list datastream active properties command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStream.Group": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
+        that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
+        you need to deactivate it first.
+
+    Args:
+        stream_id: Unique identifer of a stream
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.delete_datastream(stream_id=stream_id)
+    title = f'{INTEGRATION_NAME} - delete datastream command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStream": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def patch_datastream_command(client: Client,
+                             stream_id: int,
+                             path: str,
+                             value: str,
+                             value_to_json: str,
+                             activate: str = 'true',
+                             ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
+        a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
+        operation. When updating configuration objects such as destination or deliveryConfiguration, pass a
+        complete object to avoid overwriting current details with default values for omitted members such as
+        tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
+        their destinations. You need to set the activate parameter to true while patching active streams, and
+        optionally for inactive streams if you want to activate them upon request.
+
+    Args:
+        stream_id: The unique identifier of the stream.
+        activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
+                  Patch a stream that is active, you need to set this member to true.
+        path: A JSON Pointer that identifies the values you want to replace in the stream configuration. This
+              member's value is / followed by any of the configuration object's top-level member name.
+        value: Specifies the data to replace at the path location, any type of data including objects and arrays.
+               Pass complete objects to avoid overwriting current details with default values for omitted members.
+        value_to_json: Whether convert the value above into Json or not.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    import json
+
+    body = [
+        {
+            'op': 'REPLACE',
+            'path': path,
+            'value': json.loads(value) if value_to_json.lower() == "yes" else value
+        }
+    ]
+
+    raw_response: dict = client.patch_datastream(stream_id=stream_id, activate=activate, body=body)
+
+    title = f'{INTEGRATION_NAME} - Patch datastream command'
+
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Datastream": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def bulk_property_activation_command(client: Client,
+                                     properties: str,
+                                     notify_emails: str,
+                                     contract_id: str,
+                                     ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour
+        of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you
+        use in this operation's request. This operation launches an asynchronous process to update properties. To check its
+        progress, run the List bulk-activated properties operation, whose link is available in the Location header or
+        bulkActivationLink member of this operation's response.
+
+    Args:
+        properties: Properties to be activated.
+                    Sample: [
+                        {
+                          "network": "STAGING",
+                          "propertyId": "prp_123445",
+                          "propertyVersion": 2
+                        },
+                        {
+                          "network": "PRODUCTION",
+                          "propertyId": "prp_123456",
+                          "propertyVersion": 3
+                        }
+                    ]
+
+        notify_emails: Comma separated list of the emails for notification.
+                    Sample: "you@example.com","me@abcd.com"
+        contract_id: Unique identifier of the contract.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.bulk_property_activation(
+        properties=properties, notify_emails=notify_emails, contract_id=contract_id)
+
+    title = f'{INTEGRATION_NAME} - Bulk Property Activation command'
+
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Property.BulkActivation": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def activate_datastream_command(client: Client,
+                                stream_id: int,
+                                option: str = 'activate',
+                                ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Activate/Deactivate the latest version of a DataStream.
+
+    Args:
+        stream_id: Uniquely identifies the stream.
+        option: "activate" or "deactivate"
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.activate_datastream(stream_id=stream_id, option=option)
+
+    title = f'{INTEGRATION_NAME} - Activate DataStream command'
+
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.DataStream.Activation": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def update_client_list_entries_command(client: Client,
+                                       list_id: int,
+                                       account_switch_key: str = "",
+                                       ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Update client list entries. Append, delete, and update entries in a single batch.
+    Args:
+        list_id: Unique identifier of client list.
+        account_switch_key: For customers who manage more than one account,
+            this runs the operation from another account. The Identity and Access Management
+            API provides a list of available account switch keys.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.update_client_list_entries(list_id=str(list_id), account_switch_key=account_switch_key)
+
+    title = f'{INTEGRATION_NAME} - Update Client List Entries command'
+
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def activate_a_client_list_command(client: Client,
+                                   list_id: str,
+                                   action: str,
+                                   comments: str,
+                                   network: str,
+                                   notification_recipients: str,
+                                   account_switch_key: str = "",
+                                   siebel_ticketid: str = "",
+                                   ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Activates a client list on the staging or production network.
+    Args:
+        list_id: Unique identifier of client list.
+        account_switch_key: For customers who manage more than one account,
+            this runs the operation from another account. The Identity and Access Management
+            API provides a list of available account switch keys.
+        action: Actions you can take for a client list: either ACTIVATE or DEACTIVATE.
+        comments: A brief description for the activation.
+        network: The network environment where you activate your client list: either STAGING or PRODUCTION.
+        notification_recipients: Comma (',') seperated String that contains the email of the Users to notify.
+        siebel_ticketid: Identifies the Siebel ticket, if the activation is linked to one.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    notification_list: list = argToList(notification_recipients, separator=",")
+    raw_response: dict = client.activate_a_client_list(list_id=list_id,
+                                                       account_switch_key=account_switch_key,
+                                                       action=action,
+                                                       comments=comments,
+                                                       network=network,
+                                                       notification_recipients=notification_list,
+                                                       siebel_ticketid=siebel_ticketid,
+                                                       )
+
+    title = f'{INTEGRATION_NAME} - Activate A Client List command'
+
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_client_lists_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Get accessible client lists.
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_client_lists()
+    title = f'{INTEGRATION_NAME} - Get Client List command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_edgehostname_command(client: Client, contract_id: str, group_id: str = "na") -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists all edge hostnames available under a contract.
+
+    Args:
+        client:
+        contract_id: Unique identifier of a contract.
+        group_id: Unique identifier of a group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_edgehostname(contract_id=contract_id, group_id=group_id)
+    title = f'{INTEGRATION_NAME} - List Edgehostname command'
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Edgehostname": raw_response
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
