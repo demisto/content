@@ -15,3 +15,8 @@ dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.0.0
 tests:
 - No tests
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
