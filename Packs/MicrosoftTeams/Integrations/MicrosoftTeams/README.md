@@ -824,6 +824,7 @@ Sends a new chat message in the specified chat.
 Notes:
 
 - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
+- This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
 
 ##### Base Command
@@ -846,9 +847,9 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                  | **Required** |
-|-------------------|----------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). | Required     | 
+| **Argument Name** | **Description**                                                                                                                       | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
 | content           | The content of the chat message.                                                 | Required     | 
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     | 
 | message_type      | The type of chat message. Default is message.                                    | Optional     | 
@@ -895,6 +896,10 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 ***
 Adds a member (user) to a group chat.
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, the member will be added to the given chat by the consent user, not the bot. 
+- This command will fail if the consent user is not a member of the destination chat.
+
 
 #### Base Command
 
@@ -908,9 +913,9 @@ Adds a member (user) to a group chat.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                    | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID or group chat name (topic) to which to add the member.                                 | Required     | 
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID or group chat name (topic) to which to add the member. Note - the consent user must be a member of the chat.                               | Required     | 
 | member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.                   | Required     | 
 | share_history     | Whether to share the whole history of the chat. Possible values are: true, false. Default is True. | Optional     | 
 
@@ -930,6 +935,10 @@ The User "Bruce Willis" has been added to chat "example chat" successfully.
 Retrieves a list of members from a chat.
 
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
+
 #### Base Command
 
 `microsoft-teams-chat-member-list`
@@ -944,7 +953,7 @@ Retrieves a list of members from a chat.
 
 | **Argument Name** | **Description**                                                                  | **Required** |
 |-------------------|----------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN). | Required     | 
+| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN). Note - the consent user must be a member of the chat.| Required     | 
 
 
 #### Context Output
@@ -972,7 +981,7 @@ Retrieves a list of members from a chat.
 
 ### microsoft-teams-chat-list
 ***
-Retrieves a list of chats that the user is part of. If 'chat' is specified - retrieves this chat only.
+Retrieves a list of chats that the consent user is a member of. If 'chat' is specified - retrieves this chat only.
 
 
 #### Base Command
@@ -989,7 +998,7 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 | **Argument Name** | **Description**                                                                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                         | Optional     | 
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).  Note - the consent user must be a member of the chat.                                                                       | Optional     | 
 | filter            | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional     | 
 | expand            | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview.                               | Optional     | 
 | limit             | The number of results to retrieve. Default is 50.                                                                                                        | Optional     | 
@@ -1026,6 +1035,9 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 ***
 Retrieves a list of messages in a chat.
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
 
 #### Base Command
 
@@ -1041,7 +1053,7 @@ Retrieves a list of messages in a chat.
 
 | **Argument Name** | **Description**                                                                                                                                                                       | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                                                      | Required     | 
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.                                                                                                   | Required     | 
 | limit             | The number of results to retrieve. Default is 50.                                                                                                                                     | Optional     | 
 | order_by          | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional     | 
 | next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                                                   | Optional     | 
@@ -1090,6 +1102,9 @@ Retrieves a list of messages in a chat.
 ***
 Updates the chat name. It can only be set for group chats.
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
 
 #### Base Command
 
@@ -1105,7 +1120,7 @@ Updates the chat name. It can only be set for group chats.
 
 | **Argument Name** | **Description**                                                                 | **Required** |
 |-------------------|---------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic).                                          | Required     | 
+| chat              | The chat ID / group chat name (topic). Note - the consent user must be a member of the chat.                                      | Required     | 
 | chat_name         | The new chat name. Maximum length is 250 characters. Use of ':' is not allowed. | Required     | 
 
 
