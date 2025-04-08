@@ -1,8 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 import itertools
 from typing import Any
+
+import demistomock as demisto
+from CommonServerPython import *
 
 
 class Command:
@@ -37,9 +37,7 @@ class Modules:
         self.modules_context = modules
         self._brands_to_run = brands_to_run
         self._enabled_brands = {
-            module.get("brand")
-            for module in self.modules_context.values()
-            if module.get("state") == "active"
+            module.get("brand") for module in self.modules_context.values() if module.get("state") == "active"
         }
 
     def is_brand_in_brands_to_run(self, command: Command) -> bool:
@@ -52,9 +50,7 @@ class Modules:
         Returns:
             bool: True if the brand is in the list of brands to run, False otherwise.
         """
-        is_in_brands_to_run = (
-            command.brand in self._brands_to_run if self._brands_to_run else True
-        )
+        is_in_brands_to_run = command.brand in self._brands_to_run if self._brands_to_run else True
 
         if not is_in_brands_to_run:
             demisto.debug(
@@ -75,9 +71,7 @@ class Modules:
         """
         is_available = command.brand in self._enabled_brands
         if not is_available:
-            demisto.debug(
-                f"Skipping command '{command.name}' since the brand '{command.brand}' is not available."
-            )
+            demisto.debug(f"Skipping command '{command.name}' since the brand '{command.brand}' is not available.")
         elif not self.is_brand_in_brands_to_run(command):
             is_available = False
 
@@ -99,9 +93,7 @@ def is_valid_args(command: Command):
     """
     is_valid = any(command.args.values()) if command.args else True
     if not is_valid:
-        demisto.debug(
-            f"Skipping command '{command.name}' since no required arguments were provided."
-        )
+        demisto.debug(f"Skipping command '{command.name}' since no required arguments were provided.")
 
     return is_valid
 
@@ -232,11 +224,7 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
     for account in accounts:
         recursive_merge(merged_account, account)
 
-    return (
-        Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH]
-        if merged_account
-        else {}
-    )
+    return Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH] if merged_account else {}
 
 
 def prepare_human_readable(
@@ -265,9 +253,7 @@ def prepare_human_readable(
         command = f"!{command_name} {' '.join(formatted_args)}"
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
-            result.append(
-                CommandResults(readable_output=result_message, mark_as_note=True)
-            )
+            result.append(CommandResults(readable_output=result_message, mark_as_note=True))
         else:
             result_message = f"#### Error for {command}\n{human_readable}"
             result.append(
@@ -318,9 +304,7 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
                     full_output_key = key
                     break
         if not full_output_key:
-            demisto.debug(
-                f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}"
-            )
+            demisto.debug(f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}")
     return full_output_key
 
 
@@ -369,9 +353,7 @@ def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
     return context
 
 
-def run_execute_command(
-    command_name: str, args: dict[str, Any]
-) -> tuple[list[dict], str, list[CommandResults]]:
+def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[dict], str, list[CommandResults]]:
     """
     Executes a command and processes its results.
 
@@ -396,11 +378,7 @@ def run_execute_command(
     for entry in res:
         entry_context_list.append(entry.get("EntryContext", {}))
         if is_error(entry):
-            errors_command_results.extend(
-                prepare_human_readable(
-                    command_name, args, get_error(entry), is_error=True
-                )
-            )
+            errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
         else:
             human_readable_list.append(entry.get("HumanReadable") or "")
     human_readable = "\n".join(human_readable_list)
@@ -413,13 +391,9 @@ def identityiq_search_identities(
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("IdentityIQ.Identity", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
@@ -440,13 +414,9 @@ def identitynow_get_accounts(
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("IdentityNow.Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
@@ -466,19 +436,13 @@ def identitynow_get_accounts(
 def ad_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any], str]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-    account_disable = outputs.get("userAccountControlFields", {}).pop(
-        "ACCOUNTDISABLE", None
-    )
+    account_disable = outputs.get("userAccountControlFields", {}).pop("ACCOUNTDISABLE", None)
     is_enabled = (not account_disable) if isinstance(account_disable, bool) else None
     manager_dn = (outputs.pop("manager", None) or [""])[0]
     account_output = create_account(
@@ -499,13 +463,9 @@ def ad_get_user_manager(
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
@@ -520,13 +480,9 @@ def ad_get_user_manager(
 def pingone_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("PingOne.Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
@@ -545,18 +501,12 @@ def pingone_get_user(command: Command) -> tuple[list[CommandResults], dict[str, 
 def okta_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-    is_enabled = (
-        (outputs.pop("Status") != "DEPROVISIONED") if outputs.get("Status") else None
-    )
+    is_enabled = (outputs.pop("Status") != "DEPROVISIONED") if outputs.get("Status") else None
     account_output = create_account(
         source=command.brand,
         id=outputs.pop("ID", None),
@@ -574,13 +524,9 @@ def okta_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any
 def aws_iam_get_user(command: Command) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("AWS.IAM.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
@@ -596,13 +542,9 @@ def aws_iam_get_user(command: Command) -> tuple[list[CommandResults], dict[str, 
 def msgraph_user_get(command: Command) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
@@ -626,13 +568,9 @@ def msgraph_user_get_manager(
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("MSGraphUserManager", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
@@ -651,13 +589,9 @@ def xdr_list_risky_users(
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key(f"{outputs_key_field}.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
@@ -688,13 +622,9 @@ def iam_get_user_command(
     }
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command_name, args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command_name, args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command_name, args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command_name, args, human_readable))
     account_outputs = []
     for output_entry in entry_context:
         output_key = get_output_key("IAM.Vendor", output_entry)
@@ -729,44 +659,32 @@ def main():
         modules = Modules(demisto.getModules(), brands_to_run)
 
         if domain and not users_names:
-            raise ValueError(
-                "When specifying the domain argument, the user_name argument must also be provided."
-            )
+            raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
         if not any((users_ids, users_names, users_emails)):
-            raise ValueError(
-                "At least one of the following arguments must be specified: user_id, user_name or user_email."
-            )
+            raise ValueError("At least one of the following arguments must be specified: user_id, user_name or user_email.")
 
         command_results_list: list[CommandResults] = []
         account_outputs_list: list[dict[str, Any]] = []
         users_not_found_list: list[str] = []
 
-        for user_id, user_name, user_email in list(
-            itertools.zip_longest(users_ids, users_names, users_emails, fillvalue="")
-        ):
+        for user_id, user_name, user_email in list(itertools.zip_longest(users_ids, users_names, users_emails, fillvalue="")):
             #################################
             ### Running for a single user ###
             #################################
-            demisto.debug(
-                f"Start getting user account data for user: {user_id=}, {user_name=}, {user_email=}"
-            )
+            demisto.debug(f"Start getting user account data for user: {user_id=}, {user_name=}, {user_email=}")
             single_user_outputs = []
             single_user_readable_outputs = []
             outputs: dict[str, Any] | list[dict[str, Any]]
-            if "\\" not in (
-                user_name or ""
-            ):  # If the user_name does not contain a domain
+            if "\\" not in (user_name or ""):  # If the user_name does not contain a domain
                 identitynow_get_accounts_command = Command(
                     brand="SailPointIdentityNow",
                     name="identitynow-get-accounts",
                     args={"id": user_id, "name": user_name},
                 )
-                if modules.is_brand_available(
+                if modules.is_brand_available(identitynow_get_accounts_command) and is_valid_args(
                     identitynow_get_accounts_command
-                ) and is_valid_args(identitynow_get_accounts_command):
-                    readable_outputs, outputs = identitynow_get_accounts(
-                        identitynow_get_accounts_command
-                    )
+                ):
+                    readable_outputs, outputs = identitynow_get_accounts(identitynow_get_accounts_command)
                     single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 ad_get_user_command = Command(
@@ -774,12 +692,8 @@ def main():
                     name="ad-get-user",
                     args={"username": user_name, "email": user_email, "attributes": attributes},
                 )
-                if modules.is_brand_available(ad_get_user_command) and is_valid_args(
-                    ad_get_user_command
-                ):
-                    readable_outputs, outputs, manager_dn = ad_get_user(
-                        ad_get_user_command
-                    )
+                if modules.is_brand_available(ad_get_user_command) and is_valid_args(ad_get_user_command):
+                    readable_outputs, outputs, manager_dn = ad_get_user(ad_get_user_command)
                     single_user_readable_outputs.extend(readable_outputs)
                     if manager_dn:
                         ad_get_user_manager_command = Command(
@@ -787,9 +701,7 @@ def main():
                             name="ad-get-user",
                             args={"dn": manager_dn},
                         )
-                        readable_outputs, manager_outputs = ad_get_user_manager(
-                            ad_get_user_manager_command
-                        )
+                        readable_outputs, manager_outputs = ad_get_user_manager(ad_get_user_manager_command)
                         single_user_readable_outputs.extend(readable_outputs)
                         outputs |= manager_outputs
                     single_user_outputs.append(outputs)
@@ -798,12 +710,8 @@ def main():
                     name="pingone-get-user",
                     args={"userId": user_id, "username": user_name},
                 )
-                if modules.is_brand_available(
-                    pingone_get_user_command
-                ) and is_valid_args(pingone_get_user_command):
-                    readable_outputs, outputs = pingone_get_user(
-                        pingone_get_user_command
-                    )
+                if modules.is_brand_available(pingone_get_user_command) and is_valid_args(pingone_get_user_command):
+                    readable_outputs, outputs = pingone_get_user(pingone_get_user_command)
                     single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 okta_get_user_command = Command(
@@ -811,9 +719,7 @@ def main():
                     name="okta-get-user",
                     args={"userId": user_id, "username": user_name},
                 )
-                if modules.is_brand_available(okta_get_user_command) and is_valid_args(
-                    okta_get_user_command
-                ):
+                if modules.is_brand_available(okta_get_user_command) and is_valid_args(okta_get_user_command):
                     readable_outputs, outputs = okta_get_user(okta_get_user_command)
                     single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
@@ -822,12 +728,8 @@ def main():
                     name="aws-iam-get-user",
                     args={"userName": user_name},
                 )
-                if modules.is_brand_available(
-                    aws_iam_get_user_command
-                ) and is_valid_args(aws_iam_get_user_command):
-                    readable_outputs, outputs = aws_iam_get_user(
-                        aws_iam_get_user_command
-                    )
+                if modules.is_brand_available(aws_iam_get_user_command) and is_valid_args(aws_iam_get_user_command):
+                    readable_outputs, outputs = aws_iam_get_user(aws_iam_get_user_command)
                     single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 msgraph_user_get_command = Command(
@@ -835,12 +737,8 @@ def main():
                     name="msgraph-user-get",
                     args={"user": user_name},
                 )
-                if modules.is_brand_available(
-                    msgraph_user_get_command
-                ) and is_valid_args(msgraph_user_get_command):
-                    readable_outputs, outputs = msgraph_user_get(
-                        msgraph_user_get_command
-                    )
+                if modules.is_brand_available(msgraph_user_get_command) and is_valid_args(msgraph_user_get_command):
+                    readable_outputs, outputs = msgraph_user_get(msgraph_user_get_command)
                     single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                     if outputs.get("id"):
@@ -849,26 +747,20 @@ def main():
                             name="msgraph-user-get-manager",
                             args={"user": user_name},
                         )
-                        readable_outputs, outputs = msgraph_user_get_manager(
-                            msgraph_user_get_manager_command
-                        )
+                        readable_outputs, outputs = msgraph_user_get_manager(msgraph_user_get_manager_command)
                         single_user_readable_outputs.extend(readable_outputs)
                         single_user_outputs.append(outputs)
             else:
-                demisto.debug(
-                    f"Skipping commands that do not support domain in user_name: {user_name}"
-                )
+                demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
             identityiq_search_identities_command = Command(
                 brand="SailPointIdentityIQ",
                 name="identityiq-search-identities",
                 args={"id": user_id, "email": user_email},
             )
-            if modules.is_brand_available(
+            if modules.is_brand_available(identityiq_search_identities_command) and is_valid_args(
                 identityiq_search_identities_command
-            ) and is_valid_args(identityiq_search_identities_command):
-                readable_outputs, outputs = identityiq_search_identities(
-                    identityiq_search_identities_command
-                )
+            ):
+                readable_outputs, outputs = identityiq_search_identities(identityiq_search_identities_command)
                 single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.append(outputs)
             xdr_list_risky_users_command = Command(
@@ -876,9 +768,7 @@ def main():
                 name="xdr-list-risky-users",
                 args={"user_id": user_name},
             )
-            if modules.is_brand_available(
-                xdr_list_risky_users_command
-            ) and is_valid_args(xdr_list_risky_users_command):
+            if modules.is_brand_available(xdr_list_risky_users_command) and is_valid_args(xdr_list_risky_users_command):
                 readable_outputs, outputs = xdr_list_risky_users(
                     xdr_list_risky_users_command,
                     user_name,
@@ -891,9 +781,7 @@ def main():
                 name="core-list-risky-users",
                 args={"user_id": user_name},
             )
-            if modules.is_brand_available(
-                core_list_risky_users_command
-            ) and is_valid_args(core_list_risky_users_command):
+            if modules.is_brand_available(core_list_risky_users_command) and is_valid_args(core_list_risky_users_command):
                 readable_outputs, outputs = xdr_list_risky_users(
                     core_list_risky_users_command, user_name, outputs_key_field="Core"
                 )
@@ -901,12 +789,8 @@ def main():
                 single_user_outputs.append(outputs)
 
             ### iam-get-user command implementation ###
-            if modules.is_brand_in_brands_to_run(
-                Command(brand="iam-get-user", name="iam-get-user", args={})
-            ):
-                readable_outputs, outputs = iam_get_user_command(
-                    user_id, user_name, user_email, domain
-                )
+            if modules.is_brand_in_brands_to_run(Command(brand="iam-get-user", name="iam-get-user", args={})):
+                readable_outputs, outputs = iam_get_user_command(user_id, user_name, user_email, domain)
                 single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.extend(outputs)
 
@@ -948,7 +832,7 @@ def main():
             )
         return_results(command_results_list)
     except Exception as e:
-        return_error(f"Failed to execute get-user-data. Error: {str(e)}")
+        return_error(f"Failed to execute get-user-data. Error: {e!s}")
 
 
 """ ENTRY POINT """

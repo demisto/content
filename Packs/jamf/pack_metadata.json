@@ -2,7 +2,7 @@
     "name": "Jamf",
     "description": "Jamf device management",
     "support": "xsoar",
-    "currentVersion": "2.2.5",
+    "currentVersion": "2.2.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

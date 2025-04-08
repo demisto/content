@@ -1,21 +1,18 @@
+import subprocess
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-import subprocess
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.exceptions import PackageNotFoundError
 
+from CommonServerUserPython import *
+
 
 class WordParser:
-
     def __init__(self):
-        self.res = []   # type: List[Dict[str, str]]
-        self.errEntry = {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents": ""
-        }
+        self.res = []  # type: List[Dict[str, str]]
+        self.errEntry = {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": ""}
         self.file_path = ""
         self.file_name = ""
         self.file_type = ""
@@ -26,9 +23,9 @@ class WordParser:
 
     def get_file_details(self):
         file_path_data = demisto.getFilePath(demisto.args().get("entryID"))
-        self.file_path = file_path_data.get('path')
-        self.file_name = file_path_data.get('name')
-        file_entry = demisto.dt(self.get_context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
+        self.file_path = file_path_data.get("path")
+        self.file_name = file_path_data.get("name")
+        file_entry = demisto.dt(self.get_context(), "File(val.EntryID === '{}')".format(demisto.args().get("entryID")))
         if isinstance(file_entry, list):
             file_entry = file_entry[0]
 
@@ -36,14 +33,22 @@ class WordParser:
 
     def convert_doc_to_docx(self):
         output = subprocess.check_output(
-            ['soffice', '--headless', '-env:UserInstallation=file:///tmp/.config/extractindicators', '--convert-to',
-             'docx', self.file_path], stderr=subprocess.STDOUT)
-        demisto.debug(f"soffice output: [{str(output)}]")
+            [
+                "soffice",
+                "--headless",
+                "-env:UserInstallation=file:///tmp/.config/extractindicators",
+                "--convert-to",
+                "docx",
+                self.file_path,
+            ],
+            stderr=subprocess.STDOUT,
+        )
+        demisto.debug(f"soffice output: [{output!s}]")
         # Requires office-utils docker image
-        output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
+        output_file_name = self.file_name[0 : self.file_name.rfind(".")] + ".docx"
         self.file_path = self.file_path + ".docx"
         try:
-            with open(self.file_path, 'rb') as f:
+            with open(self.file_path, "rb") as f:
                 f_data = f.read()
                 self.res = fileResult(output_file_name, f_data)
         except OSError:
@@ -64,7 +69,7 @@ class WordParser:
             self.res = self.errEntry  # type: ignore
 
     def get_paragraphs(self, document):
-        return '\n'.join([para.text for para in document.paragraphs])
+        return "\n".join([para.text for para in document.paragraphs])
 
     def get_tables(self, document):
         all_cells_txt = ""
@@ -73,24 +78,24 @@ class WordParser:
                 for row in table.rows:
                     for cell in row.cells:
                         for para in cell.paragraphs:
-                            all_cells_txt += (" " + para.text)
+                            all_cells_txt += " " + para.text
         return " ".join(all_cells_txt.split())  # Removes extra whitespaces
 
     def get_core_properties(self, document):
-        self.core_properties['author'] = document.core_properties.author
-        self.core_properties['category'] = document.core_properties.category
-        self.core_properties['comments'] = document.core_properties.comments
-        self.core_properties['identifier'] = document.core_properties.identifier
-        self.core_properties['keywords'] = document.core_properties.keywords
-        self.core_properties['subject'] = document.core_properties.subject
-        self.core_properties['title'] = document.core_properties.title
+        self.core_properties["author"] = document.core_properties.author
+        self.core_properties["category"] = document.core_properties.category
+        self.core_properties["comments"] = document.core_properties.comments
+        self.core_properties["identifier"] = document.core_properties.identifier
+        self.core_properties["keywords"] = document.core_properties.keywords
+        self.core_properties["subject"] = document.core_properties.subject
+        self.core_properties["title"] = document.core_properties.title
 
     def get_hyperlinks(self, document):
         all_hyperlinks = ""
         rels = document.part.rels
         for rel in rels:
             if rels[rel].reltype == RT.HYPERLINK:
-                all_hyperlinks += (rels[rel]._target + " ")
+                all_hyperlinks += rels[rel]._target + " "
         return all_hyperlinks
 
     def parse_word(self):
@@ -104,9 +109,9 @@ class WordParser:
             return_error("Input file is not a doc file.")
 
     def get_context(self):
-        incident_id = demisto.incident()['id']
-        res = execute_command('getContext', {'id': incident_id})
-        return demisto.get(res, 'context')
+        incident_id = demisto.incident()["id"]
+        res = execute_command("getContext", {"id": incident_id})
+        return demisto.get(res, "context")
 
 
 def main():
@@ -123,13 +128,13 @@ def main():
     all_data = " ".join([parser.paragraphs, parser.tables, parser.hyperlinks, core_properties_str])
 
     # Returning Indicators:
-    indicators_hr = demisto.executeCommand("extractIndicators", {'text': all_data})
+    indicators_hr = demisto.executeCommand("extractIndicators", {"text": all_data})
     return_results(indicators_hr)
 
-    hr_output = tableToMarkdown('Properties', parser.core_properties)
-    hr_output += f'### Paragraphs\n{parser.paragraphs}\n'
-    hr_output += f'### Tables\n{parser.tables}\n'
-    hr_output += f'### Hyperlinks\n{parser.hyperlinks}'
+    hr_output = tableToMarkdown("Properties", parser.core_properties)
+    hr_output += f"### Paragraphs\n{parser.paragraphs}\n"
+    hr_output += f"### Tables\n{parser.tables}\n"
+    hr_output += f"### Hyperlinks\n{parser.hyperlinks}"
 
     # Returning all parsed data:
     return_results(CommandResults(readable_output=hr_output))
