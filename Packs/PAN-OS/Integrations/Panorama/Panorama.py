@@ -9260,7 +9260,7 @@ class Topology:
                 if isinstance(e, panos.errors.PanURLError) and "403" in e.message:
                     raise Exception("Request Failed. Invalid Credentials.")
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
-                # If a device fails to respond, don't add it to gitthe topology.
+                # If a device fails to respond, don't add it to the topology.
 
         topology.username = username
         topology.password = password
