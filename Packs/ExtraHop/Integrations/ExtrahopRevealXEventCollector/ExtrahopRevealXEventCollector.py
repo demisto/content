@@ -285,7 +285,7 @@ def fetch_extrahop_detections(
         List of incidents to be pushed into XSIAM.
     """
     try:
-        already_fetched: Set[str] = set(last_run.get('already_fetched', []))
+        already_fetched: List[str] = last_run.get("already_fetched", [])
         detection_start_time = advanced_filter["mod_time"]
         limit = advanced_filter["limit"]
         events = []
@@ -303,23 +303,24 @@ def fetch_extrahop_detections(
                     demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
                     continue
 
-                already_fetched.add(detection_id)
+                already_fetched.append(detection_id)
                 events.append(detection)
 
                 if len(events) == max_events:
                     break
 
-            if len(events) == max_events:
-                break
-
-            # edge case where we got same mod_time #limit times
-            if detections[-1]["mod_time"] == detections[0]["mod_time"]:
-                advanced_filter["offset"] = advanced_filter["offset"] + limit
+            # edge case where we got same mod_time for all detections
+            if detections[-1]["mod_time"] == detections[0]["mod_time"] and detections[0]["mod_time"] == detection_start_time:
+                advanced_filter["offset"] = advanced_filter["offset"] + len(detections)
             else:
                 # Prepare for the next batch of detections
                 detection_start_time = events[-1]["mod_time"] + 1  # type: ignore
                 advanced_filter["mod_time"] = detection_start_time
                 advanced_filter["offset"] = 0
+
+            if len(events) == max_events:
+                break
+
 
 
     except Exception as error:
@@ -438,6 +439,7 @@ def main():
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, last_run, max_events)
+            demisto.debug(f'Finish fetch_events with {len(events)} events')
             if len(events):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
