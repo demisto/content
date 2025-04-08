@@ -2136,6 +2136,10 @@ def density_lookup_command(client: Client, args: dict) -> CommandResults:
 
     raw_response = client.density_lookup(qtype=qtype, query=query, scope=scope)
 
+      # Check for API error in the response
+    if raw_response.get('error'):
+        raise DemistoException(f"API Error: {raw_response.get('error')}")
+
     records = raw_response.get('response', {}).get('records', [])
 
     readable_output = (
@@ -2971,6 +2975,10 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
             skip=skip,
             limit=limit
         )
+
+    # Check for API error in the response
+    if raw_response.get('error'):
+        raise DemistoException(f"API Error: {raw_response.get('error')}")
 
     records = raw_response.get('response', {}).get('records', [])
 
