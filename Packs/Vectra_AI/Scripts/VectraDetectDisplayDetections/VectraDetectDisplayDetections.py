@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 
 """ CONSTANTS """
 
-UTM_PIVOT = f"?pivot=Vectra_AI-XSOAR-{get_pack_version(pack_id='Vectra_AI') or '2.0.0'}"
+UTM_PIVOT = f"?pivot=Vectra_AI-XSOAR-{get_pack_version() or '2.0.0'}"
 
 
 def trim_api_version(url: str) -> str:

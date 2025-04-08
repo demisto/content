@@ -18,7 +18,7 @@ def test_trim_api_version():
     url_with_version = "/api/v2.5/some/endpoint"
     trimmed_url = trim_api_version(url_with_version)
     assert trimmed_url == "/some/endpoint?pivot=Vectra_AI-XSOAR-"\
-        f"{get_pack_version(pack_id='Vectra_AI') or '2.0.0'}"
+        f"{get_pack_version() or '2.0.0'}"
 
     url_without_version = "/some/endpoint"
     trimmed_url = trim_api_version(url_without_version)

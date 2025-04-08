@@ -11237,18 +11237,15 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
-def get_pack_version(pack_id):
+def get_pack_version():
     """
     Get the pack version.
     The version can be retrieved only for the pack that contains the running script or integration.
 
-    :type pack_id: ``str``
-    :param pack_id: the pack id as the pack repository name, to query its version.
-
     :return: The pack version in which the integration/script is part of, in case not found returns empty string.
     :rtype: ``str``
     """
-    global_name = f"{pack_id.upper()}_PACK_VERSION"
+    global_name = "CONSTANT_PACK_VERSION"
     global_vars = globals()
     if global_name in global_vars:
         return global_vars[global_name]
