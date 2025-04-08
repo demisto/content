@@ -751,27 +751,17 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
 
     if fields == "*":
         for result in results:
+            demisto.info(result)
             filtered_result = {
-                'Source Address': result.get('source_ip', {}).get('value'),
-                'Public IP': result.get('public_ip', {}).get('value'),
-                'Public IPv6': result.get('public_ipv6', {}).get('value'),
-                'Destination Address': result.get('dest_ip', {}).get('value'),
-                'Private IP': result.get('private_ip', {}).get('value'),
-                'Private IPv6': result.get('private_ipv6', {}).get('value'),
-                'Application': result.get('app'),
-                'Action': result.get('action', {}).get('value'),
-                'Stage': result.get('stage'),
-                'Status': result.get('status', {}).get('value'),
-                'Connection Error': result.get('connection_error').get('value'),
-                'RuleMatched': result.get('rule_matched'),
-                'TimeGenerated': human_readable_time_from_epoch_time(result.get('time_generated')),
-                'FileID': result.get('file_id'),
-                'FileName': result.get('file_name'),
-                'FileType': result.get('file_type'),
-                'Source User': result.get('source_user'),
-                'Source Region': result.get('source_region'),
-                'Gateway': result.get('gateway'),
-                'Portal': result.get('portal'),
+                "Source Address": result.get("source_ip", {}).get("value"),
+                "Destination Address": result.get("dest_ip", {}).get("value"),
+                "Application": result.get("app"),
+                "Action": result.get("action", {}).get("value"),
+                "RuleMatched": result.get("rule_matched"),
+                "TimeGenerated": human_readable_time_from_epoch_time(result.get("time_generated")),
+                "FileID": result.get("file_id"),
+                "FileName": result.get("file_name"),
+                "FileType": result.get("file_type"),
             }
             filtered_results.append(filtered_result)
     else:
