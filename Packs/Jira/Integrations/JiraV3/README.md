@@ -153,14 +153,10 @@ When you enable incidents fetching, you have the option to configure a query whi
 
 If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
 By default, 50 issues are fetched for each call.
-
 If `Fetch comments` is enabled, The fetched incidents will include the comments in the Jira issue, and preview them in the form of a table in the incident info tab.
-
 If `Fetch attachments` is enabled, The fetched incidents will include the attachments in the Jira issue.
 
-**Note**: Changing certain incidents fetching configuration parameters, such as `Issue Field to fetch by` on the fly may result in unintended side effects and behaviors, including duplicate or missing incidents.
-
-It is best to reset the "last run" timestamp before applying such changes or, preferably, configure a new integration instance with the desired parameter values.
+**Note**: Changing certain incidents fetching configuration parameters, such as `Issue Field to fetch by` on the fly may result in unintended side effects and behaviors, including duplicate or missing incidents. It is recommended to reset the "last run" timestamp before applying such changes or, preferably, configure a new integration instance with the new fetch configuration.
 
 ## Commands
 

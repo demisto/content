@@ -2739,7 +2739,7 @@ class TestJiraFetchIncidents:
 
         client = jira_base_client_mock()
         mocker.patch("JiraV3.demisto.getLastRun", return_value={})  # empty last run (first fetch) -> Convert timezone
-        mocker.patch("JiraV3.get_user_timezone", return_value="UTC")
+        get_user_timezone_mocker = mocker.patch("JiraV3.get_user_timezone", return_value="UTC")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
         set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
         query_raw_response = {
@@ -2772,6 +2772,7 @@ class TestJiraFetchIncidents:
             "convert_timezone": True,  # last run was empty, so timezone was converted
         }
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
+        assert get_user_timezone_mocker.call_count == 1
 
     def test_set_last_run_when_last_run_is_not_empty(self, mocker):
         """
@@ -2785,7 +2786,7 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch(   # last run not empty -> No timezone conversion
+        mocker.patch(  # last run not empty -> No timezone conversion
             "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": ["1", "2"],
@@ -2841,7 +2842,7 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch(   # last run not empty -> No timezone conversion
+        mocker.patch(  # last run not empty -> No timezone conversion
             "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": ["1", "2"],
