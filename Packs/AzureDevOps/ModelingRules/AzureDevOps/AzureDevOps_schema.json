@@ -1,0 +1,60 @@
+{
+    "msft_azure_devops_raw": {
+        "ActorCUID": {
+            "type": "string",
+            "is_array": false
+        },
+        "ActorUPN": {
+            "type": "string",
+            "is_array": false
+        },
+        "Area": {
+            "type": "string",
+            "is_array": false
+        },
+        "AuthenticationMechanism": {
+            "type": "string",
+            "is_array": false
+        },
+        "Category": {
+            "type": "string",
+            "is_array": false
+        },
+        "CorrelationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Data": {
+            "type": "string",
+            "is_array": false
+        },
+        "Details": {
+            "type": "string",
+            "is_array": false
+        },
+        "IpAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "OperationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ProjectId": {
+            "type": "string",
+            "is_array": false
+        },
+        "ProjectName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Type": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserAgent": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
