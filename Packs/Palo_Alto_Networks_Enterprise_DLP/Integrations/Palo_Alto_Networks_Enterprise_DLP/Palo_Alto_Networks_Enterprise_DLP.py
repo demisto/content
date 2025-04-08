@@ -1,52 +1,51 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import urllib3
+import base64
+import bz2
+import math
 import urllib.parse
 from enum import Enum
 from string import Template
-import bz2
-import base64
-import math
 
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
-BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
-PAN_AUTH_URL = 'https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token'
-REPORT_URL = 'public/report/{}'
-INCIDENTS_URL = 'public/incident-notifications'
-REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
-UPDATE_INCIDENT_URL = 'public/incident-feedback'
-SLEEP_TIME_URL = 'public/seconds-between-incident-notifications-pull'
+BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
+PAN_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
+REPORT_URL = "public/report/{}"
+INCIDENTS_URL = "public/incident-notifications"
+REFRESH_TOKEN_URL = "public/oauth/refreshToken"
+UPDATE_INCIDENT_URL = "public/incident-feedback"
+SLEEP_TIME_URL = "public/seconds-between-incident-notifications-pull"
 FETCH_SLEEP = 5  # sleep between fetches (in seconds)
-LAST_FETCH_TIME = 'last_fetch_time'
-DEFAULT_FIRST_FETCH = '60 minutes'
-ACCESS_TOKEN = 'access_token'
-RESET_KEY = 'reset'
-CREDENTIAL = 'credential'
-IDENTIFIER = 'identifier'
-PASSWORD = 'password'
+LAST_FETCH_TIME = "last_fetch_time"
+DEFAULT_FIRST_FETCH = "60 minutes"
+ACCESS_TOKEN = "access_token"
+RESET_KEY = "reset"
+CREDENTIAL = "credential"
+IDENTIFIER = "identifier"
+PASSWORD = "password"
 
 
 class FeedbackStatus(Enum):
-    PENDING_RESPONSE = 'PENDING_RESPONSE'
-    CONFIRMED_SENSITIVE = 'CONFIRMED_SENSITIVE'
-    CONFIRMED_FALSE_POSITIVE = 'CONFIRMED_FALSE_POSITIVE'
-    EXCEPTION_REQUESTED = 'EXCEPTION_REQUESTED'
-    OPERATIONAL_ERROR = 'OPERATIONAL_ERROR'
-    EXCEPTION_GRANTED = 'EXCEPTION_GRANTED'
-    EXCEPTION_NOT_REQUESTED = 'EXCEPTION_NOT_REQUESTED'
-    SEND_NOTIFICATION_FAILURE = 'SEND_NOTIFICATION_FAILURE'
-    EXCEPTION_DENIED = 'EXCEPTION_DENIED'
+    PENDING_RESPONSE = "PENDING_RESPONSE"
+    CONFIRMED_SENSITIVE = "CONFIRMED_SENSITIVE"
+    CONFIRMED_FALSE_POSITIVE = "CONFIRMED_FALSE_POSITIVE"
+    EXCEPTION_REQUESTED = "EXCEPTION_REQUESTED"
+    OPERATIONAL_ERROR = "OPERATIONAL_ERROR"
+    EXCEPTION_GRANTED = "EXCEPTION_GRANTED"
+    EXCEPTION_NOT_REQUESTED = "EXCEPTION_NOT_REQUESTED"
+    SEND_NOTIFICATION_FAILURE = "SEND_NOTIFICATION_FAILURE"
+    EXCEPTION_DENIED = "EXCEPTION_DENIED"
 
 
 class Client(BaseClient):
-
     def __init__(self, url, credentials, insecure, proxy):
         super().__init__(base_url=url, headers=None, verify=not insecure, proxy=proxy)
         self.credentials = credentials
@@ -55,28 +54,19 @@ class Client(BaseClient):
             self.access_token = credentials[IDENTIFIER]
             self.refresh_token = credentials[PASSWORD]
         else:
-            self.access_token = ''
+            self.access_token = ""
             self._refresh_token_with_client_credentials()
 
     def _refresh_token(self):
         """Refreshes Access Token"""
-        headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "Content-Type": "application/json"
-        }
-        params = {
-            "refresh_token": self.refresh_token
-        }
-        print_debug_msg(f'Calling endpoint {self._base_url}{REFRESH_TOKEN_URL}')
+        headers = {"Authorization": "Bearer " + self.access_token, "Content-Type": "application/json"}
+        params = {"refresh_token": self.refresh_token}
+        print_debug_msg(f"Calling endpoint {self._base_url}{REFRESH_TOKEN_URL}")
         try:
             r = self._http_request(
-                method='POST',
-                headers=headers,
-                url_suffix=REFRESH_TOKEN_URL,
-                json_data=params,
-                ok_codes=[200, 201, 204]
+                method="POST", headers=headers, url_suffix=REFRESH_TOKEN_URL, json_data=params, ok_codes=[200, 201, 204]
             )
-            new_token = r.get('access_token')
+            new_token = r.get("access_token")
             if new_token:
                 self.access_token = new_token
 
@@ -87,23 +77,14 @@ class Client(BaseClient):
     def _refresh_token_with_client_credentials(self):
         client_id = self.credentials[IDENTIFIER]
         client_secret = self.credentials[PASSWORD]
-        credentials = f'{client_id}:{client_secret}'
-        auth_header = f'Basic {b64_encode(credentials)}'
-        headers = {
-            'Authorization': auth_header,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        credentials = f"{client_id}:{client_secret}"
+        auth_header = f"Basic {b64_encode(credentials)}"
+        headers = {"Authorization": auth_header, "Content-Type": "application/x-www-form-urlencoded"}
 
-        payload = 'grant_type=client_credentials'
+        payload = "grant_type=client_credentials"
         try:
-            r = self._http_request(
-                full_url=PAN_AUTH_URL,
-                method='POST',
-                headers=headers,
-                data=payload,
-                ok_codes=[200, 201, 204]
-            )
-            new_token = r.get('access_token')
+            r = self._http_request(full_url=PAN_AUTH_URL, method="POST", headers=headers, data=payload, ok_codes=[200, 201, 204])
+            new_token = r.get("access_token")
             if new_token:
                 self.access_token = new_token
 
@@ -137,16 +118,16 @@ class Client(BaseClient):
             url_suffix: URL suffix for dlp api call
         """
         count = 0
-        print_debug_msg(f'Calling GET method on {self._base_url}{url_suffix}')
+        print_debug_msg(f"Calling GET method on {self._base_url}{url_suffix}")
         while count < MAX_ATTEMPTS:
             res = self._http_request(
-                method='GET',
-                headers={'Authorization': "Bearer " + self.access_token},
+                method="GET",
+                headers={"Authorization": "Bearer " + self.access_token},
                 url_suffix=url_suffix,
                 ok_codes=[200, 201, 204],
                 error_handler=self._handle_403_errors,
-                resp_type='',
-                return_empty_response=True
+                resp_type="",
+                return_empty_response=True,
             )
             if res.status_code != 403:
                 break
@@ -173,14 +154,14 @@ class Client(BaseClient):
 
         while count < MAX_ATTEMPTS:
             res = self._http_request(
-                method='POST',
-                headers={'Authorization': f"Bearer {self.access_token}"},
+                method="POST",
+                headers={"Authorization": f"Bearer {self.access_token}"},
                 url_suffix=url_suffix,
                 json_data=payload,
                 ok_codes=[200, 201, 204],
                 error_handler=self._handle_403_errors,
-                resp_type='response',
-                return_empty_response=True
+                resp_type="response",
+                return_empty_response=True,
             )
             if res.status_code != 403:
                 break
@@ -218,40 +199,44 @@ class Client(BaseClient):
         url = INCIDENTS_URL
         params = {}
         if regions:
-            params['regions'] = regions
+            params["regions"] = regions
         if start_time:
-            params['start_timestamp'] = str(start_time)
+            params["start_timestamp"] = str(start_time)
         if end_time:
-            params['end_timestamp'] = str(end_time)
+            params["end_timestamp"] = str(end_time)
         query_string = urllib.parse.urlencode(params)
         url = f"{url}?{query_string}"
         resp, status_code = self._get_dlp_api_call(url)
         return resp, status_code
 
-    def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str,
-                            report_id: str, dlp_channel: str, error_details: str = None):
+    def update_dlp_incident(
+        self,
+        incident_id: str,
+        feedback: FeedbackStatus,
+        user_id: str,
+        region: str,
+        report_id: str,
+        dlp_channel: str,
+        error_details: str = None,
+    ):
         """
-                Update Incident with user provided feedback
-                Args:
-                    incident_id: The id of the incident to update
-                    feedback: 'business_justified', 'true_positive' or 'false_positive'
-                    user_id: The user that initiated the request
-                    region: The DLP region
-                    report_id: The report ID for the incident
-                    dlp_channel: The DLP channel (service name)
-                    error_details: The error details if there is an error
+        Update Incident with user provided feedback
+        Args:
+            incident_id: The id of the incident to update
+            feedback: 'business_justified', 'true_positive' or 'false_positive'
+            user_id: The user that initiated the request
+            region: The DLP region
+            report_id: The report ID for the incident
+            dlp_channel: The DLP channel (service name)
+            error_details: The error details if there is an error
 
-                Returns: DLP Incident json
-                """
-        payload = {
-            'user_id': user_id,
-            'report_id': report_id,
-            'service_name': dlp_channel
-        }
+        Returns: DLP Incident json
+        """
+        payload = {"user_id": user_id, "report_id": report_id, "service_name": dlp_channel}
         if error_details:
-            payload['error_details'] = error_details
+            payload["error_details"] = error_details
 
-        url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
+        url = f"{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}"
         return self._post_dlp_api_call(url, payload)
 
     def query_for_sleep_time(self):
@@ -275,13 +260,15 @@ def parse_data_pattern_rule(report_json, verdict_field, results_field):
     data_patterns = []
     for dp in report_json.get("scanContentRawReport", {}).get(results_field, []):
         if (dp.get("state") == "EVALUATED") and (dp.get("unique_detection_frequency", 0) >= 1):
-            data_patterns.append({
-                'DataPatternName': dp.get('name'),
-                'LowConfidenceFrequency': dp.get('low_confidence_frequency'),
-                'HighConfidenceFrequency': dp.get('high_confidence_frequency'),
-                'MediumConfidenceFrequency': dp.get('medium_confidence_frequency'),
-                'Detections': dp.get("detections")
-            })
+            data_patterns.append(
+                {
+                    "DataPatternName": dp.get("name"),
+                    "LowConfidenceFrequency": dp.get("low_confidence_frequency"),
+                    "HighConfidenceFrequency": dp.get("high_confidence_frequency"),
+                    "MediumConfidenceFrequency": dp.get("medium_confidence_frequency"),
+                    "Detections": dp.get("detections"),
+                }
+            )
     return data_patterns
 
 
@@ -294,14 +281,9 @@ def parse_data_patterns(report_json):
     Returns: Data pattern matches
     """
     data_patterns = []
-    data_patterns.extend(
-        parse_data_pattern_rule(report_json, "data_pattern_rule_1_verdict", "data_pattern_rule_1_results"))
-    data_patterns.extend(
-        parse_data_pattern_rule(report_json, "data_pattern_rule_2_verdict", "data_pattern_rule_2_results"))
-    return {
-        'DataProfile': report_json.get("data_profile_name"),
-        'DataPatternMatches': data_patterns
-    }
+    data_patterns.extend(parse_data_pattern_rule(report_json, "data_pattern_rule_1_verdict", "data_pattern_rule_1_results"))
+    data_patterns.extend(parse_data_pattern_rule(report_json, "data_pattern_rule_2_verdict", "data_pattern_rule_2_results"))
+    return {"DataProfile": report_json.get("data_profile_name"), "DataPatternMatches": data_patterns}
 
 
 def convert_to_human_readable(data_patterns):
@@ -315,27 +297,27 @@ def convert_to_human_readable(data_patterns):
     matches: list = []
     if not data_patterns:
         return matches
-    headers = ['DataPatternName', 'ConfidenceFrequency']
+    headers = ["DataPatternName", "ConfidenceFrequency"]
     for k in data_patterns.get("DataPatternMatches", []):
         match = {
-            'DataPatternName': k.get('DataPatternName'),
-            'ConfidenceFrequency': {
-                'Low': k.get('LowConfidenceFrequency'),
-                'Medium': k.get('MediumConfidenceFrequency'),
-                'High': k.get('HighConfidenceFrequency')
-            }
+            "DataPatternName": k.get("DataPatternName"),
+            "ConfidenceFrequency": {
+                "Low": k.get("LowConfidenceFrequency"),
+                "Medium": k.get("MediumConfidenceFrequency"),
+                "High": k.get("HighConfidenceFrequency"),
+            },
         }
         index = 1
-        detections = k.get('Detections', [])
+        detections = k.get("Detections", [])
         if detections:
             for detection in detections:
-                col = f'Detection {index}'
+                col = f"Detection {index}"
                 if col not in headers:
                     headers.append(col)
                 match[col] = detection
                 index += 1
         matches.append(match)
-    title = 'DLP Report for profile: {}'.format(data_patterns.get("DataProfile"))
+    title = "DLP Report for profile: {}".format(data_patterns.get("DataProfile"))
     return tableToMarkdown(title, matches, headers)
 
 
@@ -349,16 +331,16 @@ def parse_dlp_report(report_json) -> CommandResults:
     """
     data_patterns = parse_data_patterns(report_json)
     return CommandResults(
-        outputs_prefix='DLP.Report',
-        outputs_key_field='DataPatternName',
+        outputs_prefix="DLP.Report",
+        outputs_key_field="DataPatternName",
         outputs=data_patterns,
         readable_output=convert_to_human_readable(data_patterns),
-        raw_response=report_json
+        raw_response=report_json,
     )
 
 
 def test(client: Client, params: dict):
-    """ Test Function to test validity of access and refresh tokens"""
+    """Test Function to test validity of access and refresh tokens"""
     dlp_regions = params.get("dlp_regions", "")
     report_json, status_code = client.get_dlp_incidents(regions=dlp_regions)
     if status_code in [200, 204]:
@@ -379,80 +361,72 @@ def print_debug_msg(msg: str):
         msg (str): Message to be logged.
 
     """
-    demisto.debug(f'PAN-DLP-Msg - {msg}')
+    demisto.debug(f"PAN-DLP-Msg - {msg}")
 
 
 def update_incident_command(client: Client, args: dict) -> CommandResults:
-    incident_id = args.get('incident_id', '')
-    feedback = args.get('feedback', '')
-    user_id = args.get('user_id', '')
-    region = args.get('region', '')
-    report_id = args.get('report_id', '')
-    dlp_channel = args.get('dlp_channel', '')
-    error_details = args.get('error_details')
+    incident_id = args.get("incident_id", "")
+    feedback = args.get("feedback", "")
+    user_id = args.get("user_id", "")
+    region = args.get("region", "")
+    report_id = args.get("report_id", "")
+    dlp_channel = args.get("dlp_channel", "")
+    error_details = args.get("error_details")
     feedback_enum = FeedbackStatus[feedback.upper()]
-    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id,
-                                                     dlp_channel, error_details)
+    result_json, status = client.update_dlp_incident(
+        incident_id, feedback_enum, user_id, region, report_id, dlp_channel, error_details
+    )
 
-    output = {
-        'feedback': feedback_enum.value,
-        'success': status == 200
-    }
+    output = {"feedback": feedback_enum.value, "success": status == 200}
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
-        minutes = result_json['expiration_duration_in_minutes']
+        minutes = result_json["expiration_duration_in_minutes"]
         if minutes and minutes < 60:
-            output['duration'] = f'{minutes} minutes'
+            output["duration"] = f"{minutes} minutes"
         elif minutes:
-            output['duration'] = f'{minutes / 60} hours'
+            output["duration"] = f"{minutes / 60} hours"
 
-        result = CommandResults(
-            outputs_prefix="Exemption",
-            outputs_key_field='duration',
-            outputs=output)
+        result = CommandResults(outputs_prefix="Exemption", outputs_key_field="duration", outputs=output)
     else:
-        result = CommandResults(
-            outputs_prefix="IncidentUpdate",
-            outputs_key_field='feedback',
-            outputs=output)
+        result = CommandResults(outputs_prefix="IncidentUpdate", outputs_key_field="feedback", outputs=output)
     return result
 
 
 def parse_incident_details(compressed_details: str):
     details_byte_data = bz2.decompress(base64.b64decode(compressed_details))
-    details_string = details_byte_data.decode('utf-8')
+    details_string = details_byte_data.decode("utf-8")
     details_obj = json.loads(details_string)
     return details_obj
 
 
 def create_incident(notification: dict, region: str):
-    raw_incident = notification['incident']
-    previous_notifications = notification['previous_notifications']
-    raw_incident['region'] = region
-    raw_incident['previousNotification'] = previous_notifications[0] if len(previous_notifications) > 0 else None
-    incident_creation_time = dateparser.parse(raw_incident['createdAt'])
-    parsed_details = parse_incident_details(raw_incident['incidentDetails'])
-    raw_incident['incidentDetails'] = parsed_details
-    if not raw_incident['userId']:
-        for header in parsed_details['headers']:
-            if header['attribute_name'] == 'username':
-                raw_incident['userId'] = header['attribute_value']
+    raw_incident = notification["incident"]
+    previous_notifications = notification["previous_notifications"]
+    raw_incident["region"] = region
+    raw_incident["previousNotification"] = previous_notifications[0] if len(previous_notifications) > 0 else None
+    incident_creation_time = dateparser.parse(raw_incident["createdAt"])
+    parsed_details = parse_incident_details(raw_incident["incidentDetails"])
+    raw_incident["incidentDetails"] = parsed_details
+    if not raw_incident["userId"]:
+        for header in parsed_details["headers"]:
+            if header["attribute_name"] == "username":
+                raw_incident["userId"] = header["attribute_value"]
 
     event_dump = json.dumps(raw_incident)
     incident = {
-        'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
-        'type': 'Data Loss Prevention',
-        'occurred': incident_creation_time.isoformat(),  # type: ignore
-        'rawJSON': event_dump,
-        'details': event_dump
+        "name": f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
+        "type": "Data Loss Prevention",
+        "occurred": incident_creation_time.isoformat(),  # type: ignore
+        "rawJSON": event_dump,
+        "details": event_dump,
     }
     return incident
 
 
 def fetch_incidents(client: Client, regions: str, start_time: int = None, end_time: int = None):
     if start_time and end_time:
-        print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
+        print_debug_msg(f"Start fetching incidents between {start_time} and {end_time}.")
     else:
-        print_debug_msg('Start fetching most recent incidents')
+        print_debug_msg("Start fetching most recent incidents")
 
     notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
@@ -477,8 +451,8 @@ def is_reset_triggered():
     """
     ctx = get_integration_context()
     if ctx and RESET_KEY in ctx:
-        print_debug_msg('Reset fetch-incidents.')
-        set_integration_context({'samples': '[]'})
+        print_debug_msg("Reset fetch-incidents.")
+        set_integration_context({"samples": "[]"})
         return True
     return False
 
@@ -489,17 +463,11 @@ def fetch_notifications(client: Client, regions: str):
     if access_token:
         client.set_access_token(access_token)
 
-    incidents = fetch_incidents(
-        client=client,
-        regions=regions
-    )
+    incidents = fetch_incidents(client=client, regions=regions)
     print_debug_msg(f"Received {len(incidents)} incidents")
     if not is_reset_triggered():
         demisto.createIncidents(incidents)
-        new_ctx = {
-            ACCESS_TOKEN: client.access_token,
-            'samples': incidents
-        }
+        new_ctx = {ACCESS_TOKEN: client.access_token, "samples": incidents}
         demisto.setIntegrationContext(new_ctx)
     elif len(incidents) > 0:
         print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
@@ -513,8 +481,8 @@ def long_running_execution_command(client: Client, params: dict):
         params (Dict): Demisto params.
 
     """
-    demisto.setIntegrationContext({ACCESS_TOKEN: ''})
-    regions = demisto.get(params, 'dlp_regions', '')
+    demisto.setIntegrationContext({ACCESS_TOKEN: ""})
+    regions = demisto.get(params, "dlp_regions", "")
     sleep_time = FETCH_SLEEP
     last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
     while True:
@@ -526,53 +494,42 @@ def long_running_execution_command(client: Client, params: dict):
                 overriden_sleep_time = client.query_for_sleep_time()
                 last_time_sleep_interval_queries = current_time
                 if overriden_sleep_time:
-                    print_debug_msg(f'Setting sleep time to value from backend: {overriden_sleep_time}')
+                    print_debug_msg(f"Setting sleep time to value from backend: {overriden_sleep_time}")
                     sleep_time = overriden_sleep_time
 
         except Exception:
-            demisto.error('Error occurred during long running loop')
+            demisto.error("Error occurred during long running loop")
             demisto.error(traceback.format_exc())
 
         finally:
-            print_debug_msg('Finished fetch loop')
+            print_debug_msg("Finished fetch loop")
             time.sleep(sleep_time)
 
 
 def exemption_eligible_command(args: dict, params: dict) -> CommandResults:
-    data_profile = args.get('data_profile')
-    eligible_list = params.get('dlp_exemptible_list', '')
-    if eligible_list == '*':
+    data_profile = args.get("data_profile")
+    eligible_list = params.get("dlp_exemptible_list", "")
+    if eligible_list == "*":
         eligible = True
     else:
         eligible = data_profile in eligible_list
 
-    result = {
-        'eligible': eligible
-    }
-    return CommandResults(
-        outputs_prefix='DLP.exemption',
-        outputs_key_field='eligible',
-        outputs=result
-    )
+    result = {"eligible": eligible}
+    return CommandResults(outputs_prefix="DLP.exemption", outputs_key_field="eligible", outputs=result)
 
 
 def slack_bot_message_command(args: dict, params: dict):
-    message_template = params.get('dlp_slack_message', '')
+    message_template = params.get("dlp_slack_message", "")
     template = Template(message_template)
     message = template.substitute(
-        user=args.get('user'),
-        file_name=args.get('file_name'),
-        data_profile_name=args.get('data_profile_name'),
-        app_name=args.get('app_name'),
-        snippets=args.get('snippets', ""))
-    result = {
-        'message': message
-    }
-    return CommandResults(
-        outputs_prefix='DLP.slack_message',
-        outputs_key_field='slack_message',
-        outputs=result
+        user=args.get("user"),
+        file_name=args.get("file_name"),
+        data_profile_name=args.get("data_profile_name"),
+        app_name=args.get("app_name"),
+        snippets=args.get("snippets", ""),
     )
+    result = {"message": message}
+    return CommandResults(outputs_prefix="DLP.slack_message", outputs_key_field="slack_message", outputs=result)
 
 
 def fetch_incidents_command() -> List[dict]:
@@ -584,7 +541,7 @@ def fetch_incidents_command() -> List[dict]:
         (List[Dict]): List of incidents samples.
     """
     ctx = get_integration_context()
-    return ctx.get('samples', [])
+    return ctx.get("samples", [])
 
 
 def reset_last_run_command() -> str:
@@ -594,44 +551,44 @@ def reset_last_run_command() -> str:
         (str): 'fetch-incidents was reset successfully'.
     """
     ctx = get_integration_context()
-    ctx[RESET_KEY] = 'true'
+    ctx[RESET_KEY] = "true"
     set_integration_context(ctx)
-    return 'fetch-incidents was reset successfully.'
+    return "fetch-incidents was reset successfully."
 
 
 def main():
-    """ Main Function"""
+    """Main Function"""
     try:
-        demisto.info(f'Command is {demisto.command()}')
+        demisto.info(f"Command is {demisto.command()}")
         params = demisto.params()
         print_debug_msg(f'Received parameters: {",".join(params.keys())}.')
-        credentials = params.get('credentials')
+        credentials = params.get("credentials")
 
-        client = Client(BASE_URL, credentials, params.get('insecure'), params.get('proxy'))
+        client = Client(BASE_URL, credentials, params.get("insecure"), params.get("proxy"))
         args = demisto.args()
-        if demisto.command() == 'pan-dlp-get-report':
-            report_id = args.get('report_id')
-            fetch_snippets = argToBoolean(args.get('fetch_snippets'))
+        if demisto.command() == "pan-dlp-get-report":
+            report_id = args.get("report_id")
+            fetch_snippets = argToBoolean(args.get("fetch_snippets"))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             return_results(parse_dlp_report(report_json))
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             demisto.incidents(fetch_incidents_command())
-        elif demisto.command() == 'long-running-execution':
+        elif demisto.command() == "long-running-execution":
             long_running_execution_command(client, params)
-        elif demisto.command() == 'pan-dlp-update-incident':
+        elif demisto.command() == "pan-dlp-update-incident":
             return_results(update_incident_command(client, args))
-        elif demisto.command() == 'pan-dlp-exemption-eligible':
+        elif demisto.command() == "pan-dlp-exemption-eligible":
             return_results(exemption_eligible_command(args, params))
-        elif demisto.command() == 'pan-dlp-slack-message':
+        elif demisto.command() == "pan-dlp-slack-message":
             return_results(slack_bot_message_command(args, params))
-        elif demisto.command() == 'pan-dlp-reset-last-run':
+        elif demisto.command() == "pan-dlp-reset-last-run":
             return_results(reset_last_run_command())
         elif demisto.command() == "test-module":
             test(client, params)
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()
