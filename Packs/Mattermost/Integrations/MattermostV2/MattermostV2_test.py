@@ -88,6 +88,8 @@ def http_mock(
         return channel
     elif url_suffix == '/api/v4/groups':
         return util_load_json("test_data/list_groups_response.json")
+    elif url_suffix == '/api/v4/groups/group_id/members':
+        return util_load_json("test_data/list_group_members_response.json")
     else:
         return {}
 
@@ -576,7 +578,8 @@ def test_list_group_members_command(http_client):
     """
     args = {'group_id': 'group_id', }
     results = list_group_members_command(http_client, args)
-    assert results.outputs.get('id') == 'group_id'
+    assert len(results.outputs) == 1
+    assert results.outputs[0]["username"] == "username"
 
 
 def test_add_group_member_command(http_client):

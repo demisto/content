@@ -1,5 +1,4 @@
 {
-    "id": "id123",
     "members": [
       {
         "id": "id123",
@@ -24,6 +23,5 @@
         "terms_of_service_create_at": 0
       }
     ],
-    "name": "user_group",
     "total_member_count": 1
   }
