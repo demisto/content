@@ -935,7 +935,7 @@ script:
       required: true
     description: Command performs Group IB event lookup in attacks/phishing_group collection by provided ID.
     name: gibtia-get-phishing-group-info
-  dockerimage: demisto/vendors-sdk:1.0.0.2073752
+  dockerimage: demisto/vendors-sdk:1.0.0.2914202
   feed: false
   isfetch: true
   longRunning: false

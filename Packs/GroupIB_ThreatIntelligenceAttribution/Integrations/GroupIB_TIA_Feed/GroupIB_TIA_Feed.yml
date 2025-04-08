@@ -217,7 +217,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/vendors-sdk:1.0.0.2073752
+  dockerimage: demisto/vendors-sdk:1.0.0.2914202
   feed: true
   runonce: false
   script: '-'

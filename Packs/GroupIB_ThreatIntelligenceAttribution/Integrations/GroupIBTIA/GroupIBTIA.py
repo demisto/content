@@ -301,7 +301,7 @@ INCIDENT_CREATED_DATES_MAPPING = {
     "compromised/account_group": "dateFirstSeen",
     "compromised/breached": "uploadTime",
     "compromised/mule": ["dateAdd", "dateIncident"],
-    "compromised/bank_card_group": "dateFirstCompromised",
+    "compromised/bank_card_group": ["dateFirstCompromised", "dateFirstSeen"],
     "osi/git_repository": "dateDetected",
     "osi/public_leak": "created",
     "osi/vulnerability": "datePublished",
@@ -327,6 +327,7 @@ COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED = [
     "suspicious_ip/open_proxy",
     "suspicious_ip/socks_proxy",
     "osi/public_leak",
+    "attacks/phishing_group",
 ]
 
 SET_WITH_ALL_DATE_FIELDS = {
@@ -408,6 +409,7 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public
 
 COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
 
+COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = ["osi/public_leak", "attacks/phishing_group"]
 
 class NumberedSeverity(Enum):
     LOW = 1
@@ -1799,6 +1801,8 @@ class IncidentBuilder:
         return severity_map.get(severity, 0)
 
     def get_incident_created_time(self) -> str:
+        last_exception = None
+        incident_id = self.incident.get("id", None)
         occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(
             self.collection_name, "-"
         )
@@ -1811,19 +1815,28 @@ class IncidentBuilder:
 
         for variant in occured_date_field:
             try:
-                incident_occured_date = dateparser_parse(
-                    date_string=self.incident.get(variant, "")
-                )
+                date_value = self.incident.get(variant, "")
+                
+                if date_value is None:
+                    continue
+                if not isinstance(date_value, str):
+                    date_value = str(date_value)
+                if not date_value.strip():
+                    continue
+                incident_occured_date = dateparser_parse(date_string=date_value)
+                
                 assert incident_occured_date is not None, (
                     f"{self.incident} incident_occured_date cannot be None, "
                     f"occured_date_field: {variant}, incident_occured_date: {incident_occured_date}"
+                    f"{self.collection_name} {incident_id}"
                 )
                 return incident_occured_date.strftime(DATE_FORMAT)
             except AssertionError as e:
                 last_exception = e
 
         raise AssertionError(
-            f"None of the date fields {occured_date_field} returned a valid date. Last error: {last_exception}"
+            f"None of the date fields {occured_date_field} returned a valid date."
+            f"Last error: {last_exception} {self.collection_name} {incident_id}"
         )
 
     def get_incident_name(self) -> str:
@@ -1996,7 +2009,7 @@ class BuilderCommandResponses:
             self.collection_name
             in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED
         ):
-            if self.collection_name == "osi/public_leak":
+            if self.collection_name in COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER:
                 query = f"id:{id_}"
             else:
                 query = id_
@@ -2011,8 +2024,14 @@ class BuilderCommandResponses:
 
         else:
             result = self.client.poller.search_feed_by_id(self.collection_name, id_)
+            mapping = MAPPING.get(self.collection_name, {})
+            # This was done because the response when receiving a single record can
+            # differentiate your json from getting the whole list
+            if self.collection_name == "compromised/breached":
+                mapping["emailDomains"] = "emails"
+                
             parsed_portion = result.parse_portion(
-                keys=MAPPING.get(self.collection_name, {})
+                keys=mapping
             )
             cleaned_feed = parsed_portion[0] if isinstance(parsed_portion, list) else parsed_portion  # type: ignore
 
@@ -2245,6 +2264,7 @@ def global_search_command(client: Client, args: dict) -> CommandResults:
         )
     else:
         results = CommandResults(
+            outputs_prefix="GIBTIA.search.global",
             raw_response=raw_response,
             ignore_auto_extract=True,
             outputs=[],
