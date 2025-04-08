@@ -46,7 +46,7 @@ def SSL_info(domain: str, verbose: bool = False) -> dict:
             for pairs in cert.get('issuer', []):
                 for pair in pairs:
                     if isinstance(pair, tuple) and len(pair) == 2 and all(isinstance(i, str) for i in pair):
-                        subject[pair[0]] = pair[1]
+                        issuer[pair[0]] = pair[1]
             
             ca_info = {
                 'domain': domain,
