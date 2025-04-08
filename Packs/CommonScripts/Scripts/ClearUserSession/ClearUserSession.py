@@ -156,30 +156,32 @@ def run_execute_command(
     return entry_context_list, human_readable, errors_command_results
 
 
-def remove_system_user(users_names: list[str]) -> tuple[list, list]:
+def remove_system_user(users_names: list[str], brands: list[str]) -> tuple[list, list]:
     """
     Filters out system users from the provided list of user names and returns the remaining users along with status details.
 
     Args:
         users_names (list[str]): A list of user names to be processed.
+        brands (list[str]): A list of brands to check.
 
     Returns:
         tuple: A tuple containing:
             - list: A list of user names that are not system users.
             - dict: A list of dictionaries containing information about users that were identified as system users,
-            including their status and messages.
+            including their status, brand and messages.
     """
     outputs = []
     filtered_users = []
     for user in users_names:
         if user in SYSTEM_USERS:
             demisto.debug(f"Skipping user: '{user}' is a system user.")
-            outputs.append({
-                "Message": "Skipping session clearing: User is a system user.",
-                "Result": "Failed",
-                "Brand": "",
-                "UserName": user,
-            })
+            for brand in brands:
+                outputs.append({
+                    "Message": "Skipping session clearing: User is a system user.",
+                    "Result": "Failed",
+                    "Brand": brand,
+                    "UserName": user,
+                })
         else:
             filtered_users.append(user)
 
@@ -244,7 +246,6 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
         prepare_human_readable(command.name, command.args, human_readable)
     )
     id_info = {}
-
 
     for entry in entry_context:
         if entry:
@@ -350,12 +351,12 @@ def main():
         args = demisto.args()
         users_names = argToList(args.get("user_name", ""))
         verbose = argToBoolean(args.get("verbose", False))
-        brands = args.get("brands", DEFAULT_BRANDS)
+        brands = argToList(args.get("brands", DEFAULT_BRANDS))
 
         outputs: list = []
         results_for_verbose: list[CommandResults] = []
 
-        filtered_users_names, outputs = remove_system_user(users_names)
+        filtered_users_names, outputs = remove_system_user(users_names, brands)
 
         # get ID for users
         get_user_data_command = Command(
@@ -377,16 +378,6 @@ def main():
 
             demisto.debug(f"Start getting user account data for user: {user_name=}")
 
-            if user_name not in users_ids:
-                user_output = {
-                    "Message": "Username not found or no integration configured.",
-                    "Result": "Failed",
-                    "Brand": "",
-                    "UserName": user_name,
-                }
-                outputs.append(user_output)
-                continue
-
             clear_session_results: list[tuple[str, str, str]] = []
 
             # Okta v2
@@ -400,12 +391,14 @@ def main():
                     readable_outputs, _, error_message = clear_user_sessions(okta_clear_user_sessions_command)
                     results_for_verbose.extend(readable_outputs)
                     if not error_message:
-                        clear_session_results.append((OKTA_BRAND, "Success", ""))
+                        clear_session_results.append((OKTA_BRAND, "Success", f"User session was cleared for {user_name}."))
                     else:
                         failed_message = f"Okta v2: {error_message.lstrip('#').strip()}"
                         demisto.debug(f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
                                       f"Error message: {error_message}. Response details: {readable_outputs}.")
                         clear_session_results.append((OKTA_BRAND, "Failed", failed_message))
+            elif OKTA_BRAND in brands:
+                clear_session_results.append((OKTA_BRAND, "Failed", "Username not found or no integration configured."))
 
             # Microsoft Graph User
             if microsoft_graph_id := get_user_id(users_ids, brand_name=MS_GRAPH_BRAND, user_name=user_name):
@@ -418,12 +411,14 @@ def main():
                     readable_outputs, human_readable, _ = clear_user_sessions(msgraph_user_session_revoke_command)
                     results_for_verbose.extend(readable_outputs)
                     if "successfully" in human_readable:
-                        clear_session_results.append((MS_GRAPH_BRAND, "Success", ""))
+                        clear_session_results.append((MS_GRAPH_BRAND, "Success", f"User session was cleared for {user_name}."))
                     else:
                         failed_message = f"\nMG User: {human_readable.lstrip('#').strip()}"
                         demisto.debug(f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
                                       f"Response details: {readable_outputs}")
                         clear_session_results.append((MS_GRAPH_BRAND, "Failed", failed_message))
+            elif MS_GRAPH_BRAND in brands:
+                clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
 
             for (brand, result, message) in clear_session_results:
                 user_output = {
@@ -433,7 +428,6 @@ def main():
                     "UserName": user_name,
                 }
                 outputs.append(user_output)
-
 
         ##############################
         ### Complete for all users ###

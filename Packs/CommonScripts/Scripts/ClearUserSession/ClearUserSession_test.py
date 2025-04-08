@@ -493,17 +493,17 @@ def test_remove_system_user_with_system_users():
             "UserName": "administrator",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Brand": "",
+            "Brand": "Microsoft Graph User",
         },
         {
             "UserName": "system",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Brand": "",
+            "Brand": "Microsoft Graph User",
         }
     ]
 
-    filtered_users, data_user = remove_system_user(users)
+    filtered_users, data_user = remove_system_user(users,["Microsoft Graph User"])
 
     # Assertions to verify the correctness of the result
     assert filtered_users == expected_filtered_users
@@ -517,7 +517,7 @@ def test_remove_system_user_no_system_users():
     expected_filtered_users = ["user1", "user2"]
     expected_data_user = []
 
-    filtered_users, data_user = remove_system_user(users)
+    filtered_users, data_user = remove_system_user(users,["Okta v2","Microsoft Graph User"])
 
     assert filtered_users == expected_filtered_users
     assert data_user == expected_data_user
@@ -624,38 +624,43 @@ def test_clear_user_sessions(mocker: MockerFixture):
      
      {"user1@test.com": [{"Source": "Okta v2", "Value": "1234"}]},
      
-     [{"Message": "",
+     [{"Message": "User session was cleared for user1@test.com.",
        "Result": "Success",
        "Brand": "Okta v2",
        "UserName": "user1@test.com"},]),
     
-    # Test one user with two brands
+    # Test one user which exists in two brands
     ({"user_name": ["user1@test.com"],
-      "brands": [""],},
+      "brands": None,},
      
      {"user1@test.com": [{"Source": "Okta v2", "Value": "11"},
                          {"Source": "Microsoft Graph User", "Value": "22"}]},
      
-     [{"Message": "",
+     [{"Message": "User session was cleared for user1@test.com.",
        "Result": "Success",
        "Brand": "Okta v2",
        "UserName": "user1@test.com"},
       
-      {"Message": "",
+      {"Message": "User session was cleared for user1@test.com.",
        "Result": "Success",
        "Brand": "Microsoft Graph User",
        "UserName": "user1@test.com"}]),
     
-    # System User
-    ({"user_name": ["system"],
-      "brands": [""],},
+    # Test one user which exists in one brand
+    ({"user_name": ["user1@test.com"],
+      "brands": None,},
      
-     {"user1@test.com": [{"Source": "Okta v2", "Value": "1234"}]},
+     {"user1@test.com": [{"Source": "Okta v2", "Value": "11"}]},
      
-     [{"Message": "Skipping session clearing: User is a system user.",
+     [{"Message": "User session was cleared for user1@test.com.",
+       "Result": "Success",
+       "Brand": "Okta v2",
+       "UserName": "user1@test.com"},
+      
+      {"Message": "Username not found or no integration configured.",
        "Result": "Failed",
-       "Brand": "",
-       "UserName": "system"},]),
+       "Brand": "Microsoft Graph User",
+       "UserName": "user1@test.com"}])
     
 ])
 def test_final_context_format(inputs, get_user_data_context, expected_output, mocker: MockerFixture):
@@ -668,20 +673,22 @@ def test_final_context_format(inputs, get_user_data_context, expected_output, mo
         The function should clear the session and construct valid context.
     """
 
-    # Mock clear_user_sessions
-    mocker.patch("ClearUserSession.clear_user_sessions", return_value=("", "", None))
-
     # Mock get_user_data to return expected entry context
     mocker.patch("ClearUserSession.get_user_data", return_value=([], get_user_data_context))
 
     # Mock clear_user_sessions
-    mocker.patch("ClearUserSession.clear_user_sessions", return_value=("",{"successfully"},None))
+    mocker.patch("ClearUserSession.clear_user_sessions", return_value=("","successfully",None))
     
     # Mock demisto.args()
-    mocker.patch.object(demisto, "args", return_value={
-        "user_name": inputs["user_name"],
-        "brands": inputs["brands"],
-    })
+    args_dict = {
+        "user_name": inputs["user_name"]
+    }
+
+    if inputs.get("brands"):
+        args_dict["brands"] = inputs["brands"]
+
+    mocker.patch.object(demisto, "args", return_value=args_dict)
+
 
     # Mock return_results to capture its arguments
     mock_return_results = mocker.patch("ClearUserSession.return_results")
