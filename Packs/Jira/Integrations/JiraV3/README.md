@@ -22,7 +22,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Client Secret | used only for OAuth 2.0 method | False |
     | Personal Access Token | used only for the Personal Access Token method | False |
     | Query (in JQL) for fetching incidents | The field that was selected in the "Issue Field to fetch by" can't be used. in the query. | False |
-    | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: "created >= \{created date in last run\} ORDER BY created ASC". | False |
+    | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: created &amp;gt;= \{created date in last run\} ORDER BY created ASC | False |
     | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -38,7 +38,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Fetch attachments | Fetch attachments for a Jira ticket. | False |
     | Max incidents per fetch | The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50. | False |
     | Time range for initial data fetch | The time range to consider for the initial data fetch in format: &lt;number&gt; &lt;unit&gt;. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years | False |
-    | Fetch filter timezone of issue date field | This optional parameter is dismissed if "id" is chosen in "Issue Field to Fetch by". This will convert the selected issue date field to the specified timezone before applying the JQL query: "created >= {converted created date in last run} ORDER BY created ASC". For example: "America/New York", "Europe/Madrid", "Asia/Jerusalem", "UTC+2", "UTC-4". | False |
 
 5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
@@ -154,10 +153,13 @@ When you enable incidents fetching, you have the option to configure a query whi
 
 If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
 By default, 50 issues are fetched for each call.
+
 If `Fetch comments` is enabled, The fetched incidents will include the comments in the Jira issue, and preview them in the form of a table in the incident info tab.
+
 If `Fetch attachments` is enabled, The fetched incidents will include the attachments in the Jira issue.
 
-**Note**: Changing certain incidents fetching configuration parameters, such as `Issue Field to fetch by` and `Fetch filter timezone of issue date field` on the fly may result in unintended side effects and behaviors, including duplicate or missing incidents.
+**Note**: Changing certain incidents fetching configuration parameters, such as `Issue Field to fetch by` on the fly may result in unintended side effects and behaviors, including duplicate or missing incidents.
+
 It is best to reset the "last run" timestamp before applying such changes or, preferably, configure a new integration instance with the desired parameter values.
 
 ## Commands

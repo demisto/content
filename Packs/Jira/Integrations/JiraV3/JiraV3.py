@@ -6,7 +6,6 @@ from copy import deepcopy
 from mimetypes import guess_type
 
 import demistomock as demisto  # noqa: F401
-from pytz import UnknownTimeZoneError
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
@@ -3438,38 +3437,38 @@ def parse_issue_times(
     issue_id: int,
     issue_created_time: str,
     issue_updated_time: str,
-    fetch_timezone: str | None,
+    dateparser_settings: dict| None,
 ) -> tuple[str, str]:
-    """Formats both the Jira issue created and updated timestamps in the default date format and converts them to the fetch
-    timezone, if given.
+    """Parses the the Jira issue created and updated timestamps based on the date parser settings (if given) and formats both
+    in the default date format.
 
     Args:
         issue_id (int): ID of the Jira issue.
         issue_created_time (str): Time of creation of the Jira issue.
         issue_updated_time (str): Time of last update of the Jira issue.
-        fetch_timezone (str | None): Optional timezone for converting the Jira issue created and updated timestamps.
+        dateparser_settings (dict | None): Optional configured settings to use in `dateparser.parse()`.
 
     Returns:
-        tuple[str, str]: Created and updated timestamps formatted and converted to the fetch timezone, if given.
+        tuple[str, str]: Parsed and formatted created and updated Jira issue timestamps.
     """
-    dateparser_settings = assign_params(TIMEZONE=fetch_timezone)
-    try:
-        converted_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
-        demisto.debug(
-            f"Converted created time of issue with ID: {issue_id} from: {issue_created_time} to: {converted_created_time}. "
-            + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
-        )
+    converted_created_time = convert_string_date_to_specific_format(
+        string_date=issue_created_time,
+        dateparser_settings=dateparser_settings,
+    )
+    demisto.debug(
+        f"Converted created time of issue with ID: {issue_id} from: {issue_created_time} to: {converted_created_time}. "
+        f"Used date parser settings: {dateparser_settings}."
+    )
 
-        converted_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
-        demisto.debug(
-            f"Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} to: {converted_updated_time}. "
-            + (f"Converted to timezone: {fetch_timezone}." if fetch_timezone else "No timezone conversion performed.")
-        )
-    except UnknownTimeZoneError as e:
-        raise DemistoException(f"Invalid timezone value: {fetch_timezone}.") from e
-    
+    converted_updated_time = convert_string_date_to_specific_format(
+        string_date=issue_updated_time,
+        dateparser_settings=dateparser_settings,
+    )
+    demisto.debug(
+        f"Converted updated time of issue with ID: {issue_id} from: {issue_updated_time} to: {converted_updated_time}. "
+        f"Used date parser settings: {dateparser_settings}."
+    )
     return converted_created_time, converted_updated_time
-
 
 # Fetch Incidents
 def fetch_incidents(
@@ -3486,7 +3485,6 @@ def fetch_incidents(
     comment_tag_to_jira: str,
     attachment_tag_from_jira: str,
     attachment_tag_to_jira: str,
-    fetch_timezone: str | None = None,
 ) -> List[Dict[str, Any]]:
     """This function is the entry point of fetching incidents.
 
@@ -3506,7 +3504,6 @@ def fetch_incidents(
         comment_tag_from_jira (str): The comment tag to add to an entry to mirror it as a comment from Jira.
         attachment_tag_to_jira (str): The attachment tag to add to an entry to mirror it as an attachment in Jira.
         attachment_tag_from_jira (str): The attachment tag to add to an entry to mirror it as an attachment from Jira.
-        fetch_timezone (str | None): Optional timezone for converting the Jira issue created and updated timestamps.
 
     Returns:
         List[Dict[str, Any]]: A list of incidents.
@@ -3531,8 +3528,18 @@ def fetch_incidents(
             if last_fetch_id
             else "No smallest ID found since the fetch query returns 0 results"
         )
+    # Jira timestamp filters work based on the user timezone, so we need to convert the first fetch interval timezone accordingly
+    # To stay backwards compatible, convert timezone if empty last run (first fetch) or if 'convert_timezone' in last run is True
+    dateparser_settings: dict | None = None
+    if not last_run or last_run.get("convert_timezone"):
+        user_timezone = get_user_timezone(client=client)
+        demisto.debug(f"Converting JQL timestamp filters to user timezone: {user_timezone}.")
+        dateparser_settings = {"TIMEZONE": user_timezone}
+
+    first_fetch_interval = convert_string_date_to_specific_format(first_fetch_interval, dateparser_settings=dateparser_settings)
     new_fetch_created_time = last_fetch_created_time = last_run.get("created_date", "")
     new_fetch_updated_time = last_fetch_updated_time = last_run.get("updated_date", "")
+
     incidents: List[Dict[str, Any]] = []
     demisto.debug("Creating the fetch query")
     fetch_incidents_query = create_fetch_incidents_query(
@@ -3541,7 +3548,7 @@ def fetch_incidents(
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
         last_fetch_updated_time=last_fetch_updated_time,
-        first_fetch_interval=convert_string_date_to_specific_format(string_date=first_fetch_interval),
+        first_fetch_interval=first_fetch_interval,
         issue_ids_to_exclude=last_fetch_issue_ids,
     )
     demisto.debug(f"The fetch query: {fetch_incidents_query}" if fetch_incidents_query else "No fetch query created")
@@ -3564,7 +3571,7 @@ def fetch_incidents(
                     issue_id=issue_id,
                     issue_created_time=demisto.get(issue, "fields.created") or "",
                     issue_updated_time=demisto.get(issue, "fields.updated") or "",
-                    fetch_timezone=fetch_timezone,
+                    dateparser_settings=dateparser_settings,
                 )
                 demisto.debug(f"Finished parsing created and updated fields of issue with ID: {issue_id}")
 
@@ -3619,6 +3626,7 @@ def fetch_incidents(
         "id": last_fetch_id,
         "created_date": new_fetch_created_time or last_fetch_created_time,
         "updated_date": new_fetch_updated_time or last_fetch_updated_time,
+        "convert_timezone": bool(dateparser_settings),
     }
     demisto.debug(f"Setting next run: {next_run}")
     demisto.setLastRun(next_run)
@@ -4543,8 +4551,6 @@ def main():  # pragma: no cover
     fetch_attachments = argToBoolean(params.get("fetch_attachments", False))
     fetch_comments = argToBoolean(params.get("fetch_comments", False))
     max_fetch = params.get("max_fetch", DEFAULT_FETCH_LIMIT)
-    # To keep backwards compatibility, do not do any timezone conversion by default
-    fetch_timezone: str | None = params.get("fetch_timezone")
     # This is used in the first fetch of an instance, when issue_field_to_fetch_from is either, updated date, or created date
     # It holds values such as: 3 days, 1 minute, 5 hours,...
     first_fetch_interval = params.get("first_fetch", DEFAULT_FIRST_FETCH_INTERVAL)
@@ -4645,7 +4651,6 @@ def main():  # pragma: no cover
                     client=client,
                     issue_field_to_fetch_from=issue_field_to_fetch_from,
                     fetch_query=fetch_query,
-                    fetch_timezone=fetch_timezone,
                     id_offset=arg_to_number(id_offset) or 0,
                     fetch_attachments=fetch_attachments,
                     fetch_comments=fetch_comments,

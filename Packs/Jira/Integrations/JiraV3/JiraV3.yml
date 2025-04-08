@@ -62,7 +62,7 @@ configuration:
   - created date
   - updated date
   type: 15
-  additionalinfo: 'This is how the field (e.g, created date) is applied to the query. For example: "created >= {created date in last run} ORDER BY created ASC".'
+  additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
   required: false
   section: Collect
 - display: Issue index to start fetching incidents from
@@ -186,13 +186,6 @@ configuration:
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
   required: false
-  section: Collect
-- display: Fetch filter timezone of issue date field
-  name: fetch_timezone
-  additionalinfo: 'This optional parameter is dismissed if "id" is chosen in "Issue Field to Fetch by". This will convert the selected issue date field to the specified timezone before applying the JQL query: "created >= {converted created date in last run} ORDER BY created ASC". For example: "America/New York", "Europe/Madrid", "Asia/Jerusalem", "UTC+2", "UTC-4".'
-  type: 0
-  required: false
-  advanced: true
   section: Collect
 script:
   commands:
