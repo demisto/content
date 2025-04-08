@@ -9258,9 +9258,9 @@ class Topology:
                 topology.add_device_object(device)
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
                 if isinstance(e, panos.errors.PanURLError) and "403" in e.message:
-                    raise Exception("Request Failed. Invalid Credential.")
+                    raise Exception("Request Failed. Invalid Credentials.")
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
-                # If a device fails to respond, don't add it to the topology.
+                # If a device fails to respond, don't add it to gitthe topology.
 
         topology.username = username
         topology.password = password
