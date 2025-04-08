@@ -415,6 +415,7 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
+        outputs_prefix="Extrahop.RevealX.Audit",
     )
     return output, command_results
 
@@ -455,6 +456,7 @@ def main():
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
             events, command_results = get_events(client, args, max_events)
+            print(events, command_results)
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'xuSending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
