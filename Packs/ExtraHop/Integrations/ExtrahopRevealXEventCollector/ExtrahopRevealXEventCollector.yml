@@ -77,7 +77,7 @@ script:
         type: 0
         required: false
       - description: Returns no more than the specified number of detections
-        name: limit
+        name: max_events
         required: false
   isfetch: false
   runonce: false

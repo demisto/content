@@ -240,13 +240,13 @@ def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
         update_time = detection.get("update_time")
 
         if mod_time:
-            detection["_time"] = mod_time
+            detection["_TIME"] = mod_time
             # TODO: Is this how Dima in tended that this would be?
             if start_time:
                 if mod_time == start_time:
-                    detection["_entery_status"] = "new"
+                    detection["_ENTRY_STATUS"] = "new"
                 elif mod_time > start_time or (update_time and update_time > start_time):
-                    detection["_entery_status"] = "updated"
+                    detection["_ENTRY_STATUS"] = "updated"
 
 
 def get_detections_list(client: Client,
@@ -392,11 +392,12 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
     Returns: Tuple that contains events that been fetched and the Command results.
     """
     first_fetch = arg_to_datetime(args.get("first_fetch", FIRST_FETCH))
-    limit: int = arg_to_number(args.get("limit")) or DEFAULT_FETCH_LIMIT
+    # if the user limits in the get events arguments
+    max_events: int = arg_to_number(args.get("max_events")) or max_events
     last_run = {
         'detection_start_time': int(first_fetch.timestamp() * 1000),
         'offset': 0,
-        'limit': limit
+        'limit': DEFAULT_FETCH_LIMIT
     }
 
     output, _  = fetch_events(client, last_run, max_events)
