@@ -30,6 +30,35 @@ def arg_to_list_with_regex(arg):
     return arg
 
 
+    
+def verify_ssl_certificate(url):
+    try:
+        response = requests.get(url, timeout=10, allow_redirects=True)
+        redirect_chain = response.history + [response]
+    except requests.exceptions.SSLError:
+        return {"Vendor": VENDOR, "Description": "SSL Certificate verification failed"}
+    except requests.exceptions.RequestException as e:
+        demisto.debug(f"Request failed: {e}")
+        return {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
+    
+    is_all_http = True
+    for response in redirect_chain:
+        redirected_url = response.url
+        demisto.debug(f"URL address:{redirected_url}")
+        if SSL_PREFIX not in url.lower():
+            continue
+        is_all_http = False
+        try:
+            requests.get(redirected_url, timeout=10, verify=True)
+        except requests.exceptions.SSLError:
+            return {"Vendor": VENDOR, "Description": "SSL Certificate verification failed"}
+        except requests.exceptions.RequestException:
+            return {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
+    if is_all_http:
+        return {"Vendor": VENDOR, "Description": "The URL is not secure under SSL"}
+
+    return None
+    
 def mark_http_as_suspicious(set_http_as_suspicious):
     # Could be None in previous playbooks that using this automation.
     return set_http_as_suspicious != "false"
@@ -47,28 +76,25 @@ def main():  # pragma: no cover
 
     for url in urls:
         url_obj = {"Data": url}
-        malicious = None
-
-        # Check if url is non SSL
-        if SSL_PREFIX not in url.lower() and mark_http_as_suspicious(set_http_as_suspicious):
-            malicious = {"Vendor": VENDOR, "Description": "The URL is not secure under SSL"}
-        # Check SSL signature
-        else:
-            try:
-                requests.get(url)
-            except requests.exceptions.SSLError:
-                malicious = {"Vendor": VENDOR, "Description": "SSL Certificate verification failed"}
-            except requests.exceptions.RequestException:
-                malicious = {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
+        malicious = verify_ssl_certificate(url)
 
         if malicious:
-            ec["DBotScore"].append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
-
             url_obj["Verified"] = False
             url_obj["Malicious"] = malicious
         else:
             url_obj["Verified"] = True
 
+        if mark_http_as_suspicious(set_http_as_suspicious):
+            if SSL_PREFIX not in url.lower():
+                ec["DBotScore"].append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
+            else:
+                ec["DBotScore"].append("Unknown")
+        else:
+            if malicious:
+                ec["DBotScore"].append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
+            else:
+                ec["DBotScore"].append("Unknown")
+                
         url_list.append(url_obj)
 
     ec["URL(val.Data && val.Data === obj.Data)"] = url_list
