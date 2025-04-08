@@ -312,7 +312,7 @@ def fetch_extrahop_detections(
                 advanced_filter["offset"] = advanced_filter["offset"] + len(detections)
             else:
                 # Prepare for the next batch of detections
-                detection_start_time = events[-1]["mod_time"] + 1  # type: ignore
+                detection_start_time = detections[-1]["mod_time"] + 1  # type: ignore
                 advanced_filter["mod_time"] = detection_start_time
                 advanced_filter["offset"] = 0
 
