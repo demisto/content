@@ -1754,8 +1754,8 @@ def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     try:
         response = client.add_group_member_request(group_id, data)
     except Exception as ex:
-        if '"status_code": 500' in str(ex):
-            raise DemistoException("invalid user id")
+        if ex.res.status_code == 500:
+            raise DemistoException("Got 500 from the server - this error could indicate that the user ID is invalid")
         raise ex
 
     hr = []
@@ -1779,8 +1779,8 @@ def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Com
     try:
         response = client.remove_group_member_request(group_id, data)
     except Exception as ex:
-        if '"status_code": 500' in str(ex):
-            raise DemistoException("invalid user id or user id not in group")
+        if ex.res.status_code == 500:
+            raise DemistoException("Got 500 from the server - this error could indicate that the user does not exist in the group or is invalid")
         raise ex
 
     hr = []
