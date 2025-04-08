@@ -14,7 +14,6 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: Connect
 - displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   name: credentials_auth_id
   hiddenusername: true
@@ -26,7 +25,6 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: Connect
 - displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: credentials_tenant_id
   hiddenusername: true
@@ -38,7 +36,6 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: Connect
 - displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
   name: credentials_enc_key
   hiddenusername: true
@@ -51,7 +48,6 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
   name: credentials_certificate_thumbprint
@@ -70,7 +66,6 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: Connect
 - displaypassword: Default subscription ID
   name: credentials_default_sub_id
   hiddenusername: true
@@ -471,7 +466,7 @@ script:
       type: Unknown
     - contextPath: Azure.ResourceGroupName.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   type: python
