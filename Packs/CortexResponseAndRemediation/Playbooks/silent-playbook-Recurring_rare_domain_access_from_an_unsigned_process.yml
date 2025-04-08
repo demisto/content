@@ -206,7 +206,7 @@ tasks:
       id: a5e423ee-a93e-4b7a-8598-2509169ec044
       version: -1
       name: Check Investigation Verdict
-      description: "Checks if any 2 heuristics match the Malicious condition:\n\n- Risky Path\n- Risky Commandline\n- Low Prevalence\n- Related Incidents Found"
+      description: "This task checks for potentially malicious verdict by evaluating multiple heuristics. A verdict of 'Malicious' is reached when at least two of the following conditions are met:\n\n1. Risky Path: The file or process is located in a risky or suspicious directory.\n2. Risky Command Line: The command line arguments used to execute the process contain suspicious patterns or known malicious commands.\n3. Low Prevalence: The file or process is rarely seen across the monitored environment, indicating it might be a new or targeted threat.\n4. Related Incidents Found: The file or process has been associated with previous security incidents or known malicious activities.\n\nIf a malicious verdict is reached, the playbook continues to take remediation actions."
       type: condition
       iscommand: false
       brand: ""
@@ -503,7 +503,7 @@ tasks:
       id: de1d66b4-0a3b-422d-9899-a65c8d50ebaa
       version: -1
       name: Get Domain from Alert Extra Data
-      description: Returns information about each alert ID.
+      description: Retrieves the suspicious domain name from the alert's extra data.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
