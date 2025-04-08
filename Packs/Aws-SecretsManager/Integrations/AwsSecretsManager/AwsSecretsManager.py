@@ -1,18 +1,17 @@
 # ruff: noqa: RUF001
 # we shouldnt break backwards compatibility for this error
 
-import traceback
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 import json
-from datetime import datetime, date
-
-import urllib3
+import traceback
+from datetime import date, datetime
 from typing import Any
 
+import demistomock as demisto
+import urllib3
 from AWSApiModule import *  # noqa: E402
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+from CommonServerUserPython import *  # noqa
 
 SERVICE = "secretsmanager"
 
@@ -318,7 +317,7 @@ def main():  # pragma: no cover:
 
     except Exception as e:
         demisto.debug(f"error from command {e}, {traceback.format_exc()}")
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """
