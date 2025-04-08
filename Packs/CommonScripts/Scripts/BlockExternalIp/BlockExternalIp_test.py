@@ -1,6 +1,7 @@
 import json
 
-from Packs.Base.Scripts.DBotFindSimilarIncidents.DBotFindSimilarIncidents_test import expected_results
+import pytest
+from CommonServerPython import *
 
 
 def util_load_json(path):
@@ -139,3 +140,86 @@ def test_get_relevant_context():
     result = get_relevant_context(entry_context, 'PrismaSase.Address')
     expected_context = {'address_value': '1.1.2.2', 'folder': 'Shared', 'id': '11111111-1111-1111-1111-111111111111', 'name': '1.1.2.2', 'type': 'ip_netmask'}
     assert result == expected_context
+
+def test_check_value_exist_in_context():
+   """
+   Given:
+      - The value we want to check if exists, the context to search on, and the relevant key in the context.
+   When:
+      - Running pan-os flow and checking whether a specific tag exists, a specific name, etc.
+   Then:
+      - Returns True when the value is found, False otherwise.
+   """
+   from BlockExternalIp import check_value_exist_in_context
+   context = util_load_json('test_data/pan_os_responses.json').get('address_group_list_context')
+   key = 'Match'
+   tag_exist = '3.4.5.6'
+   tag_not_exist = '1.1.1.1'
+   result_exist = check_value_exist_in_context(tag_exist, context, key)
+   result_not_exist = check_value_exist_in_context(tag_not_exist, context, key)
+   assert result_exist
+   assert not result_not_exist
+
+
+@pytest.mark.parametrize('address_group, expected_match', [
+   ("dynamic_address_group_test_pb3", "3.4.5.6"),  # a Match of type string
+   ("test1", ""), # non existing grou
+   ("pan-os-test-group", "tag1 or tag2"), # a Match of type dict
+   ("test-playbook-do-not-delete", "") # an address_group that doesn't have a Match value
+])
+def test_get_match_by_name(address_group, expected_match):
+   """
+   Given:
+      - The name of the address group, and the context.
+   When:
+      - Running pan-os flow to check if the address group has existing match value that we should add to them.
+   Then:
+      - Returns the current match value ot an empty string it the address group doesn't have one.
+   """
+   from BlockExternalIp import get_match_by_name
+   context = util_load_json('test_data/pan_os_responses.json').get('address_group_list_context')
+   result = get_match_by_name(address_group, context)
+   assert result == expected_match
+
+
+def test_update_brands_to_run(mocker):
+   """
+   Given:
+      - The list of brands that should be executed.
+   When:
+      - Running the script block-external-ip.
+   Then:
+      - Return The list of brands that were executed in previous runs and a set of the brands that should be executed in the current run.
+   """
+   from BlockExternalIp import update_brands_to_run
+   brands_to_run = ['Panorama', 'FortiGate']
+   expected_executed_brands = ['FortiGate']
+   expected_updated_brands_to_run = {'Panorama'}
+   context = {
+       'executed_brands': str(expected_executed_brands)
+   }
+   mocker.patch.object(demisto, 'context', return_value=context)
+   result_executed_brands, result_updated_brands_to_run = update_brands_to_run(brands_to_run)
+   assert expected_executed_brands == result_executed_brands
+   assert expected_updated_brands_to_run == result_updated_brands_to_run
+
+
+
+
+def test_checkpoint_object_names_to_members():
+   """
+   Given:
+      - The command context and the ips.
+   When:
+      - Running the script block-external-ip for the checkpoint brand, getting the names of the current ips objects names.
+   Then:
+      - The correct object names.
+   """
+   from BlockExternalIp import checkpoint_object_names_to_members
+   context = util_load_json('test_data/checkpoint_responses.json').get('show_object_name_to_members')
+   ip_list = ['1.1.1.1', '1.2.2.2']
+   expected_names = ['1.1.1.1', '1.2.2.2']
+   result = checkpoint_object_names_to_members(context, ip_list)
+   assert expected_names == result
+
+

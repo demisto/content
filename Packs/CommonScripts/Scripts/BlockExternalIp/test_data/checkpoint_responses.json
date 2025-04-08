@@ -1,0 +1,55 @@
+{
+   "show_object_name_to_members": [
+       {
+           "color": "black",
+           "domain": {
+               "domain-type": "data domain",
+               "name": "APPI Data",
+               "uid": "uid"
+           },
+           "icon": "icon",
+           "name": "#hashtags",
+           "type": "application-site",
+           "uid": "uid"
+       },
+       {
+           "color": "black",
+           "domain": {
+               "domain-type": "data domain",
+               "name": "APPI Data",
+               "uid": "uid"
+           },
+           "icon": "icon",
+           "name": "050 Plus",
+           "type": "application-site",
+           "uid": "uid"
+       },
+       {
+           "color": "black",
+           "domain":
+           {
+               "domain-type": "domain",
+               "name": "SMC User",
+               "uid": "uid"
+           },
+           "icon": "icon",
+           "ipv4-address": "1.1.1.1",
+           "name": "1.1.1.1",
+           "type": "host",
+           "uid": "uid"
+       },
+       {
+           "color": "black",
+           "domain": {
+               "domain-type": "domain",
+               "name": "SMC User",
+               "uid": "uid"
+           },
+           "icon": "icon",
+           "ipv4-address": "1.2.2.2",
+           "name": "1.2.2.2",
+           "type": "host",
+           "uid": "uid"
+       }
+   ]
+}

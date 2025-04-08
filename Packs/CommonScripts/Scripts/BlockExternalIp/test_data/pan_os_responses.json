@@ -152,6 +152,15 @@
             "Match": "3.4.5.6",
             "Name": "pan-os-test-playbook-dynamic-group",
             "Type": "dynamic"
-        }
+        },
+        {
+           "Description": "testing",
+           "DeviceGroup": "Lab-Devices",
+           "Match": {
+               "#text": "tag1 or tag2"
+           },
+           "Name": "pan-os-test-group",
+           "Type": "dynamic"
+       }
     ]
 }
