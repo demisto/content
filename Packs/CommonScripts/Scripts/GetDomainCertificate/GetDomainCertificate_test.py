@@ -1,8 +1,6 @@
 import pytest
 from GetDomainCertificate import SSL_info, main
 from unittest.mock import patch, MagicMock
-from datetime import datetime
-import ssl
 
 
 @patch('GetDomainCertificate.ssl.create_default_context')
@@ -46,11 +44,12 @@ def test_ssl_info_success(mock_create_connection, mock_create_default_context):
     result = SSL_info('example.com')
     assert result == expected_result
 
-        
+
 def test_SSL_info_error():
     with patch('socket.create_connection', side_effect=ConnectionError):
         result = SSL_info('example.com')
         assert result == {}
+
 
 @pytest.mark.parametrize('args, expected_outputs', [
     (
@@ -96,24 +95,26 @@ def test_SSL_info_error():
 ])
 def test_main(args, expected_outputs):
     with patch('GetDomainCertificate.demisto.args', return_value=args), \
-         patch('GetDomainCertificate.SSL_info') as mock_ssl_info, \
-         patch('GetDomainCertificate.return_results') as mock_return_results:
-        
+            patch('GetDomainCertificate.SSL_info') as mock_ssl_info, \
+            patch('GetDomainCertificate.return_results') as mock_return_results:
+
         mock_ssl_info.side_effect = expected_outputs
-        
+
         main()
-        
+
         assert mock_return_results.call_count == len(expected_outputs)
         for i, expected_output in enumerate(expected_outputs):
             assert mock_return_results.call_args_list[i][0][0].outputs == expected_output
 
+
 def test_main_error():
     with patch('GetDomainCertificate.demisto.args', return_value={'domains': 'invalid.com'}), \
-         patch('GetDomainCertificate.SSL_info', return_value={}), \
-         patch('GetDomainCertificate.return_results') as mock_return_results:
-        
+            patch('GetDomainCertificate.SSL_info', return_value={}), \
+            patch('GetDomainCertificate.return_results') as mock_return_results:
+
         main()
-        
+
         mock_return_results.assert_called_once_with(
-            "Unable to retrieve SSL certificate information for invalid.com. Please check the domain name or make sure it uses SSL (HTTPS)."
+            "Unable to retrieve SSL certificate information for invalid.com. Please check the domain name or make sure it uses"
+            "SSL (HTTPS)."
         )
