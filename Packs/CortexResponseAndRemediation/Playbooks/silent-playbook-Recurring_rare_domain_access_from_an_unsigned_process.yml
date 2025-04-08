@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6a610c72-14e4-44bb-8f93-8656923f772a
+    taskid: ba6c9222-4bb5-43d2-8a32-43e6914ad3e4
     type: start
     task:
-      id: 6a610c72-14e4-44bb-8f93-8656923f772a
+      id: ba6c9222-4bb5-43d2-8a32-43e6914ad3e4
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7acd5fab-4226-408c-80ea-adeb6638ee6e
+    taskid: 04ab0792-3df1-4a51-8d78-6c6dde3cc73b
     type: title
     task:
-      id: 7acd5fab-4226-408c-80ea-adeb6638ee6e
+      id: 04ab0792-3df1-4a51-8d78-6c6dde3cc73b
       version: -1
       name: Analysis
       type: title
@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0547af53-c731-404f-8ad1-c44d730d29ad
+    taskid: 874db49a-6448-427e-87f0-d1cdfccf096a
     type: regular
     task:
-      id: 0547af53-c731-404f-8ad1-c44d730d29ad
+      id: 874db49a-6448-427e-87f0-d1cdfccf096a
       version: -1
       name: Get Initiator Process Hash Reputation
       description: Retrieve results for a file hash using WildFire.
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 69d4b951-f341-4662-8903-2d5981837170
+    taskid: 2fb0a537-53d8-410e-8aee-c931a2948511
     type: regular
     task:
-      id: 69d4b951-f341-4662-8903-2d5981837170
+      id: 2fb0a537-53d8-410e-8aee-c931a2948511
       version: -1
       name: Get Domain Reputation
       description: Checks the reputation of a domain.
@@ -143,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5268de6d-14fa-4b08-9eee-3d893efeef78
+    taskid: 32bafb15-cb9a-4f2a-8fbc-4c2a37d3a9f4
     type: condition
     task:
-      id: 5268de6d-14fa-4b08-9eee-3d893efeef78
+      id: 32bafb15-cb9a-4f2a-8fbc-4c2a37d3a9f4
       version: -1
       name: Check for Bad Reputation
       description: Check if the process hash or domain has a suspicious/malicious reputation.
@@ -200,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8dd4d58a-0f57-4c14-81d6-45221f4b5f1f
+    taskid: a5e423ee-a93e-4b7a-8598-2509169ec044
     type: condition
     task:
-      id: 8dd4d58a-0f57-4c14-81d6-45221f4b5f1f
+      id: a5e423ee-a93e-4b7a-8598-2509169ec044
       version: -1
       name: Check Investigation Verdict
       description: "Checks if any 2 heuristics match the Malicious condition:\n\n- Risky Path\n- Risky Commandline\n- Low Prevalence\n- Related Incidents Found"
@@ -232,23 +232,15 @@ tasks:
                         simple: |-
                           [
                             {
-                              "condition": "#{CommandLineAnalysis.risk} != 'Low Risk' and  #{Core.AnalyticsPrevalence.Process.value} == [false]",
+                              "condition": "#{CommandLineAnalysis.risk} != 'Low Risk' and  #{Core.AnalyticsPrevalence.Process.[0].value} == false",
                               "return": "True"
                             },
                             {
-                              "condition": "#{isRiskyPath} and  #{Core.AnalyticsPrevalence.Process.value} == [false]",
+                              "condition": "#{isRiskyPath} and  #{Core.AnalyticsPrevalence.Process.[0].value} == false",
                               "return": "True"
                             },
                             {
-                              "condition": "#{CommandLineAnalysis.risk} != 'Low Risk' and  #{foundIncidents.[0]}",
-                              "return": "True"
-                            },
-                            {
-                              "condition": "#{Core.AnalyticsPrevalence.Process.value} == [false] and #{foundIncidents.[0]}",
-                              "return": "True"
-                            },
-                            {
-                              "condition": "#{isRiskyPath} and #{foundIncidents.[0]}",
+                              "condition": "(#{CommandLineAnalysis.risk} != 'Low Risk' or #{Core.AnalyticsPrevalence.Process.[0].value} == false or #{isRiskyPath}) and #{foundIncidents.[0]}",
                               "return": "True"
                             },
                             {
@@ -280,10 +272,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 54fd5923-c7af-4f69-8f1d-de093eebb548
+    taskid: 4ce9ff41-69d8-4af0-84ef-2e0f01f21db7
     type: regular
     task:
-      id: 54fd5923-c7af-4f69-8f1d-de093eebb548
+      id: 4ce9ff41-69d8-4af0-84ef-2e0f01f21db7
       version: -1
       name: CommandLine Analysis
       description: |-
@@ -323,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 442c02ea-ae9c-4e49-8aca-24d4acb147ce
+    taskid: 1ce7e0dd-b851-4ea0-8dcb-168a38a88736
     type: title
     task:
-      id: 442c02ea-ae9c-4e49-8aca-24d4acb147ce
+      id: 1ce7e0dd-b851-4ea0-8dcb-168a38a88736
       version: -1
       name: Remediation
       type: title
@@ -354,10 +346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 259e52cd-1604-4ba6-8dda-3ad6087aa8d3
+    taskid: 3bf218c9-c023-49b6-87a4-b85e30d875e3
     type: title
     task:
-      id: 259e52cd-1604-4ba6-8dda-3ad6087aa8d3
+      id: 3bf218c9-c023-49b6-87a4-b85e30d875e3
       version: -1
       name: Inconclusive
       type: title
@@ -385,10 +377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: cbdb143f-1c90-446b-8809-f67f5c361482
+    taskid: bcab1628-61ae-4608-908c-c857092b3c34
     type: regular
     task:
-      id: cbdb143f-1c90-446b-8809-f67f5c361482
+      id: bcab1628-61ae-4608-908c-c857092b3c34
       version: -1
       name: Terminate Causality - Action Process
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
@@ -404,6 +396,19 @@ tasks:
         simple: ${alert.agentid}
       causality_id:
         simple: ${alert.actorprocessinstanceid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
       timeout_in_seconds:
         simple: "180"
     separatecontext: false
@@ -425,10 +430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 9cf9d1b9-83ba-43e8-8243-6e631d7d37e7
+    taskid: 44f2ded0-6451-41c7-8f1e-98865756be36
     type: regular
     task:
-      id: 9cf9d1b9-83ba-43e8-8243-6e631d7d37e7
+      id: 44f2ded0-6451-41c7-8f1e-98865756be36
       version: -1
       name: Close Alert - True Positive
       description: Close the current alert.
@@ -464,10 +469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 99b5348b-f842-4a8f-84f4-ca6be03d0fc0
+    taskid: 5bd4ae25-a7a7-46d7-8cb0-c9e95057b8a4
     type: title
     task:
-      id: 99b5348b-f842-4a8f-84f4-ca6be03d0fc0
+      id: 5bd4ae25-a7a7-46d7-8cb0-c9e95057b8a4
       version: -1
       name: Done
       type: title
@@ -492,10 +497,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 17070c28-c80d-4d77-8de0-2e9c4e779b64
+    taskid: de1d66b4-0a3b-422d-9899-a65c8d50ebaa
     type: regular
     task:
-      id: 17070c28-c80d-4d77-8de0-2e9c4e779b64
+      id: de1d66b4-0a3b-422d-9899-a65c8d50ebaa
       version: -1
       name: Get Domain from Alert Extra Data
       description: Returns information about each alert ID.
@@ -529,10 +534,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: bd1e4921-57ff-4eab-8885-a51b4cbc8bee
+    taskid: 256d6734-3de0-46d6-8ccb-a2313192dd1c
     type: title
     task:
-      id: bd1e4921-57ff-4eab-8885-a51b4cbc8bee
+      id: 256d6734-3de0-46d6-8ccb-a2313192dd1c
       version: -1
       name: Invesitgation
       type: title
@@ -562,10 +567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 0e00bedd-8e49-46dc-8fa9-2d4670ca739f
+    taskid: 5c46b35d-869f-422d-8e38-3f9b1ce5ef41
     type: title
     task:
-      id: 0e00bedd-8e49-46dc-8fa9-2d4670ca739f
+      id: 5c46b35d-869f-422d-8e38-3f9b1ce5ef41
       version: -1
       name: Remediation
       type: title
@@ -593,10 +598,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: be69a6eb-e60c-4c7c-b643-8133201c3c87
+    taskid: ce393763-57f0-40a2-861e-368140b44606
     type: regular
     task:
-      id: be69a6eb-e60c-4c7c-b643-8133201c3c87
+      id: ce393763-57f0-40a2-861e-368140b44606
       version: -1
       name: Check CGO Process Prevalence
       description: Get the prevalence of a process, identified by process_name.
@@ -628,10 +633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 623c3d06-5461-40a2-82e3-054e3cb9d894
+    taskid: e5a66ee3-2e51-4a9c-8fab-5a101a0319ac
     type: regular
     task:
-      id: 623c3d06-5461-40a2-82e3-054e3cb9d894
+      id: e5a66ee3-2e51-4a9c-8fab-5a101a0319ac
       version: -1
       name: Check Risky Path
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -698,10 +703,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a09fcfde-c9b1-4b9b-8f91-7871ab09b195
+    taskid: 5e52b19d-b098-489c-9219-304fe23a4d02
     type: regular
     task:
-      id: a09fcfde-c9b1-4b9b-8f91-7871ab09b195
+      id: 5e52b19d-b098-489c-9219-304fe23a4d02
       version: -1
       name: Get Related Alerts
       description: |-
@@ -751,10 +756,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 47c1f3a7-df7d-43f9-9b8c-2ad2b2db84c1
+    taskid: ad9511ad-52f8-42f6-8a45-056427e51579
     type: regular
     task:
-      id: 47c1f3a7-df7d-43f9-9b8c-2ad2b2db84c1
+      id: ad9511ad-52f8-42f6-8a45-056427e51579
       version: -1
       name: Add Suspicious Domain Monitoring
       description: Send HTTP POST request.
@@ -791,10 +796,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: a23c840c-5445-48c8-b061-80eafd2ee18f
+    taskid: 4dffaea1-1ac1-457f-814f-1d0da7ef930b
     type: regular
     task:
-      id: a23c840c-5445-48c8-b061-80eafd2ee18f
+      id: 4dffaea1-1ac1-457f-814f-1d0da7ef930b
       version: -1
       name: Calculate Now + 2 weeks in epoch
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions."
@@ -843,10 +848,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b9b20f91-e0e4-4ed6-86c5-331a8b074696
+    taskid: 9401b6e4-6d4e-4333-84a7-f63a2433f5e1
     type: regular
     task:
-      id: b9b20f91-e0e4-4ed6-86c5-331a8b074696
+      id: 9401b6e4-6d4e-4333-84a7-f63a2433f5e1
       version: -1
       name: Get Current Time
       description: |
@@ -879,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 6aaa3e4c-1477-4739-85c5-3dda6aafa7e0
+    taskid: b982a4a5-b113-4a9d-8267-38cf61e558ff
     type: regular
     task:
-      id: 6aaa3e4c-1477-4739-85c5-3dda6aafa7e0
+      id: b982a4a5-b113-4a9d-8267-38cf61e558ff
       version: -1
       name: Get Actor Hash WF Category
       description: Returns a verdict for a hash.
