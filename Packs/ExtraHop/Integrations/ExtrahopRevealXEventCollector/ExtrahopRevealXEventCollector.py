@@ -13,8 +13,6 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'Extrahop'
 PRODUCT = 'RevealX'
-# TODO: Not sure if this is the correct value - ask Shelly
-FIRST_FETCH = "3 days"
 MAX_FETCH_LIMIT = 25000
 DEFAULT_FETCH_LIMIT = 5000
 BASE_TIME_CHECK_VERSION_PARAM = 1581852287000
@@ -194,7 +192,7 @@ def validate_fetch_events_params(last_run: dict) -> Dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
-    detection_start_time = int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000)  # type: ignore
+    detection_start_time = int(get_current_time().timestamp() * 1000)  # type: ignore
     if last_run and 'detection_start_time' in last_run:
         detection_start_time = last_run.get('detection_start_time')  # type: ignore
 
@@ -241,7 +239,6 @@ def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
 
         if mod_time:
             detection["_TIME"] = mod_time
-            # TODO: Is this how Dima in tended that this would be?
             if start_time:
                 if mod_time == start_time:
                     detection["_ENTRY_STATUS"] = "new"
@@ -349,7 +346,7 @@ def test_module(client: Client) -> str:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
     last_run = {
-        'detection_start_time': int(arg_to_datetime(FIRST_FETCH).timestamp() * 1000) ,
+        'detection_start_time': int(get_current_time().timestamp() * 1000) ,
         'offset': 0,
         'limit': 1
     }
@@ -370,9 +367,7 @@ def fetch_events(client: Client, last_run: Dict, max_events: int):
 
     validate_version(client, last_run)
 
-    _filter = {"categories": ["sec.attack"]}
-
-    advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"],
+    advanced_filter = {"mod_time": fetch_params["detection_start_time"],
                        "limit": fetch_params["limit"], "offset": fetch_params["offset"],
                        "sort": [{"direction": "asc", "field": "mod_time"}]}
 
@@ -381,7 +376,7 @@ def fetch_events(client: Client, last_run: Dict, max_events: int):
     return events, next_run
 
 
-def get_events(client: Client, args: dict, max_events: int) -> tuple[list, CommandResults]:
+def get_events(client: Client, max_events: int) -> tuple[list, CommandResults]:
     """
     Inner Test Function to make sure the integration works
     Args:
@@ -391,9 +386,8 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
 
     Returns: Tuple that contains events that been fetched and the Command results.
     """
-    first_fetch = arg_to_datetime(args.get("first_fetch", FIRST_FETCH))
+    first_fetch = get_current_time()
     # if the user limits in the get events arguments
-    max_events: int = arg_to_number(args.get("max_events")) or max_events
     last_run = {
         'detection_start_time': int(first_fetch.timestamp() * 1000),
         'offset': 0,
@@ -402,20 +396,11 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
 
     output, _  = fetch_events(client, last_run, max_events)
     human_readable = prepare_list_detections_output(output)
-    # TODO: ask shelly what is the correct one
-    # filtered_events = []
-    # for event in output:
-    #     filtered_event = {"Name": str(event.get("type", "")),
-    #                       "ID": str(event.get("id", "")),
-    #                       "Modification Time": datetime.utcfromtimestamp(event["mod_time"] / 1000).strftime(DATE_FORMAT)}
-    #
-    #     filtered_events.append(filtered_event)
-    #
-    # human_readable = tableToMarkdown(name='Audit Logs Events', t=filtered_events, removeNull=True)
+
     command_results = CommandResults(
         readable_output=human_readable,
         outputs=output,
-        outputs_prefix="Extrahop.RevealX.Audit",
+        outputs_prefix="ExtraHop.Detections",
     )
     return output, command_results
 
@@ -455,8 +440,8 @@ def main():
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
-            events, command_results = get_events(client, args, max_events)
-            print(events, command_results)
+            max_events = arg_to_number(args.get("max_events")) or max_events
+            events, command_results = get_events(client, max_events)
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'xuSending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
