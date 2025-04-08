@@ -32,12 +32,13 @@ class Client:
             set_integration_context(integration_context)
 
         self.client_credentials = client_credentials
+        self.endpoint = endpoint
         client_args = assign_params(
             base_url=base_url,
             verify=verify,
             proxy=proxy,
             ok_codes=(200, 201, 202, 204),
-            scope=f'offline_access {MICROSOFT_DEFENDER_XDR_365_SCOPES.get(endpoint)}/.default',
+            scope=f'offline_access {MICROSOFT_DEFENDER_XDR_365_SCOPES.get(self.endpoint)}/.default',
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
@@ -113,7 +114,13 @@ class Client:
             if skip:
                 params['$skip'] = skip
 
-        return self.ms_client.http_request(method='GET', url_suffix='api/incidents', timeout=timeout,
+        if self.endpoint in ['gcc', 'gcc-high', 'dod']:
+            # Using graph endpoint and suffix
+            url_suffix = 'v1.0/security/incidents'
+        else:
+            # Using defender suffix
+            url_suffix = 'api/incidents'
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, timeout=timeout,
                                            params=params)
 
     @logger

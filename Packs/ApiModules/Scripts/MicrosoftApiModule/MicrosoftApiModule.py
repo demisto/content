@@ -168,9 +168,9 @@ MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS = {
     "geo-au": "https://au.api.security.microsoft.com",
     "geo-swa": "https://swa.api.security.microsoft.com",
     "geo-ina": "https://ina.api.security.microsoft.com",
-    "gcc": "https://api-gcc.security.microsoft.us",
-    "gcc-high": "https://api-gov.security.microsoft.us",
-    "dod": "https://api-gov.security.microsoft.us",
+    "gcc": "https://graph.microsoft.us",
+    "gcc-high": "https://graph.microsoft.us",
+    "dod": "https://dod-graph.microsoft.us",
 }
 
 # https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
@@ -196,9 +196,9 @@ MICROSOFT_DEFENDER_XDR_365_SCOPES = {
     "geo-au": 'https://security.microsoft.com',
     "geo-swa": 'https://security.microsoft.com',
     "geo-ina": 'https://security.microsoft.com',
-    'gcc': 'https://security.microsoft.com',
-    'gcc-high': 'https://security.microsoft.us',
-    'dod': 'https://security.apps.mil',
+    'gcc': 'https://graph.microsoft.us',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
 }
 
 
