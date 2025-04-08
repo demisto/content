@@ -132,6 +132,7 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_API = {
     "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
 }
 
+
 MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
     "Worldwide": "com",
     "US GCC": "gcc",
