@@ -391,7 +391,7 @@ def main():
                     readable_outputs, _, error_message = clear_user_sessions(okta_clear_user_sessions_command)
                     results_for_verbose.extend(readable_outputs)
                     if not error_message:
-                        clear_session_results.append((OKTA_BRAND, "Success", f"User session was cleared for {user_name}."))
+                        clear_session_results.append((OKTA_BRAND, "Success", f"User session was cleared for {user_name}"))
                     else:
                         failed_message = f"Okta v2: {error_message.lstrip('#').strip()}"
                         demisto.debug(f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
@@ -411,7 +411,7 @@ def main():
                     readable_outputs, human_readable, _ = clear_user_sessions(msgraph_user_session_revoke_command)
                     results_for_verbose.extend(readable_outputs)
                     if "successfully" in human_readable:
-                        clear_session_results.append((MS_GRAPH_BRAND, "Success", f"User session was cleared for {user_name}."))
+                        clear_session_results.append((MS_GRAPH_BRAND, "Success", f"User session was cleared for {user_name}"))
                     else:
                         failed_message = f"\nMG User: {human_readable.lstrip('#').strip()}"
                         demisto.debug(f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
