@@ -1,10 +1,9 @@
 {
-  "trigger_id": "2055ff13ccd525f1b8402b01ca587dd1",
-  "playbook_id": "Suspicious user access to multiple resources via SSO",
+  "trigger_id": "420e8ea021be42d1f333287a092efcf7",
+  "playbook_id": "silent-Suspicious user access to multiple resources via SSO",
   "suggestion_reason": "Recommended for Valid Accounts alerts involving suspicious user access to multiple resources via SSO.",
   "description": "This trigger is responsible for handling Valid Accounts alerts related to suspicious user access to multiple resources via SSO.",
-  "trigger_name": "Suspicious User access to multiple resources via SSO",
-  "fromVersion": "8.8.0",
+  "trigger_name": "silent-Suspicious User access to multiple resources via SSO",
   "alerts_filter": {
     "filter": {
       "AND": [
@@ -20,5 +19,6 @@
       }
       ]
     }
-  }
+  },
+  "issilent": true
 }
