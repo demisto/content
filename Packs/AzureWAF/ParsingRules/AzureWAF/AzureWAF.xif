@@ -3,12 +3,14 @@
 Filter ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog events
 */
 filter category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog")
+
 /*
 Supported datetime formats:
 yyyy-MM-ddThh:mm:ssZ - 2025-03-26T05:39:46Z
 yyyy-MM-ddThh:mm:ssEz - 2024-11-19T10:50:39+00:00 (%Ez is RFC 3339-compatible numeric time zone)
 MMM dd yyyy hh:mm:ss - Nov 19 2024 12:50:39
 */
+
 | alter 
     timeStamp_t = to_string(timeStamp_t),
     timeStamp = to_string(timeStamp),
