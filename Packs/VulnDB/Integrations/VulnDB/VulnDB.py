@@ -496,7 +496,6 @@ def vulndb_get_cpe_command(args: dict, client: Client):
 
     return_results(CommandResults(
             outputs_prefix='VulnDB.CPE.Value',
-            outputs_key_field='Value',
             outputs=output,
             readable_output=tableToMarkdown(f'CPE for Vulnerability {vulndb_id}', output, 'CPE'),
             raw_response=res
