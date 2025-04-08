@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 from urllib.parse import quote
 import urllib3
 from MicrosoftApiModule import *  # noqa: E402
+from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
 
 # disable insecure warnings
 
@@ -249,7 +250,37 @@ class MsGraphClient:
             url_suffix=f'users/{quote(user)}/revokeSignInSessions',
             resp_type="text"
         )
+    
+    #  If successful, this method returns 200
+    def list_tap_policy(self, user_id, policy_id):
+        url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
+        if policy_id:
+            url_suffix += f'/{quote(policy_id)}'
+        
+        res = self.ms_client.http_request(
+            method='GET',
+            url_suffix=url_suffix
+        )
+        return res.get('value', [])
 
+        
+    #  If successful, this method returns 201
+    def create_tap_policy(self, user_id, body):
+        url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
+        res = self.ms_client.http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=body
+        )
+        return res
+    
+    #  If successful, this method returns 204 - no content
+    def delete_tap_policy(self, user_id, policy_id):
+        url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}'
+        self.ms_client.http_request(
+            method='DELETE',
+            url_suffix=url_suffix
+        )
 
 def suppress_errors_with_404_code(func):
     def wrapper(client: MsGraphClient, args: dict):
@@ -277,7 +308,7 @@ def test_function(client, _):
         if demisto.command() == 'test-module':
             if client.ms_client.grant_type != CLIENT_CREDENTIALS:
                 # cannot use test module due to the lack of ability to set refresh token to integration context
-                # for self deployed app  
+                # for self deployed app
                 raise Exception("When using a self-deployed configuration with authorization code and redirect uri, "
                                 "Please enable the integration and run the !msgraph-user-test command in order to test it")
         else:
@@ -485,6 +516,100 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
     return human_readable, None, None
 
+@suppress_errors_with_404_code
+def get_tap_policy_list_command(client: MsGraphClient, args: dict):
+    user_id = args.get('user_id')
+    policy_id = args.get('policy_id', None)
+    client_tap_data = client.list_tap_policy(user_id, policy_id)
+    tap_readable, tap_policy_output = parse_outputs(client_tap_data)
+    
+    # change HR from ID to Policy ID
+    if isinstance(tap_readable, list) and tap_readable:
+        tap_readable_dict = tap_readable[0]
+    else:
+        tap_readable_dict = tap_readable
+
+    if isinstance(tap_readable_dict, dict):
+        tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID', None)
+    headers = ['Policy ID', 'Start Date Time' , 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
+    
+    human_readable = tableToMarkdown(name='All TAP Policy Users', headers=headers, t=tap_readable_dict, removeNull=True)
+    outputs = {
+        'MSGraphUser.TAPPolicy(val.ID == obj.ID)': tap_policy_output
+        }
+    return human_readable, outputs, client_tap_data
+
+@suppress_errors_with_404_code
+def create_tap_policy_command(client: MsGraphClient, args: dict):
+    user_id = args.get('user_id')
+    zip_password = args.get('zip_password')
+    lifetime_in_minutes = arg_to_number(args.get('lifetime_in_minutes'))
+    is_usable_once = argToBoolean(args.get('is_usable_once', False))
+    start_time = args.get('start_time', None)
+    start_time_iso = arg_to_datetime(start_time, required=False)
+    
+    fields = {
+    'lifetimeInMinutes': lifetime_in_minutes,
+    'isUsableOnce': is_usable_once,
+    'startDateTime': start_time_iso.strftime("%Y-%m-%dT%H:%M:%S.000Z") if start_time_iso is not None else None
+}
+    body = dict(fields.items())
+    res = client.create_tap_policy(user_id, body)
+    
+    if zip_password:
+        generated_password = res.get('temporaryAccessPass')
+        return_results(
+            create_zip_with_password(generated_password=generated_password, zip_password=zip_password)
+        )
+    human_readable = f'Temporary Access Pass Authentication methods policy {user_id} was successfully created'
+    _, tap_policy_output = parse_outputs(res)
+    outputs = {
+        'MSGraphUser.TAPPolicy(val.ID == obj.ID)': tap_policy_output
+        }
+    return human_readable, outputs, None
+
+@suppress_errors_with_404_code
+def delete_tap_policy_command(client: MsGraphClient, args: dict):
+    user_id = args.get('user_id')
+    policy_id = args.get('policy_id')
+    client.delete_tap_policy(user_id, policy_id)
+    human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted'
+    return human_readable , None, None
+
+def create_zip_with_password(generated_password: str, zip_password: str):
+    """
+    Create a zip file with a password.
+    The function returns a zip file to the war room, and calls this script recursively using polling.
+
+    Args:
+        args (dict): The arguments passed to the script.
+        generated_password (str): The password to encrypt.
+        zip_password (str): The password to use for encrypting the zip file.
+    """
+    text_file_name = 'TAPPolicyPass.txt'
+    zip_file_name = 'TAPPolicyInfo.zip'
+
+    try:
+        with open(text_file_name, 'w') as text_file:
+            text_file.write(generated_password)
+
+        demisto.debug(f'zipping {text_file_name=}')
+        with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, 'utf-8')
+            zf.write(text_file_name)
+
+        with open(zip_file_name, 'rb') as zip_file:
+            zip_content = zip_file.read()
+
+    except Exception as e:
+        raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
+
+    finally:
+        for file_name in (text_file_name, zip_file_name):
+            if os.path.exists(file_name):
+                os.remove(file_name)
+
+    return_results(fileResult(zip_file_name, zip_content))
 
 def main():
     params: dict = demisto.params()
@@ -531,6 +656,9 @@ def main():
         'msgraph-user-get-manager': get_manager_command,
         'msgraph-user-assign-manager': assign_manager_command,
         'msgraph-user-session-revoke': revoke_user_session_command,
+        'msgraph-user-tap-policy-list': get_tap_policy_list_command,
+        'msgraph-user-tap-policy-create': create_tap_policy_command,
+        'msgraph-user-tap-policy-delete': delete_tap_policy_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')

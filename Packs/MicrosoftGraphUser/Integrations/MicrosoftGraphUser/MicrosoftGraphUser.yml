@@ -631,13 +631,63 @@ script:
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    - description: Policy ID
+      name: policy_id
+      required: false
+    description:  |-
+      This command will only return a single object in the collection 
+      as a user can have only one Temporary Access Pass method.
+    name: msgraph-user-tap-policy-list
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    - description: Password for the Zip file
+      name: zip_password
+      required: true
+    - description: Lifetime in minutes
+      name: lifetime_in_minutes
+      required: false
+      defaultValue: 60
+    - description: Is useable only once
+      name: is_usable_once
+      required: false
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - description: |-
+        Start time - Specify the start time for the Temporary Access Pass. 
+        The start time can be specified in various formats, such as "now", "in 2 days", etc.
+        Also a valid start time can be an ISO 8601 date-time string in the format "YYYY-MM-DDThh:mm:ssZ".
+      name: start_time
+      required: false
+      defaultValue: now
+    description:  |-
+      Create a new temporaryAccessPassAuthenticationMethod object on a user. 
+      A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
+    name: msgraph-user-tap-policy-create
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    - description: Policy ID
+      name: policy_id
+      required: true
+    description:  This command will delete a specific Temporary Access Pass policy 
+    name: msgraph-user-tap-policy-delete
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-user-generate-login-url
     arguments: []
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: devdemisto/crypto:1.0.0.3075932
   runonce: false
   script: '-'
   subtype: python3
