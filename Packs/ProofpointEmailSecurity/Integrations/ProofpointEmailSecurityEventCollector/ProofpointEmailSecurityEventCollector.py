@@ -1,60 +1,59 @@
-import asyncio
-from contextlib import asynccontextmanager
+import signal
+from contextlib import ExitStack, contextmanager
 from enum import Enum
 from functools import partial
-from datetime import datetime, timedelta
-import traceback
-import json
-
-from dateutil import tz, parser as dateparser
-from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
-from websockets import connect
+from threading import Lock, Thread
 
 import demistomock as demisto
 from CommonServerPython import *
+from dateutil import tz
+from websockets import exceptions
+from websockets.sync.client import connect
+from websockets.sync.connection import Connection
 
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
 
-URL_TEMPLATE = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
+URL = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
+
 
 FETCH_INTERVAL_IN_SECONDS = 60
 FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 300
-RECONNECT_TIMEOUT = 30  # Timeout for reconnection attempt in seconds
 
 
 class EventType(str, Enum):
-    MESSAGE = 'message'
-    MAILLOG = 'maillog'
-    AUDIT = 'audit'
+    MESSAGE = "message"
+    MAILLOG = "maillog"
+    AUDIT = "audit"
 
 
 class EventConnection:
-    def __init__(self, event_type: EventType, url_template: str, headers: dict,
-                 fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
-                 idle_timeout: int = SERVER_IDLE_TIMEOUT - 20):
+    def __init__(
+        self,
+        event_type: EventType,
+        url: str,
+        headers: dict,
+        fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
+        idle_timeout: int = SERVER_IDLE_TIMEOUT - 20,
+    ):
         self.event_type = event_type.value
-        self.url_template = url_template
-        self.headers = [(k, v) for k, v in headers.items()]  # Convert headers to list of tuples
+        self.url = url
+        self.headers = headers
+        self.lock = Lock()
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
-        self.connection = None
+        self.connection = self.connect()
+        self.heartbeat_thread = Thread(target=self.heartbeat, daemon=True)
+        self.heartbeat_thread.start()
 
-    async def connect(self):
+    def connect(self) -> Connection:
         """
         Establish a new WebSocket connection.
         """
-        url = self.url_template
-        demisto.info(f"Connecting to URL: {url}")
-        try:
-            self.connection = await connect(url, additional_headers=self.headers)
-            demisto.info(f"Successfully connected to URL: {url}")
-        except Exception as e:
-            demisto.error(f"Failed to connect to URL: {url}. Error: {str(e)} {traceback.format_exc()}")
-            raise
+        return connect(self.url, additional_headers=self.headers)
 
-    async def recv(self, timeout: float | None = None) -> Any:
+    def recv(self, timeout: float | None = None) -> Any:
         """
         Receive the next message from the connection
 
@@ -65,50 +64,42 @@ class EventConnection:
         Returns:
             Any: Next event received from the connection
         """
-        try:
-            return await asyncio.wait_for(self.connection.recv(), timeout)
-        except asyncio.TimeoutError:
-            raise TimeoutError("Timeout while waiting for the event")
+        with self.lock:
+            event = self.connection.recv(timeout=timeout)
+        return event
 
-    async def disconnect(self):
+    def reconnect(self):
         """
-        Disconnect the WebSocket connection.
+        Reconnect logic for the WebSocket connection.
         """
-        try:
-            await self.connection.close()
-            demisto.info(f"[{self.event_type}] Successfully disconnected from WebSocket")
-        except Exception as e:
-            demisto.error(f"[{self.event_type}] Disconnection failed: {str(e)} {traceback.format_exc()}")
-
-    async def reconnect(self, new_since_time: str):
-        """
-        Reconnect logic for the WebSocket connection with a new since_time.
-        """
-        demisto.info(f"[{self.event_type}] Starting reconnection process with new since_time: {new_since_time}")
-        await self.disconnect()
-        demisto.info(f"[{self.event_type}] Disconnected successfully. Updating URL template.")
-        self.update_url(new_since_time)
-        demisto.info(f"[{self.event_type}] URL template updated to: {self.url_template}")
-
-        start_time = time.time()
-        while time.time() - start_time < RECONNECT_TIMEOUT:
+        with self.lock:
             try:
-                demisto.info(f"[{self.event_type}] Attempting to establish a new connection.")
-                await self.connect()
+                self.connection = self.connect()
                 demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
-                return  # Exit the function if connection is successful
             except Exception as e:
-                demisto.error(f"[{self.event_type}] Reconnection attempt failed: {str(e)}")
-                await asyncio.sleep(5)  # Wait before retrying
+                demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
+                raise
 
-        demisto.error(f"[{self.event_type}] Reconnection failed after {RECONNECT_TIMEOUT} seconds. Giving up.")
-        raise Exception(f"[{self.event_type}] Reconnection failed after {RECONNECT_TIMEOUT} seconds. Giving up.")
-
-    def update_url(self, new_since_time: str):
+    def heartbeat(self):
         """
-        Update the URL template with a new since_time.
+        Heartbeat thread function to periodically send keep-alives (pong) to the server.
+        Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         """
-        self.url_template = self.url_template.replace(self.url_template.split("sinceTime=")[1].split("&")[0], new_since_time)
+        while True:
+            try:
+                with self.lock:
+                    self.connection.pong()
+                demisto.info(f"[{self.event_type}] Sent heartbeat pong")
+                time.sleep(self.idle_timeout)
+            except exceptions.ConnectionClosedError as e:
+                demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
+                self.reconnect()
+            except exceptions.ConnectionClosedOK:
+                demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
+                self.reconnect()
+            except Exception as e:
+                demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
+                self.reconnect()
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -124,23 +115,24 @@ def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     return fetch_start_time + timedelta(seconds=fetch_interval) < datetime.utcnow()
 
 
-def set_the_integration_context(context: dict):
-    """Sets the integration context."""
-    demisto.setIntegrationContext(context)
-
-
-def update_integration_context(key: str, val: Any):
-    """Updates a key-value pair in the integration context dictionary.
+def set_the_integration_context(key: str, val: Any):
+    """Adds a key-value pair to the integration context dictionary.
     If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
-    context = demisto.getIntegrationContext()
-    context[key] = val
-    set_the_integration_context(context)
+    cnx = demisto.getIntegrationContext()
+    cnx[key] = val
+    demisto.setIntegrationContext(cnx)
 
 
-@asynccontextmanager
-async def websocket_connections(host: str, cluster_id: str, api_key: str, since_time: str | None = None, to_time: str | None = None,
-                                fetch_interval: int = FETCH_INTERVAL_IN_SECONDS):
+@contextmanager
+def websocket_connections(
+    host: str,
+    cluster_id: str,
+    api_key: str,
+    since_time: str | None = None,
+    to_time: str | None = None,
+    fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
+):
     """
     Create a connection for every type of event.
 
@@ -155,36 +147,42 @@ async def websocket_connections(host: str, cluster_id: str, api_key: str, since_
     Yields:
         list[EventConnection]: List containing an eventConnection for every event type
     """
-    demisto.info(f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}")
-
+    demisto.info(
+        f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}"
+    )
+    url = URL
     if not since_time:
         since_time = datetime.utcnow().isoformat()
-    url_template = partial(URL_TEMPLATE.format, host=host, cluster_id=cluster_id, time=since_time)
     if to_time:
-        url_template += f"&toTime={to_time}"
-
+        url += f"&toTime={to_time}"
+    url = partial(url.format, host=host, cluster_id=cluster_id, time=since_time)
     extra_headers = {"Authorization": f"Bearer {api_key}"}
 
     try:
-        connections = [EventConnection(
-            event_type=event_type,
-            url_template=url_template(type=event_type.value),
-            headers=extra_headers,
-            fetch_interval=fetch_interval,
-        ) for event_type in EventType]
+        with ExitStack():  # Keep connection contexts for clean up
+            connections = [
+                EventConnection(
+                    event_type=event_type,
+                    url=url(type=event_type.value),
+                    headers=extra_headers,
+                    fetch_interval=fetch_interval,
+                )
+                for event_type in EventType
+            ]
 
-        await asyncio.gather(*[connection.connect() for connection in connections])
+            set_the_integration_context(
+                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(tz.tzutc())}"
+            )
 
-        update_integration_context("last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(tz.tzutc())}")
-        yield connections
-
-        await asyncio.gather(*[connection.disconnect() for connection in connections])
+            yield connections
     except Exception as e:
-        update_integration_context("last_run_results", f"{str(e)} \n This error happened at {datetime.now().astimezone(tz.tzutc())}")
-        raise DemistoException(f"{str(e)}\n")
+        set_the_integration_context(
+            "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
+        )
+        raise DemistoException(f"{e!s}\n")
 
 
-async def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
+def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
     """
     This function fetches events from the given connection, for the given fetch interval
 
@@ -197,23 +195,24 @@ async def fetch_events(connection: EventConnection, fetch_interval: int, recv_ti
         list[dict]: A list of events
     """
     event_type = connection.event_type
-    demisto.debug(f'Starting to fetch events of type {event_type}')
+    demisto.debug(f"Starting to fetch events of type {event_type}")
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
         try:
-            event = json.loads(await connection.recv(timeout=recv_timeout))
+            event = json.loads(connection.recv(timeout=recv_timeout))
         except TimeoutError:
             demisto.debug(f"Timeout while waiting for the event on {connection.event_type}")
             continue
-        except (ConnectionClosedError, ConnectionClosedOK) as e:
-            demisto.info(f"Connection was closed (code 1000 or similar). Attempting to reconnect... Reason: {str(e)}")
-            await connection.reconnect(datetime.utcnow().isoformat())
+        except exceptions.ConnectionClosedError:
+            demisto.error("Connection closed, attempting to reconnect...")
+            connection.reconnect()
             continue
         except Exception as e:
-            update_integration_context("last_run_results", f"{str(e)} \n This error happened at {datetime.now().astimezone(tz.tzutc())}")
-            demisto.error(f"Exception while fetching events: {str(e)} {traceback.format_exc()}")
+            set_the_integration_context(
+                "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
+            )
             raise DemistoException(str(e))
         event_id = event.get("id", event.get("guid"))
         event_ts = event.get("ts")
@@ -234,7 +233,11 @@ async def fetch_events(connection: EventConnection, fetch_interval: int, recv_ti
     num_events = len(events)
     demisto.debug(f"Fetched {num_events} events of type {event_type}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
-    update_integration_context("last_run_results", f"Got from connection {num_events} events starting at {str(fetch_start_time)} until {datetime.now().astimezone(tz.tzutc())}")
+    set_the_integration_context(
+        "last_run_results",
+        f"Got from connection {num_events} events starting\
+                                    at {fetch_start_time!s} until {datetime.now().astimezone(tz.tzutc())}",
+    )
 
     return events
 
@@ -242,7 +245,8 @@ async def fetch_events(connection: EventConnection, fetch_interval: int, recv_ti
 def test_module(host: str, cluster_id: str, api_key: str):
     raise DemistoException(
         "No test option is available due to API limitations.\
-        To verify the configuration, run the proofpoint-es-get-last-run-results command.")
+        To verify the configuration, run the proofpoint-es-get-last-run-results command."
+    )
 
 
 def get_last_run_results_command():
@@ -250,36 +254,32 @@ def get_last_run_results_command():
     if last_run_results:
         return CommandResults(readable_output=last_run_results)
     else:
-        return CommandResults(readable_output="No results from the last run yet, \
-            please wait one minute and try running the command again.")
+        return CommandResults(
+            readable_output="No results from the last run yet, \
+            please wait one minute and try running the command again."
+        )
 
 
-KEEPALIVE_INTERVAL = 30  # how often to send pings, in seconds
-
-async def keepalive_loop(connection: EventConnection):
+@contextmanager
+def time_limit(seconds: int):
     """
-    Periodically send ping frames to ensure the connection stays alive
-    or detect that it is dead. If the ping fails, reconnect.
+    A context manager that raises TimeoutError if the block
+    of code inside exceeds the given `seconds`.
     """
-    event_type = connection.event_type
-    while True:
-        try:
-            await asyncio.sleep(KEEPALIVE_INTERVAL)
-            # Ping the server:
-            if connection.connection is not None:
-                pong_waiter = await connection.connection.ping()
-                demisto.debug(f"[{event_type}] Sent ping, awaiting pong...")
-                await pong_waiter  # Wait for the pong frame
-                demisto.debug(f"[{event_type}] Received pong.")
-        except (ConnectionClosedError, ConnectionClosedOK) as e:
-            demisto.error(f"[{event_type}] Connection lost during keepalive: {str(e)}. Reconnecting...")
-            await connection.reconnect(datetime.utcnow().isoformat())
-        except Exception as e:
-            demisto.error(f"[{event_type}] Unexpected error in keepalive: {str(e)}. Reconnecting...")
-            await connection.reconnect(datetime.utcnow().isoformat())
+    def signal_handler(signum, frame):
+        raise TimeoutError(f"Operation timed out after {seconds} seconds.")
+
+    # Register handler, set the alarm
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        # Disable the alarm after exit
+        signal.alarm(0)
 
 
-async def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
+def perform_long_running_loop(connections: list[EventConnection], fetch_interval: int):
     """
     Long running loop iteration function. Fetches events from each connection and sends them to XSIAM.
 
@@ -290,43 +290,34 @@ async def perform_long_running_loop(connections: list[EventConnection], fetch_in
     integration_context = demisto.getIntegrationContext()
     events_to_send = []
     for connection in connections:
-        try:
-            events = await fetch_events(connection, fetch_interval)
-            events.extend(integration_context.get(connection.event_type, []))
-            integration_context[connection.event_type] = events  # update events in context in case of fail
-            demisto.debug(f'Adding {len(events)} {connection.event_type} Events to XSIAM')
-            events_to_send.extend(events)
-        except Exception as e:
-            demisto.error(f"Exception while fetching events for {connection.event_type}: {str(e)} {traceback.format_exc()}")
+        events = fetch_events(connection, fetch_interval)
+        events.extend(integration_context.get(connection.event_type, []))
+        integration_context[connection.event_type] = events  # update events in context in case of fail
+        demisto.debug(f"Adding {len(events)} {connection.event_type} Events to XSIAM")
+        events_to_send.extend(events)
 
     # Send the events to the XSIAM, with events from the context
     try:
-        if events_to_send:
+        with time_limit(60):
             send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
-            # clear the context after sending the events
-            for connection in connections:
-                integration_context[connection.event_type] = []
-    except DemistoException as e:
-        demisto.error(f"Failed to send events to XSIAM. Error: {str(e)} {traceback.format_exc()}")
+        # clear the context after sending the events
+        for connection in connections:
+            set_the_integration_context(connection.event_type, [])
+    except TimeoutError:
+        demisto.error("Timeout occurred while sending events to XSIAM. "
+                      "Events will be stored for the next iteration.")
+        demisto.setIntegrationContext(integration_context)
+    except DemistoException:
+        demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
         demisto.setIntegrationContext(integration_context)
-        return
-
-    if events_to_send:
-        # Update the sinceTime in the integration context for the next fetch
-        last_event_time = max(event["_time"] for event in events_to_send)
-        demisto.info(f"Updating sinceTime to {last_event_time}")
-        integration_context["sinceTime"] = last_event_time
-        set_the_integration_context(integration_context)
-        for connection in connections:
-            demisto.info(f"Reconnecting connection for event type: {connection.event_type}")
-            await connection.reconnect(last_event_time)
 
 
-async def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
+def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
     """
     Performs the long running execution loop.
     Opens a connection to Proofpoints for every event type and fetches events in a loop.
+    Heartbeat threads are opened for every connection to send keepalives if the connection is idle for too long.
 
     Args:
         host (str): host URL for the websocket connection.
@@ -334,21 +325,14 @@ async def long_running_execution_command(host: str, cluster_id: str, api_key: st
         api_key (str): Proofpoint API key.
         fetch_interval (int): Total time allocated per fetch cycle.
     """
-    since_time = demisto.getIntegrationContext().get("sinceTime")
-    async with websocket_connections(host, cluster_id, api_key, since_time=since_time, fetch_interval=fetch_interval) as connections:
+    with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
         demisto.info("Connected to websocket")
         fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
 
-        for conn in connections:
-            keepalive_task = asyncio.create_task(keepalive_loop(conn))
-
         while True:
-            try:
-                await perform_long_running_loop(connections, fetch_interval)
-            except Exception as e:
-                demisto.error(f"Exception in long running loop: {str(e)} {traceback.format_exc()}")
+            perform_long_running_loop(connections, fetch_interval)
             # sleep for a bit to not throttle the CPU
-            await asyncio.sleep(FETCH_SLEEP)
+            time.sleep(FETCH_SLEEP)
 
 
 def main():  # pragma: no cover
@@ -361,7 +345,7 @@ def main():  # pragma: no cover
 
     try:
         if command == "long-running-execution":
-            asyncio.run(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
+            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
         elif command == "test-module":
             return_results(test_module(host, cluster_id, api_key))
         elif command == "proofpoint-es-get-last-run-results":
@@ -369,7 +353,7 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
-        return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
+        return_error(f"Failed to execute {command} command.\nError:\n{traceback.format_exc()}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
