@@ -85,6 +85,30 @@ The summary of the template structure in the templates is provided below.
       "variable_substitution": {
         "opening": "<opening marker>",
         "closing": "<closing marker>"
+      },
+      "context": {
+        "filters": <filter paths>,
+        "default": <default values>,
+        "remove-null": {
+          "entries-only": <ctrl flag>,
+          "paths": <target paths>
+        }
+      },
+      "alert": {
+        "filters": <filter paths>,
+        "default": <default values>,
+        "remove-null": {
+          "entries-only": <ctrl flag>,
+          "paths": <target paths>
+        }
+      },
+      "incident": {
+        "filters": <filter paths>,
+        "default": <default values>,
+        "remove-null": {
+          "entries-only": <ctrl flag>,
+          "paths": <target paths>
+        }
       }
     },
     "query": {
@@ -121,6 +145,60 @@ The summary of the template structure in the templates is provided below.
 | --- | --- | --- |
 | .config.variable_substitution.opening | [Optional] The opening marker of the enclosure for variable substitution. It overrides the opening marker specified in the `variable_substitution` parameter of the arguments. | String |
 | .config.variable_substitution.closing | [Optional] The closing marker of the enclosure for variable substitution. It overrides the opening marker specified in the `variable_substitution` parameter of the arguments. | String |
+| .config.context.filters | [Optional] A list of node paths to extract from the context data for use. The filters are applied before the default parameters are applied. | List |
+| .config.context.default | [Optional] Default parameters to use when not present in the context data. | Dict |
+| .config.context.remove-null.entries-only | [Optional] Set to True to remove only dictionary entries; set to false to remove both dictionary entries and null values in lists \(Default = true\). | Boolean |
+| .config.context.remove-null.paths | [Optional] A list of node paths to remove dictionary entries or values from the context data before applying default parameters. | List |
+| .config.alert.filters | [Optional] A list of node paths to extract from the alert for use. `alert.` prefix is not required. The filters are applied before the default parameters are applied. | List |
+| .config.alert.default | [Optional] Default parameters to use when not present in the alert. | Dict |
+| .config.alert.remove-null.entries-only | [Optional] Set to True to remove only dictionary entries; set to false to remove both dictionary entries and null values in lists \(Default = true\). | Boolean |
+| .config.alert.remove-null.paths | [Optional] A list of node paths to remove dictionary entries or values from the alert before applying default parameters. | List |
+| .config.incident.filters | [Optional] A list of node paths to extract from the incident for use. `incident.` prefix is not required. The filters are applied before the default parameters are applied. | List |
+| .config.incident.default | [Optional] Default parameters to use when not present in the incident. | Dict |
+| .config.incident.remove-null.entries-only | [Optional] Set to True to remove only dictionary entries; set to false to remove both dictionary entries and null values in lists \(Default = true\). | Boolean |
+| .config.incident.remove-null.paths | [Optional] A list of node paths to remove dictionary entries or values from the incident before applying default parameters. | List |
+
+Below is a sample of the `config` node.
+
+```
+"config": {
+  "variable_substitution": {
+    "opening": "{",
+    "closing": "}"
+  },
+  "context": {
+    "filters": [
+      "User",
+      "time_format"
+    ],
+    "remove-null": {
+      "entries-only": true,
+      "paths": [
+        "User.ID"
+      ]
+    },
+    "default": {
+      "User": {
+        "ID": "Administrator"
+      },
+      "time_format": "%b %d, %Y"
+    }
+  },
+  "alert": {
+    "default": {
+      "username": "Administrator"
+    }
+  },
+  "incident": {
+    "default": {
+      "username": "Administrator"
+    }
+  }
+}
+```
+
+`.filters`, `.remove-null`, and `.default` settings under `content`, `alert`, and `incident` can help minimize the data used for Variable Substitution and provide default values.
+Using Variable Substitution to pass the entire data to variables like `${.=val.username}` is time-consuming. By using these settings to minimize the data and define default values, you can reduce the need to pass the entire data, thereby improving processing performance.
 
 
 ### Node: query
@@ -139,7 +217,7 @@ The summary of the template structure in the templates is provided below.
 This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
 
-#### Note: .query.conditions
+#### Node: .query.conditions
 The `.query.conditions` are evaluated as either true or false. The values of the conditions can be of any type in JSON (null, boolean, number, string, list, or dictionary).
 `null`, `false` (of type boolean or string), `0` (of type number), and an empty string (i.e., a string with 0 length) will be treated as false. All other values will be treated as true for primitive data types.
 
@@ -182,7 +260,7 @@ This dictionary is evaluated as `Condition-A AND Condition-B AND (Condition-X OR
 ---
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| .entry.type | The name of the entry type, which must be one of the following: `markdown`, `markdown-table`, `number`, `number-trend`, `pie`, `line`, `single-bar`, `stacked-bar` or `duration`. | String |
+| .entry.type | The name of the entry type, which must be one of the following: [markdown](#node-entrymarkdown), [markdown-table](#node-entrymarkdown-table), [number](#node-entrynumber), [number-trend](#node-entrynumber-trend), [pie](#node-entrypie), [line](#node-entryline), [single-bar](#node-entrysingle-bar), [stacked-bar](#node-entrystacked-bar) or [duration](#node-entryduration). | String |
 | .entry.markdown | [Entry-dependent parameters] This node is required only when `markdown` is set in `.entry.type`. | Dict |
 | .entry.markdown-table | [Entry-dependent parameters] This node is required only when `markdown-table` is set in `.entry.type`. | Dict |
 | .entry.number | [Entry-dependent parameters] This node is required only when `number` is set in `.entry.type`. | Dict |
@@ -290,6 +368,7 @@ That is intended to create a table of the top 10 applications from the record se
 The table will be created as shown below:
 
 **Top 10 Applications**
+
 | **Application** | **# of sessions** |
 | --- | --- |
 | ms-ds-smbv3 | 80879 |
@@ -647,6 +726,7 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .x.by | The name of the field by which values are aggregated into groups for the X-axis (e.g., time) of the line chart. | String |
+| .x.sort-by | [Optional] The name of the field by which the X-axis values are sorted. If not specified, the .x.by field will be used by default. | String |
 | .x.order | [Optional] The sort order of the values on the X-axis. Specifies either `asc` (default) for ascending or `desc` for descending. | String |
 | .x.field | [Optional] The name of the field that represents the value displayed for each X-axis item. | String |
 | .y.group | Specifies `records` or `fields`. The details will be provided later in this section. | String |
@@ -1018,6 +1098,7 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .x.by | The name of the field by which values are aggregated into groups for the X-axis (e.g., time) of the stacked-bar chart. | String |
+| .x.sort-by | [Optional] The name of the field by which the X-axis values are sorted. If not specified, the .x.by field will be used by default. | String |
 | .x.order | [Optional] The sort order of the values on the X-axis. Specifies either `asc` (default) for ascending or `desc` for descending. | String |
 | .x.field | [Optional] The name of the field that represents the value displayed for each X-axis item. | String |
 | .y.group | Specifies `records` or `fields`. The details will be provided later in this section. | String |
@@ -1347,11 +1428,28 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
  - ${alert.&lt;alert-field&gt;}
  - ${incident.&lt;incident-field&gt;}
 
-In addition, it supports extended variables that start with `.`. Currently, only one value is defined for those variables.
+In addition, it supports extended variables that start with `.`.
 
  - ${.recordset}
    * It refers to the record set retrieved by the XQL query.
 
+ - ${.query.string}
+   * It refers to the query string used in the XQL query.
+
+ - ${.query.timeframe.from}
+   * It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
+
+ - ${.query.timeframe.to}
+   * It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
+
+ - ${.query.execution_id}
+   * It refers to the unique execution ID for the request query.
+
+ - ${.query.request_url}
+   * It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+
+ - ${.query.result_url}
+   * It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
 
 
 ## Caching
