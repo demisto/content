@@ -1731,15 +1731,14 @@ def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> Comm
 
     params = {'page': page, 'per_page': page_size}
     member_details = client.list_group_members_request(group_id, params)
-    member_details['id'] = group_id
 
     hr = tableToMarkdown(f'Group {group_id} members ({len(member_details.get("members",[]))}/'
-                         f'{member_details.get("total_member_count", "Unknown")}):', member_details.get("members"),
+                         f'{member_details.get("total_member_count", "Unknown")}):', member_details.get("members", []),
                          headers=['username', 'email', 'id'])
     return CommandResults(
-        outputs_prefix='Mattermost.Groups',
+        outputs_prefix='Mattermost.Members',
         outputs_key_field='id',
-        outputs=member_details,
+        outputs=member_details.get("members", []),
         readable_output=hr,
         raw_response=member_details
     )

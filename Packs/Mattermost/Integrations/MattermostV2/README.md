@@ -818,9 +818,10 @@ Must have manage_system permission.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mattermost.Groups.id | String | The ID of the user group. | 
-| Mattermost.Groups.total_member_count | Unknown | The total count of members in the user group. | 
-| Mattermost.Groups.members | Unknown | Detailed list of the user group members. | 
+| Mattermost.Members.id | String | The ID of the group member. | 
+| Mattermost.Members.first_name | String | The first name of the group member. | 
+| Mattermost.Members.last_name | String | The last name of the group member. | 
+| Mattermost.Members.username | String | The username of the group member. |
 
 #### Command example
 
