@@ -51,6 +51,8 @@ def main():
             return
         elif LIMIT_EXCEEDED in export_to_csv_result_content:
             pass
+        else:
+            raise ValueError("Couldn't export incidents to CSV")
     else:
         csv_file_name = export_to_csv_result_content.get("response")
 
