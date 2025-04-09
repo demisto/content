@@ -349,13 +349,20 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
 
         while len(events) < limit:
             epoch_starttime = last_run.get(event_type, {}).get("last_fetch_max_epoch", "") or str(
-                int(arg_to_datetime("1 Year").timestamp())  # type: ignore[union-attr]
+                int(arg_to_datetime("1 month").timestamp())  # type: ignore[union-attr]
             )
+            if epoch_starttime > epoch_current_time:
+                # if last_fetch_max_epoch is higher than current time, break the loop
+                demisto.debug(
+                    f"Last fetched timestamp is higher than current time, breaking the loop for event type: {event_type}"
+                )
+                break
+
             query = f"_creation_timestamp gte {epoch_starttime}"  # TODO: add some sorting by '_creation_timestamp' key
-            params = assign_params(limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time)
-            # params = assign_params(
-            #     limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query
-            # )
+            # params = assign_params(limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time) # with out query parameter
+            params = assign_params(
+                limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query
+            )
 
             demisto.debug(f"Fetching events with params: {params}")
 
