@@ -624,7 +624,7 @@ def test_clear_user_sessions(mocker: MockerFixture):
      
      {"user1@test.com": [{"Source": "Okta v2", "Value": "1234"}]},
      
-     [{"Message": "User session was cleared for user1@test.com.",
+     [{"Message": "User session was cleared for user1@test.com",
        "Result": "Success",
        "Brand": "Okta v2",
        "UserName": "user1@test.com"},]),
@@ -636,12 +636,12 @@ def test_clear_user_sessions(mocker: MockerFixture):
      {"user1@test.com": [{"Source": "Okta v2", "Value": "11"},
                          {"Source": "Microsoft Graph User", "Value": "22"}]},
      
-     [{"Message": "User session was cleared for user1@test.com.",
+     [{"Message": "User session was cleared for user1@test.com",
        "Result": "Success",
        "Brand": "Okta v2",
        "UserName": "user1@test.com"},
       
-      {"Message": "User session was cleared for user1@test.com.",
+      {"Message": "User session was cleared for user1@test.com",
        "Result": "Success",
        "Brand": "Microsoft Graph User",
        "UserName": "user1@test.com"}]),
@@ -652,7 +652,7 @@ def test_clear_user_sessions(mocker: MockerFixture):
      
      {"user1@test.com": [{"Source": "Okta v2", "Value": "11"}]},
      
-     [{"Message": "User session was cleared for user1@test.com.",
+     [{"Message": "User session was cleared for user1@test.com",
        "Result": "Success",
        "Brand": "Okta v2",
        "UserName": "user1@test.com"},
