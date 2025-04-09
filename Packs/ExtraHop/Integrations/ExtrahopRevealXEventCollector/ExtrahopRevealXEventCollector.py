@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import demistomock as demisto
 import urllib3
@@ -114,6 +114,7 @@ class Client(BaseClient):
 
     def get_extrahop_version(self):
         """Retrieve the ExtraHop version."""
+        self.set_headers()
         return self._http_request(method="GET", url_suffix="/api/v1/extrahop/version")
 
     def detections_list(self, body):
@@ -281,7 +282,7 @@ def fetch_extrahop_detections(
         List of incidents to be pushed into XSIAM.
     """
     try:
-        already_fetched: List[str] = last_run.get("already_fetched", [])
+        already_fetched: List = last_run.get("already_fetched", [])
         detection_start_time = advanced_filter["mod_time"]
         events = []
 
@@ -372,7 +373,7 @@ def fetch_events(client: Client, last_run: Dict, max_events: int):
         client: ExtraHop client to be used.
         last_run: The last_run dictionary having the state of previous cycle.
     """
-    demisto.info(f"Extrahop fetch_events invoked")
+    demisto.info("Extrahop fetch_events invoked")
     fetch_params = validate_fetch_events_params(last_run)
 
     validate_version(client, last_run)
@@ -396,10 +397,8 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
 
     Returns: Tuple that contains events that been fetched and the Command results.
     """
-    if args.get("first_fetch"):
-        first_fetch = arg_to_datetime(args.get("first_fetch"))
-    else:
-        first_fetch = get_current_time()
+    first_fetch = arg_to_datetime(args.get("first_fetch")) or get_current_time()
+
     # if the user limits in the get events arguments
     last_run = {
         'detection_start_time': int(first_fetch.timestamp() * 1000),
