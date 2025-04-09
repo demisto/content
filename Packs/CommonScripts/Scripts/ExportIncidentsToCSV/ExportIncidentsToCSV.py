@@ -53,7 +53,7 @@ def main():
         elif LIMIT_EXCEEDED in export_to_csv_result_content:
             demisto.results(f"{LIMIT_EXCEEDED}. Try to run the same query with lower fetchdays value")
         else:
-            raise ValueError("Couldn't export incidents to CSV")
+            raise ValueError(f"Couldn't export incidents to CSV. {export_to_csv_result_content=}")
         return
 
     csv_file_name = export_to_csv_result_content.get("response")
