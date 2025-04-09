@@ -50,3 +50,11 @@ def test_incidents_amount_limit_exceeded(mocker):
     demisto.results.assert_called_once_with(expected_error_message)
     assert demisto.results.call_count == 1
 
+
+def test_execute_command_empty_response(mocker):
+    from ExportIncidentsToCSV import main
+    mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
+    mocker.patch.object(demisto, "executeCommand", return_value=[])
+    with pytest.raises(ValueError) as ve:
+        main()
+        assert "when trying to export incident(s) with query" in str(ve)
