@@ -10,7 +10,7 @@ Identity and access management is a crucial part of maintaining security in mode
 
 ### What does this pack do?
 
-#### This integration enables you to:
+#### This integration enables you to
 
 - Automatically fetch security events from the IBM Security Verify EventCollector.
 - Use these events to trigger automated playbooks, helping you quickly respond to identity-related threats.
@@ -18,7 +18,8 @@ Identity and access management is a crucial part of maintaining security in mode
 
 <~XSIAM>
 
-#### This modeling rule supports the following event types:
+#### This modeling rule supports the following event types
+
 - Authentication
 - Access Request
 - SSO
