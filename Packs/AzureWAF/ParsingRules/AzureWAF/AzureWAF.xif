@@ -1,4 +1,30 @@
-[INGEST:vendor = "msft", product = "azure", target_dataset = "msft_azure_waf_raw", no_hit = drop]
-filter to_string(timeStamp) ~= "\d{2}:\d{2}:\d{2}" and category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog")
+[INGEST:vendor = "msft", product = "azure", target_dataset = "msft_azure_waf_raw", no_hit = keep]
+/*
+Filter ApplicationGatewayAccessLog and ApplicationGatewayFirewallLog events
+*/
+filter category in ("ApplicationGatewayAccessLog", "ApplicationGatewayFirewallLog")
+
+/*
+Supported datetime formats:
+yyyy-MM-ddThh:mm:ssZ - 2025-03-26T05:39:46Z
+yyyy-MM-ddThh:mm:ssEz - 2024-11-19T10:50:39+00:00 (%Ez is RFC 3339-compatible numeric time zone)
+MMM dd yyyy hh:mm:ss - Nov 19 2024 12:50:39
+*/
+
 | alter 
-    _time = timeStamp;
+    timeStamp_t = to_string(timeStamp_t),
+    timeStamp = to_string(timeStamp),
+    time = to_string(time)
+| alter tmp_get_time_1 = if(len(timeStamp_t) > 0 , parse_timestamp("%FT%XZ" ,timeStamp_t) ,null)
+| alter tmp_get_time_2 = if(timeStamp contains "+", parse_timestamp("%FT%X%Z", timeStamp ),len(timeStamp) > 0 and timeStamp not contains "+", parse_timestamp("%h %d %Y %X", timeStamp ),null)//if(len(timeStamp) > 0 , parse_timestamp("%h %d %Y %X", timeStamp ),null)
+| alter tmp_get_time_3 = if(len(time) > 0, parse_timestamp("%FT%X%Z", time ),null)
+
+| alter _time = coalesce(TimeGenerated , tmp_get_time_1  , tmp_get_time_2 , tmp_get_time_3 )
+| fields -tmp_get_time_1, tmp_get_time_2, tmp_get_time_3;
+
+/*
+Filter FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog events
+*/
+filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
+| alter
+    _time = TimeGenerated;
