@@ -279,40 +279,40 @@
 <h5>Context Example</h5>
 <pre>{
     "Account": {
-        "Username": "administrator", 
+        "Username": "administrator",
         "Hostname": "xsoar-host"
-    }, 
+    },
     "Endpoint": {
         "MACAddress": [
             "08:29:42:f0:b3:7c"
-        ], 
-        "OS": "Windows", 
-        "Hostname": "xsoar-host", 
-        "IsDecommissioned": true, 
-        "IsIsolated": true, 
-        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+        ],
+        "OS": "Windows",
+        "Hostname": "xsoar-host",
+        "IsDecommissioned": true,
+        "IsIsolated": true,
+        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
         "IPAddress": [
             "181.61.87.106"
-        ], 
+        ],
         "ID": 2
-    }, 
+    },
     "RedCanary": {
         "Detection": [
             {
-                "Severity": "medium", 
-                "Classification": "Suspicious Activity", 
-                "Acknowledged": true, 
+                "Severity": "medium",
+                "Classification": "Suspicious Activity",
+                "Acknowledged": true,
                 "Subclassification": [
                     "Process"
-                ], 
-                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.", 
-                "Headline": "[DEM-6] Suspicious Activity (Process)", 
-                "Time": "2018-09-12T15:38:17Z", 
-                "Type": "RedCanaryDetection", 
+                ],
+                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.",
+                "Headline": "[DEM-6] Suspicious Activity (Process)",
+                "Time": "2018-09-12T15:38:17Z",
+                "Type": "RedCanaryDetection",
                 "ID": 6
-            }, 
+            },
         ]
-    }, 
+    },
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -411,17 +411,17 @@
         {
             "MACAddress": [
                 "06:79:02:e0:b0:7c"
-            ], 
-            "OS": "Windows", 
-            "Hostname": "ec2amaz-tmlcd45", 
-            "IsDecommissioned": true, 
-            "IsIsolated": true, 
-            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+            ],
+            "OS": "Windows",
+            "Hostname": "ec2amaz-tmlcd45",
+            "IsDecommissioned": true,
+            "IsIsolated": true,
+            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
             "IPAddress": [
                 "172.31.37.106"
-            ], 
+            ],
             "ID": 2
-        }, 
+        },
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -554,17 +554,17 @@
         {
             "MACAddress": [
                 "06:79:02:e0:b0:7c"
-            ], 
-            "OS": "Windows", 
-            "Hostname": "ec2amaz-tmlcd45", 
-            "IsDecommissioned": true, 
-            "IsIsolated": true, 
-            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+            ],
+            "OS": "Windows",
+            "Hostname": "ec2amaz-tmlcd45",
+            "IsDecommissioned": true,
+            "IsIsolated": true,
+            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
             "IPAddress": [
                 "172.31.37.106"
-            ], 
+            ],
             "ID": 2
-        }, 
+        },
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -710,40 +710,40 @@
 <h5>Context Example</h5>
 <pre>{
     "Account": {
-        "Username": "administrator", 
+        "Username": "administrator",
         "Hostname": "xsoar-host"
-    }, 
+    },
     "Endpoint": {
         "MACAddress": [
             "08:29:42:f0:b3:7c"
-        ], 
-        "OS": "Windows", 
-        "Hostname": "xsoar-host", 
-        "IsDecommissioned": true, 
-        "IsIsolated": true, 
-        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+        ],
+        "OS": "Windows",
+        "Hostname": "xsoar-host",
+        "IsDecommissioned": true,
+        "IsIsolated": true,
+        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
         "IPAddress": [
             "181.61.87.106"
-        ], 
+        ],
         "ID": 2
-    }, 
+    },
     "RedCanary": {
         "Detection": [
             {
-                "Severity": "medium", 
-                "Classification": "Suspicious Activity", 
-                "Acknowledged": true, 
+                "Severity": "medium",
+                "Classification": "Suspicious Activity",
+                "Acknowledged": true,
                 "Subclassification": [
                     "Process"
-                ], 
-                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.", 
-                "Headline": "[DEM-6] Suspicious Activity (Process)", 
-                "Time": "2018-09-12T15:38:17Z", 
-                "Type": "RedCanaryDetection", 
+                ],
+                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.",
+                "Headline": "[DEM-6] Suspicious Activity (Process)",
+                "Time": "2018-09-12T15:38:17Z",
+                "Type": "RedCanaryDetection",
                 "ID": 6
-            }, 
+            },
         ]
-    }, 
+    },
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -974,56 +974,56 @@
 <h5>Context Example</h5>
 <pre>{
     "Account": {
-        "Username": "administrator", 
+        "Username": "administrator",
         "Hostname": "ec2amaz-tmlcd45"
-    }, 
+    },
     "Endpoint": {
         "MACAddress": [
             "06:79:02:e0:b0:7c"
-        ], 
-        "OS": "Windows", 
-        "Hostname": "ec2amaz-tmlcd45", 
-        "IsDecommissioned": false, 
-        "IsIsolated": true, 
-        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+        ],
+        "OS": "Windows",
+        "Hostname": "ec2amaz-tmlcd45",
+        "IsDecommissioned": false,
+        "IsIsolated": true,
+        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
         "IPAddress": [
             "172.31.37.106"
-        ], 
+        ],
         "ID": 4
-    }, 
+    },
     "Process": {
-        "Path": "c:\\windows\\system32\\regsvr32.exe", 
-        "CommandLine": "regsvr32.exe  /s /u /i:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1117/RegSvr32.sct scrobj.dll", 
-        "Name": "c:\\windows\\system32\\regsvr32.exe", 
-        "StartTime": "2018-09-12T11:30:23Z", 
+        "Path": "c:\\windows\\system32\\regsvr32.exe",
+        "CommandLine": "regsvr32.exe  /s /u /i:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1117/RegSvr32.sct scrobj.dll",
+        "Name": "c:\\windows\\system32\\regsvr32.exe",
+        "StartTime": "2018-09-12T11:30:23Z",
         "MD5": "8cf9086be38a15e905924b4a45d814d9"
-    }, 
+    },
     "IP": {
-        "Port": 443, 
+        "Port": 443,
         "Address": "151.101.12.133"
-    }, 
+    },
     "Domain": {
         "Name": "raw.githubusercontent.com"
-    }, 
+    },
     "RedCanary": {
         "Detection": {
-            "Severity": "medium", 
-            "Classification": "Malicious Software", 
-            "Headline": "[DEM-4] Malicious Software", 
-            "Acknowledged": false, 
-            "Summary": "An instance of `Regsvr32` was leveraged to download Atomic Red Team code and execute it on this system.", 
-            "Time": "2018-09-12T11:15:55Z", 
-            "Type": "RedCanaryDetection", 
+            "Severity": "medium",
+            "Classification": "Malicious Software",
+            "Headline": "[DEM-4] Malicious Software",
+            "Acknowledged": false,
+            "Summary": "An instance of `Regsvr32` was leveraged to download Atomic Red Team code and execute it on this system.",
+            "Time": "2018-09-12T11:15:55Z",
+            "Type": "RedCanaryDetection",
             "ID": 4
         }
-    }, 
+    },
     "File": [
         {
-            "Path": "c:\\windows\\explorer.exe", 
-            "Name": "c:\\windows\\explorer.exe", 
-            "Extension": ".exe", 
+            "Path": "c:\\windows\\explorer.exe",
+            "Name": "c:\\windows\\explorer.exe",
+            "Extension": ".exe",
             "MD5": "a7190e945f2d00fe4af31289f4e64b8c"
-        }, 
+        },
     ]
 }
 </pre>
