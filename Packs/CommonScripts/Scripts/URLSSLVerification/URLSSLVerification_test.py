@@ -31,14 +31,14 @@ def create_response(url, status_code = 200, history = []):
     return resp
 
 
-def fake_requests_get(url, timeout, allow_redirects=True, verify=True):
+def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
     """
     This helper function simulates HTTP requests with no real URL.
     It fabricates response objects that include status codes, URL redirection history, and header-like information.
 
     Args:
         url (str): The target URL.
-        timeout (int or float): Maximum time in seconds to wait for the response.
+        timeout (int or float, optional): Maximum time in seconds to wait for the response.
         allow_redirects (bool, optional): Whether to follow redirects. Defaults to True.
         verify (bool, optional): Whether to enforce SSL certificate verification. Defaults to True.
 
