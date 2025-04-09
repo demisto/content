@@ -40,7 +40,7 @@ class Client(BaseClient):
         self.fetch_status: dict = {event_type: False for event_type in event_types_to_fetch}
         self.event_types_to_fetch: list[str] = event_types_to_fetch
 
-        headers = {"Authentication:": f"Bearer {token}"}
+        headers = {"Authentication": f"Bearer {token}"}
         super().__init__(base_url, verify=validate_certificate, proxy=proxy, headers=headers)
 
     def perform_data_export(self, endpoint: str, _type: str, index_name: str, operation: str):
