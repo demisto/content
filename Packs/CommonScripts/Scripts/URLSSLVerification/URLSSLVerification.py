@@ -30,22 +30,33 @@ def arg_to_list_with_regex(arg):
     return arg
 
 
-    
 def verify_ssl_certificate(url):
+    """
+    Verifies the SSL certificate of a given URL by following any redirects and checking the certificate for each redirected URL.
+
+    Args:
+        url (str): The URL to verify.
+
+    Returns:
+        dict: A dictionary with  Information and a description of the issue if the SSL certificate verification.
+              Returns None if the verification is successful.
+    """
     try:
-        response = requests.get(url, timeout=10, allow_redirects=True)
+        response = requests.get(url, timeout=5, allow_redirects=True)
         redirect_chain = response.history + [response]
     except requests.exceptions.SSLError:
         return {"Vendor": VENDOR, "Description": "SSL Certificate verification failed"}
     except requests.exceptions.RequestException as e:
         demisto.debug(f"Request failed: {e}")
         return {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
-    
+
     is_all_http = True
+
+    demisto.debug(f"verify_ssl_certificate::list len{len(redirect_chain)}")
     for response in redirect_chain:
         redirected_url = response.url
-        demisto.debug(f"URL address:{redirected_url}")
-        if SSL_PREFIX not in url.lower():
+        demisto.debug(f"verify_ssl_certificate::URL address:{redirected_url}")
+        if not redirected_url.startswith(SSL_PREFIX):
             continue
         is_all_http = False
         try:
@@ -58,13 +69,13 @@ def verify_ssl_certificate(url):
         return {"Vendor": VENDOR, "Description": "The URL is not secure under SSL"}
 
     return None
-    
+
+
 def mark_http_as_suspicious(set_http_as_suspicious):
     # Could be None in previous playbooks that using this automation.
     return set_http_as_suspicious != "false"
 
-
-def main():  # pragma: no cover
+def main():
     url_arg = demisto.get(demisto.args(), "url")
     urls = arg_to_list_with_regex(url_arg)
 
@@ -72,8 +83,7 @@ def main():  # pragma: no cover
 
     url_list = []
 
-    ec = {"URL": [], "DBotScore": []}  # type: dict
-
+    d_bot_score = []
     for url in urls:
         url_obj = {"Data": url}
         malicious = verify_ssl_certificate(url)
@@ -86,18 +96,16 @@ def main():  # pragma: no cover
 
         if mark_http_as_suspicious(set_http_as_suspicious):
             if SSL_PREFIX not in url.lower():
-                ec["DBotScore"].append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
+                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
             else:
-                ec["DBotScore"].append("Unknown")
+                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": "Unknown"})
         else:
             if malicious:
-                ec["DBotScore"].append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
+                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
             else:
-                ec["DBotScore"].append("Unknown")
-                
-        url_list.append(url_obj)
+                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": "Unknown"})
 
-    ec["URL(val.Data && val.Data === obj.Data)"] = url_list
+        url_list.append(url_obj)
 
     preview_list = [
         {
@@ -107,17 +115,13 @@ def main():  # pragma: no cover
         }
         for url in url_list
     ]
-
-    md = tableToMarkdown("URL SSL Verification", preview_list, ["URL", "Verified", "Description"])
-
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "Contents": url_list,
-            "ContentsFormat": formats["json"],
-            "HumanReadable": md,
-            "EntryContext": ec,
-        }
+    ec = {"URL":url_list, "DBotScore":d_bot_score}
+    return_results(CommandResults(
+                            readable_output=tableToMarkdown(name="URL SSL Verification",
+                                                            t=preview_list,
+                                                            headers=["URL", "Verified", "Description"]),
+                            outputs=ec,
+                            outputs_key_field="URL.Data")
     )
 
 
