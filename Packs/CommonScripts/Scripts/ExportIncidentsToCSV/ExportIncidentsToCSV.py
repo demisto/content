@@ -48,11 +48,11 @@ def main():
     if isinstance(export_to_csv_result_content, str):
         if NO_INCIDENTS_FOUND in export_to_csv_result_content:
             demisto.results(NO_INCIDENTS_FOUND)
-            return
         elif LIMIT_EXCEEDED in export_to_csv_result_content:
-            pass
+            demisto.results(f"{LIMIT_EXCEEDED}. Try to run the same query with lower fetchdays value")
         else:
             raise ValueError("Couldn't export incidents to CSV")
+        return
     else:
         csv_file_name = export_to_csv_result_content.get("response")
 
