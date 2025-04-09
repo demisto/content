@@ -405,7 +405,7 @@ def fetch_mails(
         try:
             demisto.debug("Creating email object")
             email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-            demisto.debug(f"{email_message_object=} email message object")
+            demisto.debug(f"{email_message_object.attachments=} email message object")
             demisto.debug(f"{mail_id=}: Created email object.")
         except Exception as e:
             demisto.debug(f"{mail_id=}: Failed creating Email object, skipping. {message_data=}. Error: {e}")
