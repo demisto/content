@@ -1,6 +1,5 @@
 # import json
 import pytest
-from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from ExtrahopRevealXEventCollector import Client
@@ -35,6 +34,11 @@ def mock_get_version(mocker):
 
 
 def test_update_time_values_detections():
+    """
+    Given: A mock raw response containing detections logs.
+    When: Updating time fields
+    Then: Ensure the events are added the new time fields
+    """
     from ExtrahopRevealXEventCollector import update_time_values_detections
     raw_detections = util_load_json("test_data/detections-dummy.json")
     update_time_values_detections(raw_detections)
@@ -45,6 +49,11 @@ def test_update_time_values_detections():
 
 
 def test_validate_version_newer_version_does_not_raise():
+    """
+    Given: a supported version and unsupported version
+    When: Checking firmware version
+    Then: Ensure that old version raise an exception and the new one doesn't.
+    """
     from ExtrahopRevealXEventCollector import validate_version
     client_mock = MagicMock()
     last_run = {}
@@ -60,6 +69,11 @@ def test_validate_version_newer_version_does_not_raise():
 
 
 def test_fetch_events_update_last_run(client, mocker):
+    """
+    Given: A mock raw response containing detections logs.
+    When: fetching events.
+    Then: Make sure that the last run object was updated as expected
+    """
     from ExtrahopRevealXEventCollector import fetch_events
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
@@ -72,6 +86,11 @@ def test_fetch_events_update_last_run(client, mocker):
 
 
 def test_fetch_events_already_fetched(client, mocker):
+    """
+    Given: A mock raw response containing detections events.
+    When: Fetching events that was already fetched
+    Then: Ensure the function does not return any events
+    """
     from ExtrahopRevealXEventCollector import fetch_events
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
@@ -86,6 +105,11 @@ def test_fetch_events_already_fetched(client, mocker):
 
 
 def test_fetch_events_reaching_limit(client, mocker):
+    """
+    Given: A mock raw response containing detections events.
+    When: Fetching events with a fetch limit higher than the number of available logs.
+    Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
+    """
     from ExtrahopRevealXEventCollector import fetch_events
     raw_detections = util_load_json("test_data/detections-dummy.json")[:-2]
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
@@ -97,6 +121,11 @@ def test_fetch_events_reaching_limit(client, mocker):
 
 
 def test_fetch_events_more_than_exist(client, mocker):
+    """
+    Given: A mock raw response containing detections events.
+    When: Fetching events with a fetch limit smaller than the number of available logs.
+    Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
+    """
     from ExtrahopRevealXEventCollector import fetch_events
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
@@ -108,6 +137,11 @@ def test_fetch_events_more_than_exist(client, mocker):
 
 
 def test_fetch_events_same_mod_time(client, mocker):
+    """
+    Given: A mock raw response containing detections events.
+    When: Fetching events with a fetch limit less than the number of available logs and they all have the same mod_time
+    Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
+    """
     from ExtrahopRevealXEventCollector import fetch_events
     raw_detections = util_load_json("test_data/detections-dummy.json")
     mod_time_all = 1000
