@@ -472,8 +472,9 @@ def main() -> None:  # pragma: no cover
         elif command_name == 'netskope-get-events':
             results, events = get_events_command(client, demisto.args(), last_run, events=[])
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
-                send_events_to_xsiam(events=events, vendor=vendor, product=product,
-                                     chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)  # type: ignore
+                demisto.debug("send_all_events_to_xsiam disabled in the POC integration")
+                # send_events_to_xsiam(events=events, vendor=vendor, product=product,
+                #  chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)  # type: ignore
             return_results(results)
 
         elif command_name == 'fetch-events':
@@ -484,9 +485,10 @@ def main() -> None:  # pragma: no cover
                     client=client, last_run=last_run, limit=max_fetch, all_event_types=all_event_types
                 )
 
-                send_events_to_xsiam(
-                    events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
-                )
+                demisto.debug("send_all_events_to_xsiam disabled in the POC integration")
+                # send_events_to_xsiam(
+                # events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
+                # )
 
                 end = datetime.utcnow()
 
@@ -504,14 +506,16 @@ def main() -> None:  # pragma: no cover
                     new_last_run = get_all_events(
                         client=client, last_run=last_run, limit=max_fetch, all_event_types=all_event_types
                     )
-                    send_events_to_xsiam(
-                        events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
-                    )
+                    demisto.debug("send_all_events_to_xsiam disabled in the POC integration")
+                    # send_events_to_xsiam(
+                    # events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
+                    # )
                 finally:
                     demisto.debug(f"sending {len(all_event_types)} to xsiam")
-                    send_events_to_xsiam(
-                        events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
-                    )
+                    demisto.debug("send_all_events_to_xsiam disabled in the POC integration")
+                    # send_events_to_xsiam(
+                    # events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
+                    # )
 
                     for (
                         event_type,
