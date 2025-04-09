@@ -4,6 +4,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from packaging.version import Version
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -178,7 +179,7 @@ def validate_version(client, last_run):
     if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
         last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
         version = get_extrahop_server_version(client)
-        if version < "9.3.0":
+        if Version(version) < Version("9.3.0"):
             raise DemistoException(
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
