@@ -33,6 +33,7 @@ def arg_to_list_with_regex(arg):
 def verify_ssl_certificate(url):
     """
     Verifies the SSL certificate of a given URL by following any redirects and checking the certificate for each redirected URL.
+    If all of the redirect chain are all http return malicious message.
 
     Args:
         url (str): The URL to verify.
