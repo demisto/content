@@ -51,6 +51,16 @@ def test_incidents_amount_limit_exceeded(mocker):
     assert demisto.results.call_count == 1
 
 
+def test_general_error_occurred(mocker):
+    from ExportIncidentsToCSV import main, LIMIT_EXCEEDED
+    export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '}]
+    mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
+    mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
+    with pytest.raises(ValueError) as ve:
+        main()
+        assert "Couldn't export incidents to CSV." in str(ve)
+
+
 def test_execute_command_empty_response(mocker):
     from ExportIncidentsToCSV import main
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
