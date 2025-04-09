@@ -3433,7 +3433,7 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
     return res, None
 
 
-def parse_issue_times(
+def parse_issue_times_for_next_run(
     issue_id: int,
     issue_created_time: str,
     issue_updated_time: str,
@@ -3530,11 +3530,14 @@ def fetch_incidents(
         )
     # Jira timestamp filters work based on the user timezone, so we need to convert the first fetch interval timezone accordingly
     # To stay backwards compatible, convert timezone if empty last run (first fetch) or if 'convert_timezone' in last run is True
-    dateparser_settings: dict | None = None
+    dateparser_settings: dict | None
     if not last_run or last_run.get("convert_timezone"):
         user_timezone = get_user_timezone(client=client)
-        demisto.debug(f"Converting JQL timestamp filters to user timezone: {user_timezone}.")
+        demisto.debug(f"Converting updated and created timestamps to user timezone: {user_timezone} for setting next run.")
         dateparser_settings = {"TIMEZONE": user_timezone}
+    else:
+        demisto.debug("Skipping timezone conversion of updated and created timestamps keeping then unchanged.")
+        dateparser_settings = None
 
     first_fetch_interval = convert_string_date_to_specific_format(first_fetch_interval, dateparser_settings=dateparser_settings)
     new_fetch_created_time = last_fetch_created_time = last_run.get("created_date", "")
@@ -3567,7 +3570,7 @@ def fetch_incidents(
                 demisto.debug(f"Incidents we got so far: {new_issue_ids}")
 
                 demisto.debug(f"Starting to parse created and updated fields of issue with ID: {issue_id}")
-                new_fetch_created_time, new_fetch_updated_time = parse_issue_times(
+                new_fetch_created_time, new_fetch_updated_time = parse_issue_times_for_next_run(
                     issue_id=issue_id,
                     issue_created_time=demisto.get(issue, "fields.created") or "",
                     issue_updated_time=demisto.get(issue, "fields.updated") or "",

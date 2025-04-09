@@ -2726,6 +2726,39 @@ class TestJiraFetchIncidents:
         parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=issue.get("names", {}) or {})
         assert expected_parsed_custom_fields == issue
 
+    @pytest.mark.parametrize(
+        "dateparser_settings, expected_parsed_created_time, expected_parsed_updated_time",
+        [
+            pytest.param(None, "2025-03-14 06:54", "2025-03-14 07:59", id="No timezone conversion"),
+            pytest.param({"TIMEZONE": "UTC-4"}, "2025-03-14 09:54", "2025-03-14 10:59", id="Convert to EST"),
+            pytest.param({"TIMEZONE": "UTC+3"}, "2025-03-14 16:54", "2025-03-14 17:59", id="Convert to IDT"),
+        ],
+    )
+    def test_parse_issue_times_for_next_run(
+        self,
+        dateparser_settings: dict | None,
+        expected_parsed_created_time: str,
+        expected_parsed_updated_time: str,
+    ):
+        """
+        Given:
+            - Issue created and updated timestamps in the UTC-7 timezone (US West Coast)
+        When
+            - Parsing the issue timestamps for fetch incidents next run
+        Then
+            - Validate that the timestamp fields get parsed correctly according to the date parser settings.
+        """
+        from JiraV3 import parse_issue_times_for_next_run
+
+        parsed_created_time, parsed_updated_time  = parse_issue_times_for_next_run(
+            issue_id=1234,
+            issue_created_time="2025-03-14T06:54:33.000-0700",
+            issue_updated_time="2025-03-14T07:59:09.000-0700",
+            dateparser_settings=dateparser_settings,
+        )
+        assert parsed_created_time == expected_parsed_created_time
+        assert parsed_updated_time == expected_parsed_updated_time
+
     def test_set_last_run_when_first_time_running_fetch(self, mocker):
         """
         Given:
@@ -2741,7 +2774,7 @@ class TestJiraFetchIncidents:
         mocker.patch("JiraV3.demisto.getLastRun", return_value={})  # empty last run (first fetch) -> Convert timezone
         get_user_timezone_mocker = mocker.patch("JiraV3.get_user_timezone", return_value="UTC")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "1", "fields": {"created": "2023-12-11 21:09", "updated": "2023-12-12 21:09"}},
@@ -2774,6 +2807,62 @@ class TestJiraFetchIncidents:
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
         assert get_user_timezone_mocker.call_count == 1
 
+    def test_set_last_run_when_timezone_has_utc_offset(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Calling the fetch incidents mechanism with `convert_timezone` set to True
+        Then
+            - Validate that the last run object gets saved with the correct data
+        """
+        from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
+
+        client = jira_base_client_mock()
+        mocker.patch("JiraV3.demisto.getLastRun",
+            return_value={
+                "issue_ids": [1],
+                "id": 1,
+                "created_date": "2023-12-11 21:04",
+                "updated_date": "2023-12-12 22:08",
+                "convert_timezone": True,
+            }
+        )
+        get_user_timezone_mocker = mocker.patch("JiraV3.get_user_timezone", return_value="UTC-4")
+        mocker.patch("JiraV3.create_incident_from_issue", return_value={})
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
+        query_raw_response = {
+            "issues": [
+                {"id": "2", "fields": {"created": "2023-12-11 21:09-0700", "updated": "2023-12-12 21:09-0700"}},
+                {"id": "3", "fields": {"created": "2023-12-11 22:09-0700", "updated": "2023-12-12 23:18-0700"}},
+            ]
+        }
+        mocker.patch.object(client, "run_query", return_value=query_raw_response)
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from="created date",
+            fetch_query="status!=done",
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval="3 days",
+            mirror_direction="Incoming And Outgoing",
+            comment_tag_to_jira="comment_tag_to_jira",
+            comment_tag_from_jira="comment_tag_from_jira",
+            attachment_tag_to_jira="attachment_tag_to_jira",
+            attachment_tag_from_jira="attachment_tag_from_jira",
+        )
+        expected_last_run = {
+            "issue_ids": [2, 3],
+            "id": 3,
+            "created_date": "2023-12-12 01:09",  # converted last created and updated from UTC-7 to UTC-4
+            "updated_date": "2023-12-13 02:18",
+            "convert_timezone": True,  # last run was empty, so timezone was converted
+        }
+        assert expected_last_run == set_last_run_mocker.call_args[0][0]
+        assert get_user_timezone_mocker.call_count == 1
+
     def test_set_last_run_when_last_run_is_not_empty(self, mocker):
         """
         Given:
@@ -2786,17 +2875,18 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch(  # last run not empty -> No timezone conversion
+        mocker.patch(  # convert_timezone is False -> No timezone conversion
             "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": ["1", "2"],
                 "id": "2",
                 "created_date": "2023-12-11 22:09",
                 "updated_date": "2023-12-12 22:09",
+                "convert_timezone": False,
             },
         )
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "3", "fields": {"created": "2024-01-11 21:09", "updated": "2024-01-12 21:09"}},
@@ -2852,7 +2942,7 @@ class TestJiraFetchIncidents:
             },
         )
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "3", "fields": {"created": "2023-12-11 22:09", "updated": "2024-01-12 21:09"}},
@@ -2908,7 +2998,7 @@ class TestJiraFetchIncidents:
             },
         )
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "3", "fields": {"created": "2022-01-12 22:09", "updated": "2023-12-12 22:09"}},
