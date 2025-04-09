@@ -53,11 +53,8 @@ def verify_ssl_certificate(url):
         return {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
 
     is_all_http = True
-
-    demisto.debug(f"verify_ssl_certificate::list len{len(redirect_chain)}")
     for response in redirect_chain:
         redirected_url = response.url
-        demisto.debug(f"verify_ssl_certificate::URL address:{redirected_url}")
         if not redirected_url.startswith(SSL_PREFIX):
             continue
         is_all_http = False

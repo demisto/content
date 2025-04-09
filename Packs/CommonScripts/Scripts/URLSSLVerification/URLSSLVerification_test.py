@@ -1,7 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
-from URLSSLVerification import arg_to_list_with_regex, mark_http_as_suspicious,main
+from URLSSLVerification import arg_to_list_with_regex, mark_http_as_suspicious,main,verify_ssl_certificate
 import requests
 from requests.exceptions import SSLError, RequestException
 
@@ -84,9 +84,18 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
         ({"url":"https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
         ({"url":"https_no_certificate","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
         ({"url":"http_to_http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
+        ({"url":"not_valid_url","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
     ],
 )
 def test_main(arg, expected_result, mocker: MockerFixture):
+    """
+    Given:
+        Requests.get work as mentioned above.
+    When:
+        main function is called.
+    Then:
+        The function should return the appropriate message.
+    """
     # Mock demisto.args()
     mocker.patch.object(
         demisto,
@@ -110,3 +119,22 @@ def test_main(arg, expected_result, mocker: MockerFixture):
     
     for d_bot in result.outputs["DBotScore"]:
         assert d_bot["Score"] == expected_result["Score"]
+        
+        
+def test_verify_ssl_certificate(mocker: MockerFixture):
+    """
+    Given:
+        Requests.get work as mentioned above.
+    When:
+        verify_ssl_certificate is called.
+    Then:
+        The function should return the appropriate message.
+    """
+    url = "https_no_certificate"
+    
+    mocker.patch("URLSSLVerification.requests.get", side_effect=fake_requests_get)
+    
+    result = verify_ssl_certificate(url)
+    assert result
+    assert result["Description"] == "SSL Certificate verification failed"
+    
