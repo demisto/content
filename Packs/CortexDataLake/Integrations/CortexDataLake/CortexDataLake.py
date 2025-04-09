@@ -751,7 +751,6 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
 
     if fields == "*":
         for result in results:
-            demisto.info(result)
             filtered_result = {
                 "Source Address": result.get("source_ip", {}).get("value"),
                 "Destination Address": result.get("dest_ip", {}).get("value"),
