@@ -175,7 +175,7 @@ script:
       type: String
     - contextPath: Shodan.Banner.Ntlm.OS
       description: OS.
-      type: String
+      type: Unknown
     - contextPath: Shodan.Banner.Ntlm.DNSDomainName
       description: DNS Domain Name.
       type: String
@@ -184,7 +184,7 @@ script:
       type: Number
     - contextPath: Shodan.Banner.Tags
       description: Tag applied by Shodan analysis.
-      type: String
+      type: Unknown
     - contextPath: Shodan.Banner.Ssl.Cert.SigAlg
       description: Certificate Signature Algorithm.
       type: String
@@ -220,7 +220,7 @@ script:
       type: Boolean
     - contextPath: Shodan.Banner.Ssl.Cert.Issuer.CN
       description: Issuer Certificate Common Name.
-      type: String
+      type: Unknown
     - contextPath: Shodan.Banner.Ssl.Cert.Issuer.O
       description: Issuer Organization.
       type: String
@@ -241,7 +241,7 @@ script:
       type: String
     - contextPath: Shodan.Banner.CPE23
       description: CPE information in the 2.3 format.
-      type: String
+      type: Unknown
     - contextPath: Shodan.Banner.Device
       description: Device identified by Shodan.
       type: String

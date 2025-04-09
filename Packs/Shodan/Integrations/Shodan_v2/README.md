@@ -65,10 +65,10 @@ Searches Shodan using facets to get summary information on properties.
 | Shodan.Banner.Ntlm.NetBIOSDomainName | String | Netbios Domain Name. | 
 | Shodan.Banner.Ntlm.NetBIOSComputerName | String | Netbios Computer Name. | 
 | Shodan.Banner.Ntlm.TargetRealm | String | Target Realm. | 
-| Shodan.Banner.Ntlm.OS | String | OS. | 
+| Shodan.Banner.Ntlm.OS | Unknown | OS. | 
 | Shodan.Banner.Ntlm.DNSDomainName | String | DNS Domain Name. | 
 | Shodan.Banner.Hash | Number | Numeric hash of the "data" property which is helpful for finding other IPs with the exact same information. | 
-| Shodan.Banner.Tags | String | Tag applied by Shodan analysis. | 
+| Shodan.Banner.Tags | Unknown | Tag applied by Shodan analysis. | 
 | Shodan.Banner.Ssl.Cert.SigAlg | String | Certificate Signature Algorithm. | 
 | Shodan.Banner.Ssl.Cert.Issued | Date | Timestamp of the beginning of certificate validity \(Not Valid Before\). | 
 | Shodan.Banner.Ssl.Cert.Expires | Date | Timestamp of the end of certificate validity \(Not Valid After\). | 
@@ -87,7 +87,7 @@ Searches Shodan using facets to get summary information on properties.
 | Shodan.Banner.Ssl.Cert.Issuer.ST | String | Issuer State or Province. | 
 | Shodan.Banner.Ssl.Cert.Issuer.C | String | Issuer Country Name. | 
 | Shodan.Banner.Data | String | The raw data returned fro the service. | 
-| Shodan.Banner.CPE23 | String | CPE information in the 2.3 format. | 
+| Shodan.Banner.CPE23 | Unknown | CPE information in the 2.3 format. | 
 | Shodan.Banner.Device | String | Device identified by Shodan. | 
 | Shodan.Banner.DeviceType | String | The Device Type identified by Shodan. | 
 | Shodan.Banner.Info | String | Additional information provided by Shodan. | 
