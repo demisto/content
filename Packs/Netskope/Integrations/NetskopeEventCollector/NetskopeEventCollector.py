@@ -40,7 +40,7 @@ class Client(BaseClient):
         self.fetch_status: dict = {event_type: False for event_type in event_types_to_fetch}
         self.event_types_to_fetch: list[str] = event_types_to_fetch
 
-        headers = {"Authentication": f"Bearer {token}"}
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
         super().__init__(base_url, verify=validate_certificate, proxy=proxy, headers=headers)
 
     def perform_data_export(self, endpoint: str, _type: str, index_name: str, operation: str):
@@ -352,9 +352,10 @@ def poc_get_all_events(client: Client, last_run: dict, all_event_types: list, li
                 int(arg_to_datetime("1 Year").timestamp())  # type: ignore[union-attr]
             )
             query = f"_creation_timestamp gte {epoch_starttime}"  # TODO: add some sorting by '_creation_timestamp' key
-            params = assign_params(
-                limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query
-            )
+            params = assign_params(limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time)
+            # params = assign_params(
+            #     limit=request_limit, offset=0, starttime=epoch_starttime, endtime=epoch_current_time, query=query
+            # )
 
             demisto.debug(f"Fetching events with params: {params}")
 
