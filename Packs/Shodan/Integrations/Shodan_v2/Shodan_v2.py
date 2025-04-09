@@ -73,7 +73,7 @@ ssl_cert_properties_map: dict[str, tuple[str, Any]] = {
 }
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def http_request(method, uri, params=None, data=None, headers=None):
