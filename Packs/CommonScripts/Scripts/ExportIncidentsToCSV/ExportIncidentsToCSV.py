@@ -41,7 +41,8 @@ def main():
     # generate the file
     export_to_csv_result = demisto.executeCommand("core-api-post", {"uri": "/incident/batch/exportToCsv", "body": incident_body})
     if not export_to_csv_result:
-        raise ValueError(f"Error {get_error(export_to_csv_result)} when trying to export incident(s) with query {incident_query} to CSV")
+        raise ValueError(f"Error {get_error(export_to_csv_result)} when trying to export incident(s) with query"
+                         f" {incident_query} to CSV")
 
     demisto.debug(f"{export_to_csv_result=}")
     export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
