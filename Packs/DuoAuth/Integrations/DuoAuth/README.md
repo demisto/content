@@ -2,7 +2,6 @@ The Duo Auth API lets developers integrate with Duo Security's platform at a low
 
 ## Configure DuoAuth in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Trust any certificate (not secure) | False |
@@ -29,14 +28,14 @@ Send push message to Duo user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Insert username. | Required | 
-| pushinfo | A set of URL-encoded key/value pairs with additional contextual information associated with this authentication attempt. The Duo Mobile app will display this information to the user. For example: from=login%20portal&amp;domain=example.com, The URL-encoded string's total length must be less than 20,000 bytes. Default is From=XSOAR&amp;Confirm=Write%20your%20message%20here.... | Optional | 
-| type | This string is displayed in the Duo Mobile app push notification and UI. Default is Activities. | Optional | 
+| username | Insert username. | Required |
+| pushinfo | A set of URL-encoded key/value pairs with additional contextual information associated with this authentication attempt. The Duo Mobile app will display this information to the user. For example: from=login%20portal&amp;domain=example.com, The URL-encoded string's total length must be less than 20,000 bytes. Default is From=XSOAR&amp;Confirm=Write%20your%20message%20here.... | Optional |
+| type | This string is displayed in the Duo Mobile app push notification and UI. Default is Activities. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DuoAuth.PushNotification.Status | String | Status of a Push message. | 
-| DuoAuth.PushNotification.Message | String | E.g. if approved, "Success. Logging you in…". | 
-| DuoAuth.PushNotification.User | String | Username receiving Push message. | 
+| DuoAuth.PushNotification.Status | String | Status of a Push message. |
+| DuoAuth.PushNotification.Message | String | E.g. if approved, "Success. Logging you in…". |
+| DuoAuth.PushNotification.User | String | Username receiving Push message. |
