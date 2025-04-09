@@ -90,6 +90,7 @@ alter syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})
     target_username = if(process_name in("su", "sudo"), username, target_username),
     target_group = coalesce(target_group_name, target_group_id), 
     log_level = if(log_level ~= "debug|info|notice|warn|error|critical|alert|emergency|fatal", uppercase(log_level), null)
+
 | alter
     xdm.source.host.hostname = hostname, 
     xdm.event.type = process_name, 
