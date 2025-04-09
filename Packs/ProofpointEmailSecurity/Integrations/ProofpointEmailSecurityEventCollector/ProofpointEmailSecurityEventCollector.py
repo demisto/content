@@ -300,14 +300,18 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         api_key (str): Proofpoint API key.
         fetch_interval (int): Total time allocated per fetch cycle.
     """
-    with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
-        demisto.info("Connected to websocket")
-        fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
+    while True:
+        try:
+            with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
+                demisto.info("Connected to websocket")
+                fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
 
-        while True:
-            perform_long_running_loop(connections, fetch_interval)
-            # sleep for a bit to not throttle the CPU
-            time.sleep(FETCH_SLEEP)
+                while True:
+                    perform_long_running_loop(connections, fetch_interval)
+                    # sleep for a bit to not throttle the CPU
+                    time.sleep(FETCH_SLEEP)
+        except Exception as e:
+            demisto.error(f"Got an error while running in long running {e}")
 
 
 def main():  # pragma: no cover
