@@ -33,7 +33,7 @@ def create_response(url, status_code = 200, history = []):
 
 def fake_requests_get(url, timeout, allow_redirects=True, verify=True):
     """
-    This helper function simulates HTTP requests with no real URL due to secret problem.
+    This helper function simulates HTTP requests with no real URL.
     It fabricates response objects that include status codes, URL redirection history, and header-like information.
 
     Args:
@@ -52,13 +52,10 @@ def fake_requests_get(url, timeout, allow_redirects=True, verify=True):
     if url == "https_no_certificate" and verify:
         raise SSLError("SSL certificate error")
     
-    elif url == "http":
-        return create_response(url="http")
+    elif url == "http" or url == "https_certificate":
+        return create_response(url=url)
     
-    elif url == "https_certificate":
-        return create_response(url="https_certificate")
-    
-    elif url == "http_to_https_certificate" and allow_redirects:
+    elif url == "http_to_https_certificate":
         first_response = create_response(url="http_to_https_certificate", status_code=301)
         if allow_redirects:
             return create_response(url="https_certificate", history=[first_response])
