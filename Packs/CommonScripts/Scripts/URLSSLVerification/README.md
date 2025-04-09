@@ -1,4 +1,4 @@
-Verifies the URL's/URL redirect chain for SSL certificate .
+Verifies the URL's/URL redirect chain for SSL certificate.
 
 ## Script Data
 ---
