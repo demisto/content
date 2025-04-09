@@ -212,7 +212,7 @@ script:
       - Tier 3
       - Tier 4
     - auto: PREDEFINED
-      description: Urgency of the request. Choose one of the listed options or provide a dictionary representing an urgency object. Can be "High", "Low", "Normal", or "Urgent".
+      description: Urgency of the request. Choose one  of the listed options or provide a dictionary representing an urgency object. Can be "High", "Low", "Normal", or "Urgent".
       name: urgency
       predefined:
       - High
