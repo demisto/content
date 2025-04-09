@@ -20,12 +20,10 @@ This integration was integrated and tested with version 0.40.1 of M2Crypto.
 
 ## Configure SMIME Messaging in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Public Key | Sender public key required for signing emails. | True |
 | Private Key | Sender private key required for decrypting and signing emails. | True |
-
 
 ## Commands
 
@@ -47,16 +45,16 @@ Warning: This function does not check the CA chain. Ensure the certificate chain
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| signed_message | Entity ID of the file with a .p7 extension containing the signed message. | Required | 
-| public_key | Sender's public key to verify. Default is instancePublicKey. | Optional | 
-| raw_output | Whether to get the full raw output of the email. Possible values are: false, true. | Optional | 
-| tag | A comma-separated list of tags to be included in the War Room output. | Optional | 
+| signed_message | Entity ID of the file with a .p7 extension containing the signed message. | Required |
+| public_key | Sender's public key to verify. Default is instancePublicKey. | Optional |
+| raw_output | Whether to get the full raw output of the email. Possible values are: false, true. | Optional |
+| tag | A comma-separated list of tags to be included in the War Room output. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SMIME.Verified.Message | String | The decoded signed message. | 
+| SMIME.Verified.Message | String | The decoded signed message. |
 
 #### Command example
 
@@ -76,7 +74,7 @@ Warning: This function does not check the CA chain. Ensure the certificate chain
 
 #### Human Readable Output
 
->### The signature verified, message is: 
+>### The signature verified, message is
 >
 >***
 > This is a message to sign
@@ -94,16 +92,16 @@ Decrypts the message body.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| encrypt_message | Entity ID of the file with a .p7 extension containing the encrypted email. | Required | 
-| encoding | The encoding code to use when decoding the message body, e.g., 'ISO-8859-2''. | Optional | 
-| raw_output | Whether to get the full raw output of the email. Possible values are: false, true. | Optional | 
-| tag | A comma-separated list of tags to be included in the War Room output. | Optional | 
+| encrypt_message | Entity ID of the file with a .p7 extension containing the encrypted email. | Required |
+| encoding | The encoding code to use when decoding the message body, e.g., 'ISO-8859-2''. | Optional |
+| raw_output | Whether to get the full raw output of the email. Possible values are: false, true. | Optional |
+| tag | A comma-separated list of tags to be included in the War Room output. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SMIME.Decrypted.Message | String | The decrypted message. | 
+| SMIME.Decrypted.Message | String | The decrypted message. |
 
 #### Command example
 
@@ -123,7 +121,7 @@ Decrypts the message body.
 
 #### Human Readable Output
 
->### The decrypted message is: 
+>### The decrypted message is
 >
 >***
 > This is a message to encrypt
@@ -141,24 +139,24 @@ Encrypts and signs an email message with S/MIME protocol by using a public RSA c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | The message body to encrypt and sign. | Required | 
-| recipients | JSON dict of recipients and their public keys<br/>Format: {"recipient@email":"cert", "other@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional | 
-| cc | JSON dict of cc recipients and their public keys<br/>Format: {"cc@email":"cert", "othercc@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional | 
-| bcc | JSON dict of bcc recipients and their public keys<br/>Format: {"bcc@email":"cert", "otherbcc@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional | 
-| attachment_entry_id | List of War Room entry IDs of files to attach to the mail. | Optional | 
-| signed | Whether the mail should be signed. Possible values are: true, false. Default is true. | Optional | 
-| encrypted | Whether the mail should be encrypted. Possible values are: true, false. Default is true. | Optional | 
-| sender | Sender email address. | Optional | 
-| subject | Email subject. | Optional | 
-| create_file_p7 | Whether to create a file with the encrypted/signed content. Possible values are: false, true. | Optional | 
+| message | The message body to encrypt and sign. | Required |
+| recipients | JSON dict of recipients and their public keys<br/>Format: {"recipient@email":"cert", "other@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional |
+| cc | JSON dict of cc recipients and their public keys<br/>Format: {"cc@email":"cert", "othercc@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional |
+| bcc | JSON dict of bcc recipients and their public keys<br/>Format: {"bcc@email":"cert", "otherbcc@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional |
+| attachment_entry_id | List of War Room entry IDs of files to attach to the mail. | Optional |
+| signed | Whether the mail should be signed. Possible values are: true, false. Default is true. | Optional |
+| encrypted | Whether the mail should be encrypted. Possible values are: true, false. Default is true. | Optional |
+| sender | Sender email address. | Optional |
+| subject | Email subject. | Optional |
+| create_file_p7 | Whether to create a file with the encrypted/signed content. Possible values are: false, true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SMIME.SignedAndEncrypted.Message | String | The raw message to send. | 
-| SMIME.SignedAndEncrypted.RecipientIds | String | Address of the recipient. | 
-| SMIME.SignedAndEncrypted.FileName | String | Name of the file output if create_file_p7 is used. | 
+| SMIME.SignedAndEncrypted.Message | String | The raw message to send. |
+| SMIME.SignedAndEncrypted.RecipientIds | String | Address of the recipient. |
+| SMIME.SignedAndEncrypted.FileName | String | Name of the file output if create_file_p7 is used. |
 
 #### Command example
 
@@ -245,7 +243,6 @@ Encrypts and signs an email message with S/MIME protocol by using a public RSA c
 >me4sPRRl8TJQ12xVuOmlRpQ4+rUxhMfZKyyYZ0isoVNYsmeFPQ8=
 >
 
-
 #### Command example
 
 ```!smime-sign-and-encrypt message="This is a message to encrypt" signed=false```
@@ -295,7 +292,6 @@ Encrypts and signs an email message with S/MIME protocol by using a public RSA c
 >KJu33MeFXApz/qZ3OwmmdYl7l8zs12LArs813yMhOpu2vicjrZ+S5BYygM1oOvr+
 >+Mmk+dI+iwm16cO4MWhY6szJRQ==
 >
-
 
 #### Command example
 
