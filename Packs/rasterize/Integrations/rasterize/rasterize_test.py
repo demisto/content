@@ -568,13 +568,13 @@ def test_generate_chrome_port_no_port_available(mocker):
     assert not port
 
 
-def test_get_chrome_browser_error(mocker: MockerFixture):
+def test_get_headless_chrome_error(mocker: MockerFixture):
     """
     Given   A connection error.
     When    Launching a pychrome browser.
     Then    Make sure the error is caught and debugged properly.
     """
-    from rasterize import get_chrome_browser
+    from rasterize import get_headless_chrome
 
     def raise_connection_error(url):
         raise requests.exceptions.ConnectionError("connection error")
