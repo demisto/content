@@ -83,6 +83,7 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
         ({"url":"http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
         ({"url":"https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
         ({"url":"https_no_certificate","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
+        ({"url":"http_to_http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
     ],
 )
 def test_main(arg, expected_result, mocker: MockerFixture):
