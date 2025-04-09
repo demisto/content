@@ -1,0 +1,95 @@
+commonfields:
+  id: Dynatrace
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+name: Dynatrace
+display: Dynatrace
+category: Cloud Services
+description: 'Dynatrace is a revolutionary platform that delivers analytics and automation for unified observability and security.'
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Access Token
+  name: token
+  required: true
+  type: 4
+  section: Connect
+- display: Event types to fetch
+  name: events_to_fetch
+  type: 16
+  defaultvalue: Audit logs,APM
+  required: true
+  section: Collect
+  advanced: true
+  options:
+  - Audit logs
+  - APM
+- display: The maximum number of audit logs events per fetch
+  section: Collect
+  advanced: true
+  defaultvalue: "25000"
+  type: 0
+  name: audit_limit
+- display: The maximum number of APM events per fetch
+  section: Collect
+  advanced: true
+  defaultvalue: "7000"
+  type: 0
+  name: apm_limit
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+script:
+  script: ""
+  type: python
+  commands:
+  - arguments:
+    - name: events_types_to_get
+      description: comma separated list of events types to get.
+      auto: PREDEFINED
+      predefined:
+      - Audit logs
+      - APM
+      required: true
+    - name: audit_from
+      description: The start date for searching audit_logs events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/events-v2/get-events for more information.
+    - name: apm_from
+      description: The start date for searching apm events. The date can be provided in three formats- Timestamp in UTC milliseconds, Human-readable format in the following format- 2021-01-25T05:57:01.123+01:00 or relative timeframe using the format now-NU/A. For more information, please refer to https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/environment-api/audit-logs/get-log for more information.
+    - name: audit_limit
+      required: false
+      description: Number of audit_logs events to fetch.
+      defaultValue: "1"
+    - name: apm_limit
+      required: false
+      description: Number of apm events to fetch.
+      defaultValue: "1"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: false
+    description: Manual command to fetch events and display them. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+    name: dynatrace-get-events
+  isfetchevents: true
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+marketplaces:
+- marketplacev2
+fromversion: 6.9.0
+tests:
+- No tests
