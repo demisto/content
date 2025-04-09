@@ -1,0 +1,18 @@
+{
+    "name": "Example Pack",
+    "description": "An Integration Pack to fetch Alibaba action trail events.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
