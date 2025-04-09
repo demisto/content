@@ -98,7 +98,7 @@ tags:
 - phishing
 timeout: 60µs
 type: python
-dockerimage: devdemisto/ml:1.0.0.3011669
+dockerimage: demisto/ml:1.0.0.3099369
 tests:
 - Create Phishing Classifier V2 ML Test
 - DbotPredictOufOfTheBoxTestV2
