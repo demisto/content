@@ -156,7 +156,7 @@ def main():  # pragma: no cover
 
         feed_main(params, "ACTI Indicator Feed", "acti")
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

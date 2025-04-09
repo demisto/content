@@ -18,9 +18,7 @@ def mock_incident(
         "status": 1,
         "created": created,
         "modified": modified,
-        "CustomFields": {
-            "testField": "testValue"
-        },
+        "CustomFields": {"testField": "testValue"},
         "closed": "0001-01-01T00:00:00Z",
         "labels": [{"type": "subject", "value": "This subject1"}, {"type": "unique", "value": "This subject1"}],
         "attachment": [{"name": "Test word1 word2"}],
@@ -73,12 +71,12 @@ def mock_execute_command(command: str, args: dict) -> list[dict]:
             if match := re.search(r"\(modified:<\"([^\"]*)\"\)", query):
                 to_date = match.group(1)
             if match := re.search(r"\(type:\(([^)]*)\)\)", query):
-                incident_types = argToList(match.group(1), separator=" ", transform=lambda t: t.strip("\""))
+                incident_types = argToList(match.group(1), separator=" ", transform=lambda t: t.strip('"'))
             res = [
                 i  # {k: v for k, v in i.items() if not populate_fields or k in populate_fields}
                 for i in INCIDENTS_LIST
                 if does_incident_match_query(i, time_field, from_date, to_date, incident_types)
-            ][page * size:(page + 1) * size]
+            ][page * size : (page + 1) * size]
             return [{"Contents": {"data": res}, "Type": "json"}]
         case "getContext":
             return [{"Contents": "context", "Type": "json"}]
@@ -110,8 +108,8 @@ def test_build_query():
         non_empty_fields=["status", "closeReason"],
     )
     assert query == (
-        "(Extra part) and (type:(*phish* \"Malware\")) and (modified:>=\"2019-01-10T00:00:00\") "
-        "and (modified:<\"2019-01-12T00:00:00\") and (status:* and closeReason:*)"
+        '(Extra part) and (type:(*phish* "Malware")) and (modified:>="2019-01-10T00:00:00") '
+        'and (modified:<"2019-01-12T00:00:00") and (status:* and closeReason:*)'
     )
 
 
@@ -152,17 +150,9 @@ def test_get_incidents_by_query_sanity_test(mocker):
     }
     results = get_incidents_by_query(args)
     assert len(results) == 4
-    assert all(
-        inc["type"] in args["incidentTypes"] for inc in results
-    )
-    assert all(
-        dateparser.parse(args["fromDate"]).astimezone() <= dateparser.parse(inc["created"])
-        for inc in results
-    )
-    assert all(
-        dateparser.parse(inc["created"]) < dateparser.parse(args["toDate"]).astimezone()
-        for inc in results
-    )
+    assert all(inc["type"] in args["incidentTypes"] for inc in results)
+    assert all(dateparser.parse(args["fromDate"]).astimezone() <= dateparser.parse(inc["created"]) for inc in results)
+    assert all(dateparser.parse(inc["created"]) < dateparser.parse(args["toDate"]).astimezone() for inc in results)
 
 
 def test_get_incidents_by_query_with_pagination(mocker):
@@ -211,7 +201,7 @@ def test_get_incidents_by_query_with_populate_fields(mocker):
         "limit": "10",
         "includeContext": "false",
         "pageSize": "10",
-        "populateFields": "id,name,testField"
+        "populateFields": "id,name,testField",
     }
     results = get_incidents_by_query(args)
     assert len(results) == 4
@@ -238,7 +228,7 @@ def test_get_incidents_by_query_with_populate_fields_with_pipe_separator(mocker)
         "limit": "10",
         "includeContext": "false",
         "pageSize": "10",
-        "populateFields": "id|name|testField"
+        "populateFields": "id|name|testField",
     }
     results = get_incidents_by_query(args)
     assert len(results) == 4
