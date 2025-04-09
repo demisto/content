@@ -71,21 +71,60 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
 
     
 @pytest.mark.parametrize(
-    "arg, expected_result",
+    "arg, expected_results",
     [
         # Set_http_as_suspicious = True
-        ({"url":"http","set_http_as_suspicious":"true"}, {"Verified":False, "Score":2}),
-        ({"url":"https_certificate","set_http_as_suspicious":"true"}, {"Verified":True, "Score":0}),
+        ({"url":"http",
+          "set_http_as_suspicious":"true"},              [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":"http"}]),
+        ({"url":"https_certificate",
+          "set_http_as_suspicious":"true"},              [{"Verified":True,
+                                                           "Score":0,
+                                                           "Indicator":"https_certificate"}]),
+        
         # Set_http_as_suspicious = False
-        ({"url":"http_to_https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
-        ({"url":"http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
-        ({"url":"https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
-        ({"url":"https_no_certificate","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
-        ({"url":"http_to_http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
-        ({"url":"invalid_url","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
+        ({"url":"http_to_https_certificate",
+          "set_http_as_suspicious":"false"},             [{"Verified":True,
+                                                           "Score":0,
+                                                           "Indicator":
+                                                            "http_to_https_certificate"}]),
+        ({"url":"http",
+          "set_http_as_suspicious":"false"},             [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":"http"}]),
+        ({"url":"https_certificate",
+          "set_http_as_suspicious":"false"},             [{"Verified":True,
+                                                           "Score":0,
+                                                           "Indicator":"https_certificate"}]),
+        ({"url":"https_no_certificate",
+          "set_http_as_suspicious":"false"},             [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":"https_no_certificate"}]),
+        ({"url":"http_to_http",
+          "set_http_as_suspicious":"false"},             [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":"http_to_http"}]),
+        ({"url":"invalid_url",
+          "set_http_as_suspicious":"false"},              [{"Verified":False,
+                                                            "Score":2,
+                                                            "Indicator":"invalid_url"}]),
+        
+        # Test Multiple url
+        ({"url":["invalid_url","http_to_http","http_to_https_certificate"],
+          "set_http_as_suspicious":"false"},
+                                                          [{"Verified":False,
+                                                            "Score":2,
+                                                            "Indicator":"invalid_url"},
+                                                           {"Verified":False,
+                                                            "Score":2,
+                                                            "Indicator":"http_to_http"},
+                                                           {"Verified":True,
+                                                           "Score":0,
+                                                           "Indicator":"http_to_https_certificate"}]),
     ],
 )
-def test_main(arg, expected_result, mocker: MockerFixture):
+def test_main(arg, expected_results, mocker: MockerFixture):
     """
     Given:
         Requests.get work as mentioned above.
@@ -113,10 +152,10 @@ def test_main(arg, expected_result, mocker: MockerFixture):
     result = mock_return_results.call_args[0][0]
     
     for url in result.outputs["URL"]:
-        assert url["Verified"] == expected_result["Verified"]
+        assert url["Verified"] == [ret["Verified"] for ret in expected_results if ret["Indicator"] == url["Data"]][0]
     
     for d_bot in result.outputs["DBotScore"]:
-        assert d_bot["Score"] == expected_result["Score"]
+        assert d_bot["Score"] == [ret["Score"] for ret in expected_results if ret["Indicator"] == d_bot["Indicator"]][0]
         
 @pytest.mark.parametrize("url, description_result",[
     ("https_no_certificate","SSL Certificate verification failed"),
