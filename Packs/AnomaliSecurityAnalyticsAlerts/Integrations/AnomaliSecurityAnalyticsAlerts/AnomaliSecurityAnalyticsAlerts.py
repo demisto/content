@@ -126,7 +126,7 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     query = str(args.get('query'))
-    source = str(args.get('source', ''))
+    source = str(args.get('source', 'third_party'))
     tz_str = str(args.get('timezone', 'UTC'))
     from_datetime = arg_to_datetime(args.get('from', '1 day'),
                                     arg_name='from',

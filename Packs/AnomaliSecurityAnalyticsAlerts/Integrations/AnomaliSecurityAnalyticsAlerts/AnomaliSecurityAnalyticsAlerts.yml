@@ -42,7 +42,7 @@ script:
       description: Search expression or keyword you're looking for in logs, e.g. alerts.
       required: true
     - name: source
-      description: Filters results by the log source or origin system, e.g. third_party_xsoar_integration.
+      description: Filters results by the log source or origin system, e.g. third_party_xsoar_integration. Default value is third_party.
       required: false
     - name: from
       defaultValue: 1 day
