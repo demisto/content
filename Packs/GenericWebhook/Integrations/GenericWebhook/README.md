@@ -78,7 +78,7 @@ The payload could then be mapped in the [Mapping wizard (Cortex XSOAR 6.13)](htt
 
 - Note that the *Store sample events for mapping* parameter needs to be set.
 
-    <img width="900" src="./../../doc_imgs/mapping.png" />
+    <img width="900" src="./../../doc_files/mapping.png" />
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 
@@ -92,3 +92,10 @@ The response is an array containing an object with the created incident metadata
         For example, if the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
     
 - If you are not using server rerouting as described above, you can configure an HTTPS server by providing a certificate and private key.
+
+## Troubleshooting
+
+- Header Size Limit: Each server or framework may impose a limit on the total size of the headers received in a request. For example, servers like Nginx or Apache have their own default values that can be configured. FastAPI itself doesn't specifically limit the header size, but underlying ASGI servers like Uvicorn or Hypercorn that run FastAPI do have default limits (e.g., Uvicorn has a default of 1MB for the total size of request headers).
+- Allowed Characters: Headers should only use ASCII characters. Non-ASCII characters must be encoded.
+- Header Names and Values: Certain characters are restricted in header names and values. Typically, names cannot include characters such as : or newlines, and values are restricted from including newlines to protect against header injection attacks.
+- Case Sensitivity: Header keys are case-insensitive as per HTTP standards, but it is good practice to keep a consistent casing convention for ease of maintenance and readability.

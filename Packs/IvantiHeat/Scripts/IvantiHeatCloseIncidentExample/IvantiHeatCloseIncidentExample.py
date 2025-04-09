@@ -1,7 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """
 Use the IvantiHeatCloseIncidentExample script to close incident object in Ivanti Heat.
@@ -17,7 +17,7 @@ See the Ivanti documentation for more information on quick actions:
 
 
 def main():
-    rec_id = demisto.args().get('rec_id')
+    rec_id = demisto.args().get("rec_id")
     data = {
         "ActionId": "3492dbcc-e502-44fd-9790-e3e45cb26c45",
         "ShouldSave": True,
@@ -25,15 +25,12 @@ def main():
             "FormParams": {
                 "actionId": "3492dbcc-e502-44fd-9790-e3e45cb26c45",
                 "actualObjectType": "Incident#",
-                "objectId": rec_id
+                "objectId": rec_id,
             },
-            "GridParams": None
+            "GridParams": None,
         },
         "PromptParams": [
-            {
-                "Value": "Closed",
-                "FieldName": "Status"
-            },
+            {"Value": "Closed", "FieldName": "Status"},
             {
                 "__type": "DataLayer.PromptData",
                 "Label": "Select Cause Code",
@@ -43,8 +40,7 @@ def main():
                 "ActionObjectType": "Incident#",
                 "PromptObjectType": "Incident#",
                 "Value": "Documentation Request",
-
-                "FieldName": "CauseCode"
+                "FieldName": "CauseCode",
             },
             {
                 "__type": "DataLayer.PromptData",
@@ -66,7 +62,7 @@ def main():
                 "Required": False,
                 "DefaultValue": None,
                 "Hidden": False,
-                "IsNewPrompt": True
+                "IsNewPrompt": True,
             },
             {
                 "__type": "DataLayer.PromptData",
@@ -77,12 +73,11 @@ def main():
                 "ActionObjectType": "Incident#",
                 "PromptObjectType": "Incident#",
                 "Value": "test",
-                "FieldName": "Resolution"
-
-            }
-        ]
+                "FieldName": "Resolution",
+            },
+        ],
     }
-    return_outputs(json.dumps(data, indent=4), {'IvantiHeat.CloseIncidentJSON': json.dumps(data)}, data)
+    return_outputs(json.dumps(data, indent=4), {"IvantiHeat.CloseIncidentJSON": json.dumps(data)}, data)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

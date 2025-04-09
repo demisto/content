@@ -43,7 +43,6 @@ class EventType(str, Enum):
 
 
 class Client:
-
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -55,7 +54,7 @@ class Client:
         start_time: datetime | str,
         end_time: datetime | timedelta | str | None = None,
         limit: int = MAX_FETCH_AUDIT_LOGS,
-        page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
+        page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE,
     ):
         """
         Get audit logs
@@ -66,11 +65,13 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
-        demisto.debug(f'Audit logs: {start_time=}, {end_time=}, {limit=}')
+        demisto.debug(f"Audit logs: {start_time=}, {end_time=}, {limit=}")
         audit_logs = []
 
         for audit_log in self.code42_client.audit_log.v1.iter_all(
-            start_time=start_time, end_time=end_time, page_size=page_size  # iterates all the pages
+            start_time=start_time,
+            end_time=end_time,
+            page_size=page_size,  # iterates all the pages
         ):
             encoded_audit_log = json.dumps(audit_log, sort_keys=True).encode()
             audit_log["id"] = hashlib.sha256(encoded_audit_log).hexdigest()
@@ -79,7 +80,8 @@ class Client:
             audit_logs.append(audit_log)
 
         audit_logs = sorted(
-            audit_logs, key=lambda _log: _log["_time"]  # type: ignore[arg-type, return-value]
+            audit_logs,
+            key=lambda _log: _log["_time"],  # type: ignore[arg-type, return-value]
         )
         return audit_logs[:limit]
 
@@ -88,7 +90,7 @@ class Client:
         start_time: datetime | str | timedelta,
         end_time: datetime | str | timedelta | None = None,
         limit: int = MAX_FETCH_FILE_EVENTS,
-        page_size: int = MAX_FILE_EVENTS_PAGE_SIZE
+        page_size: int = MAX_FILE_EVENTS_PAGE_SIZE,
     ) -> List[dict[str, Any]]:
         """
         Get file events
@@ -142,11 +144,7 @@ class Client:
         return [event.dict() for event in sorted_file_events]
 
 
-def dedup_fetched_events(
-    events: List[dict],
-    last_run_fetched_event_ids: Set[str],
-    keys_list_to_id: List[str]
-) -> List[dict]:
+def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str], keys_list_to_id: List[str]) -> List[dict]:
     """
     Dedup events, removes events which were already fetched.
 
@@ -242,11 +240,13 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         last_run: Last run object
         max_fetch_file_events: the maximum number of file events to return
     """
-    demisto.debug(f'last run before getting {EventType.FILE} logs: {last_run}')
+    demisto.debug(f"last run before getting {EventType.FILE} logs: {last_run}")
     new_last_run = last_run.copy()
     new_last_run.pop("nextTrigger", None)
-    file_event_time = dateparser.parse(last_run[FileEventLastRun.TIME]) if FileEventLastRun.TIME in last_run else (
-        datetime.now() - timedelta(minutes=1)
+    file_event_time = (
+        dateparser.parse(last_run[FileEventLastRun.TIME])
+        if FileEventLastRun.TIME in last_run
+        else (datetime.now() - timedelta(minutes=1))
     )
 
     last_fetched_event_file_ids = set(
@@ -271,7 +271,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
             }
         )
 
-    demisto.debug(f'updated last run of {EventType.FILE} events to {new_last_run}')
+    demisto.debug(f"updated last run of {EventType.FILE} events to {new_last_run}")
     return file_events, new_last_run
 
 
@@ -284,14 +284,14 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
         last_run: Last run object
         max_fetch_audit_events: the maximum number of audit logs to return
     """
-    demisto.debug(f'last run before getting {EventType.AUDIT} logs: {last_run}')
+    demisto.debug(f"last run before getting {EventType.AUDIT} logs: {last_run}")
     new_last_run = last_run.copy()
-    audit_log_time = dateparser.parse(last_run[AuditLogLastRun.TIME]) if AuditLogLastRun.TIME in last_run else (
-        datetime.now() - timedelta(minutes=1)
+    audit_log_time = (
+        dateparser.parse(last_run[AuditLogLastRun.TIME])
+        if AuditLogLastRun.TIME in last_run
+        else (datetime.now() - timedelta(minutes=1))
     )
-    last_fetched_audit_log_ids = set(
-        last_run[AuditLogLastRun.FETCHED_IDS]
-    ) if AuditLogLastRun.FETCHED_IDS in last_run else set()
+    last_fetched_audit_log_ids = set(last_run[AuditLogLastRun.FETCHED_IDS]) if AuditLogLastRun.FETCHED_IDS in last_run else set()
     audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)  # type: ignore[arg-type]
     audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
 
@@ -305,7 +305,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
             }
         )
 
-    demisto.debug(f'updated last run of {EventType.AUDIT} logs to {new_last_run}')
+    demisto.debug(f"updated last run of {EventType.AUDIT} logs to {new_last_run}")
     return audit_logs, new_last_run
 
 
@@ -325,7 +325,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
     )
     demisto.setLastRun(last_run)
-    demisto.debug(f'Updated the last run to {last_run} after fetching {EventType.FILE} events')
+    demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.FILE} events")
 
     audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
     audit_log_ids = get_event_ids(audit_logs, keys_to_id=["id"])
@@ -337,12 +337,10 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
 
     last_run.update(audit_logs_last_run)
     send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
-    demisto.debug(
-        f'Fetched the following {EventType.AUDIT} events event IDs {audit_log_ids}'
-    )
+    demisto.debug(f"Fetched the following {EventType.AUDIT} events event IDs {audit_log_ids}")
     demisto.setLastRun(last_run)
 
-    demisto.debug(f'Updated the last run to {last_run} after fetching {EventType.AUDIT} logs')
+    demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.AUDIT} logs")
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -360,38 +358,31 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
             "Audit Logs",
             events,
             headers=["actorId", "actorName", "timestamp", "type"],
-            headerTransform=pascalToSpace, removeNull=True
+            headerTransform=pascalToSpace,
+            removeNull=True,
         )
     else:
         events = client.get_file_events(start_date, end_time=end_date, limit=limit)
         for event in events:
             event["Id"] = event["event"]["id"]
-        readable_output = tableToMarkdown(
-            "File Events",
-            events,
-            headers=["id", "_time"],
-            removeNull=True
-        )
+        readable_output = tableToMarkdown("File Events", events, headers=["id", "_time"], removeNull=True)
 
     return CommandResults(
-        outputs_prefix="Code42EventCollector.Events",
-        outputs=events,
-        raw_response=events,
-        readable_output=readable_output
+        outputs_prefix="Code42EventCollector.Events", outputs=events, raw_response=events, readable_output=readable_output
     )
 
 
 def main() -> None:
     params = demisto.params()
-    client_id: str = params.get('credentials', {}).get('identifier', '')
-    client_secret: str = params.get('credentials', {}).get('password', '')
-    base_url: str = params.get('url', '').rstrip('/')
-    verify_certificate = not params.get('insecure', False)
+    client_id: str = params.get("credentials", {}).get("identifier", "")
+    client_secret: str = params.get("credentials", {}).get("password", "")
+    base_url: str = params.get("url", "").rstrip("/")
+    verify_certificate = not params.get("insecure", False)
     max_fetch_file_events = arg_to_number(params.get("max_file_events_per_fetch")) or DEFAULT_FILE_EVENTS_MAX_FETCH
     max_fetch_audit_events = arg_to_number(params.get("max_audit_events_per_fetch")) or DEFAULT_AUDIT_EVENTS_MAX_FETCH
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     try:
         client = Client(
             client_id=client_id,
@@ -399,14 +390,14 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
         )
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             fetch_events(
                 client,
                 last_run=demisto.getLastRun(),
                 max_fetch_file_events=max_fetch_file_events,
-                max_fetch_audit_events=max_fetch_audit_events
+                max_fetch_audit_events=max_fetch_audit_events,
             )
             demisto.debug(f'[TEMP] fetch ended. LastRun: {demisto.getLastRun()}')
         elif command == "code42-get-events":
@@ -416,5 +407,5 @@ def main() -> None:
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
