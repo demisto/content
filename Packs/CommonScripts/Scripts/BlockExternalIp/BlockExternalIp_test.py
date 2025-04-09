@@ -223,3 +223,58 @@ def test_checkpoint_object_names_to_members():
    assert expected_names == result
 
 
+def test_prisma_sase_candidate_config_push_false():
+    """
+    Given:
+      - auto_commit = false, and an object to save the responses of execute command.
+    When:
+      - Running the script block-external-ip for the prisma-sase brand, checking if a commit should be executed or not.
+    Then:
+      - A command result with a warning is returned.
+    """
+    from BlockExternalIp import prisma_sase_candidate_config_push
+    expected_auto_commit_message = ("Not commiting the changes in Palo Alto Networks - Prisma SASE, since auto_commit=False."
+                                    " Please do so manually for the changes to take affect.")
+    result_auto_commit, result_auto_commit_message = prisma_sase_candidate_config_push(False, [])
+    assert not result_auto_commit
+    assert result_auto_commit_message.readable_output == expected_auto_commit_message
+
+
+def test_prisma_sase_candidate_config_push_true(mocker):
+    """
+    Given:
+      - auto_commit = true, and an object to save the responses of execute command.
+    When:
+      - Running the script block-external-ip for the prisma-sase brand, checking if a commit should be executed or not.
+    Then:
+      - Verify the correct outputs are returned from the function.
+    """
+    from BlockExternalIp import prisma_sase_candidate_config_push
+    responses = []
+    entries = util_load_json('test_data/prisma_sase_responses.json').get('candidate_config_push')
+    mocker.patch.object(demisto, 'executeCommand', return_value=entries)
+    result_auto_commit, result_auto_commit_message = prisma_sase_candidate_config_push(True, responses)
+    assert not result_auto_commit_message
+    assert len(responses) == 1
+    assert result_auto_commit
+
+
+def test_prisma_sase_security_rule_update_needed(mocker):
+    """
+    Given:
+      - rule_name, address_group, a responses list.
+    When:
+      - Running the script block-external-ip for the prisma-sase brand, checking if a rule update should be performed.
+    Then:
+      - Verify the correct outputs are returned from the function, the response of the command in case it was executed, otherwise [].
+    """
+    from BlockExternalIp import prisma_sase_security_rule_update
+    rule_name = "rules"
+    address_group = "test_debug1"
+    res_rule_list = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_list')
+    responses = [res_rule_list]
+    entries = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_update')
+    mocker.patch.object(demisto, 'executeCommand', return_value=entries)
+    result = prisma_sase_security_rule_update(rule_name, address_group, responses)
+    assert result == entries
+    assert len(responses) == 2
