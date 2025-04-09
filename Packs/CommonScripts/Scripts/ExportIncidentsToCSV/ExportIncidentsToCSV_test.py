@@ -27,6 +27,13 @@ def test_main_error(mocker):
 
 
 def test_no_incidents_found(mocker):
+    """
+    Given: NO_INCIDENTS_FOUND global string
+    When: The main() function is called and no incidents are found
+    Then: The NO_INCIDENTS_FOUND message is expected to be called as a result within the results object,
+     and the call count for results is expected to be 1.
+    """
+
     from ExportIncidentsToCSV import main, NO_INCIDENTS_FOUND
     export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '
                                          '"Status":"400 Bad Request "title": "Incidents search returned no results" '}]
@@ -39,6 +46,13 @@ def test_no_incidents_found(mocker):
 
 
 def test_incidents_amount_limit_exceeded(mocker):
+    """
+    Given: LIMIT_EXCEEDED global string
+    When: The main() function is called and the incidents amount exceeded the limit
+    Then: The LIMIT_EXCEEDED message is expected to be called as a result within the results object,
+     and the call count for results is expected to be 1.
+    """
+
     from ExportIncidentsToCSV import main, LIMIT_EXCEEDED
     export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '
                                          '"StatusCode":413, title\":\"Limit Exceeded\" '}]
@@ -52,7 +66,13 @@ def test_incidents_amount_limit_exceeded(mocker):
 
 
 def test_general_error_occurred(mocker):
-    from ExportIncidentsToCSV import main, LIMIT_EXCEEDED
+    """
+    Given: None
+    When: The main() function is called and general error returned as response from executeCommand
+    Then: ValueError is expected to be raised
+    """
+
+    from ExportIncidentsToCSV import main
     export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '}]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
@@ -62,6 +82,12 @@ def test_general_error_occurred(mocker):
 
 
 def test_execute_command_empty_response(mocker):
+    """
+    Given: None
+    When: The main() function is called and general error occurred when executing executeCommand
+    Then: ValueError is expected to be raised
+    """
+
     from ExportIncidentsToCSV import main
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=[])
