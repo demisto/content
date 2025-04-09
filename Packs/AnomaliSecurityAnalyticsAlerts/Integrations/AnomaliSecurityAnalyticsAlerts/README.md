@@ -31,12 +31,20 @@ Create a new search job.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search expression or keyword you're looking for in logs, e.g. alerts. | Required | 
-| source | Filters results by the log source or origin system, e.g. third_party_xsoar_integration. | Optional | 
+| source | Filters results by the log source or origin system, e.g. third_party_xsoar_integration. Default value is third_party. | Optional | 
 | from | Timerange - start time, e.g., 1 hour, 30 minutes. Default value is 1 day. Default is 1 day. | Optional | 
 | to | Timerange - end time, e.g., 1 hour, 30 minutes. Default value is present. Default is 0 minutes. | Optional | 
 | timezone | The desired timezone for the log source from the dropdown list. The default is Universal Link System Time Zone, which is the timezone where Universal Link is installed. Default value is UTC. Default is UTC. | Optional | 
 
-### Search Job Created
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnomaliSecurityAnalytics.SearchJob.job_id | String | Job ID of the search job. | 
+
+#### Human Readable Output
+
+**Search Job Created**
 |job_id|status|
 |---|---|
 | 7af7bc62c807446fa4bf7ad12dfbe64b | in progress |
@@ -60,13 +68,27 @@ Get search job results.
 
 #### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnomaliSecurityAnalytics.SearchJobResults.job_id | String | Job ID of the search job. | 
+| AnomaliSecurityAnalytics.SearchJobResults.status | String | Status of the search. | 
+| AnomaliSecurityAnalytics.SearchJobResults.count | Number | Number of records returned. | 
+| AnomaliSecurityAnalytics.SearchJobResults.fields | String | List of search fields returned. | 
+| AnomaliSecurityAnalytics.SearchJobResults.has_next | Boolean | Indicates if more pages are available. | 
+| AnomaliSecurityAnalytics.SearchJobResults.is_aggregated | Boolean | Indicates if the search is aggregated. | 
+| AnomaliSecurityAnalytics.SearchJobResults.records | Array | List of records containing the fields included in the fields response attribute. | 
+| AnomaliSecurityAnalytics.SearchJobResults.result_row_count | Number | Total number of records retrieved by the search. | 
+| AnomaliSecurityAnalytics.SearchJobResults.search_end_time | Number | End timestamp of the search \(UNIX timestamp in milliseconds\). | 
+| AnomaliSecurityAnalytics.SearchJobResults.search_start_time | Number | Start timestamp of the search \(UNIX timestamp in milliseconds\). | 
+| AnomaliSecurityAnalytics.SearchJobResults.status | String | Status of the search job. | 
+| AnomaliSecurityAnalytics.SearchJobResults.types | Array | Data types of the search record attributes. | 
+
+#### Human Readable Output
 **Search Job Results**
 
 | id  | name            | owner              | status | severity | alert_time      | search_job_id                           |
 |-----|-----------------|--------------------|--------|----------|-----------------|-----------------------------------------|
 | 905 | AlertTriageDemo | test@anomali.com | new    | high     | 1741867250299   | 7af7bc62c807446fa4bf7ad12dfbe64b         |
-
-
 
 ### anomali-security-analytics-alert-update
 
@@ -87,7 +109,12 @@ Update alert's comment or status.
 
 #### Context Output
 
-### Update Alert Status
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnomaliSecurityAnalytics.UpdateAlert.message | String | Confirmation message returned after updating the alert status. | 
+
+#### Human Readable Output
+**Update Alert Status**
 |message|
 |---|
 | Table (alert) was successfully updated. |
