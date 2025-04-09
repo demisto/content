@@ -1,18 +1,15 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+# import json
+import pytest
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
-Pytest Unit Tests: all funcion names must start with "test_"
+from ExtrahopRevealXEventCollector import Client
+from CommonServerPython import *
 
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-from demisto_sdk.commands.common.handlers import JSON_Handler
-
-import json
+MOCK_BASEURL = "https://example.com"
+MOCK_CLIENT_ID = "ID"
+MOCK_CLIENT_SECRET = "SECRET"
+OK_CODES = (200, 201, 204)
 
 
 def util_load_json(path):
@@ -20,22 +17,106 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url="some_mock_url", verify=False)
-    args = {"dummy": "this is a dummy response", "dummy2": "a dummy value"}
-    response = baseintegration_dummy_command(client, args)
-
-    assert response.outputs == args
+@pytest.fixture
+def client():
+    return Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        use_proxy=False,
+        ok_codes=OK_CODES
+    )
 
 
-# TODO: ADD HERE unit tests for every command
+@pytest.fixture(autouse=True)
+def mock_get_version(mocker):
+    mocker.patch("ExtrahopRevealXEventCollector.Client.get_extrahop_version", return_value={"version": "20.3.5"})
+
+
+def test_update_time_values_detections():
+    from ExtrahopRevealXEventCollector import update_time_values_detections
+    raw_detections = util_load_json("test_data/detections-dummy.json")
+    update_time_values_detections(raw_detections)
+
+    for detection in raw_detections:
+        assert "_TIME" in detection
+        assert "_ENTRY_STATUS" in detection
+
+
+def test_validate_version_newer_version_does_not_raise():
+    from ExtrahopRevealXEventCollector import validate_version
+    client_mock = MagicMock()
+    last_run = {}
+
+    with patch("ExtrahopRevealXEventCollector.get_extrahop_server_version", return_value="20.3.5"):
+        validate_version(client_mock, last_run)
+
+    with patch("ExtrahopRevealXEventCollector.get_extrahop_server_version", return_value="9.2"):
+        try:
+            validate_version(client_mock, last_run)
+        except DemistoException as e:
+            assert e.message == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
+
+
+def test_fetch_events_update_last_run(client, mocker):
+    from ExtrahopRevealXEventCollector import fetch_events
+    raw_detections = util_load_json("test_data/detections-dummy.json")
+    mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
+
+    output, new_last_run = fetch_events(client, last_run={}, max_events=len(raw_detections))
+
+    assert len(output) == 5
+    assert new_last_run.get("offset") == 0
+    assert new_last_run.get("detection_start_time") == raw_detections[-1]["mod_time"] + 1
+
+
+def test_fetch_events_already_fetched(client, mocker):
+    from ExtrahopRevealXEventCollector import fetch_events
+    raw_detections = util_load_json("test_data/detections-dummy.json")
+    mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
+
+    mock_already_fetched = [d["id"] for d in raw_detections]
+    last_run_mock = {"already_fetched": mock_already_fetched}
+
+    output, new_last_run = fetch_events(client, last_run=last_run_mock, max_events=len(raw_detections))
+
+    assert len(output) == 0
+    assert new_last_run.get("already_fetched") == mock_already_fetched
+
+
+def test_fetch_events_reaching_limit(client, mocker):
+    from ExtrahopRevealXEventCollector import fetch_events
+    raw_detections = util_load_json("test_data/detections-dummy.json")[:-2]
+    mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
+
+    output, new_last_run = fetch_events(client, last_run={}, max_events=len(raw_detections) + 2)
+
+    assert len(output) == len(raw_detections)
+    assert new_last_run.get("detection_start_time") == raw_detections[-1]["mod_time"] + 1
+
+
+def test_fetch_events_more_than_exist(client, mocker):
+    from ExtrahopRevealXEventCollector import fetch_events
+    raw_detections = util_load_json("test_data/detections-dummy.json")
+    mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
+
+    output, new_last_run = fetch_events(client, last_run={}, max_events=len(raw_detections) - 2)
+
+    assert len(output) == len(raw_detections) - 2
+    assert new_last_run.get("detection_start_time") == raw_detections[-3]["mod_time"] + 1
+
+
+def test_fetch_events_same_mod_time(client, mocker):
+    from ExtrahopRevealXEventCollector import fetch_events
+    raw_detections = util_load_json("test_data/detections-dummy.json")
+    mod_time_all = 1000
+    for d in raw_detections:
+        d["mod_time"] = mod_time_all
+
+    mocker.patch("ExtrahopRevealXEventCollector.Client.detections_list", return_value=raw_detections)
+
+    output, new_last_run = fetch_events(client, last_run={}, max_events=len(raw_detections) - 2)
+
+    assert len(output) == len(raw_detections) - 2
+    assert new_last_run.get("detection_start_time") == mod_time_all

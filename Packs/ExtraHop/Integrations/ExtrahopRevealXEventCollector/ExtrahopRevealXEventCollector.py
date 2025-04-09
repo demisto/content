@@ -41,8 +41,8 @@ class Client(BaseClient):
         self._client_id = client_id
         self._client_secret = client_secret
 
-        # Setting up access token in headers.
-        self.set_headers()
+        # # Setting up access token in headers.
+        # self.set_headers()
 
     def set_headers(self):
         self._headers: Dict[str, Any] = {
@@ -201,14 +201,10 @@ def validate_fetch_events_params(last_run: dict) -> Dict:
     if last_run and 'offset' in last_run:
         offset = last_run.get("offset")  # type: ignore
 
-    limit = DEFAULT_FETCH_LIMIT
-    if last_run and 'limit' in last_run:
-        limit = last_run.get("limit") # type: ignore
-
     return {
         'detection_start_time': detection_start_time,
         'offset': offset,
-        'limit': limit
+        'limit': DEFAULT_FETCH_LIMIT
     }
 
 def get_extrahop_server_version(client: Client):
@@ -296,30 +292,43 @@ def fetch_extrahop_detections(
                 # Didn't get any detections or got all duplicates
                 break
 
-            for detection in detections:  # type: ignore
-                detection_id = detection.get("id")
-                if detection_id in already_fetched:
-                    demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
-                    continue
+            # Check if all detections are already fetched
+            new_detections = [detection for detection in detections if detection.get("id") not in already_fetched]
 
+            if not new_detections:
+                # If no new detections, break the loop to prevent an infinite loop
+                demisto.info("No new detections to fetch, exiting the loop.")
+                break
+
+            for detection in new_detections:
+                detection_id = detection.get("id")
                 already_fetched.append(detection_id)
                 events.append(detection)
 
                 if len(events) == max_events:
                     break
 
+            # hit max_events
+            if events and len(events) == max_events:
+                # Compare mod_time of last event with the first in this batch
+                if new_detections and events[-1]["mod_time"] == detections[0]["mod_time"]:
+                    # Same mod_time: continue with next offset
+                    advanced_filter["offset"] += len(detections)
+                    detection_start_time = events[-1]["mod_time"]
+                else:
+                    # Different mod_time: reset offset and bump mod_time
+                    detection_start_time = events[-1]["mod_time"] + 1
+                    advanced_filter["offset"] = 0
+                break  # We've hit the max, exit loop
+
+            # didn't hit max_events, continue fetching
             # edge case where we got same mod_time for all detections
-            if detections[-1]["mod_time"] == detections[0]["mod_time"] and detections[0]["mod_time"] == detection_start_time:
-                advanced_filter["offset"] = advanced_filter["offset"] + len(detections)
+            if detections[-1]["mod_time"] == detections[0]["mod_time"] and len(detections) == advanced_filter["limit"]:
+                advanced_filter["offset"] += len(detections)
             else:
-                # Prepare for the next batch of detections
-                detection_start_time = detections[-1]["mod_time"] + 1  # type: ignore
+                detection_start_time = events[-1]["mod_time"] + 1 if events else detection_start_time
                 advanced_filter["mod_time"] = detection_start_time
                 advanced_filter["offset"] = 0
-
-            if len(events) == max_events:
-                break
-
 
 
     except Exception as error:
@@ -395,7 +404,6 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
     last_run = {
         'detection_start_time': int(first_fetch.timestamp() * 1000),
         'offset': 0,
-        'limit': DEFAULT_FETCH_LIMIT
     }
 
     output, _  = fetch_events(client, last_run, max_events)
