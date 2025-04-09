@@ -6,6 +6,7 @@ NON_SSL_PREFIX = "http"
 SSL_PREFIX = "https"
 VENDOR = "URL SSL Verification"
 SUSPICIOUS_SCORE = 2
+UNKNOWN_SCORE = 0
 URL_REGEX_PATTERN = r",(?=https?://)"
 
 
@@ -99,12 +100,12 @@ def main():
             if SSL_PREFIX not in url.lower():
                 d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
             else:
-                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": "Unknown"})
+                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": UNKNOWN_SCORE})
         else:
             if malicious:
                 d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": SUSPICIOUS_SCORE})
             else:
-                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": "Unknown"})
+                d_bot_score.append({"Indicator": url, "Type": "url", "Vendor": VENDOR, "Score": UNKNOWN_SCORE})
 
         url_list.append(url_obj)
 

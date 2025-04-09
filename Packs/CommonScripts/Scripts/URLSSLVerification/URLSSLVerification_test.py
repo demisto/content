@@ -77,11 +77,11 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
     [
         # Set_http_as_suspicious = True
         ({"url":"http","set_http_as_suspicious":"true"}, {"Verified":False, "Score":2}),
-        ({"url":"https_certificate","set_http_as_suspicious":"true"}, {"Verified":True, "Score":"Unknown"}),
+        ({"url":"https_certificate","set_http_as_suspicious":"true"}, {"Verified":True, "Score":0}),
         # Set_http_as_suspicious = False
-        ({"url":"http_to_https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":"Unknown"}),
+        ({"url":"http_to_https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
         ({"url":"http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
-        ({"url":"https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":"Unknown"}),
+        ({"url":"https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
         ({"url":"https_no_certificate","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
     ],
 )
