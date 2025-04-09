@@ -259,3 +259,22 @@ def test_prisma_sase_security_rule_update_needed(mocker):
     result = prisma_sase_security_rule_update(rule_name, address_group, responses)
     assert result == entries
     assert len(responses) == 2
+
+
+def test_prisma_sase_security_rule_update_not_needed(mocker):
+    """
+    Given:
+      - rule_name, address_group, a responses list.
+    When:
+      - Running the script block-external-ip for the prisma-sase brand, checking if a rule update should be performed.
+        In this case the address_group is in the rule destination, no need for a rule update.
+    Then:
+      - Verify the correct outputs are returned from the function, the response of the command in case it was executed, otherwise [].
+    """
+    from BlockExternalIp import prisma_sase_security_rule_update
+    rule_name = "rules"
+    address_group = "test_debug"
+    res_rule_list = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_list')
+    responses = [res_rule_list]
+    result = prisma_sase_security_rule_update(rule_name, address_group, responses)
+    assert not result
