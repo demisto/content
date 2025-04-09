@@ -1,0 +1,32 @@
+args:
+- auto: PREDEFINED
+  defaultValue: scripts
+  description: Finds all the playbooks used by custom scripts and enabled integrations.
+  name: mode
+  predefined:
+  - scripts
+  - integrations
+  required: true
+comment: Find custom scripts and integration dependencies of playbooks.
+commonfields:
+  id: PlaybooksUsingScripts
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+name: PlaybooksUsingScripts
+outputs:
+- contextPath: Info
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
