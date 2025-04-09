@@ -154,51 +154,42 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     assert isinstance(command_results, list)
     assert len(command_results) == expected
 
-def test_detect_format():
-    test_cases = [
-        # CVE 5.1 format
-        ({"cveMetadata": {"cveId": "CVE-2025-1234"}}, "cve_5_1"),
+@pytest.mark.parametrize("input_data, expected", [
+    ({"cveMetadata": {"cveId": "CVE-2025-1234"}}, "cve_5_1"),
+    ({"document": {"title": "Example"}, "vulnerabilities": []}, "csaf"),
+    ({"schema_version": "1.4.0", "id": "GHSA-xxxx-yyyy-zzzz"}, "ghsa"),
+    ({"sourceIdentifier": "example@vendor.com", "id": "CVE-2025-5678"}, "nvd_cve_5_1"),
+    ({"id": "CVE-2021-0001", "summary": "Some legacy format CVE"}, "legacy"),
+])
+def test_detect_format_valid(input_data, expected):
+    """
+    Given: A valid CVE data structure in a known format (e.g., CVE 5.1, CSAF, GHSA, etc.)
+    When:  The `detect_format` function is called with this input
+    Then:  It should return the correct format identifier as a string
+    """
+    result = detect_format(input_data)
+    assert result == expected
 
-        # CSAF format
-        ({
-            "document": {"title": "Example"},
-            "vulnerabilities": []
-        }, "csaf"),
+def test_detect_format_invalid():
+    """
+    Given: An empty or unrecognized CVE data dictionary
+    When:  The `detect_format` function is called with this input
+    Then:  It should return 'unknown' or None to indicate unsupported format
+    """
+    result = detect_format({})
+    assert result == "Unknown"
 
-        # GHSA format
-        ({
-            "schema_version": "1.4.0",
-            "id": "GHSA-xxxx-yyyy-zzzz"
-        }, "ghsa"),
-
-        # NVD CVE 5.1 format
-        ({
-            "sourceIdentifier": "example@vendor.com",
-            "id": "CVE-2025-5678"
-        }, "nvd_cve_5_1"),
-
-        # Legacy format
-        ({
-            "id": "CVE-2021-0001",
-            "summary": "Some legacy format CVE"
-        }, "legacy"),
-
-        # Unrecognized format (should raise)
-        ({}, "ValueError"),
-    ]
-
-    for i, (input_data, expected) in enumerate(test_cases):
-        if expected == "ValueError":
-            try:
-                detect_format(input_data)
-                pytest.fail(f"Test case {i} expected ValueError but none was raised")
-            except ValueError:
-                pass  # Expected
-        else:
-            result = detect_format(input_data)
-            assert result == expected, f"Test case {i} failed: expected {expected}, got {result}"
-
+        
 def test_handle_cve_5_1():
+    """
+    Given: A valid CVE 5.1 JSON file loaded from test data
+    When:  The `handle_cve_5_1` function is called to normalize the data
+    Then:  It should return a dictionary with all required normalized fields:
+           - id starting with 'CVE-'
+           - non-empty summary and CVSS
+           - references, vulnerable_product, and vulnerable_configuration as lists
+           - access and impact as dictionaries
+    """
     test_file_path = os.path.join("test_data", "5_1.json")
 
     with open(test_file_path, encoding="utf-8") as f:
@@ -218,6 +209,15 @@ def test_handle_cve_5_1():
     assert isinstance(result["impact"], dict), "impact should be a dictionary"
 
 def test_create_cve_summary():
+    """
+    Given: A normalized CVE dictionary with keys for id, cvss, published/modified dates, and summary
+    When:  The `create_cve_summary` function is called
+    Then:  It should return a dictionary summary with correct mappings:
+           - 'ID' matching the CVE ID
+           - 'CVSS' matching the score
+           - 'Published' and 'Modified' trimmed to ISO format
+           - 'Description' starting with the CVE summary text
+    """
     cve_data = {
         "id": "CVE-2025-12345",
         "cvss": "7.8",

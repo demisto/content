@@ -61,10 +61,10 @@ def detect_format(cve_data: dict) -> str:
         demisto.debug("CVE legacy format")
         return 'legacy'
     else:
-        raise ValueError("Unknown CVE format: Unable to detect CVE structure")
+        return "Unknown"
 
 
-def process_cve_data(cve: dict) -> dict:
+def process_cve_data(cve: dict) -> dict | None:
     """
     Normalizes any supported CVE format into a unified structure expected by the `generate_indicator()` function.
 
@@ -76,10 +76,7 @@ def process_cve_data(cve: dict) -> dict:
         cve: The raw CVE data dictionary, from any supported source.
 
     Returns:
-        A normalized dictionary with unified keys for downstream processing.
-
-    Raises:
-        ValueError: If the format is unrecognized or processing fails.
+        A normalized dictionary with unified keys for downstream processing or None
     """
     try:
         format_type = detect_format(cve)
@@ -89,9 +86,11 @@ def process_cve_data(cve: dict) -> dict:
         elif format_type == "legacy":
             return cve
         else:
-            raise ValueError(f"Unsupported CVE format type: {format_type}")
+            demisto.debug(f"Unsupported CVE format type: {format_type}")
+            return None
     except Exception as e:
-        raise ValueError(f"Failed to process CVE data: {e}")
+        demisto.debug(f"Failed to process CVE data: {e}")
+        return None
 
 def handle_cve_5_1(cve: dict) -> dict:
     """
@@ -242,25 +241,20 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
 
         if response := client.cve(_id):
             
-            try:
-                full_data = process_cve_data(response)
-            except ValueError as ve:
-                if "Unsupported CVE format type" in str(ve):
-                    demisto.debug("Unsupported CVE format type")
-                    continue
-                elif "Failed to process CVE data" in str(ve):
-                    demisto.debug("Failed to process CVE data")
-                    continue
-            
+            full_data = process_cve_data(response)
+            if not full_data:
+                continue
             data = create_cve_summary(full_data)
             indicator = generate_indicator(full_data)
+            relationships = indicator.relationships if indicator else []
+
             cr = CommandResults(
                 outputs_prefix="CVESearch.CVE",
                 outputs_key_field="CVE",
                 outputs=data,
                 raw_response=response,
                 indicator=indicator,
-                relationships=indicator.relationships,
+                relationships=relationships,
             )
         else:
             cr = CommandResults(readable_output=f"### No results found for cve {_id}")
@@ -281,13 +275,11 @@ def cve_latest_command(client: Client, limit) -> list[CommandResults]:
     command_results: list[CommandResults] = []
     for cve_details in res:
 
-        try:
-            full_data = process_cve_data(cve_details)
-        except ValueError as ve:
-            if "Unsupported CVE format type" in str(ve):
-                continue
-            elif "Failed to process CVE data" in str(ve):
-                continue
+        full_data = process_cve_data(cve_details)
+        
+        if not full_data:
+            continue
+        
         data = create_cve_summary(full_data)
         indicator = generate_indicator(full_data)
         readable_output = tableToMarkdown("Latest CVEs", data)
@@ -326,19 +318,37 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
     parts = set()
 
     for cpe in cpes:
+        
         cpe_split = re.split(r"(?<!\\):", cpe)
 
-        with contextlib.suppress(IndexError):
-            if vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
-                vendors.add(vendor)
+        if cpe.startswith("cpe:2.3:"):
 
-        with contextlib.suppress(IndexError):
-            if product := cpe_split[4].capitalize().replace("\\", "").replace("_", " "):
-                products.add(product)
+            with contextlib.suppress(IndexError):
+                if vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
+                    vendors.add(vendor)
 
-        with contextlib.suppress(IndexError):
-            parts.add(cpe_parts[cpe_split[2]])
+            with contextlib.suppress(IndexError):
+                if product := cpe_split[4].capitalize().replace("\\", "").replace("_", " "):
+                    products.add(product)
 
+            with contextlib.suppress(IndexError):
+                parts.add(cpe_parts[cpe_split[2]])
+                
+        elif cpe.startswith("cpe:/"):
+            
+            with contextlib.suppress(IndexError):
+                if vendor := cpe_split[2].capitalize().replace("\\", "").replace("_", " "):
+                    vendors.add(vendor)
+
+            with contextlib.suppress(IndexError):
+                if product := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
+                    products.add(product)
+
+
+            with contextlib.suppress(IndexError):
+                parts.add(cpe_parts[cpe_split[1].replace("/","")])
+                
+                
     relationships = [
         EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve",
                             entity_b=vendor, entity_b_type="identity")
