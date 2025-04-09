@@ -2,7 +2,7 @@ Use the Jira integration to manage issues and create Cortex XSOAR incidents from
 This integration was integrated and tested with: Jira Cloud Platform V3 (for Cloud), Jira Software Cloud (for Cloud), Jira Server Platform 9.6.0 (for OnPrem), Jira Software Server 9.6.0 (for OnPrem).
 
 Some changes have been made that might affect your existing content.
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-atlassian-jira-v3).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---atlassian-jira-v3).
 
 ## Configure Atlassian Jira V3 on Cortex XSOAR
 
@@ -39,7 +39,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Max incidents per fetch | The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50. | False |
     | Time range for initial data fetch | The time range to consider for the initial data fetch in format: &lt;number&gt; &lt;unit&gt;. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years | False |
 
-5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
+5. Check [Authorization Flow In Cortex XSOAR](#oauth-20-authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
 
 Configure only one of the following fields:
@@ -2992,8 +2992,8 @@ match.
   Meaning, if you change the severity in Cortex XSOAR and then change it back in Jira, the final value that will be presented is the one in Cortex XSOAR.
   You can see a list of these fields for each incident under "Context Data" -> "dbotDirtyFields".
 * If you wish to mirror in and out Jira's custom fields, please see the [Mirror In And Out Custom Fields](#mirror-in-and-out-custom-fields) section below.
-* If you wish to change the status of a JiraV3 Incident using the available transitions, please see the [Change Ticket's Status Using Transitions](#change-tickets-status-using-transitions) section below.
-* If you wish to change the status of a JiraV3 Incident using the available statuses, please see the [Change Ticket's Status](#change-tickets-status) section below.
+* If you wish to change the status of a JiraV3 Incident using the available transitions, please see the [Change Ticket's Status Using Transitions](#change-tickets-status-using-transitions-or-statuses) section below.
+* If you wish to change the status of a JiraV3 Incident using the available statuses, please see the [Change Ticket's Status](#change-tickets-status-using-transitions-or-statuses) section below.
 
 ## Mirror In And Out Custom Fields
 
