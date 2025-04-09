@@ -3,8 +3,6 @@ This integration was integrated and tested with version 1.0 of DomainTools Iris.
 
 ## Configure DomainTools Iris in Cortex
 
-
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Username |  | False |
@@ -25,8 +23,6 @@ This integration was integrated and tested with version 1.0 of DomainTools Iris.
 | Incident type |  |  |
 | Fetch incidents |  |  |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags. | False |
-
-
 
 ## Commands
 
@@ -983,4 +979,3 @@ Reverse loopkup of an IP address or a domain.
 | --- | --- | --- |
 | Domain.Name | unknown | Domain name returned by the query. |
 | Domain.DNS.Address | unknown | The IP address associated with the returned domains. |
-
