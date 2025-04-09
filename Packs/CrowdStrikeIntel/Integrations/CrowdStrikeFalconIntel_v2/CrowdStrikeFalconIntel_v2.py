@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from datetime import datetime, UTC
+import traceback
+from datetime import UTC, datetime
 from typing import Any
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
 from dateparser import parse
 
-import urllib3
-import traceback
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -305,25 +306,23 @@ def get_indicator_outputs(resource: dict[str, Any]) -> dict[str, Any]:
         labels: List[Any] = resource.get("labels", [])[:10]
 
         output = assign_params(
-            **{
-                "ID": indicator_id,
-                "Type": indicator_type,
-                "Value": indicator_value,
-                "LastUpdate": datetime.fromtimestamp(last_update, UTC).isoformat() if last_update else None,
-                "PublishDate": datetime.fromtimestamp(publish_date, UTC).isoformat() if publish_date else None,
-                "MaliciousConfidence": malicious_confidence,
-                "Reports": reports,
-                "Actors": actors,
-                "MalwareFamilies": malware_families,
-                "KillChains": kill_chains,
-                "DomainTypes": domain_types,
-                "IPAddressTypes": ip_address_types,
-                "Relations": [
-                    f'{item.get("Type")}: {item.get("Indicator")}'    # type: ignore
-                    for item in get_values(relations, return_type="list", keys=["indicator", "type"])  # type: ignore
-                ],
-                "Labels": get_values(labels, return_type="list", keys="name"),
-            }
+            ID=indicator_id,
+            Type=indicator_type,
+            Value=indicator_value,
+            LastUpdate=datetime.fromtimestamp(last_update, UTC).isoformat() if last_update else None,
+            PublishDate=datetime.fromtimestamp(publish_date, UTC).isoformat() if publish_date else None,
+            MaliciousConfidence=malicious_confidence,
+            Reports=reports,
+            Actors=actors,
+            MalwareFamilies=malware_families,
+            KillChains=kill_chains,
+            DomainTypes=domain_types,
+            IPAddressTypes=ip_address_types,
+            Relations=[
+                f'{item.get("Type")}: {item.get("Indicator")}'  # type: ignore
+                for item in get_values(relations, return_type="list", keys=["indicator", "type"])  # type: ignore
+            ],
+            Labels=get_values(labels, return_type="list", keys="name"),
         )
 
     return output
@@ -403,31 +402,25 @@ def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
             kill_chain = r.get("kill_chain")
 
             output: dict[str, Any] = assign_params(
-                **{
-                    "ImageURL": image_url,
-                    "Name": name,
-                    "ID": actor_id,
-                    "URL": url,
-                    "Slug": slug,
-                    "ShortDescription": short_description,
-                    "Description": description,
-                    "FirstActivityDate": datetime.fromtimestamp(first_activity_date, UTC).isoformat()
-                    if first_activity_date
-                    else None,
-                    "LastActivityDate": datetime.fromtimestamp(last_activity_date, UTC).isoformat()
-                    if last_activity_date
-                    else None,
-                    "Active": active,
-                    "KnownAs": known_as,
-                    "TargetIndustries": get_values(target_industries, return_type="list"),
-                    "TargetCountries": get_values(target_countries, return_type="list"),
-                    "Origins": get_values(origins, return_type="list"),
-                    "Motivations": get_values(motivations, return_type="list"),
-                    "Capability": capability,
-                    "Group": group,
-                    "Region": region,
-                    "KillChains": kill_chain,
-                }
+                ImageURL=image_url,
+                Name=name,
+                ID=actor_id,
+                URL=url,
+                Slug=slug,
+                ShortDescription=short_description,
+                Description=description,
+                FirstActivityDate=datetime.fromtimestamp(first_activity_date, UTC).isoformat() if first_activity_date else None,
+                LastActivityDate=datetime.fromtimestamp(last_activity_date, UTC).isoformat() if last_activity_date else None,
+                Active=active,
+                KnownAs=known_as,
+                TargetIndustries=get_values(target_industries, return_type="list"),
+                TargetCountries=get_values(target_countries, return_type="list"),
+                Origins=get_values(origins, return_type="list"),
+                Motivations=get_values(motivations, return_type="list"),
+                Capability=capability,
+                Group=group,
+                Region=region,
+                KillChains=kill_chain,
             )
             outputs.append(output)
 
@@ -523,25 +516,21 @@ def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
             actors: List[Any] = r.get("actors") or []
 
             output: dict[str, Any] = assign_params(
-                **{
-                    "ID": report_id,
-                    "URL": url,
-                    "Name": name,
-                    "Type": report_type,
-                    "SubType": sub_type,
-                    "Slug": slug,
-                    "CreatedDate": datetime.fromtimestamp(created_date, UTC).isoformat() if created_date else None,
-                    "LastModifiedSate": datetime.fromtimestamp(last_modified_date, UTC).isoformat()
-                    if last_modified_date
-                    else None,
-                    "ShortDescription": short_description,
-                    "Description": description,
-                    "TargetIndustries": get_values(target_industries, return_type="list"),
-                    "TargetCountries": get_values(target_countries, return_type="list"),
-                    "Motivations": get_values(motivations, return_type="list"),
-                    "Tags": get_values(tags, return_type="list"),
-                    "Actors": get_values(actors, return_type="list", keys="name"),
-                }
+                ID=report_id,
+                URL=url,
+                Name=name,
+                Type=report_type,
+                SubType=sub_type,
+                Slug=slug,
+                CreatedDate=datetime.fromtimestamp(created_date, UTC).isoformat() if created_date else None,
+                LastModifiedSate=datetime.fromtimestamp(last_modified_date, UTC).isoformat() if last_modified_date else None,
+                ShortDescription=short_description,
+                Description=description,
+                TargetIndustries=get_values(target_industries, return_type="list"),
+                TargetCountries=get_values(target_countries, return_type="list"),
+                Motivations=get_values(motivations, return_type="list"),
+                Tags=get_values(tags, return_type="list"),
+                Actors=get_values(actors, return_type="list", keys="name"),
             )
             outputs.append(output)
 
@@ -609,7 +598,7 @@ def main():
         else:
             raise NotImplementedError(f"{command} command is not an existing CrowdStrike Falcon Intel v2 integration")
     except Exception as err:
-        return_error(f"Unexpected error:\n{str(err)}", error=traceback.format_exc())
+        return_error(f"Unexpected error:\n{err!s}", error=traceback.format_exc())
 
 
 from CrowdStrikeApiModule import *  # noqa: E402
