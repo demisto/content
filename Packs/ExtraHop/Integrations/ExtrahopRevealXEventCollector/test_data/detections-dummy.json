@@ -1,0 +1,264 @@
+[
+    {
+        "id": 1,
+        "start_time": 1648701240001,
+        "update_time": 1648706400000,
+        "end_time": 1648701360000,
+        "title": "Title 1",
+        "description": "Dummy description",
+        "risk_score": 60,
+        "type": "ssh_brute_force",
+        "recommended_factors": [],
+        "recommended": false,
+        "categories": [
+            "sec.exploit",
+            "sec",
+            "sec.attack"
+        ],
+        "properties": {},
+        "participants": [
+            {
+                "role": "victim",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 11,
+                "object_type": "device",
+                "username": null,
+                "id": 11
+            },
+            {
+                "role": "offender",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_type": "ipaddr",
+                "object_value": "1.1.1.1",
+                "username": null,
+                "id": 11
+            }
+        ],
+        "ticket_id": null,
+        "assignee": "example@example.com",
+        "status": "closed",
+        "resolution": "no_action_taken",
+        "mitre_tactics": [
+            {
+                "id": "001",
+                "name": "Credential Access",
+                "url": "https://example.com"
+            }
+        ],
+        "mitre_techniques": [
+            {
+                "id": "1110",
+                "name": "Brute Force",
+                "url": "https://example.com",
+                "legacy_ids": [
+                    "T1110"
+                ]
+            }
+        ],
+        "appliance_id": 2,
+        "is_user_created": false,
+        "mod_time": 1648706939003,
+        "create_time": null,
+        "url": "https://example.com"
+    },
+    {
+        "id": 2,
+        "start_time": 1648715910001,
+        "update_time": 1648724400000,
+        "end_time": 1648718220000,
+        "title": "Title 2",
+        "description": "Dummy description",
+        "type": "Type 2",
+        "recommended_factors": [],
+        "recommended": false,
+        "categories": [
+            "perf.auth",
+            "perf"
+        ],
+        "properties": {},
+        "participants": [
+            {
+                "role": "offender",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 2,
+                "object_type": "device",
+                "username": null,
+                "id": 2
+            },
+            {
+                "role": "victim",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 2,
+                "object_type": "device",
+                "username": null,
+                "id": 2
+            }
+        ],
+        "ticket_id": null,
+        "assignee": null,
+        "status": null,
+        "resolution": null,
+        "mitre_tactics": [],
+        "mitre_techniques": [],
+        "appliance_id": 2,
+        "is_user_created": false,
+        "mod_time": 1648724696969,
+        "create_time": null,
+        "url": "https://example.com"
+    },
+    {
+        "id": 3,
+        "start_time": 1648727280001,
+        "update_time": 1648731600000,
+        "end_time": 1648727910000,
+        "title": "Title 3",
+        "description": "Dummy description",
+        "type": "Type 3",
+        "recommended_factors": [],
+        "recommended": false,
+        "categories": [
+            "perf.auth",
+            "perf"
+        ],
+        "properties": {},
+        "participants": [
+            {
+                "role": "offender",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 3,
+                "object_type": "device",
+                "username": null,
+                "id": 148746626
+            },
+            {
+                "role": "victim",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 3,
+                "object_type": "device",
+                "username": null,
+                "id": 3
+            }
+        ],
+        "ticket_id": null,
+        "assignee": null,
+        "status": null,
+        "resolution": null,
+        "mitre_tactics": [],
+        "mitre_techniques": [],
+        "appliance_id": 2,
+        "is_user_created": false,
+        "mod_time": 1648731877537,
+        "create_time": null,
+        "url": "https://example.com"
+    },
+    {
+        "id": 4,
+        "start_time": 1648734106437,
+        "update_time": 1648737630000,
+        "end_time": 1648734216859,
+        "title": "Title 4",
+        "description": "Dummy description",
+        "type": "Type 4",
+        "recommended_factors": [],
+        "recommended": false,
+        "categories": [
+            "perf.auth",
+            "perf"
+        ],
+        "properties": {},
+        "participants": [
+            {
+                "role": "offender",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 4,
+                "object_type": "device",
+                "username": null,
+                "id": 4
+            },
+            {
+                "role": "victim",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 4,
+                "object_type": "device",
+                "username": null,
+                "id": 4
+            }
+        ],
+        "ticket_id": null,
+        "assignee": null,
+        "status": null,
+        "resolution": null,
+        "mitre_tactics": [],
+        "mitre_techniques": [],
+        "appliance_id": 2,
+        "is_user_created": false,
+        "mod_time": 1648737970551,
+        "create_time": null,
+        "url": "https://example.com"
+    },
+    {
+        "id": 5,
+        "start_time": 1648734315364,
+        "update_time": 1648738530000,
+        "end_time": 1648735094068,
+        "title": "Title 3",
+        "description": "Dummy description",
+        "type": "Type 3",
+        "recommended_factors": [],
+        "recommended": false,
+        "categories": [
+            "perf.auth",
+            "perf"
+        ],
+        "properties": {},
+        "participants": [
+            {
+                "role": "offender",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 5,
+                "object_type": "device",
+                "username": null,
+                "id": 5
+            },
+            {
+                "role": "victim",
+                "scanner_service": null,
+                "endpoint": null,
+                "external": false,
+                "object_id": 5,
+                "object_type": "device",
+                "username": null,
+                "id": 5
+            }
+        ],
+        "ticket_id": null,
+        "assignee": null,
+        "status": null,
+        "resolution": null,
+        "mitre_tactics": [],
+        "mitre_techniques": [],
+        "appliance_id": 2,
+        "is_user_created": false,
+        "mod_time": 5,
+        "create_time": null,
+        "url": "https://example.com"
+    }
+]
