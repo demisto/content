@@ -318,7 +318,9 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         file_events_last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
-    send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
+    futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
+    tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
+
     demisto.debug(
         f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
     )
@@ -406,6 +408,7 @@ def main() -> None:
                 max_fetch_file_events=max_fetch_file_events,
                 max_fetch_audit_events=max_fetch_audit_events
             )
+            demisto.debug(f'[TEMP] fetch ended. LastRun: {demisto.getLastRun()}')
         elif command == "code42-get-events":
             return_results(get_events_command(client, demisto.args()))
     except Exception as e:
