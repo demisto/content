@@ -48,8 +48,7 @@ def verify_ssl_certificate(url):
         redirect_chain = response.history + [response]
     except requests.exceptions.SSLError:
         return {"Vendor": VENDOR, "Description": "SSL Certificate verification failed"}
-    except requests.exceptions.RequestException as e:
-        demisto.debug(f"Request failed: {e}")
+    except requests.exceptions.RequestException:
         return {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
 
     is_all_http = True

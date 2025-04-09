@@ -49,7 +49,7 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
         requests.Response: A simulated HTTP response including status, final URL, and redirect history.
 
     """
-    if url == "https_no_certificate" and verify:
+    if url == "https_no_certificate":
         raise SSLError("SSL certificate error")
     
     elif url == "http" or url == "https_certificate":
@@ -67,9 +67,7 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
             return create_response(url="http", history=[first_response])
         else:
             return first_response
-        
-    else:
-        raise RequestException
+    raise requests.exceptions.RequestException
 
     
 @pytest.mark.parametrize(
@@ -84,7 +82,7 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
         ({"url":"https_certificate","set_http_as_suspicious":"false"}, {"Verified":True, "Score":0}),
         ({"url":"https_no_certificate","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
         ({"url":"http_to_http","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
-        ({"url":"not_valid_url","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
+        ({"url":"invalid_url","set_http_as_suspicious":"false"}, {"Verified":False, "Score":2}),
     ],
 )
 def test_main(arg, expected_result, mocker: MockerFixture):
@@ -120,8 +118,11 @@ def test_main(arg, expected_result, mocker: MockerFixture):
     for d_bot in result.outputs["DBotScore"]:
         assert d_bot["Score"] == expected_result["Score"]
         
-        
-def test_verify_ssl_certificate(mocker: MockerFixture):
+@pytest.mark.parametrize("url, description_result",[
+    ("https_no_certificate","SSL Certificate verification failed"),
+    ("invalid_url","Failed to establish a new connection with the URL"),
+])
+def test_verify_ssl_certificate(url, description_result, mocker: MockerFixture):
     """
     Given:
         Requests.get work as mentioned above.
@@ -130,11 +131,9 @@ def test_verify_ssl_certificate(mocker: MockerFixture):
     Then:
         The function should return the appropriate message.
     """
-    url = "https_no_certificate"
-    
     mocker.patch("URLSSLVerification.requests.get", side_effect=fake_requests_get)
     
     result = verify_ssl_certificate(url)
     assert result
-    assert result["Description"] == "SSL Certificate verification failed"
+    assert result["Description"] == description_result
     
