@@ -1,15 +1,16 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.7 of CheckPointHEC
+This integration was integrated and tested with version 1.1.9 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
+
 
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Smart API URL or Check Point Infinity API URL | The URL of the Smart API or Check Point Infinity API. | True |
-| Fetch incidents | Enable fetching incidents from the selected SaaS application. | False |
-| Incident type | Fetch incidents of the selected types. | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
 | Client ID | The client ID of the Smart API or Check Point Infinity API. | True |
 | Client Secret | The client secret of the Smart API or Check Point Infinity API. | True |
 | First fetch time | The time range for the first fetch. The default is 1 hour. | False |
@@ -19,11 +20,12 @@ This integration was integrated and tested with version 1.1.7 of CheckPointHEC
 | Threat Type | Get incidents with only the selected types. | False |
 | Maximum number of incidents per fetch | The maximum number of incidents to retrieve per fetch. | False |
 | Collect restore requests | Collect restore requests as incidents. | False |
-| Include denied requests | Denied restore requests will be in the results \(they are not by default\). | False |
-| Include accepted requests | Accepted restore requests will be in the results \(they are not by default\). | False |
+| Include denied requests | Include denied restore requests in the results, do not check with "Include accepted requests". | False |
+| Include accepted requests | Include accepted restore requests in the results, do not check with "Include denied requests". | False |
 | Trust any certificate (not secure) | Trust server certificate. | False |
 | Use system proxy settings | Use system proxy settings. | False |
 | Incidents Fetch Interval | The interval in minutes to fetch incidents. The default is 1 minute. | False |
+
 
 
 
