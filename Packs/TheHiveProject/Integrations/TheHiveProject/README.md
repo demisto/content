@@ -3,7 +3,6 @@ This integration was integrated and tested with version 4.1.4 of TheHive Project
 
 ## Configure TheHive Project in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Host | Ensure to include the port number with the URL \(e.g. http://IP_OF_VM:9000\) | True |
@@ -17,7 +16,6 @@ This integration was integrated and tested with version 4.1.4 of TheHive Project
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -28,7 +26,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 List cases.
 
-
 #### Base Command
 
 `thehive-list-cases`
@@ -37,56 +34,54 @@ List cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Limit the number of returned results. | Optional | 
-
+| limit | Limit the number of returned results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
-| TheHive.Cases.caseId | number | The order of the case. | 
-| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.status | string | Status of the case. | 
-| TheHive.Cases.owner | string | Owner of the case. | 
-| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
-| TheHive.Cases.title | string | Title of the case. | 
-| TheHive.Cases.tags | unknown | Tags added to the case. | 
-| TheHive.Cases._type | string | Type of the case. | 
-| TheHive.Cases._version | number | The version of TheHive Project. | 
-| TheHive.Cases.id | string | The ID of the case. | 
-| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.description | string | Description of the case. | 
-| TheHive.Cases.severity | number | Severity of the case. | 
-| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
-| TheHive.Cases.createdBy | string | The user who created the case. | 
-| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.tasks.order | number | The order of the task. | 
-| TheHive.Cases.tasks.status | string | Status of the task. | 
-| TheHive.Cases.tasks.title | string | Title of the task. | 
-| TheHive.Cases.tasks._type | string | Type of the task. | 
-| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.id | string | The ID of the task. | 
-| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
-| TheHive.Cases.tasks.group | string | Group of the task. | 
-| TheHive.Cases.tasks.logs.message | string | Log message. | 
-| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
-| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
-| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
-| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
-| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
-
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. |
+| TheHive.Cases.caseId | number | The order of the case. |
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.status | string | Status of the case. |
+| TheHive.Cases.owner | string | Owner of the case. |
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. |
+| TheHive.Cases.title | string | Title of the case. |
+| TheHive.Cases.tags | unknown | Tags added to the case. |
+| TheHive.Cases._type | string | Type of the case. |
+| TheHive.Cases._version | number | The version of TheHive Project. |
+| TheHive.Cases.id | string | The ID of the case. |
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.description | string | Description of the case. |
+| TheHive.Cases.severity | number | Severity of the case. |
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. |
+| TheHive.Cases.createdBy | string | The user who created the case. |
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.tasks.order | number | The order of the task. |
+| TheHive.Cases.tasks.status | string | Status of the task. |
+| TheHive.Cases.tasks.title | string | Title of the task. |
+| TheHive.Cases.tasks._type | string | Type of the task. |
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.id | string | The ID of the task. |
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. |
+| TheHive.Cases.tasks.group | string | Group of the task. |
+| TheHive.Cases.tasks.logs.message | string | Log message. |
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.status | string | Status of the log. |
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. |
+| TheHive.Cases.tasks.logs._type | string | Type of the log. |
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. |
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. |
 
 #### Command Example
 
@@ -506,7 +501,7 @@ List cases.
 
 #### Human Readable Output
 
->### TheHive Cases:
+>### TheHive Cases
 
 >|id|title|description|createdAt|
 >|---|---|---|---|
@@ -517,12 +512,10 @@ List cases.
 >| ~561160 | observables case | case with observables | 2021-10-11T17:12:06Z |
 >| ~41509016 | remove case | case to be removed | 2021-10-11T17:16:33Z |
 
-
 ### thehive-get-case
 
 ***
 Get a case
-
 
 #### Base Command
 
@@ -532,56 +525,54 @@ Get a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the case. | Required | 
-
+| id | ID of the case. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
-| TheHive.Cases.caseId | number | The order of the case. | 
-| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.status | string | Status of the case. | 
-| TheHive.Cases.owner | string | Owner of the case. | 
-| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
-| TheHive.Cases.title | string | Title of the case. | 
-| TheHive.Cases.tags | unknown | Tags added to the case. | 
-| TheHive.Cases._type | string | Type of the case. | 
-| TheHive.Cases._version | number | The version of TheHive Project. | 
-| TheHive.Cases.id | string | The ID of the case. | 
-| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.description | string | Description of the case. | 
-| TheHive.Cases.severity | number | Severity of the case. | 
-| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
-| TheHive.Cases.createdBy | string | The user who created the case. | 
-| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.tasks.order | number | The order of the task. | 
-| TheHive.Cases.tasks.status | string | Status of the task. | 
-| TheHive.Cases.tasks.title | string | Title of the task. | 
-| TheHive.Cases.tasks._type | string | Type of the task. | 
-| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.id | string | The ID of the task. | 
-| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
-| TheHive.Cases.tasks.group | string | Group of the task. | 
-| TheHive.Cases.tasks.logs.message | string | Log message. | 
-| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
-| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
-| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
-| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
-| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
-
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. |
+| TheHive.Cases.caseId | number | The order of the case. |
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.status | string | Status of the case. |
+| TheHive.Cases.owner | string | Owner of the case. |
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. |
+| TheHive.Cases.title | string | Title of the case. |
+| TheHive.Cases.tags | unknown | Tags added to the case. |
+| TheHive.Cases._type | string | Type of the case. |
+| TheHive.Cases._version | number | The version of TheHive Project. |
+| TheHive.Cases.id | string | The ID of the case. |
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.description | string | Description of the case. |
+| TheHive.Cases.severity | number | Severity of the case. |
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. |
+| TheHive.Cases.createdBy | string | The user who created the case. |
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.tasks.order | number | The order of the task. |
+| TheHive.Cases.tasks.status | string | Status of the task. |
+| TheHive.Cases.tasks.title | string | Title of the task. |
+| TheHive.Cases.tasks._type | string | Type of the task. |
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.id | string | The ID of the task. |
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. |
+| TheHive.Cases.tasks.group | string | Group of the task. |
+| TheHive.Cases.tasks.logs.message | string | Log message. |
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.status | string | Status of the log. |
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. |
+| TheHive.Cases.tasks.logs._type | string | Type of the log. |
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. |
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. |
 
 #### Command Example
 
@@ -688,18 +679,16 @@ Get a case
 
 #### Human Readable Output
 
->### TheHive Case ID ~479312:
+>### TheHive Case ID ~479312
 
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~479312 | case with tasks | case with tasks | 2021-10-11T17:02:01Z |
 
-
 ### thehive-update-case
 
 ***
 Update a case
-
 
 #### Base Command
 
@@ -709,70 +698,68 @@ Update a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the case. | Required | 
-| title | Title of the case. | Optional | 
-| description | Description of the case. | Optional | 
-| severity | Severity of the case. Possible values are: 1, 2, 3. | Optional | 
-| startDate | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
-| owner | Owner of the case. | Optional | 
-| flag | A boolean flag used for filtering. Possible values are: true, false. | Optional | 
-| tlp | Traffic Light Protocol designation for the case. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
-| tags | Tags added to the case. | Optional | 
-| resolutionStatus | Resolution status of the case. Possible values are: Indeterminate, FalsePositive, TruePositive, Other, Duplicated. | Optional | 
-| impactStatus | Impact status of the case. Possible values are: NoImpact, WithImpact, NotApplicable. | Optional | 
-| summary | Summary of the case. | Optional | 
-| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional | 
-| metrics | Metrics of the case. | Optional | 
-| status | Status of the case. Possible values are: Open, Resolved, Deleted. | Optional | 
-
+| id | ID of the case. | Required |
+| title | Title of the case. | Optional |
+| description | Description of the case. | Optional |
+| severity | Severity of the case. Possible values are: 1, 2, 3. | Optional |
+| startDate | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | Optional |
+| owner | Owner of the case. | Optional |
+| flag | A boolean flag used for filtering. Possible values are: true, false. | Optional |
+| tlp | Traffic Light Protocol designation for the case. Possible values are: WHITE, GREEN, AMBER, RED. | Optional |
+| tags | Tags added to the case. | Optional |
+| resolutionStatus | Resolution status of the case. Possible values are: Indeterminate, FalsePositive, TruePositive, Other, Duplicated. | Optional |
+| impactStatus | Impact status of the case. Possible values are: NoImpact, WithImpact, NotApplicable. | Optional |
+| summary | Summary of the case. | Optional |
+| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional |
+| metrics | Metrics of the case. | Optional |
+| status | Status of the case. Possible values are: Open, Resolved, Deleted. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
-| TheHive.Cases.caseId | number | The order of the case. | 
-| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.status | string | Status of the case. | 
-| TheHive.Cases.owner | string | Owner of the case. | 
-| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
-| TheHive.Cases.title | string | Title of the case. | 
-| TheHive.Cases.tags | unknown | Tags added to the case. | 
-| TheHive.Cases._type | string | Type of the case. | 
-| TheHive.Cases._version | number | The version of TheHive Project. | 
-| TheHive.Cases.id | string | The ID of the case. | 
-| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.description | string | Description of the case. | 
-| TheHive.Cases.severity | number | Severity of the case. | 
-| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
-| TheHive.Cases.createdBy | string | The user who created the case. | 
-| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.tasks.order | number | The order of the task. | 
-| TheHive.Cases.tasks.status | string | Status of the task. | 
-| TheHive.Cases.tasks.title | string | Title of the task. | 
-| TheHive.Cases.tasks._type | string | Type of the task. | 
-| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.id | string | The ID of the task. | 
-| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
-| TheHive.Cases.tasks.group | string | Group of the task. | 
-| TheHive.Cases.tasks.logs.message | string | Log message. | 
-| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
-| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
-| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
-| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
-| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
-
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. |
+| TheHive.Cases.caseId | number | The order of the case. |
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.status | string | Status of the case. |
+| TheHive.Cases.owner | string | Owner of the case. |
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. |
+| TheHive.Cases.title | string | Title of the case. |
+| TheHive.Cases.tags | unknown | Tags added to the case. |
+| TheHive.Cases._type | string | Type of the case. |
+| TheHive.Cases._version | number | The version of TheHive Project. |
+| TheHive.Cases.id | string | The ID of the case. |
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.description | string | Description of the case. |
+| TheHive.Cases.severity | number | Severity of the case. |
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. |
+| TheHive.Cases.createdBy | string | The user who created the case. |
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.tasks.order | number | The order of the task. |
+| TheHive.Cases.tasks.status | string | Status of the task. |
+| TheHive.Cases.tasks.title | string | Title of the task. |
+| TheHive.Cases.tasks._type | string | Type of the task. |
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.id | string | The ID of the task. |
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. |
+| TheHive.Cases.tasks.group | string | Group of the task. |
+| TheHive.Cases.tasks.logs.message | string | Log message. |
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.status | string | Status of the log. |
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. |
+| TheHive.Cases.tasks.logs._type | string | Type of the log. |
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. |
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. |
 
 #### Command Example
 
@@ -831,18 +818,16 @@ Update a case
 
 #### Human Readable Output
 
->### TheHive Update Case ID ~487504:
+>### TheHive Update Case ID ~487504
 
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~487504 | updated title for case with no tasks | case with no task | 2021-10-11T17:02:34Z |
 
-
 ### thehive-create-case
 
 ***
 Create a new case
-
 
 #### Base Command
 
@@ -852,68 +837,66 @@ Create a new case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | Title of the case. | Required | 
-| description | Description of the case. | Required | 
-| severity | Severity of the case (default = 2). Possible values are: 1, 2, 3. | Optional | 
-| startDate | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
-| owner | Owner of the case. | Required | 
-| flag | A boolean flag used for filtering (default = false). Possible values are: false, true. | Optional | 
-| tlp | Traffic Light Protocol designation for the case (default = 2). Possible values are: 0, 1, 2, 3. | Optional | 
-| tags | Tags added to the case. | Optional | 
-| resolutionStatus | Resolution status of the case. | Optional | 
-| impactStatus | Impact status of the case. Possible values are: NoImpact, WithImpact, qNotApplicable. | Optional | 
-| summary | Summary of the case. | Optional | 
-| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional | 
-| metrics | Metrics of the case. | Optional | 
-
+| title | Title of the case. | Required |
+| description | Description of the case. | Required |
+| severity | Severity of the case (default = 2). Possible values are: 1, 2, 3. | Optional |
+| startDate | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | Optional |
+| owner | Owner of the case. | Required |
+| flag | A boolean flag used for filtering (default = false). Possible values are: false, true. | Optional |
+| tlp | Traffic Light Protocol designation for the case (default = 2). Possible values are: 0, 1, 2, 3. | Optional |
+| tags | Tags added to the case. | Optional |
+| resolutionStatus | Resolution status of the case. | Optional |
+| impactStatus | Impact status of the case. Possible values are: NoImpact, WithImpact, qNotApplicable. | Optional |
+| summary | Summary of the case. | Optional |
+| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional |
+| metrics | Metrics of the case. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
-| TheHive.Cases.caseId | number | The order of the case. | 
-| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.status | string | Status of the case. | 
-| TheHive.Cases.owner | string | Owner of the case. | 
-| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
-| TheHive.Cases.title | string | Title of the case. | 
-| TheHive.Cases.tags | unknown | Tags added to the case. | 
-| TheHive.Cases._type | string | Type of the case. | 
-| TheHive.Cases._version | number | The version of TheHive Project. | 
-| TheHive.Cases.id | string | The ID of the case. | 
-| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.description | string | Description of the case. | 
-| TheHive.Cases.severity | number | Severity of the case. | 
-| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
-| TheHive.Cases.createdBy | string | The user who created the case. | 
-| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.tasks.order | number | The order of the task. | 
-| TheHive.Cases.tasks.status | string | Status of the task. | 
-| TheHive.Cases.tasks.title | string | Title of the task. | 
-| TheHive.Cases.tasks._type | string | Type of the task. | 
-| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.id | string | The ID of the task. | 
-| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
-| TheHive.Cases.tasks.group | string | Group of the task. | 
-| TheHive.Cases.tasks.logs.message | string | Log message. | 
-| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
-| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
-| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
-| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
-| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
-
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. |
+| TheHive.Cases.caseId | number | The order of the case. |
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.status | string | Status of the case. |
+| TheHive.Cases.owner | string | Owner of the case. |
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. |
+| TheHive.Cases.title | string | Title of the case. |
+| TheHive.Cases.tags | unknown | Tags added to the case. |
+| TheHive.Cases._type | string | Type of the case. |
+| TheHive.Cases._version | number | The version of TheHive Project. |
+| TheHive.Cases.id | string | The ID of the case. |
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.description | string | Description of the case. |
+| TheHive.Cases.severity | number | Severity of the case. |
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. |
+| TheHive.Cases.createdBy | string | The user who created the case. |
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.tasks.order | number | The order of the task. |
+| TheHive.Cases.tasks.status | string | Status of the task. |
+| TheHive.Cases.tasks.title | string | Title of the task. |
+| TheHive.Cases.tasks._type | string | Type of the task. |
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.id | string | The ID of the task. |
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. |
+| TheHive.Cases.tasks.group | string | Group of the task. |
+| TheHive.Cases.tasks.logs.message | string | Log message. |
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.status | string | Status of the log. |
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. |
+| TheHive.Cases.tasks.logs._type | string | Type of the log. |
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. |
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. |
 
 #### Command Example
 
@@ -1016,18 +999,16 @@ Create a new case
 
 #### Human Readable Output
 
->### TheHive newly Created Case:
+>### TheHive newly Created Case
 
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~41492552 | new created case | description for new case | 2021-10-11T17:36:40Z |
 
-
 ### thehive-create-task
 
 ***
 Create a new task
-
 
 #### Base Command
 
@@ -1037,26 +1018,24 @@ Create a new task
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Case ID. | Required | 
-| title | Title of the case. | Required | 
-| description | Description. | Optional | 
-| startDate | Datetime the task was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
-
+| id | Case ID. | Required |
+| title | Title of the case. | Required |
+| description | Description. | Optional |
+| startDate | Datetime the task was started on, for example, 2018-06-29 08:15:27.243860. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Tasks.status | string | Status of the task. | 
-| TheHive.TasKs.title | string | Title of the task. | 
-| TheHive.Tasks.id | string | The ID of the task. | 
-| TheHive.Tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Tasks._type | string | Type of the task. | 
-| TheHive.Tasks.createdBy | string | The user who created the task. | 
-| TheHive.Tasks.group | string | Group of the task. | 
-| TheHive.Tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Tasks.order | int | The order of the task. | 
-
+| TheHive.Tasks.status | string | Status of the task. |
+| TheHive.TasKs.title | string | Title of the task. |
+| TheHive.Tasks.id | string | The ID of the task. |
+| TheHive.Tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Tasks._type | string | Type of the task. |
+| TheHive.Tasks.createdBy | string | The user who created the task. |
+| TheHive.Tasks.group | string | Group of the task. |
+| TheHive.Tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Tasks.order | int | The order of the task. |
 
 #### Command Example
 
@@ -1107,12 +1086,10 @@ Create a new task
 >|---|---|---|---|
 >| ~581640 | newly added task | 2021-10-11T17:36:42Z | Waiting |
 
-
 ### thehive-remove-case
 
 ***
 Removes a case
-
 
 #### Base Command
 
@@ -1122,9 +1099,8 @@ Removes a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Case ID. | Required | 
-| permanent | Permanently removes the case (cannot be undone). Possible values are: false, true. Default is false. | Optional | 
-
+| id | Case ID. | Required |
+| permanent | Permanently removes the case (cannot be undone). Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
@@ -1138,12 +1114,10 @@ There is no context output for this command.
 
 ```Case ID ~41496648 removed successfully```
 
-
 ### thehive-merge-cases
 
 ***
 Merges 2 cases
-
 
 #### Base Command
 
@@ -1153,57 +1127,55 @@ Merges 2 cases
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firstCaseID | ID of the first case. | Required | 
-| secondCaseID | ID of the second case. | Required | 
-
+| firstCaseID | ID of the first case. | Required |
+| secondCaseID | ID of the second case. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
-| TheHive.Cases.caseId | number | The order of the case. | 
-| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.status | string | Status of the case. | 
-| TheHive.Cases.owner | string | Owner of the case. | 
-| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
-| TheHive.Cases.title | string | Title of the case. | 
-| TheHive.Cases.tags | unknown | Tags added to the case. | 
-| TheHive.Cases._type | string | Type of the case. | 
-| TheHive.Cases._version | number | The version of TheHive Project. | 
-| TheHive.Cases.id | string | The ID of the case. | 
-| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.description | string | Description of the case. | 
-| TheHive.Cases.severity | number | Severity of the case. | 
-| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
-| TheHive.Cases.createdBy | string | The user who created the case. | 
-| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Cases.tasks.order | number | The order of the task. | 
-| TheHive.Cases.tasks.status | string | Status of the task. | 
-| TheHive.Cases.tasks.title | string | Title of the task. | 
-| TheHive.Cases.tasks._type | string | Type of the task. | 
-| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.id | string | The ID of the task. | 
-| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
-| TheHive.Cases.tasks.group | string | Group of the task. | 
-| TheHive.Cases.tasks.logs.message | string | Log message. | 
-| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
-| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
-| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
-| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
-| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
-| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
-
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. |
+| TheHive.Cases.caseId | number | The order of the case. |
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.status | string | Status of the case. |
+| TheHive.Cases.owner | string | Owner of the case. |
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. |
+| TheHive.Cases.title | string | Title of the case. |
+| TheHive.Cases.tags | unknown | Tags added to the case. |
+| TheHive.Cases._type | string | Type of the case. |
+| TheHive.Cases._version | number | The version of TheHive Project. |
+| TheHive.Cases.id | string | The ID of the case. |
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.description | string | Description of the case. |
+| TheHive.Cases.severity | number | Severity of the case. |
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. |
+| TheHive.Cases.createdBy | string | The user who created the case. |
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Cases.tasks.order | number | The order of the task. |
+| TheHive.Cases.tasks.status | string | Status of the task. |
+| TheHive.Cases.tasks.title | string | Title of the task. |
+| TheHive.Cases.tasks._type | string | Type of the task. |
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.id | string | The ID of the task. |
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. |
+| TheHive.Cases.tasks.group | string | Group of the task. |
+| TheHive.Cases.tasks.logs.message | string | Log message. |
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.status | string | Status of the log. |
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. |
+| TheHive.Cases.tasks.logs._type | string | Type of the log. |
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. |
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. |
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. |
 
 #### Command Example
 
@@ -1248,19 +1220,16 @@ Merges 2 cases
 
 #### Human Readable Output
 
->### TheHive Linked Cases of ~413824:
+>### TheHive Linked Cases of ~413824
 
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~41443480 | new created case / new created case | description for new case<br><br>description for new case | 2021-10-04T22:16:20Z |
 
-
-
 ### thehive-get-case-tasks
 
 ***
 Get the tasks of a case
-
 
 #### Base Command
 
@@ -1270,8 +1239,7 @@ Get the tasks of a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Case ID. | Required | 
-
+| id | Case ID. | Required |
 
 #### Context Output
 
@@ -1371,7 +1339,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### TheHive Tasks For Case ~479312:
+>### TheHive Tasks For Case ~479312
 
 >|_id|title|_createdAt|_createdBy|status|group|
 >|---|---|---|---|---|---|
@@ -1381,12 +1349,10 @@ There is no context output for this command.
 >| ~438408 | task2 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 >| ~442504 | task3 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 
-
 ### thehive-get-task
 
 ***
 Get a specific task.
-
 
 #### Base Command
 
@@ -1396,37 +1362,35 @@ Get a specific task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Task ID. | Required | 
-
+| id | Task ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Tasks._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Tasks.flag | boolean | A boolean flag used for filtering. | 
-| TheHive.Tasks.order | number | The order of the task. | 
-| TheHive.Tasks.status | string | Status of the task. | 
-| TheHive.Tasks.title | string | Title of the task. | 
-| TheHive.Tasks._type | string | Type of the task. | 
-| TheHive.Tasks._version | number | The version of TheHive Project. | 
-| TheHive.Tasks.id | string | The ID of the task. | 
-| TheHive.Tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Tasks.createdBy | string | The user who created the task. | 
-| TheHive.Tasks.group | string | Group of the task. | 
-| TheHive.Tasks.logs.message | string | Log message. | 
-| TheHive.Tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
-| TheHive.Tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
-| TheHive.Tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Tasks.logs.status | string | Status of the log. | 
-| TheHive.Tasks.logs.owner | string | Owner of the log. | 
-| TheHive.Tasks.logs._type | string | Type of the log. | 
-| TheHive.Tasks.logs._version | number | The version of TheHive Project. | 
-| TheHive.Tasks.logs.id | string | The ID of the log. | 
-| TheHive.Tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
-| TheHive.Tasks.logs.createdBy | string | The user who created the task. | 
-
+| TheHive.Tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Tasks._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Tasks.flag | boolean | A boolean flag used for filtering. |
+| TheHive.Tasks.order | number | The order of the task. |
+| TheHive.Tasks.status | string | Status of the task. |
+| TheHive.Tasks.title | string | Title of the task. |
+| TheHive.Tasks._type | string | Type of the task. |
+| TheHive.Tasks._version | number | The version of TheHive Project. |
+| TheHive.Tasks.id | string | The ID of the task. |
+| TheHive.Tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Tasks.createdBy | string | The user who created the task. |
+| TheHive.Tasks.group | string | Group of the task. |
+| TheHive.Tasks.logs.message | string | Log message. |
+| TheHive.Tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. |
+| TheHive.Tasks.logs._parent | string | The direct parent level object which the current object belongs to. |
+| TheHive.Tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Tasks.logs.status | string | Status of the log. |
+| TheHive.Tasks.logs.owner | string | Owner of the log. |
+| TheHive.Tasks.logs._type | string | Type of the log. |
+| TheHive.Tasks.logs._version | number | The version of TheHive Project. |
+| TheHive.Tasks.logs.id | string | The ID of the log. |
+| TheHive.Tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. |
+| TheHive.Tasks.logs.createdBy | string | The user who created the task. |
 
 #### Command Example
 
@@ -1441,7 +1405,6 @@ Get a specific task.
 ***
 Updates a task.
 
-
 #### Base Command
 
 `thehive-update-task`
@@ -1450,14 +1413,13 @@ Updates a task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Task ID. | Required | 
-| title | Title of the task. | Optional | 
-| status | Status of the task. Possible values are: Waiting, InProgress, Completed, Cancel. | Optional | 
-| flag | A boolean flag used for filtering. Possible values are: false, true. | Optional | 
-| owner | Owner of the task. | Optional | 
-| startDate | Datetime the task was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
-| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional | 
-
+| id | Task ID. | Required |
+| title | Title of the task. | Optional |
+| status | Status of the task. Possible values are: Waiting, InProgress, Completed, Cancel. | Optional |
+| flag | A boolean flag used for filtering. Possible values are: false, true. | Optional |
+| owner | Owner of the task. | Optional |
+| startDate | Datetime the task was started on, for example, 2018-06-29 08:15:27.243860. | Optional |
+| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional |
 
 #### Context Output
 
@@ -1465,17 +1427,14 @@ There is no context output for this command.
 
 #### Command Example
 
-``` ```
+``````
 
 #### Human Readable Output
-
-
 
 ### thehive-list-users
 
 ***
 Get a list of users.
-
 
 #### Base Command
 
@@ -1485,7 +1444,6 @@ Get a list of users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -1649,7 +1607,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### TheHive Users:
+>### TheHive Users
 
 >|id|name|roles|status|
 >|---|---|---|---|
@@ -1663,12 +1621,10 @@ There is no context output for this command.
 >| example_2@example.com | merit | read | Ok |
 >| test@example.com | testing | read | Ok |
 
-
 ### thehive-get-user
 
 ***
 Get a single user
-
 
 #### Base Command
 
@@ -1678,8 +1634,7 @@ Get a single user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | User ID. | Required | 
-
+| id | User ID. | Required |
 
 #### Context Output
 
@@ -1715,18 +1670,16 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### TheHive User ID ~41402520:
+>### TheHive User ID ~41402520
 
 >|_id|name|roles|status|organisation|createdAt|
 >|---|---|---|---|---|---|
 >| ~41402520 | testing | read | Ok | name | 2021-09-22T10:32:01Z |
 
-
 ### thehive-create-local-user
 
 ***
 Create a new user
-
 
 #### Base Command
 
@@ -1736,12 +1689,11 @@ Create a new user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| login | Username login. | Required | 
-| name | Name of the user. | Required | 
-| roles | Roles (CSV: can be read, write, admin). Default is read. | Optional | 
-| password | Password. | Required | 
-| profile | Profile name (only used with TheHive Project v4 and onwards). | Optional | 
-
+| login | Username login. | Required |
+| name | Name of the user. | Required |
+| roles | Roles (CSV: can be read, write, admin). Default is read. | Optional |
+| password | Password. | Required |
+| profile | Profile name (only used with TheHive Project v4 and onwards). | Optional |
 
 #### Context Output
 
@@ -1794,18 +1746,16 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### New User ~593928:
+>### New User ~593928
 
 >|_id|login|name|profile|
 >|---|---|---|---|
 >| ~593928 | name@example.local | dem | read-only |
 
-
 ### thehive-block-user
 
 ***
 Block a user
-
 
 #### Base Command
 
@@ -1815,8 +1765,7 @@ Block a user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | User ID. | Required | 
-
+| id | User ID. | Required |
 
 #### Context Output
 
@@ -1835,7 +1784,6 @@ There is no context output for this command.
 ***
 List observables for a case.
 
-
 #### Base Command
 
 `thehive-list-observables`
@@ -1844,15 +1792,13 @@ List observables for a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Case ID. | Required | 
-
+| id | Case ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Observables | string | List of observables for a case. | 
-
+| TheHive.Observables | string | List of observables for a case. |
 
 #### Command Example
 
@@ -1949,19 +1895,17 @@ List observables for a case.
 
 #### Human Readable Output
 
->### Observables for Case ~561160:
+>### Observables for Case ~561160
 
 >|data|dataType|message|
 >|---|---|---|
 >| google | domain | observable 2 |
 >| 8.8.8.8 | ip | observable 1 |
 
-
 ### thehive-create-observable
 
 ***
 Creates an observable.
-
 
 #### Base Command
 
@@ -1971,15 +1915,14 @@ Creates an observable.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Case ID. | Required | 
-| data | Data of the observable. | Required | 
-| dataType | Data type of the observable. Possible values are: autonomous-system, domain, file, filename, fqdn, hash, ip, mail, mail_subject, other, regexp, registry, uri_path, url, user-agent. Default is other. | Required | 
-| message | Observable message. | Required | 
-| startDate | Datetime the observable was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
-| tlp | Traffic Light Protocol designation for the observable. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
-| ioc | Is the observable an IOC?. Possible values are: true, false. | Optional | 
-| status | Status of the observable. Possible values are: Ok, Deleted. | Optional | 
-
+| id | Case ID. | Required |
+| data | Data of the observable. | Required |
+| dataType | Data type of the observable. Possible values are: autonomous-system, domain, file, filename, fqdn, hash, ip, mail, mail_subject, other, regexp, registry, uri_path, url, user-agent. Default is other. | Required |
+| message | Observable message. | Required |
+| startDate | Datetime the observable was started on, for example, 2018-06-29 08:15:27.243860. | Optional |
+| tlp | Traffic Light Protocol designation for the observable. Possible values are: WHITE, GREEN, AMBER, RED. | Optional |
+| ioc | Is the observable an IOC?. Possible values are: true, false. | Optional |
+| status | Status of the observable. Possible values are: Ok, Deleted. | Optional |
 
 #### Context Output
 
@@ -1987,17 +1930,14 @@ There is no context output for this command.
 
 #### Command Example
 
-``` ```
+``````
 
 #### Human Readable Output
-
-
 
 ### thehive-update-observable
 
 ***
 Update an observable.
-
 
 #### Base Command
 
@@ -2007,12 +1947,11 @@ Update an observable.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Observable ID. | Required | 
-| message | Observable message. | Required | 
-| tlp | Traffic Light Protocol designation for the observable. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
-| ioc | Is the observable an IOC?. Possible values are: true, false. | Optional | 
-| status | Status of the observable. Possible values are: Ok, Deleted. | Optional | 
-
+| id | Observable ID. | Required |
+| message | Observable message. | Required |
+| tlp | Traffic Light Protocol designation for the observable. Possible values are: WHITE, GREEN, AMBER, RED. | Optional |
+| ioc | Is the observable an IOC?. Possible values are: true, false. | Optional |
+| status | Status of the observable. Possible values are: Ok, Deleted. | Optional |
 
 #### Context Output
 
@@ -2053,18 +1992,16 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Updated Observable:
+>### Updated Observable
 
 >|id|data|dataType|message|
 >|---|---|---|---|
 >| ~41504920 | google | domain | updated message for observable |
 
-
 ### get-mapping-fields
 
 ***
 Returns the list of fields.
-
 
 #### Base Command
 
@@ -2075,24 +2012,20 @@ Returns the list of fields.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
 
-``` ```
+``````
 
 #### Human Readable Output
-
-
 
 ### get-remote-data
 
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-
 
 #### Base Command
 
@@ -2102,9 +2035,8 @@ Get remote data from a remote incident. This method does not update the current 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ticket ID. | Required | 
-| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
-
+| id | The ticket ID. | Required |
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required |
 
 #### Context Output
 
@@ -2112,17 +2044,14 @@ There is no context output for this command.
 
 #### Command Example
 
-``` ```
+``````
 
 #### Human Readable Output
-
-
 
 ### thehive-get-version
 
 ***
 Displays the version of TheHive Project.
-
 
 #### Base Command
 
@@ -2132,7 +2061,6 @@ Displays the version of TheHive Project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -2151,7 +2079,6 @@ There is no context output for this command.
 ***
 Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
 
-
 #### Base Command
 
 `get-modified-remote-data`
@@ -2161,14 +2088,12 @@ Gets the list of incidents that were modified since the last update time. Note t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
 
-``` ```
+``````
 
 #### Human Readable Output
-

@@ -7,7 +7,6 @@ This integration was integrated and tested with version 2.12.0 of datadog-api-cl
 
 ## Configure Datadog Cloud SIEM in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Datadog website URL | True |
@@ -19,7 +18,6 @@ This integration was integrated and tested with version 2.12.0 of datadog-api-cl
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
-
 
 ## Commands
 
@@ -39,38 +37,41 @@ This endpoint allows you to post events to the stream.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| text | A description of the event.<br/>Limited to 4000 characters.<br/>The description supports markdown. To use markdown in the event text, start the text block with %%% \n and end the text block with \n %%% . | Required | 
-| title | The title of an event. | Required | 
-| date_happened | The timestamp cannot be older than 18 hours.<br/>Format :  <br/>yyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. | Optional | 
-| device_name | A device name. | Optional | 
-| host_name | Host name to associate with the event. | Optional | 
-| priority | The priority of the event.<br/><br/>Restricted value : low<br/>Permitted value : normal (Bug will be fixed in the near future.). Possible values are: normal, low. | Optional | 
-| related_event_id | ID of the parent event. | Optional | 
-| tags | A comma-separated list of tags to apply to the event. <br/>Ex: "environment:production, region:East” . | Optional | 
-| aggregation_key | An arbitrary string to use for aggregation. <br/>If you specify a key, all events using that key are grouped together in the Event Stream. <br/>Limited to 100 characters. | Optional | 
-| source_type_name | The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
-| alert_type | If an alert event is enabled, set its type. Possible values are: error, warning, info, success, user_update, recommendation, snapshot. | Optional | 
+| text | A description of the event.<br/>Limited to 4000 characters.<br/>The description supports markdown. To use markdown in the event text, start the text block with %%% \n and end the text block with \n %%% . | Required |
+| title | The title of an event. | Required |
+| date_happened | The timestamp cannot be older than 18 hours.<br/>Format :  <br/>yyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. | Optional |
+| device_name | A device name. | Optional |
+| host_name | Host name to associate with the event. | Optional |
+| priority | The priority of the event.<br/><br/>Restricted value : low<br/>Permitted value : normal (Bug will be fixed in the near future.). Possible values are: normal, low. | Optional |
+| related_event_id | ID of the parent event. | Optional |
+| tags | A comma-separated list of tags to apply to the event. <br/>Ex: "environment:production, region:East” . | Optional |
+| aggregation_key | An arbitrary string to use for aggregation. <br/>If you specify a key, all events using that key are grouped together in the Event Stream. <br/>Limited to 100 characters. | Optional |
+| source_type_name | The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional |
+| alert_type | If an alert event is enabled, set its type. Possible values are: error, warning, info, success, user_update, recommendation, snapshot. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Event.date_happened | Number | The timestamp of when the event happened. | 
-| Datadog.Event.id | Number | Integer ID of the event. | 
-| Datadog.Event.priority | String | The priority of the event.  Possible values: normal, low. | 
-| Datadog.Event.text | String | The description of the event. Limited to 4000 characters. The description supports markdown. | 
-| Datadog.Event.tags | Unknown | A list of tags to apply to the event. | 
-| Datadog.Event.url | String | URL of the event. | 
-| Datadog.Event.status | String | The status of the event. | 
-| Datadog.Event.title | String | The event title. | 
-| Datadog.Event.alert_type | String | The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot. | 
-| Datadog.Event.device_name | String | A device name associated with the event. | 
-| Datadog.Event.source_type_name | String | The type of event being posted. | 
-| Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. | 
+| Datadog.Event.date_happened | Number | The timestamp of when the event happened. |
+| Datadog.Event.id | Number | Integer ID of the event. |
+| Datadog.Event.priority | String | The priority of the event.  Possible values: normal, low. |
+| Datadog.Event.text | String | The description of the event. Limited to 4000 characters. The description supports markdown. |
+| Datadog.Event.tags | Unknown | A list of tags to apply to the event. |
+| Datadog.Event.url | String | URL of the event. |
+| Datadog.Event.status | String | The status of the event. |
+| Datadog.Event.title | String | The event title. |
+| Datadog.Event.alert_type | String | The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot. |
+| Datadog.Event.device_name | String | A device name associated with the event. |
+| Datadog.Event.source_type_name | String | The type of event being posted. |
+| Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. |
 
 #### Command example
+
 ```!datadog-event-create title="EventTitle" text="EventText"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -96,10 +97,10 @@ This endpoint allows you to post events to the stream.
 #### Human Readable Output
 
 >### Event Details
+>
 >|Title|Text|Date Happened|Id|
 >|---|---|---|---|
 >| EventTitle | EventText | May 02, 2023 08:18 AM | 7025503766209321995 |
-
 
 ### datadog-event-list
 
@@ -114,38 +115,41 @@ Get a list of events / Get the details of a particular event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | The ID of the event. | Optional | 
-| start_date | Start Date <br/>Format : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. . | Optional | 
-| end_date | End Date <br/>Default: now <br/>Format : yyyy-MM-dd’T’HH:mm:ssZ or "-1 days" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. . | Optional | 
-| priority | The priority of the event. Possible values are: normal, low. | Optional | 
-| sources | A comma-separated string of sources.<br/>A complete list of source attribute values is available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
-| tags | A comma-separated list indicating what tags, if any, should be used to filter the list of events. <br/>Ex: "environment:production, region:East". | Optional | 
-| unaggregated | Set unaggregated to 'true' to return all events within the specified [start,end] timeframe. Possible values are: True, False. | Optional | 
-| exclude_aggregate | Set exclude_aggregate to 'true' to only return unaggregated events where is_aggregate=false in the response. Possible values are: True, False. | Optional | 
-| page | The page number. Default is 1. | Optional | 
-| limit | The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
-| page_size | The number of requested results per page. Default is 50. | Optional | 
+| event_id | The ID of the event. | Optional |
+| start_date | Start Date <br/>Format : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. . | Optional |
+| end_date | End Date <br/>Default: now <br/>Format : yyyy-MM-dd’T’HH:mm:ssZ or "-1 days" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. . | Optional |
+| priority | The priority of the event. Possible values are: normal, low. | Optional |
+| sources | A comma-separated string of sources.<br/>A complete list of source attribute values is available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional |
+| tags | A comma-separated list indicating what tags, if any, should be used to filter the list of events. <br/>Ex: "environment:production, region:East". | Optional |
+| unaggregated | Set unaggregated to 'true' to return all events within the specified [start,end] timeframe. Possible values are: True, False. | Optional |
+| exclude_aggregate | Set exclude_aggregate to 'true' to only return unaggregated events where is_aggregate=false in the response. Possible values are: True, False. | Optional |
+| page | The page number. Default is 1. | Optional |
+| limit | The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional |
+| page_size | The number of requested results per page. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Event.alert_type | String | The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot. | 
-| Datadog.Event.date_happened | Number | The timestamp of when the event happened. | 
-| Datadog.Event.device_name | String | A device name.  | 
-| Datadog.Event.id | Number | Integer ID of the event. | 
-| Datadog.Event.priority | String | The priority of the event.  Possible values: normal, low. | 
-| Datadog.Event.text | String | The description of the event. Limited to 4000 characters. The description supports markdown. | 
-| Datadog.Event.tags | Unknown | A list of tags to apply to the event. | 
-| Datadog.Event.url | String | URL of the event. | 
-| Datadog.Event.status | String | The status of the event. | 
-| Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. | 
-| Datadog.Event.title | String | The Event title. | 
-| Datadog.Event.source_type_name | String | The type of event being posted. | 
+| Datadog.Event.alert_type | String | The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot. |
+| Datadog.Event.date_happened | Number | The timestamp of when the event happened. |
+| Datadog.Event.device_name | String | A device name.  |
+| Datadog.Event.id | Number | Integer ID of the event. |
+| Datadog.Event.priority | String | The priority of the event.  Possible values: normal, low. |
+| Datadog.Event.text | String | The description of the event. Limited to 4000 characters. The description supports markdown. |
+| Datadog.Event.tags | Unknown | A list of tags to apply to the event. |
+| Datadog.Event.url | String | URL of the event. |
+| Datadog.Event.status | String | The status of the event. |
+| Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. |
+| Datadog.Event.title | String | The Event title. |
+| Datadog.Event.source_type_name | String | The type of event being posted. |
 
 #### Command example
+
 ```!datadog-event-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -202,11 +206,11 @@ Get a list of events / Get the details of a particular event.
 #### Human Readable Output
 
 >### Events List
+>
 >|Title|Text|Date Happened|Id|Priority|Source|Tags|Is Aggregate|Alert Type|
 >|---|---|---|---|---|---|---|---|---|
 >| Incident #236: incident-test1 | Status: Active \| Severity: Unknown \| Commander: Unassigned<br/>https:<span>//</span>app.datadoghq.com/incidents/236 | May 02, 2023 08:17 AM | 7025502259105342299 | normal | Incidents | source:incidents | false | info |
 >| Incident #235: incident-test1 | Status: Active \| Severity: Unknown \| Commander: Unassigned<br/>https:<span>//</span>app.datadoghq.com/incidents/235 | May 02, 2023 08:16 AM | 7025501798182967576 | normal | Incidents | source:incidents | false | info |
-
 
 ### datadog-tag-list
 
@@ -221,21 +225,24 @@ Return a mapping of tags to hosts for your whole infrastructure.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50. | Optional | 
-| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
-| source | Source to filter.<br/>Ex: user, datadog. | Optional | 
+| page | The page number. Default is 1. | Optional |
+| page_size | The number of requested results per page. Default is 50. | Optional |
+| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional |
+| source | Source to filter.<br/>Ex: user, datadog. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Tag | String | A list of tags to apply to the host. | 
-| Datadog.HostTag | Unknown | The host name. | 
+| Datadog.Tag | String | A list of tags to apply to the host. |
+| Datadog.HostTag | Unknown | The host name. |
 
 #### Command example
+
 ```!datadog-tag-list limit=10```
+
 #### Context Example
+
 ```json
 {
     "Datadog": [
@@ -270,13 +277,13 @@ Return a mapping of tags to hosts for your whole infrastructure.
 #### Human Readable Output
 
 >### Tags List
+>
 >|Tag|Host Name|
 >|---|---|
 >| role:database | TestHost2 |
 >| app:frontend | TestHost2 |
 >| region:west | TestHost2 |
 >| team:infra | TestHost2 |
-
 
 ### datadog-host-tag-create
 
@@ -291,19 +298,22 @@ This endpoint allows you to add new tags to a host, optionally specifying where 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The host name. | Required | 
-| tags | A list of tags to apply to the host. <br/>Comma-seperated values. Ex: "environment:production, region:East” . | Required | 
+| host_name | The host name. | Required |
+| tags | A list of tags to apply to the host. <br/>Comma-seperated values. Ex: "environment:production, region:East” . | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
-| Datadog.HostTag | String | The host name. | 
+| Datadog.Tag | Unknown | A list of tags to apply to the host. |
+| Datadog.HostTag | String | The host name. |
 
 #### Command example
+
 ```!datadog-host-tag-create host_name="TestHost2" tags="env:prod"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -318,10 +328,10 @@ This endpoint allows you to add new tags to a host, optionally specifying where 
 #### Human Readable Output
 
 >### Host Tags Details
+>
 >|Host Name|Tag|
 >|---|---|
 >| TestHost2 | env:prod |
-
 
 ### datadog-host-tag-get
 
@@ -336,22 +346,25 @@ Return the list of tags that apply to a given host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The host name. | Required | 
-| source | Source to filter.<br/>Ex: user, datadog. | Optional | 
-| page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. <br/>Default is 50. . | Optional | 
-| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
+| host_name | The host name. | Required |
+| source | Source to filter.<br/>Ex: user, datadog. | Optional |
+| page | The page number. Default is 1. | Optional |
+| page_size | The number of requested results per page. <br/>Default is 50. . | Optional |
+| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
-| Datadog.HostTag | String | The host name. | 
+| Datadog.Tag | Unknown | A list of tags to apply to the host. |
+| Datadog.HostTag | String | The host name. |
 
 #### Command example
+
 ```!datadog-host-tag-get host_name="TestHost2"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -369,13 +382,13 @@ Return the list of tags that apply to a given host.
 #### Human Readable Output
 
 >### Host Tags List
+>
 >|Tags|
 >|---|
 >| role:database |
 >| team:infra |
 >| region:west |
 >| app:frontend |
-
 
 ### datadog-host-tag-update
 
@@ -390,19 +403,22 @@ This endpoint allows you to replace all tags in an integration source with those
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The host name. | Required | 
-| tags | A comma-separated list of tags to apply to the host  <br/>Previous tags will be replaced by new tags. Ex: "environment:production, region:East” . | Optional | 
+| host_name | The host name. | Required |
+| tags | A comma-separated list of tags to apply to the host  <br/>Previous tags will be replaced by new tags. Ex: "environment:production, region:East” . | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
-| Datadog.HostTag | String | The host name. | 
+| Datadog.Tag | Unknown | A list of tags to apply to the host. |
+| Datadog.HostTag | String | The host name. |
 
 #### Command example
+
 ```!datadog-host-tag-update host_name="TestHost2"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -415,10 +431,10 @@ This endpoint allows you to replace all tags in an integration source with those
 #### Human Readable Output
 
 >### Host Tags Details
+>
 >|Host Name|
 >|---|
 >| TestHost2 |
-
 
 ### datadog-host-tag-delete
 
@@ -433,17 +449,19 @@ This endpoint allows you to remove all user-assigned tags for a single host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | Host name from which to remove associated tags. | Required | 
+| host_name | Host name from which to remove associated tags. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!datadog-host-tag-delete host_name="TestHost2"```
+
 #### Human Readable Output
 
->### Host tags deleted successfully!
-
+>### Host tags deleted successfully
 
 ### datadog-active-metric-list
 
@@ -458,23 +476,26 @@ Get the list of actively reporting metrics.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | List of actively reporting metrics from a given time until now.<br/>Format :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' . | Required | 
-| host_name | Hostname for filtering the list of metrics.<br/><br/>Please do not complete this field (Bug will be fixed in the near future.). | Optional | 
-| tag_filter | Filter metrics that have been submitted with the given tags.<br/>Ex: “region:east,env:prod”. | Optional | 
-| page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50. | Optional | 
-| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
+| from | List of actively reporting metrics from a given time until now.<br/>Format :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' . | Required |
+| host_name | Hostname for filtering the list of metrics.<br/><br/>Please do not complete this field (Bug will be fixed in the near future.). | Optional |
+| tag_filter | Filter metrics that have been submitted with the given tags.<br/>Ex: “region:east,env:prod”. | Optional |
+| page | The page number. Default is 1. | Optional |
+| page_size | The number of requested results per page. Default is 50. | Optional |
+| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Metric.from | String | Time when the metrics were active in seconds since the Unix epoch. | 
-| Datadog.Metric | Unknown | List of metric names. | 
+| Datadog.Metric.from | String | Time when the metrics were active in seconds since the Unix epoch. |
+| Datadog.Metric | Unknown | List of metric names. |
 
 #### Command example
+
 ```!datadog-active-metric-list from="-2days"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -538,10 +559,10 @@ Get the list of actively reporting metrics.
 #### Human Readable Output
 
 >### Active Metric List
+>
 >|From|Metric Name|
 >|---|---|
 >| 2023-04-30 08:18:57 | datadog.agent.python.version,<br/>datadog.agent.running,<br/>datadog.dogstatsd.client.aggregated_context,<br/>datadog.dogstatsd.client.aggregated_context_by_type,<br/>datadog.dogstatsd.client.bytes_dropped,<br/>datadog.dogstatsd.client.bytes_dropped_queue,<br/>datadog.dogstatsd.client.bytes_dropped_writer,<br/>datadog.dogstatsd.client.bytes_sent,<br/>datadog.dogstatsd.client.events,<br/>datadog.dogstatsd.client.metric_dropped_on_receive,<br/>datadog.dogstatsd.client.metrics,<br/>datadog.dogstatsd.client.metrics_by_type,<br/>datadog.dogstatsd.client.packets_dropped,<br/>datadog.dogstatsd.client.packets_dropped_queue,<br/>datadog.dogstatsd.client.packets_dropped_writer,<br/>datadog.dogstatsd.client.packets_sent,<br/>datadog.dogstatsd.client.service_checks,<br/>datadog.estimated_usage.events.custom_events,<br/>datadog.estimated_usage.events.ingested_events,<br/>datadog.estimated_usage.hosts,<br/>datadog.estimated_usage.incident_management.active_users,<br/>datadog.event.tracking.indexation.feed.events,<br/>datadog.event.tracking.intake.feed.bytes,<br/>datadog.event.tracking.intakev2.feed.bytes,<br/>datadog.process.agent,<br/>datadog.trace_agent.cpu_percent,<br/>datadog.trace_agent.events.max_eps.current_rate,<br/>datadog.trace_agent.events.max_eps.max_rate,<br/>datadog.trace_agent.events.max_eps.reached_max,<br/>datadog.trace_agent.events.max_eps.sample_rate,<br/>datadog.trace_agent.heap_alloc,<br/>datadog.trace_agent.heartbeat,<br/>datadog.trace_agent.receiver.out_chan_fill,<br/>datadog.trace_agent.receiver.ratelimit,<br/>datadog.trace_agent.sampler.kept,<br/>datadog.trace_agent.sampler.rare.hits,<br/>datadog.trace_agent.sampler.rare.misses,<br/>datadog.trace_agent.sampler.rare.shrinks,<br/>datadog.trace_agent.sampler.seen,<br/>datadog.trace_agent.sampler.size,<br/>datadog.trace_agent.stats_writer.bytes,<br/>datadog.trace_agent.stats_writer.client_payloads,<br/>datadog.trace_agent.stats_writer.encode_ms.avg,<br/>datadog.trace_agent.stats_writer.encode_ms.count,<br/>datadog.trace_agent.stats_writer.encode_ms.max,<br/>datadog.trace_agent.stats_writer.errors,<br/>datadog.trace_agent.stats_writer.payloads,<br/>datadog.trace_agent.stats_writer.retries,<br/>datadog.trace_agent.stats_writer.splits,<br/>datadog.trace_agent.stats_writer.stats_buckets |
-
 
 ### datadog-metric-search
 
@@ -556,17 +577,20 @@ Search for metrics from the last 24 hours in Datadog.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query string to search metrics from last 24 hours in Datadog.<br/>A complete list of query string values are available here: https://app.datadoghq.com/metric/summary. | Required | 
+| query | Query string to search metrics from last 24 hours in Datadog.<br/>A complete list of query string values are available here: https://app.datadoghq.com/metric/summary. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Metric.metric_name | Unknown | List of metrics that match the search query. | 
+| Datadog.Metric.metric_name | Unknown | List of metrics that match the search query. |
 
 #### Command example
+
 ```!datadog-metric-search query="datadog.agent.python.version"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -582,10 +606,10 @@ Search for metrics from the last 24 hours in Datadog.
 #### Human Readable Output
 
 >### Metrics Search List
+>
 >|Metric Name|
 >|---|
 >| datadog.agent.python.version |
-
 
 ### datadog-metric-metadata-get
 
@@ -600,24 +624,27 @@ Get metadata about a specific metric.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| metric_name | Name of the metric for which to get metadata. | Required | 
+| metric_name | Name of the metric for which to get metadata. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.MetricMetadata.description | String | Metric description. | 
-| Datadog.MetricMetadata.integration | String | Name of the integration that sent the metric if applicable. | 
-| Datadog.MetricMetadata.per_unit | String | Per unit of the metric such as second in bytes per second. | 
-| Datadog.MetricMetadata.short_name | String | A human-readable and abbreviated version of the metric name. | 
-| Datadog.MetricMetadata.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
-| Datadog.MetricMetadata.type | String | Metric type. | 
-| Datadog.MetricMetadata.unit | String | Primary unit of the metric. | 
-| Datadog.MetricMetadata.metric_name | String | The metric name. | 
+| Datadog.MetricMetadata.description | String | Metric description. |
+| Datadog.MetricMetadata.integration | String | Name of the integration that sent the metric if applicable. |
+| Datadog.MetricMetadata.per_unit | String | Per unit of the metric such as second in bytes per second. |
+| Datadog.MetricMetadata.short_name | String | A human-readable and abbreviated version of the metric name. |
+| Datadog.MetricMetadata.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. |
+| Datadog.MetricMetadata.type | String | Metric type. |
+| Datadog.MetricMetadata.unit | String | Primary unit of the metric. |
+| Datadog.MetricMetadata.metric_name | String | The metric name. |
 
 #### Command example
+
 ```!datadog-metric-metadata-get metric_name="system.io.block_in"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -638,10 +665,10 @@ Get metadata about a specific metric.
 #### Human Readable Output
 
 >### Metric Metadata Details
+>
 >|Metric Name|Type|
 >|---|---|
 >| system.io.block_in | gauge |
-
 
 ### datadog-metric-metadata-update
 
@@ -656,29 +683,32 @@ Edit metadata of a specific metric.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| metric_name | Name of the metric for which to edit metadata. | Required | 
-| description | Metric description. | Optional | 
-| per_unit | Per unit of the metric  <br/>A complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list. | Optional | 
-| short_name | A human-readable and abbreviated version of the metric name. | Optional | 
-| statsd_interval | StatsD flush interval of the metric in seconds if applicable. | Optional | 
-| type | Metric type. Possible values are: count, rate, gauge, set, histogram, distribution. | Optional | 
-| unit | Primary unit of the metric. | Optional | 
+| metric_name | Name of the metric for which to edit metadata. | Required |
+| description | Metric description. | Optional |
+| per_unit | Per unit of the metric  <br/>A complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list. | Optional |
+| short_name | A human-readable and abbreviated version of the metric name. | Optional |
+| statsd_interval | StatsD flush interval of the metric in seconds if applicable. | Optional |
+| type | Metric type. Possible values are: count, rate, gauge, set, histogram, distribution. | Optional |
+| unit | Primary unit of the metric. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.MetricMetadata.description | String | Metric description. | 
-| Datadog.MetricMetadata.per_unit | String | Per unit of the metric such as second in bytes per second. | 
-| Datadog.MetricMetadata.short_name | String | A human-readable and abbreviated version of the metric name. | 
-| Datadog.MetricMetadata.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
-| Datadog.MetricMetadata.type | String | Metric type. | 
-| Datadog.MetricMetadata.unit | String | Primary unit of the metric. | 
-| Datadog.MetricMetadata.metric_name | String | The metric name. | 
+| Datadog.MetricMetadata.description | String | Metric description. |
+| Datadog.MetricMetadata.per_unit | String | Per unit of the metric such as second in bytes per second. |
+| Datadog.MetricMetadata.short_name | String | A human-readable and abbreviated version of the metric name. |
+| Datadog.MetricMetadata.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. |
+| Datadog.MetricMetadata.type | String | Metric type. |
+| Datadog.MetricMetadata.unit | String | Primary unit of the metric. |
+| Datadog.MetricMetadata.metric_name | String | The metric name. |
 
 #### Command example
+
 ```!datadog-metric-metadata-update metric_name="system.io.block_in"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -699,10 +729,10 @@ Edit metadata of a specific metric.
 #### Human Readable Output
 
 >### Metric Metadata Details
+>
 >|Metric Name|Type|
 >|---|---|
 >| system.io.block_in | gauge |
-
 
 ### datadog-incident-create
 
@@ -717,69 +747,72 @@ Create an incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_impacted | A flag indicating whether the incident caused customer impact.<br/><br/>Restricted value : True<br/>Permitted value : False (Bug will be fixed in the near future.). Possible values are: True, False. | Required | 
-| title | The title of the incident, which summarizes what happened. | Required | 
-| severity | The severity of the incident.<br/>Default value=unknown. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional | 
-| state | The state of the incident. Possible values are: active, stable, resolved. | Optional | 
-| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional | 
-| root_cause | This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | Optional | 
-| summary | Summary of the incident. | Optional | 
-| content | The Markdown content of the cell  that is used to format using the Markdown syntax rules.<br/>If content is provided, important attribute is required. | Optional | 
-| important | A flag indicating whether the timeline cell is important and should be highlighted. Possible values are: True, False. | Optional | 
-| display_name | The name of the notified handle. | Optional | 
-| handle | The email address used for the notification. | Optional | 
+| customer_impacted | A flag indicating whether the incident caused customer impact.<br/><br/>Restricted value : True<br/>Permitted value : False (Bug will be fixed in the near future.). Possible values are: True, False. | Required |
+| title | The title of the incident, which summarizes what happened. | Required |
+| severity | The severity of the incident.<br/>Default value=unknown. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional |
+| state | The state of the incident. Possible values are: active, stable, resolved. | Optional |
+| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional |
+| root_cause | This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | Optional |
+| summary | Summary of the incident. | Optional |
+| content | The Markdown content of the cell  that is used to format using the Markdown syntax rules.<br/>If content is provided, important attribute is required. | Optional |
+| important | A flag indicating whether the timeline cell is important and should be highlighted. Possible values are: True, False. | Optional |
+| display_name | The name of the notified handle. | Optional |
+| handle | The email address used for the notification. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Incident.id | String | The ID of the incident. | 
-| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. | 
-| Datadog.Incident.attributes.resolved | Unknown | Timestamp when the incident's state was last changed from active or stable to resolved or completed. | 
-| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. | 
-| Datadog.Incident.attributes.customer_impact_scope | Unknown | A summary of the impact customers experienced during the incident. | 
-| Datadog.Incident.attributes.customer_impact_start | Unknown | Timestamp when customers began being impacted by the incident. | 
-| Datadog.Incident.attributes.customer_impact_end | Unknown | Timestamp when customers were no longer impacted by the incident. | 
-| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. | 
-| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. | 
-| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. | 
-| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. | 
-| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. | 
-| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. | 
-| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. | 
-| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. | 
-| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. | 
-| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. | 
-| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. | 
-| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. | 
-| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. | 
-| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown. | 
-| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | 
-| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. | 
-| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.relationships.integrations.data.id | String | A unique identifier that represents the integration metadata. | 
-| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.relationships.commander_user.data.id | Unknown | A unique identifier that represents the user. | 
-| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. | 
-| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. | 
-| Datadog.Incident.included.attributes.email | String | Email of the user. | 
-| Datadog.Incident.included.attributes.handle | String | Handle of the user. | 
-| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. | 
-| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. | 
-| Datadog.Incident.included.attributes.name | String | Name of the user. | 
-| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. | 
-| Datadog.Incident.included.attributes.status | String | Status of the user. | 
-| Datadog.Incident.included.attributes.title | String | Title of the user. | 
-| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. | 
-| Datadog.Incident.included.id | String | ID of the user. | 
-| Datadog.Incident.included.relationships.org.id | String | ID of the organization. | 
-| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. | 
-| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
+| Datadog.Incident.id | String | The ID of the incident. |
+| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. |
+| Datadog.Incident.attributes.resolved | Unknown | Timestamp when the incident's state was last changed from active or stable to resolved or completed. |
+| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. |
+| Datadog.Incident.attributes.customer_impact_scope | Unknown | A summary of the impact customers experienced during the incident. |
+| Datadog.Incident.attributes.customer_impact_start | Unknown | Timestamp when customers began being impacted by the incident. |
+| Datadog.Incident.attributes.customer_impact_end | Unknown | Timestamp when customers were no longer impacted by the incident. |
+| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. |
+| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. |
+| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. |
+| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. |
+| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. |
+| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. |
+| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. |
+| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. |
+| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. |
+| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. |
+| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. |
+| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. |
+| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. |
+| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown. |
+| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. |
+| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. |
+| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.relationships.integrations.data.id | String | A unique identifier that represents the integration metadata. |
+| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.relationships.commander_user.data.id | Unknown | A unique identifier that represents the user. |
+| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. |
+| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. |
+| Datadog.Incident.included.attributes.email | String | Email of the user. |
+| Datadog.Incident.included.attributes.handle | String | Handle of the user. |
+| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. |
+| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. |
+| Datadog.Incident.included.attributes.name | String | Name of the user. |
+| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. |
+| Datadog.Incident.included.attributes.status | String | Status of the user. |
+| Datadog.Incident.included.attributes.title | String | Title of the user. |
+| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. |
+| Datadog.Incident.included.id | String | ID of the user. |
+| Datadog.Incident.included.relationships.org.id | String | ID of the organization. |
+| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. |
+| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. |
 
 #### Command example
+
 ```!datadog-incident-create customer_impacted=False title="incident-test1"```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -946,10 +979,10 @@ Create an incident.
 #### Human Readable Output
 
 >### Incident Details
+>
 >|ID|Title|Created|Customer Impacted|Customer Impact Duration|Customer Impact Scope|Detected|Resolved|Time to Detect|Time to Internal Response|Time to Repair|Time to Resolve|Severity|State|Detection Method|Root Cause|Summary|Notification Display Name|Notification Handle|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 33203994-907e-5fb1-8655-9a81f4fd2d99 | incident-test1 | May 02, 2023 08:19 AM | False | 0 | None | May 02, 2023 08:19 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | active | unknown | None | None | None | None |
-
 
 ### datadog-incident-delete
 
@@ -964,17 +997,19 @@ Delete an existing incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The UUID of the incident. | Required | 
+| incident_id | The UUID of the incident. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!datadog-incident-delete incident_id=73e9f627-5dd6-526f-b658-6e89b7e2e438```
+
 #### Human Readable Output
 
->### Incident deleted successfully!
-
+>### Incident deleted successfully
 
 ### datadog-incident-update
 
@@ -989,71 +1024,74 @@ Updates an incident. Provide only the attributes that should be updated as this 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The UUID of the incident. | Required | 
-| customer_impact_end | Specifies the end of the search time frame.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional | 
-| customer_impact_scope | A summary of the impact customers experienced during the incident. | Optional | 
-| customer_impact_start | Timestamp when customers began being impacted by the incident.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional | 
-| customer_impacted | A flag indicating whether the incident caused customer impact. Possible values are: True, False. | Optional | 
-| detected | Timestamp when the incident was detected.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional | 
-| severity | The severity of the incident.<br/>Default value=unknown. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional | 
-| state | The state of the incident. Possible values are: active, stable, resolved. | Optional | 
-| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional | 
-| root_cause | This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | Optional | 
-| summary | Summary of the incident. | Optional | 
-| display_name | The name of the notified handle. | Optional | 
-| handle | The email address used for the notification. | Optional | 
-| title | The title of the incident, which summarizes what happened. | Optional | 
+| incident_id | The UUID of the incident. | Required |
+| customer_impact_end | Specifies the end of the search time frame.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional |
+| customer_impact_scope | A summary of the impact customers experienced during the incident. | Optional |
+| customer_impact_start | Timestamp when customers began being impacted by the incident.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional |
+| customer_impacted | A flag indicating whether the incident caused customer impact. Possible values are: True, False. | Optional |
+| detected | Timestamp when the incident was detected.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional |
+| severity | The severity of the incident.<br/>Default value=unknown. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional |
+| state | The state of the incident. Possible values are: active, stable, resolved. | Optional |
+| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional |
+| root_cause | This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | Optional |
+| summary | Summary of the incident. | Optional |
+| display_name | The name of the notified handle. | Optional |
+| handle | The email address used for the notification. | Optional |
+| title | The title of the incident, which summarizes what happened. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Incident.id | String | The incident ID. | 
-| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. | 
-| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. | 
-| Datadog.Incident.attributes.resolved | String | Timestamp when the incident's state was last changed from active or stable to resolved or completed. | 
-| Datadog.Incident.attributes.customer_impact_scope | String | A summary of the impact customers experienced during the incident. | 
-| Datadog.Incident.attributes.customer_impact_start | Date | Timestamp when customers began being impacted by the incident. | 
-| Datadog.Incident.attributes.customer_impact_end | String | Timestamp when customers were no longer impacted by the incident. | 
-| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. | 
-| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. | 
-| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. | 
-| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. | 
-| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. | 
-| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. | 
-| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. | 
-| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. | 
-| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. | 
-| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. | 
-| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. | 
-| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. | 
-| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. | 
-| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options: customer, employee, monitor, other, or unknown. | 
-| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | 
-| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. | 
-| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.relationships.commander_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. | 
-| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. | 
-| Datadog.Incident.included.attributes.email | String | Email of the user. | 
-| Datadog.Incident.included.attributes.handle | String | Handle of the user. | 
-| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. | 
-| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. | 
-| Datadog.Incident.included.attributes.name | String | Name of the user. | 
-| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. | 
-| Datadog.Incident.included.attributes.status | String | Status of the user. | 
-| Datadog.Incident.included.attributes.title | String | Title of the user. | 
-| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. | 
-| Datadog.Incident.included.id | String | ID of the user. | 
-| Datadog.Incident.included.relationships.org.id | String | ID of the organization. | 
-| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. | 
-| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
+| Datadog.Incident.id | String | The incident ID. |
+| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. |
+| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. |
+| Datadog.Incident.attributes.resolved | String | Timestamp when the incident's state was last changed from active or stable to resolved or completed. |
+| Datadog.Incident.attributes.customer_impact_scope | String | A summary of the impact customers experienced during the incident. |
+| Datadog.Incident.attributes.customer_impact_start | Date | Timestamp when customers began being impacted by the incident. |
+| Datadog.Incident.attributes.customer_impact_end | String | Timestamp when customers were no longer impacted by the incident. |
+| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. |
+| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. |
+| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. |
+| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. |
+| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. |
+| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. |
+| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. |
+| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. |
+| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. |
+| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. |
+| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. |
+| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. |
+| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. |
+| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options: customer, employee, monitor, other, or unknown. |
+| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. |
+| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. |
+| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.relationships.commander_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. |
+| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. |
+| Datadog.Incident.included.attributes.email | String | Email of the user. |
+| Datadog.Incident.included.attributes.handle | String | Handle of the user. |
+| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. |
+| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. |
+| Datadog.Incident.included.attributes.name | String | Name of the user. |
+| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. |
+| Datadog.Incident.included.attributes.status | String | Status of the user. |
+| Datadog.Incident.included.attributes.title | String | Title of the user. |
+| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. |
+| Datadog.Incident.included.id | String | ID of the user. |
+| Datadog.Incident.included.relationships.org.id | String | ID of the organization. |
+| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. |
+| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. |
 
 #### Command example
+
 ```!datadog-incident-update incident_id=73e9f627-5dd6-526f-b658-6e89b7e2e438```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -1234,10 +1272,10 @@ Updates an incident. Provide only the attributes that should be updated as this 
 #### Human Readable Output
 
 >### Incident Details
+>
 >|ID|Title|Created|Customer Impacted|Customer Impact Duration|Customer Impact Scope|Detected|Resolved|Time to Detect|Time to Internal Response|Time to Repair|Time to Resolve|Severity|State|Detection Method|Root Cause|Summary|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 73e9f627-5dd6-526f-b658-6e89b7e2e438 | Example-Create_an_incident_returns_CREATED_response | February 02, 2023 06:53 AM | False | 0 | None | February 02, 2023 06:53 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | resolved | unknown | None | None |
-
 
 ### datadog-incident-list
 
@@ -1252,68 +1290,71 @@ Get all incidents for the user’s organization / Get the details of an incident
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The UUID of the incident. | Optional | 
-| state | The status of the incident. Possible values are: active, stable, resolved. | Optional | 
-| severity | The severity of the incident. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional | 
-| customer_impacted | A flag indicating whether the incident caused customer impact. Possible values are: True, False. | Optional | 
-| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional | 
-| sort | Specifies the order of returned incidents. Possible values are: asc, desc. | Optional | 
-| page_size | The number of requested results per page. Default is 50. | Optional | 
-| page | The page number. Default is 1. | Optional | 
-| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
-| include | Specifies which types of related objects should be included in the response.<br/>Allowed enum values: users, attachments. Possible values are: users, attachments. | Optional | 
+| incident_id | The UUID of the incident. | Optional |
+| state | The status of the incident. Possible values are: active, stable, resolved. | Optional |
+| severity | The severity of the incident. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional |
+| customer_impacted | A flag indicating whether the incident caused customer impact. Possible values are: True, False. | Optional |
+| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional |
+| sort | Specifies the order of returned incidents. Possible values are: asc, desc. | Optional |
+| page_size | The number of requested results per page. Default is 50. | Optional |
+| page | The page number. Default is 1. | Optional |
+| limit | The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional |
+| include | Specifies which types of related objects should be included in the response.<br/>Allowed enum values: users, attachments. Possible values are: users, attachments. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Incident.id | String | The ID of the incident. | 
-| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. | 
-| Datadog.Incident.attributes.resolved | Unknown | Timestamp when the incident's state was last changed from active or stable to resolved or completed. | 
-| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. | 
-| Datadog.Incident.attributes.customer_impact_scope | Unknown | A summary of the impact customers experienced during the incident. | 
-| Datadog.Incident.attributes.customer_impact_start | Unknown | Timestamp when customers began being impacted by the incident. | 
-| Datadog.Incident.attributes.customer_impact_end | Unknown | Timestamp when customers were no longer impacted by the incident. | 
-| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. | 
-| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. | 
-| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. | 
-| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. | 
-| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. | 
-| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. | 
-| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. | 
-| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. | 
-| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. | 
-| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. | 
-| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. | 
-| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. | 
-| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. | 
-| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown. | 
-| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | 
-| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. | 
-| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.relationships.integrations.data.id | String | A unique identifier that represents the integration metadata. | 
-| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.relationships.commander_user.data.id | Unknown | A unique identifier that represents the user. | 
-| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. | 
-| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. | 
-| Datadog.Incident.included.attributes.email | String | Email of the user. | 
-| Datadog.Incident.included.attributes.handle | String | Handle of the user. | 
-| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. | 
-| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. | 
-| Datadog.Incident.included.attributes.name | String | Name of the user. | 
-| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. | 
-| Datadog.Incident.included.attributes.status | String | Status of the user. | 
-| Datadog.Incident.included.attributes.title | String | Title of the user. | 
-| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. | 
-| Datadog.Incident.included.id | String | ID of the user. | 
-| Datadog.Incident.included.relationships.org.id | String | ID of the organization. | 
-| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. | 
-| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. | 
-| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
+| Datadog.Incident.id | String | The ID of the incident. |
+| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. |
+| Datadog.Incident.attributes.resolved | Unknown | Timestamp when the incident's state was last changed from active or stable to resolved or completed. |
+| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. |
+| Datadog.Incident.attributes.customer_impact_scope | Unknown | A summary of the impact customers experienced during the incident. |
+| Datadog.Incident.attributes.customer_impact_start | Unknown | Timestamp when customers began being impacted by the incident. |
+| Datadog.Incident.attributes.customer_impact_end | Unknown | Timestamp when customers were no longer impacted by the incident. |
+| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. |
+| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. |
+| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. |
+| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. |
+| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. |
+| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. |
+| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. |
+| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. |
+| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. |
+| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. |
+| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. |
+| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. |
+| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. |
+| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown. |
+| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. |
+| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. |
+| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.relationships.integrations.data.id | String | A unique identifier that represents the integration metadata. |
+| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.relationships.commander_user.data.id | Unknown | A unique identifier that represents the user. |
+| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. |
+| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. |
+| Datadog.Incident.included.attributes.email | String | Email of the user. |
+| Datadog.Incident.included.attributes.handle | String | Handle of the user. |
+| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. |
+| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. |
+| Datadog.Incident.included.attributes.name | String | Name of the user. |
+| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. |
+| Datadog.Incident.included.attributes.status | String | Status of the user. |
+| Datadog.Incident.included.attributes.title | String | Title of the user. |
+| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. |
+| Datadog.Incident.included.id | String | ID of the user. |
+| Datadog.Incident.included.relationships.org.id | String | ID of the organization. |
+| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. |
+| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. |
+| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. |
 
 #### Command example
+
 ```!datadog-incident-list limit=2```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -1632,11 +1673,11 @@ Get all incidents for the user’s organization / Get the details of an incident
 #### Human Readable Output
 
 >### Incidents List
+>
 >|ID|Title|Created|Customer Impacted|Customer Impact Duration|Detected|Resolved|Time to Detect|Time to Internal Response|Time to Repair|Time to Resolve|Severity|State|Detection Method|Root Cause|Summary|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| dc203d96-2c07-55f4-9312-5427468a8190 | test-incident-i1 | February 02, 2023 10:07 AM | False | 0 | February 02, 2023 10:07 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | resolved | unknown | None | None |
 >| e8d7e756-fc4b-5ae3-978b-dc6c081b0c38 | test-incident-i1 | February 03, 2023 06:36 AM | False | 0 | February 03, 2023 06:36 AM | None | 0 | 0 | 0 | 0 | UNKNOWN | active | unknown | None | None |
-
 
 ### datadog-time-series-point-query
 
@@ -1651,43 +1692,46 @@ Query of sequence of data points that are collected over time intervals, allowin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | Start of the queried time period.<br/>Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required | 
-| to | End of the queried time period.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required | 
-| query | Query string.<br/>Ex : query="system.cpu.idle" <br/>A complete list of query string values are available here: https://app.datadoghq.com/metric/summary. | Required | 
+| from | Start of the queried time period.<br/>Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required |
+| to | End of the queried time period.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required |
+| query | Query string.<br/>Ex : query="system.cpu.idle" <br/>A complete list of query string values are available here: https://app.datadoghq.com/metric/summary. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.TimeSeriesPoint.from_date | Date | Start of requested time window in milliseconds since Unix epoch. | 
-| Datadog.TimeSeriesPoint.error | String | Message indicating the errors if status is not OK. | 
-| Datadog.TimeSeriesPoint.group_by | Unknown | List of tag keys on which to group. | 
-| Datadog.TimeSeriesPoint.message | String | Message indicating success if status is OK. | 
-| Datadog.TimeSeriesPoint.query | String | Query string. | 
-| Datadog.TimeSeriesPoint.res_type | String | Type of response. | 
-| Datadog.TimeSeriesPoint.series.aggr | Unknown | Aggregation type. | 
-| Datadog.TimeSeriesPoint.series.display_name | String | Display name of the metric. | 
-| Datadog.TimeSeriesPoint.series.end | Date | End of the time window in milliseconds since Unix epoch. | 
-| Datadog.TimeSeriesPoint.series.expression | String | Metric expression. | 
-| Datadog.TimeSeriesPoint.series.interval | Number | Number of seconds between data samples. | 
-| Datadog.TimeSeriesPoint.series.length | Number | Number of data samples. | 
-| Datadog.TimeSeriesPoint.series.metric | String | Metric name. | 
-| Datadog.TimeSeriesPoint.series.pointlist | Number | List of points of the time series. | 
-| Datadog.TimeSeriesPoint.series.query_index | Number | The index of the series query within the request. | 
-| Datadog.TimeSeriesPoint.series.scope | String | Metric scope, comma-separated list of tags. | 
-| Datadog.TimeSeriesPoint.series.start | Date | Start of the time window in milliseconds since Unix epoch. | 
-| Datadog.TimeSeriesPoint.series.tag_set | Unknown | Unique tags identifying this series. | 
-| Datadog.TimeSeriesPoint.series.unit.family | String | Unit family allows for conversion between units of the same family, for scaling. | 
-| Datadog.TimeSeriesPoint.series.unit.name | String | Unit name. | 
-| Datadog.TimeSeriesPoint.series.unit.plural | String | Plural form of the unit's name. | 
-| Datadog.TimeSeriesPoint.series.unit.scale_factor | Number | Factor for scaling between units of the same family. | 
-| Datadog.TimeSeriesPoint.series.unit.short_name | String | Abbreviation of the unit. | 
-| Datadog.TimeSeriesPoint.status | String | Status of the query. | 
-| Datadog.TimeSeriesPoint.to_date | Date | End of requested time window in milliseconds since Unix epoch. | 
+| Datadog.TimeSeriesPoint.from_date | Date | Start of requested time window in milliseconds since Unix epoch. |
+| Datadog.TimeSeriesPoint.error | String | Message indicating the errors if status is not OK. |
+| Datadog.TimeSeriesPoint.group_by | Unknown | List of tag keys on which to group. |
+| Datadog.TimeSeriesPoint.message | String | Message indicating success if status is OK. |
+| Datadog.TimeSeriesPoint.query | String | Query string. |
+| Datadog.TimeSeriesPoint.res_type | String | Type of response. |
+| Datadog.TimeSeriesPoint.series.aggr | Unknown | Aggregation type. |
+| Datadog.TimeSeriesPoint.series.display_name | String | Display name of the metric. |
+| Datadog.TimeSeriesPoint.series.end | Date | End of the time window in milliseconds since Unix epoch. |
+| Datadog.TimeSeriesPoint.series.expression | String | Metric expression. |
+| Datadog.TimeSeriesPoint.series.interval | Number | Number of seconds between data samples. |
+| Datadog.TimeSeriesPoint.series.length | Number | Number of data samples. |
+| Datadog.TimeSeriesPoint.series.metric | String | Metric name. |
+| Datadog.TimeSeriesPoint.series.pointlist | Number | List of points of the time series. |
+| Datadog.TimeSeriesPoint.series.query_index | Number | The index of the series query within the request. |
+| Datadog.TimeSeriesPoint.series.scope | String | Metric scope, comma-separated list of tags. |
+| Datadog.TimeSeriesPoint.series.start | Date | Start of the time window in milliseconds since Unix epoch. |
+| Datadog.TimeSeriesPoint.series.tag_set | Unknown | Unique tags identifying this series. |
+| Datadog.TimeSeriesPoint.series.unit.family | String | Unit family allows for conversion between units of the same family, for scaling. |
+| Datadog.TimeSeriesPoint.series.unit.name | String | Unit name. |
+| Datadog.TimeSeriesPoint.series.unit.plural | String | Plural form of the unit's name. |
+| Datadog.TimeSeriesPoint.series.unit.scale_factor | Number | Factor for scaling between units of the same family. |
+| Datadog.TimeSeriesPoint.series.unit.short_name | String | Abbreviation of the unit. |
+| Datadog.TimeSeriesPoint.status | String | Status of the query. |
+| Datadog.TimeSeriesPoint.to_date | Date | End of requested time window in milliseconds since Unix epoch. |
 
 #### Command example
+
 ```!datadog-time-series-point-query from="-2days" query="system.cpu.idle" to=now```
+
 #### Context Example
+
 ```json
 {
     "Datadog": {
@@ -2898,4 +2942,4 @@ Query of sequence of data points that are collected over time intervals, allowin
 
 #### Human Readable Output
 
->### Query Timeseries Points 
+>### Query Timeseries Points
