@@ -23,7 +23,6 @@ def test_arg_to_list_with_regex(arg, expected_result):
     assert arg_to_list_with_regex(arg) == expected_result
 
 
-# Create a fake response object.
 def create_response(url, status_code = 200, history = []):
     resp = requests.Response()
     resp.status_code = status_code
@@ -59,13 +58,19 @@ def fake_requests_get(url, timeout, allow_redirects=True, verify=True):
     elif url == "https_certificate":
         return create_response(url="https_certificate")
     
-    elif url == "http_to_https_certificate":
+    elif url == "http_to_https_certificate" and allow_redirects:
         first_response = create_response(url="http_to_https_certificate", status_code=301)
         if allow_redirects:
             return create_response(url="https_certificate", history=[first_response])
         else:
             return first_response
-
+    elif url == "http_to_http" and allow_redirects:
+        first_response = create_response(url="http_to_http", status_code=301)
+        if allow_redirects:
+            return create_response(url="http", history=[first_response])
+        else:
+            return first_response
+        
     else:
         raise RequestException
 

@@ -116,12 +116,12 @@ def main():
         }
         for url in url_list
     ]
-    ec = {"URL":url_list, "DBotScore":d_bot_score}
+    entry_context = {"URL":url_list, "DBotScore":d_bot_score}
     return_results(CommandResults(
                             readable_output=tableToMarkdown(name="URL SSL Verification",
                                                             t=preview_list,
                                                             headers=["URL", "Verified", "Description"]),
-                            outputs=ec,
+                            outputs=entry_context,
                             outputs_key_field="URL.Data")
     )
 
