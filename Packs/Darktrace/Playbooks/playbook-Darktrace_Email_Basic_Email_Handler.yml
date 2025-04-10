@@ -1,0 +1,457 @@
+id: b6ba5d37-ff83-4b53-89ac-17be2a241f7d
+version: 24
+vcShouldKeepItemLegacyProdMachine: false
+name: Darktrace Email Basic Email Handler
+description: Runs a common Email workflow for fetch Darktrace Email incidents.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 49113b0c-5e10-43f6-86ed-a59118326e2b
+    type: start
+    task:
+      id: 49113b0c-5e10-43f6-86ed-a59118326e2b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2d28219e-b3c4-4cc0-8b26-69c1f03b30ac
+    type: condition
+    task:
+      id: 2d28219e-b3c4-4cc0-8b26-69c1f03b30ac
+      version: -1
+      name: Was the Email held?
+      description: Indicates whether a given value is a member of given array
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "16"
+    scriptarguments:
+      array:
+        simple: ${incident.darktraceemailactionstaken}
+      value:
+        simple: Hold message
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8b6b35fc-c421-43d0-8802-e0c2dea3a52c
+    type: condition
+    task:
+      id: 8b6b35fc-c421-43d0-8802-e0c2dea3a52c
+      version: -1
+      name: Release Email?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "11"
+      "Yes":
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Would you like to Release this Email?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3fda3097-6acc-4823-8247-a41b33f346c4
+    type: condition
+    task:
+      id: 3fda3097-6acc-4823-8247-a41b33f346c4
+      version: -1
+      name: Hold Email?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "11"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Would you like to apply a Hold action to this Email?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 166daf09-a4a1-4ab0-8a05-73c85c9d1142
+    type: regular
+    task:
+      id: 166daf09-a4a1-4ab0-8a05-73c85c9d1142
+      version: -1
+      name: Release Email
+      description: Release an Email that has previously been held.
+      script: DarktraceEmail|||darktrace-email-release-email
+      type: regular
+      iscommand: true
+      brand: DarktraceEmail
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      recipient:
+        simple: ${incident.darktraceemailrecipient}
+      uuid:
+        simple: ${incident.darktraceemailuuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1fdb6bde-4b1a-4f91-82f7-5530455e8e6e
+    type: regular
+    task:
+      id: 1fdb6bde-4b1a-4f91-82f7-5530455e8e6e
+      version: -1
+      name: Hold Email
+      description: Apply 'hold' action to specified Email.
+      script: DarktraceEmail|||darktrace-email-hold-email
+      type: regular
+      iscommand: true
+      brand: DarktraceEmail
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      uuid:
+        simple: ${incident.darktraceemailuuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 16286256-4501-48bd-82f0-37f143143649
+    type: regular
+    task:
+      id: 16286256-4501-48bd-82f0-37f143143649
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e4afbc6f-5e88-459f-880e-c251bbbd6045
+    type: condition
+    task:
+      id: e4afbc6f-5e88-459f-880e-c251bbbd6045
+      version: -1
+      name: Did the User request the Email be released?
+      description: Check if a given value is true. Will return 'no' otherwise
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${incident.darktraceemailreleaserequested}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 274eeaab-c602-4049-8e59-376f451048b4
+    type: condition
+    task:
+      id: 274eeaab-c602-4049-8e59-376f451048b4
+      version: -1
+      name: Release Email?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "11"
+      "Yes":
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Would you like to Release this Email?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f24406d9-5ae3-423a-858a-c305a445248a
+    type: condition
+    task:
+      id: f24406d9-5ae3-423a-858a-c305a445248a
+      version: -1
+      name: Was the Email released?
+      description: Indicates whether a given value is a member of given array
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "4"
+    scriptarguments:
+      array:
+        simple: ${incident.darktraceemailreceiptstatus}
+      value:
+        simple: released
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 535a25b1-0ab2-4a4f-8761-b451f887f7f4
+    type: playbook
+    task:
+      id: 535a25b1-0ab2-4a4f-8761-b451f887f7f4
+      version: -1
+      name: Darktrace Email Update Incident Fields
+      playbookName: Darktrace Email Update Incident Fields
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_no": 0.25,
+      "12_3_yes": 0.31,
+      "13_11_No": 0.29,
+      "13_9_Yes": 0.49,
+      "16_12_no": 0.32,
+      "16_4_yes": 0.16,
+      "2_16_yes": 0.19,
+      "2_4_no": 0.12,
+      "3_11_No": 0.22,
+      "3_9_Yes": 0.6,
+      "4_10_Yes": 0.47,
+      "4_11_No": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1905,
+        "width": 1760,
+        "x": 460,
+        "y": -590
+      }
+    }
+  }
+inputs:
+- key: Incident ID
+  value:
+    simple: ${incident.id}
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []
