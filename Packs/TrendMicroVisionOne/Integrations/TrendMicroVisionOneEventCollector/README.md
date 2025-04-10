@@ -83,7 +83,7 @@ Returns a list of logs.
 | **Argument Name**  | **Description**                                                                                                                                                    | **Required** |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | limit              | The maximum number of logs to retrieve. Default is 50.                                                                                                             | Optional    | 
-| from_time          | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days.                               | Optional    | 
+| from_time          | From which time to retrieve the log(s) in ISO8601 format.                               | Required    | 
 | to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.                                                              | Optional    | 
 | should_push_events | Whether to push the fetched events to Cortex XSIAM or not. Possible values are: false, true. Default is false.                                                     | Optional    | 
 | log_type           | Comma-separated list of log-types to retrieve, options are audit, observed_attack_techniques, search_detections and workbench. Default is to retrieve all of them. | Optional    | 
