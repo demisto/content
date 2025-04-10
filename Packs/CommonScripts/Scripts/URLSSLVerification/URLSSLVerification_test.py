@@ -3,7 +3,7 @@ from pytest_mock import MockerFixture
 import demistomock as demisto
 from URLSSLVerification import arg_to_list_with_regex, mark_http_as_suspicious,main,verify_ssl_certificate
 import requests
-from requests.exceptions import SSLError, RequestException
+from requests.exceptions import SSLError
 
 @pytest.mark.parametrize("arg, expected_result", [("false", False), ("true", True), (None, True)])
 def test_is_http_should_be_suspicious(arg, expected_result):
