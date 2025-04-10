@@ -7,6 +7,7 @@
     "url": "https://customer.extrahop.com/s/",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
+    "defaultDataSource": "ExtraHop v2",
     "categories": [
         "Network Security"
     ],
