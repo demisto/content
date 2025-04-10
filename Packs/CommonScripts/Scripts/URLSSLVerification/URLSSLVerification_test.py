@@ -61,10 +61,18 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
             return create_response(url="https_certificate", history=[first_response])
         else:
             return first_response
+        
     elif url == "http_to_http" and allow_redirects:
         first_response = create_response(url="http_to_http", status_code=301)
         if allow_redirects:
             return create_response(url="http", history=[first_response])
+        else:
+            return first_response
+    
+    elif url == "http_to_https_no_certificate":
+        first_response = create_response(url="http_to_https_no_certificate", status_code=301)
+        if allow_redirects:
+            return create_response(url="https_no_certificate", history=[first_response])
         else:
             return first_response
     raise requests.exceptions.RequestException
@@ -89,6 +97,11 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
                                                            "Score":0,
                                                            "Indicator":
                                                             "http_to_https_certificate"}]),
+        ({"url":"http_to_https_no_certificate",
+          "set_http_as_suspicious":"false"},             [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":
+                                                            "http_to_https_no_certificate"}]),
         ({"url":"http",
           "set_http_as_suspicious":"false"},             [{"Verified":False,
                                                            "Score":2,
