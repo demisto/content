@@ -52,7 +52,7 @@ configuration:
   section: Collect
   advanced: true
 description: ExtraHop Reveal(x) is a network detection and response solution that provides complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
-display: ExtraHop Reveal(x)
+display: ExtraHop Reveal(x) Event Collector
 name: ExtrahopRevealXEventCollector
 supportlevelheader: xsoar
 script:
