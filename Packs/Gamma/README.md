@@ -4,6 +4,7 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
   (Outlook, Teams, OneDrivex), ServiceNow, ZenDesk, Salesforce and many more.
 
 ### Acknowledgements
+
 Special Thanks to the **Upstart team** (Ines Kim, Chris Schafer) for their ideas, support and
  significant code contribution in developing this content pack.
 
@@ -12,9 +13,10 @@ Special Thanks to the **Upstart team** (Ines Kim, Chris Schafer) for their ideas
 - Fetches all DLP incidents detected by Gamma
 - Gather detailed information for each incident
 - Engage with end-users to remediate incidents directly via Slack bot
-- Update and Resolve status of all DLP incidents in Gamma 
+- Update and Resolve status of all DLP incidents in Gamma
 
-### About Gamma.AI:
+### About Gamma.AI
+
 Gamma.AI is an AI-powered enterprise-ready cloud data discovery, data classification and data
  loss prevention platform. Gamma conducts deep contextual introspection of all your enterprise
   data across cloud applications to understand its true meaning from a sensitivity, criticality
@@ -24,6 +26,7 @@ Gamma.AI is an AI-powered enterprise-ready cloud data discovery, data classifica
       remediation of any data loss instance across cloud applications.
 
 ### Gamma Deployment & Integrations
+
 Gamma is readily available as a plugin for deployment across cloud collaboration applications
  including but not limited to Slack, Servicenow, Github, Jira, Confluence, Suite, O365, etc. The
   deployment takes less than a minute and works horizontally for all end users without needing
@@ -31,11 +34,13 @@ Gamma is readily available as a plugin for deployment across cloud collaboration
     your SIEM/SOAR/CASB/EDR platforms for streamlining the SOC efforts.
 
 ### Gamma Differentiators
+
 Gamma does not require complex rules or complex network/endpoint integration. Solution can be
  deployed within 5 minutes and is complementary to existing network/cloud DLP. Gamma offers an
   industry leading 99.5% accuracy on alerts. Gamma's AI based detectors greatly enhance PII / PHI
    / PCI / IP / Secrets loss prevention beyond the limited capabilities of legacy RegEx based
     solutions. Gamma's AI/NLP increases classification using the following capabilities:
+
 - Can detect sensitive data in images (including handwritten)
 - Can identify complex data (Financial Statements, Passports, Intellectual Property etc).
 - Derive meaningful context and use it to detect previously undetectable data classes (without

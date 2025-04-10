@@ -6,7 +6,7 @@ What does this pack do?
 
 - Query Qintel’s Patch Management Intelligence (PMI) platform to gather context on vulnerabilities that are known by Qintel to be leveraged by adversaries
 - Query Qintel’s Qsentry platform for IP reputation data
-- Retrieve exposed credential alerts from Qintel’s QWatch platform 
+- Retrieve exposed credential alerts from Qintel’s QWatch platform
 
 For more information, existing customers can visit our [Integrations Documentation](https://docs.qintel.com/integrations/overview)
 
