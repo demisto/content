@@ -50,7 +50,7 @@ configuration:
   type: 8
   section: Connect
 description: Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
-display: 'Trend Micro Vision One Event Collector'
+display: Trend Micro Vision One Event Collector
 name: TrendMicroVisionOneEventCollector
 supportlevelheader: xsoar
 script:
