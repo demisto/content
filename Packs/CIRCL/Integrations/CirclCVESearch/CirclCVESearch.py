@@ -89,7 +89,7 @@ def process_cve_data(cve: dict) -> dict | None:
         return None
 
 
-def handle_cve_5_1(cve: dict) -> dict:
+def handle_cve_5_1(cve: dict) -> dict | None:
     """
     Converts a CVE 5.1 formatted record into a normalized legacy-like dictionary format
     used throughout the integration.
@@ -173,7 +173,7 @@ def handle_cve_5_1(cve: dict) -> dict:
         return legacy
     except Exception as e:
         demisto.debug(f"Failed to parse CVE 5.1 data: {e}")
-        raise None
+        return None
     
 def create_cve_summary(cve: dict) -> dict:
     """
