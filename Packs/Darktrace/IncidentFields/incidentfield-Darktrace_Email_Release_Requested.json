@@ -1,0 +1,31 @@
+{
+    "id": "incident_darktraceemailreleaserequested",
+    "version": 1,
+    "modified": "2025-01-08T19:39:34.452915329Z",
+    "fromVersion": "6.6.0",
+    "name": "Darktrace Email Release Requested",
+    "ownerOnly": false,
+    "cliName": "darktraceemailreleaserequested",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Darktrace Email"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

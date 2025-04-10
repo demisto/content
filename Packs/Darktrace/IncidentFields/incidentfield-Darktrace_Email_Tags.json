@@ -1,0 +1,31 @@
+{
+    "id": "incident_darktraceemailtags",
+    "version": 1,
+    "modified": "2024-09-26T16:31:28.479983816Z",
+    "fromVersion": "6.6.0",
+    "name": "Darktrace Email Tags",
+    "ownerOnly": false,
+    "cliName": "darktraceemailtags",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Darktrace Email"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

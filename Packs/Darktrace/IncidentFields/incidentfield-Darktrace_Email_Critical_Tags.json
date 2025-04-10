@@ -1,0 +1,31 @@
+{
+    "id": "incident_darktraceemailcriticaltags",
+    "version": 3,
+    "modified": "2024-10-07T15:26:24.766758482Z",
+    "fromVersion": "6.6.0",
+    "name": "Darktrace Email Critical Tags",
+    "ownerOnly": false,
+    "cliName": "darktraceemailcriticaltags",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Darktrace Email"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
