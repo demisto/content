@@ -7,6 +7,9 @@ from urllib.parse import urlencode
 import demistomock as demisto
 import pytest
 import requests
+
+import jwt
+
 import ServiceNowv2
 from CommonServerPython import CommandResults, DemistoException, EntryType
 from freezegun import freeze_time
@@ -122,7 +125,8 @@ from test_data.response_constants import (
     RESPONSE_UPDATE_TICKET_SC_REQ,
     RESPONSE_UPLOAD_FILE,
     USER_RESPONSE,
-)
+    JWT_PARAMS
+),
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
     EXPECTED_ADD_LINK_HR,
@@ -1725,6 +1729,58 @@ def test_test_module(mocker):
     with pytest.raises(Exception) as e:
         module(client)
     assert "Test button cannot be used when using OAuth 2.0" in str(e)
+    
+    
+def test_jwt_checker():
+    """
+    Given:
+    - private key
+    When:
+    - creating a jwt
+    Then:
+    - (a) that the return type is a string
+    - (b) validate the pem format
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = JWT_PARAMS)
+    test_token = client.check_private_key(JWT_PARAMS['private_key'])
+    assert isinstance(test_token, str)
+    assert test_token.startswith('-----BEGIN PRIVATE KEY-----')
+    assert test_token.endswith('-----END PRIVATE KEY-----')
+    
+def test_jwt_init(mocker):
+    """
+    Given:
+
+    When:
+    - creating a jwt
+    Then:
+    - create jwt
+    """
+    mocker.patch('jwt.encode', return_value = 'test')
+
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = JWT_PARAMS)
+    client.create_jwt()
+    assert client.jwt == 'test'
+    
+    
+def test_jwt_without_oauth():
+    """
+    Given:
+    When:
+    - creating a new client while mark jwt and not mark oauth
+    Then:
+    - exception throw
+    """
+    with pytest.raises(Exception) as e:
+        Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                get_attachments=False, incident_name='description', oauth_params={}, jwt_params = JWT_PARAMS)
+    assert 'When using JWT, mark OAuth checkbox first' in str(e)
+    
 
 
 def test_oauth_test_module(mocker):

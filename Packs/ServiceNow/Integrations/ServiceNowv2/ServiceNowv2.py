@@ -10,6 +10,10 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
+import jwt
+from datetime import datetime, timezone, timedelta
+import uuid
+
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
 INCIDENT = "incident"
@@ -626,7 +630,7 @@ class Client(BaseClient):
         look_back: int = 0,
         use_display_value: bool = False,
         display_date_format: str = "",
-    ):
+        jwt_params: dict | None = None):
         """
 
         Args:
@@ -657,6 +661,7 @@ class Client(BaseClient):
         self._password = password
         self._proxies = handle_proxy(proxy_param_name="proxy", checkbox_default_value=False)
         self.use_oauth = bool(oauth_params)
+        self.use_jwt = bool(jwt_params)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -673,7 +678,7 @@ class Client(BaseClient):
                 "A display date format must be selected in the instance configuration when "
                 "using the `Use Display Value` option."
             )
-
+                                             
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(
                 credentials=oauth_params.get("credentials", {}),
@@ -685,8 +690,56 @@ class Client(BaseClient):
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
             )
+            if self.use_jwt:
+                self.generate_jwt = {"jwt": jwt_params, "oauth":oauth_params}
+                self.jwt = self.create_jwt()
         else:
             self._auth = (self._username, self._password)
+            
+
+    def check_private_key(self, private_key:str) -> str:
+        # Define the start and end markers
+        start_marker = "-----BEGIN PRIVATE KEY-----"
+        end_marker = "-----END PRIVATE KEY-----"
+        
+        if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
+            raise ValueError("Invalid private key format")
+        
+        # Remove the markers and replace whitespaces with '\n'
+        key_content = private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
+        # Reattach the markers
+        processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
+        return processed_key
+    
+    def create_jwt(self):
+        jwt_params = self.generate_jwt["jwt"]
+        oauth_params = self.generate_jwt["oauth"]
+        # Private key (PEM format)
+        private_key = self.check_private_key(jwt_params["private_key"])
+
+        # Header
+        header = {
+            "alg": "RS256",  # Signing algorithm
+            "typ": "JWT",  # Token type
+            "kid": jwt_params.get('kid'), #From ServiceNow (see Jwt Verifier Maps )
+        }
+        self.exp_time = datetime.now(timezone.utc) + timedelta(hours=1)  # Expiry time 1 hour
+        # Payload
+        payload = {
+            "sub": jwt_params.get("sub"),  # Subject (e.g., user ID)
+            "aud": oauth_params.get('client_id', ''), # serviceNow client_id
+            "iss": oauth_params.get('client_id', ''),# can be serviceNow client_id
+            "iat": datetime.now(timezone.utc),  # Issued at
+            "exp": self.exp_time,
+            "jti": str(uuid.uuid4())    # Unique JWT ID
+        }
+        try:
+        # Generate the JWT
+            jwt_token= jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        except Exception as e:
+            #Generate again if failed
+            jwt_token= jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        return jwt_token
 
     def generic_request(
         self,
@@ -745,7 +798,7 @@ class Client(BaseClient):
             with open(file_path, "rb") as f:
                 file_info = (file_name, f, self.get_content_type(file_name))
                 if self.use_oauth:
-                    access_token = self.snow_client.get_access_token()
+                    access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt else self.snow_client.get_access_token()
                     headers.update({"Authorization": f"Bearer {access_token}"})
                     return requests.request(
                         method,
@@ -774,7 +827,7 @@ class Client(BaseClient):
 
     def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
         if self.use_oauth:
-            access_token = self.snow_client.get_access_token()
+            access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt else self.snow_client.get_access_token()
             headers.update({"Authorization": f"Bearer {access_token}"})
             return requests.request(
                 method,
@@ -960,7 +1013,7 @@ class Client(BaseClient):
         query = f"table_sys_id={ticket_id}"
         if sys_created_on:
             query += f"^sys_created_on>{sys_created_on}"
-        return self.send_request("attachment", "GET", params={"sysparm_query": query}, get_attachments=True)
+        return self.send_request("attachment", "GET", params={"sysparm_query": query}, get_attachments=True) # type: ignore
 
     def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments
@@ -983,7 +1036,7 @@ class Client(BaseClient):
 
         for link in links:
             if self.use_oauth:
-                access_token = self.snow_client.get_access_token()
+                access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt else self.snow_client.get_access_token()
                 headers.update({"Authorization": f"Bearer {access_token}"})
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
@@ -1067,6 +1120,7 @@ class Client(BaseClient):
             Response from API.
         """
         body = generate_body(fields, custom_fields)
+     
         query_params = {"sysparm_input_display_value": input_display_value}
         return self.send_request(f"table/{table_name}", "POST", params=query_params, body=body)
 
@@ -2705,7 +2759,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     Test the instance configurations when using basic authorization.
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth:
+    if client.use_oauth and not client.use_jwt:
         raise Exception(
             "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login "
             "command followed by the !servicenow-oauth-test command to test the instance."
@@ -3486,7 +3540,14 @@ def main():
     verify = not params.get("insecure", False)
     use_oauth = params.get("use_oauth", False)
     oauth_params = {}
+    
+    use_jwt = params.get('use_jwt', False)
+    
+    #use jwt only with OAuth
+    if use_jwt and not use_oauth:
+        raise ValueError('When using JWT, mark OAuth checkbox first')
 
+    jwt_params = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ""
         password = ""
@@ -3502,6 +3563,13 @@ def main():
             "proxy": params.get("proxy"),
             "use_oauth": use_oauth,
         }
+        if use_jwt:
+            jwt_params = {
+                'private_key': params.get('private_key'),
+                'kid': params.get('kid'),
+                'sub': params.get('sub'),
+            }
+
     else:  # use basic authentication
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
@@ -3587,7 +3655,7 @@ def main():
             version=version,
             look_back=look_back,
             use_display_value=use_display_value,
-            display_date_format=display_date_format,
+            display_date_format=display_date_format, jwt_params=jwt_params,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             "test-module": test_module,
