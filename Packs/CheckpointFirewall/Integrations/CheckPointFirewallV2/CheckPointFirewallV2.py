@@ -580,7 +580,7 @@ def checkpoint_add_host_command(
         outputs_key_field="uid",
         readable_output=readable_output,
         outputs=context,
-        raw_response=result
+        raw_response=result,
     )
     return command_results
 
