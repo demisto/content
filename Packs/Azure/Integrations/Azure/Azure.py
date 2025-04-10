@@ -27,8 +27,9 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-PREFIX_URL = "https://management.azure.com/subscriptions/"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+API_VERSION = "2022-09-01"
+NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
     "Authorization Code": AUTHORIZATION_CODE,
@@ -39,6 +40,9 @@ SCOPE_BY_CONNECTION = {
     "Authorization Code": "https://management.azure.com/.default",
     "Client Credentials": "https://management.azure.com/.default",
 }
+
+DEFAULT_LIMIT = 50
+PREFIX_URL = "https://management.azure.com/subscriptions/"
 
 """ CLIENT CLASS """
 
@@ -280,6 +284,35 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     return format_rule(rule, security_rule_name)
 
 
+def test_module(client: AzureNSGClient) -> str:
+    """Tests API connectivity and authentication'
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type AzureNSGClient: ``Client``
+    :param Client: client to use
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This  should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    print("HERE")
+    if "Device" in client.connection_type:
+        raise DemistoException(
+            "Please enable the integration and run `!azure-nsg-auth-start`"
+            "and `!azure-nsg-auth-complete` to log in."
+            "You can validate the connection by running `!azure-nsg-auth-test`\n"
+            "For more details press the (?) button."
+        )
+    elif client.connection_type == "Azure Managed Identities" or client.connection_type == "Client Credentials":
+        client.ms_client.get_access_token()
+        return "ok"
+
+    else:
+        raise Exception(
+            "When using user auth flow configuration, "
+            "Please enable the integration and run the !azure-nsg-auth-test command in order to test it"
+        )
 
 
 
@@ -287,7 +320,7 @@ def main():
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-
+    print("here")
     demisto.debug(f"Command being called is {command}")
     try:
         client = AzureNSGClient(
@@ -310,16 +343,12 @@ def main():
         }
        
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            return_results(test_module(client))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(
-            result
-        )  # Returns either str, CommandResults and a list of CommandResults
-    # Log exceptions and return errors
+        
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
