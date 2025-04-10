@@ -1775,9 +1775,7 @@ def test_jwt_without_oauth():
     - exception throw
     """
     with pytest.raises(Exception) as e:
-        Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
-                get_attachments=False, incident_name='description', oauth_params={}, jwt_params = JWT_PARAMS)
+        main()
     assert 'When using JWT, mark OAuth checkbox first' in str(e)
     
 
