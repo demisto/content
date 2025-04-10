@@ -2,10 +2,10 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: PrismaCloud v2
+  id: PrismaCloud v2 test
   version: -1
-name: PrismaCloud v2
-display: Prisma Cloud v2
+name: PrismaCloud v2 test 
+display: Prisma Cloud v2 test
 category: Network Security
 description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
 configuration:
@@ -3851,4 +3851,4 @@ tests:
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 6.5.0
-hybrid: true
+# hybrid: true
