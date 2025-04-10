@@ -1,0 +1,133 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "Darktrace Email Mapper",
+	"fromVersion": "6.6.0",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 9,
+	"mapping": {
+		"Darktrace Email": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Darktrace Email Action Status": {
+					"complex": {
+						"filters": [],
+						"root": "action_status",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Actions": {
+					"complex": {
+						"filters": [],
+						"root": "actions",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Actions Taken": {
+					"complex": {
+						"filters": [],
+						"root": "actions",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Anomaly Score": {
+					"simple": "score"
+				},
+				"Darktrace Email Attachments": {
+					"simple": "attachments"
+				},
+				"Darktrace Email Critical Tags": {
+					"simple": "tags_critical"
+				},
+				"Darktrace Email Direction": {
+					"complex": {
+						"filters": [],
+						"root": "direction",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Group Status": {
+					"simple": "is_group_email"
+				},
+				"Darktrace Email Informational Tags": {
+					"simple": "tags_informational"
+				},
+				"Darktrace Email Links": {
+					"simple": "links"
+				},
+				"Darktrace Email Read Status": {
+					"complex": {
+						"filters": [],
+						"root": "read_status",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Receipt Status": {
+					"complex": {
+						"filters": [],
+						"root": "receipt_status",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Recipient": {
+					"complex": {
+						"filters": [],
+						"root": "recipient",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Release Requested": {
+					"complex": {
+						"filters": [],
+						"root": "release_requested",
+						"transformers": []
+					}
+				},
+				"Darktrace Email Sender": {
+					"simple": "sender"
+				},
+				"Darktrace Email Subject": {
+					"simple": "subject"
+				},
+				"Darktrace Email Summary": {
+					"simple": "summary"
+				},
+				"Darktrace Email Time": {
+					"simple": "time"
+				},
+				"Darktrace Email UI Link": {
+					"simple": "darktrace_url"
+				},
+				"Darktrace Email UUID": {
+					"simple": "uuid"
+				},
+				"Darktrace Email Warning Tags": {
+					"simple": "tags_warning"
+				}
+			}
+		}
+	},
+	"name": "Darktrace Email Mapper",
+	"nameRaw": "Darktrace Email Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
