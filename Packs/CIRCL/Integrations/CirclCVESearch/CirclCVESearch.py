@@ -78,19 +78,16 @@ def process_cve_data(cve: dict) -> dict | None:
     Returns:
         A normalized dictionary with unified keys for downstream processing or None
     """
-    try:
-        format_type = detect_format(cve)
+    format_type = detect_format(cve)
 
-        if format_type == "cve_5_1":
-            return handle_cve_5_1(cve)
-        elif format_type == "legacy":
-            return cve
-        else:
-            demisto.debug(f"Unsupported CVE format type: {format_type}")
-            return None
-    except Exception as e:
-        demisto.debug(f"Failed to process CVE data: {e}")
+    if format_type == "cve_5_1":
+        return handle_cve_5_1(cve)
+    elif format_type == "legacy":
+        return cve
+    else:
+        demisto.debug(f"Unsupported CVE format type: {format_type}")
         return None
+
 
 def handle_cve_5_1(cve: dict) -> dict:
     """
@@ -104,76 +101,80 @@ def handle_cve_5_1(cve: dict) -> dict:
         A normalized dictionary containing common CVE attributes including ID, CVSS data, CWE, vulnerable products,
         references, and other relevant fields.
     """
-    metadata = cve.get("cveMetadata", {})
-    cna = cve.get("containers", {}).get("cna", {})
-    cwe = next(
-        (
-            d.get("cweId")
-            for p in cna.get("problemTypes", [])
-            for d in p.get("descriptions", [])
-            if d.get("lang") == "en" and d.get("cweId")
-        ),
-        "NVD-CWE-noinfo",
-    )
-    
-    legacy = {
-        "id": metadata.get("cveId", ""),
-        "Published": metadata.get("datePublished", ""),
-        "Modified": metadata.get("dateUpdated", ""),
-        "summary": next((d.get("value") for d in cna.get("descriptions", []) if d.get("lang") in ("en", "en-US")), ""),
-        "cvss": "N\\A",
-        "cvss-vector": "",
-        "cwe": cwe,
-        "references": [r.get("url") for r in cna.get("references", []) if r.get("url")],
-        "vulnerable_product": [],
-        "vulnerable_configuration": [],
-        "access": {},
-        "impact": {},
-    }
-
-    vector_str = ""
-    for m in cna.get("metrics", []):
-        for key in ["cvssV3_1", "cvssV3_0", "cvssV2_0"]:
-            if key in m:
-                cvss = m[key]
-                legacy["cvss"] = cvss.get("baseScore")
-                vector_str = cvss.get("vectorString", "")
-                legacy["cvss-vector"] = vector_str
-                break
-
-    if vector_str:
-        parts = vector_str.split("/")
-        vector_map = {p.split(":")[0]: p.split(":")[1] for p in parts if ":" in p}
-
-        legacy["access"] = {
-            "vector": vector_map.get("AV", ""),
-            "complexity": vector_map.get("AC", ""),
-            "authentication": vector_map.get("Au", "NONE")
-        }
-        legacy["impact"] = {
-            "confidentiality": vector_map.get("C", ""),
-            "integrity": vector_map.get("I", ""),
-            "availability": vector_map.get("A", "")
+    try:
+        metadata = cve.get("cveMetadata", {})
+        cna = cve.get("containers", {}).get("cna", {})
+        cwe = next(
+            (
+                d.get("cweId")
+                for p in cna.get("problemTypes", [])
+                for d in p.get("descriptions", [])
+                if d.get("lang") == "en" and d.get("cweId")
+            ),
+            "NVD-CWE-noinfo",
+        )
+        
+        legacy = {
+            "id": metadata.get("cveId", ""),
+            "Published": metadata.get("datePublished", ""),
+            "Modified": metadata.get("dateUpdated", ""),
+            "summary": next((d.get("value") for d in cna.get("descriptions", []) if d.get("lang") in ("en", "en-US")), ""),
+            "cvss": "N\\A",
+            "cvss-vector": "",
+            "cwe": cwe,
+            "references": [r.get("url") for r in cna.get("references", []) if r.get("url")],
+            "vulnerable_product": [],
+            "vulnerable_configuration": [],
+            "access": {},
+            "impact": {},
         }
 
-    for affected in cna.get("affected", []):
-        vendor = affected.get("vendor", "").lower().replace(" ", "_")
-        product = affected.get("product", "").lower().replace(" ", "_")
-        versions = affected.get("versions", [])
+        vector_str = ""
+        for m in cna.get("metrics", []):
+            for key in ["cvssV3_1", "cvssV3_0", "cvssV2_0"]:
+                if key in m:
+                    cvss = m[key]
+                    legacy["cvss"] = cvss.get("baseScore")
+                    vector_str = cvss.get("vectorString", "")
+                    legacy["cvss-vector"] = vector_str
+                    break
 
-        for version_entry in versions:
-            version = version_entry.get("version")
-            if vendor and product and version:
-                cpe = f"cpe:2.3:a:{vendor}:{product}:{version}:*:*:*:*:*:*:*"
+        if vector_str:
+            parts = vector_str.split("/")
+            vector_map = {p.split(":")[0]: p.split(":")[1] for p in parts if ":" in p}
+
+            legacy["access"] = {
+                "vector": vector_map.get("AV", ""),
+                "complexity": vector_map.get("AC", ""),
+                "authentication": vector_map.get("Au", "NONE")
+            }
+            legacy["impact"] = {
+                "confidentiality": vector_map.get("C", ""),
+                "integrity": vector_map.get("I", ""),
+                "availability": vector_map.get("A", "")
+            }
+
+        for affected in cna.get("affected", []):
+            vendor = affected.get("vendor", "").lower().replace(" ", "_")
+            product = affected.get("product", "").lower().replace(" ", "_")
+            versions = affected.get("versions", [])
+
+            for version_entry in versions:
+                version = version_entry.get("version")
+                if vendor and product and version:
+                    cpe = f"cpe:2.3:a:{vendor}:{product}:{version}:*:*:*:*:*:*:*"
+                    legacy["vulnerable_product"].append(cpe)
+                    legacy["vulnerable_configuration"].append({"id": cpe, "title": cpe})
+
+            for cpe in affected.get("cpes", []):
                 legacy["vulnerable_product"].append(cpe)
                 legacy["vulnerable_configuration"].append({"id": cpe, "title": cpe})
 
-        for cpe in affected.get("cpes", []):
-            legacy["vulnerable_product"].append(cpe)
-            legacy["vulnerable_configuration"].append({"id": cpe, "title": cpe})
-
-    return legacy
-
+        return legacy
+    except Exception as e:
+        demisto.debug(f"Failed to parse CVE 5.1 data: {e}")
+        raise None
+    
 def create_cve_summary(cve: dict) -> dict:
     """
     Extracts and summarizes the key fields from the normalized CVE data for presentation or context.
@@ -235,6 +236,7 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
     """
     cve_ids = argToList(args.get("cve", ""))
     command_results: list[CommandResults] = []
+    skipped_cve_ids = []
     for _id in cve_ids:
         if not valid_cve_id_format(_id):
             raise DemistoException(f'"{_id}" is not a valid cve ID')
@@ -243,6 +245,7 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
             
             full_data = process_cve_data(response)
             if not full_data:
+                skipped_cve_ids.append(_id)
                 continue
             data = create_cve_summary(full_data)
             indicator = generate_indicator(full_data)
@@ -260,6 +263,16 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
             cr = CommandResults(readable_output=f"### No results found for cve {_id}")
         command_results.append(cr)
 
+    if skipped_cve_ids:
+        skipped_msg = "The format of the following CVE IDs is not supported and they were skipped:\n"
+        skipped_msg += "\n".join(f"- {cve_id}" for cve_id in skipped_cve_ids)
+
+        command_results.append(
+            CommandResults(
+                readable_output=skipped_msg
+            )
+        )
+        
     return command_results
 
 def cve_latest_command(client: Client, limit) -> list[CommandResults]:
