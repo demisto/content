@@ -44,18 +44,18 @@ def main():
         raise ValueError(f"Error {get_error(export_to_csv_result)} when trying to export incident(s) with query"
                          f" {incident_query} to CSV")
 
-    demisto.debug(f"{export_to_csv_result=}")
-    export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
-
-    if isinstance(export_to_csv_result_content, str):
+    if is_error(export_to_csv_result):
+        export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
         if NO_INCIDENTS_FOUND in export_to_csv_result_content:
             return_results(NO_INCIDENTS_FOUND)
         elif LIMIT_EXCEEDED in export_to_csv_result_content:
-            return_results(f"{LIMIT_EXCEEDED}. Try to run the same query with lower fetchdays value")
+            return_error(f"{LIMIT_EXCEEDED} (10,000 incidents). Try to run the same query with lower fetchdays value")
         else:
-            raise ValueError(f"Couldn't export incidents to CSV. {export_to_csv_result_content=}")
+            raise ValueError(f"Couldn't export incidents to CSV. {export_to_csv_result=}")
         return
 
+    demisto.debug(f"{export_to_csv_result=}")
+    export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
     csv_file_name = export_to_csv_result_content.get("response")
 
     # download the file and return to the war room
