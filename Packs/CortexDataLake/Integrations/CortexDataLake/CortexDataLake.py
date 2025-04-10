@@ -732,7 +732,7 @@ def gp_context_transformer(row_content: dict) -> dict:
     }
 
 
-def records_to_human_readable_output(fields: str, table_name: str, results: list) -> str:
+def records_to_human_readable_output(fields: str, table_name: str, results: list, is_gp_logs_query: bool = False) -> str:
     """
     This function gets all relevant data for the human readable output of a specific table.
     By design if the user queries all fields of the table (i.e. enters '*' in the query) than the outputs
@@ -762,6 +762,20 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
                 "FileName": result.get("file_name"),
                 "FileType": result.get("file_type"),
             }
+            if is_gp_logs_query:
+                filtered_result.update({
+                    'Public IP': result.get('public_ip', {}).get('value'),
+                    'Public IPv6': result.get('public_ipv6', {}).get('value'),
+                    'Private IP': result.get('private_ip', {}).get('value'),
+                    'Private IPv6': result.get('private_ipv6', {}).get('value'),
+                    'Stage': result.get('stage'),
+                    'Status': result.get('status', {}).get('value'),
+                    'Connection Error': result.get('connection_error').get('value'),
+                    'Source User': result.get('source_user'),
+                    'Source Region': result.get('source_region'),
+                    'Gateway': result.get('gateway'),
+                    'Portal': result.get('portal'),
+                })
             filtered_results.append(filtered_result)
     else:
         for result in results:
@@ -1181,7 +1195,7 @@ def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[
     query_table_name: str = "url"
     context_transformer_function = url_context_transformer
     table_context_path: str = "CDL.Logging.URL"
-    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path, True)
 
 
 def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
@@ -1207,7 +1221,8 @@ def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
                      context_transformer_function: Callable[[dict], dict],
-                     table_context_path: str) -> tuple[str, dict, list[dict[str, Any]]]:
+                     table_context_path: str,
+                     is_gp_logs_query: bool = False) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     This function is a generic function that get's all the data needed for a specific table of Cortex and acts as a
     regular command function
@@ -1222,7 +1237,7 @@ def query_table_logs(args: dict,
     fields, query = build_query(args, table_name)
     results, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
     outputs = [context_transformer_function(record) for record in results]
-    human_readable = records_to_human_readable_output(fields, table_name, results)
+    human_readable = records_to_human_readable_output(fields, table_name, results, is_gp_logs_query)
 
     context_outputs: dict = {table_context_path: outputs}
     return human_readable, context_outputs, raw_results
