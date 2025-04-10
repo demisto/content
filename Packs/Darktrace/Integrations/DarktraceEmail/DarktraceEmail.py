@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401s
+from CommonServerUserPython import *
 import hashlib
 import hmac
 import json
@@ -364,16 +365,15 @@ def format_JSON_for_email(email: Dict[str, Any], tag_mapper: Dict[str, str]) -> 
     relevant_info = {}
 
     relevant_info['uuid'] = email.get('uuid')
-    relevant_info['direction'] = email.get('direction').capitalize()
+    relevant_info['direction'] = email.get('direction', "").capitalize()
     relevant_info['time'] = email.get('dtime')
     relevant_info['timestamp'] = email.get('dtime_unix')
     relevant_info['sender'] = email.get('header_from_email')
     relevant_info['subject'] = email.get('header_subject')
     relevant_info['score'] = email.get('model_score')
     relevant_info['darktrace_url'] = f"{demisto.params().get('url', '')}/agemail/?uuid={email.get('uuid')}"
-    relevant_info['attachements'] = email.get('n_attachments')
+    relevant_info['attachments'] = email.get('n_attachments')
     relevant_info['links'] = email.get('n_links')
-    relevant_info['is_group_email'] = email.get('is_group_email')
     recipient = email.get('rcpts')[0]
     relevant_info['recipient'] = recipient.get('rcpt_to')
     relevant_info['receipt_status'] = recipient.get('rcpt_status').capitalize()
