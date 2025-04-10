@@ -32,8 +32,8 @@ def update_model_in_server(model_data, model_type, model_name):
         raise DemistoException(f'Unable to update model: {res}')
 
 
-def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[dict, str]:
-    def load_from_models(model_name: str) -> None | tuple[dict, str]:
+def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[str, str]:
+    def load_from_models(model_name: str) -> None | tuple[str, str]:
         res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})
         if is_error(res_model):
             demisto.debug(get_error(res_model))
@@ -136,7 +136,7 @@ def predict_phishing_words(
     model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
 
     if model_type in ('Phishing', 'torch'):
-        model_data, model_type = demisto_ml.renew_model(model_data, model_type)
+        model_data, model_type = demisto_ml.renew_model(model_data.encode(), model_type)
         update_model_in_server(model_data, model_type, model_name)
     
     model_type = {
