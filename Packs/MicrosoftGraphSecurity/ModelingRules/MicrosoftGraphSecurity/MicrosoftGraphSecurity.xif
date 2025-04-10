@@ -26,7 +26,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     alertEvidence_tags = json_extract_scalar(alertEvidence_json, "$.tags"),
 // analyzedMessageEvidence Fields
     analyzedMessageEvidence_tags = json_extract_scalar(analyzedMessageEvidence_json, "$.tags"),
-    analyzedMessageEvidence_threats = json_extract_scalar(analyzedMessageEvidence_json, "$.threats"),
+    analyzedMessageEvidence_threats = json_extract_scalar(azedMessageEvidence_json, "$.threats"),
     analyzedMessageEvidence_internetMessageId = json_extract_scalar(analyzedMessageEvidence_json, "$.internetMessageId"),
     analyzedMessageEvidence_receivedDateTime = json_extract_scalar(analyzedMessageEvidence_json, "$.receivedDateTime"),
     analyzedMessageEvidence_subject = json_extract_scalar(analyzedMessageEvidence_json, "$.subject"),
@@ -94,8 +94,8 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     lowercase_registry_type = lowercase(registryValueEvidence_registryValueType),
     get_email_timestamp = arraystring(regextract(analyzedMessageEvidence_receivedDateTime, "\d+\/\d+\/\d+ \d+:\d+:\d+ [A-Z]{2}"), ""),
     get_email_zone = replex(arraystring(regextract(analyzedMessageEvidence_receivedDateTime, "[+|-]\d+:\d+"), ""), ":", ""),
-    check_ipv4 = if(ipEvidence_ipAddress !~= ":", ipEvidence_ipAddress, null),
-    check_ipv6 = if(ipEvidence_ipAddress ~= ":", ipEvidence_ipAddress, null),
+    check_ipv4 = arrayfilter(ipEvidence_ipAddress, "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+    check_ipv6 = arrayfilter(ipEvidence_ipAddress, "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
     outcome_check = coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, to_string(classification))
 | alter
     xdm.observer.unique_identifier = id,
