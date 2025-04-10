@@ -642,6 +642,31 @@ script:
       This command will only return a single object in the collection 
       as a user can have only one Temporary Access Pass method.
     name: msgraph-user-tap-policy-list
+    outputs:
+    - contextPath: MSGraphUser.TAPPolicy.ID
+      description: TAP policy's ID.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.IsUsable
+      description: TAP policy's usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.IsUsableOnce
+      description: TAP policy's once - usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
+      description: TAP policy's creation date and time.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.TemporaryAccessPass
+      description: TAP policy's temporary access pass.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
+      description: TAP policy's method usability reason.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.LifetimeInMinutes
+      description: TAP policy's lifetime in minutes.
+      type: Int
+    - contextPath: MSGraphUser.TAPPolicy.StartDateTime
+      description: TAP policy's start date and time.
+      type: String
   - arguments:
     - description: User ID
       name: user_id
@@ -672,6 +697,31 @@ script:
       Create a new temporaryAccessPassAuthenticationMethod object on a user. 
       A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
     name: msgraph-user-tap-policy-create
+    outputs:
+    - contextPath: MSGraphUser.TAPPolicy.ID
+      description: TAP policy's ID.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.IsUsable
+      description: TAP policy's usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.IsUsableOnce
+      description: TAP policy's once - usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
+      description: TAP policy's creation date and time.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.TemporaryAccessPass
+      description: TAP policy's temporary access pass.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
+      description: TAP policy's method usability reason.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.LifetimeInMinutes
+      description: TAP policy's lifetime in minutes.
+      type: Int
+    - contextPath: MSGraphUser.TAPPolicy.StartDateTime
+      description: TAP policy's start date and time.
+      type: String
   - arguments:
     - description: User ID
       name: user_id
@@ -687,7 +737,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: devdemisto/crypto:1.0.0.3075932
+  dockerimage: devdemisto/crypto:1.0.0.3096068
   runonce: false
   script: '-'
   subtype: python3

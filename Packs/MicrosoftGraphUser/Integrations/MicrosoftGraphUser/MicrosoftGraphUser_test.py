@@ -119,7 +119,8 @@ def test_suppress_errors(mocker):
     from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
         update_user_command, change_password_user_command, delete_user_command, \
         get_direct_reports_command, get_manager_command, assign_manager_command, \
-        revoke_user_session_command, MsGraphClient
+        revoke_user_session_command, get_tap_policy_list_command, \
+        delete_tap_policy_command, create_tap_policy_command, MsGraphClient
     from MicrosoftApiModule import NotFoundError
 
     TEST_SUPPRESS_ERRORS = [
@@ -152,6 +153,15 @@ def test_suppress_errors(mocker):
          'expected_result': '#### Manager -> 123456789 does not exist'},
         {'fun': revoke_user_session_command, 'mock_fun': 'revoke_user_session',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': get_tap_policy_list_command, 'mock_fun': 'list_tap_policy',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': delete_tap_policy_command, 'mock_fun': 'delete_tap_policy',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789', 'policy_id': '987654321'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': create_tap_policy_command, 'mock_fun': 'create_tap_policy',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789', 'zip_password': '12345'},
          'expected_result': '#### User -> 123456789 does not exist'}
     ]
 

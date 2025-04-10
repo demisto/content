@@ -261,6 +261,8 @@ class MsGraphClient:
             method='GET',
             url_suffix=url_suffix
         )
+        if policy_id:
+            return res
         return res.get('value', [])
 
         
@@ -279,7 +281,8 @@ class MsGraphClient:
         url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}'
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=url_suffix
+            url_suffix=url_suffix,
+            resp_type="text"
         )
 
 def suppress_errors_with_404_code(func):
@@ -293,6 +296,10 @@ def suppress_errors_with_404_code(func):
                     return human_readable, None, None
                 elif (manager := args.get('manager', '___')) in str(e):
                     human_readable = f'#### Manager -> {manager} does not exist'
+                    return human_readable, None, None
+                elif "The specified user could not be found." in str(e.message):
+                    user = args.get('user', '___')
+                    human_readable = f'#### User -> {user} does not exist'
                     return human_readable, None, None
             raise
     return wrapper
@@ -574,7 +581,7 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict):
     policy_id = args.get('policy_id')
     client.delete_tap_policy(user_id, policy_id)
     human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted'
-    return human_readable , None, None
+    return human_readable, None, None
 
 def create_zip_with_password(generated_password: str, zip_password: str):
     """
