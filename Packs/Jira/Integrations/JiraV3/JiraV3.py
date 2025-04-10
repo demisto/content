@@ -3440,7 +3440,7 @@ def parse_issue_times_for_next_run(
     dateparser_settings: dict| None,
 ) -> tuple[str, str]:
     """Parses the the Jira issue created and updated timestamps based on the date parser settings (if given) and formats both
-    in the default date format.
+    in the default date format. This makes sure queries by time are not affected by timezone.
 
     Args:
         issue_id (int): ID of the Jira issue.
