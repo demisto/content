@@ -1,0 +1,324 @@
+id: CyberBlindspot Retrieve Incident Screenshots
+version: -1
+fromversion: "6.10.0"
+name: CyberBlindspot Retrieve Incident Screenshots
+description: This playbook retrieves screenshot evidence from the CyberBlindspot API and adds it to the incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ccc1b586-6451-4c54-8d02-72a555bf3eda
+    type: start
+    task:
+      id: ccc1b586-6451-4c54-8d02-72a555bf3eda
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 861a1a46-66fe-4f8a-8248-266ee3caa7b9
+    type: condition
+    task:
+      id: 861a1a46-66fe-4f8a-8248-266ee3caa7b9
+      version: -1
+      name: Is CTM360 CyberBlindspot Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: CTM360_CyberBlindspot
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3f4cf1cd-7408-4490-8b9a-b72da3e386d2
+    type: regular
+    task:
+      id: 3f4cf1cd-7408-4490-8b9a-b72da3e386d2
+      version: -1
+      name: Get Screenshots
+      description: Retrieves screenshot evidence if available.
+      script: CTM360_CyberBlindspot|||ctm360-cbs-incident-retrieve-screenshots
+      type: regular
+      iscommand: true
+      brand: CTM360_CyberBlindspot
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      files:
+        simple: ${CyberBlindspot.RemoteIncident.screenshots}
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 14ddc600-8d6b-4b3f-8c74-f59b3f2f30a3
+    type: title
+    task:
+      id: 14ddc600-8d6b-4b3f-8c74-f59b3f2f30a3
+      version: -1
+      name: End of Playbook
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ba7f807a-9af9-4ec4-87a2-1fde7614b3fc
+    type: condition
+    task:
+      id: ba7f807a-9af9-4ec4-87a2-1fde7614b3fc
+      version: -1
+      name: Are Screenshots Available?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${CyberBlindspot.RemoteIncident.screenshots}
+            iscontext: true
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CyberBlindspot.RemoteIncident.screenshots}
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9e359a5d-2da9-4f30-891c-fac78a38ce52
+    type: regular
+    task:
+      id: 9e359a5d-2da9-4f30-891c-fac78a38ce52
+      version: -1
+      name: Inform User of Results
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      using:
+        simple: ${incident.sourceInstance}
+      value:
+        simple: No screenshots to fetch.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d8776329-476f-4342-87b9-9cb1065e9a4d
+    type: regular
+    task:
+      id: d8776329-476f-4342-87b9-9cb1065e9a4d
+      version: -1
+      name: Get Enabled Instances
+      description: Gets all currently enabled integration instances.
+      scriptName: GetEnabledInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1b5a0032-05ca-4966-8282-6979ae5036c7
+    type: condition
+    task:
+      id: 1b5a0032-05ca-4966-8282-6979ae5036c7
+      version: -1
+      name: Is Source Instance Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: EnabledInstances
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: sourceInstance
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1395,
+        "width": 1230,
+        "x": -100,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
