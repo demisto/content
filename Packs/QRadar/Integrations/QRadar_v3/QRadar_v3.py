@@ -247,6 +247,8 @@ LOG_SOURCES_RAW_FORMATTED = {
     "target_event_collector_id": "TargetEventCollectorID",
 }
 
+TIME_FIELDS_PLACE_HOLDER = 9223372036854775807 # represents the max val that can be stored in a 64-bit signed integer data type.
+
 USECS_ENTRIES = {
     "last_persisted_time",
     "start_time",
@@ -1285,7 +1287,8 @@ def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
         (List[Dict]): New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
     """
     return [
-        {k: (get_time_parameter(v, iso_format=True) if should_get_time_parameter(k, v) else v) for k, v in dict_.items()} for dict_ in dicts
+        {k: (get_time_parameter(v, iso_format=True) if should_get_time_parameter(k, v) else v) for k,
+         v in dict_.items()} for dict_ in dicts
     ]
 
 def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) -> bool:
@@ -1299,7 +1302,7 @@ def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) ->
     Returns:
         bool: True if it should be converted, otherwise return False.
     """
-    valid_value = isinstance(v, str) or v != 9223372036854775807
+    valid_value = isinstance(v, str) or v != TIME_FIELDS_PLACE_HOLDER
     return k in USECS_ENTRIES and valid_value
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> List[dict]:
@@ -2766,6 +2769,7 @@ def qradar_offenses_list_command(client: Client, args: dict) -> CommandResults:
     filter_ = args.get("filter")
     fields = args.get("fields")
     ip_enrich, asset_enrich = get_offense_enrichment(args.get("enrichment", "None"))
+
     # if this call fails, raise an error and stop command execution
     response = client.offenses_list(range_, offense_id, filter_, fields)
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
