@@ -923,14 +923,14 @@ class Client(BaseClient):
 
     def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
-        cache_key = f"{field_id}__{depth}"  # Need to set and get from cache using both field ID and depth
+        cache_key = f"{field_id}__{depth}"  # Value list depends on both field ID and depth
 
         # Get the value from cache using both field ID and depth (if exists)
         if cached_field_value_list:= cache.get("fieldValueList", {}).get(cache_key):
             demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
             return cached_field_value_list
 
-        # If the value does not exist in cache, get it from the API.
+        # If the value does not exist in cache, get it from the API
         res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
         if errors:= get_errors_from_res(res):
