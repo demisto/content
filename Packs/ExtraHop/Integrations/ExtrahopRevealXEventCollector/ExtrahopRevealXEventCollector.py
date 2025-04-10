@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import demistomock as demisto
 import urllib3
@@ -45,7 +45,7 @@ class Client(BaseClient):
         # self.set_headers()
 
     def set_headers(self):
-        self._headers: Dict[str, Any] = {
+        self._headers: dict[str, Any] = {
             "Authorization": f"Bearer {self.get_access_token()}",
         }
 
@@ -131,7 +131,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def trim_spaces_from_args(args: Dict) -> Dict:
+def trim_spaces_from_args(args: dict) -> dict:
     """Trim spaces from values of the args dict.
 
     Args:
@@ -184,7 +184,7 @@ def validate_version(client, last_run):
             raise DemistoException(
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
-def validate_fetch_events_params(last_run: dict) -> Dict:
+def validate_fetch_events_params(last_run: dict) -> dict:
     """
     Validate the parameter list for fetch incidents.
 
@@ -224,7 +224,7 @@ def get_extrahop_server_version(client: Client):
     return version
 
 
-def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
+def update_time_values_detections(detections: List[dict[str, Any]]) -> None:
     """
     Add Requested Time Fields to detections list.
     Args:
@@ -245,7 +245,7 @@ def update_time_values_detections(detections: List[Dict[str, Any]]) -> None:
 
 
 def get_detections_list(client: Client,
-                            advanced_filter=None) -> List[Dict[str, Any]]:
+                            advanced_filter=None) -> List[dict[str, Any]]:
     """Retrieve the detections from Reveal(X).
 
     Args:
@@ -265,10 +265,10 @@ def get_detections_list(client: Client,
 
 def fetch_extrahop_detections(
     client: Client,
-    advanced_filter: Dict,
-    last_run: Dict,
+    advanced_filter: dict,
+    last_run: dict,
     max_events: int,
-) -> tuple[List, Dict]:
+) -> tuple[List, dict]:
     """
     Fetch detections from ExtraHop according to the given filter.
 
@@ -365,7 +365,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: Dict, max_events: int):
+def fetch_events(client: Client, last_run: dict, max_events: int):
     """Fetch the specified ExtraHop entity and push into XSIAM.
 
      Args:
