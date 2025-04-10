@@ -3555,12 +3555,12 @@ def fetch_incidents(
                 demisto.debug(f"Creating an incident for Jira issue: {issue}")
 
                 issue_id: int = int(issue.get("id"))  # The ID returned by the API is an integer
-                demisto.debug(f"Creating an incident for Jira issue with ID: {issue_id}")
+                demisto.debug(f"Creating an incident for Jira issue: {issue_id}")
                 new_issue_ids.append(issue_id)
                 last_fetch_id = issue_id
                 demisto.debug(f"Incidents we got so far: {new_issue_ids}")
 
-                demisto.debug(f"Starting to parse created and updated fields of issue with ID: {issue_id}")
+                demisto.debug(f"Starting to parse created and updated fields of issue: {issue_id}")
                 new_fetch_created_time, new_fetch_updated_time = parse_issue_times_for_next_run(
                     issue_id=issue_id,
                     issue_created_time=demisto.get(issue, "fields.created") or "",
@@ -3568,9 +3568,9 @@ def fetch_incidents(
                     dateparser_settings=dateparser_settings,
                 )
 
-                demisto.debug(f"Starting to parse custom fields of issue with ID: {issue_id}")
+                demisto.debug(f"Starting to parse custom fields of issue: {issue_id}")
                 parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get("names", {}))
-                demisto.debug(f"Finished parsing custom fields of issue with ID: {issue_id}. Starting to build an incident")
+                demisto.debug(f"Finished parsing custom fields of issue: {issue_id}. Starting to build an incident")
 
                 incidents.append(
                     create_incident_from_issue(
@@ -3585,7 +3585,7 @@ def fetch_incidents(
                         attachment_tag_to_jira=attachment_tag_to_jira,
                     )
                 )
-                demisto.debug(f"Finished building incident for issue with ID: {issue_id}")
+                demisto.debug(f"Finished building incident for issue: {issue_id}")
 
     except Exception as e:
         demisto.debug(f"Failure detected: {e}.")
