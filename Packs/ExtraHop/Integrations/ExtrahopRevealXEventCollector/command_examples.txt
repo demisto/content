@@ -1,1 +1,1 @@
-!revealx-get-events should_push_events=false max_events=10
+!revealx-get-events should_push_events=false max_events=10 first_fetch="1 days"
