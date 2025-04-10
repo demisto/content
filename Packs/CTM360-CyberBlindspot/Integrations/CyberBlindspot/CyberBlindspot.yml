@@ -35,28 +35,35 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
-- additionalinfo: The time the incidents should be fetched starting from.
-  name: first_fetch
+- name: retrieve_screenshots
   required: false
+  type: 8
+  defaultvalue: 'true'
+  display: Retrieve Screenshots
+  section: Collect
+  advanced: true
+- name: first_fetch
   type: 0
+  required: false
+  additionalinfo: The time the incidents should be fetched starting from.
+  section: Collect
   defaultvalue: 7 days
   display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
-  section: Collect
   advanced: true
 - name: api_key
   type: 9
   required: true
   additionalinfo: The CTM360 CyberBlindspot API Key to use for fetching data.
+  section: Connect
   displaypassword: API Key
   hiddenusername: true
-  section: Connect
 - display: Maximum Number of Incidents per Fetch
   name: max_fetch
   type: 0
   required: true
+  section: Collect
   defaultvalue: "25"
   additionalinfo: Default is 25. Maximum is 200.
-  section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
@@ -181,6 +188,19 @@ script:
       description: The potential difficulties carried by the infringement.
     - contextPath: CyberBlindspot.RemoteIncident.incident_status
       description: The status of the infringement incident.
+    - contextPath: CyberBlindspot.RemoteIncident.screenshots
+      description: The screenshot evidence if available.
+  - name: ctm360-cbs-incident-retrieve-screenshots
+    arguments:
+    - description: The files to retrieve.
+      name: files
+      required: true
+      isArray: true
+    description: Retrieves screenshot evidence if available.
+    outputs:
+    - contextPath: File
+      description: 'Output list of files.'
+      type: Unknown
   - name: get-remote-data
     arguments:
     - description: The incident ID.

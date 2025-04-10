@@ -23,6 +23,7 @@ MIRROR_LIMIT = 1000
 ABSOLUTE_MAX_FETCH = 200
 MAX_FETCH = arg_to_number(demisto.params().get("max_fetch")) or 25
 MAX_FETCH = min(MAX_FETCH, ABSOLUTE_MAX_FETCH)
+RETRIEVE_SCREENSHOTS = bool(demisto.params().get("retrieve_screenshots")) or True
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 CBS_OUTGOING_DATE_FORMAT = "%d-%m-%Y %H:%M"
 CBS_INCOMING_DATE_FORMAT = "%d-%m-%Y %I:%M:%S %p"
@@ -30,6 +31,7 @@ CBS_BASE_URL = "https://cbs.ctm360.com"
 CBS_API_ENDPOINT = "/api/v2"
 API = {
     "FETCH": "/incidents/xsoar",
+    "GET_SCREENSHOT": "/incidents/x_platform/screenshots",
     "CLOSE_INCIDENT": "/incidents/close_incident/",
     "REQUEST_TAKEDOWN": "/incidents/request_takedown/",
 }
@@ -47,10 +49,11 @@ DEFAULT_FIELDS = [
     {"name": "id", "description": "Unique ID for the incident record"},
 ]
 CBS_INCIDENT_FIELDS = [
-    {"name": "subject", "description": "Asset or title of incident"},
-    {"name": "class", "description": "Subject class"},
-    {"name": "coa", "description": "The possible course of action"},
-    *DEFAULT_FIELDS,
+    {'name': 'subject', 'description': 'Asset or title of incident'},
+    {'name': 'screenshots', 'description': 'The screenshot evidence if available'},
+    {'name': 'class', 'description': 'Subject class'},
+    {'name': 'coa', 'description': 'The possible course of action'},
+    *DEFAULT_FIELDS
 ]
 
 CBS_CARD_FIELDS = [
@@ -143,6 +146,29 @@ class Client(BaseClient):
         if response.get("statusCode") != 200:
             raise DemistoException(f'Error received: {response.get("errors", "request was not successful")}')
         return response.get("hits", [])
+
+    def get_screenshot_files(self, params: dict[str, Any]) -> list[dict[str, Any]]:
+        """Send request to get screenshot(s)
+
+        :param params: Parameters to be sent in the request
+        :type params: dict[str, Any]
+        :return: List of dictionaries containing file information
+        :rtype: list[dict[str, Any]]
+        """
+        log(DEBUG, 'at client\'s get_screenshot_files function')
+        log(DEBUG, f"{params=}")
+        response = self._http_request(
+            method='POST',
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API.get('GET_SCREENSHOT', ''),
+            json_data=params,
+            params={'t': datetime.now().timestamp()}
+        )
+        log(DEBUG, f"{response=}")
+        return response.get('results', []) or []  # Return empty list if results is None
+    
 
     def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """Send request to fetch list of incidents
@@ -357,6 +383,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     :rtype: ``dict``
     """
     unmapped_incident.pop("brand", "")
+    unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
     mapped_incident = {
         "name": unmapped_incident.pop("remarks", ""),
@@ -416,7 +443,6 @@ def test_module(client: Client, params) -> str:
     message: str = ""
     args: dict[str, Any] = {}
     try:
-        log(DEBUG, f"{params=}")
         mirror_direction = params.get("mirror_direction", "")
         first_fetch = params.get("first_fetch", "")
         max_fetch = arg_to_number(params.get("max_fetch", ""))
@@ -723,7 +749,61 @@ def ctm360_cbs_incident_close_command(client: Client, args: dict[str, Any]) -> C
     return CommandResults(readable_output=msg)
 
 
-""" MAIN FUNCTION """
+def ctm360_cbs_incident_retrieve_screenshots_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | list[dict[str, Any]] | dict[str, Any]:
+    """Get screenshot evidence for an incident
+
+    Args:
+        client (Client): CyberBlindspot client
+        args (dict[str, Any]): Command arguments
+
+    Returns:
+        CommandResults | list[dict[str, Any]] | dict[str, Any]: File results or error message
+    """
+    params = {to_snake_case(key): v for key, v in args.items()}
+    log(DEBUG, f"Getting screenshot evidence for {params=}")
+
+    try:
+        if not RETRIEVE_SCREENSHOTS:
+            log(INFO, "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+            return CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+
+        results = client.get_screenshot_files(params)
+
+        if not results:
+            return CommandResults(readable_output="Failed to fetch screenshot(s)")
+
+        files = []
+        for file_data in results:
+            log(DEBUG, f"File: {file_data}")
+            filename = file_data.get("filename")
+            filedata = file_data.get("filedata", {})
+
+            if not filename or not isinstance(filedata, dict) or "data" not in filedata:
+                log(INFO, f"Skipping invalid file data: {file_data}")
+                continue
+
+            try:
+                data = bytes(filedata["data"])
+                file = fileResult(filename, data, file_type=EntryType.IMAGE)
+                files.append(file)
+            except Exception as e:
+                log(ERROR, f"Failed to process file {filename}: {str(e)}")
+                continue
+
+        if not files:
+            return CommandResults(readable_output="No valid screenshots found")
+
+        log(DEBUG, f"{files=}")
+        return files[0] if len(files) == 1 else files
+
+    except Exception as e:
+        log(ERROR, f"Failed to get screenshot evidence: {str(e)}")
+        return CommandResults(readable_output=f"Failed to fetch screenshot(s): {str(e)}")
+
+
+''' MAIN FUNCTION '''
 
 
 def main() -> None:
@@ -749,15 +829,16 @@ def main() -> None:
         )
 
         cbs_commands: dict[str, Any] = {
-            "test-module": test_module,
-            "get-mapping-fields": get_mapping_fields_command,
-            "get-remote-data": get_remote_data_command,
-            "get-modified-remote-data": get_modified_remote_data_command,
-            "update-remote-system": update_remote_system_command,
-            "ctm360-cbs-incident-list": ctm360_cbs_list_command,
-            "ctm360-cbs-incident-details": ctm360_cbs_details_command,
-            "ctm360-cbs-incident-request-takedown": ctm360_cbs_incident_request_takedown_command,
-            "ctm360-cbs-incident-close": ctm360_cbs_incident_close_command,
+            'test-module': test_module,
+            'get-mapping-fields': get_mapping_fields_command,
+            'get-remote-data': get_remote_data_command,
+            'get-modified-remote-data': get_modified_remote_data_command,
+            'update-remote-system': update_remote_system_command,
+            'ctm360-cbs-incident-list': ctm360_cbs_list_command,
+            'ctm360-cbs-incident-details': ctm360_cbs_details_command,
+            'ctm360-cbs-incident-request-takedown': ctm360_cbs_incident_request_takedown_command,
+            'ctm360-cbs-incident-close': ctm360_cbs_incident_close_command,
+            'ctm360-cbs-incident-retrieve-screenshots': ctm360_cbs_incident_retrieve_screenshots_command,
         }
 
         if demisto_command == "fetch-incidents":
