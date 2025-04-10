@@ -192,11 +192,11 @@ def elasticsearch_builder(proxies):
 
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-    # In some versions of the ES library, the transport object does not have a get_session func
-    if API_KEY_ID and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
-        es.transport.get_connection().session.headers["authorization"] = get_api_key_header_val(  # type: ignore[attr-defined]
-            API_KEY
-        )
+    # In the client v8, the transport object does not have a get_session func
+    if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8 and API_KEY_ID:
+        # Only do this for older ES or OpenSearch versions
+        if hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
+            es.transport.get_connection().session.headers["authorization"] = get_api_key_header_val(API_KEY)
 
     return es
 
