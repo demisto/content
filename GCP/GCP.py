@@ -20,6 +20,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from google.oauth2.credentials import Credentials
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -106,141 +107,230 @@ def baseintegration_dummy_command(
     )
 
 
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+def get_access_token(service_name=None, user_id=None):
+    """
+    Black-box function to get a valid Google OAuth2 access token.
+
+    Args:
+        service_name (str): The service the token is needed for (e.g., 'gsuite', 'compute', 'storage', 'iam').
+        user_id (str): The user identity for delegated access, used mostly for GSuite.
+
+    Returns:
+        str: OAuth2 token string.
+    """
+
+    if service_name == 'gsuite':
+        if not user_id:
+            raise ValueError("user_id is required for GSuite token delegation.")
+        return get_gsuite_token(user_id)
+
+    elif service_name == 'compute':
+        return get_compute_token()
+
+    elif service_name == 'storage':
+        return get_storage_token()
+
+    elif service_name == 'iam':
+        return get_iam_token()
+
+    elif service_name == 'gke':
+        return get_gke_token()
+
+    # Add more services as needed here
+    # e.g., elif service_name == 'bigquery': return get_bigquery_token()
+
+    # Default fallback (e.g., for general-purpose APIs or development)
+    return get_default_token()
+
+
+def get_service_name_for_command(command):
+    """
+    Determines the service name for the given command.
+
+    Args:
+        command (str): The command name as provided by the XSOAR playbook.
+
+    Returns:
+        str: The service name (e.g., 'gsuite', 'compute', 'storage') or None if not recognized.
+    """
+    # Mapping commands to their respective service names
+    service_map = {
+        # GCP commands
+        "gcp-compute-start-instance": "compute",
+        "gcp-compute-stop-instance": "compute",
+        "gcp-compute-patch-firewall": "compute",
+        "gcp-compute-update-subnet-config": "compute",
+        "gcp-compute-project-info-add-metadata": "compute",
+        "gcp-compute-instance-set-service-account": "compute",
+        "gcp-compute-instance-remove-service-account": "compute",
+
+        # GCS commands
+        "gcs-set-uniform-bucket-access": "storage",
+        "gcs-enable-bucket-versioning": "storage",
+        "gcs-delete-bucket-policy": "storage",
+
+        # GKE commands
+        "gcloud-clusters-update-security-config": "gke",
+
+        # IAM commands
+        "gcp-iam-service-account-delete": "iam",
+        "gcp-remove-iam-policy-binding": "iam",
+        "gcp-iam-project-iam-deny-policy-create": "iam",
+        "gcp-iam-project-iam-policy-binding-remove": "iam",
+        "gcp-iam-group-membership-delete": "iam",
+
+        # GSuite commands
+        "gsuite-user-update": "gsuite",
+        "gsuite-user-reset-password": "gsuite",
+        "gsuite-user-signout": "gsuite",
+    }
+
+    # Check if the command has a quick-action variant and map it to the same service
+    quick_action_command = f"{command}-quick-action"
+    if quick_action_command in service_map:
+        return service_map[quick_action_command]
+
+    # If the command exists in the service map, return the associated service
+    return service_map.get(command)
 
 
 def main():
     """main function, parses params and runs command functions"""
 
-        try:
-            command = demisto.command()
-            args = demisto.args()
+    try:
+        command = demisto.command()
+        args = demisto.args()
 
-            # Initialize GCP API client using black box token
-            client = get_access_token()  # returns a token string
-            creds = Credentials(client)
+        # Initialize GCP API client using black box token
+        # Determine which service/token to use
+        service_name = get_service_name_for_command(command)  # e.g., 'gsuite' or 'compute'
+        user_id = args.get('user_id')  # If GSuite, this might be passed in args
 
-            if command in [
-                "gcp-compute-start-instance",
-                "gcp-compute-start-instance-quick-action",
-            ]:
-                result = compute_start_instance(creds, args)
+        # Get the access token based on service name and user ID
+        client = get_access_token(service_name=service_name, user_id=user_id)  # Returns the appropriate token
+        creds = Credentials(client)
 
-            elif command in [
-                "gcp-compute-stop-instance",
-                "gcp-compute-stop-instance-quick-action",
-            ]:
-                result = compute_stop_instance(creds, args)
+        if command in [
+            "gcp-compute-start-instance",
+            "gcp-compute-start-instance-quick-action",
+        ]:
+            result = compute_start_instance(creds, args)
 
-            elif command in [
-                "gcp-compute-patch-firewall",
-                "gcp-compute-patch-firewall-quick-action",
-            ]:
-                result = compute_patch_firewall(creds, args)
+        elif command in [
+            "gcp-compute-stop-instance",
+            "gcp-compute-stop-instance-quick-action",
+        ]:
+            result = compute_stop_instance(creds, args)
 
-            elif command in [
-                "gcs-delete-bucket-policy",
-                "gcs-delete-bucket-policy-quick-action",
-            ]:
-                result = gcs_delete_bucket_policy(creds, args)
+        elif command in [
+            "gcp-compute-patch-firewall",
+            "gcp-compute-patch-firewall-quick-action",
+        ]:
+            result = compute_patch_firewall(creds, args)
 
-            elif command in [
-                "gcp-compute-update-subnet-config",
-                "gcp-compute-update-subnet-config-quick-action",
-            ]:
-                result = compute_update_subnet(creds, args)
+        elif command in [
+            "gcs-delete-bucket-policy",
+            "gcs-delete-bucket-policy-quick-action",
+        ]:
+            result = gcs_delete_bucket_policy(creds, args)
 
-            elif command in [
-                "gcp-compute-project-info-add-metadata",
-                "gcp-compute-project-info-add-metadata-quick-action",
-            ]:
-                result = compute_add_metadata(creds, args)
+        elif command in [
+            "gcp-compute-update-subnet-config",
+            "gcp-compute-update-subnet-config-quick-action",
+        ]:
+            result = compute_update_subnet(creds, args)
 
-            elif command in [
-                "gcs-set-uniform-bucket-access",
-                "gcs-set-uniform-bucket-access-quick-action",
-            ]:
-                result = gcs_set_ubla(creds, args)
+        elif command in [
+            "gcp-compute-project-info-add-metadata",
+            "gcp-compute-project-info-add-metadata-quick-action",
+        ]:
+            result = compute_add_metadata(creds, args)
 
-            elif command in [
-                "gcloud-clusters-update-security-config",
-                "gcloud-clusters-update-security-config-quick-action",
-            ]:
-                result = gke_update_master_auth_networks(creds, args)
+        elif command in [
+            "gcs-set-uniform-bucket-access",
+            "gcs-set-uniform-bucket-access-quick-action",
+        ]:
+            result = gcs_set_ubla(creds, args)
 
-            elif command in [
-                "gcs-enable-bucket-versioning",
-                "gcs-enable-bucket-versioning-quick-action",
-            ]:
-                result = gcs_enable_bucket_versioning(creds, args)
+        elif command in [
+            "gcloud-clusters-update-security-config",
+            "gcloud-clusters-update-security-config-quick-action",
+        ]:
+            result = gke_update_master_auth_networks(creds, args)
 
-            elif command in [
-                "gcp-iam-service-account-delete",
-                "gcp-iam-service-account-delete-quick-action",
-            ]:
-                result = iam_delete_service_account(creds, args)
+        elif command in [
+            "gcs-enable-bucket-versioning",
+            "gcs-enable-bucket-versioning-quick-action",
+        ]:
+            result = gcs_enable_bucket_versioning(creds, args)
 
-            elif command in [
-                "gcp-remove-iam-policy-binding",
-                "gcp-remove-iam-policy-binding-quick-action",
-            ]:
-                result = iam_remove_policy_binding(creds, args)
+        elif command in [
+            "gcp-iam-service-account-delete",
+            "gcp-iam-service-account-delete-quick-action",
+        ]:
+            result = iam_delete_service_account(creds, args)
 
-            elif command in [
-                "gcp-iam-project-iam-deny-policy-create",
-                "gcp-iam-project-iam-deny-policy-create-quick-action",
-            ]:
-                result = iam_create_deny_policy(creds, args)
+        elif command in [
+            "gcp-remove-iam-policy-binding",
+            "gcp-remove-iam-policy-binding-quick-action",
+        ]:
+            result = iam_remove_policy_binding(creds, args)
 
-            elif command in [
-                "gcp-iam-project-iam-policy-binding-remove",
-                "gcp-iam-project-iam-policy-binding-remove-quick-action",
-            ]:
-                result = iam_remove_project_binding(creds, args)
+        elif command in [
+            "gcp-iam-project-iam-deny-policy-create",
+            "gcp-iam-project-iam-deny-policy-create-quick-action",
+        ]:
+            result = iam_create_deny_policy(creds, args)
 
-            elif command in [
-                "gcp-compute-instance-set-service-account",
-                "gcp-compute-instance-set-service-account-quick-action",
-            ]:
-                result = compute_instance_set_service_account(creds, args)
+        elif command in [
+            "gcp-iam-project-iam-policy-binding-remove",
+            "gcp-iam-project-iam-policy-binding-remove-quick-action",
+        ]:
+            result = iam_remove_project_binding(creds, args)
 
-            elif command in [
-                "gcp-compute-instance-remove-service-account",
-                "gcp-compute-instance-remove-service-account-quick-action",
-            ]:
-                result = compute_instance_remove_service_account(creds, args)
+        elif command in [
+            "gcp-compute-instance-set-service-account",
+            "gcp-compute-instance-set-service-account-quick-action",
+        ]:
+            result = compute_instance_set_service_account(creds, args)
 
-            elif command in [
-                "gcp-iam-group-membership-delete",
-                "gcp-iam-group-membership-delete-quick-action",
-            ]:
-                result = iam_group_membership_delete(creds, args)
+        elif command in [
+            "gcp-compute-instance-remove-service-account",
+            "gcp-compute-instance-remove-service-account-quick-action",
+        ]:
+            result = compute_instance_remove_service_account(creds, args)
 
-            elif command in [
-                "gsuite-user-update",
-                "gsuite-user-update-quick-action",
-            ]:
-                result = gsuite_user_update(creds, args)
+        elif command in [
+            "gcp-iam-group-membership-delete",
+            "gcp-iam-group-membership-delete-quick-action",
+        ]:
+            result = iam_group_membership_delete(creds, args)
 
-            elif command in [
-                "gsuite-user-reset-password",
-                "gsuite-user-reset-password-quick-action",
-            ]:
-                result = gsuite_user_reset_password(creds, args)
+        elif command in [
+            "gsuite-user-update",
+            "gsuite-user-update-quick-action",
+        ]:
+            result = gsuite_user_update(creds, args)
 
-            elif command in [
-                "gsuite-user-signout",
-                "gsuite-user-signout-quick-action",
-            ]:
-                result = gsuite_user_signout(creds, args)
+        elif command in [
+            "gsuite-user-reset-password",
+            "gsuite-user-reset-password-quick-action",
+        ]:
+            result = gsuite_user_reset_password(creds, args)
 
-            else:
-                raise NotImplementedError(f"Command not implemented: {command}")
+        elif command in [
+            "gsuite-user-signout",
+            "gsuite-user-signout-quick-action",
+        ]:
+            result = gsuite_user_signout(creds, args)
 
-            return_results(result)
+        else:
+            raise NotImplementedError(f"Command not implemented: {command}")
 
-        except Exception as e:
-            return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
+        return_results(result)
+
+    except Exception as e:
+        return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
