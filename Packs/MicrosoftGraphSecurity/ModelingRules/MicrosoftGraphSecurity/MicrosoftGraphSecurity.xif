@@ -26,7 +26,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     alertEvidence_tags = json_extract_scalar(alertEvidence_json, "$.tags"),
 // analyzedMessageEvidence Fields
     analyzedMessageEvidence_tags = json_extract_scalar(analyzedMessageEvidence_json, "$.tags"),
-    analyzedMessageEvidence_threats = json_extract_scalar(azedMessageEvidence_json, "$.threats"),
+    analyzedMessageEvidence_threats = json_extract_scalar(analyzedMessageEvidence_json, "$.threats"),
     analyzedMessageEvidence_internetMessageId = json_extract_scalar(analyzedMessageEvidence_json, "$.internetMessageId"),
     analyzedMessageEvidence_receivedDateTime = json_extract_scalar(analyzedMessageEvidence_json, "$.receivedDateTime"),
     analyzedMessageEvidence_subject = json_extract_scalar(analyzedMessageEvidence_json, "$.subject"),
