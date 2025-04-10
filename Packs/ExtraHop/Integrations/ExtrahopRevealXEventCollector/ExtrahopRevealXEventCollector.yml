@@ -6,20 +6,15 @@ commonfields:
   id: ExtrahopRevealXEventCollector
   version: -1
 configuration:
-- display: Your server URL
+- display: Server URL
   name: server_url
   required: true
   type: 0
   section: Connect
-- display: Client Id
-  additionalinfo: The client ID generated on your ExtraHop system that is required for authentication if connecting to ExtraHop Reveal(x) 360.
-  name: client_id
-  required: true
-  type: 0
-  section: Connect
-- display: Client Secret
-  additionalinfo: The client secret generated on your ExtraHop system that is required for authentication if connecting to ExtraHop Reveal(x) 360.
-  name: client_secret
+- additionalinfo: The Client Credentials (ID, Secret) generated on your ExtraHop system that is required for authentication if connecting to ExtraHop Reveal(x) 360.
+  displaypassword: Client Secret
+  display: Client ID
+  name: credentials
   required: true
   type: 9
   section: Connect

@@ -429,8 +429,8 @@ def main():
     try:
         base_url = params.get("server_url")
         verify_certificate = not argToBoolean(params.get("insecure", False))
-        client_id = params.get("client_id", "")
-        client_secret = params.get("client_secret", "")
+        client_id = params.get("credentials", {}).get("identifier")
+        client_secret = params.get("credentials", {}).get("password")
         use_proxy: bool = params.get('proxy', False)
         max_events = arg_to_number(params.get('max_events_per_fetch')) or MAX_FETCH_LIMIT
 
