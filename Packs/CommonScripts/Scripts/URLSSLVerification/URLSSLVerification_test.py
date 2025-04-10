@@ -3,7 +3,6 @@ from pytest_mock import MockerFixture
 import demistomock as demisto
 from URLSSLVerification import arg_to_list_with_regex, mark_http_as_suspicious,main,verify_ssl_certificate
 import requests
-from requests.exceptions import SSLError
 
 @pytest.mark.parametrize("arg, expected_result", [("false", False), ("true", True), (None, True)])
 def test_is_http_should_be_suspicious(arg, expected_result):
@@ -17,124 +16,61 @@ def test_is_http_should_be_suspicious(arg, expected_result):
         (["some_url"], ["some_url"]),
         ('["some_url"]', ["some_url"]),
         ("https://some_url.com", ["https://some_url.com"]),
+        ("this is a test",["this is a test"])
     ],
 )
 def test_arg_to_list_with_regex(arg, expected_result):
     assert arg_to_list_with_regex(arg) == expected_result
-
-
-def create_response(url, status_code = 200, history = []):
-    resp = requests.Response()
-    resp.status_code = status_code
-    resp.url = url
-    resp.history = history
-    return resp
-
-
-def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
-    """
-    This helper function simulates HTTP requests with no real URL.
-    It fabricates response objects that include status codes, URL redirection history, and header-like information.
-
-    Args:
-        url (str): The target URL.
-        timeout (int or float, optional): Maximum time in seconds to wait for the response.
-        allow_redirects (bool, optional): Whether to follow redirects. Defaults to True.
-        verify (bool, optional): Whether to enforce SSL certificate verification. Defaults to True.
-
-    Raises:
-        SSLError: If SSL certificate verification fails.
-
-    Returns:
-        requests.Response: A simulated HTTP response including status, final URL, and redirect history.
-
-    """
-    if url == "https_no_certificate":
-        raise SSLError("SSL certificate error")
-    
-    elif url == "http" or url == "https_certificate":
-        return create_response(url=url)
-    
-    elif url == "http_to_https_certificate":
-        first_response = create_response(url="http_to_https_certificate", status_code=301)
-        if allow_redirects:
-            return create_response(url="https_certificate", history=[first_response])
-        else:
-            return first_response
-        
-    elif url == "http_to_http" and allow_redirects:
-        first_response = create_response(url="http_to_http", status_code=301)
-        if allow_redirects:
-            return create_response(url="http", history=[first_response])
-        else:
-            return first_response
-    
-    elif url == "http_to_https_no_certificate":
-        first_response = create_response(url="http_to_https_no_certificate", status_code=301)
-        if allow_redirects:
-            return create_response(url="https_no_certificate", history=[first_response])
-        else:
-            return first_response
-    raise requests.exceptions.RequestException
-
     
 @pytest.mark.parametrize(
     "arg, expected_results",
     [
         # Set_http_as_suspicious = True
-        ({"url":"http",
+        ({"url":"http://neverssl.com",
           "set_http_as_suspicious":"true"},              [{"Verified":False,
                                                            "Score":2,
-                                                           "Indicator":"http"}]),
-        ({"url":"https_certificate",
+                                                           "Indicator":"http://neverssl.com"}]),
+        ({"url":"https://www.google.com",
           "set_http_as_suspicious":"true"},              [{"Verified":True,
                                                            "Score":0,
-                                                           "Indicator":"https_certificate"}]),
+                                                           "Indicator":"https://www.google.com"}]),
         
         # Set_http_as_suspicious = False
-        ({"url":"http_to_https_certificate",
+        ({"url":"http://expired.badssl.com",
+          "set_http_as_suspicious":"false"},             [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":"http://expired.badssl.com"}]),
+        ({"url":"http://neverssl.com",
+          "set_http_as_suspicious":"false"},             [{"Verified":False,
+                                                           "Score":2,
+                                                           "Indicator":"http://neverssl.com"}]),
+        ({"url":"https://www.google.com",
           "set_http_as_suspicious":"false"},             [{"Verified":True,
                                                            "Score":0,
-                                                           "Indicator":
-                                                            "http_to_https_certificate"}]),
-        ({"url":"http_to_https_no_certificate",
+                                                           "Indicator":"https://www.google.com"}]),
+        ({"url":"https://expired.badssl.com",
           "set_http_as_suspicious":"false"},             [{"Verified":False,
                                                            "Score":2,
-                                                           "Indicator":
-                                                            "http_to_https_no_certificate"}]),
-        ({"url":"http",
+                                                           "Indicator":"https://expired.badssl.com"}]),
+        ({"url":"http://httpbin.org/redirect/1",
           "set_http_as_suspicious":"false"},             [{"Verified":False,
                                                            "Score":2,
-                                                           "Indicator":"http"}]),
-        ({"url":"https_certificate",
-          "set_http_as_suspicious":"false"},             [{"Verified":True,
-                                                           "Score":0,
-                                                           "Indicator":"https_certificate"}]),
-        ({"url":"https_no_certificate",
-          "set_http_as_suspicious":"false"},             [{"Verified":False,
-                                                           "Score":2,
-                                                           "Indicator":"https_no_certificate"}]),
-        ({"url":"http_to_http",
-          "set_http_as_suspicious":"false"},             [{"Verified":False,
-                                                           "Score":2,
-                                                           "Indicator":"http_to_http"}]),
+                                                           "Indicator":"http://httpbin.org/redirect/1"}]),
         ({"url":"invalid_url",
           "set_http_as_suspicious":"false"},              [{"Verified":False,
                                                             "Score":2,
                                                             "Indicator":"invalid_url"}]),
         
         # Test Multiple url
-        ({"url":["invalid_url","http_to_http","http_to_https_certificate"],
+        ({"url":["invalid_url","http://httpbin.org/redirect/1"],
           "set_http_as_suspicious":"false"},
                                                           [{"Verified":False,
                                                             "Score":2,
                                                             "Indicator":"invalid_url"},
                                                            {"Verified":False,
                                                             "Score":2,
-                                                            "Indicator":"http_to_http"},
-                                                           {"Verified":True,
-                                                           "Score":0,
-                                                           "Indicator":"http_to_https_certificate"}]),
+                                                            "Indicator":"http://httpbin.org/redirect/1"},
+                                                           ]),
     ],
 )
 def test_main(arg, expected_results, mocker: MockerFixture):
@@ -154,7 +90,6 @@ def test_main(arg, expected_results, mocker: MockerFixture):
     )
      # Mock return_results
     mock_return_results = mocker.patch("URLSSLVerification.return_results")
-    mocker.patch("URLSSLVerification.requests.get", side_effect=fake_requests_get)
     
     # Call the main function
     main()
@@ -171,7 +106,7 @@ def test_main(arg, expected_results, mocker: MockerFixture):
         assert d_bot["Score"] == [ret["Score"] for ret in expected_results if ret["Indicator"] == d_bot["Indicator"]][0]
         
 @pytest.mark.parametrize("url, description_result",[
-    ("https_no_certificate","SSL Certificate verification failed"),
+    ("https://expired.badssl.com","SSL Certificate verification failed"),
     ("invalid_url","Failed to establish a new connection with the URL"),
 ])
 def test_verify_ssl_certificate(url, description_result, mocker: MockerFixture):
@@ -183,7 +118,6 @@ def test_verify_ssl_certificate(url, description_result, mocker: MockerFixture):
     Then:
         The function should return the appropriate message.
     """
-    mocker.patch("URLSSLVerification.requests.get", side_effect=fake_requests_get)
     
     result = verify_ssl_certificate(url)
     assert result

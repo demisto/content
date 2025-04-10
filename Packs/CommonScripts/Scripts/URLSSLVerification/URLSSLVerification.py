@@ -58,7 +58,7 @@ def verify_ssl_certificate(url):
             continue
         is_all_http = False
         try:
-            requests.get(redirected_url, timeout=10, verify=True)
+            requests.get(redirected_url, timeout=5, verify=True)
         except requests.exceptions.SSLError:
             return {"Vendor": VENDOR, "Description": "SSL Certificate verification failed"}
         except requests.exceptions.RequestException:
