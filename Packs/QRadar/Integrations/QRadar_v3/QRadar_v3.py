@@ -1285,9 +1285,22 @@ def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
         (List[Dict]): New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
     """
     return [
-        {k: (get_time_parameter(v, iso_format=True) if k in USECS_ENTRIES else v) for k, v in dict_.items()} for dict_ in dicts
+        {k: (get_time_parameter(v, iso_format=True) if should_get_time_parameter(k, v) else v) for k, v in dict_.items()} for dict_ in dicts
     ]
 
+def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) -> bool:
+    """Checks whether the given key should be converted or not.
+    The variable should be converted if the key is in the USECS_ENTRIES list and the value is valid.
+
+    Args:
+        k (str): the key of the field
+        v (Union[Optional[str], Optional[int]]): the field value
+
+    Returns:
+        bool: True if it should be converted, otherwise return False.
+    """
+    valid_value = isinstance(v, str) or v != 9223372036854775807
+    return k in USECS_ENTRIES and valid_value
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> List[dict]:
     """
@@ -1306,7 +1319,6 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> L
     if not isinstance(outputs, list):
         outputs = [outputs]
     outputs = [remove_empty_elements(output) for output in outputs]
-    demisto.info(f"[test] in sanitize_outputs, got {outputs=}")
     outputs = add_iso_entries_to_dict(outputs)
     return build_final_outputs(outputs, key_replace_dict) if key_replace_dict else outputs
 
@@ -1327,21 +1339,21 @@ def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: boo
         - (str): If 'arg' is exists and parse_format is true, returns ISO format of the date time object.
         - (int): If 'arg' is exists and epoch_format is true, returns epoch format of the date time object.
     """
-    demisto.info(f"[test] in get_time_parameter, got {arg=}")
-    maybe_unaware_date = arg_to_datetime(arg, is_utc=True)
-    if not maybe_unaware_date:
-        return None
-    demisto.info(f"[test] in get_time_parameter, got {maybe_unaware_date=}")
+    try:
+        maybe_unaware_date = arg_to_datetime(arg, is_utc=True)
+        if not maybe_unaware_date:
+            return None
 
-    aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(maybe_unaware_date)
-    demisto.info(f"[test] in get_time_parameter, got {aware_time_date=} and {iso_format=} and {epoch_format=}")
+        aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(maybe_unaware_date)
 
-    if iso_format:
-        return aware_time_date.isoformat()
-    if epoch_format:
-        return int(aware_time_date.timestamp() * 1000)
-    return aware_time_date
-
+        if iso_format:
+            return aware_time_date.isoformat()
+        if epoch_format:
+            return int(aware_time_date.timestamp() * 1000)
+        return aware_time_date
+    except Exception as e:
+        demisto.info(f"Could not convert time for {arg=}, reason {e}")
+        return arg
 
 def build_final_outputs(outputs: List[dict], old_new_dict: dict) -> List[dict]:
     """
@@ -2754,12 +2766,9 @@ def qradar_offenses_list_command(client: Client, args: dict) -> CommandResults:
     filter_ = args.get("filter")
     fields = args.get("fields")
     ip_enrich, asset_enrich = get_offense_enrichment(args.get("enrichment", "None"))
-
     # if this call fails, raise an error and stop command execution
     response = client.offenses_list(range_, offense_id, filter_, fields)
-    demisto.info(f"[test] in qradar_offenses_list_command, after offenses_list, received {response}")
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
-    demisto.info(f"[test] in qradar_offenses_list_command, after enrich_offenses_result, received {enriched_outputs=}")
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
     headers = build_headers(["ID", "Description", "OffenseType", "Status", "Severity"], set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
 
