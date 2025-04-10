@@ -2204,3 +2204,16 @@ def test_should_get_time_parameter(key, value, expected_results):
         - Case 4: Should return False.
     """
     assert should_get_time_parameter(key, value) is expected_results
+
+def test_add_iso_entries_to_dict_placeholder_edge_case():
+    """
+    Given:
+        - A dict with valid and invalid time values.
+    When:
+        - Running add_iso_entries_to_dict.
+    Then:
+        - Ensure the right results returned and no error is thrown.
+    """
+    dicts = [{"start_time": 9223372036854775807, "last_persisted_time": 1741790340000}]
+    results = add_iso_entries_to_dict(dicts)
+    assert results == [{'start_time': 9223372036854775807, 'last_persisted_time': '2025-03-12T14:39:00+00:00'}]
