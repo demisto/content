@@ -930,7 +930,7 @@ class Client(BaseClient):
             demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
             return cached_field_value_list
 
-        # If the value does not exist in cache, perform REST API requests
+        # If the value does not exist in cache, get it from the API.
         res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
         if errors:= get_errors_from_res(res):
