@@ -362,7 +362,6 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get("iocs") or []
             for ioc in fetched_iocs:
-                demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
 
                 ioc_counter += 1
                 if request_args.out_format == FORMAT_PROXYSG:
