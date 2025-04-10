@@ -245,6 +245,9 @@ script:
       required: true
     - description: The Level ID to use to update the record. If empty, the command by default takes the first level ID.
       name: levelId
+    - description: In case of nesting, to which level to go in the depth of the recursion.
+      name: depth
+      defaultValue: 0
     description: Updates an existing content record in the given application.
     name: archer-update-record
   - arguments:
