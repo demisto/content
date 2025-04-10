@@ -41,10 +41,10 @@ class Client(BaseClient):
         self._client_id = client_id
         self._client_secret = client_secret
 
-        # # Setting up access token in headers.
-        # self.set_headers()
-
-    def set_headers(self):
+    def set_headers(self) -> None:
+        """
+        Sets headers for requests.
+        """
         self._headers: dict[str, Any] = {
             "Authorization": f"Bearer {self.get_access_token()}",
         }
@@ -55,7 +55,6 @@ class Client(BaseClient):
         If the token has expired or is not present in the integration context
         (in the first case), it calls the Authentication function, which
         generates a new token and stores it in the integration context.
-
 
         Returns:
             str: Authentication token stored in integration context.
@@ -119,9 +118,6 @@ class Client(BaseClient):
 
     def detections_list(self, body):
         """Retrieve the detections from Reveal(X).
-
-        Returns:
-            Response from the API.
         """
         # Make sure we have a valid token
         self.set_headers()
@@ -174,7 +170,13 @@ def prepare_list_detections_output(detections) -> str:
     return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
 
 
-def validate_version(client, last_run):
+def validate_version(client, last_run) -> None:
+    """
+    Nake sure the Extrahop version that is supported by  this integration.
+    Args:
+        client: ExtraHop client to be used.
+        last_run: Last run of ExtraHop event collector.
+    """
     now = datetime.now()
     next_day = now + timedelta(days=1)
     if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
@@ -183,6 +185,7 @@ def validate_version(client, last_run):
         if Version(version) < Version("9.3.0"):
             raise DemistoException(
                 "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
+
 
 def validate_fetch_events_params(last_run: dict) -> dict:
     """
@@ -207,6 +210,7 @@ def validate_fetch_events_params(last_run: dict) -> dict:
         'offset': offset,
         'limit': DEFAULT_FETCH_LIMIT
     }
+
 
 def get_extrahop_server_version(client: Client):
     """Retrieve and parse the extrahop server version.
@@ -246,7 +250,7 @@ def update_time_values_detections(detections: List[dict[str, Any]]) -> None:
 
 def get_detections_list(client: Client,
                             advanced_filter=None) -> List[dict[str, Any]]:
-    """Retrieve the detections from Reveal(X).
+    """Retrieve the detections from ExtraHop-Reveal(X).
 
     Args:
         client: ExtraHop client to be used.
@@ -358,8 +362,7 @@ def test_module(client: Client) -> str:
     """
     last_run = {
         'detection_start_time': int(get_current_time().timestamp() * 1000) ,
-        'offset': 0,
-        'limit': 1
+        'offset': 0
     }
     fetch_events(client, last_run, 1)
     return "ok"
@@ -445,7 +448,6 @@ def main():
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, last_run, max_events)
-            demisto.debug(f'Finish fetch_events with {len(events)} events')
             if len(events):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
@@ -460,7 +462,7 @@ def main():
             return_results(command_results)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-    # Log exceptions and return errors
+
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
