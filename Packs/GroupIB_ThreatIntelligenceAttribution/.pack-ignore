@@ -19,6 +19,9 @@ ignore=BA101
 [file:1_4_1.md]
 ignore=RN116
 
+[file:README.md]
+ignore=RM110
+
 [file:incidentfield-GIB_Nation-State_Cybercriminals_Threat_Actor_Country.json]
 ignore=IF115
 

@@ -1,0 +1,23 @@
+{
+    "name": "Anthropic Claude",
+    "description": "Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging Anthropic Claude's natural language conversational capabilities.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Alex Pekarovsky",
+    "url": "",
+    "email": "",
+    "created": "2025-04-01T08:22:49Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "tilarium"
+    ]
+}
