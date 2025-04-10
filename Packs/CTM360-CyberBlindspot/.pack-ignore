@@ -14,6 +14,9 @@ ignore=IF115
 [file:playbook-CyberBlindspot_Incident_Management_V2.yml]
 ignore=PB106
 
+[file:playbook-CyberBlindspot_Incident_Management_V3.yml]
+ignore=PB106
+
 [known_words]
 D
 lf
