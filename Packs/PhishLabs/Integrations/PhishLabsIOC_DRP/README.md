@@ -1894,4 +1894,3 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-

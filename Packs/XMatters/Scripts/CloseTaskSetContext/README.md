@@ -1,6 +1,7 @@
 Closes a task with the taskComplete command, then returns the context
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Closes a task with the taskComplete command, then returns the context
 | Script Type | python |
 | Tags | utility |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * taskComplete
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,5 +27,6 @@ This script uses the following commands and scripts.
 | comments | The comments to be added to the incident context |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
