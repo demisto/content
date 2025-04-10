@@ -3576,7 +3576,6 @@ def fetch_incidents(
                     issue_updated_time=demisto.get(issue, "fields.updated") or "",
                     dateparser_settings=dateparser_settings,
                 )
-                demisto.debug(f"Finished parsing created and updated fields of issue with ID: {issue_id}")
 
                 demisto.debug(f"Starting to parse custom fields of issue with ID: {issue_id}")
                 parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get("names", {}))
