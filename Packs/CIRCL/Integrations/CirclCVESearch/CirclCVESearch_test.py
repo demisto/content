@@ -3,7 +3,8 @@ import os
 from pathlib import Path
 
 import pytest
-from CirclCVESearch import Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_verion
+from CirclCVESearch import (Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_version,
+                            detect_format, handle_cve_5_1, create_cve_summary)
 
 from CommonServerPython import DemistoException, EntityRelationship, argToList
 
@@ -83,7 +84,7 @@ def test_indicator_creation():
     [("CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H", 3.0), ("", 0), ("AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H", 2.0)],
 )
 def test_parse_cvss_version(cvss_vector, expected_output):
-    version = get_cvss_verion(cvss_vector)
+    version = get_cvss_version(cvss_vector)
     assert version == expected_output
 
 
@@ -152,3 +153,83 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     command_results = cve_command(client, cve_id_arg)
     assert isinstance(command_results, list)
     assert len(command_results) == expected
+
+@pytest.mark.parametrize("input_data, expected", [
+    ({"cveMetadata": {"cveId": "CVE-2025-1234"}}, "cve_5_1"),
+    ({"document": {"title": "Example"}, "vulnerabilities": []}, "csaf"),
+    ({"schema_version": "1.4.0", "id": "GHSA-xxxx-yyyy-zzzz"}, "ghsa"),
+    ({"sourceIdentifier": "example@vendor.com", "id": "CVE-2025-5678"}, "nvd_cve_5_1"),
+    ({"id": "CVE-2021-0001", "summary": "Some legacy format CVE"}, "legacy"),
+])
+def test_detect_format_valid(input_data, expected):
+    """
+    Given: A valid CVE data structure in a known format (e.g., CVE 5.1, CSAF, GHSA, etc.)
+    When:  The `detect_format` function is called with this input
+    Then:  It should return the correct format identifier as a string
+    """
+    result = detect_format(input_data)
+    assert result == expected
+
+def test_detect_format_invalid():
+    """
+    Given: An empty or unrecognized CVE data dictionary
+    When:  The `detect_format` function is called with this input
+    Then:  It should return 'unknown' or None to indicate unsupported format
+    """
+    result = detect_format({})
+    assert result == "Unknown"
+
+        
+def test_handle_cve_5_1():
+    """
+    Given: A valid CVE 5.1 JSON file loaded from test data
+    When:  The `handle_cve_5_1` function is called to normalize the data
+    Then:  It should return a dictionary with all required normalized fields:
+           - id starting with 'CVE-'
+           - non-empty summary and CVSS
+           - references, vulnerable_product, and vulnerable_configuration as lists
+           - access and impact as dictionaries
+    """
+    test_file_path = os.path.join("test_data", "5_1.json")
+
+    with open(test_file_path, encoding="utf-8") as f:
+        cve_data = json.load(f)
+
+    result = handle_cve_5_1(cve_data)
+
+    assert isinstance(result, dict), "Result should be a dictionary"
+
+    assert result["id"].startswith("CVE-"), "CVE ID should start with 'CVE-'"
+    assert result["summary"], "Summary should not be empty"
+    assert result["cvss"] != "", "CVSS should be present or marked as 'N\\A'"
+    assert isinstance(result["references"], list), "References should be a list"
+    assert isinstance(result["vulnerable_product"], list), "vulnerable_product should be a list"
+    assert isinstance(result["vulnerable_configuration"], list), "vulnerable_configuration should be a list"
+    assert isinstance(result["access"], dict), "access should be a dictionary"
+    assert isinstance(result["impact"], dict), "impact should be a dictionary"
+
+def test_create_cve_summary():
+    """
+    Given: A normalized CVE dictionary with keys for id, cvss, published/modified dates, and summary
+    When:  The `create_cve_summary` function is called
+    Then:  It should return a dictionary summary with correct mappings:
+           - 'ID' matching the CVE ID
+           - 'CVSS' matching the score
+           - 'Published' and 'Modified' trimmed to ISO format
+           - 'Description' starting with the CVE summary text
+    """
+    cve_data = {
+        "id": "CVE-2025-12345",
+        "cvss": "7.8",
+        "Published": "2025-03-01T10:00:00Z",
+        "Modified": "2025-03-05T15:00:00Z",
+        "summary": "Some vulnerability affecting X system..."
+    }
+
+    summary = create_cve_summary(cve_data)
+
+    assert summary["ID"] == "CVE-2025-12345"
+    assert summary["CVSS"] == "7.8"
+    assert summary["Published"] == "2025-03-01T10:00:00"
+    assert summary["Modified"] == "2025-03-05T15:00:00"
+    assert summary["Description"].startswith("Some vulnerability")
