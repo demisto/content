@@ -2326,7 +2326,7 @@ class TestJiraGetRemoteData:
         client = jira_base_client_mock()
         issue_response = {"id": "1234", "fields": {"summary": "dummy summary", "updated": "2023-01-01"}}
         mocker.patch.object(client, "get_issue", return_value=issue_response)
-        mocker.patch("JiraV3.get_user_timezone", return_value="Asia/Jerusalem")
+        mocker.patch("JiraV3.get_cached_user_timezone", return_value="Asia/Jerusalem")
         close_reason = 'Issue was marked as "Resolved", or status was changed to "Done"'
         expected_parsed_entries = [
             {
@@ -2772,7 +2772,7 @@ class TestJiraFetchIncidents:
 
         client = jira_base_client_mock()
         mocker.patch("JiraV3.demisto.getLastRun", return_value={})  # empty last run (first fetch) -> Convert timezone
-        get_user_timezone_mocker = mocker.patch("JiraV3.get_user_timezone", return_value="UTC")
+        get_user_timezone_mocker = mocker.patch("JiraV3.get_cached_user_timezone", return_value="UTC")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
         set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
@@ -2828,7 +2828,7 @@ class TestJiraFetchIncidents:
                 "convert_timezone": True,
             }
         )
-        get_user_timezone_mocker = mocker.patch("JiraV3.get_user_timezone", return_value="UTC-4")
+        get_user_timezone_mocker = mocker.patch("JiraV3.get_cached_user_timezone", return_value="UTC-4")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
         set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {

@@ -3201,3 +3201,28 @@ Returns a page of field metadata for a specified project and issue type.
 | Jira.IssueField.Schema.custom | String | If the field is a custom field, the URI of the field. | 
 | Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
 | Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
+
+### jira-reset-timezone-cache
+
+***
+Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
+
+#### Base Command
+
+`jira-reset-timezone-cache`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-reset-timezone-cache```
+
+#### Human Readable Output
+
+>The Jira user timezone was successfully cleared from the cache
