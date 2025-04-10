@@ -3509,7 +3509,7 @@ def fetch_incidents(
         List[Dict[str, Any]]: A list of incidents.
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"Got last run: {last_run}" if last_run else "Got empty last run")
+    demisto.debug(f"Got last run: {last_run}")
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
     # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
