@@ -39,6 +39,7 @@ def test_no_incidents_found(mocker):
                                          '"Status":"400 Bad Request "title": "Incidents search returned no results" '}]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
+    mocker.patch("ExportIncidentsToCSV.is_error", return_value=True)
     mocker.patch.object(demisto, "results")
     main()
     demisto.results.assert_called_once_with(NO_INCIDENTS_FOUND)
@@ -58,11 +59,12 @@ def test_incidents_amount_limit_exceeded(mocker):
                                          '"StatusCode":413, title\":\"Limit Exceeded\" '}]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
-    mocker.patch.object(demisto, "results")
+    mocker.patch("ExportIncidentsToCSV.is_error", return_value=True)
+    return_error_mock = mocker.patch("ExportIncidentsToCSV.return_error")
     main()
-    expected_error_message = f"{LIMIT_EXCEEDED}. Try to run the same query with lower fetchdays value"
-    demisto.results.assert_called_once_with(expected_error_message)
-    assert demisto.results.call_count == 1
+    expected_error_message = f"{LIMIT_EXCEEDED} (10,000 incidents). Try to run the same query with lower fetchdays value"
+    return_error_mock.assert_called_once_with(expected_error_message)
+    assert return_error_mock.call_count == 1
 
 
 def test_general_error_occurred(mocker):
@@ -76,6 +78,7 @@ def test_general_error_occurred(mocker):
     export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '}]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
+    mocker.patch("ExportIncidentsToCSV.is_error", return_value=True)
     with pytest.raises(ValueError) as ve:
         main()
         assert "Couldn't export incidents to CSV." in str(ve)
