@@ -252,7 +252,7 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
 """ COMMAND FUNCTION """
 
 
-def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> tuple[list[dict], CommandResults]:
+def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> CommandResults:
     """ Execute the command prisma-sase-candidate-config-push if needed.
     Args:
         auto_commit (bool): Whether to execute the command prisma-sase-candidate-config-push.
@@ -262,7 +262,7 @@ def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> tup
         1. The response of the execution of the command prisma-sase-candidate-config-push or None if wasn't executed
         2. None or the command result created in case the auto_commit == false.
     """
-    res_auto_commit, auto_commit_message = None, None
+    auto_commit_message = None
     if auto_commit:
         res_auto_commit = run_execute_command("prisma-sase-candidate-config-push",
                                                  {
@@ -271,7 +271,7 @@ def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> tup
     else:
         auto_commit_message = CommandResults(readable_output=f"Not commiting the changes in Palo Alto Networks - Prisma SASE, "
                                        f"since {auto_commit=}. Please do so manually for the changes to take affect.")
-    return res_auto_commit, auto_commit_message
+    return auto_commit_message
 
 
 def prisma_sase_security_rule_update(rule_name: str, address_group: str, responses: list) -> list:
@@ -320,7 +320,7 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
         responses.append(res_add_obj_create)
         if is_error(res_add_obj_create):
             return prepare_context_and_hr_multiple_executions(responses, brand_args.get('verbose'), '', [ip])
-        res_auto_commit, auto_commit_message = prisma_sase_candidate_config_push(brand_args.get('auto_commit'), responses)
+        auto_commit_message = prisma_sase_candidate_config_push(brand_args.get('auto_commit'), responses)
 
     res_add_group_list = run_execute_command("prisma-sase-address-group-list", {'name': address_group})
     responses.append(res_add_group_list)
@@ -350,7 +350,7 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
             if res_rule_update and is_error(res_rule_update):
                 return prepare_context_and_hr_multiple_executions(responses, brand_args.get('verbose'), rule_name, [ip])
 
-        res_auto_commit, auto_commit_message = prisma_sase_candidate_config_push(brand_args.get('auto_commit'), responses)
+        auto_commit_message = prisma_sase_candidate_config_push(brand_args.get('auto_commit'), responses)
     else:
         demisto.debug(f"The {address_group=} exists, editing it.")
         context_add_group_list = get_relevant_context(res_add_group_list[0].get('EntryContext', {}), 'PrismaSase.AddressGroup')
@@ -363,7 +363,7 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
             responses.append(res_add_group_update)
             if is_error(res_add_group_update):
                 return prepare_context_and_hr_multiple_executions(responses, brand_args.get('verbose'), '', [ip])
-            res_auto_commit, auto_commit_message = prisma_sase_candidate_config_push(brand_args.get('auto_commit'), responses)
+            auto_commit_message = prisma_sase_candidate_config_push(brand_args.get('auto_commit'), responses)
 
     command_results_list = prepare_context_and_hr_multiple_executions(responses, brand_args.get('verbose'), rule_name, [ip])
     if auto_commit_message:
@@ -744,7 +744,7 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
 """ MAIN FUNCTION """
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         demisto.debug(f"The script block-external-ip was called with the arguments {args=}")

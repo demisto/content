@@ -216,8 +216,7 @@ def test_prisma_sase_candidate_config_push_false():
     from BlockExternalIp import prisma_sase_candidate_config_push
     expected_auto_commit_message = ("Not commiting the changes in Palo Alto Networks - Prisma SASE, since auto_commit=False."
                                     " Please do so manually for the changes to take affect.")
-    result_auto_commit, result_auto_commit_message = prisma_sase_candidate_config_push(False, [])
-    assert not result_auto_commit
+    result_auto_commit_message = prisma_sase_candidate_config_push(False, [])
     assert result_auto_commit_message.readable_output == expected_auto_commit_message
 
 
@@ -234,10 +233,9 @@ def test_prisma_sase_candidate_config_push_true(mocker):
     responses = []
     entries = util_load_json('test_data/prisma_sase_responses.json').get('candidate_config_push')
     mocker.patch.object(demisto, 'executeCommand', return_value=entries)
-    result_auto_commit, result_auto_commit_message = prisma_sase_candidate_config_push(True, responses)
+    result_auto_commit_message = prisma_sase_candidate_config_push(True, responses)
     assert not result_auto_commit_message
     assert len(responses) == 1
-    assert result_auto_commit
 
 
 def test_prisma_sase_security_rule_update_needed(mocker):
@@ -261,7 +259,7 @@ def test_prisma_sase_security_rule_update_needed(mocker):
     assert len(responses) == 2
 
 
-def test_prisma_sase_security_rule_update_not_needed(mocker):
+def test_prisma_sase_security_rule_update_not_needed():
     """
     Given:
       - rule_name, address_group, a responses list.
@@ -278,3 +276,38 @@ def test_prisma_sase_security_rule_update_not_needed(mocker):
     responses = [res_rule_list]
     result = prisma_sase_security_rule_update(rule_name, address_group, responses)
     assert not result
+
+
+def test_prisma_sase_block_ip_object_not_exist(mocker):
+    """
+    Given:
+      - The arguments for running the prisma flow.
+    When:
+      - Running the script block-external-ip for the prisma-sase brand.
+    Then:
+      - Verify the correct outputs are returned from the function, the first command result should contain that the ip does not exist.
+    """
+    from BlockExternalIp import prisma_sase_block_ip
+    args = {
+        "ip": "1.2.3.7",
+        "address_group": "test_debug2",
+        "verbose": True,
+        "rule_name": "rules",
+        "auto_commit": False
+    }
+    res_address_object_list = util_load_json('test_data/prisma_sase_responses.json').get('address_object_list_1237')
+    res_create_object = util_load_json('test_data/prisma_sase_responses.json').get('address_object_create1237')
+    res_address_group_list = util_load_json('test_data/prisma_sase_responses.json').get('address_group_list1237')
+    res_address_group_update = util_load_json('test_data/prisma_sase_responses.json').get('address_group_update1237')
+    mocker.patch.object(demisto, 'executeCommand', side_effect=[res_address_object_list,
+                                                                res_create_object,
+                                                                res_address_group_list,
+                                                                res_address_group_update])
+    results = prisma_sase_block_ip(args)
+    assert len(results) == 6
+    assert results[0].readable_output == "The item you're searching for does not exist within the Prisma SASE API."
+    assert results[1].readable_output == '### Address Object Created\n|Address Value|Folder|Id|Name|Type|\n|---|---|---|---|---|\n| 1.2.3.7 | Shared | 11111111-1111-1111-1111-111111111111 | 1.2.3.7 | ip_netmask |\n'
+    assert results[2].readable_output == '### Address Groups\n|Id|Name|Description|Addresses|Dynamic Filter|\n|---|---|---|---|---|\n| id | test_debug2 |  | 1.2.3.6 |  |\n'
+    assert results[3].readable_output == '### Address Group updated\n|Addresses|Folder|Id|Name|\n|---|---|---|---|\n| 1.2.3.6,<br>1.2.3.7 | Shared | id | test_debug2 |\n'
+    assert results[4].readable_output == '### The IP was blocked successfully\n|IP|Status|Result|Created rule name|Used integration|\n|---|---|---|---|---|\n| 1.2.3.7 | Done | Success | rules | Palo Alto Networks - Prisma SASE |\n'
+    assert results[5].readable_output == 'Not commiting the changes in Palo Alto Networks - Prisma SASE, since auto_commit=False. Please do so manually for the changes to take affect.'
