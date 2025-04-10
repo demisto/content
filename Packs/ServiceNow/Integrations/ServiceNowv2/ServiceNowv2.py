@@ -691,7 +691,7 @@ class Client(BaseClient):
                 headers=oauth_params.get("headers", ""),
             )
             if self.use_jwt:
-                self.generate_jwt = {"jwt": jwt_params, "oauth":oauth_params}
+                self.generate_jwt: Dict[Any, Any] = {"jwt": jwt_params, "oauth":oauth_params}
                 self.jwt = self.create_jwt()
         else:
             self._auth = (self._username, self._password)
@@ -706,7 +706,8 @@ class Client(BaseClient):
             raise ValueError("Invalid private key format")
         
         # Remove the markers and replace whitespaces with '\n'
-        key_content = private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
+        key_content = private_key.replace(start_marker, "").replace(end_marker, "")\
+            .replace(" ", "\n").replace("\n\n", "\n").strip()
         # Reattach the markers
         processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
         return processed_key
@@ -736,7 +737,7 @@ class Client(BaseClient):
         try:
         # Generate the JWT
             jwt_token= jwt.encode(payload, private_key, algorithm="RS256", headers=header)
-        except Exception as e:
+        except Exception:
             #Generate again if failed
             jwt_token= jwt.encode(payload, private_key, algorithm="RS256", headers=header)
         return jwt_token
@@ -798,7 +799,8 @@ class Client(BaseClient):
             with open(file_path, "rb") as f:
                 file_info = (file_name, f, self.get_content_type(file_name))
                 if self.use_oauth:
-                    access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt else self.snow_client.get_access_token()
+                    access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt \
+                        else self.snow_client.get_access_token()
                     headers.update({"Authorization": f"Bearer {access_token}"})
                     return requests.request(
                         method,
@@ -1036,7 +1038,8 @@ class Client(BaseClient):
 
         for link in links:
             if self.use_oauth:
-                access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt else self.snow_client.get_access_token()
+                access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt \
+                    else self.snow_client.get_access_token()
                 headers.update({"Authorization": f"Bearer {access_token}"})
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
@@ -3532,6 +3535,7 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
     command = demisto.command()
     demisto.debug(f"Executing command {command}")
 

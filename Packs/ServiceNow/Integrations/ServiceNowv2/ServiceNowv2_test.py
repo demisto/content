@@ -8,7 +8,6 @@ import demistomock as demisto
 import pytest
 import requests
 
-import jwt
 
 import ServiceNowv2
 from CommonServerPython import CommandResults, DemistoException, EntryType
@@ -126,7 +125,7 @@ from test_data.response_constants import (
     RESPONSE_UPLOAD_FILE,
     USER_RESPONSE,
     JWT_PARAMS
-),
+)
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
     EXPECTED_ADD_LINK_HR,
