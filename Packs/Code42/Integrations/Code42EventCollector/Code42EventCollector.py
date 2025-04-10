@@ -1,33 +1,27 @@
 import hashlib
 
 import incydr
-from incydr import EventQuery
+from incydr.enums.file_events import EventSearchTerm
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 from CommonServerUserPython import *  # noqa
 
-import urllib3
 from typing import Any
 from enum import Enum
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 
-
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%fZ"
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S.%fZ'
 
 MAX_FETCH_AUDIT_LOGS = 100000
 MAX_AUDIT_LOGS_PAGE_SIZE = 10000
 
-
 MAX_FETCH_FILE_EVENTS = 50000
 MAX_FILE_EVENTS_PAGE_SIZE = 10000
-
+FILE_EVENTS_LOOK_BACK = timedelta(seconds=45)
 
 VENDOR = "code42"
 PRODUCT = "code42"
@@ -107,10 +101,22 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
-        demisto.debug(f"File Events: {start_time=}, {end_time=}, {limit=}")
-        query = EventQuery(start_date=start_time, end_date=end_time, srtDir="asc", pgSize=page_size)
-        response = self.code42_client.file_events.v2.search(query)
+        demisto.debug(f'File Events: {start_time=}, {end_time=}, {limit=}')
+        query = incydr.EventQuery(
+            start_date=start_time,
+            end_date=end_time,
+            page_size=page_size,
+            sort_dir="asc",
+            sort_key=EventSearchTerm.EVENT_INSERTED,
+        )
+        for filter in query.groups[0].filters:
+            filter.term = EventSearchTerm.EVENT_INSERTED
 
+        demisto.debug(f'First query: {query.dict()}')
+
+        response = self.code42_client.file_events.v2.search(
+            query
+        )
         if response.total_count == 0:
             return []
         file_events = response.file_events
@@ -118,14 +124,24 @@ class Client:
             response = self.code42_client.file_events.v2.search(query)
             if current_events := response.file_events:
                 file_events.extend(current_events)
+            demisto.debug(f'New query: {query.dict()}')
 
-        file_events = file_events[:limit]
+        demisto.debug(
+            f'Fetched {len(file_events)} events. '
+            f'First: ID={file_events[0].event.id!r}, Time={file_events[0].event.inserted}. '
+            f'Last: ID={file_events[-1].event.id!r}, Time={file_events[-1].event.inserted}')
 
-        for event in file_events:
+        sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
+        demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
+        demisto.debug('[TEMP] Last 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(max(0, len(file_events) - 100), len(file_events)), file_events)))
+
+        sorted_file_events = sorted_file_events[:limit]
+
+        for event in sorted_file_events:
             event.eventType = EventType.FILE
-            event._time = event.timestamp
+            event._time = event.event.inserted
 
-        return [event.dict() for event in file_events]
+        return [event.dict() for event in sorted_file_events]
 
 
 def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str], keys_list_to_id: List[str]) -> List[dict]:
@@ -137,28 +153,28 @@ def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str
         last_run_fetched_event_ids: a list of already fetched IDs from previous run
         keys_list_to_id (list): a list of keys to retrieve the ID from the event
     """
-    un_fetched_events = []
-    already_fetched_event_ids = []
+    new_events = []
+    duplicate_events = []
 
     for event in events:
         event_id = dict_safe_get(event, keys=keys_list_to_id)
         if event_id not in last_run_fetched_event_ids:
-            un_fetched_events.append(event)
+            new_events.append(event)
         else:
-            already_fetched_event_ids.append(event_id)
+            duplicate_events.append(event_id)
 
-    un_fetched_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in un_fetched_events}
-    demisto.debug(f"{un_fetched_event_ids=}")
-    demisto.debug(f"{already_fetched_event_ids=}")
+    new_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in new_events}
+    demisto.debug(f'{new_event_ids=}')
+    demisto.debug(f'{duplicate_events=}')
 
-    return un_fetched_events
+    return new_events
 
 
 def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[str]:
     return [dict_safe_get(event, keys=keys_to_id) for event in events]
 
 
-def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> tuple[List[str], str]:
+def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre_fetch_look_back: Optional[datetime] = None) -> tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
 
@@ -167,11 +183,20 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
         keys_to_id: a list of nested keys to get into the event ID
     """
     event_type = events[0]["eventType"]
-    latest_time_event = max([event["_time"] for event in events])
+    latest_time_event = max(event["_time"] for event in events)
+    
+    next_fetch_from = datetime.fromisoformat(
+        min(latest_time_event, pre_fetch_look_back or latest_time_event).isoformat()[:-9] + '000+00:00'
+    )
 
-    latest_event_ids: List = [dict_safe_get(event, keys=keys_to_id) for event in events if event["_time"] == latest_time_event]
-    demisto.debug(f"Latest {event_type}s event IDs {latest_event_ids} occurred in {latest_time_event}")
-    return latest_event_ids, latest_time_event.strftime(DATE_FORMAT)
+    latest_event_ids: List = [
+        dict_safe_get(event, keys=keys_to_id)
+        for event in events
+        if event["_time"] >= next_fetch_from
+    ]
+
+    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {next_fetch_from}')
+    return latest_event_ids, next_fetch_from.strftime(DATE_FORMAT)
 
 
 def datetime_to_date_string(events: List[Dict[str, Any]]):
@@ -224,15 +249,20 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         else (datetime.now() - timedelta(minutes=1))
     )
 
-    file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)  # type: ignore[arg-type]
-    last_fetched_event_file_ids = (
-        set(last_run[FileEventLastRun.FETCHED_IDS]) if FileEventLastRun.FETCHED_IDS in last_run else set()
+    last_fetched_event_file_ids = set(
+        last_run.get(FileEventLastRun.FETCHED_IDS, [])
+    )
+    pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
+    file_events = client.get_file_events(  # type: ignore[arg-type]
+        file_event_time,
+        limit=max_fetch_file_events + len(last_fetched_event_file_ids)
     )
     file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=last_fetched_event_file_ids, keys_list_to_id=["event", "id"]
     )
     if file_events:
-        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(file_events, keys_to_id=["event", "id"])
+        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(
+            file_events, keys_to_id=["event", "id"], pre_fetch_look_back=pre_fetch_look_back)
         datetime_to_date_string(file_events)
         new_last_run.update(
             {
@@ -288,8 +318,12 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         file_events_last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
-    send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
-    demisto.debug(f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}')
+    futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
+    tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
+
+    demisto.debug(
+        f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
+    )
     demisto.setLastRun(last_run)
     demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.FILE} events")
 
@@ -365,6 +399,7 @@ def main() -> None:
                 max_fetch_file_events=max_fetch_file_events,
                 max_fetch_audit_events=max_fetch_audit_events,
             )
+            demisto.debug(f'[TEMP] fetch ended. LastRun: {demisto.getLastRun()}')
         elif command == "code42-get-events":
             return_results(get_events_command(client, demisto.args()))
     except Exception as e:
