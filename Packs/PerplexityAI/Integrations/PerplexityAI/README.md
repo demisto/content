@@ -9,7 +9,6 @@ Perplexity AI is a web search engine that uses a large language model to process
     | --- | --- | --- |
     | URL for Perplexity AI |  | True |
     | Perplexity AI API Key |  | True |
-    | Perplexity AI API Key |  | True |
     | Cloudflare Access Client Id |  | False |
     | Cloudflare Access Client Secret |  | False |
     | Perplexity AI Model | Available models are: sonar,sonar-pro,sonar-deep-research,sonar-reasoning,sonar-reasoning-pro,r1-1776 | True |
