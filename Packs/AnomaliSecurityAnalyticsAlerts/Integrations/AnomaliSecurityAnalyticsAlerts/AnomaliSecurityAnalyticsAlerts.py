@@ -235,7 +235,7 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
                 human_readable = tableToMarkdown(name="Search Job Results",
                                                  t=results_response,
                                                  removeNull=True)
-            results_response["job_id"] = job_id
+            results_response['job_id'] = job_id
             command_result = CommandResults(
                 outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
                 outputs_key_field='job_id',
