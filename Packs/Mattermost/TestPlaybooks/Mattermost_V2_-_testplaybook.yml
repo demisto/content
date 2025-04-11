@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -90
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 60
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -96,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 380
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -136,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 760
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -173,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 990
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -199,7 +199,7 @@ tasks:
       brand: MattermostV2
     nexttasks:
       '#none#':
-      - "8"
+      - "14"
     scriptarguments:
       channel:
         simple: channel_test_playbook_${RandomString}
@@ -212,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1180
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -238,7 +238,7 @@ tasks:
       brand: MattermostV2
     nexttasks:
       '#none#':
-      - "11"
+      - "17"
     scriptarguments:
       channel:
         simple: channel_test_playbook_${RandomString}
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1370
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -287,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1930
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -324,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 560
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -362,8 +362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1570
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -405,8 +405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1750
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -448,8 +448,278 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: cead912b-c4c4-4f89-80a7-c47a25fc9cda
+    type: regular
+    task:
+      id: cead912b-c4c4-4f89-80a7-c47a25fc9cda
+      version: -1
+      name: mattermost-set-channel-role
+      description: Update a user's roles for a channel.
+      script: 'MattermostV2|||mattermost-set-channel-role'
+      type: regular
+      iscommand: true
+      brand: "MattermostV2"
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      channel_id:
+        simple: ${Mattermost.Channel.id}
+      role:
+        simple: Admin
+      user_id:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 61717cf3-5207-47ae-8df2-5d9e0688426d
+    type: regular
+    task:
+      id: 61717cf3-5207-47ae-8df2-5d9e0688426d
+      version: -1
+      name: mattermost-list-users
+      description: Lists users.
+      script: 'MattermostV2|||mattermost-list-users'
+      type: regular
+      iscommand: true
+      brand: "MattermostV2"
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      channel:
+        simple: channel_test_playbook_${RandomString}
+      team_name:
+        simple: PANW
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 0ff872ee-3b59-45d5-8a0d-1764c7f27ae0
+    type: condition
+    task:
+      id: 0ff872ee-3b59-45d5-8a0d-1764c7f27ae0
+      version: -1
+      name: Check user role
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Mattermost.User
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Mattermost.User.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Mattermost.User.id
+                      iscontext: true
+                accessor: roles
+            iscontext: true
+          right:
+            value:
+              simple: channel_user channel_admin
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b20c7cae-68e0-4a90-8966-e2fcbd04fed1
+    type: regular
+    task:
+      id: b20c7cae-68e0-4a90-8966-e2fcbd04fed1
+      version: -1
+      name: mattermost-list-groups
+      description: Lists groups.
+      script: 'MattermostV2|||mattermost-list-groups'
+      type: regular
+      iscommand: true
+      brand: "MattermostV2"
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: ea2dbdee-6c65-4560-8ebd-2fc3b32fa0d0
+    type: regular
+    task:
+      id: ea2dbdee-6c65-4560-8ebd-2fc3b32fa0d0
+      version: -1
+      name: mattermost-list-group-members
+      description: Lists group members.
+      script: 'MattermostV2|||mattermost-list-group-members'
+      type: regular
+      iscommand: true
+      brand: "MattermostV2"
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      group_id:
+        simple: ${Mattermost.Groups.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3633e38f-dd27-4004-8534-fbff297fb97b
+    type: regular
+    task:
+      id: 3633e38f-dd27-4004-8534-fbff297fb97b
+      version: -1
+      name: mattermost-add-group-member
+      description: Add group member(s).
+      script: 'MattermostV2|||mattermost-add-group-member'
+      type: regular
+      iscommand: true
+      brand: "MattermostV2"
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      group_id:
+        simple: ${Mattermost.Groups.id}
+      user_ids:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 1f35dba5-0809-42c0-81da-88ed77f84c19
+    type: regular
+    task:
+      id: 1f35dba5-0809-42c0-81da-88ed77f84c19
+      version: -1
+      name: mattermost-remove-group-member
+      description: Remove group member(s).
+      script: 'MattermostV2|||mattermost-remove-group-member'
+      type: regular
+      iscommand: true
+      brand: "MattermostV2"
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      group:
+        simple: ${Mattermost.Groups.id}
+      user_ids:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -464,10 +734,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2115,
+        "height": 3215,
         "width": 380,
-        "x": 450,
-        "y": -90
+        "x": 50,
+        "y": 50
       }
     }
   }
