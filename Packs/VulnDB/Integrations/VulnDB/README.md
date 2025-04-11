@@ -1587,8 +1587,8 @@ Run any API request in the VulnDB API.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url_suffix | Path for the API request, i.e., '/vulnerabilities/123456'. | Required | 
-| method | HTTP method to use I.E. GET/POST/UPDATE . | Required | 
-| params | Additional parameters to pass to the API request in JSON format. I.E. {"show_cpe":"true"}. | Optional | 
+| method | HTTP method to use. i.e., GET/POST/UPDATE . | Required | 
+| params | Additional parameters to pass to the API request in JSON format, i.e., {"show_cpe":"true"}. | Optional | 
 
 #### Context Output
 
