@@ -461,7 +461,10 @@ def vulndb_get_vuln_report_command(args: dict, client: Client):
     vulndb_id = args['vuln_id']
     try:
         res = client.http_file_request(f'/vulnerabilities/{vulndb_id}.pdf')
-    except Exception:
+  except Exception as ex:
+          if ex.res.status_code == 406:
+          raise DemistoException("Got 406 from the server - verify that a vulnerability with that ID exists")
+      raise ex
         return_error(
             f"Could not retrieve a report for vulnerability with ID {vulndb_id}."
             " Verify that a vulnerability with that ID exists.\n{ex}"
