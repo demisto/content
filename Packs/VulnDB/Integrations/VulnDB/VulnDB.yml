@@ -892,7 +892,7 @@ script:
     description: 'Run any API request in the VulnDB API.'
     name: vulndb-generic-api-request
     outputs:
-    - contextPath: VulnDB.API.Results
+    - contextPath: VulnDB.Generic.Response
       description: API response for the request.
       type: unknown
   dockerimage: demisto/python3:3.12.8.1983910
