@@ -18,7 +18,7 @@ class Client(BaseClient):
                 json_data=args
             )
         except Exception as e:
-            msg = f"test_module.chat: exception - {e}"
+            msg = f"{demisto.command()}: exception - {e}"
             demisto.debug(msg)
             raise Exception(msg)
         return response
