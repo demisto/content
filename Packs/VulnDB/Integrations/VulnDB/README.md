@@ -1594,7 +1594,7 @@ Run any API request in the VulnDB API.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VulnDB.API.Results | unknown | API response for the request | 
+| VulnDB.API.Results | unknown | API response for the request. | 
 
 ### vulndb-get-vuln-report-by-vuln-id
 
