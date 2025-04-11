@@ -1576,7 +1576,7 @@
 ### vulndb-generic-api-request
 
 ***
-Run any API request in the VulnDB API 
+Run any API request in the VulnDB API.
 
 #### Base Command
 
