@@ -33,7 +33,7 @@ Send a chat message. You may need to increase the command timeout in "advanced s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| systemmessage | The system message to influence how the user message is handled - used in the "system" role. Default is Be precise and concise.. | Optional | 
+| systemmessage | The system message to influence how the user message is handled - used in the "system" role. Default is Be precise and concise. | Optional | 
 | usermessage | The user's question - used in the "users" role. | Required | 
 | recentfilter | Limit search to recent hour, day, week, month. Possible values are: hour, day, week, month. | Optional | 
 | domainfilter | Limit search to these domains. CSV list of domains of up to 3 domains. A '-' in front of the domain excludes it. | Optional | 
