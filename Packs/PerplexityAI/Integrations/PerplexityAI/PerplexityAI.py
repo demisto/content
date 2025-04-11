@@ -137,7 +137,7 @@ def main() -> None:
 
         if command == 'test-module':
             result = test_module(client, {
-                'model': "sonar-deep-research",
+                'model': params.get('model', 'sonar-deep-research')
                 'messages': [
                     {
                         'role': "system",
