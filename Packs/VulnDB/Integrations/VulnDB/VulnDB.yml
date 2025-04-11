@@ -874,7 +874,7 @@ script:
     - description: VulnDB vulnerability ID.
       name: vuln_id
       required: true
-    description: Returns the CPE(s) for a vulnerability, by VulnDB ID.
+    description: Returns the CPE(s) for a vulnerability by VulnDB ID.
     name: vulndb-get-cpe-by-vuln-id
     outputs:
     - contextPath: VulnDB.CPE.Value
