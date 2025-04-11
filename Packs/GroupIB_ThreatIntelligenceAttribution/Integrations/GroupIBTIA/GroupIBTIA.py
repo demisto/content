@@ -485,6 +485,7 @@ MAPPING = {
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
         },
+        "source_type":"sourceType", # Not displayed in the incident, but used in the code 
     },
     "compromised/bank_card_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "cardInfo.number",
@@ -1442,7 +1443,7 @@ class Client(BaseClient):
         return last_fetch, date_from  # type: ignore
 
     def create_poll_generator(
-        self, collection_name: str, hunting_rules: int, **kwargs
+        self, collection_name: str, hunting_rules: int, enable_probable_corporate_access: bool, **kwargs
     ):
         """
         Interface to work with different types of indicators.
@@ -1479,6 +1480,8 @@ class Client(BaseClient):
         else:
             if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
                 hunting_rules = 1
+            if enable_probable_corporate_access:
+                enable_probable_corporate_access = 1
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
@@ -1486,6 +1489,7 @@ class Client(BaseClient):
                     sequpdate=last_fetch,
                     limit=self.limit,
                     apply_hunting_rules=hunting_rules,
+                    # TODO enable_probable_corporate_access=enable_probable_corporate_access,
                 ),
                 last_fetch,
             )
@@ -1786,11 +1790,13 @@ class IncidentBuilder:
         "gibdatecompromised",
     ]
 
-    def __init__(self, collection_name: str, incident: dict, mapping: dict) -> None:
+    def __init__(self, collection_name: str, incident: dict, mapping: dict, exclude_combolist: bool) -> None:
         self.collection_name = collection_name
         self.incident = incident
         self.mapping = mapping
-
+        self.exclude_combolist = exclude_combolist
+        self.remove_threat_actor_from_incident = False
+        
     def get_system_severity(self) -> int:
         severity_map = {
             "green": NumberedSeverity.LOW.value,
@@ -1939,7 +1945,27 @@ class IncidentBuilder:
                     else:
                         self.incident[field] = None
 
+    def check_combolist(self) -> bool:
+        if self.collection_name == "compromised/account_group":
+            incident_source_type = self.incident.get("source_type", None)
+            demisto.debug(f"check_combolist incident_source_type: {incident_source_type} {self.incident['id']} {self.exclude_combolist}")
+            if self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
+                return False
+            elif not self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
+                self.remove_threat_actor_from_incident = True
+                return True
+        return True
+    
+    def check_threat_actor(self):
+        if self.collection_name == "compromised/account_group":
+            demisto.debug(f"check_threat_actor incident_source_type: {self.incident['source_type']} {self.incident['id']} {self.remove_threat_actor_from_incident}")
+            if self.remove_threat_actor_from_incident:
+                demisto.debug(f"check_threat_actor Threat actor before deleting:{self.incident['events_table']['threatActor']}")
+                self.incident['events_table']['threatActor'] = []
+                demisto.debug(f"check_threat_actor Threat actor after deleting:{self.incident['events_table']['threatActor']}")
+                
     def build_incident(self) -> dict:
+        self.check_threat_actor()
         self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
@@ -2111,6 +2137,8 @@ def fetch_incidents_command(
     incident_collections: list[str],
     max_requests: int,
     hunting_rules: int,
+    exclude_combolist: bool = False,
+    enable_probable_corporate_access: bool = False,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -2137,8 +2165,9 @@ def fetch_incidents_command(
             hunting_rules=hunting_rules,
             last_fetch=last_fetch,
             first_fetch_time=first_fetch_time,
+            enable_probable_corporate_access=enable_probable_corporate_access,
         )
-
+        
         mapping = MAPPING.get(collection_name, {})
         for portion in portions:
             sequpdate = portion.sequpdate
@@ -2148,12 +2177,15 @@ def fetch_incidents_command(
             if isinstance(new_parsed_json, list):
                 for i in new_parsed_json:
                     for incident in i:
-                        constructed_incident = IncidentBuilder(
+                        incident_builder = IncidentBuilder(
                             collection_name=collection_name,
                             incident=incident,
                             mapping=mapping,
-                        ).build_incident()
-                        incidents.append(constructed_incident)
+                            exclude_combolist=exclude_combolist,
+                        )
+                        if incident_builder.check_combolist():
+                            constructed_incident = incident_builder.build_incident()
+                            incidents.append(constructed_incident)
             else:
                 raise Exception("new_parsed_json in portion should not be a string")
 
@@ -2340,6 +2372,9 @@ def main():
         incident_collections = params.get("incident_collections", [])
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
         requests_count = int(params.get("max_fetch", 3))
+        
+        exclude_combolist = params.get("exclude_combolist", False)
+        enable_probable_corporate_access = params.get("enable_probable_corporate_access", 0)
 
         args = demisto.args()
         command = demisto.command()
@@ -2418,8 +2453,10 @@ def main():
                 incident_collections=incident_collections,
                 max_requests=requests_count,
                 hunting_rules=hunting_rules,
+                exclude_combolist=exclude_combolist,
+                enable_probable_corporate_access=enable_probable_corporate_access,
             )
-            demisto.info(f"{str(incidents)}")
+            demisto.debug(f"{str(incidents)}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:

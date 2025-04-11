@@ -74,6 +74,18 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: Exclude All with Combolist type
+  name: exclude_combolist
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Exclude All with Combolist type
+- display: Enable filter "Probable Corporate Access"
+  name: enable_probable_corporate_access
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Enable filter "Probable Corporate Access"
 - additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
   defaultvalue: '3'
   section: Collect
