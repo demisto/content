@@ -1,6 +1,5 @@
 {
 	"id": "ZeroFox Key Incident",
-	"locked": false,
 	"name": "ZeroFox Key Incident",
 	"version": -1,
 	"fromVersion": "6.0.0",
@@ -17,10 +16,6 @@
 	"autorun": false,
 	"disabled": false,
 	"layout": "331f1c29-422d-49df-81dc-4329a2073078",
-	"extractSettings": {
-		"mode": "Specific",
-		"fieldCliNameToExtractSettings": {}
-	},
 	"marketplaces": [
         "xsoar"
     ]
