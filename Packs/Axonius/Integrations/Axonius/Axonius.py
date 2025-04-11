@@ -6,7 +6,10 @@ from axonius_api_client.api.assets.users import Users
 from axonius_api_client.connect import Connect
 from axonius_api_client.tools import dt_parse, strip_left
 from CommonServerPython import *
+import re
+com_regex = re.compile(r"^axonius-get-.*-by-.*$")
 
+supported_method = ["mail", "username", "ip", "hostname", "mac"]
 # Added ignore RemovedInMarshmallow4Warning in Axonius_test file.
 
 
@@ -296,36 +299,43 @@ def run_command(client: Connect, args: dict, command: str):
     elif command == "axonius-get-users-by-aql":
         results = get(api_obj=client.users, args=args)
 
-    elif command == "axonius-get-users-by-mail":
-        results = get_by_value(api_obj=client.users, args=args, method_name="mail")
+    # elif command == "axonius-get-users-by-mail":
+    #     results = get_by_value(api_obj=client.users, args=args, method_name="mail")
 
-    elif command == "axonius-get-users-by-mail-regex":
-        results = get_by_value(api_obj=client.users, args=args, method_name="mail_regex")
+    # elif command == "axonius-get-users-by-mail-regex":
+    #     results = get_by_value(api_obj=client.users, args=args, method_name="mail_regex")
 
-    elif command == "axonius-get-users-by-username":
-        results = get_by_value(api_obj=client.users, args=args, method_name="username")
+    # elif command == "axonius-get-users-by-username":
+    #     results = get_by_value(api_obj=client.users, args=args, method_name="username")
 
-    elif command == "axonius-get-users-by-username-regex":
-        results = get_by_value(api_obj=client.users, args=args, method_name="username_regex")
+    # elif command == "axonius-get-users-by-username-regex":
+    #     results = get_by_value(api_obj=client.users, args=args, method_name="username_regex")
 
-    elif command == "axonius-get-devices-by-hostname":
-        results = get_by_value(api_obj=client.devices, args=args, method_name="hostname")
+    # elif command == "axonius-get-devices-by-hostname":
+    #     results = get_by_value(api_obj=client.devices, args=args, method_name="hostname")
 
-    elif command == "axonius-get-devices-by-hostname-regex":
-        results = get_by_value(api_obj=client.devices, args=args, method_name="hostname_regex")
+    # elif command == "axonius-get-devices-by-hostname-regex":
+    #     results = get_by_value(api_obj=client.devices, args=args, method_name="hostname_regex")
 
-    elif command == "axonius-get-devices-by-ip":
-        results = get_by_value(api_obj=client.devices, args=args, method_name="ip")
+    # elif command == "axonius-get-devices-by-ip":
+    #     results = get_by_value(api_obj=client.devices, args=args, method_name="ip")
 
-    elif command == "axonius-get-devices-by-ip-regex":
-        results = get_by_value(api_obj=client.devices, args=args, method_name="ip_regex")
+    # elif command == "axonius-get-devices-by-ip-regex":
+    #     results = get_by_value(api_obj=client.devices, args=args, method_name="ip_regex")
 
-    elif command == "axonius-get-devices-by-mac":
-        results = get_by_value(api_obj=client.devices, args=args, method_name="mac")
+    # elif command == "axonius-get-devices-by-mac":
+    #     results = get_by_value(api_obj=client.devices, args=args, method_name="mac")
 
-    elif command == "axonius-get-devices-by-mac-regex":
-        results = get_by_value(api_obj=client.devices, args=args, method_name="mac_regex")
-
+    # elif command == "axonius-get-devices-by-mac-regex":
+    #     results = get_by_value(api_obj=client.devices, args=args, method_name="mac_regex")
+    elif re.match(com_regex, command):
+        method = command.split("-by-")[1]
+        if any(x in method for x in supported_method):
+            if any(x in method for x in ["mail", "username"]):
+                api_obj = Users
+            elif any(x in method for x in ["ip", "hostname", "mac"]):
+                api_obj = Devices
+            results = get_by_value(api_obj=api_obj, args=args, method_name=method)
     elif command == "axonius-get-saved-queries":
         results = get_saved_queries(client=client, args=args)
 
