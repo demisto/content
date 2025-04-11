@@ -2,6 +2,9 @@ category: Utilities
 commonfields:
   id: Perplexity AI
   version: -1
+sectionOrder:
+  - Connect
+  - Collect
 configuration:
 - defaultvalue: https://api.perplexity.ai
   display: URL for Perplexity AI
