@@ -28,6 +28,18 @@ configuration:
   name: model
   required: true
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 description: Perplexity AI is a web search engine that uses a large language model to process queries and synthesize responses based on web search results.  With a conversational approach, Perplexity AI allows users to ask follow-up questions and receive answers with citations to its sources from the internet.
 display: Perplexity AI
 name: Perplexity AI
