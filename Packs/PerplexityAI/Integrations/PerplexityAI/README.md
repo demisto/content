@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### deepresearch-chat
 
 ***
-Send a chat message.  You may need to increase the command timeout in "advanced settings" from the default 5 minutes
+Send a chat message. You may need to increase the command timeout in "advanced settings" from the default 5 minutes.
 
 #### Base Command
 
