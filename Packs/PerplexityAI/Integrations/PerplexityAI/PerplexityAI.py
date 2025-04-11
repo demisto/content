@@ -176,7 +176,7 @@ def main() -> None:
                     'content': usrcontent
                 }
             ]
-            for key in ['systemmessage', 'usermessage', 'citations', 'thinking', 
+            for key in ['systemmessage', 'usermessage', 'citations', 'thinking',
                         'jsonout', 'contextsize', 'recentfilter', 'domainfilter']:
                 if key in args:
                     del args[key]
