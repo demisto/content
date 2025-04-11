@@ -55,7 +55,7 @@ script:
       required: false
     - name: timezone
       defaultValue: "UTC"
-      description: The desired timezone for the log source from the dropdown list. The default is Universal Link System Time Zone, which is the timezone where Universal Link is installed. Default value is UTC.
+      description: The desired timezone for the log source. Pass the official IANA name for the time zone you are interested in, e.g. Europe/London, America/New_York. Default value is UTC.
       required: false
     execution: false
     outputs:
@@ -71,11 +71,11 @@ script:
       isArray: true
     - name: offset
       defaultValue: 0
-      description: Offset of the search results. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0.
+      description:  Offset of records returned from the search result job. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0.
       required: false
     - name: fetch_size
       defaultValue: 25
-      description: Number of rows returned. Maximum rows is 1000. Default value is 25.
+      description: Number of records returned from the search result job. Maximum rows is 1000. Default value is 25.
       required: false
     execution: false
     outputs:
@@ -138,7 +138,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.12.8.1983910
-fromversion: 6.5.0
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2

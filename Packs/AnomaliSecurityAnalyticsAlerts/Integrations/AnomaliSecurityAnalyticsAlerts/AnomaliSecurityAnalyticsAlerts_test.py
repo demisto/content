@@ -105,7 +105,8 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
             ['1', 'record1'],
             ['2', 'record2']
         ],
-        'complete': True
+        "result_row_count": 2,
+        'status': "DONE"
     }
     mocker.patch.object(client,
                         '_http_request',
@@ -121,11 +122,15 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
     assert isinstance(results, list)
     assert len(results) == 1
     outputs = results[0].outputs
-    assert outputs.get('fields') == results_response.get('fields')
-    assert outputs.get('records') == results_response.get('records')
+    assert outputs.get('job_id') == 'job_done'
+    assert 'fields' not in outputs
+    expected_records = [{'id': '1', 'name': 'record1'},
+                        {'id': '2', 'name': 'record2'}]
+    assert outputs.get('records') == expected_records
+
     readable_output = results[0].readable_output
     assert "Search Job Results" in readable_output
-    for header in results_response['fields']:
+    for header in ['id', 'name']:
         assert header in readable_output
     assert "record1" in readable_output
 
@@ -244,7 +249,6 @@ def test_command_update_alert_status_and_comment(mocker):
 
     result = command_update_alert(client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs == return_data
     assert "Update Alert" in result.readable_output
 
 

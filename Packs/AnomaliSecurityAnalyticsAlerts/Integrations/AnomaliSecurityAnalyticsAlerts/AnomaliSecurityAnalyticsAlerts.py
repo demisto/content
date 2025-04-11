@@ -3,6 +3,7 @@ Anomali Security Analytics Alerts Integration
 """
 
 from datetime import datetime, UTC
+from dateutil.tz import gettz
 import urllib3
 import demistomock as demisto
 from CommonServerPython import *
@@ -136,6 +137,9 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Please provide 'query' parameter, e.g. alerts")
     if from_datetime is None:
         raise ValueError("Failed to parse 'from' argument. Please provide correct value")
+    tz_info = gettz(tz_str)
+    if tz_info is None:
+        raise DemistoException(f"Invalid timezone specified: {tz_str}")
 
     if args.get('to'):
         to_datetime = arg_to_datetime(args.get('to'),
@@ -220,15 +224,18 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
             if 'fields' in results_response and 'records' in results_response:
                 headers = results_response['fields']
                 records = results_response['records']
-                table_data = [dict(zip(headers, record)) for record in records]
+                combined_records = [dict(zip(headers, record)) for record in records]
+                results_response.pop('fields')
+                results_response['records'] = combined_records
                 human_readable = tableToMarkdown(name="Search Job Results",
-                                                 t=table_data,
+                                                 t=combined_records,
                                                  headers=headers,
                                                  removeNull=True)
             else:
                 human_readable = tableToMarkdown(name="Search Job Results",
                                                  t=results_response,
                                                  removeNull=True)
+            results_response["job_id"] = job_id
             command_result = CommandResults(
                 outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
                 outputs_key_field='job_id',
@@ -271,7 +278,6 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     response = client.update_alert(data)
     return CommandResults(
         outputs_prefix='AnomaliSecurityAnalytics.UpdateAlert',
-        outputs=response,
         readable_output=tableToMarkdown(name="Update Alert", t=response, removeNull=True),
         raw_response=response
     )
@@ -333,8 +339,7 @@ def main():
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        return_error(f'Failed to execute {command} command. Error: {str(err)} \n '
-                     f'tracback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {str(err)} \n ')
 
 
 ''' ENTRY POINT '''
