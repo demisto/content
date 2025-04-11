@@ -137,7 +137,7 @@ def main() -> None:
 
         if command == 'test-module':
             result = test_module(client, {
-                'model': params.get('model', 'sonar-deep-research')
+                'model': params.get('model', 'sonar-deep-research'),
                 'messages': [
                     {
                         'role': "system",
@@ -176,7 +176,8 @@ def main() -> None:
                     'content': usrcontent
                 }
             ]
-            for key in ['systemmessage', 'usermessage', 'citations', 'thinking', 'jsonout', 'contextsize', 'recentfilter', 'domainfilter']:
+            for key in ['systemmessage', 'usermessage', 'citations', 'thinking', 
+                        'jsonout', 'contextsize', 'recentfilter', 'domainfilter']:
                 if key in args:
                     del args[key]
             return_results(deepresearch_chat_command(client, args, thinking, citations, jsonout))
