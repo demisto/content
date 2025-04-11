@@ -8,6 +8,7 @@ from ZeroFox_Key_Incidents import (
     KeyIncident,
     ZeroFox,
     ZeroFoxKIAttachmentNotFoundException,
+    ZeroFoxInternalException,
     demisto,
     fetch_incidents,
     get_key_incident_attachment_command,
@@ -122,6 +123,36 @@ def test_create_xsoar_incidents():
 
 
 @freezegun.freeze_time("2022-05-25")
+def test_fetch_incidents_zerofox_error(requests_mock, zerofox):
+    start_time = "2022-05-24T00:00:00"
+    end_time = "2022-05-25T00:00:00"
+    last_run = {"time": start_time}
+    url_params = urlencode(
+        {"Tags": "Key Incident", "updated_after": start_time, "updated_before": end_time, "ordering": "updated"}
+    )
+    requests_mock.post(CTI_TOKEN_ENDPOINT, json={"access": "token"})
+    requests_mock.get(f"{KEY_INCIDENTS_ENDPOINT}?{url_params}", status_code=500, json={"error": "test error"})
+    first_fetch_time = ""
+    with pytest.raises(ZeroFoxInternalException):
+        fetch_incidents(zerofox, last_run, first_fetch_time)
+
+@freezegun.freeze_time("2022-05-25")
+def test_fetch_incidents_no_incidents(requests_mock, zerofox):
+    start_time = "2022-05-24T00:00:00"
+    end_time = "2022-05-25T00:00:00"
+    last_run = {"time": start_time}
+    url_params = urlencode(
+        {"Tags": "Key Incident", "updated_after": start_time, "updated_before": end_time, "ordering": "updated"}
+    )
+    requests_mock.post(CTI_TOKEN_ENDPOINT, json={"access": "token"})
+    requests_mock.get(f"{KEY_INCIDENTS_ENDPOINT}?{url_params}", json={"next": None, "results": []})
+    first_fetch_time = ""
+    last_run, incidents = fetch_incidents(zerofox, last_run, first_fetch_time)
+    assert last_run == {"time": "2022-05-25T00:00:00"}
+    assert incidents == []
+
+
+@freezegun.freeze_time("2022-05-25")
 def test_fetch_incidents(requests_mock, zerofox):
     requests_mock.post("/auth/token/", json={"access": "token"})
     start_time = "2022-05-24T00:00:00"
@@ -212,3 +243,24 @@ def test_get_key_incident_attachment_command(requests_mock, zerofox, mock_file_i
     }
 
     assert results == expected
+
+def test_key_incident_attachment_command_not_found(requests_mock, zerofox):
+    """
+    Given
+        A Key Incident Attachment Id
+    When
+        Calling get_key_incident_attachment_command
+    Then
+        It should return a file with attachment contents
+    """
+    attachment_id = 123
+    requests_mock.post(CTI_TOKEN_ENDPOINT, json={"access": "token"})
+    requests_mock.get(
+        f"/cti/key-incident-attachment/{attachment_id}/",
+        status_code=404,
+    )
+    args = {"attachment_id": attachment_id}
+
+    result = get_key_incident_attachment_command(zerofox, args)
+
+    assert result.readable_output == f"Key Incident attachment {attachment_id} was not found"

@@ -126,6 +126,7 @@ class ZeroFox(BaseClient):
         headers = {}
         if cti:
             headers = self.get_cti_request_header()
+
         def err_handler(raw_response: Response):
             if error_handler is not None:
                 error_handler(raw_response)
@@ -210,27 +211,24 @@ class ZeroFox(BaseClient):
         :return: HTTP request content.
         """
         url_suffix = "/cti/key-incidents/"
-        headers = self.get_cti_request_header()
         params = remove_none_dict(
             {"updated_after": start_time, "updated_before": end_time, "ordering": "updated", "tags": "Key Incident"}
         )
         key_incidents = []
-        response = self._http_request(
+        response = self._make_rest_call(
             "GET",
             url_suffix,
             params=params,
-            headers=headers,
         )
         key_incidents += [KeyIncident.from_dict(ki) for ki in response.get("results", [])]
 
         if next_page := response.get("next"):
             cursor = self._parse_cursor(next_page)
             params.update(cursor=cursor)
-            response = self._http_request(
+            response = self._make_rest_call(
                 "GET",
                 url_suffix,
                 params=params,
-                headers=headers,
             )
             key_incidents += [KeyIncident.from_dict(ki) for ki in response.get("results", [])]
         return key_incidents
@@ -311,24 +309,6 @@ def remove_none_dict(input_dict: dict[Any, Any]) -> dict[Any, Any]:
 
 
 """ COMMAND FUNCTIONS """
-
-
-def get_key_incidents_command(client: ZeroFox, args: dict[str, Any]) -> CommandResults:
-    start_time: str = args.get("start_time", "")
-    end_time: str = args.get("end_time", "")
-    key_incidents = client.get_key_incidents(start_time, end_time)
-
-    if len(key_incidents) == 0:
-        return CommandResults(
-            readable_output="No Key Incidents were found",
-            outputs=key_incidents,
-            outputs_prefix="ZeroFox_Key_Incidents.Key_Incidents",
-        )
-    return CommandResults(
-        outputs=key_incidents,
-        readable_output=tableToMarkdown("Key Incidents", key_incidents),
-        outputs_prefix="ZeroFox_Key_Incidents.Key_Incidents",
-    )
 
 
 def conectivity_test(client: ZeroFox) -> str:
@@ -415,7 +395,6 @@ def fetch_incidents(
     client: ZeroFox, last_run: dict[str, Any], first_fetch_time: str
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     start_time, end_time = get_fetch_run_time_range(last_run, first_fetch_time)
-
     incidents = client.get_key_incidents(start_time, end_time)
 
     if not incidents:
