@@ -884,10 +884,10 @@ script:
     - description: Path for the API request. I.E. '/vulnerabilities/123456'.
       name: url_suffix
       required: true
-    - description: 'HTTP method to use I.E. GET/POST/UPDATE.'
+    - description: 'HTTP method to use, i.e., GET/POST/UPDATE.'
       name: method
       required: true
-    - description: Additional parameters to pass to the API request in JSON format. I.E. {"show_cpe":"true"}.
+    - description: Additional parameters to pass to the API request in JSON format, i.e., {"show_cpe":"true"}.
       name: params
     description: 'Run any API request in the VulnDB API.'
     name: vulndb-generic-api-request
