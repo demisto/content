@@ -1,6 +1,5 @@
 id: Darktrace Email Basic Email Handler
-version: 24
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Darktrace Email Basic Email Handler
 description: Runs a common Email workflow for fetch Darktrace Email incidents.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -82,6 +82,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Release Email?'
     nexttasks:
       "No":
       - "11"
@@ -99,14 +100,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Would you like to Release this Email?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -128,8 +129,7 @@ tasks:
       id: 3fda3097-6acc-4823-8247-a41b33f346c4
       version: -1
       name: Hold Email?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -150,14 +150,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Would you like to apply a Hold action to this Email?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -316,6 +316,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Release Email?'
     nexttasks:
       "No":
       - "11"
@@ -333,14 +334,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Would you like to Release this Email?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -404,6 +405,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -453,5 +455,8 @@ inputs:
     simple: ${incident.id}
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
