@@ -1,6 +1,6 @@
 {
     "id": "Darktrace Email",
-    "version": 2,
+    "version": -1,
     "fromVersion": "6.10.0",
     "vcShouldIgnore": false,
     "locked": false,
