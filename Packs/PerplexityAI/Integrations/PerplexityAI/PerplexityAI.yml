@@ -95,9 +95,9 @@ script:
     description: Send a chat message.  You may need to increase the command timeout in "advanced settings" from the default 5 minutes.
     name: deepresearch-chat
     outputs:
-      - contextPath: Deepresearch
-        description: Research report.
-        type: String
+    - contextPath: Deepresearch
+      description: Research report.
+      type: String
   dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
