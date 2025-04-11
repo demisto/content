@@ -1,0 +1,587 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 10
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "darktraceemailuilink",
+								"height": 53,
+								"id": "64bcfd40-84bc-11ef-8307-e7a154975a71",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 53,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 10
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 106,
+								"id": "incident-details-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "darktraceemailrecipient",
+								"height": 53,
+								"id": "f625a3e0-7c29-11ef-b82a-e7410d06bec9",
+								"index": 0,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "darktraceemailanomalyscore",
+								"height": 53,
+								"id": "09169400-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "darktraceemailsubject",
+								"height": 53,
+								"id": "051752e0-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 2,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "darktraceemailcriticaltags",
+								"height": 53,
+								"id": "72929fd0-84ba-11ef-8307-e7a154975a71",
+								"index": 3,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "darktraceemailsummary",
+								"height": 106,
+								"id": "77827970-80ff-11ef-a093-578545e1c475",
+								"index": 4,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "darktraceemailuilink",
+								"height": 53,
+								"id": "4305b3e0-84bc-11ef-8307-e7a154975a71",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "darktraceemaildirection",
+								"height": 53,
+								"id": "f01276e0-7c29-11ef-b82a-e7410d06bec9",
+								"index": 0,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "darktraceemailsender",
+								"height": 53,
+								"id": "005e37a0-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 1,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 3,
+								"fieldId": "darktraceemailreceiptstatus",
+								"height": 53,
+								"id": "12fb1450-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "darktraceemaillinks",
+								"height": 53,
+								"id": "0f5e1770-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 1,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "darktraceemailactionstaken",
+								"height": 53,
+								"id": "06d2cc10-0c15-11f0-b811-0f370f0aef71",
+								"index": 2,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "darktraceemailwarningtags",
+								"height": 53,
+								"id": "7a502170-84ba-11ef-8307-e7a154975a71",
+								"index": 3,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "darktraceemailuuid",
+								"height": 53,
+								"id": "27d9df50-84bd-11ef-8307-e7a154975a71",
+								"index": 5,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "darktraceemailreadstatus",
+								"height": 53,
+								"id": "15c77ac0-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 0,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "darktraceemailattachments",
+								"height": 53,
+								"id": "6bbc70f0-84ba-11ef-8307-e7a154975a71",
+								"index": 1,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "darktraceemailactionstatus",
+								"height": 53,
+								"id": "1ebdf190-7c2a-11ef-b82a-e7410d06bec9",
+								"index": 2,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "darktraceemailinformationaltags",
+								"height": 53,
+								"id": "8d49eb30-84ba-11ef-8307-e7a154975a71",
+								"index": 3,
+								"listId": "caseinfoid-91330cc0-7c29-11ef-b82a-e7410d06bec9",
+								"sectionItemType": "field",
+								"startCol": 3
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident - Darktrace Email Details",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "99188f04-4669-404c-8cca-b5d90db39b25",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Darktrace Email Layout",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}
