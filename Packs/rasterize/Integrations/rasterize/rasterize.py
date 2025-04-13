@@ -1389,7 +1389,7 @@ def rasterize_command():  # pragma: no cover
 
 def get_width_height(args: dict):
     """
-    Get commomn args.
+    Get common args.
     :param args: dict to get args from
     :return: width, height, rasterize mode
     """
