@@ -626,6 +626,29 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
+def test_screenshot_image_local_file(mocker: MockerFixture):
+    """The function returns an error when attempting to rasterize a local file"""
+    mock_browser = mocker.Mock()
+    mock_tab = mocker.Mock()
+    mocker.patch('rasterize.demisto.command', return_value="rasterize-test")
+
+    local_file_path = "file:///path/to/local/file.html"
+    
+    result, error_message = screenshot_image(
+        mock_browser,
+        mock_tab,
+        local_file_path,
+        wait_time=0,
+        navigation_timeout=30,
+        full_screen=False,
+        include_url=False,
+        include_source=False
+    )
+
+    assert result is None
+    assert error_message == "Cannot rasterize local files"
+
+
 def test_is_private_network_urls(mocker: MockerFixture):
     """
     Given   A private network URL is called.
