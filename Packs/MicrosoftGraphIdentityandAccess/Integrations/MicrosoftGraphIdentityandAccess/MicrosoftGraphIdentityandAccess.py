@@ -365,7 +365,7 @@ class Client:  # pragma: no cover
             resp_type="json"
         )
         
-    def delete_conditional_access_policy(self, policy_id: str) -> bool:
+    def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
         """
         Delete specific Conditional Access policy by ID.
 
@@ -377,29 +377,101 @@ class Client:  # pragma: no cover
         """
         url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
 
-        return self.ms_client.http_request(
-            method="DELETE",
-            url_suffix=url_suffix,
-        )
+        try:
+            
+            self.ms_client.http_request(
+                method="DELETE",
+                url_suffix=url_suffix,
+            )
+            return CommandResults(
+            readable_output=f"Conditional Access policy {policy_id} was successfully deleted."
+            )
+        except Exception as e:
+            err = parse_error_from_exception(e)
+            return CommandResults(readable_output=(f"Error deleting Conditional Access policy:"
+                f" Code - {err.get("code")}, Message - {err.get("message")}"),)
         
     
-    def create_conditional_access_policy(self, policy) -> dict:
-        
-        if isinstance(policy, str):
-            try:
-                policy = json.loads(policy)
-            except json.JSONDecodeError:
-                raise ValueError("The provided policy string is not a valid JSON.")
+    def create_conditional_access_policy(self, policy) -> CommandResults:
+        try:
+            if isinstance(policy, str):
+                try:
+                    policy = json.loads(policy)
+                except json.JSONDecodeError:
+                    raise ValueError("The provided policy string is not a valid JSON.")
 
-        return self.ms_client.http_request(
-            method="POST",
-            url_suffix="v1.0/identity/conditionalAccess/policies",
-            json_data=policy
-        )
-
-
-        
+            res = self.ms_client.http_request(
+                method="POST",
+                url_suffix="v1.0/identity/conditionalAccess/policies",
+                json_data=policy
+                )
+            policy_id = res.get('id', 'Unknown')
+            demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n {res}")
             
+            return CommandResults(
+                readable_output=f"Conditional Access policy {policy_id} was successfully created.",
+                raw_response=res,)
+            
+        except Exception as e:
+            err = parse_error_from_exception(e)
+            
+            return CommandResults(readable_output=(f"Error creating Conditional Access policy:"
+                            f" Code - {err.get("code")}, Message - {err.get("message")}"),)
+
+    def update_conditional_access_policy(self, policy_id: str, policy: Union[dict, str]) -> CommandResults:
+        try:
+            if isinstance(policy, str):
+                try:
+                    policy = json.loads(policy)
+                except json.JSONDecodeError:
+                    raise ValueError("The provided policy string is not a valid JSON.")
+
+            res = self.ms_client.http_request(
+                method="PATCH",
+                url_suffix=f"v1.0/identity/conditionalAccess/policies/{policy_id}",
+                json_data=policy,
+                resp_type="response"
+            )
+            
+            demisto.info(f"Conditional Access policy {policy_id} was successfully updated:\n {res}")
+            
+            return CommandResults(
+                readable_output=f"Conditional Access policy {policy_id} was successfully updated.",
+                raw_response=res,)
+        except Exception as e:
+            err = parse_error_from_exception(e)
+            
+            return CommandResults(readable_output=(f"Error updating Conditional Access policy:"
+                            f" Code - {err.get("code")}, Message - {err.get("message")}"),)
+
+
+""" UTILITIES"""
+
+def parse_error_from_exception(e: Exception) -> Dict[str, str]:
+    try:
+        if not e.args:
+            return {'code': 'UnknownError', 'message': str(e)}
+
+        first_arg = e.args[0]
+
+        if isinstance(first_arg, dict):
+            error = first_arg.get("error", {})
+        elif isinstance(first_arg, str) and "{" in first_arg:
+            json_part = first_arg[first_arg.find('{'):]
+            parsed_error = json.loads(json_part)
+            error = parsed_error.get("error", {})
+        else:
+            error = {}
+
+        return {
+            'code': error.get('code', 'UnknownError'),
+            'message': error.get('message', str(e))
+        }
+
+    except Exception:
+        return {'code': 'UnknownError', 'message': str(e)}
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -1011,28 +1083,8 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
     if not policy_id:
         raise ValueError("The 'policy_id' argument is required to delete a Conditional Access policy.")
 
-    try:
-        client.delete_conditional_access_policy(policy_id)
-        
-        return CommandResults(
-            readable_output=f"Conditional Access policy {policy_id} was successfully deleted."
-        )
+    return client.delete_conditional_access_policy(policy_id)
     
-    except Exception as e:
-        error_details = e.args[0].get('error', {}) if len(e.args) > 0 and isinstance(e.args[0], dict) else {}
-        error_code = error_details.get('code', 'UnknownError')
-        error_message = error_details.get('message', str(e))
-
-        if error_code == 'ResourceNotFound':
-            return CommandResults(
-                readable_output=f"Error: {error_message}",
-            )
-        
-        return CommandResults(
-            readable_output=(f"Error deleting Conditional Access policy {policy_id}:"
-                             " Code - {error_code}, Message - {error_message}"),
-        )
-
 def create_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Creates a Conditional Access policy.
@@ -1051,87 +1103,126 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
     
     policy = args.get('policy', {})
     if not policy:
-        policy_name = args.get('policy_name')
-        state = args.get('state', 'enabled')
-        sign_in_risk_levels = args.get('sign_in_risk_levels', [])
-        user_risk_levels = args.get('user_risk_levels', [])
-        client_app_types = args.get('client_app_types', [])
-        include_applications = args.get('include_applications', [])
-        exclude_applications = args.get('exclude_applications', [])
-        include_user_actions = args.get('include_user_actions', [])
-        include_users = args.get('include_users', [])
-        exclude_users = args.get('exclude_users', [])
-        include_groups = args.get('include_groups', [])
-        exclude_groups = args.get('exclude_groups', [])
-        include_roles = args.get('include_roles', [])
-        exclude_roles = args.get('exclude_roles', [])
-        include_platforms = args.get('include_platforms', [])
-        exclude_platforms = args.get('exclude_platforms', [])
-        include_locations = args.get('include_locations', [])
-        exclude_locations = args.get('exclude_locations', [])
-        grant_control_operator = args.get('grant_control_operator', 'AND')
-        built_in_controls = args.get('built_in_controls', [])
+       
+    
+        def convert_to_list(value):
+                return [item.strip() for item in value.split(",")] if isinstance(value, str) else value
 
-        # Build the policy JSON object
         policy = {
-            "displayName": policy_name,
-            "state": state,
-            "conditions": {
-                "clientAppTypes": client_app_types if client_app_types else ["all"],
-                "applications": {
-                    "includeApplications": include_applications if include_applications else ["None"],
-                    "excludeApplications": exclude_applications if exclude_applications else ["None"]
-                },
-                "users": {
-                    "includeUsers": include_users if include_users else ["None"],
-                    "excludeUsers": exclude_users if exclude_users else ["None"],
-                    "includeUserActions": include_user_actions if include_user_actions else [],
-                },
-                "groups": {
-                    "includeGroups": include_groups,
-                    "excludeGroups": exclude_groups
-                },
-                "roles": {
-                    "includeRoles": include_roles,
-                    "excludeRoles": exclude_roles
-                },
-                "platforms": {
-                    "includePlatforms": include_platforms,
-                    "excludePlatforms": exclude_platforms
-                },
-                "locations": {
-                    "includeLocations": include_locations,
-                    "excludeLocations": exclude_locations
-                }
+        "displayName": args.get('policy_name'),
+        "state": args.get('state', 'enabled'),
+        "conditions": {
+            "clientAppTypes": convert_to_list(args.get('client_app_types', [])),
+            "applications": {
+                "includeApplications": convert_to_list(args.get('include_applications', [])),
+                "excludeApplications": convert_to_list(args.get('exclude_applications', [])),
+                "includeUserActions": convert_to_list(args.get('include_user_actions', [])),
             },
-            "grantControls": {
-                "operator": grant_control_operator,
-                "builtInControls": built_in_controls
-            }
+            "users": {
+                "includeUsers": convert_to_list(args.get('include_users', [])),
+                "excludeUsers": convert_to_list(args.get('exclude_users', [])),
+                "includeRoles": convert_to_list(args.get('include_roles', [])),
+                "excludeRoles": convert_to_list(args.get('exclude_roles', [])),
+                "includeGroups": convert_to_list(args.get('include_groups', [])),
+                "excludeGroups": convert_to_list(args.get('exclude_groups', [])),
+            },
+            "platforms": {
+                "includePlatforms": convert_to_list(args.get('include_platforms', [])),
+                "excludePlatforms": convert_to_list(args.get('exclude_platforms', [])),
+            },
+            "locations": {
+                "includeLocations": convert_to_list(args.get('include_locations', ["All"])),
+                "excludeLocations": convert_to_list(args.get('exclude_locations', [])),
+            },
+            "signInRiskLevels": convert_to_list(args.get('sign_in_risk_levels', [])),
+            "userRiskLevels": convert_to_list(args.get('user_risk_levels', [])),
+
+        },
+        "grantControls": {
+            "operator": args.get('grant_operator', 'OR'),
+            "builtInControls": convert_to_list(args.get('built_in_controls', ["mfa"]))
+        }
         }
 
-        # Add sign-in and user risk levels if provided
-        if sign_in_risk_levels:
-            policy["conditions"]["signInRiskLevels"] = sign_in_risk_levels
-        if user_risk_levels:
-            policy["conditions"]["userRiskLevels"] = user_risk_levels
 
-    # Make the API request to create the policy
-    try:
-        response = client.create_conditional_access_policy(policy)  # Pass the dictionary directly
+    return client.create_conditional_access_policy(policy) 
 
-        # Return the result of the policy creation
-        policy_id = response.get('id', 'Unknown')
-        return CommandResults(
-            readable_output=f"Conditional Access policy {policy_id} was successfully created.",
-            raw_response=response,
-        )
+        
 
-    except Exception as e:
+def update_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates an existing Conditional Access policy.
 
-        return CommandResults(
-            readable_output=f"Error creating Conditional Access policy: {str(e)}"
-        )
+    Required Permissions:
+        Policy.Read.All (Delegated or Application)
+        Policy.ReadWrite.ConditionalAccess (Delegated or Application)
+
+    Args:
+        client (Client): Microsoft Graph client.
+        args (dict): Command arguments containing policy update details.
+
+    Returns:
+        CommandResults: Results to return to Cortex XSOAR.
+    """
+
+    policy_id = args.get('policy_id')
+    if not policy_id:
+        raise ValueError("The 'policy_id' argument is required.")
+
+    def convert_to_list(value):
+        if isinstance(value, str):
+            return [item.strip() for item in value.split(",") if item.strip()]
+        return value
+
+    def clean_dict(d):
+        if isinstance(d, dict):
+            return {k: clean_dict(v) for k, v in d.items() if v not in [None, [], {}, ""] and clean_dict(v) != {}}
+        return d
+
+    if args.get("policy"):
+        policy = args.get("policy")
+    else:
+        conditions = {
+            "clientAppTypes": convert_to_list(args.get('client_app_types')),
+            "applications": {
+                "includeApplications": convert_to_list(args.get('include_applications')),
+                "excludeApplications": convert_to_list(args.get('exclude_applications')),
+                "includeUserActions": convert_to_list(args.get('include_user_actions')),
+            },
+            "users": {
+                "includeUsers": convert_to_list(args.get('include_users')),
+                "excludeUsers": convert_to_list(args.get('exclude_users')),
+                "includeRoles": convert_to_list(args.get('include_roles')),
+                "excludeRoles": convert_to_list(args.get('exclude_roles')),
+                "includeGroups": convert_to_list(args.get('include_groups')),
+                "excludeGroups": convert_to_list(args.get('exclude_groups')),
+            },
+            "platforms": {
+                "includePlatforms": convert_to_list(args.get('include_platforms')),
+                "excludePlatforms": convert_to_list(args.get('exclude_platforms')),
+            },
+            "locations": {
+                "includeLocations": convert_to_list(args.get('include_locations')),
+                "excludeLocations": convert_to_list(args.get('exclude_locations')),
+            },
+            "signInRiskLevels": convert_to_list(args.get('sign_in_risk_levels')),
+            "userRiskLevels": convert_to_list(args.get('user_risk_levels')),
+        }
+
+        grant_controls = {
+            "operator": args.get('grant_control_operator'),
+            "builtInControls": convert_to_list(args.get('built_in_controls')),
+        }
+
+        raw_policy = {
+            "state": args.get('state'),
+            "conditions": conditions,
+            "grantControls": grant_controls,
+        }
+
+        policy = clean_dict(raw_policy)
+        
+    return client.update_conditional_access_policy(policy_id, policy)
 
 
     
@@ -1206,7 +1297,9 @@ def main():  # pragma: no cover
             return_results(delete_conditional_access_policy_command(client, args))
         elif command == "msgraph-identity-ca-policy-create":
             return_results(create_conditional_access_policy_command(client, args))
-
+        elif command == "msgraph-identity-ca-policy-update":
+            return_results(update_conditional_access_policy_command(client, args))
+            
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(client, params)
             demisto.incidents(incidents)

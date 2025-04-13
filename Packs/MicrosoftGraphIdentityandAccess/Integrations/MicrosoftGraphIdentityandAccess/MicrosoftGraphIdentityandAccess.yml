@@ -636,6 +636,166 @@ script:
         - approvedApplication
         - compliantApplication
         - passwordChange
+
+  - description: Updates a Conditional Access policy.
+    name: msgraph-identity-ca-policy-update
+    arguments:
+    - name: policy_id
+      description: Required. The ID of the Conditional Access policy to update.
+      required: true
+    - name: policy
+      description: |
+        JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,
+        other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.
+      required: false
+      isArray: false
+    - name: policy_name
+      description: The name of the Conditional Access policy to be created.
+      required: false
+      isArray: false
+    - name: state
+      description: |
+        The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.
+      required: false
+      isArray: false
+      possibleValues: 
+        - enabled
+        - disabled
+    - name: sign_in_risk_levels
+      description: |
+        List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
+      required: false
+      isArray: true
+      possibleValues:
+        - low
+        - medium
+        - high
+        - hidden
+        - none
+    - name: user_risk_levels
+      description: |
+        List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
+      required: false
+      isArray: true
+      possibleValues:
+        - low
+        - medium
+        - high
+        - hidden
+        - none
+    - name: client_app_types
+      description: |
+        Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.
+      required: false
+      isArray: true
+      possibleValues:
+        - all
+        - browser
+        - mobileAppsAndDesktopClients
+        - exchangeActiveSync
+        - easSupported
+        - other
+    - name: include_applications
+      description: |
+        List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.
+      required: false
+      isArray: true
+    - name: exclude_applications
+      description: |
+        List of application IDs to be excluded from the policy.
+      required: false
+      isArray: true
+    - name: include_user_actions
+      description: |
+        List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.
+      required: false
+      isArray: true
+      possibleValues:
+        - vrn:user:registersecurityinfo
+        - urn:user:registerdevice
+    - name: include_users
+      description: |
+        List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.
+      required: false
+      isArray: true
+    - name: exclude_users
+      description: |
+        List of user IDs to be excluded from the policy.
+      required: false
+      isArray: true
+    - name: include_groups
+      description: |
+        List of group IDs to be included in the policy.
+      required: false
+      isArray: true
+    - name: exclude_groups
+      description: |
+        List of group IDs to be excluded from the policy.
+      required: false
+      isArray: true
+    - name: include_roles
+      description: |
+        List of role IDs to be included in the policy.
+      required: false
+      isArray: true
+    - name: exclude_roles
+      description: |
+        List of role IDs to be excluded from the policy.
+      required: false
+      isArray: true
+    - name: include_platforms
+      description: |
+        List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.
+      required: false
+      isArray: true
+      possibleValues:
+        - Android
+        - iOS
+        - Windows
+        - windowsPhone
+        - macOS
+        - Linux
+        - all
+    - name: exclude_platforms
+      description: |
+        List of platforms to be excluded from the policy.
+      required: false
+      isArray: true
+    - name: include_locations
+      description: |
+        List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.
+      required: false
+      isArray: true
+    - name: exclude_locations
+      description: |
+        List of location IDs to be excluded from the policy.
+      required: false
+      isArray: true
+    - name: grant_control_operator
+      description: |
+        The operator for grant control. Can be `AND` or `OR`. Default is `AND`.
+      required: false
+      isArray: false
+      possibleValues:
+        - AND
+        - OR
+    - name: built_in_controls
+      description: |
+        List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.
+        Special considerations when using `passwordChange`: 
+        - `passwordChange` must be accompanied by `mfa` using an `AND` operator.
+        - `passwordChange` must be used with `userRiskLevels`.
+        - The policy should target all applications and not exclude any.
+      required: false
+      isArray: true
+      possibleValues:
+        - block
+        - mfa
+        - compliantDevice
+        - domainJoinedDevice
+        - approvedApplication
+        - compliantApplication
+        - passwordChange
   isfetch: true
   script: '-'
   type: python
