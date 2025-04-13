@@ -115,9 +115,11 @@ CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
 
 # Define constants
 PRIVATE_NETWORKS = {
-    ipaddress.ip_network('0.0.0.0/8'),     # "This" Network
-    ipaddress.ip_network('127.0.0.0/8'),   # Loopback Network
+    ipaddress.ip_network("0.0.0.0/8"),  # "This" Network
+    ipaddress.ip_network("127.0.0.0/8"),  # Loopback Network
 }
+
+
 class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
@@ -654,9 +656,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         demisto.debug("chrome_manager: condition chrome_instances_contents is empty")
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
-        demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true"
-        )
+        demisto.debug("chrome_manager: condition chrome_options in chrome_options_dict is true")
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
     for chrome_port_ in chrome_instances_contents:
@@ -769,28 +769,28 @@ def screenshot_image(
     navigation_timeout: int,
     full_screen=False,
     include_url=False,
-    include_source=False
+    include_source=False,
 ):  # pragma: no cover
     """Takes a screenshot of a web page using Chrome browser.
 
-        Args:
-            browser: The Chrome browser instance.
-            tab: The Chrome tab instance.
-            path: The URL or file path to capture.
-            wait_time: Time to wait before taking the screenshot.
-            navigation_timeout: Maximum time to wait for page load.
-            full_screen: Whether to capture full page. Defaults to False.
-            include_url: Whether to include URL in the image. Defaults to False.
-            include_source: Whether to include page source in the response. Defaults to False.
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab instance.
+        path: The URL or file path to capture.
+        wait_time: Time to wait before taking the screenshot.
+        navigation_timeout: Maximum time to wait for page load.
+        full_screen: Whether to capture full page. Defaults to False.
+        include_url: Whether to include URL in the image. Defaults to False.
+        include_source: Whether to include page source in the response. Defaults to False.
 
-        Returns:
-            tuple: A tuple containing:
-                - bytes: The captured image data.
-                - str: The page source if include_source is True, otherwise an empty string.
+    Returns:
+        tuple: A tuple containing:
+            - bytes: The captured image data.
+            - str: The page source if include_source is True, otherwise an empty string.
 
-        Raises:
-            DemistoException: If the URL is a local file or starts with "mailto:".
-        """
+    Raises:
+        DemistoException: If the URL is a local file or starts with "mailto:".
+    """
 
     if path.lower().startswith("file://") and demisto.command() != "rasterize-email":
         # In rasterize-email command we create a temporary file, and we only rasterize it
@@ -802,7 +802,7 @@ def screenshot_image(
     if tab_event_handler.is_private_network_url:
         return None, (
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
-            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+            f" the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}"
         )
 
     try:
@@ -979,29 +979,30 @@ def kill_zombie_processes():
 def is_private_network(url: str) -> bool:
     """
     Check if a URL's hostname belongs to a private network.
-    
+
     Args:
         url (str): The URL to check
-        
+
     Returns:
         bool: True if the hostname is in a private network, False otherwise
     """
     try:
-        if not url.startswith(('http://', 'https://')):
-            url = 'http://' + url
+        if not url.startswith(("http://", "https://")):
+            url = "http://" + url
         parsed = urlparse(url)
-        hostname = parsed.netloc.split(':')[0]  # Remove port if exists
-        
+        hostname = parsed.netloc.split(":")[0]  # Remove port if exists
+
         if not hostname:  # Handle cases where netloc is empty
             return False
-            
+
         ip = ipaddress.ip_address(hostname)
         return any(ip in network for network in PRIVATE_NETWORKS)
-            
+
     except (ValueError, AttributeError):
         # ValueError: Invalid IP address
         # AttributeError: Invalid URL format
         return False
+
 
 def perform_rasterize(
     path: str | list[str],
