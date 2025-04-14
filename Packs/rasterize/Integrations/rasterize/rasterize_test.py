@@ -105,6 +105,7 @@ def test_rasterize_large_html(capfd, mocker):
 
 
 def test_rasterize_html(mocker, capfd):
+    mocker.patch('rasterize.demisto.command', return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/file.html")
         mocker.patch.object(demisto, "args", return_value={"EntryID": "test"})
