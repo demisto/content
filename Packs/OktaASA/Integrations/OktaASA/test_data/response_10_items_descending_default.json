@@ -5,8 +5,9 @@
             "timestamp": "2025-02-04T14:19:30.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_1",
+                "server": "server_1",
+                "client": "client_1",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -14,7 +15,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_1"
             }
         },
         {
@@ -22,8 +23,9 @@
             "timestamp": "2025-02-04T14:19:31.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_2",
+                "server": "server_2",
+                "client": "client_2",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -31,7 +33,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_2"
             }
         },
         {
@@ -39,8 +41,9 @@
             "timestamp": "2025-02-04T14:19:32.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_3",
+                "server": "server_3",
+                "client": "client_3",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -48,7 +51,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_3"
             }
         },
         {
@@ -56,8 +59,9 @@
             "timestamp": "2025-02-04T14:19:33.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_4",
+                "server": "server_4",
+                "client": "client_4",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -65,7 +69,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_4"
             }
         },
         {
@@ -73,8 +77,9 @@
             "timestamp": "2025-02-04T14:19:34.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_5",
+                "server": "server_5",
+                "client": "client_5",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -82,7 +87,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_5"
             }
         },
         {
@@ -90,8 +95,9 @@
             "timestamp": "2025-02-04T14:19:35.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_6",
+                "server": "server_6",
+                "client": "client_6",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -99,7 +105,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_6"
             }
         },
         {
@@ -107,8 +113,9 @@
             "timestamp": "2025-02-04T14:19:36.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_7",
+                "server": "server_7",
+                "client": "client_7",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -116,7 +123,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_7"
             }
         },
         {
@@ -124,8 +131,9 @@
             "timestamp": "2025-02-04T14:19:37.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_8",
+                "server": "server_8",
+                "client": "client_8",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -133,7 +141,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_8"
             }
         },
         {
@@ -141,8 +149,8 @@
             "timestamp": "2025-02-04T14:19:38.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_9",
+                "server": "server_9",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -150,7 +158,7 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_9"
             }
         },
         {
@@ -158,8 +166,8 @@
             "timestamp": "2025-02-04T14:19:39.000000Z",
             "details": {
                 "from_address": "x",
-                "project": "x",
-                "server": "x",
+                "project": "project_10",
+                "server": "server_10",
                 "ssh_algorithm": "x",
                 "ssh_public_key": "x",
                 "team_id": "x",
@@ -167,9 +175,11 @@
                 "trace_id": "x",
                 "type": "x",
                 "unix_user_name": "x",
-                "user": "x"
+                "user": "user_10"
             }
         }
     ],
-    "related_objects": {}
+    "related_objects": {"server_1": {"type": "server","object": {"data": "some_data"}}, "server_2": {"type": "server","object": {"data": "some_data"}}, "server_3":{"type": "server","object": {"data": "some_data"}}, "server_4":{"type": "server","object": {"data": "some_data"}}, "server_5": {"type": "server","object": {"data": "some_data"}},"server_6": {"type": "server","object": {"data": "some_data"}}, "server_7": {"type": "server","object": {"data": "some_data"}}, "server_8":{"type": "server","object": {"data": "some_data"}}, "server_9":{"type": "server","object": {"data": "some_data"}}, "server_10": {"type": "server","object": {"data": "some_data"}},
+                        "project_1": {"type": "project","object": {"data": "some_data"}}, "project_2": {"type": "project","object": {"data": "some_data"}}, "project_3":{"type": "project","object": {"data": "some_data"}}, "project_4":{"type": "project","object": {"data": "some_data"}}, "project_5": {"type": "project","object": {"data": "some_data"}},"project_6": {"type": "project","object": {"data": "some_data"}}, "project_7": {"type": "project","object": {"data": "some_data"}}, "project_8":{"type": "project","object": {"data": "some_data"}}, "project_9":{"type": "project","object": {"data": "some_data"}}, "project_10": {"type": "project","object": {"data": "some_data"}},
+                        "user_1": {}, "user_2": {}, "user_3":{}, "user_4":{}, "user_5": {},"user_6": {}, "user_7": {}, "user_8":{}, "user_9":{}, "user_10": {}}
 }
