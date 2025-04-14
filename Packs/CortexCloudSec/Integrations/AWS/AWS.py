@@ -4,7 +4,8 @@ from CommonServerPython import *
 from http import HTTPStatus
 from datetime import date
 
-def test_module(client) -> str:
+def test_module(aws_client: AWSClient) -> str:
+    aws_client.aws_session(service=SERVICE)
     return "ok"
 
 # =================== #
@@ -21,17 +22,17 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 def get_client(params, command_args):
-    aws_role_name = params.get('roleName')
-    accountId = command_args.get('account_id')
-    aws_role_arn = f'arn:aws:iam::{accountId}:role/{aws_role_name}'
+    aws_role_name = params.get('role_name')
+    account_id = command_args.get('account_id')
+    aws_role_arn = f'arn:aws:iam::{account_id}:role/{aws_role_name}'
     
-    aws_role_session_name = params.get('roleSessionName')
-    aws_role_session_duration = params.get('sessionDuration')
-    verify_certificate = not params.get('insecure', True)
+    aws_role_session_name = params.get('role_session_name')
+    aws_role_session_duration = params.get('session_duration')
+    verify_certificate = not argToBoolean(params.get('insecure') or True)
     timeout = params.get('timeout')
-    retries = params.get('retries', 5)
-    sts_endpoint_url = params.get('sts_endpoint_url', None)
-    endpoint_url = params.get('endpoint_url', None)
+    retries = params.get('retries') or 5
+    sts_endpoint_url = params.get('sts_endpoint_url')
+    endpoint_url = params.get('endpoint_url')
     
     aws_default_region = aws_role_policy = aws_access_key_id = aws_secret_access_key = aws_session_token = None
   
@@ -104,7 +105,7 @@ def update_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) 
     if 'ExpirePasswords' in kwargs:
         kwargs.pop('ExpirePasswords')
     if args.get('minimum_password_length'):
-        kwargs.update({'MinimumPasswordLength': int(args.get('minimum_password_length'))})
+        kwargs.update({'MinimumPasswordLength': arg_to_number(args.get('minimum_password_length'))})
     if args.get('require_symbols'):
         kwargs.update({'RequireSymbols': args.get('require_symbols') == 'True'})
     if args.get('require_numbers'):

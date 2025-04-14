@@ -7,17 +7,17 @@ commonfields:
   version: -1
 configuration:
 - display: Role Name
-  name: roleName
+  name: role_name
   type: 0
   section: Connect
   required: true
 - display: Role Session Name
-  name: roleSessionName
+  name: role_session_name
   type: 0
   section: Connect
   required: true
 - display: Role Session Duration
-  name: sessionDuration
+  name: session_duration
   type: 0
   section: Connect
   advanced: true
@@ -97,14 +97,14 @@ script:
       name: block_public_acls
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
       name: ignore_public_acls
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
       name: block_public_policy
       auto: PREDEFINED
@@ -115,9 +115,8 @@ script:
       name: restrict_public_buckets
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-    
+      - 'true'
+      - 'false'
   - name: aws-iam-account-password-policy-get
     description: Get AWS account's password policy.
     arguments:
@@ -196,32 +195,32 @@ script:
       description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
       name: require_symbols
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
       name: require_numbers
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
       name: require_uppercase_characters
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
       name: require_lowercase_characters
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
       name: allow_users_to_change_password
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - description: The number of days that an IAM user password is valid.
       name: max_password_age
       predefined:
@@ -234,8 +233,8 @@ script:
       description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
       name: hard_expiry
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     
   isfetch: false
   runonce: false
