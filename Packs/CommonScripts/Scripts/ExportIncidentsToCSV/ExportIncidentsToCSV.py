@@ -47,7 +47,7 @@ def main():
     if is_error(export_to_csv_result):
         export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
         if NO_INCIDENTS_FOUND in export_to_csv_result_content:
-            return_results(NO_INCIDENTS_FOUND)
+            return_results(NO_INCIDENTS_FOUND) #comment
         elif LIMIT_EXCEEDED in export_to_csv_result_content:
             return_error(f"{LIMIT_EXCEEDED} (10,000 incidents). Try to run the same query with lower fetchdays value")
         else:
