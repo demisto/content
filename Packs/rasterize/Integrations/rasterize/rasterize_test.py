@@ -279,7 +279,7 @@ class TestRasterizeIncludeUrl:
             - Verify that it runs as expected.
         """
         mocker.patch("os.remove")
-        mocker.patch('rasterize.demisto.command', return_value="rasterize-image")
+        mocker.patch('rasterize.demisto.command', return_value="rasterize-html")
         with capfd.disabled(), NamedTemporaryFile("w+") as f:
             f.write(
                 '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
