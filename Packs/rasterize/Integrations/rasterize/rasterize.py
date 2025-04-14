@@ -791,9 +791,14 @@ def screenshot_image(
     Raises:
         DemistoException: If the URL is a local file or starts with "mailto:".
     """
-
-    if path.lower().startswith("file://") and demisto.command() != "rasterize-email":
-        # In rasterize-email command we create a temporary file, and we only rasterize it
+    command = demisto.command()
+    if path.lower().startswith("file://") and command not in [
+        "rasterize-email",
+        "rasterize-html",
+        "test-module",
+        "rasterize-image"
+    ]:
+        # In some rasterize commands we create a temporary file, and we only rasterize it
         return None, ("Cannot rasterize local files")
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
