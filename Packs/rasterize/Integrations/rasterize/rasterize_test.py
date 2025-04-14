@@ -50,6 +50,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
 
 
 def test_rasterize_email_image_array(caplog, capfd, mocker):
+    mocker.patch('rasterize.demisto.command', return_value="rasterize-email")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -63,19 +64,7 @@ def test_rasterize_email_image_array(caplog, capfd, mocker):
 
 
 def test_rasterize_email_pdf(caplog, capfd, mocker):
-    with capfd.disabled() and NamedTemporaryFile("w+") as f:
-        f.write(
-            '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
-            "</head><body><br>---------- TEST FILE ----------<br></body></html>"
-        )
-        path = os.path.realpath(f.name)
-        f.flush()
-        mocker.patch.object(rasterize, "support_multithreading")
-        perform_rasterize(path=f"file://{path}", width=250, height=250, rasterize_type=RasterizeType.PDF)
-        caplog.clear()
-
-
-def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
+    mocker.patch('rasterize.demisto.command', return_value="rasterize-pdf")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -107,6 +96,7 @@ def test_get_chrome_options():
 
 
 def test_rasterize_large_html(capfd, mocker):
+    mocker.patch('rasterize.demisto.command', return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/large.html")
         mocker.patch.object(rasterize, "support_multithreading")
@@ -288,7 +278,7 @@ class TestRasterizeIncludeUrl:
             - Verify that it runs as expected.
         """
         mocker.patch("os.remove")
-
+        mocker.patch('rasterize.demisto.command', return_value="rasterize-image")
         with capfd.disabled(), NamedTemporaryFile("w+") as f:
             f.write(
                 '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
