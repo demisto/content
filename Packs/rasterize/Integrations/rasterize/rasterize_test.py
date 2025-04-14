@@ -809,13 +809,13 @@ def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerF
 
 
 @pytest.mark.parametrize("url, expected", [
-    pytest.param("http://192.168.1.1", False, id="private IPv4"),
-    pytest.param("https://10.0.0.1", False, id="private IPv4 with HTTPS"),
+    pytest.param("http://192.168.1.1", True, id="private IPv4"),
+    pytest.param("https://10.0.0.1", True, id="private IPv4 with HTTPS"),
     pytest.param("localhost", False, id="localhost"),
     pytest.param("http://8.8.8.8", False, id="public IPv4"),
     pytest.param("invalid_url", False, id="invalid URL"),
     pytest.param("http://", False, id="empty URL"),
-    pytest.param("192.168.1.1", False, id="private IPv4 without scheme"),
+    pytest.param("192.168.1.1", True, id="private IPv4"),
     pytest.param("2001:db8::1", False, id="IPv6 address"),
     pytest.param("https://www.example.com", False, id="public domain"),
     pytest.param("http://127.0.0.1", True, id="loopback IPv4"),
