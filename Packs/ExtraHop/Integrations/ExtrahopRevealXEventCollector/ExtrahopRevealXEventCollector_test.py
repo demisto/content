@@ -1,6 +1,4 @@
-# import json
 import pytest
-from unittest.mock import MagicMock, patch
 
 from ExtrahopRevealXEventCollector import Client
 from CommonServerPython import *

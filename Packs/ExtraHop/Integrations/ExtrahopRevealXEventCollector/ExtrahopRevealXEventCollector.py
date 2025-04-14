@@ -255,13 +255,15 @@ def fetch_extrahop_detections(
                 already_fetched.append(detection_id)
                 events.append(detection)
 
-                if len(events) == max_events:
+                if len(events) >= max_events:
                     break
 
             # hit max_events
-            if events and len(events) == max_events:
+            if len(events) >= max_events:
+                last_event = events[-1]
+                first_event = detections[0]
                 # Compare mod_time of last event with the first in this batch
-                if new_detections and events[-1]["mod_time"] == detections[0]["mod_time"]:
+                if new_detections and last_event["mod_time"] == first_event["mod_time"]:
                     # Same mod_time: continue with next offset
                     advanced_filter["offset"] += len(detections)
                     detection_start_time = events[-1]["mod_time"]
@@ -333,7 +335,7 @@ def fetch_events(client: Client, last_run: dict, max_events: int):
     return events, next_run
 
 
-def get_events(client: Client, args: dict, max_events: int) -> tuple[list, CommandResults]:
+def get_events(client: Client, args: dict, max_events: int) -> CommandResults:
     """
     Inner Test Function to make sure the integration works
     Args:
@@ -343,6 +345,7 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
 
     Returns: Tuple that contains events that been fetched and the Command results.
     """
+    max_events = arg_to_number(args.get("limit")) or max_events
     first_fetch = arg_to_datetime(args.get("first_fetch")) or get_current_time()
 
     # if the user limits in the get events arguments
@@ -359,7 +362,7 @@ def get_events(client: Client, args: dict, max_events: int) -> tuple[list, Comma
         outputs=output,
         outputs_prefix="ExtraHop.Detections",
     )
-    return output, command_results
+    return command_results
 
 
 def main():
@@ -397,8 +400,8 @@ def main():
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "revealx-get-events":
-            max_events = arg_to_number(args.get("max_events")) or max_events
-            events, command_results = get_events(client, args, max_events)
+            command_results = get_events(client, args, max_events)
+            events = command_results.outputs
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)

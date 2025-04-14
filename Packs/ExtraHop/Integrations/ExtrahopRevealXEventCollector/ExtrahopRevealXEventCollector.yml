@@ -64,7 +64,7 @@ script:
           - 'false'
         required: true
       - description: Returns no more than the specified number of detections.
-        name: max_events
+        name: limit
         required: false
       - description: "The UTC date or relative timestamp from where to start fetching incidents
                       Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
