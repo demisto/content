@@ -126,6 +126,7 @@ tasks:
       domain:
         simple: ${Core.OriginalAlert.[0].event.domain}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
