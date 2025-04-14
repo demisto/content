@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Rubrik Update Anomaly Status- Rubrik Security Cloud](../doc_files/Rubrik_Update_Anomaly_Status-_Rubrik_Security_Cloud.png)
+![Rubrik Update Anomaly Status- Rubrik Security Cloud](../doc_files/Rubrik_Update_Anomaly_Status_-_Rubrik_Security_Cloud.png)

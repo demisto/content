@@ -25,6 +25,9 @@ ignore=BA124
 [file:incidentfield-Rubrik_Polaris_Activity_Type.json]
 ignore=IF115,IF113
 
+[file:RubrikPolaris.yml]
+ignore=IN124
+
 [known_words]
 Acct
 acfc
