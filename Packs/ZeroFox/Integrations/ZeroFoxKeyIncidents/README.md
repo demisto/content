@@ -1,5 +1,5 @@
 Cloud-based SaaS to detect risks found on social media and digital channels.
-This integration was integrated and tested with version xx of ZeroFoxKeyIncidents.
+This integration was integrated and tested with version 1.4.0 of ZeroFoxKey.
 
 ## Configure ZeroFox Key Incidents in Cortex
 
