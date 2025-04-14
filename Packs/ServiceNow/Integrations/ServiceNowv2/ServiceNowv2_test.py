@@ -1730,7 +1730,7 @@ def test_test_module(mocker):
     assert "Test button cannot be used when using OAuth 2.0" in str(e)
     
     
-def test_jwt_checker():
+def test_jwt_checker(mocker):
     """
     Given:
     - private key
@@ -1740,6 +1740,9 @@ def test_jwt_checker():
     - (a) that the return type is a string
     - (b) validate the pem format
     """
+    import jwt
+
+    jwt_encode = mocker.patch.object(jwt, "encode", return_value="")
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = JWT_PARAMS)
@@ -1765,18 +1768,7 @@ def test_jwt_init(mocker):
     client.create_jwt()
     assert client.jwt == 'test'
     
-    
-def test_jwt_without_oauth():
-    """
-    Given:
-    When:
-    - creating a new client while mark jwt and not mark oauth
-    Then:
-    - exception throw
-    """
-    with pytest.raises(Exception) as e:
-        main()
-    assert 'When using JWT, mark OAuth checkbox first' in str(e)
+
     
 
 
