@@ -795,8 +795,8 @@ def screenshot_image(
     if path.lower().startswith("file://") and command not in [
         "rasterize-email",
         "rasterize-html",
-        "test-module",
         "rasterize-image"
+        "test-module",
     ]:
         # In some rasterize commands we create a temporary file, and we only rasterize it
         return None, ("Cannot rasterize local files")
