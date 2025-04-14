@@ -1,5 +1,5 @@
 ExtraHop Reveal(x) is a network detection and response solution that provides complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
-
+#### This integration works with ExtraHop firmware version greater than or equal to 9.3.0
 
 ## Configure an instance for ExtraHop Reveal(x)
 
@@ -56,3 +56,4 @@ Retrieves a list of audit logs events from the Extrahop RevealX instance.
 #### Context Output
 
 There is no context output for this command.
+

@@ -4,19 +4,16 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from packaging.version import Version
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'Extrahop'
 PRODUCT = 'RevealX'
 MAX_FETCH_LIMIT = 25000
 DEFAULT_FETCH_LIMIT = 5000
-BASE_TIME_CHECK_VERSION_PARAM = 1581852287000
 
 """ CLIENT CLASS """
 
@@ -89,7 +86,7 @@ class Client(BaseClient):
         Returns:
             tuple[str,int]: The token and its expiration time in seconds received from the API.
         """
-        demisto.info("Generating new authentication token.")
+        demisto.debug("Generating new authentication token.")
 
         req_headers = {
             "cache-control": "no-cache",
@@ -111,11 +108,6 @@ class Client(BaseClient):
 
         return token, expires_in
 
-    def get_extrahop_version(self):
-        """Retrieve the ExtraHop version."""
-        self.set_headers()
-        return self._http_request(method="GET", url_suffix="/api/v1/extrahop/version")
-
     def detections_list(self, body):
         """Retrieve the detections from Reveal(X).
         """
@@ -125,22 +117,6 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
-
-
-def trim_spaces_from_args(args: dict) -> dict:
-    """Trim spaces from values of the args dict.
-
-    Args:
-        args: Dict to trim spaces from.
-
-    Returns:
-        Arguments after trim spaces.
-    """
-    for key, val in args.items():
-        if isinstance(val, str):
-            args[key] = val.strip()
-
-    return args
 
 
 def prepare_list_detections_output(detections) -> str:
@@ -170,26 +146,9 @@ def prepare_list_detections_output(detections) -> str:
     return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
 
 
-def validate_version(client, last_run) -> None:
-    """
-    Nake sure the Extrahop version that is supported by  this integration.
-    Args:
-        client: ExtraHop client to be used.
-        last_run: Last run of ExtraHop event collector.
-    """
-    now = datetime.now()
-    next_day = now + timedelta(days=1)
-    if last_run.get("version_recheck_time", BASE_TIME_CHECK_VERSION_PARAM) < int(now.timestamp() * 1000):
-        last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
-        version = get_extrahop_server_version(client)
-        if Version(version) < Version("9.3.0"):
-            raise DemistoException(
-                "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
-
-
 def validate_fetch_events_params(last_run: dict) -> dict:
     """
-    Validate the parameter list for fetch incidents.
+    Validate the parameter list for fetch events.
 
     Args:
         last_run: last run returned by function demisto.getLastRun
@@ -212,25 +171,10 @@ def validate_fetch_events_params(last_run: dict) -> dict:
     }
 
 
-def get_extrahop_server_version(client: Client):
-    """Retrieve and parse the extrahop server version.
-
-    Args:
-        client: ExtraHop client to be used.
-
-    Returns:
-        The parsed version of the current extrahop server.
-
-    """
-    version = client.get_extrahop_version().get("version")
-    temp = version.split(".")
-    version = ".".join(temp[:3])
-    return version
-
 
 def update_time_values_detections(detections: List[dict[str, Any]]) -> None:
     """
-    Add Requested Time Fields to detections list.
+     Updates each detection in the list with _TIME and _ENTRY_STATUS fields based on mod_time, start_time, and update_time.
     Args:
         detections: Detections that came from Reveal(X).
     """
@@ -260,7 +204,6 @@ def get_detections_list(client: Client,
         CommandResults object.
     """
     body = advanced_filter
-    trim_spaces_from_args(body)
     detections = list(client.detections_list(body))
     # Add Time Params
     update_time_values_detections(detections)
@@ -283,7 +226,9 @@ def fetch_extrahop_detections(
         last_run: Last run returned by function demisto.getLastRun.
 
     Returns:
-        List of incidents to be pushed into XSIAM.
+        - List of new detections to be pushed into XSIAM.
+        - Updated last_run dictionary.
+
     """
     try:
         already_fetched: List = last_run.get("already_fetched", [])
@@ -302,7 +247,7 @@ def fetch_extrahop_detections(
 
             if not new_detections:
                 # If no new detections, break the loop to prevent an infinite loop
-                demisto.info("No new detections to fetch, exiting the loop.")
+                demisto.debug("No new detections to fetch, exiting the loop.")
                 break
 
             for detection in new_detections:
@@ -339,7 +284,7 @@ def fetch_extrahop_detections(
     except Exception as error:
         raise DemistoException(f"extrahop: exception occurred {str(error)}")
 
-    demisto.info(f"Extrahop fetched {len(events)} events with the advanced filter: {advanced_filter}")
+    demisto.debug(f"Extrahop fetched {len(events)} events with the advanced filter: {advanced_filter}")
 
     last_run.update({
         "detection_start_time": int(detection_start_time),
@@ -376,17 +321,15 @@ def fetch_events(client: Client, last_run: dict, max_events: int):
         client: ExtraHop client to be used.
         last_run: The last_run dictionary having the state of previous cycle.
     """
-    demisto.info("Extrahop fetch_events invoked")
+    demisto.debug("Extrahop fetch_events invoked")
     fetch_params = validate_fetch_events_params(last_run)
-
-    validate_version(client, last_run)
 
     advanced_filter = {"mod_time": fetch_params["detection_start_time"],
                        "limit": fetch_params["limit"], "offset": fetch_params["offset"],
                        "sort": [{"direction": "asc", "field": "mod_time"}]}
 
     events, next_run = fetch_extrahop_detections(client, advanced_filter, last_run, max_events)
-    demisto.info(f"Extrahop next_run is {next_run}")
+    demisto.debug(f"Extrahop next_run is {next_run}")
     return events, next_run
 
 
@@ -457,7 +400,7 @@ def main():
             max_events = arg_to_number(args.get("max_events")) or max_events
             events, command_results = get_events(client, args, max_events)
             if events and argToBoolean(args.get('should_push_events')):
-                demisto.debug(f'xuSending {len(events)} events.')
+                demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
         else:
