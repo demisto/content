@@ -50,7 +50,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
 
 
 def test_rasterize_email_image_array(caplog, capfd, mocker):
-    mocker.patch('rasterize.demisto.command', return_value="rasterize-email")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-email")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -64,7 +64,7 @@ def test_rasterize_email_image_array(caplog, capfd, mocker):
 
 
 def test_rasterize_email_pdf(caplog, capfd, mocker):
-    mocker.patch('rasterize.demisto.command', return_value="rasterize-pdf")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-pdf")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -96,7 +96,7 @@ def test_get_chrome_options():
 
 
 def test_rasterize_large_html(capfd, mocker):
-    mocker.patch('rasterize.demisto.command', return_value="rasterize-html")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/large.html")
         mocker.patch.object(rasterize, "support_multithreading")
@@ -105,7 +105,7 @@ def test_rasterize_large_html(capfd, mocker):
 
 
 def test_rasterize_html(mocker, capfd):
-    mocker.patch('rasterize.demisto.command', return_value="rasterize-html")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/file.html")
         mocker.patch.object(demisto, "args", return_value={"EntryID": "test"})
@@ -279,7 +279,7 @@ class TestRasterizeIncludeUrl:
             - Verify that it runs as expected.
         """
         mocker.patch("os.remove")
-        mocker.patch('rasterize.demisto.command', return_value="rasterize-html")
+        mocker.patch("rasterize.demisto.command", return_value="rasterize-image")
         with capfd.disabled(), NamedTemporaryFile("w+") as f:
             f.write(
                 '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -621,10 +621,10 @@ def test_screenshot_image_local_file(mocker: MockerFixture):
     """The function returns an error when attempting to rasterize a local file"""
     mock_browser = mocker.Mock()
     mock_tab = mocker.Mock()
-    mocker.patch('rasterize.demisto.command', return_value="rasterize-test")
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-test")
 
     local_file_path = "file:///path/to/local/file.html"
-    
+
     result, error_message = screenshot_image(
         mock_browser,
         mock_tab,
@@ -633,7 +633,7 @@ def test_screenshot_image_local_file(mocker: MockerFixture):
         navigation_timeout=30,
         full_screen=False,
         include_url=False,
-        include_source=False
+        include_source=False,
     )
 
     assert result is None

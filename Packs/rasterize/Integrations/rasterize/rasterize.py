@@ -246,9 +246,7 @@ class PychromeEventHandler:
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(
-                f"PychromeEventHandler.page_frame_stopped_loading, Frame URL: {frame_url}, Original path: {self.path}"
-            )
+            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, Frame URL: {frame_url}, Original path: {self.path}")
 
             # Check if the loaded page is a Chrome error page, which indicates a failed load
             # Only retry loading when the URL is a direct file path
@@ -797,7 +795,7 @@ def screenshot_image(
     if path.lower().startswith("file://") and command not in [
         "rasterize-email",
         "rasterize-html",
-        "rasterize-image"
+        "rasterize-image",
         "test-module",
     ]:
         # In some rasterize commands we create a temporary file, and we only rasterize it
