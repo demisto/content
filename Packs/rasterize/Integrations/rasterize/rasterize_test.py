@@ -836,11 +836,11 @@ def test_is_private_network(url: str, expected: bool):
     pytest.param("http://192.168.001.001?param=value", "http://192.168.1.1?param=value", id="url_with_ipv4_and_query_params"),
     pytest.param("2001:db8:3333:4444:5555:6666:7777:8888", "2001:db8:3333:4444:5555:6666:7777:8888", id="ipv6"),
 ])
-def test_remove_leading_zero_from_ip_addresses(test_input: str, expected: str):
+def test_remove_leading_zeros_from_ip_addresses(test_input: str, expected: str):
     """
-    Test the remove_leading_zero_from_ip_addresses function with various inputs.
+    Test the remove_leading_zeros_from_ip_addresses function with various inputs.
     """
-    assert remove_leading_zero_from_ip_addresses(test_input) == expected
+    assert remove_leading_zeros_from_ip_addresses(test_input) == expected
 
 
 def test_handle_request_paused(mocker):

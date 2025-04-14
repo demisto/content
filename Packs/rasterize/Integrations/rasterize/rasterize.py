@@ -972,14 +972,16 @@ def is_private_network(url: str) -> bool:
     """
     try:
         if not (hostname := extract_hostname(url)):
+            demisto.debug(f"Problematic URL detected: Unable to extract hostname from {url}")
             return False
             
         return ipaddress.ip_address(hostname).is_private
         
     except (ValueError, AttributeError):
+        demisto.debug(f"Problematic URL detected: Unable to process {url}")
         return False
 
-def remove_leading_zero_from_ip_addresses(path: str) -> str:
+def remove_leading_zeros_from_ip_addresses(path: str) -> str:
     """
     Removes leading zeros from IP addresses in the given path.
     as leading zeros is not valid in IP addresses.
@@ -1002,7 +1004,11 @@ def remove_leading_zero_from_ip_addresses(path: str) -> str:
     if re.match(ip_pattern, hostname):
         octets = hostname.split('.')
         normalized_ip = '.'.join(str(int(octet)) for octet in octets)
-        return path.replace(hostname, normalized_ip)
+        result = path.replace(hostname, normalized_ip)
+        if result != path:
+            demisto.info(f"IP address normalized: {path} -> {result}")
+        return result
+
         
     return path
 
@@ -1032,7 +1038,7 @@ def perform_rasterize(
 
     # convert the path param to list in case we have only one string
     paths: list[str] = argToList(path)
-    paths = [remove_leading_zero_from_ip_addresses(path_value) for path_value in paths]
+    paths = [remove_leading_zeros_from_ip_addresses(path_value) for path_value in paths]
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith("mailto:")]
     private_network_paths = [path_value for path_value in paths if is_private_network(path_value)]
