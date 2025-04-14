@@ -35,7 +35,7 @@ def request_get_wrap(url: str, allow_redirects=True):
     """
     Wrapper around requests.get to handle SSL and connection errors,
     and optionally capture the full redirect chain.
-
+    Return message with Failure information.
     Args:
         url (str): The URL to fetch.
         allow_redirects (bool): Whether to follow redirects.
