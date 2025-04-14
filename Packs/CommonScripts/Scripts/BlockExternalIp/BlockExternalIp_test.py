@@ -450,7 +450,7 @@ def test_final_part_pan_os(mocker):
 def test_pan_os_commit(mocker):
     """
     Given:
-      - The command arguments and a lost of the previous responses.
+      - The command arguments and a list of the previous responses.
     When:
       - Running the script block-external-ip for the panorama brand, triggering the commit action.
     Then:
@@ -469,10 +469,112 @@ def test_pan_os_commit(mocker):
     }
     responses = []
     res_commit = util_load_json('test_data/pan_os_responses.json').get('pan_os_commit')
-    mocker_register_ip = mocker.patch.object(demisto, 'executeCommand', return_value=res_commit)
+    mocker_commit = mocker.patch.object(demisto, 'executeCommand', return_value=res_commit)
     mocker_set_context = mocker.patch.object(demisto, 'setContext', return_value={})
     result = pan_os_commit(args, responses)
-    mocker_register_ip.assert_called_with("pan-os-commit", {'polling': True})
-    mocker_set_context('commit_job_id', '2925')
+    mocker_commit.assert_called_with("pan-os-commit", {'polling': True})
+    mocker_set_context.assert_called_with('commit_job_id', '2925')
     assert result.readable_output == '### Commit Status:\n|JobID|Status|\n|---|---|\n| 2925 | Pending |\n'
     assert len(responses) == 1
+
+
+def test_pan_os_create_update_address_group_create(mocker):
+    """
+    Given:
+      - The address group, relevant context, tag, and a list of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, creating a new address group.
+    Then:
+      - Verify the pan-os-create-address-group was called with the correct arguments.
+    """
+    from BlockExternalIp import pan_os_create_edit_address_group, get_relevant_context
+    address_group = 'new_add_group3'
+    res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
+    res_address_group_create = util_load_json('test_data/pan_os_responses.json').get('create_address_group')
+    context_address_group_list = get_relevant_context(res_address_group_list[0].get('EntryContext', {}), 'Panorama.AddressGroups')
+    tag = 'new_tag3'
+    responses = []
+    mocker_address_group_create = mocker.patch.object(demisto, 'executeCommand', return_value=res_address_group_create)
+    pan_os_create_edit_address_group(address_group, context_address_group_list, tag, responses)
+    mocker_address_group_create.assert_called_with("pan-os-create-address-group",
+                                                   {'name': address_group, 'type': 'dynamic', 'match': tag})
+    assert len(responses) == 1
+
+
+def test_pan_os_create_update_address_group_edit(mocker):
+    """
+    Given:
+      - The address group, relevant context, tag, and a list of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, update an existing address group.
+    Then:
+      - Verify the pan-os-edit-address-group was called with the correct arguments.
+    """
+    from BlockExternalIp import pan_os_create_edit_address_group, get_relevant_context
+    address_group = 'testing2'
+    res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
+    res_address_group_edit = util_load_json('test_data/pan_os_responses.json').get('edit_address_group')
+    context_address_group_list = get_relevant_context(res_address_group_list[0].get('EntryContext', {}), 'Panorama.AddressGroups')
+    tag = 'some_tag2'
+    expected_match = 'xsiam-blocked-external-ip or shalom21 or some_tag or some_tag1 or some_tag2'
+    responses = []
+    mocker_address_group_edit = mocker.patch.object(demisto, 'executeCommand', return_value=res_address_group_edit)
+    pan_os_create_edit_address_group(address_group, context_address_group_list, tag, responses)
+    mocker_address_group_edit.assert_called_with("pan-os-edit-address-group",
+                                                 {'name': address_group, 'type': 'dynamic', 'match': expected_match})
+    assert len(responses) == 1
+
+
+def test_pan_os_create_edit_rule_create(mocker):
+    """
+    Given:
+      - The rule name, relevant context, address group, log forwarding name, and a list of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, create new rule.
+    Then:
+      - Verify the pan-os-create-rule was called with the correct arguments.
+    """
+    from BlockExternalIp import pan_os_create_edit_rule, get_relevant_context
+    address_group = 'testing2'
+    rule_name = 'rule_name1'
+    expected_create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase',
+                                 'source': address_group}
+    expected_calls = [mocker.call('pan-os-create-rule', expected_create_rule_args),
+                      mocker.call('pan-os-move-rule', {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'})]
+    res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
+    res_rule_create = util_load_json('test_data/pan_os_responses.json').get('create_rule')
+    res_rule_move = util_load_json('test_data/pan_os_responses.json').get('move_rule')
+    context_rule_list = get_relevant_context(res_rules_list[0].get('EntryContext', {}), 'Panorama.SecurityRule')
+    responses = []
+    mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_rule_create, res_rule_move])
+    pan_os_create_edit_rule(rule_name, context_rule_list, address_group, '', responses)
+    assert len(responses) == 2
+    assert mocker_execute_command.call_count == 2
+    mocker_execute_command.assert_has_calls(expected_calls)
+
+
+def test_pan_os_create_edit_rule_edit(mocker):
+    """
+    Given:
+      - The rule name, relevant context, address group, log forwarding name, and a list of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, update an existing rule.
+    Then:
+      - Verify the pan-os-edit-rule was called with the correct arguments.
+    """
+    from BlockExternalIp import pan_os_create_edit_rule, get_relevant_context
+    address_group = 'testing2'
+    rule_name = 'new_rule'
+    expected_edit_rule_args = {'rulename': rule_name, 'element_to_change': 'source', 'element_value': address_group, 'pre_post': 'pre-rulebase'}
+    expected_calls = [mocker.call('pan-os-edit-rule', expected_edit_rule_args),
+                      mocker.call('pan-os-move-rule', {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'})]
+    res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
+    res_rule_edit = util_load_json('test_data/pan_os_responses.json').get('edit_rule')
+    res_rule_move = util_load_json('test_data/pan_os_responses.json').get('move_rule')
+    context_rule_list = get_relevant_context(res_rules_list[0].get('EntryContext', {}), 'Panorama.SecurityRule')
+    responses = []
+    mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_rule_edit, res_rule_move])
+    pan_os_create_edit_rule(rule_name, context_rule_list, address_group, '', responses)
+    assert len(responses) == 2
+    assert mocker_execute_command.call_count == 2
+    mocker_execute_command.assert_has_calls(expected_calls)

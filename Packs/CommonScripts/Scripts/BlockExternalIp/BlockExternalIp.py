@@ -535,7 +535,7 @@ def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     return results
 
 
-def pan_os_create_update_address_group(address_group: str, context_list_add_group: list, tag: str, responses: list):
+def pan_os_create_edit_address_group(address_group: str, context_list_add_group: list, tag: str, responses: list):
     """ Checks whether to create a new address group or update an existing one, and does it.
     Args:
         address_group (str): The address group.
@@ -601,7 +601,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     if not check_value_exist_in_context(tag, context_list_add_group, 'Match'):
         # check if the group already exists we should update the tag.
         demisto.debug(f"The {tag=} doesn't exist in the address groups")
-        pan_os_create_update_address_group(address_group, context_list_add_group, tag, responses)
+        pan_os_create_edit_address_group(address_group, context_list_add_group, tag, responses)
 
         res_list_rules = run_execute_command("pan-os-list-rules", {'pre_post': 'pre-rulebase'})
         context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
