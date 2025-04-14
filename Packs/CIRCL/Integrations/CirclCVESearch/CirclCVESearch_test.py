@@ -6,7 +6,7 @@ import pytest
 from CirclCVESearch import (Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_version,
                             detect_format, handle_cve_5_1, create_cve_summary)
 
-from CommonServerPython import DemistoException, EntityRelationship, argToList
+from CommonServerPython import DemistoException, EntityRelationship, argToList, CommandResults
 
 BASE_URL = "https://cve.circl.lu/api/"
 
@@ -233,3 +233,58 @@ def test_create_cve_summary():
     assert summary["Published"] == "2025-03-01T10:00:00"
     assert summary["Modified"] == "2025-03-05T15:00:00"
     assert summary["Description"].startswith("Some vulnerability")
+
+def test_cve_command_with_skipped_and_valid_cves():
+    """
+    Given:
+        - A list of three CVE IDs
+        - Only one returns usable data from `process_cve_data`
+        - Two others return None and should be skipped
+
+    When:
+        `cve_command` is called
+
+    Then:
+        - One CommandResults contains parsed CVE data
+        - One CommandResults contains a skipped CVE message mentioning the skipped CVEs
+    """
+    cve_valid = "CVE-2025-0001"
+    cve_skipped1 = "CVE-2025-0002"
+    cve_skipped2 = "CVE-2025-0003"
+    args = {"cve": f"{cve_valid},{cve_skipped1},{cve_skipped2}"}
+
+    class MockClient(Client):
+        def __init__(self):
+            pass
+        
+        def cve(self, cve_id):
+            if cve_id == "CVE-2025-0001":
+                return {
+                    "id": cve_id,
+                    "cvss": "8.0",
+                    "summary": "Some vuln",
+                    "impact": {},
+                    "access": {},
+                    "vulnerable_product": [],
+                    "cwe": "CWE-123"
+                }
+            else:
+                return {"format": "bad_format"}
+
+
+    client = MockClient()
+    results = cve_command(client, args)
+    if not results:
+        pytest.fail("cve_command returned None unexpectedly")
+
+    if isinstance(results, CommandResults):
+        results = [results]
+
+    assert len(results) == 2
+    outputs = results[0].outputs
+    assert isinstance(outputs, dict), "Expected outputs to be a dict"
+    assert outputs["ID"] == cve_valid
+    skipped_output = results[1].readable_output
+    assert cve_skipped1 in skipped_output
+    assert cve_skipped2 in skipped_output
+    assert "skipped" in skipped_output.lower()
