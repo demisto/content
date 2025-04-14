@@ -19,8 +19,9 @@ from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
 urllib3.disable_warnings()
-
 """ GLOBALS/PARAMS """
+VENDOR = "CrowdStrike"
+PRODUCT = "Falcon_Event"
 INTEGRATION_NAME = "CrowdStrike Falcon"
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
@@ -51,7 +52,7 @@ HEADERS = {
 }
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
-INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
+INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15)) if not is_xsiam() else int(PARAMS.get("events_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
@@ -2887,8 +2888,9 @@ def fetch_incidents():
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
-    fetch_incidents_or_detections = params.get("fetch_incidents_or_detections", "")
-    look_back = int(params.get("look_back") or 2)
+    fetch_incidents_or_detections = params.get("fetch_incidents_or_detections", "") if not is_xsiam() else params.get("fetch_events_or_detections", "")
+    
+    look_back = int(params.get("look_back") or 2) if not is_xsiam() else int(params.get("look_back_xsiam") or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -7285,7 +7287,8 @@ def main():
         elif command == "fetch-incidents":
             disable_for_xsiam()
             demisto.incidents(fetch_incidents())
-
+        elif command == "fetch-events":
+            send_events_to_xsiam(fetch_incidents(), vendor=VENDOR, product=PRODUCT)
         elif command in ("cs-device-ran-on", "cs-falcon-device-ran-on"):
             return_results(get_indicator_device_id())
         elif demisto.command() == "cs-falcon-search-device":
