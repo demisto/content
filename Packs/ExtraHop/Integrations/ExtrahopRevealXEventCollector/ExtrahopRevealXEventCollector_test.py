@@ -28,11 +28,6 @@ def client():
     )
 
 
-@pytest.fixture(autouse=True)
-def mock_get_version(mocker):
-    mocker.patch("ExtrahopRevealXEventCollector.Client.get_extrahop_version", return_value={"version": "20.3.5"})
-
-
 def test_update_time_values_detections():
     """
     Given: A mock raw response containing detections logs.
@@ -47,25 +42,6 @@ def test_update_time_values_detections():
         assert "_TIME" in detection
         assert "_ENTRY_STATUS" in detection
 
-
-def test_validate_version_newer_version_does_not_raise():
-    """
-    Given: a supported version and unsupported version
-    When: Checking firmware version
-    Then: Ensure that old version raise an exception and the new one doesn't.
-    """
-    from ExtrahopRevealXEventCollector import validate_version
-    client_mock = MagicMock()
-    last_run = {}
-
-    with patch("ExtrahopRevealXEventCollector.get_extrahop_server_version", return_value="20.3.5"):
-        validate_version(client_mock, last_run)
-
-    with patch("ExtrahopRevealXEventCollector.get_extrahop_server_version", return_value="9.2"):
-        try:
-            validate_version(client_mock, last_run)
-        except DemistoException as e:
-            assert e.message == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
 
 
 def test_fetch_events_update_last_run(client, mocker):
