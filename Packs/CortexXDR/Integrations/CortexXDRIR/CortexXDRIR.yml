@@ -108,7 +108,7 @@ configuration:
   required: false
   hidden: true
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
-  defaultvalue: '120'
+  defaultvalue: '180'
   display: HTTP Timeout
   name: timeout
   type: 0
