@@ -174,14 +174,14 @@ tasks:
           right:
             value:
               simple: "2"
-        - operator: isNotEqualString
+        - operator: in
           left:
             value:
               simple: WildFire.Verdicts.VerdictDescription
             iscontext: true
           right:
             value:
-              simple: Benign
+              simple: C2,phishing,grayware,malware
           ignorecase: true
     continueonerrortype: ""
     view: |-
