@@ -124,7 +124,7 @@ tasks:
       - "4"
     scriptarguments:
       domain:
-        simple: ${Core.OriginalAlert.raw_abioc.event.domain}
+        simple: ${Core.OriginalAlert.[0].event.domain}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -694,6 +694,7 @@ tasks:
                   simple: ProgramData
               ignorecase: true
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -782,7 +783,7 @@ tasks:
       body:
         simple: |-
           {
-            "request_data": "indicator,type,severity,expiration_date\n${Core.OriginalAlert.raw_abioc.event.domain},DOMAIN_NAME,MEDIUM,${iocExpiration}","validate":"true"
+            "request_data": "indicator,type,severity,expiration_date\n${Core.OriginalAlert.[0].event.domain},DOMAIN_NAME,MEDIUM,${iocExpiration}","validate":"true"
           }
       uri:
         simple: /public_api/v1/indicators/insert_csv
