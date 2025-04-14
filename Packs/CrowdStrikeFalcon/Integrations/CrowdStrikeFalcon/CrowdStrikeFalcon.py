@@ -2888,8 +2888,10 @@ def fetch_incidents():
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
-    fetch_incidents_or_detections = params.get("fetch_incidents_or_detections", "") if not is_xsiam() else params.get("fetch_events_or_detections", "")
-    
+    if is_xsiam():
+        fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
+    else:
+        fetch_incidents_or_detections = params.get("fetch_incidents_or_detections", "")
     look_back = int(params.get("look_back") or 2) if not is_xsiam() else int(params.get("look_back_xsiam") or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
