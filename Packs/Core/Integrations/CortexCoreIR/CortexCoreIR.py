@@ -577,8 +577,8 @@ def main():  # pragma: no cover
         elif command == "core-execute-command":
             core_execute_command_command(args)
             script_res = script_run_polling_command(args, client, statuses = ('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
-            reformated_res = {}
             if isinstance(script_res, list):
+                reformated_res: dict[str, Any] = {}
                 for response in script_res:
                     results = response.outputs.get('results')
                     for res in results:
