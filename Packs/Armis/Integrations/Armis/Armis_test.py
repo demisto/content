@@ -347,3 +347,105 @@ def test_url_parameter(mocker):
     main()
 
     assert mock_client.call_args.kwargs["base_url"] == "test.com/api/v1/"
+
+
+def test_get_api_token_when_found_in_integration_context(mocker):
+    """ Test cases for scenario when there is api_token and expiration_time in integration context."""
+    from Armis import Client
+
+    test_integration_context = {
+        "token": "1234567890",
+        "token_expiration": time.ctime(time.time() + 10000)
+    }
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=test_integration_context)
+    client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
+
+    api_token = client._get_token()
+
+    assert api_token == test_integration_context["token"]
+
+
+def test_get_api_token_when_expired_token_found_in_integration_context(mocker, requests_mock):
+    """ Test cases for scenario when there is an expired api_token in integration context."""
+    from Armis import Client
+
+    mock_token = {"data": {"access_token": "example", "expiration_utc": time.ctime(time.time() + 10000)}}
+    requests_mock.post("https://test.com/api/v1/access_token/", json=mock_token)
+
+    client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
+
+    api_token = client._get_token()
+
+    assert api_token == mock_token["data"]["access_token"]
+
+
+def test_retry_for_401_error(mocker, requests_mock):
+    from Armis import Client, search_alerts_by_aql_command
+
+    test_integration_context = {
+        "token": "invalid_token",
+        "token_expiration": time.ctime(time.time() - 10000)
+    }
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=test_integration_context)
+
+    url = "https://test.com/api/v1/search/?aql="
+    url += "+".join(
+        [
+            "in%3Aalerts",
+            "timeFrame%3A%223+days%22",
+            "riskLevel%3AHigh%2CMedium",
+            "status%3AUNHANDLED%2CRESOLVED",
+            "type%3A%22Policy+Violation%22",
+        ]
+    )
+
+    mock_results = {"message": "Invalid access token.", "success": False}
+
+    mock_token = {"data": {"access_token": "example", "expiration_utc": time.ctime(time.time() + 10000)}}
+    requests_mock.post("https://test.com/api/v1/access_token/", json=mock_token)
+
+    example_alerts = [
+        {
+            "accessSwitch": None,
+            "category": "Dummy Category",
+            "dataSources": [
+                {
+                    "firstSeen": "2025-01-01T00:00:00+00:00",
+                    "lastSeen": "2025-01-02T00:00:00+00:00",
+                    "name": "Dummy Source",
+                    "types": ["Dummy Type"],
+                }
+            ],
+            "firstSeen": "2025-01-01T00:00:00+00:00",
+            "id": 100,
+            "ipAddress": "0.0.0.1",
+            "ipv6": "0000:0000:0000:0000:0000:0000:0000:0001",
+            "lastSeen": "2025-01-02T00:00:00+00:00",
+            "macAddress": "00:00:00:00:00:01",
+            "manufacturer": "Dummy Manufacturer",
+            "model": "Dummy Model",
+            "name": "Dummy Device",
+            "operatingSystem": "Dummy OS",
+            "operatingSystemVersion": "1.0",
+            "riskLevel": 1,
+            "sensor": {"name": "Dummy Sensor", "type": "Dummy Sensor Type"},
+            "site": {"location": "Dummy Location", "name": "Dummy Site"},
+            "tags": ["Dummy Tag 1", "Dummy Tag 2", "Dummy Tag 3"],
+            "type": "Dummy Type",
+            "user": "Dummy User",
+            "visibility": "Dummy Visibility",
+        }
+    ]
+    new_mock_results = {"data": {"results": example_alerts}}
+
+    requests_mock.register_uri('GET', url, [
+        {'status_code': 401, 'json': mock_results},
+        {'status_code': 200, 'json': new_mock_results}])
+
+    client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
+    args = {"aql_string": 'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'}
+
+    response = search_alerts_by_aql_command(client, args)
+    assert response.outputs == example_alerts

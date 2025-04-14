@@ -12,24 +12,56 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 
-class AccessToken:
-    def __init__(self, token: str, expiration: datetime):
-        self._expiration = expiration
-        self._token = token
-
-    def __str__(self):
-        return self._token
-
-    @property
-    def expired(self) -> bool:
-        return self._expiration < datetime.now()
-
-
 class Client(BaseClient):
     def __init__(self, secret: str, base_url: str, verify: bool, proxy):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._secret = secret
-        self._token: AccessToken = AccessToken("", datetime.now())
+
+    def http_request(self, method="GET", url_suffix=None, resp_type="json", headers=None, json_data=None,
+                     params=None, data=None) -> Any:
+        """
+        Function to make http requests using inbuilt _http_request() method.
+        Handles token expiration case and makes request using secret key.
+        Args:
+            method (str): HTTP method to use. Defaults to "GET".
+            url_suffix (str): URL suffix to append to base_url. Defaults to None.
+            resp_type (str): Response type. Defaults to "json".
+            headers (dict): Headers to include in the request. Defaults to None.
+            json_data (dict): JSON data to include in the request body. Defaults to None.
+            params (dict): Parameters to include in the request. Defaults to None.
+            data (dict): Data to include in the request body. Defaults to None.
+        Returns:
+            Any: Response from the request.
+        """
+        headers = headers or {}
+
+        try:
+            token = self._get_token()
+            headers['Authorization'] = str(token)
+            response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
+                                          headers=headers, resp_type=resp_type, data=data)
+        except DemistoException as e:
+            if 'Error in API call [401]' in str(e):
+                demisto.debug(f'One retry for 401 error. Error: {str(e)}')
+                # Token has expired, refresh token and retry request
+                token = self._get_token(force_new=True)
+                headers['Authorization'] = str(token)
+                response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
+                                              headers=headers, resp_type=resp_type, data=data)
+            else:
+                raise e
+        return response
+
+    def is_token_expired(self) -> bool:
+        demisto.debug("Checking if token is expired")
+        token_expiration = get_integration_context().get("token_expiration", None)
+        if token_expiration is not None:
+            expire_time = dateparser.parse(token_expiration).replace(tzinfo=datetime.now().tzinfo)  # type: ignore
+            current_time = datetime.now() - timedelta(seconds=30)
+            demisto.debug(f"Comparing current time: {current_time} with expire time: {expire_time}")
+            return expire_time < current_time
+        else:
+            return True
 
     def _get_token(self, force_new: bool = False):
         """
@@ -37,17 +69,22 @@ class Client(BaseClient):
         Args:
             force_new (bool): create a new access token even if an existing one is available
         Returns:
-            AccessToken: A valid Access Token to authorize requests
+            str: A valid Access Token to authorize requests
         """
-        if self._token is None or force_new or self._token.expired:
+        token = get_integration_context().get("token", None)
+        if token is None or force_new or self.is_token_expired():
+            demisto.debug("Creating a new access token")
             response = self._http_request("POST", "/access_token/", data={"secret_key": self._secret})
             token = response.get("data", {}).get("access_token")
             expiration = response.get("data", {}).get("expiration_utc")
             expiration_date = dateparser.parse(expiration)
             assert expiration_date is not None, f"failed parsing {expiration}"
 
-            self._token = AccessToken(token, expiration_date)
-        return self._token
+            set_integration_context({"token": token, "token_expiration": str(expiration_date)})
+
+            demisto.debug(f"setting new token to integration context with expiration time: {expiration_date}.")
+            return token
+        return token
 
     def search_by_aql_string(self, aql_string: str, order_by: str = None, max_results: int = None, page_from: int = None):
         """
@@ -62,7 +99,6 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of results represented by JSON objects
         """
-        token = self._get_token()
         params = {"aql": aql_string}
         if order_by is not None:
             params["orderBy"] = order_by
@@ -71,8 +107,8 @@ class Client(BaseClient):
         if page_from is not None:
             params["from"] = str(page_from)
 
-        response = self._http_request(
-            "GET", "/search/", params=params, headers={"accept": "application/json", "Authorization": str(token)}
+        response = self.http_request(
+            "GET", "/search/", params=params, headers={"accept": "application/json"}
         )
         if max_results is None:
             # if max results was not specified get all results.
@@ -80,8 +116,8 @@ class Client(BaseClient):
             while response.get("data", {}).get("next") is not None:
                 # while the response says there are more results use the 'page from' parameter to get the next results
                 params["from"] = str(len(results))
-                response = self._http_request(
-                    "GET", "/search/", params=params, headers={"accept": "application/json", "Authorization": str(token)}
+                response = self.http_request(
+                    "GET", "/search/", params=params, headers={"accept": "application/json"}
                 )
                 results.extend(response.get("data", {}).get("results", []))
 
@@ -154,13 +190,11 @@ class Client(BaseClient):
             status (str): The new status of the Alert to set
             alert_id (str): The Id of the Alert
         """
-        token = self._get_token()
-        return self._http_request(
+        return self.http_request(
             "PATCH",
             f"/alerts/{alert_id}/",
             headers={
                 "accept": "application/json",
-                "Authorization": str(token),
                 "content-type": "application/x-www-form-urlencoded",
             },
             data={"status": status},
@@ -173,12 +207,11 @@ class Client(BaseClient):
             tags (str): The tags to add to the Device
             device_id (str): The Id of the Device
         """
-        token = self._get_token()
-        return self._http_request(
+        return self.http_request(
             "POST",
             f"/devices/{device_id}/tags/",
             json_data={"tags": tags},
-            headers={"accept": "application/json", "Authorization": str(token)},
+            headers={"accept": "application/json"},
         )
 
     def untag_device(self, device_id: str, tags: list[str]):
@@ -188,12 +221,11 @@ class Client(BaseClient):
             tags (List[str]): The tags to remove from the Device
             device_id (str): The Id of the Device
         """
-        token = self._get_token()
-        return self._http_request(
+        return self.http_request(
             "DELETE",
             f"/devices/{device_id}/tags/",
             json_data={"tags": tags},
-            headers={"accept": "application/json", "Authorization": str(token)},
+            headers={"accept": "application/json"},
         )
 
     def search_devices(
@@ -657,7 +689,7 @@ def main():
     verify = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get("fetch_time", "3 days").strip()
+    first_fetch_time = params.get("first_fetch", "3 days").strip()
 
     proxy = params.get("proxy", False)
 
