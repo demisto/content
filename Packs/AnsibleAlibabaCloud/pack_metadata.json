@@ -7,14 +7,24 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider",
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Database",
+        "Elasticsearch"
+    ],
     "useCases": [],
     "keywords": [
         "Aliyun",
         "Alicloud",
-        "Asset Management"
+        "Asset Management",
+        "DB",
+        "Database",
+        "CDN",
+        "Elastic",
+        "ECS"
     ],
     "marketplaces": [
         "xsoar",
