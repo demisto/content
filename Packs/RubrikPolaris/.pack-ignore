@@ -22,6 +22,9 @@ ignore=BA124
 [file:RubrikRadarFilesAdded.yml]
 ignore=BA124
 
+[file:incidentfield-Rubrik_Polaris_Activity_Type.json]
+ignore=IF115,IF113
+
 [known_words]
 Acct
 acfc
@@ -151,3 +154,5 @@ internationalized
 IDN
 B
 Bool
+FILESYSTEM
+HYPERVISOR

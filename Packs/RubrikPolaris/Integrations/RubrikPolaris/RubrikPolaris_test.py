@@ -15,6 +15,9 @@ from RubrikPolaris import (
     OUTPUT_PREFIX,
     TOKEN_EXPIRY_BUFFER_TIME,
     TOKEN_EXPIRY_TIME_SPAN,
+    DEFAULT_EVENT_TYPES,
+    ANOMALY_TYPE_ENUM,
+    FALSE_POSITIVE_TYPE_ENUM,
 )
 
 BASE_URL = "https://demo.my.rubrik.com/api"
@@ -157,12 +160,21 @@ def test_test_module_for_correct_params(client, monkeypatch, requests_mock):
     assert test_module(client, params) == "ok"
 
 
-@pytest.mark.parametrize("max_fetch, first_fetch", [("-1", "3 days"), ("20", "abc")])
-def test_test_module_for_incorrect_params(client, monkeypatch, requests_mock, max_fetch, first_fetch):
+@pytest.mark.parametrize("max_fetch, first_fetch, event_types, radar_critical_severity_mapping",
+                         [("-1", "3 days", [], None), ("20", "abc", [], None),
+                          ("10", "3 days", ["abc"], None), ("10", "3 days", [], '')])
+def test_test_module_for_incorrect_params(client, requests_mock, max_fetch, first_fetch,
+                                          event_types, radar_critical_severity_mapping):
     """Test test_module function to raise ValueError with appropriate message when incorrect parameters are passed."""
     from RubrikPolaris import test_module
 
-    params = {"isFetch": True, "max_fetch": max_fetch, "first_fetch": first_fetch}
+    params = {
+        "isFetch": True,
+        "max_fetch": max_fetch,
+        "first_fetch": first_fetch,
+        "event_types": event_types,
+        "radar_critical_severity_mapping": radar_critical_severity_mapping
+    }
     list_policies_response = {"data": {}}
     requests_mock.post(BASE_URL_GRAPHQL, json=list_policies_response)
 
@@ -214,8 +226,7 @@ def test_fetch_incidents_success_without_last_run(client, requests_mock):
     requests_mock.post(BASE_URL_GRAPHQL, responses)
 
     fetch_incidents_last_run, fetch_incidents_incidents = fetch_incidents(
-        client, {}, {"first_fetch": f"{first_fetch}", "max_fetch": 2}
-    )
+        client, {}, {"first_fetch": f"{first_fetch}", "max_fetch": 2, "event_types": [DEFAULT_EVENT_TYPES[0]]})
     last_run = {
         "last_fetch": f"{last_fetch}",
         "next_page_token": fetch_response["data"]["activitySeriesConnection"]["pageInfo"]["endCursor"],
@@ -3103,3 +3114,102 @@ def test_domain_command_success(mock_return, client, requests_mock, capfd):
     assert command_output[0].outputs_key_field == "domain"
     assert OUTPUT_PREFIX["DOMAIN"] == command_output[0].outputs_prefix
     assert domain_indicator == command_output[0].indicator.to_context()
+
+
+def test_rubrik_radar_anomaly_status_update_command_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_radar_anomaly_status_update_command with valid case.
+
+    When:
+        - Calling rubrik_radar_anomaly_status_update_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_radar_anomaly_status_update_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/radar_anomaly_status_update_response.json"))
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           "test_data/radar_anomaly_status_update_hr.md")) as f:
+        hr_data = f.read()
+
+    args = {'workload_id': '00000000-0000-0000-0000-000000000001',
+            'anomaly_id': '00000000-0000-0000-0000-000000000001', 'anomaly_type': 'FILESYSTEM'}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    response = rubrik_radar_anomaly_status_update_command(client, args=args)
+
+    assert response.raw_response == response_data.get('raw_response')
+    assert response.outputs == remove_empty_elements(response_data.get('outputs'))
+    assert response.readable_output == hr_data
+    assert response.outputs_key_field == ['command_name', 'anomaly_id', 'workload_id']
+    assert response.outputs_prefix == OUTPUT_PREFIX['ANOMALY_UPDATE_STATUS']
+
+
+def test_rubrik_radar_anomaly_status_update_command_false_positive_success(client, requests_mock):
+    """
+    Test case scenario for rubrik_radar_anomaly_status_update_command with false positive valid case.
+
+    When:
+        - Calling rubrik_radar_anomaly_status_update_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_radar_anomaly_status_update_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/radar_anomaly_status_update_false_positive_response.json"))
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           "test_data/radar_anomaly_status_update_false_positive_hr.md")) as f:
+        hr_data = f.read()
+
+    args = {'workload_id': '00000000-0000-0000-0000-000000000001', 'anomaly_id': '00000000-0000-0000-0000-000000000001',
+            'anomaly_type': 'FILESYSTEM', 'false_positive_type': 'other', 'false_positive_reason': 'test reason'}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    response = rubrik_radar_anomaly_status_update_command(client, args=args)
+
+    assert response.raw_response == response_data.get('raw_response')
+    assert response.outputs == remove_empty_elements(response_data.get('outputs'))
+    assert response.readable_output == hr_data
+    assert response.outputs_key_field == ['command_name', 'anomaly_id', 'workload_id']
+    assert response.outputs_prefix == OUTPUT_PREFIX['ANOMALY_UPDATE_STATUS']
+
+
+@pytest.mark.parametrize("args, error", [
+    ({}, ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('anomaly_type')),
+    ({'anomaly_type': 'filesystem'}, ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('workload_id')),
+    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001'},
+     ERROR_MESSAGES['MISSING_REQUIRED_FIELD'].format('anomaly_id')),
+    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001',
+      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_type': 'other'},
+     ERROR_MESSAGES['FALSE_POSITIVE_TYPE_ERROR'].format('false_positive_reason', 'false_positive_type')),
+    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001',
+      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_reason': 'test reason'},
+     ERROR_MESSAGES['FALSE_POSITIVE_REASON_ERROR'].format('false_positive_type', 'false_positive_reason')),
+    ({'anomaly_type': 'anomaly', 'workload_id': '00000000-0000-0000-0000-000000000001',
+      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_type': 'other'},
+     ERROR_MESSAGES['INVALID_SELECT'].format('anomaly', 'anomaly_type', ANOMALY_TYPE_ENUM)),
+    ({'anomaly_type': 'filesystem', 'workload_id': '00000000-0000-0000-0000-000000000001',
+      'anomaly_id': '00000000-0000-0000-0000-000000000001', 'false_positive_reason': 'test reason',
+      'false_positive_type': 'other_type'},
+     ERROR_MESSAGES['INVALID_SELECT'].format('other_type', 'false_positive_type', FALSE_POSITIVE_TYPE_ENUM)),
+])
+def test_rubrik_radar_anomaly_status_update_command_with_invalid_args(client, args, error):
+    """
+    Test case scenario for invalid arguments for rubrik_radar_anomaly_status_update_command.
+
+    Given:
+        -args: Contains arguments for the command.
+    When:
+        -Invalid value is passed in arguments
+    Then:
+        -Raises ValueError and asserts error message
+    """
+    from RubrikPolaris import rubrik_radar_anomaly_status_update_command
+
+    with pytest.raises(ValueError) as e:
+        rubrik_radar_anomaly_status_update_command(client, args=args)
+    assert str(e.value) == error

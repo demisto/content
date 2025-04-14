@@ -662,6 +662,9 @@
           },
           {
             "name": "K8S"
+          },
+          {
+            "name": "THREAT_MONITORING"
           }
         ]
       }

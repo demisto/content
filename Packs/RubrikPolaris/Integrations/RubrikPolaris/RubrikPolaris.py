@@ -75,11 +75,13 @@ IS_ANOMALY = "Is Anomaly"
 ANOMALY_PROBABILITY = "Anomaly Probability"
 SEVERITY = "Severity"
 ENCRYPTION = "Encryption"
+ANOMALY = "Anomaly"
 ANOMALY_TYPE = "Anomaly Type"
 TOTAL_SUSPICIOUS_FILES = "Total Suspicious Files"
 TOTAL_RANSOMEWARE_NOTE = "Total Ransomware Note"
 DETECTION_TIME = "Detection Time"
 SNAPSHOT_TIME = "Snapshot Time"
+ANOMALY_RESOLUTION_STATUS = "Resolution Status"
 RANSOMEWARE_NOTE = "Ransomware Note"
 RANSOMEWARE_ENCRYPTION = "Ransomware Encryption"
 ACCESS_TYPE = "Access Type"
@@ -106,6 +108,9 @@ THREAT_HUNT_INFO_KEY = "threatHuntInfo"
 THREAT_MONITORING_INFO_KEY = "threatMonitoringInfo"
 
 DAILY_HITS_CHANGE = "Daily Hits Change"
+DEFAULT_EVENT_TYPES = ["ANOMALY", "THREAT_MONITORING"]
+DEFAULT_ACTIVITY_STATUSES = ["SUCCESS", "PARTIAL_SUCCESS"]
+DEFAULT_SEVERITIES = ["SEVERITY_CRITICAL"]
 START_CURSOR = "Start Cursor"
 END_CURSOR = "End Cursor"
 HAS_NEXT_PAGE = "Has Next Page"
@@ -128,6 +133,7 @@ MESSAGES = {
     "IP_NOT_FOUND": 'No details found for IP: "{}".',
     "DOMAIN_NOT_FOUND": 'No details found for domain: "{}".',
     "NO_OBJECT_FOUND": "No Objects Found",
+    'INVALID_FETCH_EVENT_TYPE': f"Only the following event types are supported: {', '.join(DEFAULT_EVENT_TYPES)}"
 }
 
 OUTPUT_PREFIX = {
@@ -168,6 +174,7 @@ OUTPUT_PREFIX = {
     "SUSPICIOUS_FILE": "RubrikPolaris.SuspiciousFile",
     "IP": "RubrikPolaris.IP",
     "DOMAIN": "RubrikPolaris.Domain",
+    "ANOMALY_UPDATE_STATUS": "RubrikPolaris.AnomalyStatus",
 }
 
 ERROR_MESSAGES = {
@@ -194,6 +201,9 @@ ERROR_MESSAGES = {
     "to specify the indicator to scan for.",
     "INVALID_FORMAT": "Invalid format for '{}', please check it's format in the argument's help-text. ",
     "IP_ADDRESS_REQUIRED": "IP Address is required for fetching snapshot files download results command",
+    "FALSE_POSITIVE_REASON_ERROR": "Requires the {} argument when the {} argument is specified.",
+    "FALSE_POSITIVE_TYPE_ERROR": "Requires the {} argument when {} argument is set to OTHER.",
+    "FETCH_PARAM_REQUIRED": "Requires the '{}' parameter when fetch incidents is selected.",
 }
 
 DBOT_SCORE_MAPPING = {
@@ -212,6 +222,10 @@ IOC_TYPE_ENUM = [
     "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE",
     "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME",
 ]
+
+ANOMALY_TYPE_ENUM = ['FILESYSTEM', 'HYPERVISOR']
+FALSE_POSITIVE_TYPE_ENUM = ['FP_TYPE_UNSPECIFIED', 'OS_UPDATE', 'APPLICATION_UPDATE',
+                            'LOG_ROTATION', 'OTHER', 'NFA_SCHEDULED_MAINTENANCE', 'NFA_UNSCHEDULED_MAINTENANCE']
 
 USER_ACCESS_QUERY = """query UserAccessPrincipalListQuery(
     $filter: PrincipalSummariesFilterInput,
@@ -606,6 +620,8 @@ ANOMALY_RESULT_QUERY = """query AnomalyResultQuery(
     detectionTime
     snapshotDate
     encryption
+    resolutionStatus
+    anomalyType
     anomalyInfo {
       strainAnalysisInfo {
         strainId
@@ -665,6 +681,10 @@ VOLUME_GROUP_DOWNLOAD_SNAPSHOT_FILES_MUTATION = """mutation RadarInvestigationVG
   }
 }
 """
+
+ANOMALY_UPDATE_STATUS_MUTATION = """mutation AnomalyUpdateStatusMutation($input: ResolveAnomalyInput!) {
+  resolveAnomaly(input: $input)
+}"""
 
 
 class MyClient(PolarisClient):
@@ -742,12 +762,15 @@ def convert_to_demisto_severity(severity: str = "XSOAR LOW") -> int:
     :return: mapped incident severity level
     """
     demisto.info("SEVERITY TO CONVERT IS: " + severity)
-    return {
-        "XSOAR LOW": IncidentSeverity.LOW,
-        "XSOAR MEDIUM": IncidentSeverity.MEDIUM,
-        "XSOAR HIGH": IncidentSeverity.HIGH,
-        "XSOAR CRITICAL": IncidentSeverity.CRITICAL,
-    }[severity]
+    try:
+        return {
+            "XSOAR LOW": IncidentSeverity.LOW,
+            "XSOAR MEDIUM": IncidentSeverity.MEDIUM,
+            "XSOAR HIGH": IncidentSeverity.HIGH,
+            "XSOAR CRITICAL": IncidentSeverity.CRITICAL,
+        }[severity]
+    except KeyError:
+        raise ValueError(ERROR_MESSAGES['FETCH_PARAM_REQUIRED'].format('Event Critical Severity Level Mapping'))
 
 
 def process_activity_nodes(activity_nodes: list, processed_incident):
@@ -767,8 +790,8 @@ def process_activity_nodes(activity_nodes: list, processed_incident):
         display_time = datetime.strptime(activity_node.get("time", ""), DATE_TIME_FORMAT)
         stringified_display_time = display_time.strftime(HUMAN_READABLE_DATE_TIME_FORMAT)
 
-        processed_incident["message"].append(
-            {  # type: ignore
+        processed_incident["message"].append(  # type: ignore
+            {
                 "message": activity_node.get("message", ""),
                 "id": activity_node.get("id", ""),
                 "severity": activity_node.get("severity", ""),
@@ -2160,6 +2183,8 @@ def prepare_context_hr_suspicious_file_list(snappable_investigations_data: dict,
         ENCRYPTION: context.get("encryption"),
         DETECTION_TIME: context.get("detectionTime"),
         SNAPSHOT_TIME: context.get("snapshotDate"),
+        ANOMALY_RESOLUTION_STATUS: context.get('resolutionStatus'),
+        ANOMALY_TYPE: context.get('anomalyType')
     }
 
     anomaly_info_list: list = context.get("anomalyInfo", {}).get("strainAnalysisInfo", [])
@@ -2169,7 +2194,7 @@ def prepare_context_hr_suspicious_file_list(snappable_investigations_data: dict,
         anomaly_info: dict = anomaly_info_list[0]
         anomaly_information.update(
             {
-                ANOMALY_TYPE: anomaly_info.get("strainId"),
+                ANOMALY: anomaly_info.get("strainId"),
                 TOTAL_SUSPICIOUS_FILES: anomaly_info.get("totalAffectedFiles"),
                 TOTAL_RANSOMEWARE_NOTE: anomaly_info.get("totalRansomwareNotes"),
             }
@@ -2205,7 +2230,9 @@ def prepare_context_hr_suspicious_file_list(snappable_investigations_data: dict,
             ANOMALY_PROBABILITY,
             SEVERITY,
             ENCRYPTION,
+            ANOMALY,
             ANOMALY_TYPE,
+            ANOMALY_RESOLUTION_STATUS,
             TOTAL_SUSPICIOUS_FILES,
             TOTAL_RANSOMEWARE_NOTE,
             DETECTION_TIME,
@@ -2316,6 +2343,35 @@ def validate_ip_addresses(ips_list: List[str]) -> tuple[List[str], List[str]]:
     return invalid_ip_addresses, valid_ip_addresses
 
 
+def validate_anomaly_status_update_command_args(anomaly_type: str, false_positive_type: Optional[str],
+                                                false_positive_reason: Optional[str]):
+    '''
+    Validate the arguments of the rubrik_radar_anomaly_status_update_command.
+
+    :type anomaly_type: ``str``
+    :param anomaly_type: The type of the anomaly.
+
+    :type false_positive_type: ``Optional[str]``
+    :param false_positive_type: The type of the false positive.
+
+    :type false_positive_reason: ``Optional[str]``
+    :param false_positive_reason: The reason for marking the anomaly as a false positive.
+    '''
+
+    if anomaly_type.upper() not in ANOMALY_TYPE_ENUM:
+        raise ValueError(ERROR_MESSAGES['INVALID_SELECT'].format(anomaly_type, 'anomaly_type', ANOMALY_TYPE_ENUM))
+
+    if false_positive_reason and not false_positive_type:
+        raise ValueError(ERROR_MESSAGES['FALSE_POSITIVE_REASON_ERROR'].format('false_positive_type', 'false_positive_reason'))
+
+    if false_positive_type and false_positive_type.upper() not in FALSE_POSITIVE_TYPE_ENUM:
+        raise ValueError(ERROR_MESSAGES['INVALID_SELECT'].format(
+            false_positive_type, 'false_positive_type', FALSE_POSITIVE_TYPE_ENUM))
+
+    if false_positive_type and false_positive_type.upper() == 'OTHER' and not false_positive_reason:
+        raise ValueError(ERROR_MESSAGES['FALSE_POSITIVE_TYPE_ERROR'].format('false_positive_reason', 'false_positive_type'))
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -2360,6 +2416,12 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
     :return:
     """
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), "Fetch Limit")
+    event_types = argToList(params.get("event_types"), transform=lambda s: s.strip())
+    event_types = [event_type.upper() for event_type in event_types if event_type]
+    if not event_types:
+        event_types = DEFAULT_EVENT_TYPES
+    elif any(event_type not in DEFAULT_EVENT_TYPES for event_type in event_types):
+        raise ValueError(MESSAGES['INVALID_FETCH_EVENT_TYPE'])
 
     last_run_time = last_run.get("last_fetch", None)
     next_page_token = last_run.get("next_page_token", "")
@@ -2376,9 +2438,14 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
         next_run["last_fetch"] = last_run_time
     # removed manual fetch interval as this feature is built in XSOAR 6.0.0 and onwards
 
-    events = client.list_event_series(
-        activity_type="ANOMALY", start_date=last_run_time, sort_order="ASC", first=max_fetch, after=next_page_token
-    )
+    filters = {"lastActivityStatus": DEFAULT_ACTIVITY_STATUSES, "severity": DEFAULT_SEVERITIES}
+
+    events = client.list_event_series(activity_type=",".join(event_types),
+                                      start_date=last_run_time,
+                                      sort_order="ASC",
+                                      first=max_fetch,
+                                      after=next_page_token,
+                                      filters=filters)
 
     activity_series_connection = events.get("data", {}).get("activitySeriesConnection", {})
 
@@ -4373,6 +4440,64 @@ def domain_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandR
     return command_results
 
 
+def rubrik_radar_anomaly_status_update_command(client: PolarisClient, args: Dict[str, Any]):
+    """
+    Update the status of a radar anomaly.
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``CommandResults``
+    :return: Standard command result.
+    """
+    anomaly_type = validate_required_arg('anomaly_type', args.get('anomaly_type'))
+    workload_id = validate_required_arg('workload_id', args.get('workload_id'))
+    anomaly_id = validate_required_arg('anomaly_id', args.get('anomaly_id'))
+    false_positive_type = args.get('false_positive_type')
+    false_positive_reason = args.get('false_positive_reason')
+
+    validate_anomaly_status_update_command_args(anomaly_type, false_positive_type, false_positive_reason)
+
+    params = {'anomalyType': anomaly_type.upper(), 'workloadId': workload_id, 'anomalyId': anomaly_id}
+
+    if false_positive_type:
+        false_positive_params = {'falsePositiveType': false_positive_type.upper()}
+        if false_positive_type.upper() == 'OTHER':
+            false_positive_params['otherReason'] = false_positive_reason
+        params.update({'falsePositiveReport': false_positive_params})
+
+    input_params = {"input": params}
+
+    anomaly_status_update_response = client._query_raw(raw_query=ANOMALY_UPDATE_STATUS_MUTATION,
+                                                       operation_name='AnomalyUpdateStatusMutation',
+                                                       variables=input_params, timeout=60)
+    ec = {
+        'command_name': 'rubrik-radar-anomaly-update-status',
+        'anomaly_id': anomaly_id,
+        'anomaly_type': anomaly_type,
+        'workload_id': workload_id,
+    }
+    if false_positive_type:
+        ec['false_positive_type'] = false_positive_type
+        if false_positive_type.upper() == 'OTHER':
+            ec['false_positive_reason'] = false_positive_reason
+        hr_output = f'### Anomaly detection with the ID {anomaly_id} marked as false positive successfully.'
+    else:
+        ec['is_resloved'] = True
+        hr_output = f'### Anomaly detection with the ID {anomaly_id} resolved successfully.'
+
+    return CommandResults(
+        readable_output=hr_output,
+        raw_response=anomaly_status_update_response,
+        outputs=remove_empty_elements(ec),
+        outputs_prefix=OUTPUT_PREFIX['ANOMALY_UPDATE_STATUS'],
+        outputs_key_field=['command_name', 'anomaly_id', 'workload_id']
+    )
+
+
 def trim_spaces_from_args(args):
     """
     Trim spaces from values of the args dict.
@@ -4503,6 +4628,7 @@ def main() -> None:
                 "rubrik-sonar-user-access-get": rubrik_sonar_user_access_get_command,
                 "rubrik-sonar-file-context-list": rubrik_sonar_file_context_list_command,
                 "rubrik-radar-suspicious-file-list": rubrik_radar_suspicious_file_list_command,
+                "rubrik-radar-anomaly-status-update": rubrik_radar_anomaly_status_update_command,
                 "ip": ip_command,
                 "domain": domain_command,
             }
