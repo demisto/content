@@ -10,6 +10,7 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
+    "defaultDataSource": "ZeroFox",
     "tags": [],
     "useCases": [],
     "keywords": [],
