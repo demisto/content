@@ -109,8 +109,8 @@ script:
       name: block_public_policy
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
       name: restrict_public_buckets
       auto: PREDEFINED
