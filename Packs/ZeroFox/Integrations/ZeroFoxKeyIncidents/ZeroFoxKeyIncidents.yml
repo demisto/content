@@ -3,7 +3,7 @@ sectionOrder:
   - Connect
   - Collect
 commonfields:
-  id: ZeroFox_Key_Incidents
+  id: ZeroFoxKeyIncidents
   version: -1
 configuration:
   - defaultvalue: 'https://api.zerofox.com/'
@@ -37,12 +37,13 @@ configuration:
   - display: Maximum number of incidents per fetch
     name: max_fetch
     type: 0
+    section: Collect
     defaultvalue: '0'
     required: false
     hidden: true
 description: Cloud-based SaaS to detect risks found on social media and digital channels.
-display: ZeroFox_Key_Incidents
-name: ZeroFox_Key_Incidents
+display: ZeroFox Key Incidents
+name: ZeroFoxKeyIncidents
 script:
   commands:
   - name: zerofox-get-key-incident-attachment

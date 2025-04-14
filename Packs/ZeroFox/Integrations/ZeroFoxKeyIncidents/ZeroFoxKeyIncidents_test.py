@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 
 import freezegun
 import pytest
-from ZeroFox_Key_Incidents import (
+from ZeroFoxKeyIncidents import (
     KeyIncident,
     ZeroFox,
     ZeroFoxKIAttachmentNotFoundException,
