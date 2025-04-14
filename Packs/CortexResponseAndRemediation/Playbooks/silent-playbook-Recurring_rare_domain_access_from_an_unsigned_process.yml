@@ -391,7 +391,7 @@ tasks:
     task:
       id: d17b132c-b5a2-4497-83aa-8dc22a290f6b
       version: -1
-      name: Terminate Causality - Action Process
+      name: Terminate Causality
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
@@ -404,7 +404,7 @@ tasks:
       agent_id:
         simple: ${alert.agentid}
       causality_id:
-        simple: ${alert.actorprocessinstanceid}
+        simple: ${alert.cid.[0]}
       incident_id:
         complex:
           root: alert
@@ -789,6 +789,7 @@ tasks:
       uri:
         simple: /public_api/v1/indicators/insert_csv
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
