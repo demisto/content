@@ -1306,14 +1306,17 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
     """
     job = None
     error_msg = f"Failed submitting identity enrichment request to Splunk for notable {notable_data[EVENT_ID]}"
-    if users := get_fields_query_part(
+    users = get_fields_query_part(
         notable_data=notable_data,
         prefix="identity",
         fields=USER_RELATED_FIELDS,
         add_backslash=True,
-    ):
+    )
+    demisto.debug(f"identity_enrichment: {users=}")
+    if users:
         tables = argToList(demisto.params().get("identity_enrich_lookup_tables", DEFAULT_IDENTITY_ENRICH_TABLE))
         query = ""
+        demisto.debug(f"identity_enrichment {tables}")
         for table in tables:
             query += f"| inputlookup {table} where {users}"
         demisto.debug(f"Identity query for notable {notable_data[EVENT_ID]}: {query}")
@@ -1468,7 +1471,9 @@ def submit_notables(service: client.Service, cache_object: Cache) -> tuple[list[
         demisto.debug(f"Enriching {len(notables[:MAX_SUBMIT_NOTABLES])}/{total} fetched notables")
 
     for notable in notables[:MAX_SUBMIT_NOTABLES]:
+        demisto.debug(f"run submit_notable {notable=}, {num_enrichment_events=}")
         if submit_notable(service, notable, num_enrichment_events):
+            demisto.debug("after calling submit_notable")
             cache_object.submitted_notables.append(notable)
             submitted_notables.append(notable)
             demisto.debug(f"Submitted enrichment request to Splunk for notable {notable.id}")
@@ -1503,6 +1508,7 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
     Returns:
         task_status (bool): True if any of the enrichment's succeeded to be submitted to Splunk, False otherwise
     """
+    demisto.debug("inside submit_notable")
     submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
 
     if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
@@ -1517,6 +1523,8 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
         job = asset_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(Enrichment.from_job(ASSET_ENRICHMENT, job))
     if IDENTITY_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_identity:
+        demisto.debug(f"submit_notable if IDENTITY_ENRICHMENT in "
+                      f"ENABLED_ENRICHMENTS and not submitted_identity {service=}, {notable.data=}, {num_enrichment_events=}")
         job = identity_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(Enrichment.from_job(IDENTITY_ENRICHMENT, job))
 
@@ -1601,7 +1609,7 @@ def run_enrichment_mechanism(
                 # as they need to be able to update by the mirror in process
                 demisto.debug("dumping the cache object direct after fetch as mirror-in enabled")
                 cache_object.dump_to_integration_context()
-
+        demisto.debug(f"run submit_notables {service=}, {cache_object=}")
         failed_notables, _ = submit_notables(service, cache_object)
         incidents = create_incidents_from_notables(
             handled_notables + failed_notables, mapper, comment_tag_to_splunk, comment_tag_from_splunk
@@ -3779,7 +3787,8 @@ def main():  # pragma: no cover
     elif command == "splunk-get-indexes":
         splunk_get_indexes_command(service)
     elif command == "fetch-incidents":
-        demisto.info("########### FETCH #############")
+        demisto.info(f"########### FETCH #############"
+                     f"{service=}, {mapper=}, {comment_tag_to_splunk=}, {comment_tag_from_splunk=}")
         fetch_incidents(service, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
         extensive_log("[SplunkPy] Fetch Incidents was successfully executed.")
     elif command == "splunk-submit-event":
