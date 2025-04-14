@@ -801,6 +801,7 @@ def screenshot_image(
         "test-module",
     ]:
         # In some rasterize commands we create a temporary file, and we only rasterize it
+        demisto.info(f"Rejected path: {path}. Local files cannot be rasterized for this command.")
         return None, ("Cannot rasterize local files")
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
