@@ -387,9 +387,7 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     """
     commit_job_id = args['commit_job_id']
     res_commit_status = run_execute_command("pan-os-commit-status", {'job_id': commit_job_id})
-    demisto.debug(f"Before adding the new response {len(responses)=}")
     responses.append(res_commit_status)
-    demisto.debug(f"After adding the new response {len(responses)=}")
     result_commit_status = res_commit_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {})
     job_result = result_commit_status.get('result')
     demisto.debug(f"The result is {job_result=}")
@@ -423,9 +421,7 @@ def pan_os_check_trigger_push_to_device(responses: list) -> bool:
     responses.append(res_pan_os)
     context = get_relevant_context(res_pan_os[0].get('EntryContext', {}), 'Panorama.Command')
     model = context.get('response', {}).get('result', {}).get('system', {}).get('model', '')
-    if model == "Panorama":
-        return True
-    return False
+    return model == 'Panorama'
 
 
 @polling_function(
@@ -434,7 +430,7 @@ def pan_os_check_trigger_push_to_device(responses: list) -> bool:
    timeout=600,
    requires_polling_arg=True,
 )
-def pan_os_push_to_device(responses: list) -> PollResult:
+def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     """ Execute pan-os-push-to-device-group.
     Args:
         responses (list): The responses of the previous command.
@@ -493,12 +489,10 @@ def pan_os_push_status(args: dict, responses: list):
     """
     push_job_id = args['push_job_id']
     res_push_device_status = run_execute_command("pan-os-push-status", {'job_id': push_job_id})
-    demisto.debug(f"Before adding the new response {len(responses)=}")
     responses.append(res_push_device_status)
-    demisto.debug(f"After adding the new response {len(responses)=}")
     push_status = res_push_device_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {}).get('status', '')
 
-    continue_to_poll = True if push_status and push_status != 'FIN' else False
+    continue_to_poll = bool(push_status and push_status != 'FIN')
     demisto.debug(f"{push_status=}")
     demisto.debug(f"{continue_to_poll=}")
     context_output = {
@@ -527,7 +521,7 @@ def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     2. Create the list of Command Results.
     Args:
         args (dict): The arguments of the function.
-        responses (list): The responses of the previous command.
+        responses (list): The responses of the previous commands.
     Returns:
         The list of Command Results.
     """
@@ -539,6 +533,49 @@ def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     responses.append(run_execute_command('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list}))
     results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], args['rule_name'], ip_list)
     return results
+
+
+def pan_os_create_update_address_group(address_group: str, context_list_add_group: list, tag: str, responses: list):
+    """ Checks whether to create a new address group or update an existing one, and does it.
+    Args:
+        address_group (str): The address group.
+        context_list_add_group (list): The context of pan-os-list-address-group.
+        tag (str): The tag.
+        responses (list): The responses of the previous commands.
+    """
+    if check_value_exist_in_context(address_group, context_list_add_group, 'Name'):
+        current_match = get_match_by_name(address_group, context_list_add_group)
+        new_match = f'{current_match} or {tag}' if current_match else tag
+        res_edit_add_group = run_execute_command("pan-os-edit-address-group",
+                                                 {'name': address_group, 'type': 'dynamic', 'match': new_match})
+        responses.append(res_edit_add_group)
+    else:
+        res_create_add_group = run_execute_command("pan-os-create-address-group",
+                                                   {'name': address_group, 'type': 'dynamic', 'match': tag})
+        responses.append(res_create_add_group)
+
+
+def pan_os_create_edit_rule(rule_name: str, context_list_rules: list, address_group: str, log_forwarding_name: str, responses: list):
+    """ Checks whether to create a new address group or update an existing one, and does it.
+    Args:
+        rule_name (str): The rule name.
+        address_group (str): The address group.
+        context_list_rules (list): The context of pan-os-list-rules.
+        log_forwarding_name (str): Panorama log forwarding object name.
+        responses (list): The responses of the previous commands.
+    """
+    if check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
+        responses.append(run_execute_command("pan-os-edit-rule", {'rulename': rule_name,
+                                                                  'element_to_change': 'source',
+                                                                  'element_value': address_group,
+                                                                  'pre_post': 'pre-rulebase'}))
+    else:
+        create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase',
+                            'source': address_group}
+        if log_forwarding_name:
+            create_rule_args['log_forwarding'] = log_forwarding_name
+        responses.append(run_execute_command("pan-os-create-rule", create_rule_args))
+    responses.append(run_execute_command("pan-os-move-rule", {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
 
 
 def start_pan_os_flow(args: dict) -> tuple[list, bool]:
@@ -564,24 +601,11 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     if not check_value_exist_in_context(tag, context_list_add_group, 'Match'):
         # check if the group already exists we should update the tag.
         demisto.debug(f"The {tag=} doesn't exist in the address groups")
-        if check_value_exist_in_context(address_group, context_list_add_group, 'Name'):
-            current_match = get_match_by_name(address_group, context_list_add_group)
-            new_match = f'{current_match} or {tag}' if current_match else tag
-            res_edit_add_group = run_execute_command("pan-os-edit-address-group", {'name': address_group, 'type': 'dynamic', 'match': new_match})
-            responses.append(res_edit_add_group)
-        else:
-            res_create_add_group = run_execute_command("pan-os-create-address-group", {'name': address_group, 'type': 'dynamic', 'match': tag})
-            responses.append(res_create_add_group)
+        pan_os_create_update_address_group(address_group, context_list_add_group, tag, responses)
+
         res_list_rules = run_execute_command("pan-os-list-rules", {'pre_post': 'pre-rulebase'})
         context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
-        if check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
-            responses.append(run_execute_command("pan-os-edit-rule", {'rulename': rule_name, 'element_to_change': 'source', 'element_value': address_group, 'pre_post': 'pre-rulebase'}))
-        else:
-            create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase', 'source': address_group}
-            if log_forwarding_name:
-                args['log_forwarding'] = log_forwarding_name
-            responses.append(run_execute_command("pan-os-create-rule", create_rule_args))
-        responses.append(run_execute_command("pan-os-move-rule", {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
+        pan_os_create_edit_rule(rule_name, context_list_rules, address_group, log_forwarding_name, responses)
         return responses, auto_commit  # should perform the commit section
     else:
         args['rule_name'] = ''

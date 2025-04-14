@@ -1,6 +1,7 @@
 import json
 
 import pytest
+
 from CommonServerPython import *
 
 
@@ -232,10 +233,12 @@ def test_prisma_sase_candidate_config_push_true(mocker):
     from BlockExternalIp import prisma_sase_candidate_config_push
     responses = []
     entries = util_load_json('test_data/prisma_sase_responses.json').get('candidate_config_push')
-    mocker.patch.object(demisto, 'executeCommand', return_value=entries)
+    mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=entries)
     result_auto_commit_message = prisma_sase_candidate_config_push(True, responses)
     assert not result_auto_commit_message
     assert len(responses) == 1
+    mocker_object.assert_called_with("prisma-sase-candidate-config-push",
+                                     {"folders": "Remote Networks, Mobile Users, Service Connections"})
 
 
 def test_prisma_sase_security_rule_update_needed(mocker):
@@ -253,10 +256,14 @@ def test_prisma_sase_security_rule_update_needed(mocker):
     res_rule_list = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_list')
     responses = [res_rule_list]
     entries = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_update')
-    mocker.patch.object(demisto, 'executeCommand', return_value=entries)
+    mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=entries)
     result = prisma_sase_security_rule_update(rule_name, address_group, responses)
     assert result == entries
     assert len(responses) == 2
+    mocker_object.assert_called_with("prisma-sase-security-rule-update",
+                                     {'rule_id': '11111111-1111-1111-1111-111111111111',
+                                      'action': 'deny',
+                                      'destination': address_group})
 
 
 def test_prisma_sase_security_rule_update_not_needed():
@@ -311,3 +318,161 @@ def test_prisma_sase_block_ip_object_not_exist(mocker):
     assert results[3].readable_output == '### Address Group updated\n|Addresses|Folder|Id|Name|\n|---|---|---|---|\n| 1.2.3.6,<br>1.2.3.7 | Shared | id | test_debug2 |\n'
     assert results[4].readable_output == '### The IP was blocked successfully\n|IP|Status|Result|Created rule name|Used integration|\n|---|---|---|---|---|\n| 1.2.3.7 | Done | Success | rules | Palo Alto Networks - Prisma SASE |\n'
     assert results[5].readable_output == 'Not commiting the changes in Palo Alto Networks - Prisma SASE, since auto_commit=False. Please do so manually for the changes to take affect.'
+
+
+def test_pan_os_commit_status(mocker):
+    """
+    Given:
+      - The commit job id.
+    When:
+      - Running the script block-external-ip for the panorama brand, and we need to check the commit status.
+    Then:
+      - Verify the correct outputs are returned from the function.
+    """
+    from BlockExternalIp import pan_os_commit_status
+    args = {
+        'commit_job_id': "2925"
+    }
+    responses = []
+    res_commit_status = util_load_json('test_data/pan_os_responses.json').get('commit_status')
+    mocker_object = mocker.patch.object(demisto, 'executeCommand',return_value=res_commit_status)
+    result = pan_os_commit_status(args, responses)
+    assert result.readable_output == '### Commit Status:\n|JobID|Status|\n|---|---|\n| 2925 | Success |\n'
+    assert len(responses) == 1
+    mocker_object.assert_called_with("pan-os-commit-status", {"job_id": "2925"})
+
+
+def test_pan_os_check_trigger_push_to_device(mocker):
+    """
+    Given:
+      - A list with the pan-os responses so far.
+    When:
+      - Running the script block-external-ip for the panorama brand, to verify if this is a Panorama instance.
+    Then:
+      - True since it is a panorama instance.
+    """
+    from BlockExternalIp import pan_os_check_trigger_push_to_device
+    responses = []
+    res_pan_os = util_load_json('test_data/pan_os_responses.json').get('pan_os_check_panorama')
+    mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=res_pan_os)
+    result = pan_os_check_trigger_push_to_device(responses)
+    assert result
+    mocker_object.assert_called_with("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
+
+
+def test_pan_os_check_trigger_push_to_device_not_panorama(mocker):
+    """
+    Given:
+      - A list with the pan-os responses so far.
+    When:
+      - Running the script block-external-ip for the panorama brand, to verify if this is a Panorama instance.
+    Then:
+      - False since it is not a panorama instance.
+    """
+    from BlockExternalIp import pan_os_check_trigger_push_to_device
+    responses = []
+    res_pan_os = util_load_json('test_data/pan_os_responses.json').get('pan_os_check_not_panorama')
+    mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=res_pan_os)
+    result = pan_os_check_trigger_push_to_device(responses)
+    assert not result
+    mocker_object.assert_called_with("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
+
+
+def test_pan_os_push_to_device(mocker):
+    """
+    Given:
+      - A list with the pan-os responses so far.
+    When:
+      - Running the script block-external-ip for the panorama brand, to trigger the push for the panorama devices.
+    Then:
+      - The correct output is returned, and the push_job_id has been updated in the context.
+    """
+    from BlockExternalIp import pan_os_push_to_device
+    responses = []
+    res_push_to_device = util_load_json('test_data/pan_os_responses.json').get('push_to_device')
+    mocker.patch.object(demisto, 'executeCommand', return_value=res_push_to_device)
+    mocker_object = mocker.patch.object(demisto, 'setContext', return_value={})
+    result = pan_os_push_to_device({}, responses)
+    assert result.readable_output == '### Push to Device Group:\n|DeviceGroup|JobID|Status|\n|---|---|---|\n| device-group | 2936 | Pending |\n'
+    mocker_object.assert_called_with('push_job_id', '2936')
+
+
+def test_pan_os_push_status(mocker):
+    """
+    Given:
+      - The command arguments and a lost of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, to check what is the status of the push for
+        the panorama devices action.
+    Then:
+      - The correct output is returned.
+    """
+    from BlockExternalIp import pan_os_push_status
+    args = {
+        'push_job_id': '2936'
+    }
+    responses = []
+    res_push_to_device_status = util_load_json('test_data/pan_os_responses.json').get('push_status')
+    mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=res_push_to_device_status)
+    result = pan_os_push_status(args, responses)
+    assert result.readable_output == '### Push to Device Group:\n|JobID|Status|\n|---|---|\n| 2936 | ACT |\n'
+    mocker_object.assert_called_with("pan-os-push-status", {'job_id': '2936'})
+    assert len(responses) == 1
+
+
+def test_final_part_pan_os(mocker):
+    """
+    Given:
+      - The command arguments and a lost of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, at the end of the flow.
+    Then:
+      - Verify the context was cleared and the execute command is called with the correct arguments.
+    """
+    from BlockExternalIp import final_part_pan_os
+    tag = 'new_tag3'
+    ip_list = ['1.2.3.7']
+    args = {
+        'tag': tag,
+        'ip_list': ip_list,
+        'verbose': False,
+        'rule_name': 'rule_name'
+    }
+    responses = []
+    res_register_ip_tag = util_load_json('test_data/pan_os_responses.json').get('register_ip_tag')
+    mocker_register_ip = mocker.patch.object(demisto, 'executeCommand', return_value=res_register_ip_tag)
+    mocker_set_context = mocker.patch.object(demisto, 'setContext', return_value={})
+    final_part_pan_os(args, responses)
+    assert mocker_set_context.call_count == 3
+    mocker_register_ip.assert_called_with('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list})
+
+
+def test_pan_os_commit(mocker):
+    """
+    Given:
+      - The command arguments and a lost of the previous responses.
+    When:
+      - Running the script block-external-ip for the panorama brand, triggering the commit action.
+    Then:
+      - Verify the context was set with the correct arguments, and the output is correct.
+    """
+    from BlockExternalIp import pan_os_commit
+    args = {
+        'ip_list': ['1.2.3.7'],
+        'rule_name': 'new_rule3',
+        'log_forwarding_name': '',
+        'address_group': 'new_add_group3',
+        'tag': 'new_tag3',
+        'auto_commit': True,
+        'verbose': True,
+        'brands': ['Panorama']
+    }
+    responses = []
+    res_commit = util_load_json('test_data/pan_os_responses.json').get('pan_os_commit')
+    mocker_register_ip = mocker.patch.object(demisto, 'executeCommand', return_value=res_commit)
+    mocker_set_context = mocker.patch.object(demisto, 'setContext', return_value={})
+    result = pan_os_commit(args, responses)
+    mocker_register_ip.assert_called_with("pan-os-commit", {'polling': True})
+    mocker_set_context('commit_job_id', '2925')
+    assert result.readable_output == '### Commit Status:\n|JobID|Status|\n|---|---|\n| 2925 | Pending |\n'
+    assert len(responses) == 1
