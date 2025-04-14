@@ -11,7 +11,7 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 import jwt
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 import uuid
 
 DEFAULT_FETCH_TIME = "10 minutes"
@@ -724,13 +724,13 @@ class Client(BaseClient):
             "typ": "JWT",  # Token type
             "kid": jwt_params.get('kid'), #From ServiceNow (see Jwt Verifier Maps )
         }
-        self.exp_time = datetime.now(timezone.utc) + timedelta(hours=1)  # Expiry time 1 hour
+        self.exp_time = datetime.now(UTC) + timedelta(hours=1)  # Expiry time 1 hour
         # Payload
         payload = {
             "sub": jwt_params.get("sub"),  # Subject (e.g., user ID)
             "aud": oauth_params.get('client_id', ''), # serviceNow client_id
             "iss": oauth_params.get('client_id', ''),# can be serviceNow client_id
-            "iat": datetime.now(timezone.utc),  # Issued at
+            "iat": datetime.now(UTC),  # Issued at
             "exp": self.exp_time,
             "jti": str(uuid.uuid4())    # Unique JWT ID
         }
