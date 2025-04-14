@@ -4730,7 +4730,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "jira-reset-timezone-cache":
-            jira_rest_timezone_cache_command()
+            return_results(jira_rest_timezone_cache_command())
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
