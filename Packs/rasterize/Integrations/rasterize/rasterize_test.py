@@ -269,7 +269,7 @@ class TestRasterizeIncludeUrl:
             pass
 
     @pytest.mark.parametrize("include_url", [False, True])
-    def test_sanity_rasterize_with_include_url(self, mocker, include_url, capfd):
+    def test_sanity_rasterize_with_include_url(self, mocker: MockerFixture, include_url: bool, capfd: pytest.CaptureFixture):
         """
         Given:
             - A parameter that mention whether to include the URL bar in the screenshot.
