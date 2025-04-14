@@ -172,6 +172,23 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         raw_response=parsed,
     )
 
+def core_execute_command_command(args: dict) -> None:
+    """
+    reformat args before start polling command
+
+    Args:
+        args (dict): Dictionary containing the arguments for the command.
+    """
+    commands = args.get('command')
+    if not commands:
+        raise DemistoException("command is a required field")
+    # the value of script_uid is the Unique identifier of execute_commands script.
+    args |= {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = [commands] if is_raw_command else argToList(commands)
+    if args.get('command_type') == 'powershell':
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    args['parameters'] = json.dumps({'commands_list': commands_list})
 
 def main():  # pragma: no cover
     """
@@ -558,18 +575,27 @@ def main():  # pragma: no cover
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-execute-command":
-            commands = args.get('command')
-            if not commands:
-                raise DemistoException("command is a required field")
-            # the value of script_uid is the Unique identifier of execute_commands script.
-            args |= {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
-            is_raw_command = argToBoolean(args.get('is_raw_command', False))
-            commands_list = [commands] if is_raw_command else argToList(commands)
-            if args.get('command_type') == 'powershell':
-                commands_list = [form_powershell_command(command) for command in commands_list]
-            args['parameters'] = json.dumps({'commands_list': commands_list})
-            statuses = ('PENDING', 'IN_PROGRESS', 'PENDING_ABORT')
-            return_results(script_run_polling_command(args, client, statuses))
+            core_execute_command_command(args)
+            script_res = script_run_polling_command(args, client, statuses = ('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
+            reformated_res = {}
+            if isinstance(script_res, list):
+                for response in script_res:
+                    results = response.outputs.get('results')
+                    for res in results:
+                        endpoint_id = res.get('endpoint_id')
+                        if endpoint_id in reformated_res:
+                            reformated_res[endpoint_id]['executed_command'].append({'command':res['command'][1:],
+                                                                                    'command_output':res.get('command_output')})
+                            reformated_res[endpoint_id].pop(res.get('command'))
+                        else:
+                            res['executed_command'] = [{'command':res['command'][1:], 'command_output':res.get('command_output')}]
+                            res.pop(res.pop('command'))
+                            res.pop('command_output')
+                            reformated_res[endpoint_id] = res
+                            
+                script_res[0].outputs['results'] = reformated_res
+                script_res[0].raw_response['results'] = reformated_res
+            return_results(script_res)
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

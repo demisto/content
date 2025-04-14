@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
+from CortexCoreIR import core_execute_command_command
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -366,3 +367,72 @@ def test_get_distribution_url_command_without_download_not_supported_type():
         get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "sh")
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
+
+# tests for core_execute_command_command
+def test_missing_command_raises():
+    """
+    Given:
+        - args set to empty dict.
+    When:
+        - Calling `core_execute_command_command` with no args.
+    Then:
+        - Should raise a DemistoException.
+    """
+    from CommonServerPython import DemistoException
+    args = {}
+    with pytest.raises(DemistoException, match="command is a required field"):
+        core_execute_command_command(args)
+
+def test_is_raw_command_true():
+    """
+    Given:
+        - is_raw_command argument set to True.
+    When:
+        - Calling `core_execute_command_command` with is_raw_command set to True.
+    Then:
+        - Verify args reformated as expected.
+    """
+    args = {
+        "command": "dir",
+        "is_raw_command": True
+    }
+    core_execute_command_command(args)
+    params = json.loads(args["parameters"])
+    assert params["commands_list"] == ["dir"]
+    assert args["is_core"] is True
+    assert args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
+
+def test_is_raw_command_false():
+    """
+    Given:
+        - is_raw_command argument set to False.
+    When:
+        - Calling `core_execute_command_command` with is_raw_command set to False.
+    Then:
+        - Verify args reformated as expected.
+    """
+    args = {
+        "command": "dir,hostname",
+        "is_raw_command": False
+    }
+    core_execute_command_command(args)
+    params = json.loads(args["parameters"])
+    assert params["commands_list"] == ["dir", "hostname"]
+
+def test_powershell_command_formatting():
+    """
+    Given:
+        - command_type argument set to powershell.
+    When:
+        - Calling `core_execute_command_command` with powershell command type.
+    Then:
+        - Verify args reformated as expected.
+    """
+    args = {
+        "command": "Get-Process",
+        "command_type": "powershell",
+        "is_raw_command": True
+    }
+    core_execute_command_command(args)
+    params = json.loads(args["parameters"])
+    assert params["commands_list"] == ['powershell -Command "Get-Process"']
