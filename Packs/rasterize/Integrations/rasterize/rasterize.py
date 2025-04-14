@@ -648,9 +648,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         demisto.debug("chrome_manager: condition chrome_instances_contents is empty")
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
-        demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true"
-        )
+        demisto.debug("chrome_manager: condition chrome_options in chrome_options_dict is true")
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
     for chrome_port_ in chrome_instances_contents:
@@ -768,7 +766,7 @@ def screenshot_image(
     if tab_event_handler.is_private_network_url:
         return None, (
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
-            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+            f" the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}"
         )
 
     try:
@@ -959,6 +957,7 @@ def extract_hostname(url: str) -> str:
     except Exception:
         return ""
 
+
 @lru_cache(maxsize=1024)
 def is_private_network(url: str) -> bool:
     """
@@ -974,12 +973,13 @@ def is_private_network(url: str) -> bool:
         if not (hostname := extract_hostname(url)):
             demisto.debug(f"Problematic URL detected: Unable to extract hostname from {url}")
             return False
-            
+
         return ipaddress.ip_address(hostname).is_private
-        
+
     except (ValueError, AttributeError):
         demisto.debug(f"Problematic URL detected: Unable to process {url}")
         return False
+
 
 def remove_leading_zeros_from_ip_addresses(path: str) -> str:
     """
@@ -996,21 +996,21 @@ def remove_leading_zeros_from_ip_addresses(path: str) -> str:
         return path
 
     # If hostname contains letters, it's not an IP address
-    if bool(re.search('[a-zA-Z]', hostname)):
+    if bool(re.search("[a-zA-Z]", hostname)):
         return path
     # Check if the hostname is an IP address
     # Check if it's a valid IP address
-    ip_pattern = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+    ip_pattern = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
     if re.match(ip_pattern, hostname):
-        octets = hostname.split('.')
-        normalized_ip = '.'.join(str(int(octet)) for octet in octets)
+        octets = hostname.split(".")
+        normalized_ip = ".".join(str(int(octet)) for octet in octets)
         result = path.replace(hostname, normalized_ip)
         if result != path:
             demisto.info(f"IP address normalized: {path} -> {result}")
         return result
 
-        
     return path
+
 
 def perform_rasterize(
     path: str | list[str],
