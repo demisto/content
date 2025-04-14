@@ -207,12 +207,460 @@ script:
     - contextPath: AzureNSG.Rule.direction
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
+  - arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - description: The name of the storage account.
+      name: account_name
+      required: true
+      default: false
+      isArray: false
+    - auto: PREDEFINED
+      description: Gets or sets the SKU name, Required for account creation; optional for update.
+      name: sku
+      predefined:
+      - Premium_LRS
+      - Premium_ZRS
+      - Standard_GRS
+      - Standard_GZRS
+      - Standard_LRS
+      - Standard_RAGRS
+      - Standard_RAGZRS
+      - Standard_ZRS
+      required: true
+    - description: Indicates the type of storage account.
+      name: kind
+      auto: PREDEFINED
+      predefined:
+      - Storage
+      - StorageV2
+      - BlobStorage
+      - FileStorage
+      - BlockBlobStorage
+      required: true
+    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed.
+      name: location
+      auto: PREDEFINED
+      predefined:
+      - eastus
+      - eastus2
+      - westus
+      - westeurope
+      - eastasia
+      - southeastasia
+      - japaneast
+      - japanwest
+      - northcentralus
+      - southcentralus
+      - centralus
+      - northeurope
+      - brazilsouth
+      - australiaeast
+      - australiasoutheast
+      - southindia
+      - centralindia
+      - westindia
+      - canadaeast
+      - canadacentral
+      - westus2
+      - westcentralus
+      - uksouth
+      - ukwest
+      - koreacentral
+      - koreasouth
+      - francecentral
+      - australiacentral
+      - southafricanorth
+      - uaenorth
+      - switzerlandnorth
+      - germanywestcentral
+      - norwayeast
+      required: true
+    - description: Gets or sets a list of tags that describe the resource.
+      name: tags
+      isArray: true
+    - description: Gets or sets the custom domain name assigned to the storage account.
+      name: custom_domain_name
+    - auto: PREDEFINED
+      description: Indicates whether indirect CName validation is enabled.
+      name: use_sub_domain_name
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The encryption keySource.
+      name: enc_key_source
+      auto: PREDEFINED
+      predefined:
+      - Microsoft.Storage
+      - Microsoft.Keyvault
+    - description: Indicating whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
+      name: enc_requireInfrastructureEncryption
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The name of KeyVault key.
+      name: enc_keyvault_key_name
+    - description: The version of KeyVault key.
+      name: enc_keyvault_key_version
+    - description: The Uri of KeyVault.
+      name: enc_keyvault_uri
+    - auto: PREDEFINED
+      description: The access tier for the account. Required where kind = BlobStorage.
+      name: access_tier
+      predefined:
+      - 'Hot'
+      - 'Cool'
+    - auto: PREDEFINED
+      description: Allows https traffic only to storage service if sets to true.
+      name: supports_https_traffic_only
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Account HierarchicalNamespace enabled if sets to true.
+      name: is_hns_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Allow large file shares if sets to Enabled.
+      name: large_file_shares_state
+      predefined:
+      - Disabled
+      - Enabled
+    - auto: PREDEFINED
+      description: Allow or disallow public access to all blobs or containers in the storage account.
+      name: allow_blob_public_access
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Set the minimum TLS version to be permitted on requests to storage.
+      name: minimum_tls_version
+      auto: PREDEFINED
+      predefined:
+      - TLS1_0
+      - TLS1_1
+      - TLS1_2
+    - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
+      name: network_ruleset_bypass
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - AzureServices
+      - Logging
+      - Metrics
+      - None
+    - description: Specifies the default action of allow or deny when no other rules match.
+      name: network_ruleset_default_action
+    - description: Sets the IP ACL rules.
+      name: network_ruleset_ipRules
+    - description: Sets the virtual network rules.
+      name: virtual_network_rules
+    description: |-
+      Run this command to create or update a specific
+      account storage.
+    name: azure-storage-account-create-update
+    outputs:
+    - contextPath: AzureStorage.StorageAccount.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.kind
+      description: Gets the Kind.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.location
+      description: The geo-location where the resource lives.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.isHnsEnabled
+      description: Account HierarchicalNamespace enabled if sets to true.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.allowBlobPublicAccess
+      description: Allow or disallow public access to all blobs or containers in the storage account. The default interpretation is true for this property.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.minimumTlsVersion
+      description: Set the minimum TLS version to be permitted on requests to storage. The default interpretation is TLS 1.0 for this property.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.allowSharedKeyAccess
+      description: Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD).
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.creationTime
+      description: Gets the creation date and time of the storage account in UTC.
+      type: Date
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.web
+      description: Gets the web endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.dfs
+      description: Gets the dfs endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.blob
+      description: Gets the blob endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.file
+      description: Gets the file endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.queue
+      description: Gets the queue endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.table
+      description: Gets the table endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.microsoftEndpoints.web
+      description: Gets the web microsoft endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.microsoftEndpoints.dfs
+      description: Gets the dfs microsoft endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.microsoftEndpoints.blob
+      description: Gets the blob microsoft endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.microsoftEndpoints.file
+      description: Gets the file microsoft endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.microsoftEndpoints.queue
+      description: Gets the queue microsoft endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.microsoftEndpoints.table
+      description: Gets the table microsoft endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.internetEndpoints.web
+      description: Gets the web internet endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.internetEndpoints.dfs
+      description: Gets the dfs internet endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.internetEndpoints.blob
+      description: Gets the blob internet endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryEndpoints.internetEndpoints.file
+      description: Gets the file internet endpoint.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.primaryLocation
+      description: Gets the location of the primary data center for the storage account.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.provisioningState
+      description: Gets the status of the storage account at the time the operation was called.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.routingPreference.routingChoice
+      description: Routing Choice defines the kind of network routing opted by the user.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints
+      description: A boolean flag which indicates whether microsoft routing storage endpoints are to be published.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.routingPreference.publishInternetEndpoints
+      description: A boolean flag which indicates whether internet routing storage endpoints are to be published.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.services.file.keyType
+      description: Encryption key type to be used for the encryption service. 'Account' key type implies that an account-scoped encryption key will be used. 'Service' key type implies that a default service key is used.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.services.file.enabled
+      description: A boolean indicating whether or not the service encrypts the data as it is stored.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.services.file.lastEnabledTime
+      description: Gets a rough estimate of the date/time when the encryption was last enabled by the user.
+      type: Date
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.services.blob.keyType
+      description: Encryption key type to be used for the encryption service. 'Account' key type implies that an account-scoped encryption key will be used. 'Service' key type implies that a default service key is used.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.services.blob.enabled
+      description: A boolean indicating whether or not the service encrypts the data as it is stored.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.services.blob.lastEnabledTime
+      description: Gets a rough estimate of the date/time when the encryption was last enabled by the user.
+      type: Date
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.requireInfrastructureEncryption
+      description: A boolean indicating whether or not the service applies a secondary layer of encryption with platform managed keys for data at rest.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.properties.encryption.keySource
+      description: 'The encryption keySource (provider). Possible values (case-insensitive): Microsoft.Storage, Microsoft.Keyvault.'
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.secondaryLocation
+      description: Gets the location of the geo-replicated secondary for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.statusOfPrimary
+      description: Gets the status indicating whether the primary location of the storage account is available or unavailable.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.statusOfSecondary
+      description: Gets the status indicating whether the secondary location of the storage account is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.properties.supportsHttpsTrafficOnly
+      description: Allows https traffic only to storage service if sets to true.
+      type: Boolean
+    - contextPath: AzureStorage.StorageAccount.sku.name
+      description: The SKU name. Required for account creation; optional for update.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.sku.tier
+      description: The SKU tier. This is based on the SKU name.
+      type: String
+    - contextPath: AzureStorage.StorageAccount.tags
+      description: Resource tags.
+      type: Unknown
+    - contextPath: AzureStorage.StorageAccount.type
+      description: The type of the resource.
+      type: String
+  - arguments:
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    - description: The name of the storage account.
+      name: account_name
+      default: false
+      isArray: false
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether change feed event logging is enabled for the Blob service.
+      name: change_feed_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Indicates the duration of changeFeed retention in days.
+      name: change_feed_retention_days
+    - auto: PREDEFINED
+      description: Indicates whether DeleteRetentionPolicy is enabled.
+      name: container_delete_rentention_policy_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Indicates the number of days that the deleted item should be retained.
+      name: container_delete_rentention_policy_days
+    - auto: PREDEFINED
+      description: Indicates whether DeleteRetentionPolicy is enabled.
+      name: delete_rentention_policy_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Indicates the number of days that the deleted item should be retained.
+      name: delete_rentention_policy_days
+    - description: Versioning is enabled if set to true.
+      name: versioning
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: When set to true last access time based tracking is enabled.
+      name: last_access_time_tracking_policy_enabled
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: An array of predefined supported blob types.
+      name: last_access_time_tracking_policy_blob_types
+      isArray: true
+    - description: The field specifies blob object tracking granularity in days.
+      name: last_access_time_tracking_policy_days
+    - description: Blob restore is enabled if set to true.
+      name: restore_policy_enabled
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The minimum date and time that the restore can be started.
+      name: restore_policy_min_restore_time
+    - description: how long this blob can be restored.
+      name: restore_policy_days
+    description: |-
+      Run this command to set properties for
+      the blob service in a specific account storage.
+    name: azure-storage-blob-service-properties-set
+    outputs:
+    - contextPath: AzureStorage.BlobServiceProperties.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.properties.cors.corsRules.allowedOrigins
+      description: Required if CorsRule element is present. A list of origin domains that will be allowed via CORS, or "*" to allow all domains.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.properties.cors.corsRules.allowedMethods
+      description: Required if CorsRule element is present. A list of HTTP methods that are allowed to be executed by the origin.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.properties.cors.corsRules.maxAgeInSeconds
+      description: Required if CorsRule element is present. The number of seconds that the client/browser should cache a preflight response.
+      type: Number
+    - contextPath: AzureStorage.BlobServiceProperties.properties.cors.corsRules.exposedHeaders
+      description: Required if CorsRule element is present. A list of response headers to expose to CORS clients.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.properties.cors.corsRules.allowedHeaders
+      description: Required if CorsRule element is present. A list of headers allowed to be part of the cross-origin request.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.properties.defaultServiceVersion
+      description: Indicates the default version to use for requests to the Blob service if an incoming request\u2019s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      type: Date
+    - contextPath: AzureStorage.BlobServiceProperties.properties.deleteRetentionPolicy.enabled
+      description: Indicates whether DeleteRetentionPolicy is enabled.
+      type: Boolean
+    - contextPath: AzureStorage.BlobServiceProperties.properties.deleteRetentionPolicy.days
+      description: Indicates the number of days that the deleted item should be retained. The minimum specified value can be 1 and the maximum value can be 365.
+      type: Number
+    - contextPath: AzureStorage.BlobServiceProperties.properties.isVersioningEnabled
+      description: Versioning is enabled if set to true.
+      type: Boolean
+    - contextPath: AzureStorage.BlobServiceProperties.properties.changeFeed.enabled
+      description: Indicates whether change feed event logging is enabled for the Blob service.
+      type: Boolean
+    - contextPath: AzureStorage.BlobServiceProperties.properties.changeFeed.retentionInDays
+      description: Indicates the duration of changeFeed retention in days. Minimum value is 1 day and maximum value is 146000 days.
+      type: Number
+    - contextPath: AzureStorage.BlobServiceProperties.sku.name
+      description: The SKU name.
+      type: String
+    - contextPath: AzureStorage.BlobServiceProperties.sku.tier
+      description: The SKU tier.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: default
+      description: Name of the auto provisioning setting. The default setting's name is 'default'.
+      name: setting_name
+      required: true
+    - description: Describes the type of security agent provisioning action to take (On or Off).
+      name: auto_provision
+      required: true
+    - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      name: subscription_id
+    description: Updates a specific auto provisioning setting.
+    name: azure-sc-update-aps
+    outputs:
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
+      description: The setting display name.
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
+      description: Displays the type of security agent provisioning action to take (On or Off).
+      type: string
+    - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
+      description: The setting resource ID.
+      type: string
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/crypto:1.0.0.2005673
 fromversion: 6.1.0
 marketplaces:
 - xsoar
