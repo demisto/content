@@ -1742,7 +1742,7 @@ def test_jwt_checker(mocker):
     """
     import jwt
 
-    jwt_encode = mocker.patch.object(jwt, "encode", return_value="")
+    mocker.patch.object(jwt, "encode", return_value="")
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = JWT_PARAMS)
