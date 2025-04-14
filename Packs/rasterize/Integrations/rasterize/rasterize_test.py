@@ -824,6 +824,23 @@ def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerF
 def test_is_private_network(url: str, expected: bool):
     assert is_private_network(url) == expected
 
+@pytest.mark.parametrize("test_input,expected", [
+    pytest.param("192.168.001.001", "192.168.1.1", id="ipv4_with_leading_zeros"),
+    pytest.param("010.001.001.001", "10.1.1.1", id="ipv4_with_leading_zeros_all_octets"),
+    pytest.param("http://192.168.001.001", "http://192.168.1.1", id="url_with_ipv4_leading_zeros"),
+    pytest.param("example.com", "example.com", id="domain_name_unchanged"),
+    pytest.param("256.1.2.3", "256.1.2.3", id="invalid_ipv4_unchanged"),
+    pytest.param("", "", id="empty_string"),
+    pytest.param("127.000.000.001", "127.0.0.1", id="localhost_with_leading_zeros"),
+    pytest.param("127.000.000.001:8080", "127.0.0.1:8080", id="localhost_with_leading_zeros_and_port"),
+    pytest.param("http://192.168.001.001?param=value", "http://192.168.1.1?param=value", id="url_with_ipv4_and_query_params"),
+])
+def test_remove_leading_zero_from_ip_addresses(test_input: str, expected: str):
+    """
+    Test the remove_leading_zero_from_ip_addresses function with various inputs.
+    """
+    assert remove_leading_zero_from_ip_addresses(test_input) == expected
+
 
 def test_handle_request_paused(mocker):
     """
