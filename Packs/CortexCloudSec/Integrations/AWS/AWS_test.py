@@ -10,7 +10,6 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-from demisto_sdk.commands.common.handlers import JSON_Handler
 
 import json
 

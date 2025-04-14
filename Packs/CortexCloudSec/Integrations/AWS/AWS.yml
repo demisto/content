@@ -7,21 +7,26 @@ commonfields:
   version: -1
 configuration:
 - display: Role Name
-  name: roleName
+  name: role_name
   type: 0
   section: Connect
   required: true
 - display: Role Session Name
-  name: roleSessionName
+  name: role_session_name
   type: 0
   section: Connect
   required: true
 - display: Role Session Duration
-  name: sessionDuration
+  name: session_duration
   type: 0
   section: Connect
   advanced: true
   required: false
+- display: Default Region
+  name: default_region
+  type: 0
+  section: Connect
+  required: true
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
@@ -79,6 +84,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+
 script:
   commands:
   - name: aws-s3-public-access-block-update
