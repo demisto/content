@@ -57,8 +57,8 @@ def put_public_access_block(aws_client: AWSClient, args: Dict[str, Any]) -> Comm
             'BlockPublicPolicy': public_access_block_configuration.get('BlockPublicPolicy'),
             'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets')
         }
-    except client_session.exceptions.NoSuchEntityException:
-        kwargs = {}
+    except Exception:
+        return CommandResults(readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
         
     if args.get('block_public_acls'):
         kwargs.update({ 'BlockPublicAcls': argToBoolean(args.get('block_public_acls')) })
@@ -146,9 +146,6 @@ def aws_ec2_instance_metadata_options_modify(aws_client: AWSClient, args: Dict[s
         kwargs.update({'HttpEndpoint': args.get('http_endpoint')})
 
     response = client_session.modify_instance_metadata_options(**kwargs)
-    
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The EC2 instance metadata was updated")
         
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
         return CommandResults(readable_output=f"Successfully updated EC2 instance metadata for {args.get('instance_id')}")
