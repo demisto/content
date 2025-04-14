@@ -4,10 +4,10 @@ from CommonServerUserPython import *
 import hashlib
 import hmac
 import json
-import time
 import traceback
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Mapping, Optional, Tuple, cast
+from datetime import datetime, timezone
+from typing import Any, cast
+from collections.abc import Mapping
 
 import dateparser
 import urllib3
@@ -71,7 +71,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get(self, query_uri: str, params: Dict[str, str] = None):
+    def get(self, query_uri: str, params: dict[str, str] = None):
         """Handles Darktrace GET API calls"""
         return self._darktrace_api_call(query_uri, method='GET', params=params)
 
@@ -87,7 +87,7 @@ class Client(BaseClient):
         params: dict = None,
         data: dict = None,
         json: dict = None,
-        headers: Dict[str, str] = None,
+        headers: dict[str, str] = None,
     ):
         """Handles Darktrace API calls"""
         headers = {
@@ -151,14 +151,14 @@ class Client(BaseClient):
         elif res.status_code >= 300:
             raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
 
-    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> Dict[str, str]:
+    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
         date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {'DTAPI-Token': public_token, 'DTAPI-Date': date, 'DTAPI-Signature': signature}
 
-    def get_email(self, uuid: str) -> Dict[str, Any]:
+    def get_email(self, uuid: str) -> dict[str, Any]:
         """Get a specific Email given it's Darktrace UUID.
         :type uuid: ``str``
         :param uuid: Darktrace UUID of desired Email.
@@ -170,7 +170,7 @@ class Client(BaseClient):
         return email
 
 
-    def search_emails(self, min_score: float, actioned: bool, tag_severity: List[str], start_time: int, end_time: int, direction: Optional[str]) -> List[Dict[str, Any]]:
+    def search_emails(self, min_score: float, actioned: bool, tag_severity: list[str], start_time: int, end_time: int, direction: str | None) -> list[dict[str, Any]]:
         """Searches for Darktrace emails using the '/emails/search' API endpoint
         :type min_score: ``float``
         :param min_score: min score of the email to search for. Range [0, 1].
@@ -214,7 +214,7 @@ class Client(BaseClient):
         all_emails_details = [self.get(f"{GET_EMAIL_ENDPOINT}/{email[0]}?dtime={email[1]}") for email in all_emails]
         return all_emails_details
 
-    def action_email(self, uuid: str, action: str = 'hold', recipients:str = None) -> Dict[str, Any]:
+    def action_email(self, uuid: str, action: str = 'hold', recipients:str = None) -> dict[str, Any]:
         """Apply a given action to the specified Email.
         :type uuid: ``str``
         :param uuid: Unique ID of Email to apply action to.
@@ -235,7 +235,7 @@ class Client(BaseClient):
         return response
 
 
-    def get_tag_mapper(self) -> List[Dict[str, str]]:
+    def get_tag_mapper(self) -> list[dict[str, str]]:
         """Get a list of all available tags with their details.
         :return: dictionary containing the tag IDs as keys and the human readable tag Name as values.
         :rtype: Dict[str, str]
@@ -249,7 +249,7 @@ class Client(BaseClient):
 """*****HELPER FUNCTIONS****"""
 
 
-def email_query_builder(page: int, filter_triads: List[tuple[Any]], init_date: int, end_date: int) -> Dict[str, Any]:
+def email_query_builder(page: int, filter_triads: list[tuple[Any]], init_date: int, end_date: int) -> dict[str, Any]:
         '''
         Summary:
             Function to build the dictionary used to query the API given certain API filters.
@@ -283,7 +283,7 @@ def email_query_builder(page: int, filter_triads: List[tuple[Any]], init_date: i
 def format_timestamp(timestamp: int) -> str:
     return datetime.strftime(datetime.fromtimestamp(timestamp), '%Y-%m-%dT%H:%M:%SZ')
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
@@ -353,7 +353,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
         hashlib.sha1,
     ).hexdigest()
 
-def format_JSON_for_email(email: Dict[str, Any], tag_mapper: Dict[str, str]) -> Dict[str, Any]:
+def format_JSON_for_email(email: dict[str, Any], tag_mapper: dict[str, str]) -> dict[str, Any]:
     """Formats JSON for get-email command.
     :type email: ``Dict[str, Any]``
     :param email: JSON email as returned by /emails/{uuid} API endpoint.
@@ -390,7 +390,7 @@ def format_JSON_for_email(email: Dict[str, Any], tag_mapper: Dict[str, str]) -> 
     return relevant_info
 
 
-def _compute_xsoar_severity(tags: List['str'], actions: List['str'], score: int, tag_mapper:Dict) -> int:
+def _compute_xsoar_severity(tags: list['str'], actions: list['str'], score: int, tag_mapper:dict) -> int:
     """Translates Darktrace email tags into XSOAR Severity"""
     if 'critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 75 and 'Hold message' not in actions:
         return 4
@@ -431,11 +431,11 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 
 def fetch_incidents(client: Client, max_alerts: int,
-                    last_run: Dict[str, int],
-                    first_fetch_time: Optional[int],
+                    last_run: dict[str, int],
+                    first_fetch_time: int | None,
                     min_score: int, actioned: bool,
-                    tag_severity: List[str],
-                    direction: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    tag_severity: list[str],
+                    direction: str | None) -> tuple[dict[str, int], list[dict]]:
     """This function retrieves new model breaches every minute. It will use last_run
     to save the timestamp of the last incident it processed. If last_run is not provided,
     it should use the integration parameter first_fetch to determine when to start fetching
@@ -482,7 +482,7 @@ def fetch_incidents(client: Client, max_alerts: int,
     latest_created_time = cast(int, last_fetch)
 
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # Get current time
     end_time = int(datetime.now().timestamp())
@@ -531,7 +531,7 @@ def fetch_incidents(client: Client, max_alerts: int,
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
 
-def get_email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_email_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """darktrace-email-get-email command: Return a Darktrace email
 
     :type client: ``Client``
@@ -563,7 +563,7 @@ def get_email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def hold_email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def hold_email_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """darktrace-email-hold-email command: Apply 'hold' action to specified Email.
 
     :type client: ``Client``
@@ -596,7 +596,7 @@ def hold_email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def release_email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def release_email_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """darktrace-email-release-email command: Release a previously held Email.
 
     :type client: ``Client``

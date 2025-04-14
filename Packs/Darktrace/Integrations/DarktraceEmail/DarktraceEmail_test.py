@@ -1,5 +1,4 @@
 import json
-import pytest
 
 
 from DarktraceEmail import (
@@ -59,7 +58,7 @@ def test_release_email(requests_mock):
             Response to release request is returned
     """
     uuid = "BA13B274-03F3-46D6-8698-244DFF1037A0.1"
-    recipient = "leeroy.jenkins@storosta.com"
+    recipient = "leeroy.jenkins@example.com"
     
     mock_api_response = util_load_json("test_data/release_email.json")
     requests_mock.post(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid}/action", json=mock_api_response)
@@ -83,7 +82,7 @@ def test_hold_email(requests_mock):
             Response to hold request is returned
     """
     uuid = "BA13B274-03F3-46D6-8698-244DFF1037A0.1"
-    recipient = "leeroy.jenkins@storosta.com"
+    recipient = "leeroy.jenkins@example.com"
     
     mock_api_response_get_email = util_load_json("test_data/get_email.json")
     requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid}", json=mock_api_response_get_email)
@@ -119,7 +118,7 @@ def test_fetch_incidents(requests_mock):
     requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_02}?dtime=1744300434119", json=mock_api_response_incident_02)
     
     mock_api_response_get_email = util_load_json("test_data/fetch_incidents.json")
-    requests_mock.post(f"https://mock.darktrace.com/agemail/api/v1.0/emails/search", json=mock_api_response_get_email)
+    requests_mock.post("https://mock.darktrace.com/agemail/api/v1.0/emails/search", json=mock_api_response_get_email)
     
     mock_api_response_tags = util_load_json("test_data/get_tags.json")
     requests_mock.get("https://mock.darktrace.com/agemail/api/v1.0/resources/tags", json=mock_api_response_tags)

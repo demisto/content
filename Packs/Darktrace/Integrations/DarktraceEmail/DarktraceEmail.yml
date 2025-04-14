@@ -1,0 +1,145 @@
+commonfields:
+  id: DarktraceEmail
+  version: -1
+name: DarktraceEmail
+display: DarktraceEmail
+category: Network Security
+image: data:image/png;base64,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
+description: "This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate critical incidents along with accompanying summaries and timelines."
+detaileddescription: "### Partner Contributed Integration\n#### Integration Author: Darktrace\nSupport and maintenance for this integration are provided by the author. Please create a ticket on the Darktrace Customer Portal:\n- **URL**: [https://customerportal.darktrace.com](https://customerportal.darktrace.com)\n***\n## Darktrace\nTo configure the connection to your Darktrace instance, you will provide:\n- Server URL of Darktrace Server (ex: darktrace.yourcompany.com) and any necessary proxy information\n- Public and Private API Tokens from Darktrace (instructions to generate these tokens can be found at: https://customerportal.darktrace.com/product-guides/main/api-tokens)\n\nBest Practices: \n- Ingest both actioned and un-actioned emails. Ingesting the un-actioned emails will give you the ability to manually hold them.\n- If you want to reduce the volume of emails ingested then we recommend starting with only inbound emails. Consider adding internal and outbound later on.\n- Ingest emails with all Darktrace Tag Severity levels.\n\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/darktrace-m-bs)"
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://example.net
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Public API Token
+  name: publicApiKey
+  type: 4
+  required: true
+  additionalinfo: Public token obtained by creating an API token pair on the /config configuration page.
+- display: Private API Token
+  name: privateApiKey
+  type: 4
+  required: true
+  additionalinfo: Private token obtained by creating an API token pair on the /config configuration page.
+- display: Minimum Score
+  name: min_score
+  defaultvalue: "0"
+  type: 0
+  required: true
+  additionalinfo: Minimum Darktrace score for fetched incidents (0-100).
+- display: Maximum Emails per Fetch
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+  additionalinfo: Maximum number of Darktrace Emails to fetch at a time.
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 1 day ago
+  type: 0
+  required: false
+  additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Darktrace Tag Severity
+  name: tag_severity
+  defaultvalue: Critical,Warning,Informational
+  type: 16
+  required: false
+  options:
+  - Critical
+  - Warning
+  - Informational
+  additionalinfo: Fetches Emails with any tags of the desired severity level, filtering is inclusive.  By default fetches all severity levels.
+- display: Only Actioned Emails
+  name: actioned
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Only fetch Emails that have been actioned. Disabled by default.
+- display: Direction
+  name: direction
+  type: 15
+  required: false
+  options:
+  - inbound
+  - outbound
+  - internal
+  additionalinfo: Fetch emails based on direction; either inbound, outbound or internal.  By default fetches all directions.
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: darktrace-email-get-email
+    arguments:
+    - name: uuid
+      required: true
+      description: Darktrace UUID of the Email.
+    outputs:
+    - contextPath: Darktrace.Email.uuid
+      description: UUID of email.
+      type: string
+    - contextPath: Darktrace.Email.direction
+      description: Direction of email.
+      type: string
+    - contextPath: Darktrace.Email.dtime
+      description: Timestamp of email.
+      type: string
+    - contextPath: Darktrace.Email.header_from_email
+      description: Email address of sender.
+      type: string
+    - contextPath: Darktrace.Email.header_subject
+      description: Subject of email.
+      type: string
+    - contextPath: Darktrace.Email.model_score
+      description: Anomaly score of email.
+      type: number
+    - contextPath: Darktrace.Email.receipt_status
+      description: Receipt status of email.
+      type: string
+    description: Fetch details about a specific Email.
+  - name: darktrace-email-hold-email
+    arguments:
+    - name: uuid
+      required: true
+      description: Unique ID of Email.
+      type: unknown
+    description: Apply "hold" action to a specified Email.
+    execution: true
+  - name: darktrace-email-release-email
+    arguments:
+    - name: uuid
+      required: true
+      description: Unique ID of Email.
+    - name: recipient
+      description: Recipient of Email. Not required but speeds up the command.
+    description: 'Apply "release" action to a specified Email. '
+    execution: true
+  dockerimage: demisto/python3:3.10.13.87159
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
