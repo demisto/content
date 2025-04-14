@@ -211,7 +211,7 @@ def extract_usernames_with_ids(context: dict, output_key: str) -> dict:
     users = context.get(output_key, [])
 
     for user in users:
-        usernames = user.get("Username", {})
+        usernames = user.get("Username", [])
         for username in usernames:
             username = username.get("Value", "")
             id_info = user.get("ID", {})
