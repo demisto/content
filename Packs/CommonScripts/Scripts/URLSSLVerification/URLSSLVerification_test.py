@@ -61,7 +61,7 @@ def fake_requests_get(url, timeout=1, allow_redirects=True, verify=True):
             return create_response(url="https_certificate", history=[first_response])
         else:
             return first_response
-    elif url == "http_to_http" and allow_redirects:
+    elif url == "http_to_http":
         first_response = create_response(url="http_to_http", status_code=301)
         if allow_redirects:
             return create_response(url="http", history=[first_response])

@@ -52,8 +52,8 @@ def verify_ssl_certificate(url):
         return {"Vendor": VENDOR, "Description": "Failed to establish a new connection with the URL"}
 
     is_all_http = True
-    for response in redirect_chain:
-        redirected_url = response.url
+    for resp in redirect_chain:
+        redirected_url = resp.url
         if not redirected_url.startswith(SSL_PREFIX):
             continue
         is_all_http = False
