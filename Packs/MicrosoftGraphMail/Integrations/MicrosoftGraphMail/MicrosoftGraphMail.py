@@ -13,7 +13,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
     @logger
     def fetch_incidents(self, last_run):
         """
-        Fetches emails from office 365 mailbox and creates incidents of parsed emails.
+        Fetches emails from office 365 mailbox and creates incidents of parsed emails. TEST
         :type last_run: ``dict``
         :param last_run:
             Previous fetch run data that holds the fetch time in utc Y-m-dTH:M:SZ format,
