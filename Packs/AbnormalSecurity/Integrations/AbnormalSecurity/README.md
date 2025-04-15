@@ -4,12 +4,24 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 ## Configure Abnormal Security in Cortex
 
 
-| **Parameter**                                         | **Required** |
-| ----------------------------------------------------- | ------------ |
-| Server URL (e.g. https://api.abnormalplatform.com/v1) | True         |
-| API Key                                               | True         |
-| Trust any certificate (not secure)                    | False        |
-| Use system proxy settings                             | False        |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://api.abnormalplatform.com/v1) |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Maximum incidents to fetch. | Maximum number of incidents per fetch. The default value is 200. | False |
+| Fetch Threats |  | False |
+| Fetch Abuse Campaigns |  | False |
+| Fetch Account Takeover Cases |  | False |
+| First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
+| Incident type |  | False |
+| Incidents Fetch Interval |  | False |
+| Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency | False |
+| Maximum incidents pages to fetch | Maximum number of pages to fetch for incidents | False |
+
 
 
 ## Commands
@@ -306,7 +318,7 @@ Get a list of threats
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                          | **Required** |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | filter            | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/threats` is `receivedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`. | Optional     |
-| page_size         | Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.                                                                                                                                                                                                 | Optional     |
+| page_size         | Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.                                                                                                                                                                                                 | Optional     |
 | page_number       | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.                                                                                                                                                                                                                                     | Optional     |
 | mock-data         | Returns test data if set to `True`.                                                                                                                                                                                                                                                                                                      | Optional     |
 | source            | Filters threats based on the source of detection.                                                                                                                                                                                                                                                                                        | Optional     |
@@ -364,11 +376,13 @@ Get details of a threat
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                               | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| threat_id         | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required     |
-| mock-data         | Returns test data if set to `True`.                                                                                           | Optional     |
-| subtenant         | Subtenant of the user (if applicable).                                                                                        | Optional     |
+| **Argument Name** | **Description**                                                                                                                           | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| threat_id         | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.             | Required     |
+| mock-data         | Returns test data if set to `True`.                                                                                                       | Optional     |
+| subtenant         | Subtenant of the user (if applicable).                                                                                                    | Optional     |
+| page_size         | Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.                 | Optional     | 
+| page_number       | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.                                      | Optional     | 
 
 #### Context Output
 
@@ -491,6 +505,7 @@ Get details of an Abnormal case
 | AbnormalSecurity.AbnormalCaseDetails.severity         | String   | Description of the severity level for this case. |
 | AbnormalSecurity.AbnormalCaseDetails.affectedEmployee | String   | Which employee this case pertains to.            |
 | AbnormalSecurity.AbnormalCaseDetails.firstObserved    | String   | First time suspicious behavior was observed.     |
+| AbnormalSecurity.AbnormalCaseDetails.genai_summary    | String   | Gen AI summary for this case                     |
 
 #### Command Example
 
@@ -509,7 +524,8 @@ Get details of an Abnormal case
             "firstObserved": "2020-06-09T17:42:59Z",
             "remediation_status": "Not remediated",
             "severity": "Potential Account Takeover",
-            "threatIds": ["184712ab-6d8b-47b3-89d3-a314efef79e2"]
+            "threatIds": ["184712ab-6d8b-47b3-89d3-a314efef79e2"],
+            "genai_summary": "Observed 2 lateral phishing emails sent internally from the user's account"
         }
     }
 }

@@ -514,8 +514,10 @@ class Client(BaseClient):
             attempts: (int) number of attempts to try with the given session extraction/method.
 
         Returns:
-            requets.Response: the response object
+            requests.Response: the response object
         """
+        demisto.debug(f"Sending {method.upper()} request to REST endpoint: {url_suffix} with params: {params} and body: {data}")
+
         for _ in range(attempts):
             headers = self.get_headers(create_new_session=create_new_session)
             res = self._http_request(
@@ -921,14 +923,17 @@ class Client(BaseClient):
 
     def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
+        cache_key = f"{field_id}__{depth}"  # Value list depends on both field ID and depth
 
-        if cache["fieldValueList"].get(field_id):
-            return cache.get("fieldValueList").get(field_id)
+        # Get the value from cache using both field ID and depth (if exists)
+        if cached_field_value_list:= cache.get("fieldValueList", {}).get(cache_key):
+            demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
+            return cached_field_value_list
 
+        # If the value does not exist in cache, get it from the API
         res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
-        errors = get_errors_from_res(res)
-        if errors:
+        if errors:= get_errors_from_res(res):
             return_error(errors)
 
         if res.get("RequestedObject") and res.get("IsSuccessful"):
@@ -936,17 +941,18 @@ class Client(BaseClient):
                 raise Exception('The command returns values only for fields of type "Values List".\n')
 
             list_id = res["RequestedObject"]["RelatedValuesListId"]
-            values_list_res = self.do_rest_request(
-                "GET",
-                f"{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}",
-            )
+            values_list_res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}")
+
             if values_list_res.get("RequestedObject") and values_list_res.get("IsSuccessful"):
                 values_list: List[dict[str, Any]] = []
                 for value in values_list_res["RequestedObject"].get("Children", ()):
                     self.get_field_value_list_helper(value, values_list, depth)
+
                 field_data = {"FieldId": field_id, "ValuesList": values_list}
 
-                cache["fieldValueList"][field_id] = field_data
+                # Write the value to cache so it can be retrieved next time using both field ID and depth
+                cache["fieldValueList"][cache_key] = field_data
+                demisto.debug(f"Merging field value list for field ID: {field_id} and depth: {depth} into integration context.")
                 merge_integration_context(cache)
                 return field_data
         return {}
@@ -1035,13 +1041,22 @@ def extract_from_xml(xml, path):
 
 def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
-        demisto.debug(f"fields values are: {fields_values}")
-        fields_values = re.sub(r'\\(?!")', r"\\\\", fields_values)
-        demisto.debug(f"fields values after escaping: {fields_values}")
+        demisto.debug(f"Fields values string before escaping: {fields_values}")
+        # Escape backslashes if not any of the following:
+        # \" - escaped double quote        \b - backspace
+        # \f - form feed                   \n - new line
+        # \r - carriage return             \t - tab
+        # \u - unicode character
+        fields_values = re.sub(r'\\(?!["bfnrtu])', r"\\\\", fields_values)
+        demisto.debug(f"Fields values string after escaping: {fields_values}")
+
         try:
+            demisto.debug(f"Loading JSON fields values string: {fields_values}")
             fields_values = json.loads(fields_values)
-        except Exception:
-            raise Exception("Failed to parse fields-values argument")
+        except Exception as e:
+            raise Exception(f"Failed to load JSON fields values string. Error: {str(e)}")
+        else:
+            demisto.debug("Successfully loaded JSON fields values string")
 
     field_content = {}
     for field_name in fields_values:
