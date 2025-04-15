@@ -79,12 +79,17 @@ def convert_datetime_to_string(v):  # pylint: disable=W9014
     returns:
         Formatted string of the object
     """
+    demisto.info(f"[test] in convert_datetime_to_string didn't got {v=}.")
     if isinstance(v, datetime):
+        demisto.info(f"[test] in convert_datetime_to_string in first condition {v=}.")
         return v.strftime("%Y-%m-%d %H:%M:%S.%f %z").strip()
     elif isinstance(v, date):
+        demisto.info(f"[test] in convert_datetime_to_string in second condition {v=}.")
         return v.strftime("%Y-%m-%d").strip()
     elif isinstance(v, dttime):
+        demisto.info(f"[test] in convert_datetime_to_string in third condition {v=}.")
         return v.strftime("%H:%M:%S.%f").strip()
+    demisto.info(f"[test] in convert_datetime_to_string in no condition {v=}.")
     return v
 
 
@@ -145,14 +150,18 @@ def process_table_row(row, checks):  # pylint: disable=W9014
     returns:
         Reformatted Row
     """
+    demisto.info(f"[test] in process_table_row got {row=}, {checks=}.")
     for column_name, val in row.items():
         if column_name in checks.get("isDecimal", []):
+            demisto.info(f"[test] in process_table_row got isDecimal for {column_name=}, {val=}.")
             # Then check the value and reformat it if necessary
             if isinstance(val, Decimal):
                 row[column_name] = str(val)
         elif column_name in checks.get("isDT", []):
+            demisto.info(f"[test] in process_table_row got isDT for {column_name=}, {val=}.")
             # Then reformat it if necessary
             row[column_name] = convert_datetime_to_string(val)
+    demisto.info(f"[test] in process_table_row return {row=}.")
     return row
 
 
@@ -190,11 +199,14 @@ def format_to_json_serializable(column_descriptions, results):  # pylint: disabl
     # in the table, otherwise if 'results' is a dict then it a single table row
     # Check candidates and reformat if necessary
     if isinstance(results, dict):
+        demisto.info(f"[test] in format_to_json_serializable got dict {results=}.")
         results = process_table_row(results, checks)
     else:
+        demisto.info(f"[test] in format_to_json_serializable got list {results=}.")
         # if 'results' isn't a dict, assume it's a list
         for i, row in enumerate(results):
             results[i] = process_table_row(row, checks)
+    demisto.info(f"[test] in format_to_json_serializable {results=}.")
     return results
 
 
@@ -248,12 +260,14 @@ def row_to_incident(column_descriptions, row):  # pylint: disable=W9014
     occurred = row.get(DATETIME_COLUMN)
     timestamp = None
     if occurred:
+        demisto.info(f"[test] in row_to_incident got {occurred=}")
         if isinstance(occurred, dttime | timedelta):
             err_msg = "The datetime field specified in the integration parameters must "
             err_msg += 'contain values of type "datetime" or "date".'
             raise Exception(err_msg)
         timestamp = occurred.timestamp() * 1000
     else:
+        demisto.info(f"[test] in row_to_incident didn't get occur.")
         err_msg = "Nothing found when trying to fetch the datetime field specified in"
         err_msg += " the integration parameters. Please check that the name was correct."
         err_msg += " If the field name was correct, verify that the returned value for"
@@ -261,17 +275,23 @@ def row_to_incident(column_descriptions, row):  # pylint: disable=W9014
         raise Exception(err_msg)
     # Incident Title
     if INCIDENT_NAME_COLUMN:
+        demisto.info(f"[test] in row_to_incident didn't got {INCIDENT_NAME_COLUMN=}.")
         name = row.get(INCIDENT_NAME_COLUMN)
+        demisto.info(f"[test] in row_to_incident didn't got {name=}.")
     else:
         name = "Snowflake Incident -- "
+        demisto.info(f"[test] in row_to_incident didn't got {occurred=}.")
         name += convert_datetime_to_string(occurred) + "- " + str(datetime.now().timestamp())
+        demisto.info(f"[test] in row_to_incident didn't got {name=}.")
     incident["name"] = name
     incident["occurred"] = occurred.isoformat()
     # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
     incident["timestamp"] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query
+    demisto.info(f"[test] in row_to_incident so far got {incident=}.")
     reformatted_row = format_to_json_serializable(column_descriptions, row)
     incident["rawJSON"] = json.dumps(reformatted_row)
+    demisto.info(f"[test] in row_to_incident return {incident=}.")
     return incident
 
 
@@ -302,12 +322,13 @@ def fetch_incidents():
     # Get the last fetch time and data if it exists
     last_fetch = last_run.get("last_fetched_data_timestamp")
     last_fetched_data = last_run.get("last_fetched_data")
-
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
+    demisto.info(f'[test] going to get incidents with {args=}')
     column_descriptions, data = snowflake_query(args)
+    demisto.info(f'[test] got events with {column_descriptions=} and {data=}')
     data.sort(key=lambda k: k[DATETIME_COLUMN])
     # convert the data/events to demisto incidents
     incidents = []
@@ -352,7 +373,9 @@ def snowflake_query_command():
     query = args.get("query")
     db = args.get("database") if args.get("database") else DATABASE
     schema = args.get("schema") if args.get("schema") else SCHEMA
+    demisto.info(f'[test] snowflake_query_command {args=}')
     col_descriptions, results = snowflake_query(args)
+    demisto.info(f'[test] snowflake_query_command {col_descriptions=} {results=}')
     if not results:
         demisto.results("No data found matching the query")  # pylint: disable=W9008
     else:
