@@ -604,7 +604,7 @@ def test_doppel_get_alerts_command_no_results(client, mocker):
     """Test doppel_get_alerts_command when no alerts are found."""
 
     # Mock the API response to return an empty list
-    mocker.patch.object(client, 'get_alerts', return_value=[])
+    mocker.patch.object(client, 'get_alerts', return_value={'alerts': []})
 
     args = {
         'search_key': 'non-existent-key',
@@ -621,7 +621,7 @@ def test_doppel_get_alerts_command_no_results(client, mocker):
     result = doppel_get_alerts_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs == []  # Expecting an empty result
+    assert result.outputs == {'alerts': []}  # Expecting an empty result
     assert 'No alerts were found' not in result.readable_output  # Should not raise an error, just be empty
 
 
@@ -695,7 +695,7 @@ def test_doppel_get_alerts_no_results(mocker):
     """Test when no alerts are found (empty response)."""
 
     mock_client = MagicMock()
-    mock_client.get_alerts.return_value = []
+    mock_client.get_alerts.return_value = {'alerts': []}
 
     test_args = {"queue_state": "resolved"}
 
@@ -703,7 +703,7 @@ def test_doppel_get_alerts_no_results(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Doppel.GetAlerts"
-    assert result.outputs == []
+    assert result.outputs == {'alerts': []}
     assert "No alerts were found" not in result.readable_output
 
 
@@ -711,7 +711,7 @@ def test_doppel_get_alerts_missing_params(mocker):
     """Test when query parameters are missing."""
 
     mock_client = MagicMock()
-    mock_client.get_alerts.return_value = [{"id": "125", "name": "Alert"}]
+    mock_client.get_alerts.return_value = {'alerts': [{"id": "125", "name": "Alert"}]}
 
     test_args = {}  # No parameters provided
 
@@ -720,14 +720,14 @@ def test_doppel_get_alerts_missing_params(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Doppel.GetAlerts"
     assert len(result.outputs) == 1
-    assert result.outputs[0]["id"] == "125"
+    assert result.outputs['alerts'][0]["id"] == "125"
 
 
 def test_doppel_get_alerts_optional_params(mocker):
     """Test handling of optional parameters like tags and pagination."""
 
     mock_client = MagicMock()
-    mock_client.get_alerts.return_value = [{"id": "126", "name": "Optional Param Test"}]
+    mock_client.get_alerts.return_value = {'alerts': [{"id": "126", "name": "Optional Param Test"}]}
 
     test_args = {
         "tags": "phishing,low",
@@ -739,7 +739,7 @@ def test_doppel_get_alerts_optional_params(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Doppel.GetAlerts"
     assert len(result.outputs) == 1
-    assert result.outputs[0]["name"] == "Optional Param Test"
+    assert result.outputs['alerts'][0]["name"] == "Optional Param Test"
 
 
 def test_doppel_create_abuse_alert_command(client, mocker):
