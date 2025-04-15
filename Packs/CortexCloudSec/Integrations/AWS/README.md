@@ -1,5 +1,5 @@
 Support for AWS cloud
-This integration was integrated and tested with version xx of Cortex CloudSec - AWS.
+This integration was integrated and tested with version 1.0.0 of Cortex CloudSec - AWS.
 
 ## Configure Cortex CloudSec - AWS in Cortex
 
