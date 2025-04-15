@@ -129,7 +129,7 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
 
 def get_xsoar_close_reasons():
     """
-    Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
+    Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration. test
     """
     default_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
     custom_close_reasons: List[str] = []
