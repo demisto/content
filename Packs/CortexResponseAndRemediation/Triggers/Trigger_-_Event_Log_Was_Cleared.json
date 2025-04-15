@@ -44,6 +44,11 @@
                 "SEARCH_FIELD": "alert_name",
                 "SEARCH_TYPE": "EQ",
                 "SEARCH_VALUE": "Windows event logs cleared using wmic.exe and test"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Update Update Update"
                 }
                 ]
         },
