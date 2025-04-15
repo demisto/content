@@ -6,9 +6,9 @@ This integration was integrated and tested with version xx of Cortex CloudSec - 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Role Name |  | True |
-| Role Session Name |  | True |
-| Role Session Duration |  | False |
+| Role Name | ARN of the role to be used for authentication | True |
+| Role Session Name | Role session name to be used for authentication | True |
+| Role Session Duration | Max role session duration | False |
 | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
 | PrivateLink service URL. |  | False |
@@ -39,10 +39,10 @@ Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region. | Required | 
 | bucket | The name of the Amazon S3 bucket. | Required | 
-| block_public_acls | Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Possible values are: True, False. | Optional | 
-| ignore_public_acls | Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Possible values are: True, False. | Optional | 
-| block_public_policy | Specifies whether Amazon S3 should block public bucket policies for this bucket. Possible values are: True, False. | Optional | 
-| restrict_public_buckets | Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Possible values are: True, False. | Optional | 
+| block_public_acls | Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Possible values are: true, false. | Optional | 
+| ignore_public_acls | Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Possible values are: true, false. | Optional | 
+| block_public_policy | Specifies whether Amazon S3 should block public bucket policies for this bucket. Possible values are: true, false. | Optional | 
+| restrict_public_buckets | Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -94,7 +94,7 @@ Modify the EC2 instance metadata parameters on a running or stopped instance.
 | region | The AWS region. | Required | 
 | instance_id | The ID of the instance. | Required | 
 | http_tokens | Indicates whether IMDSv2 is required. Possible values are: optional, required. | Optional | 
-| http_endpoint | The AWS region. Possible values are: disabled, enabled. | Optional | 
+| http_endpoint | Enables or disables the HTTP metadata endpoint on your instances. Possible values are: disabled, enabled. | Optional | 
 
 #### Context Output
 
@@ -114,14 +114,14 @@ Create/update password policy.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required | 
 | minimum_password_length | The minimum number of characters allowed in an IAM user password. Possible values are: . | Optional | 
-| require_symbols | Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False". Possible values are: True, False. | Optional | 
-| require_numbers | Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False". Possible values are: True, False. | Optional | 
-| require_uppercase_characters | Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False". Possible values are: True, False. | Optional | 
-| require_lowercase_characters | Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False". Possible values are: True, False. | Optional | 
-| allow_users_to_change_password | Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False". Possible values are: True, False. | Optional | 
+| require_symbols | Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False". Possible values are: true, false. | Optional | 
+| require_numbers | Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False". Possible values are: true, false. | Optional | 
+| require_uppercase_characters | Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False". Possible values are: true, false. | Optional | 
+| require_lowercase_characters | Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False". Possible values are: true, false. | Optional | 
+| allow_users_to_change_password | Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False". Possible values are: true, false. | Optional | 
 | max_password_age | The number of days that an IAM user password is valid. Possible values are: . | Optional | 
 | password_reuse_prevention | Specifies the number of previous passwords that IAM users are prevented from reusing. Possible values are: . | Optional | 
-| hard_expiry | Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False". Possible values are: True, False. | Optional | 
+| hard_expiry | Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False". Possible values are: true, false. | Optional | 
 
 #### Context Output
 

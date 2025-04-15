@@ -3,9 +3,10 @@ from AWSApiModule import *  # noqa: E402
 from CommonServerPython import *
 from http import HTTPStatus
 from datetime import date
+from collections.abc import Callable
 
 def test_module(aws_client: AWSClient) -> str:
-    aws_client.aws_session(service=SERVICE)
+    # aws_client.aws_session(service='sts')
     return "ok"
 
 # =================== #
@@ -59,15 +60,18 @@ def put_public_access_block(aws_client: AWSClient, args: Dict[str, Any]) -> Comm
         }
     except Exception:
         return CommandResults(readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
-        
-    if args.get('block_public_acls'):
-        kwargs.update({ 'BlockPublicAcls': argToBoolean(args.get('block_public_acls')) })
-    if args.get('ignore_public_acls'):
-        kwargs.update({ 'IgnorePublicAcls': argToBoolean(args.get('ignore_public_acls')) })
-    if args.get('block_public_policy'):
-        kwargs.update({ 'BlockPublicPolicy': argToBoolean(args.get('block_public_policy')) })
-    if args.get('restrict_public_buckets'):
-        kwargs.update({ 'RestrictPublicBuckets': argToBoolean(args.get('restrict_public_buckets')) })
+
+    command_args_map = {
+        'block_public_acls': ('BlockPublicAcls', argToBoolean),
+        'ignore_public_acls': ('IgnorePublicAcls', argToBoolean),
+        'block_public_policy': ('BlockPublicPolicy', argToBoolean),
+        'restrict_public_buckets': ('RestrictPublicBuckets', argToBoolean)
+    }
+    
+    remove_nulls_from_dictionary(args)
+    for arg_key, (kwarg_key, converter_func) in command_args_map.items():
+        if arg_key in args:
+            kwargs[kwarg_key] = converter_func(args[arg_key])
 
 
     response = client_session.put_public_access_block(Bucket=args.get('bucket'),
@@ -86,65 +90,65 @@ def get_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) -> 
     client_session = aws_client.aws_session(service='iam', region=args.get('region'))
     response = client_session.get_account_password_policy()
     data = json.loads(json.dumps(response['PasswordPolicy'], cls=DatetimeEncoder))
-    data.update({'AccountId': args.get('account_id')})
-    
+
     human_readable = tableToMarkdown('AWS IAM Account Password Policy', data)
     
     return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.IAM.PasswordPolicy',
                           outputs_key_field='AccountId')
     
 def update_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) -> CommandResults:
-    client_session = aws_client.aws_session(service='iam', region=args.get('region'))
+    client_session = aws_client.aws_session(service='iam')
     try:
         response = client_session.get_account_password_policy()
         kwargs = response['PasswordPolicy']
-    except client_session.exceptions.NoSuchEntityException:
-        kwargs = {}
-    # ExpirePasswords is part of the response but cannot be included
-    # in the request
+    except Exception:
+        return CommandResults(
+            readable_output=f"Couldn't check current account password policy for account: {args.get('account_id')}"
+        )
+        
+    # ExpirePasswords is part of the response but cannot be included in the request
     if 'ExpirePasswords' in kwargs:
         kwargs.pop('ExpirePasswords')
-    if args.get('minimum_password_length'):
-        kwargs.update({'MinimumPasswordLength': arg_to_number(args.get('minimum_password_length'))})
-    if args.get('require_symbols'):
-        kwargs.update({'RequireSymbols': args.get('require_symbols') == 'True'})
-    if args.get('require_numbers'):
-        kwargs.update({'RequireNumbers': args.get('require_numbers') == 'True'})
-    if args.get('require_uppercase_characters'):
-        kwargs.update(
-            {'RequireUppercaseCharacters': args.get('require_uppercase_characters') == 'True'})
-    if args.get('require_lowercase_characters'):
-        kwargs.update(
-            {'RequireLowercaseCharacters': args.get('require_lowercase_characters') == 'True'})
-    if args.get('allow_users_to_change_password'):
-        kwargs.update(
-            {'AllowUsersToChangePassword': args.get('allow_users_to_change_password') == 'True'})
-    if args.get('max_password_age'):
-        kwargs.update({'MaxPasswordAge': int(args.get('max_password_age'))})
-    if args.get('password_reuse_prevention'):
-        kwargs.update({'PasswordReusePrevention': int(args.get('password_reuse_prevention'))})
-    if args.get('hard_expiry'):
-        kwargs.update({'HardExpiry': args.get('hard_expiry') == 'True'})
+    
+    command_args_map: Dict[str, tuple[str, Callable[[Any], Any]]] = {
+        'minimum_password_length': ('MinimumPasswordLength', arg_to_number),
+        'require_symbols': ('RequireSymbols', argToBoolean),
+        'require_numbers': ('RequireNumbers', argToBoolean),
+        'require_uppercase_characters': ('RequireUppercaseCharacters', argToBoolean),
+        'require_lowercase_characters': ('RequireLowercaseCharacters', argToBoolean),
+        'allow_users_to_change_password': ('AllowUsersToChangePassword', argToBoolean),
+        'max_password_age': ('MaxPasswordAge', arg_to_number),
+        'password_reuse_prevention': ('PasswordReusePrevention', arg_to_number),
+        'hard_expiry': ('HardExpiry', argToBoolean),
+    }
+    
+    remove_nulls_from_dictionary(args)
+    for arg_key, (kwarg_key, converter_func) in command_args_map.items():
+        if arg_key in args:
+            kwargs[kwarg_key] = converter_func(args[arg_key])
+        
     response = client_session.update_account_password_policy(**kwargs)
     
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-        return CommandResults(readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}")
+        return CommandResults(
+            readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}"
+        )
     else:
         return CommandResults(readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}")
         
 # =================== #
 # EC2 commands
 # =================== #
-def aws_ec2_instance_metadata_options_modify(aws_client: AWSClient, args: Dict[str, Any]) -> CommandResults:
+def ec2_instance_metadata_options_modify(aws_client: AWSClient, args: Dict[str, Any]) -> CommandResults:
     client_session = aws_client.aws_session(service='ec2', region=args.get('region'))
     
-    kwargs = {'InstanceId': args.get('instance_id')}
+    kwargs = {
+        'InstanceId': args.get('instance_id'),
+        'HttpTokens': args.get('http_tokens'),
+        'HttpEndpoint': args.get('http_endpoint')
+    }
+    remove_nulls_from_dictionary(kwargs)
     
-    if args.get('http_tokens'):
-        kwargs.update({'HttpTokens': args.get('http_tokens')})
-    if args.get('http_endpoint'):
-        kwargs.update({'HttpEndpoint': args.get('http_endpoint')})
-
     response = client_session.modify_instance_metadata_options(**kwargs)
         
     if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
@@ -168,7 +172,6 @@ def main():
     
     aws_client = get_client(params, command_args)
 
-    result = ''
     try:
         match command:
             case "aws-s3-public-access-block-update":
@@ -178,10 +181,10 @@ def main():
             case 'aws-iam-account-password-policy-update':
                 result = update_account_password_policy(aws_client, command_args)
             case 'aws-ec2-instance-metadata-options-modify':
-                result = aws_ec2_instance_metadata_options_modify(aws_client, command_args)
+                result = ec2_instance_metadata_options_modify(aws_client, command_args)
                 
             case 'test-module':
-                result = test_module(aws_client)
+                return_results(test_module(aws_client))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 
