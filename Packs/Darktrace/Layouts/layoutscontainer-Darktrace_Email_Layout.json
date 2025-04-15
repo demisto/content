@@ -1,13 +1,8 @@
 {
-	"cacheVersn": 0,
     "fromVersion": "6.10.0",
-	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -566,24 +561,11 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "Darktrace Email Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Darktrace Email Layout",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
 	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1,
     "marketplaces": ["xsoar"]
 }
