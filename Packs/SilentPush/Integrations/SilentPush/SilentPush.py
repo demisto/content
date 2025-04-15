@@ -2303,7 +2303,7 @@ def parse_arguments(args: Dict[str, Any]) -> Tuple[List[str], bool, bool]:
     if not domains_arg:
         raise DemistoException('No domains provided')
     
-    domains = [domain.strip() for domain in domains_arg.split(',') if domain.strip()]
+    domains = argToList(domains_arg)
     fetch_risk_score = argToBoolean(args.get('fetch_risk_score', False))
     fetch_whois_info = argToBoolean(args.get('fetch_whois_info', False))
     
@@ -3185,7 +3185,7 @@ def get_future_attack_indicators_command(client: Client, args: dict) -> CommandR
         page_size=page_size
     )
 
-    headers = list(raw_response[0].keys()) if raw_response else []
+    headers = list(raw_response.keys()) if raw_response else []
     readable_output = tableToMarkdown(
         f"# Future Attack Indicators\nFeed UUID: {feed_uuid}\n",
         raw_response,
