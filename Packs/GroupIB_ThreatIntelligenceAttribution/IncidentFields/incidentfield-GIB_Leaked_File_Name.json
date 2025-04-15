@@ -30,5 +30,8 @@
     "openEnded": false,
     "systemAssociatedTypes": [
         "GIB OSI Git Leak"
+    ],
+    "marketplaces": [
+        "xsoar"
     ]
 }

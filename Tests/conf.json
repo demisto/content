@@ -5528,6 +5528,7 @@
                 "legacy_context_output"
             ],
             "memory_threshold": 300,
+            "timeout": 600,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
         },
@@ -5743,7 +5744,8 @@
                 "LOLBAS Feed",
                 "Core REST API"
             ],
-            "playbookID": "FeedLOLBas_test"
+            "playbookID": "FeedLOLBas_test",
+            "timeout": 500
         },
         {
             "integrations": "CIRCL CVE Search",
@@ -6038,7 +6040,8 @@
         "Mail Sender (New) Test": "Creds not working CRTX-160174",
         "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
         "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
-        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "The creds were expired CIAC-13447"
 
 
     },
