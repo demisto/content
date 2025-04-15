@@ -31,10 +31,10 @@ Create a new search job.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search expression or keyword you're looking for in logs, e.g. alerts. | Required | 
-| source | Filters results by the log source or origin system, e.g. third_party_xsoar_integration. Default value is third_party. | Optional | 
+| source | Filters results by the log source or origin system, e.g. third_party_xsoar_integration. Default value is third_party. Default is third_party. | Optional | 
 | from | Timerange - start time, e.g., 1 hour, 30 minutes. Default value is 1 day. Default is 1 day. | Optional | 
 | to | Timerange - end time, e.g., 1 hour, 30 minutes. Default value is present. Default is 0 minutes. | Optional | 
-| timezone | The desired timezone for the log source from the dropdown list. The default is Universal Link System Time Zone, which is the timezone where Universal Link is installed. Default value is UTC. Default is UTC. | Optional | 
+| timezone | The desired timezone for the log source. Pass the official IANA name for the time zone you are interested in, e.g. Europe/London, America/New_York. Default value is UTC. Default is UTC. | Optional | 
 
 #### Context Output
 
@@ -63,8 +63,8 @@ Get search job results.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | Unique identifier assigned to a background process or job. | Required | 
-| offset | Offset of the search results. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0. | Optional | 
-| fetch_size | Number of rows returned. Maximum rows is 1000. Default value is 25. Default is 25. | Optional | 
+| offset | Offset of records returned from the search result job. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0. | Optional | 
+| fetch_size | Number of records returned from the search result job. Maximum rows is 1000. Default value is 25. Default is 25. | Optional | 
 
 #### Context Output
 
@@ -72,7 +72,7 @@ Get search job results.
 | --- | --- | --- |
 | AnomaliSecurityAnalytics.SearchJobResults.job_id | String | Job ID of the search job. | 
 | AnomaliSecurityAnalytics.SearchJobResults.status | String | Status of the search. | 
-| AnomaliSecurityAnalytics.SearchJobResults.count | Number | Number of records returned. |  
+| AnomaliSecurityAnalytics.SearchJobResults.count | Number | Number of records returned. | 
 | AnomaliSecurityAnalytics.SearchJobResults.has_next | Boolean | Indicates if more pages are available. | 
 | AnomaliSecurityAnalytics.SearchJobResults.is_aggregated | Boolean | Indicates if the search is aggregated. | 
 | AnomaliSecurityAnalytics.SearchJobResults.records | Array | List of records containing the fields included in the fields response attribute. | 
