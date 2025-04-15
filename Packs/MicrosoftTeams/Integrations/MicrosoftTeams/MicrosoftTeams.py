@@ -1556,6 +1556,7 @@ def add_bot_to_chat(chat_id: str):
     Add the Dbot to a chat.
     :param chat_id: chat id which to add the bot to.
     """
+    missing_bot_err_msg = f"Bot with ID: {BOT_ID} was not found in the App Catalog in Microsoft."
 
     demisto.debug(f"adding bot with id {BOT_ID} to chat")
 
@@ -1563,18 +1564,26 @@ def add_bot_to_chat(chat_id: str):
     if is_bot_in_chat(chat_id):
         demisto.debug(f"Bot is already part of the chat - chat ID: {chat_id}")
         return
-    res = http_request("GET", f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps", params={"$filter": f"externalId eq '{BOT_ID}'"})
-    demisto.debug(f"res is: {res}")
-    demisto.debug(f"res type is: {type(res)}")
+      
+    res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
+                       params={"$filter": f"externalId eq '{BOT_ID}'"})
+    demisto.debug(f"App data is: {res}")
     if isinstance(res, dict):
-        app_data = res.get("value")[0]  # type: ignore
-        bot_internal_id = app_data.get("id")
-        request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
-        http_request("POST", f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps", json_=request_json)
-        demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
-    else:
-        demisto.debug("Bot not in catalog")
+        value = res.get('value', []) # type: ignore
+        if not value:
+            raise DemistoException(missing_bot_err_msg)
+        app_data = value[0]
+        bot_internal_id = app_data.get('id')
+        demisto.debug(f"Bot internal ID is: {bot_internal_id}")
 
+        request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+        http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
+
+        demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+    
+    else:
+       raise DemistoException(missing_bot_err_msg)
+        
 
 def chat_create_command():
     """
