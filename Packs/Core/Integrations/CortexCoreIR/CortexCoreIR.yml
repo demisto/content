@@ -4020,7 +4020,7 @@ script:
       hidden: true
       description: Is the command being called from a core pack.
       defaultValue: true
-    - description: Unique identifier of execute_commands script.
+    - description: Unique identifier of the execute_commands script.
       name: script_uid
       hidden: true
     - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
