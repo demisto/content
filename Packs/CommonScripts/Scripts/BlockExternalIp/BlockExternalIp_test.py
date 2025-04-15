@@ -103,6 +103,36 @@ def test_prepare_context_and_hr_multiple_executions():
         assert result.readable_output == hr
 
 
+def test_sanitize_pan_os_responses():
+    """
+    Given:
+       - A list of responses from demosto.executeCommand
+    When:
+       - Saving only the relevant part of the responses.
+    Then:
+       - The correct information is returned.
+    """
+    from BlockExternalIp import reduce_pan_os_responses
+    res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
+    res_address_group_edit = util_load_json('test_data/pan_os_responses.json').get('edit_address_group')
+    res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
+    res_rule_edit = util_load_json('test_data/pan_os_responses.json').get('edit_rule')
+    res_rule_move = util_load_json('test_data/pan_os_responses.json').get('move_rule')
+    res_commit = util_load_json('test_data/pan_os_responses.json').get('pan_os_commit')
+    responses = [res_address_group_list,
+                 res_address_group_edit,
+                 res_rules_list,
+                 res_rule_edit,
+                 res_rule_move,
+                 res_commit]
+    result_responses = reduce_pan_os_responses(responses)
+    assert len(result_responses) == 6
+    for result in result_responses:
+        assert len(result[0]) == 3
+        keys_list = list(result[0].keys())
+        assert keys_list == ['HumanReadable', 'Contents', 'Type']
+
+
 def test_prepare_context_and_hr():
     """
     Given:
@@ -578,3 +608,74 @@ def test_pan_os_create_edit_rule_edit(mocker):
     assert len(responses) == 2
     assert mocker_execute_command.call_count == 2
     mocker_execute_command.assert_has_calls(expected_calls)
+
+
+def test_start_pan_os_flow_edit(mocker):
+    """
+    Given:
+      - The flow arguments.
+    When:
+      - Running the script block-external-ip for the panorama brand, the tag doesn't exist, but the address group
+        and rule does, so they need to be edited, and the changes should be committed.
+    Then:
+      - Verify the outputs of the start_pan_os_flow, include all the relevant responses, and auto_commit == true.
+    """
+    from BlockExternalIp import start_pan_os_flow
+    args = {
+        'ip_list': ['1.2.5.9'],
+        'rule_name': 'new_rule',
+        'log_forwarding_name': '',
+        'address_group': 'testing2',
+        'tag': 'some_tag3',
+        'auto_commit': True,
+        'verbose': False,
+        'brands': ['Panorama'],
+        'commit_job_id': '',
+        'polling': True
+    }
+    res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
+    res_address_group_edit = util_load_json('test_data/pan_os_responses.json').get('edit_address_group')
+    res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
+    res_rule_edit = util_load_json('test_data/pan_os_responses.json').get('edit_rule')
+    res_rule_move = util_load_json('test_data/pan_os_responses.json').get('move_rule')
+    mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_address_group_list,
+                                                                                         res_address_group_edit,
+                                                                                         res_rules_list,
+                                                                                         res_rule_edit,
+                                                                                         res_rule_move])
+    responses, auto_commit = start_pan_os_flow(args)
+    assert mocker_execute_command.call_count == 5
+    assert len(responses) == 5
+    assert auto_commit
+
+
+def test_start_pan_os_flow_register(mocker):
+    """
+    Given:
+      - The flow arguments.
+    When:
+      - Running the script block-external-ip for the panorama brand, the tag exist, just register the ip.
+    Then:
+      - Verify the outputs of the start_pan_os_flow, include all the relevant responses, and auto_commit == false.
+    """
+    from BlockExternalIp import start_pan_os_flow
+    args = {
+        'ip_list': ['1.2.5.9'],
+        'rule_name': 'new_rule',
+        'log_forwarding_name': '',
+        'address_group': 'testing2',
+        'tag': 'some_tag',
+        'auto_commit': True,
+        'verbose': False,
+        'brands': ['Panorama'],
+        'commit_job_id': '',
+        'polling': True
+    }
+    res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
+    res_address_register_ip_tag = util_load_json('test_data/pan_os_responses.json').get('register_ip_tag')
+    mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_address_group_list,
+                                                                                         res_address_register_ip_tag])
+    results, auto_commit = start_pan_os_flow(args)
+    assert mocker_execute_command.call_count == 2
+    assert not auto_commit
+    assert results[0].readable_output == '### The IP was blocked successfully\n|IP|Status|Result|Used integration|\n|---|---|---|---|\n| 1.2.5.9 | Done | Success | Panorama |\n'

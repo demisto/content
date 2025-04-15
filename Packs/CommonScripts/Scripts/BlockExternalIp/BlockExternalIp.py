@@ -90,7 +90,6 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
             })
     return context
 
-# TODO think about adding the command name to the human readable.
 def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose: bool, rule_name: str, ip_list_arr: list[str]) -> list:  # a list of command results
     """ Creates the relevant context and human readable in case of multiple command executions.
     Args:
@@ -134,6 +133,32 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
     else:
         results = [final_cr]
     return results
+
+
+def reduce_pan_os_responses(responses: list) -> list[list[dict]]:
+    """ Returns a list of just the information needed for later usage by the flow.
+    Args:
+        responses (list[list[dict]]): The responses returned from the execute command.
+    Returns:
+        A list containing the relevant parts of the command responses.
+    """
+    demisto.debug("Updating the responses in sanitize_pan_os_responses.")
+    sanitize_responses = []
+    for res in responses:
+        current_new_res = []
+        for entry in res:
+            command_hr = entry.get('HumanReadable')
+            message = entry.get('Contents')
+            entry_type = entry.get('Type')
+            demisto.debug(f"got {entry_type=} , {command_hr=} , {message=}")
+            current_new_res.append({
+                'HumanReadable': command_hr,
+                'Contents': message,
+                'Type': entry_type
+            })
+        sanitize_responses.append(current_new_res)
+    demisto.debug(f"{len(sanitize_responses)=}, {len(responses)=}")
+    return sanitize_responses
 
 
 def prepare_context_and_hr(response: list[dict], verbose: bool, ip_list: list[str]) -> list[CommandResults]:
@@ -200,17 +225,16 @@ def check_value_exist_in_context(value: str, context: list[dict], key: str) -> b
     """
     for item in context:
         match = item.get(key, '')
-        demisto.debug(f"The {match=}")
         if match and match == value:
             demisto.debug(f"The {value=} was found")
             return True
         elif match:
             match_split = match.split('or') if isinstance(match, str) else match.get('#text', '').split('or')
             match_split_strip = [m.strip() for m in match_split]
-            demisto.debug(f"{match_split_strip=}")
             if value in match_split_strip:
                 demisto.debug(f"The {value=} was found in an 'or' case")
                 return True
+    demisto.debug(f"The {value=} isn't in the context with the {key=}")
     return False
 
 
@@ -604,6 +628,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
         pan_os_create_edit_address_group(address_group, context_list_add_group, tag, responses)
 
         res_list_rules = run_execute_command("pan-os-list-rules", {'pre_post': 'pre-rulebase'})
+        responses.append(res_list_rules)
         context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
         pan_os_create_edit_rule(rule_name, context_list_rules, address_group, log_forwarding_name, responses)
         return responses, auto_commit  # should perform the commit section
@@ -671,7 +696,7 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     )
     return poll_result
 
-def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | PollResult:
+def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | PollResult:  # pragma: no cover
     """ Manage the different states of the pan-os flow.
     Args:
         args (dict): The arguments of the function.
@@ -695,6 +720,7 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
             return final_part_pan_os(args, responses)
         else:
             demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
+            responses = reduce_pan_os_responses(responses)
             demisto.setContext('panorama_responses', str(responses))
             return res_push_status
     elif commit_job_id:
@@ -712,6 +738,7 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
                     return final_part_pan_os(args, responses)
                 else:
                     demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
+                    responses = reduce_pan_os_responses(responses)
                     demisto.setContext('panorama_responses', str(responses))
                     return poll_push_to_device
             else:
@@ -719,6 +746,7 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
                 return final_part_pan_os(args, responses)
         else:
             demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
+            responses = reduce_pan_os_responses(responses)
             demisto.setContext('panorama_responses', str(responses))
             return poll_commit_status
 
@@ -735,6 +763,7 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
             return result
         else:
             demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
+            responses = reduce_pan_os_responses(responses)
             demisto.setContext('panorama_responses', str(responses))
             return poll_result
     elif isinstance(responses[0], CommandResults): # already did the final part in start_pan_os_flow

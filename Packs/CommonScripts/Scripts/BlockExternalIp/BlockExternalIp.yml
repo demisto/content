@@ -35,14 +35,13 @@ args:
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
     For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2"
   isArray: true
-  defaultValue: 'Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2,FortiGate,F5Silverline,Cisco ASA,Zscaler'
+  defaultValue: 'Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler'
   name: brands
   required: false
   auto: PREDEFINED
   predefined:
     - 'Palo Alto Networks - Prisma SASE'
     - 'Panorama'
-    - 'CheckPointFirewall_v2'
     - 'FortiGate'
     - 'F5Silverline'
     - 'Cisco ASA'
