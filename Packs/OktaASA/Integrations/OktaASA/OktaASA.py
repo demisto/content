@@ -49,7 +49,7 @@ class OktaASAClient(BaseClient):
         token_response.pop("team_name", None)
         return token_response
 
-    def get_audit_events_request(self, params: dict) -> list:
+    def get_audit_events_request(self, params: dict) -> dict:
         """Gets audit events request.
 
         Args:
@@ -57,15 +57,15 @@ class OktaASAClient(BaseClient):
             params (Dict): Request parameters.
 
         Returns:
-            list: A list of events.
+            dict: The response dict form: {"list": [], "related_objects": {}}.
         """
-        events_response: list = self._http_request("GET", "/auditsV2", params=params).get("list", [])
+        events_response: dict = self._http_request("GET", "/auditsV2", params=params)
 
         return events_response
 
     def execute_audit_events_request(
         self, offset: Optional[str], count: Optional[int], descending: Optional[bool], prev: Optional[bool]
-    ) -> list:
+    ) -> tuple[list,dict]:
         """Gets audit events request.
 
         Args:
@@ -76,13 +76,13 @@ class OktaASAClient(BaseClient):
             prev (bool): Controls the direction of paging
 
         Returns:
-            Dict: The response.
+            tuple[list,dict]: The response "list" and the response "related_objects".
         """
 
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.generate_token_if_required()
-        events_response = self.get_audit_events_request(params)
-        return events_response
+        response = self.get_audit_events_request(params)
+        return response.get("list",[]),response.get("related_objects",{})
 
     def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
@@ -139,7 +139,7 @@ class OktaASAClient(BaseClient):
             )
             if not events:
                 break
-            add_time_and_related_object_data_to_events(events, related_objects,add_time_mapping)
+            add_time_and_related_object_data_to_events(events, related_objects, add_time_mapping)
             event_offset = events[0] if descending else events[len(events) - 1]
             offset = event_offset.get("id")
             returned_timestamp = event_offset.get("timestamp")
@@ -185,13 +185,12 @@ def add_time_and_related_object_data_to_events(events: List[Dict], related_objec
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
         event_details = event.get("details", {})
         for key in event_details:
-            if key in ["actor", "user", "client", "project"] and event_details.get(key):
+            if key in ["project", "server"] and event_details.get(key):
                 id_of_related_object = event_details.get(key)
                 related_object = related_objects.get(event_details.get(key),{})
                 if related_object.get("type") == key and related_object.get("object"):
                     related_object_data = related_object.get("object",{})
                     event_details[key] = related_object_data or id_of_related_object
-
 
 """COMMAND FUNCTIONS"""
 

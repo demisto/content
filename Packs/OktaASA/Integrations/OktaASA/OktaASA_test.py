@@ -597,3 +597,31 @@ def test_search_events_first_page_is_empty_with_offset(mocker):
     assert len(results) == 0
     assert id == "offset"
     assert timestamp is None
+
+
+def test_add_time_and_related_object_data_to_events(mocker):
+    """
+    Given:
+    - response from oktaASA endpoint.
+
+    When:
+    - Call the add_time_and_related_object_data_to_events method
+
+    Then:
+    - The response_list contains the requested data.
+    """
+    from OktaASA import add_time_and_related_object_data_to_events
+
+    response = util_load_json("test_data/response_10_items_descending_true.json")
+    response_list, response_related_objects = mocker.patch.object(
+        OktaASAClient,
+        "get_audit_events_request",
+        return_value=(response.get("list"), response.get("related_objects")),
+    )
+    add_time_and_related_object_data_to_events(
+        response_list, response_related_objects, True
+    )
+    assert len(response_list) == 10
+    for log in response_list:
+        assert isinstance(log.get("server"), dict)
+        assert isinstance(log.get("project"), dict)
