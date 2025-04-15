@@ -90,7 +90,9 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
             })
     return context
 
-def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose: bool, rule_name: str, ip_list_arr: list[str]) -> list:  # a list of command results
+
+def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verbose: bool, rule_name: str,
+                                               ip_list_arr: list[str]) -> list[CommandResults]:
     """ Creates the relevant context and human readable in case of multiple command executions.
     Args:
         responses (list[list[dict]]): The responses returned from the execute command.
@@ -340,7 +342,8 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
 
     if isinstance(contents_address_object_list, str) and "does not exist" in contents_address_object_list:
         demisto.debug(f"The {ip} does not exist in the address-object list.")
-        res_add_obj_create = run_execute_command("prisma-sase-address-object-create", {'name': ip, 'type': 'ip_netmask', 'address_value': ip})
+        res_add_obj_create = run_execute_command("prisma-sase-address-object-create",
+                                                 {'name': ip, 'type': 'ip_netmask', 'address_value': ip})
         responses.append(res_add_obj_create)
         if is_error(res_add_obj_create):
             return prepare_context_and_hr_multiple_executions(responses, brand_args.get('verbose'), '', [ip])
@@ -383,7 +386,8 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
             demisto.debug(
                 f"The {address_group=} exists, but the {ip=} isn't in the {addresses_group_ip_list=} of {address_group=}")
             group_id = context_add_group_list.get('id')
-            res_add_group_update = run_execute_command("prisma-sase-address-group-update",{'group_id': group_id, 'static_addresses': ip})
+            res_add_group_update = run_execute_command("prisma-sase-address-group-update",
+                                                       {'group_id': group_id, 'static_addresses': ip})
             responses.append(res_add_group_update)
             if is_error(res_add_group_update):
                 return prepare_context_and_hr_multiple_executions(responses, brand_args.get('verbose'), '', [ip])
@@ -514,7 +518,8 @@ def pan_os_push_status(args: dict, responses: list):
     push_job_id = args['push_job_id']
     res_push_device_status = run_execute_command("pan-os-push-status", {'job_id': push_job_id})
     responses.append(res_push_device_status)
-    push_status = res_push_device_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {}).get('status', '')
+    push_status = (res_push_device_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {})
+                   .get('status', ''))
 
     continue_to_poll = bool(push_status and push_status != 'FIN')
     demisto.debug(f"{push_status=}")
@@ -579,7 +584,8 @@ def pan_os_create_edit_address_group(address_group: str, context_list_add_group:
         responses.append(res_create_add_group)
 
 
-def pan_os_create_edit_rule(rule_name: str, context_list_rules: list, address_group: str, log_forwarding_name: str, responses: list):
+def pan_os_create_edit_rule(rule_name: str, context_list_rules: list, address_group: str, log_forwarding_name: str,
+                            responses: list):
     """ Checks whether to create a new address group or update an existing one, and does it.
     Args:
         rule_name (str): The rule name.
@@ -608,9 +614,10 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
         args (dict): The arguments of the function.
     Returns:
         A tuple that can be one of 2 options:
-        1. A list of the responses of all the command executions until this point, a boolean represents whether to commit the changes to pan-os.
-            This option will take effect if the input tag doesn't exist in pan-os.
-        2. A list of command results, and a "False" representing the fact that a commit to pan-os shouldn't be performed since the tag already exists.
+        1. A list of the responses of all the command executions until this point, a boolean represents whether to
+            commit the changes to pan-os. This option will take effect if the input tag doesn't exist in pan-os.
+        2. A list of command results, and a "False" representing the fact that a commit to pan-os shouldn't be
+            performed since the tag already exists.
     """
     responses = []
     tag = args['tag']
