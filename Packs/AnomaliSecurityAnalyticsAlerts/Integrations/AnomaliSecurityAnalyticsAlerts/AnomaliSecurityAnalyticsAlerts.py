@@ -3,7 +3,7 @@ Anomali Security Analytics Alerts Integration
 """
 
 from datetime import datetime, UTC
-from dateutil.tz import gettz
+import pytz
 import urllib3
 import demistomock as demisto
 from CommonServerPython import *
@@ -137,8 +137,7 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Please provide 'query' parameter, e.g. alerts")
     if from_datetime is None:
         raise ValueError("Failed to parse 'from' argument. Please provide correct value")
-    tz_info = gettz(tz_str)
-    if tz_info is None:
+    if tz_str not in pytz.all_timezones:
         raise DemistoException(f"Invalid timezone specified: {tz_str}")
 
     if args.get('to'):

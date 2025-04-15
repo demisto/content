@@ -88,9 +88,6 @@ script:
       - contextPath: AnomaliSecurityAnalytics.SearchJobResults.count
         description: Number of records returned.
         type: Number
-      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.fields
-        description: List of search fields returned.
-        type: String
       - contextPath: AnomaliSecurityAnalytics.SearchJobResults.has_next
         description: Indicates if more pages are available.
         type: Boolean

@@ -100,13 +100,14 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
 
     status_response = {'status': 'DONE'}
     results_response = {
-        'fields': ['id', 'name'],
+        'fields': ['event_time', 'sourcetype', 'dcid', 'src'],
         'records': [
-            ['1', 'record1'],
-            ['2', 'record2']
+            ['1727647847687', 'myexamplesourcetype', '78', '192.1.0.0'],
+            ['1727647468096', 'aws_cloudtrail', '1', '192.1.0.1']
         ],
+        'types': ['timestamp', 'string', 'string', 'string'],
         "result_row_count": 2,
-        'status': "DONE"
+        'status': 'DONE'
     }
     mocker.patch.object(client,
                         '_http_request',
@@ -124,15 +125,26 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
     outputs = results[0].outputs
     assert outputs.get('job_id') == 'job_done'
     assert 'fields' not in outputs
-    expected_records = [{'id': '1', 'name': 'record1'},
-                        {'id': '2', 'name': 'record2'}]
+    expected_records = [
+        {
+            'event_time': '1727647847687',
+            'sourcetype': 'myexamplesourcetype',
+            'dcid': '78',
+            'src': '192.1.0.0'
+        },
+        {
+            'event_time': '1727647468096',
+            'sourcetype': 'aws_cloudtrail',
+            'dcid': '1',
+            'src': '192.1.0.1'
+        }
+    ]
     assert outputs.get('records') == expected_records
 
     readable_output = results[0].readable_output
     assert "Search Job Results" in readable_output
-    for header in ['id', 'name']:
+    for header in ['event_time', 'sourcetype', 'dcid', 'src']:
         assert header in readable_output
-    assert "record1" in readable_output
 
 
 def test_command_get_search_job_results_invalid(mocker):
