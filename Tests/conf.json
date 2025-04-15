@@ -6040,7 +6040,8 @@
         "Mail Sender (New) Test": "Creds not working CRTX-160174",
         "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
         "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
-        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "The creds were expired CIAC-13447"
 
 
     },
