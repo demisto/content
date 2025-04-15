@@ -1804,6 +1804,8 @@ script:
       - contextPath: Ticket.Key
         description: The ticket key.
         type: String
+  - name: jira-reset-timezone-cache
+    description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
   dockerimage: demisto/btfl-soup:1.0.1.2129515
   isfetch: true
   ismappable: true
