@@ -44,6 +44,8 @@ script:
       name: tenant_id
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
+    - description: Number of seconds until the polling sequence will timeout.
+      name: timeout_in_seconds
     - description: The maximum number of returned fields per result.
       name: max_fields
       defaultValue: 20
