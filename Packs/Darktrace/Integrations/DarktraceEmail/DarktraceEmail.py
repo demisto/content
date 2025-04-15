@@ -379,7 +379,7 @@ def format_JSON_for_email(email: dict[str, Any], tag_mapper: dict[str, str]) -> 
     relevant_info['darktrace_url'] = f"{demisto.params().get('url', '')}/agemail/?uuid={email.get('uuid')}"
     relevant_info['attachments'] = email.get('n_attachments')
     relevant_info['links'] = email.get('n_links')
-    recipient = email.get('rcpts')[0]
+    recipient = email.get('rcpts', [None])[0]
     relevant_info['recipient'] = recipient.get('rcpt_to')
     relevant_info['receipt_status'] = recipient.get('rcpt_status').capitalize()
     relevant_info['read_status'] = str(recipient.get('is_read')).capitalize()
@@ -427,7 +427,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     """
     end_time = int(datetime.now().timestamp())
     try:
-        client.search_emails(min_score=0, tag_severity=["critical", "info"], direction=False,
+        client.search_emails(min_score=0, tag_severity=["critical", "info"], direction=None,
                              actioned=True, start_time=first_fetch_time, end_time=end_time)
 
     except DemistoException as e:
@@ -479,12 +479,13 @@ def fetch_incidents(client: Client, max_alerts: int,
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    temp_last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
-    if last_fetch is None:
-        last_fetch = first_fetch_time
+    last_fetch: int
+    if temp_last_fetch is None:
+        last_fetch = first_fetch_time if isinstance(first_fetch_time, int) else int(datetime.now().timestamp())
     else:
-        last_fetch = int(last_fetch)
+        last_fetch = int(temp_last_fetch)
 
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
@@ -587,7 +588,7 @@ def hold_email_command(client: Client, args: dict[str, Any]) -> CommandResults:
         A ``CommandResults`` object that is then passed to ``return_results``, that contains a list of tags.
     :rtype: ``CommandResults``
     """
-    uuid = args.get('uuid')
+    uuid = str(args.get('uuid'))
     response = client.action_email(uuid=uuid)
 
     if response['resp'] == EMAIL_ACTION_UNDETERMINED:
@@ -620,8 +621,8 @@ def release_email_command(client: Client, args: dict[str, Any]) -> CommandResult
         A ``CommandResults`` object that is then passed to ``return_results``, that contains a list of tags.
     :rtype: ``CommandResults``
     """
-    uuid = args.get('uuid')
-    recipients = args.get('recipient')
+    uuid = str(args.get('uuid'))
+    recipients = str(args.get('recipient'))
     response = client.action_email(uuid=uuid, recipients=recipients, action='release')
 
     if response['resp'] == EMAIL_ACTION_RELEASE_RESPONSE:
@@ -637,15 +638,6 @@ def release_email_command(client: Client, args: dict[str, Any]) -> CommandResult
         outputs_key_field='resp',
         outputs=response
     )
-
-
-def test_command(client: Client):
-    populate_fields = ["id", "labels"]
-    results = demisto.execute_command('GetIncidentsByQuery', {
-        'populateFields': ' , '.join(populate_fields)
-    })
-
-    return results
 
 
 """*****MAIN FUNCTIONS****
@@ -704,7 +696,8 @@ def main() -> None:     # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client, first_fetch_time))
+            start_time = first_fetch_time if isinstance(first_fetch_time, int) else int(datetime.now().timestamp())
+            return_results(test_module(client, start_time))
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
