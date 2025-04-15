@@ -76,9 +76,9 @@ script:
     - contextPath: IP.Registrar.Abuse.Address
       description: The address of the abuse Team.
     - contextPath: IP.Registrar.Abuse.Email
-      description: The email address of the abuse Team.
+      description: The email address of the abuse team.
     - contextPath: IP.Registrar.Abuse.Name
-      description: The name of the abuse Team.
+      description: The name of the abuse team.
     - contextPath: RDAP.IP.Value
       description: The queried IP address.
     - contextPath: RDAP.IP.IndicatorType

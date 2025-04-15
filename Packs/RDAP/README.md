@@ -5,13 +5,13 @@ The RDAP (Registration Data Access Protocol) pack allows you to query and retrie
 ## Pack Content
 
 ### Integrations
-- **RDAP**: Allows querying RDAP servers for domain and IP information.
+**RDAP**: Allows querying RDAP servers for domain and IP information.
 
 ### Playbooks
-- No playbooks are currently included in this pack.
+No playbooks are currently included in this pack.
 
 ### Scripts
-- No scripts are currently included in this pack.
+No scripts are currently included in this pack.
 
 ## Use Cases
 - Enrichment of domain and IP data for threat intelligence purposes.
@@ -55,4 +55,4 @@ If you encounter any issues:
 - Check that the queried domain or IP address is valid.
 - Verify that you have internet connectivity to reach RDAP servers.
 
-For more information and support, please refer to the integration's documentation or contact Cortex XSOAR support.
+For more information and support, refer to the integration's documentation or contact Cortex XSOAR support.
