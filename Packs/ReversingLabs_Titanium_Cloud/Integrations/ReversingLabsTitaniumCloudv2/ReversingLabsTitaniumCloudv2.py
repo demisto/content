@@ -112,6 +112,32 @@ def test_module_command():
     return_results(result)
 
 
+def file_command():
+    mwp = FileReputation(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    hash_list = argToList(demisto.getArg("file"))
+    results_list = []
+
+    for file_hash in hash_list:
+        try:
+            response = mwp.get_file_reputation(hash_input=file_hash)
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        result = file_reputation_output(response_json=response_json, hash_value=file_hash)
+        results_list.append(result)
+
+    return_results(results_list)
+
+
 def file_reputation_command():
     mwp = FileReputation(
         host=TICLOUD_URL,
@@ -2553,7 +2579,7 @@ def main():
         test_module_command()
 
     elif command == "file":
-        file_reputation_command()
+        file_command()
 
     elif command == "reversinglabs-titaniumcloud-file-reputation":
         file_reputation_command()

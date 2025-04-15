@@ -120,16 +120,16 @@ script:
         - contextPath: ReversingLabs.file_reputation
           description: The file reputation report.
           type: Unknown
-        - contextPath: ReversingLabs.file_reputation.status
+        - contextPath: ReversingLabs.file_reputation.rl.malware_presence.status
           description: ReversingLabs classification string.
           type: String
-        - contextPath: ReversingLabs.file_reputation.threat_name
+        - contextPath: ReversingLabs.file_reputation.rl.malware_presence.threat_name
           description: ReversingLabs threat name for the malware.
           type: String
-        - contextPath: ReversingLabs.file_reputation.threat_level
+        - contextPath: ReversingLabs.file_reputation.rl.malware_presence.threat_level
           description: ReversingLabs threat level for the sample.
           type: Number
-        - contextPath: ReversingLabs.file_reputation.trust_factor
+        - contextPath: ReversingLabs.file_reputation.rl.malware_presence.trust_factor
           description: ReversingLabs trust factor for the sample.
           type: Number
 
