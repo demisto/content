@@ -18,25 +18,6 @@ No scripts are currently included in this pack.
 - Gathering registration information for domains and IP addresses during investigations.
 - Automating the retrieval of WHOIS-like data using the more modern RDAP protocol.
 
-## Configure RDAP Integration
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RDAP.
-3. Click **Add instance** to create and configure a new integration instance.
-4. Configure the instance name and reliability.
-5. Click **Test** to validate the configuration.
-
-## Using the RDAP Integration
-
-You can use the RDAP integration to query information about domains and IP addresses. Here are some example commands:
-
-```
-!ip ip=8.8.8.8
-!domain domain=example.com
-```
-
-For more details on the available commands and their outputs, please refer to the integration's README file.
-
 ## Additional Information
 
 - This pack uses the RDAP protocol, which is designed to replace the older WHOIS protocol.
