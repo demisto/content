@@ -32,6 +32,12 @@ This command queries IP information using RDAP.
 |Path|Type|Description|
 |---|---|---|
 |IP.Address|String|The IP address.|
+|IP.Description|String|The IP address description.|
+|IP.Geo.Country|String|The IP address geo country.|
+|IP.Organization.Name|String|The IP address organization name.|
+|IP.Registrar.Abuse.Address|String|The address of the abuse Team.|
+|IP.Registrar.Abuse.Email|String|The email address of the abuse team.|
+|IP.Registrar.Abuse.Name|String|The name of the abuse team.|
 |RDAP.IP.Value|String|The queried IP address.|
 |RDAP.IP.IndicatorType|String|The type of the indicator (IP).|
 |RDAP.IP.RegistrarAbuseAddress|String|The registrar abuse address for the IP.|
@@ -62,6 +68,10 @@ This command queries domain information using RDAP.
 |Path|Type|Description|
 |---|---|---|
 |Domain.Name|String|The domain name.|
+|Domain.CreationDate|Date|The domain registration date.|
+|Domain.ExpirationDate|Date|The domain expiration date.|
+|Domain.WHOIS.CreationDate|Date|The domain registration date.|
+|Domain.WHOIS.ExpirationDate|Date|The domain expiration date.|
 |RDAP.Domain.Value|String|The queried domain name.|
 |RDAP.Domain.IndicatorType|String|The type of the indicator (Domain).|
 |RDAP.Domain.RegistrationDate|Date|The domain registration date.|
