@@ -1,0 +1,160 @@
+category: Utilities
+commonfields:
+  id: WizDefend
+  version: -1
+defaultmapperin: Wiz Mapper Webhook
+configuration:
+- name: incidentType
+  display: Incident type
+  defaultvalue: WizDefend
+  type: 13
+  required: false
+- display: Service Account ID
+  name: credentials
+  type: 9
+  required: true
+- display: Authentication Endpoint
+  name: auth_endpoint
+  type: 0
+  required: false
+- display: API Endpoint
+  name: api_endpoint
+  required: true
+  type: 0
+  defaultvalue: https://api.us1.app.wiz.io/graphql
+- defaultvalue: 2 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+description: Agentless cloud security.
+display: WizDefend
+name: WizDefend
+script:
+  commands:
+  - name: wiz-get-detections
+    description: Get Wiz Detections for a specific type.
+    arguments:
+    - name: creation_days_back
+      description: Number of days back to retrieve detections (1-60).
+      defaultValue: 2
+      required: false
+    - name: detection_type
+      description: Type of detections.
+      predefined:
+      - GENERATED_THREAT
+      - MATCH_ONLY
+      auto: PREDEFINED
+    - name: detection_platform
+      description: Get detections for cloud platform.
+      predefined:
+        - AWS
+        - GCP
+        - Azure
+        - OCI
+        - Alibaba
+        - vSphere
+        - OpenStack
+        - AKS
+        - EKS
+        - GKE
+        - Kubernetes
+        - OpenShift
+        - OKE
+        - Linode
+        - AzureDevOps
+        - GitHub
+        - GitLab
+        - Bitbucket
+        - Terraform
+        - OpenAI
+        - Snowflake
+        - MongoDBAtlas
+        - Databricks
+        - Okta
+        - Cloudflare
+        - Microsoft365
+        - Wiz
+        - ACK
+        - SelfHosted
+        - LKE
+      auto: PREDEFINED
+    - name: resource_id
+      description: Get Detections of a specific resource.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
+      description: Get Detections of a specific severity and above.
+    - name: rule_match_id
+      description: Filter detections by rule match ID (must be a valid UUID).
+      required: false
+    - name: rule_match_name
+      description: Filter detections by rule match name.
+      required: false
+    - name: project
+      description: Filter detections by project.
+      required: false
+    outputs:
+    - contextPath: Wiz.Manager.Detections.entitySnapshot
+      description: All resource details.
+      type: String
+    - contextPath: Wiz.Manager.Detections.createdAt
+      description: Detection created at.
+      type: String
+    - contextPath: Wiz.Manager.Detections.id
+      description: Wiz Detection ID.
+      type: String
+    - contextPath: Wiz.Manager.Detections.severity
+      description: Wiz Detection severity.
+      type: String
+    - contextPath: Wiz.Manager.Detections.status
+      description: Wiz Detection status.
+      type: String
+  - name: wiz-get-detection
+    description: Get the details of a Wiz Detection.
+    arguments:
+    - description: List of detection IDs to retrieve.
+      name: detection_id
+      isArray: true
+      required: false
+    - name: issue_id
+      description: The internal Wiz Issue ID of the detection.
+      required: false
+    outputs:
+    - contextPath: Wiz.Manager.Detection.id
+      description: Detection ID in Wiz.
+      type: String
+    - contextPath: Wiz.Manager.Detection.severity
+      description: Detection severity.
+      type: String
+    - contextPath: Wiz.Manager.Detection.description
+      description: Detection description.
+      type: String
+    - contextPath: Wiz.Manager.Detection.createdAt
+      description: Detection creation time.
+      type: Date
+    - contextPath: Wiz.Manager.Detection.resources
+      description: Related resources.
+      type: String
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.0.0
