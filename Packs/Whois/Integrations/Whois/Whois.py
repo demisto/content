@@ -7216,6 +7216,7 @@ def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, st
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
                   server_list=None, is_recursive=True):
+    new_list = []
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -8474,7 +8475,7 @@ def prepare_readable_ip_data(response):
             'asn': response.get('asn'),
             'asn_cidr': response.get('asn_cidr'),
             'asn_date': response.get('asn_date'),
-            'country_code': network_data.get('country'),
+            'country_code': response.get('asn_country_code'),
             'network_name': network_data.get('name')
             }
 

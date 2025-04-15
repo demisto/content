@@ -873,5 +873,210 @@
 			"client_domain": "domain1.com",
 			"categories": ["mail_provider"]
 		}]
+	},
+    "delivery_objects": {
+        "entries": [{
+            "workflow": {
+                "steps": [
+                    {
+                        "action": {
+                            "value": "alert_teammate",
+                            "recipientType": {
+                                "value": "self"
+                            }
+                        }
+                    }
+                ],
+                "name": "Alert me when my_scorecard drops in grade",
+                "filters": {
+                    "changes": {
+                        "value": "grade_drop",
+                        "grade": {
+                            "value": "any"
+                        }
+                    },
+                    "scorecards": {
+                        "value": "my_scorecard"
+                    }
+                }
+            }
+        },
+        {
+            "workflow": {
+                "steps": [
+                    {
+                        "action": {
+                            "value": "alert_teammate",
+                            "recipientType": {
+                                "value": "self"
+                            }
+                        }
+                    }
+                ],
+                "name": "Alert me when portfolio drops in factor(s) grade",
+                "filters": {
+                    "changes": {
+                        "value": "factor_grade_drop",
+                        "grade": {
+                            "value": "any"
+                        },
+                        "factor": {
+                            "value": [
+                                "application_security"
+                            ]
+                        }
+                    },
+                    "scorecards": {
+                        "value": "in_portfolio",
+                        "portfolio_id": {
+                            "value": "1"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "workflow": {
+                "steps": [
+                    {
+                        "action": {
+                            "value": "alert_teammate",
+                            "recipientType": {
+                                "value": "self"
+                            }
+                        }
+                    }
+                ],
+                "name": "Alert me when portfolio rises in factor(s) grade",
+                "filters": {
+                    "changes": {
+                        "value": "factor_grade_raise",
+                        "grade": {
+                            "value": "any"
+                        },
+                        "factor": {
+                            "value": [
+                                "application_security"
+                            ]
+                        }
+                    },
+                    "scorecards": {
+                        "value": "in_portfolio",
+                        "portfolio_id": {
+                            "value": "1"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "workflow": {
+                "steps": [
+                    {
+                        "action": {
+                            "value": "alert_teammate",
+                            "recipientType": {
+                                "value": "self"
+                            }
+                        }
+                    }
+                ],
+                "name": "Alert me when any_followed_company rises in grade",
+                "filters": {
+                    "changes": {
+                        "value": "grade_raise",
+                        "grade": {
+                            "value": "any"
+                        }
+                    },
+                    "scorecards": {
+                        "value": "followed"
+                    }
+                }
+            }
+        }
+    ]},
+    "threshold_delivery_objects": {
+        "entries": [{
+            "workflow": {
+                "steps": [
+                    {
+                        "action": {
+                            "value": "alert_teammate",
+                            "recipientType": {
+                                "value": "self"
+                            }
+                        }
+                    }
+                ],
+                "name": "Alert me when any_followed_company overall score drops_below 85 pts",
+                "filters": {
+                    "changes": {
+                        "value": "score_drop_threshold",
+                        "threshold": {
+                            "value": "85"
+                        }
+                    },
+                    "scorecards": {
+                        "value": "followed"
+                    }
+                }
+            }
+        },
+        {
+            "workflow": {
+                "steps": [
+                    {
+                        "action": {
+                            "value": "alert_teammate",
+                            "recipientType": {
+                                "value": "self"
+                            }
+                        }
+                    }
+                ],
+                "name": "Alert me when portfolio factor(s) score rises_above 70 pts",
+                "filters": {
+                    "changes": {
+                        "value": "factor_score_rise_threshold",
+                        "threshold": {
+                            "value": "70"
+                        },
+                        "factor": {
+                            "value": [
+                                "application_security",
+                                "test_factor"
+                            ]
+                        }
+                    },
+                    "scorecards": {
+                        "value": "in_portfolio",
+                        "portfolio_id": {
+                            "value": "1"
+                        }
+                    }
+                }
+            }
+        }
+    ]},
+	"alert_rules": {
+		"entries": [
+			{
+				"id": "1",
+				"name": "Alert Rule 1",
+				"event_type": "scorecard.changed",
+				"created_at": "2021-07-01T00:00:00.000Z",
+				"updated_at": "2021-07-02T00:00:00.000Z",
+				"status": "active"
+			},
+			{
+				"id": "2",
+				"name": "Alert Rule 2",
+				"event_type": "scorecard.changed",
+				"created_at": "2021-07-03T00:00:00.000Z",
+				"updated_at": "2021-07-04T00:00:00.000Z",
+				"status": "inactive"
+			}
+		]
 	}
 }

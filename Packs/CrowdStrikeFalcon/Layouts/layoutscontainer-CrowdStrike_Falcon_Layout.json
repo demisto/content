@@ -495,6 +495,42 @@
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+                            {
+								"endCol": 2,
+								"fieldId": "hostnames",
+								"height": 26,
+								"id": "96efc4a6-2cff-4716-ba85-ed5071d62c70",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "agentsid",
+								"height": 26,
+								"id": "543df87f-2a97-4b10-91ca-172f1d9c37c6",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "deviceosname",
+								"height": 26,
+								"id": "9065a305-42dd-40e6-a8bf-6bcdc2e54680",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "deviceosversion",
+								"height": 26,
+								"id": "672ca090-3308-485a-9dda-ec5ed74cdafb",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,

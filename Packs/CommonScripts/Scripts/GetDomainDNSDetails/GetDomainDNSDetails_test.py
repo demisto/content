@@ -1,6 +1,6 @@
 from GetDomainDNSDetails import make_query, get_domain_dns_details_command
 
-from typing import cast, List, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 
 import dns.rdatatype
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ class MockRData:
 
 
 class MockAnswer:
-    def __init__(self, rrset: List[MockRData]):
+    def __init__(self, rrset: list[MockRData]):
         self.rrset = rrset
 
 

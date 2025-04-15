@@ -2,7 +2,7 @@
     "name": "Free Feeds",
     "description": "This content Pack helps set up free feeds (Plug & Fetch, Free with signup and Generic) available for TIM",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,10 +15,8 @@
         "Plug & Fetch",
         "Generic Feed"
     ],
-    "itemPrefix": [
-    ],
-    "useCases": [
-    ],
+    "itemPrefix": [],
+    "useCases": [],
     "keywords": [
         "Feed"
     ],
@@ -156,12 +154,16 @@
             "display_name": "Fastly IP Feed"
         },
         "FeedLOLBAS": {
-                "mandatory": false,
-                "display_name": "LOLBAS Tools Feed"
+            "mandatory": false,
+            "display_name": "LOLBAS Tools Feed"
         },
         "FeedFeedly": {
             "mandatory": false,
             "display_name": "Feedly Feed"
+        },
+        "FeedMISPThreatActors": {
+            "mandatory": false,
+            "display_name": "MISP Threat Actors Feed"
         }
     },
     "marketplaces": [

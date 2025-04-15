@@ -2,7 +2,7 @@
     "name": "Sumo Logic",
     "description": "Cloud-based service for logs & metrics management",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

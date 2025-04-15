@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import re
 
+
 def defang(content, defang_options, mail_options, url_options):
     if "ip" in defang_options:
         ip_regex = r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
@@ -80,6 +81,7 @@ def defang(content, defang_options, mail_options, url_options):
     outputs = {"Defang": {"output": content}}
 
     return content, outputs
+
 
 if __name__ in ("__main__", "builtins", "__builtin__"):
     try:

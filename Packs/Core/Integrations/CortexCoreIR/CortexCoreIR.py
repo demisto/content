@@ -71,7 +71,7 @@ class Client(CoreClient):
             method="POST",
             json_data={"asset_id": asset_id},
             headers=self._headers,
-            url_suffix="/unified-assets-inventory/get_asset/",
+            url_suffix="/unified-asset-inventory/get_asset/",
         )
         return reply
 

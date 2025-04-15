@@ -2,7 +2,7 @@
     "name": "AWS Feed",
     "description": "Indicators feed from AWS",
     "support": "xsoar",
-    "currentVersion": "1.1.54",
+    "currentVersion": "1.1.55",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

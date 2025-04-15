@@ -4,13 +4,16 @@ This integration was integrated and tested with the API version 1.7 of Absolute.
 ## Configure Absolute in Cortex
 
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Your Absolute server URL |  | True |
+| **Parameter** | **Description**          | **Required** |
+| --- |--------------------------| --- |
+| Your Absolute server URL |                          | True |
 | Token ID | Token ID and Secret Key. | True |
-| Secret Key |  | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Secret Key |                          | True |
+| Trust any certificate (not secure) |                          | False |
+| Use system proxy settings |                          | False |
+| Events Fetch Interval |        Only in XSIAM                  | False |
+| Max number of events per fetch |     Only in XSIAM                     | False |
+| Fetch Events | Only in XSIAM            | False |
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -947,6 +950,28 @@ Gets a list of devices geo locations records and their corresponding data that m
 #### Human Readable Output
 
 >No device locations found in Absolute for the given filters: {'device_ids': '1234'}
+
+
+### absolute-device-get-events
+
+***
+Retrieves a list of events from the Absolute device instance.
+
+#### Base Command
+
+`absolute-device-get-events`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                        | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| start_date | Filters the results to the records on or after the start date.                                                                                         | Optional |
+| end_date | Filters the results to the records until the end date.                                                                                                 | Optional |
+| limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits.                                                 | Optional | 
+
+#### Command Example
+```!absolute-device-get-events start_date="one minute ago" end_date="now" limit=10```
 
 
 ### Creating a filtering and sorting query

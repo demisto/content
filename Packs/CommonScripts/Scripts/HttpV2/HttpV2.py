@@ -178,7 +178,7 @@ def main():
         save_as_file = args.get('save_as_file', 'no')
         file_name = args.get('filename', 'http-file')
         timeout = arg_to_number(args.get('timeout', 10))
-        timeout_between_retries = args.get('timeout_between_retries', 5)
+        timeout_between_retries = arg_to_number(args.get('timeout_between_retries', 5))
         retry_count = arg_to_number(args.get('retry_count', 3))
         proxy = argToBoolean(args.get('proxy', False))
         verify = argToBoolean(not args.get('unsecure', False))

@@ -1979,7 +1979,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         xsoar_incident = event.format_incident()
         incidents.append(xsoar_incident)
         if event.created_at > created_after:
-            next_run = event.created_at
+            next_run = event.created_at  # type: ignore[assignment]
 
     return next_run, incidents
 

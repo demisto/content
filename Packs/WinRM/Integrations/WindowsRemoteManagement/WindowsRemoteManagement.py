@@ -30,7 +30,8 @@ class Client:
                 auth=(self.username, self.password),
                 transport=self.auth
             )
-        elif self.auth == "kerberos":
+        else:  # self.auth == "kerberos":
+            demisto.debug(f"{self.auth=}. Should be kerberos")
             s = winrm.Session(
                 target=self.hostname,
                 auth=(self.username, self.password),

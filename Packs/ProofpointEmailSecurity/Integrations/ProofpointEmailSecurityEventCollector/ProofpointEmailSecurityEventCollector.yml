@@ -45,7 +45,7 @@ script:
   script: ""
   type: python
   commands: []
-  dockerimage: demisto/netutils:1.0.0.115452
+  dockerimage: demisto/netutils:1.0.0.118055
   longRunning: true
   subtype: python3
 marketplaces:

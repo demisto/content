@@ -1,0 +1,228 @@
+{
+  "execution_id": "a8f41acf2dad41_98996_inv",
+  "number_of_results": 24,
+  "query_cost": {
+    "3204872200335": 0.003904722222222222
+  },
+  "query_name": "",
+  "remaining_quota": 64.88616722222223,
+  "results": [
+    {
+      "_time": 1734267600000,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM",
+      "total_bytes_received": 19655736,
+      "total_bytes_received_mb": 18.7,
+      "total_bytes_sent": 29369380,
+      "total_bytes_sent_mb": 28
+    },
+    {
+      "_time": 1734213600000,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM",
+      "total_bytes_received": 14177221,
+      "total_bytes_received_mb": 13.5,
+      "total_bytes_sent": 26740954,
+      "total_bytes_sent_mb": 25.5
+    },
+    {
+      "_time": 1734195600000,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM",
+      "total_bytes_received": 15810991,
+      "total_bytes_received_mb": 15.1,
+      "total_bytes_sent": 28804997,
+      "total_bytes_sent_mb": 27.5
+    },
+    {
+      "_time": 1734238800000,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM",
+      "total_bytes_received": 57115395,
+      "total_bytes_received_mb": 54.5,
+      "total_bytes_sent": 29871542,
+      "total_bytes_sent_mb": 28.5
+    },
+    {
+      "_time": 1734202800000,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM",
+      "total_bytes_received": 77066669,
+      "total_bytes_received_mb": 73.5,
+      "total_bytes_sent": 258429530,
+      "total_bytes_sent_mb": 246.5
+    },
+    {
+      "_time": 1734192000000,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM",
+      "total_bytes_received": 164802492,
+      "total_bytes_received_mb": 157.2,
+      "total_bytes_sent": 30663283,
+      "total_bytes_sent_mb": 29.2
+    },
+    {
+      "_time": 1734235200000,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM",
+      "total_bytes_received": 390476240,
+      "total_bytes_received_mb": 372.4,
+      "total_bytes_sent": 40834454,
+      "total_bytes_sent_mb": 38.9
+    },
+    {
+      "_time": 1734246000000,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM",
+      "total_bytes_received": 57137844,
+      "total_bytes_received_mb": 54.5,
+      "total_bytes_sent": 29023974,
+      "total_bytes_sent_mb": 27.7
+    },
+    {
+      "_time": 1734231600000,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM",
+      "total_bytes_received": 230531664,
+      "total_bytes_received_mb": 219.9,
+      "total_bytes_sent": 33261063,
+      "total_bytes_sent_mb": 31.7
+    },
+    {
+      "_time": 1734271200000,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM",
+      "total_bytes_received": 225363876,
+      "total_bytes_received_mb": 214.9,
+      "total_bytes_sent": 33866202,
+      "total_bytes_sent_mb": 32.3
+    },
+    {
+      "_time": 1734264000000,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM",
+      "total_bytes_received": 14627898,
+      "total_bytes_received_mb": 14,
+      "total_bytes_sent": 27683591,
+      "total_bytes_sent_mb": 26.4
+    },
+    {
+      "_time": 1734210000000,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM",
+      "total_bytes_received": 85893086,
+      "total_bytes_received_mb": 81.9,
+      "total_bytes_sent": 28695955,
+      "total_bytes_sent_mb": 27.4
+    },
+    {
+      "_time": 1734249600000,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM",
+      "total_bytes_received": 93913729,
+      "total_bytes_received_mb": 89.6,
+      "total_bytes_sent": 29751525,
+      "total_bytes_sent_mb": 28.4
+    },
+    {
+      "_time": 1734206400000,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM",
+      "total_bytes_received": 53456749,
+      "total_bytes_received_mb": 51,
+      "total_bytes_sent": 127504422,
+      "total_bytes_sent_mb": 121.6
+    },
+    {
+      "_time": 1734224400000,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM",
+      "total_bytes_received": 23917882,
+      "total_bytes_received_mb": 22.8,
+      "total_bytes_sent": 27196408,
+      "total_bytes_sent_mb": 25.9
+    },
+    {
+      "_time": 1734199200000,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM",
+      "total_bytes_received": 128627903,
+      "total_bytes_received_mb": 122.7,
+      "total_bytes_sent": 30259938,
+      "total_bytes_sent_mb": 28.9
+    },
+    {
+      "_time": 1734256800000,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM",
+      "total_bytes_received": 283823899,
+      "total_bytes_received_mb": 270.7,
+      "total_bytes_sent": 33453916,
+      "total_bytes_sent_mb": 31.9
+    },
+    {
+      "_time": 1734228000000,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM",
+      "total_bytes_received": 14759617,
+      "total_bytes_received_mb": 14.1,
+      "total_bytes_sent": 27332364,
+      "total_bytes_sent_mb": 26.1
+    },
+    {
+      "_time": 1734188400000,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM",
+      "total_bytes_received": 15338933,
+      "total_bytes_received_mb": 14.6,
+      "total_bytes_sent": 28424889,
+      "total_bytes_sent_mb": 27.1
+    },
+    {
+      "_time": 1734242400000,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM",
+      "total_bytes_received": 15254350,
+      "total_bytes_received_mb": 14.5,
+      "total_bytes_sent": 28415677,
+      "total_bytes_sent_mb": 27.1
+    },
+    {
+      "_time": 1734260400000,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM",
+      "total_bytes_received": 65278368,
+      "total_bytes_received_mb": 62.3,
+      "total_bytes_sent": 28889032,
+      "total_bytes_sent_mb": 27.6
+    },
+    {
+      "_time": 1734217200000,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM",
+      "total_bytes_received": 52385617,
+      "total_bytes_received_mb": 50,
+      "total_bytes_sent": 27600545,
+      "total_bytes_sent_mb": 26.3
+    },
+    {
+      "_time": 1734253200000,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM",
+      "total_bytes_received": 178532261,
+      "total_bytes_received_mb": 170.3,
+      "total_bytes_sent": 31725048,
+      "total_bytes_sent_mb": 30.3
+    },
+    {
+      "_time": 1734220800000,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM",
+      "total_bytes_received": 100246059,
+      "total_bytes_received_mb": 95.6,
+      "total_bytes_sent": 30217978,
+      "total_bytes_sent_mb": 28.8
+    }
+  ],
+  "status": "SUCCESS"
+}

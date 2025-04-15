@@ -333,7 +333,7 @@
                         "y": 4
                     },
                     {
-                        "h": 2,
+                        "h": 3,
                         "i": "caseinfoid-f98cd270-a6b1-11eb-bada-87dc9a8c0b9b",
                         "items": [],
                         "maxW": 3,
@@ -356,9 +356,9 @@
                         "name": "Linked Incidents",
                         "static": false,
                         "type": "linkedIncidents",
-                        "w": 2,
-                        "x": 1,
-                        "y": 7
+                        "w": 1,
+                        "x": 0,
+                        "y": 11
                     },
                     {
                         "description": "",
@@ -408,7 +408,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 9
+                        "y": 11
                     },
                     {
                         "h": 4,
@@ -423,6 +423,30 @@
                         "w": 1,
                         "x": 0,
                         "y": 7
+                    },
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-b692ce70-c809-11ef-b02b-91540fae8b93",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 1,
+                        "y": 8
                     }
                 ],
                 "type": "custom"

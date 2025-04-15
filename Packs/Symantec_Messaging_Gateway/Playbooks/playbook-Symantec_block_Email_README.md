@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Symantec block Email](../docs_files/Symantec_block_Email.png)
+![Symantec block Email](../doc_files/Symantec_block_Email.png)

@@ -12,9 +12,9 @@ def load_json_file(path):
         return json.load(json_file)
 
 
-def test_parse_all_certificates(datadir):
-    certificate = Path(datadir['CA.pem']).read_text()
-    assert parse_all_certificates(certificate) == load_json_file(datadir['output.json'])
+def test_parse_all_certificates():
+    certificate = Path('test_data/CA.pem').read_text()
+    assert parse_all_certificates(certificate) == load_json_file('test_data/output.json')
 
 
 def test_openssl_timeout(mocker: MockerFixture, datadir):
@@ -30,9 +30,9 @@ def test_openssl_timeout(mocker: MockerFixture, datadir):
     mocked_return_error.assert_called_once_with('openssl command timed out, see logs for more details.')
 
 
-def test_openssl(mocker: MockerFixture, datadir):
+def test_openssl(mocker: MockerFixture):
     process_mock = mocker.MagicMock()
-    certificate = Path(datadir['openssl-github-output.txt']).read_text()
+    certificate = Path('test_data/openssl-github-output.txt').read_text()
     process_mock.communicate.return_value = (certificate, None)
 
     mocker.patch('subprocess.Popen', return_value=process_mock)

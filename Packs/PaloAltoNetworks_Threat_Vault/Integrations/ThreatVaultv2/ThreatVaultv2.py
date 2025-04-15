@@ -560,7 +560,8 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
     """
     Get the reputation of a sha256 or a md5 representing an antivirus
     """
-
+    readable_output = ""
+    file_info: dict = {}
     hashes = argToList(args.get("file"))
     command_results_list: List[CommandResults] = []
     dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -592,7 +593,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 readable_output = (
                     f"Hash {_hash} antivirus reputation is unknown to Threat Vault."
                 )
-                file_info = None
+                file_info = {}
             else:
                 raise
 
@@ -622,6 +623,9 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 headers=HEADERS_FILE,
                 removeNull=True,
             )
+        else:
+            file = Common.File(dbot_score=0)
+            demisto.debug("No response. Initialized file variable.")
 
         command_results = CommandResults(
             readable_output=readable_output,
@@ -636,7 +640,8 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
 
 
 def cve_command(client: Client, args: Dict) -> List[CommandResults]:
-
+    readable_output = ""
+    _cve = None
     cves = argToList(args.get("cve"))
     command_results_list: List[CommandResults] = []
 

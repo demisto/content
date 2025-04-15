@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # TODO: Add description to the integration in <root>/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
-from datetime import timezone
+from datetime import datetime, UTC
 
 from CommonServerUserPython import *
 ''' IMPORTS '''
@@ -362,11 +362,11 @@ def fetch_incidents(
             }
             incidents.append(incident)
             incident_date_obj = dateutil.parser.parse(incident_date)
-            if incident_date_obj.replace(tzinfo=timezone.utc).timestamp() > \
-                    newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp():
+            if incident_date_obj.replace(tzinfo=UTC).timestamp() > \
+                    newest_incident_date_obj.replace(tzinfo=UTC).timestamp():
                 newest_incident_date_obj = incident_date_obj
 
-    demisto.setLastRun({"last_run_timestamp": newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp()})
+    demisto.setLastRun({"last_run_timestamp": newest_incident_date_obj.replace(tzinfo=UTC).timestamp()})
     return incidents
 
 

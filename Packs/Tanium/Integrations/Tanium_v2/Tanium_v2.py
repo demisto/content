@@ -269,6 +269,8 @@ class Client(BaseClient):
             if not ip_address and not hostname:
                 raise ValueError('hostname and ip address are missing, Please specify one of them.')
 
+            group_question = ""
+            demisto.debug(f"Initializing {group_question=}")
             if ip_address:
                 group_question = f'Get Computer Name from all machines with ip address equals {ip_address}'
             if hostname:

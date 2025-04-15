@@ -7,7 +7,7 @@ CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND = {
     'AdditionalComments': {'display_value': '', 'value': ''}, 'CloseCode': {'display_value': '', 'value': ''},
     'OpenedAt': {'display_value': '06/01/2022 04:12:43', 'value': '2022-01-06 12:12:43',
                  'display_value_internal': '2022-01-06 04:12:43'}, 'OpenedBy': '46428af1db202c1026fca015ca961994',
-    'Creator': '46428af1db202c1026fca015ca961994', 'Priority': ('4 - Low',), 'State': {'display_value': 'New', 'value': -5.0}
+    'Creator': '46428af1db202c1026fca015ca961994', 'Priority': '4 - Low', 'State': {'display_value': 'New', 'value': -5.0}
 }
 
 CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND = [

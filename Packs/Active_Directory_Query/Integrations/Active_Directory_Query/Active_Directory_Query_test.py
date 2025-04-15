@@ -79,7 +79,7 @@ def ssl_bad_socket_server(port):
     # cert and keyfile generated with
     # openssl req -x509 -nodes -days 3000 -newkey rsa:2048 -keyout key.pem -out cert.pem
     try:
-        context.load_cert_chain('cert.pem', 'key.pem')
+        context.load_cert_chain('test_data/cert.pem', 'test_data/key.pem')
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
             sock.bind(('127.0.0.1', port))
             sock.listen(5)
@@ -131,7 +131,7 @@ def test_faulty_server(mocker):
 
 def test_ssl_custom_cert(mocker, request):
     ENV_KEY = 'SSL_CERT_FILE'
-    os.environ[ENV_KEY] = 'cert.pem'
+    os.environ[ENV_KEY] = 'test_data/cert.pem'
 
     def cleanup():
         os.environ.pop(ENV_KEY)

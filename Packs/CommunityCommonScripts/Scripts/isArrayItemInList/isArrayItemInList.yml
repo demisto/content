@@ -1,0 +1,32 @@
+args:
+- description: the context list data. Data type is list.
+  isArray: true
+  name: inputArray
+  required: true
+- description: the XSOAR system list name.
+  name: listName
+  required: true
+comment: 'This automation is for comparing array(list) data of context to existing lists on XSOAR server. You can avoid using loop of sub-playbook.
+
+  inputArray: the context array/list data
+
+  listName: the XSOAR system list.'
+commonfields:
+  id: isArrayItemInList
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+name: isArrayItemInList
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Condition
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

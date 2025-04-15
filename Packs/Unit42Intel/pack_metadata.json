@@ -2,7 +2,7 @@
     "name": "Unit 42 Intel",
     "description": "Use the Unit 42 Intel pack to enrich your Threat Intel Library with Palo Alto Networks threat intelligence.",
     "support": "xsoar",
-    "currentVersion": "1.0.26",
+    "currentVersion": "1.0.27",
     "author": "Cortex XSOAR",
     "serverMinVersion": "6.5.0",
     "url": "https://www.paloaltonetworks.com/cortex",

@@ -1,3 +1,4 @@
+
 from CommonServerPython import DemistoException
 import pytest
 from FeedRSS import *
@@ -119,3 +120,69 @@ def test_parsed_indicators_from_response_no_publish_field(mocker, parse_response
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
     indicators = fetch_indicators(client)
     assert indicators == expected_output
+
+
+def test_parsed_indicators_from_response_with_links_field(mocker):
+    """
+    Given:
+    - RSS feed url
+
+    When:
+    - After parsing the feed content, we hold a list of items and create a Report indicator from each one of them
+
+    Then:
+    - Ensure all the links extracted properly to the publications field
+    """
+
+    from unittest.mock import MagicMock
+    example_link = MagicMock()
+    example_link.href = "https://example.com"
+
+    FEED_DATA[0][0]['entries'][0]['links'] = [example_link]
+
+    client = mock_client(mocker, FEED_DATA[0][0])
+
+    mocker.patch.object(Client, 'get_url_content', return_value='test description')
+    indicators = fetch_indicators(client)
+
+    expected_output = [{
+        "timestamp": "2021-06-18T15:35:41",
+        "link": "https://test-article.com/",
+        "source": "test.com",
+        "title": "Test Article, with comma"
+    }, {
+        "timestamp": "2021-06-18T15:35:41",
+        "link": "https://example.com",
+        "source": "test.com",
+        "title": "Test Article, with comma"
+    }]
+
+    assert indicators[0]['fields']['publications'] == expected_output
+
+
+def test_feed_main_enrichment_excluded(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False
+        When: Calling feed_main
+        Then: validate enrichment_excluded is set to True
+    """
+    from FeedRSS import main
+
+    params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False,
+        'server_url': 'test.test.com'
+    }
+
+    client_mocker = mocker.patch('FeedRSS.Client')
+
+    mocker.patch('FeedRSS.is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch('FeedRSS.fetch_indicators', return_value=[])
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+
+    # Call the function under test
+    main()
+
+    # Assertion - verify that enrichment_excluded is set to True
+    assert client_mocker.call_args.kwargs.get('enrichment_excluded') is True

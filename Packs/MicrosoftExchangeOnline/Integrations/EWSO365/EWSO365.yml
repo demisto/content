@@ -12,12 +12,12 @@ configuration:
   required: false
   defaultvalue: Worldwide
   options:
-    - Worldwide
-    - US GCC
-    - US GCC-High
-    - DoD
-    - Germany
-    - China
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
   section: Connect
   advanced: true
   additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
@@ -41,7 +41,7 @@ configuration:
   section: Connect
   display: ''
   required: false
-- additionalinfo: Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365#additional-information
+- additionalinfo: Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365#additional-information
   display: Email Address
   name: default_target_mailbox
   required: true
@@ -62,7 +62,7 @@ configuration:
   additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
   section: Collect
 - defaultvalue: 'Impersonation'
-  display: Access Type
+  display: Access Type (Impersonation is deprecated as of February 2025)
   name: access_type
   type: 15
   options:
@@ -854,7 +854,7 @@ script:
     - description: The item ID of the item to upload as an EML file.
       name: item-id
       required: true
-    - description: The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox.
+    - description: The mailbox in which this email was found. If empty, the default mailbox is used.
       name: target-mailbox
     description: Retrieves items by item ID and uploads its content as an EML file.
     name: ews-get-items-as-eml
@@ -912,7 +912,7 @@ script:
     - description: A comma-separated list of War Room entry IDs that contain the files to attach to the email.
       isArray: true
       name: attachIDs
-    - description: A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3).
+    - description: A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3.
       isArray: true
       name: attachNames
     - description: A comma-separated list of CIDs to embed attachments inside the email itself.
@@ -947,6 +947,13 @@ script:
       - High
       - Normal
       - Low
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML body and will be attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Sends an email.
     name: send-mail
   - name: reply-mail
@@ -989,7 +996,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:5.5.0.115535
+  dockerimage: demisto/py3ews:5.5.0.118099
   isfetch: true
   script: ''
   subtype: python3

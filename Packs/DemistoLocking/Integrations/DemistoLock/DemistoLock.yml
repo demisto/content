@@ -16,6 +16,13 @@ configuration:
   required: true
   section: Connect
   advanced: true
+- display: Polling interval
+  name: polling_interval
+  type: 0
+  additionalinfo: Default polling interval value for `demisto-lock-get`, can be overridden by the "polling_interval" argument. 
+  section: Connect
+  advanced: true
+  required: false
 - display: Sync integration cache
   name: sync
   defaultvalue: "false"
@@ -66,3 +73,5 @@ marketplaces:
 - xsoar
 - marketplacev2
 fromversion: 5.0.0
+tests:
+- No tests

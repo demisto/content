@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Set Team Members]![image](https://user-images.githubusercontent.com/53576129/123927657-f7b9ee00-d984-11eb-820b-adc37801f104.png)
+![Set Team Members]![image](../doc_files/Set_Team_Members.png)

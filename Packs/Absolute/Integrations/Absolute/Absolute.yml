@@ -1,4 +1,7 @@
 category: Endpoint
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Absolute
   version: -1
@@ -8,6 +11,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - name: credentials
   display: Token ID
   required: true
@@ -15,14 +19,41 @@ configuration:
   type: 9
   additionalinfo: Token ID and Secret Key.
   displaypassword: "Secret Key"
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+- defaultvalue: 10000
+  section: Collect
+  display: Max number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+  hidden:
+  - xsoar
+- defaultvalue: 'false'
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: "Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
 display: Absolute
 name: Absolute
@@ -706,11 +737,29 @@ script:
     - contextPath: Absolute.LocationReport.LastUpdate
       description: The date and time (in Unix epoch) when the device last changed its location.
       type: Number
+  - arguments:
+      - name: should_push_events
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "false"
+      - name: start_date
+        description: Filters the results to the records on or after the start date.
+      - name: end_date
+        description: Filters the results to the records until the end date.
+      - name: limit
+        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
+    name: absolute-device-get-events
+    description: Retrieves a list of events from the Absolute instance.
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/auth-utils:1.0.0.1968974
+  isfetchevents: true
+  isfetchevents:xsoar: false
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook

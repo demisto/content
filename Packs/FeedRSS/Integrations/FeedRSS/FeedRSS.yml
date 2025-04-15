@@ -25,6 +25,13 @@ configuration:
   required: false
   section: Collect
   advanced: true
+- display: Request headers in JSON format.
+  name: default_headers
+  defaultvalue: '{"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"}'
+  type: 12
+  required: false
+  section: Collect
+  advanced: true
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -141,7 +148,7 @@ script:
       name: limit
     description: Gets the reports from the RSS feed.
     name: rss-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.2072021
   feed: true
   runonce: false
   script: '-'

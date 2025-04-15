@@ -28,6 +28,8 @@ For more information, refer to the following [Microsoft article](https://learn.m
 You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 For more information, refer to the following [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application).
 
+**Note** - The credentials are valid for a single instance only.
+
 ## Self Deployed Application
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
@@ -777,3 +779,11 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Search job test_SRCH deleted successfully.
+
+## Troubleshooting
+
+In case of a **hash verification** error:
+1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
+2. Execute the command ***!azure-log-analytics-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
+3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
+4. After updating the credentials, test the integration.

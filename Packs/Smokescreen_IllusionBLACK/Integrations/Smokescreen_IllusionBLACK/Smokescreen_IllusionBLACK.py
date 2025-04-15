@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from datetime import timezone
+from datetime import datetime, UTC
 from typing import Any
 
 import json
@@ -308,14 +308,14 @@ def fetch_incidents(first_fetch, client):
         client: IllusionBLACK client
     Returns: Demisto Incidents
     """
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     demisto.info(f"IllusionBLACK: Fetching incidents at {now}")
     demisto_last_run = demisto.getLastRun()
     if "last_run" in demisto_last_run:
         last_run = datetime.fromisoformat(demisto_last_run["last_run"])
     else:
         last_run, _ = parse_date_range(first_fetch)
-        last_run = last_run.replace(tzinfo=timezone.utc)
+        last_run = last_run.replace(tzinfo=UTC)
     if now - last_run < timedelta(minutes=5):
         return []
     from_time = last_run.replace(microsecond=0).isoformat()

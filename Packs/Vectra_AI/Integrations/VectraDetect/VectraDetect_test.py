@@ -2175,7 +2175,7 @@ def test_vectra_tag_list_invalid_args(client, args, error_msg):
     """
     from VectraDetect import tag_list_command
 
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
 
@@ -2378,7 +2378,7 @@ def test_note_add_command_invalid_args(client, args, error_msg):
     """
     from VectraDetect import note_add_command
 
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
 
@@ -2537,7 +2537,7 @@ def test_note_update_command_invalid_args(client, args, error_msg):
 
     from VectraDetect import note_update_command
 
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
 
@@ -2679,7 +2679,7 @@ def test_note_remove_command_invalid_args(client, args, error_msg):
     """
     from VectraDetect import note_remove_command
 
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
 
@@ -2817,7 +2817,7 @@ def test_vectra_note_list_invalid_args(client, args, error_msg):
     """
     from VectraDetect import note_list_command
 
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
 
@@ -3170,7 +3170,7 @@ def test_vectra_assign_account_group_invalid_group_name(requests_mock, mocker, c
     return_warning = mocker.patch.object(VectraDetect, "return_warning")
     vectra_group_assign_command(client, args)
 
-    assert "The following account names were invalid: account_5" == return_warning.call_args[0][0]
+    assert return_warning.call_args[0][0] == "The following account names were invalid: account_5"
 
 
 def test_vectra_unassign_domain_group_valid_arguments(requests_mock, client):

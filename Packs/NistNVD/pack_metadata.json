@@ -2,7 +2,7 @@
     "name": "Nist NVD",
     "description": "This integration can be used for daily routine vulnerability checks.(and used with several playbook)\nThe National Vulnerability Database (NVD), https://nvd.nist.gov, allows government agencies, software\nvendors, and researchers to search and view information about vulnerabilities and vulnerable products. In\nthe Fall of 2019, NVD began offering web services to allow computer applications to better access the\nNVD data",
     "support": "community",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Murat Ozfidan",
     "url": "",
     "email": "",

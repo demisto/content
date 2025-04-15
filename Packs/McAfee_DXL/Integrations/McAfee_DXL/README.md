@@ -3,7 +3,7 @@ Use the McAfee DXL integration to connect and optimize security actions across m
 ## How to Create the RSA Key Pair
 Before you configure the ePO server, you need to generate the RSA key pair. Make sure that **openssl** is installed.
 1. Open a new directory.
-2. Download the [sh script](https://github.com/demisto/content/blob/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/create_keys.sh) and move it to the new directory.
+2. Download the [sh script](https://github.com/demisto/content/blob/master/Packs/McAfee_DXL/doc_files/create_keys.sh) and move it to the new directory.
 3. Run the script.
 4. Complete the required fields, except the challenge password and the optional company name (leave empty).  
 The certificate (**client.crt**) is valid for 365 days (you can change the value in the script).

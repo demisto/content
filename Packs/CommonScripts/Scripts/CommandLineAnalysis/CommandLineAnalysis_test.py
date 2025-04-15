@@ -12,6 +12,7 @@ from CommandLineAnalysis import (
     check_amsi,
     check_mixed_case_powershell,
     check_powershell_suspicious_patterns,
+    check_suspicious_macos_applescript_commands,
     analyze_command_line
 )
 
@@ -19,6 +20,7 @@ from CommandLineAnalysis import (
 # Test data
 DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbENhRWxJVW14ak0xRm5Zek5TZVdGWE5XND0="
 MALICIOUS_COMMAND_LINE = "wevtutil cl Security RG91YmxlIGVuY29kaW5nIFZHaHBjeUJwY3lCaElHeHBjM1JsYm1WeUtERXhMakV3TVM0eE1qUXVNaklw"
+MACOS_COMMAND_LINE = "tell window 1 of application to set visible to false"
 
 
 @pytest.fixture
@@ -59,8 +61,9 @@ def test_identify_and_decode_base64(sample_malicious_command):
     assert "11.101.124.22" in decoded_command
     assert is_double_encoded is True
 
-
 # Test reverse_command
+
+
 def test_reverse_command():
     reversed_string = "llehSrewoP"
     result, was_reversed = reverse_command(reversed_string)
@@ -120,7 +123,14 @@ def test_check_powershell_suspicious_patterns():
     assert "DownloadString" in matches
 
 
+# Test check_reconnaissance_temp
+def test_check_suspicious_macos_applescript_commands():
+    matches = check_suspicious_macos_applescript_commands(MACOS_COMMAND_LINE)
+    assert ["to set visible", "false"] in matches["infostealer_characteristics"]
+
 # Test analyze_command_line
+
+
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
     assert result["risk"] == "Medium Risk"

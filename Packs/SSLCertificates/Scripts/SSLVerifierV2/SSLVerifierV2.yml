@@ -10,7 +10,7 @@ comment: Use this automation to check for validity of your SSL certificate and g
 commonfields:
   id: SSLVerifierV2
   version: -1
-dockerimage: demisto/ansible-runner:1.0.0.115040
+dockerimage: demisto/ansible-runner:1.0.0.2024530
 enabled: true
 name: SSLVerifierV2
 outputs:

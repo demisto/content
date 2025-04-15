@@ -2,7 +2,7 @@
     "name": "Venafi",
     "description": "Retrieves information about certificates stored in Venafi.",
     "support": "xsoar",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -1,0 +1,1 @@
+To configure an integration instance, you need your BeyondTrust client secret and client ID. The API key is generated after you configure an API Registration. For detailed instructions, see the [BeyondTrust Password Safe Admin Guide](https://www.beyondtrust.com/docs/privilege-management/console/pm-cloud/configuration/api-settings/view-api-account-details.htm).

@@ -32,4 +32,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![ExtraHop_Default](../doc_files/ExtraHop_Default.png)
+![ExtraHop_Default](../doc_files/ExtraHop_-_Default.png)

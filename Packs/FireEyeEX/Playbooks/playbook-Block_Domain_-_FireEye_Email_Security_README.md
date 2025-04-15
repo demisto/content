@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Block Domain - FireEye Email Security](https://raw.githubusercontent.com/demisto/content/7d20d193ddfe06ad3ead0effb87db3e71fe675a8/Packs/FireEyeEX/doc_files/Block_Domain_-_FireEye_Email_Security.png)
+![Block Domain - FireEye Email Security](../doc_files/Block_Domain_-_FireEye_Email_Security.png)

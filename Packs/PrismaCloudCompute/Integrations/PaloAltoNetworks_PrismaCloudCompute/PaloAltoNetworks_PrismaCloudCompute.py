@@ -2256,6 +2256,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
 
     if ci_scan_results := client.get_ci_scan_results(all_results=all_results, params=params):
+        table = ""
         if not verbose:
             ci_scan_results = reduce_ci_scan_results(ci_scan_results)
             if all_results:

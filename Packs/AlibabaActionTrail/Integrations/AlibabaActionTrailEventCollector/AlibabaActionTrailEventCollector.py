@@ -42,6 +42,8 @@ class AlibabaEventsClient(IntegrationEventsClient):
     def call(self, request: IntegrationHTTPRequest) -> requests.Response:
         try:
             response = self.session.request(**self.request.dict(by_alias=True))
+            if response.status_code >= 400:
+                demisto.debug(f"An error occurred - raw response is: {response.json()}")
             response.raise_for_status()
             return response
         except Exception as exc:
@@ -179,7 +181,7 @@ def main():
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
-    request.params = AlibabaParams.model_validate(params)  # type: ignore[attr-defined]
+    request.params = AlibabaParams.model_validate(params)  # type: ignore[attr-defined,assignment]
 
     options = IntegrationOptions.model_validate(demisto_params)  # type: ignore[attr-defined]
 

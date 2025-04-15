@@ -173,7 +173,7 @@ def handle_results(command_results: dict, playbook_id: str, alert_ids: str | lis
     try:
         result_dict = command_results[0].get('Contents', {})
         if isinstance(alert_ids, str):
-            if type(result_dict) == str:
+            if type(result_dict) is str:
                 results_summary.update_failure_create(playbook_id, alert_ids)
                 return None
 
