@@ -1,5 +1,6 @@
 {
 	"cacheVersn": 0,
+    "fromVersion": "6.10.0",
 	"close": null,
 	"definitionId": "",
 	"description": "",
@@ -568,7 +569,7 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "99188f04-4669-404c-8cca-b5d90db39b25",
+	"id": "Darktrace Email Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
@@ -583,5 +584,6 @@
 	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+    "marketplaces": ["xsoar"]
 }

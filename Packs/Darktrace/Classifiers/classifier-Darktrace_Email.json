@@ -1,20 +1,11 @@
 {
 	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Darktrace Email Mapper",
-	"fromVersion": "6.6.0",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 9,
+	"fromVersion": "6.10.0",
 	"mapping": {
 		"Darktrace Email": {
 			"dontMapEventToLabels": true,
@@ -118,16 +109,6 @@
 		}
 	},
 	"name": "Darktrace Email Mapper",
-	"nameRaw": "Darktrace Email Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }

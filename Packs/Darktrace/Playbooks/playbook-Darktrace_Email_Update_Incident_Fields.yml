@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: Get Email Info
       description: Fetch details about a specific Email.
-      script: DarktraceEmail_v1.0|||darktrace-email-get-email
+      script: DarktraceEmail|||darktrace-email-get-email
       type: regular
       iscommand: true
-      brand: DarktraceEmail_v1.0
+      brand: DarktraceEmail
     nexttasks:
       '#none#':
       - "17"
