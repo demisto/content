@@ -192,7 +192,8 @@ def test_get_relevant_context():
     response = util_load_json('test_data/prisma_sase_responses.json').get('address_group_list')
     entry_context = response[0].get('EntryContext', {})
     result = get_relevant_context(entry_context, 'PrismaSase.Address')
-    expected_context = {'address_value': '1.1.2.2', 'folder': 'Shared', 'id': '11111111-1111-1111-1111-111111111111', 'name': '1.1.2.2', 'type': 'ip_netmask'}
+    expected_context = {'address_value': '1.1.2.2', 'folder': 'Shared', 'id': '11111111-1111-1111-1111-111111111111',
+                        'name': '1.1.2.2', 'type': 'ip_netmask'}
     assert result == expected_context
 
 def test_check_value_exist_in_context():
@@ -329,7 +330,8 @@ def test_prisma_sase_security_rule_update_not_needed():
       - Running the script block-external-ip for the prisma-sase brand, checking if a rule update should be performed.
         In this case the address_group is in the rule destination, no need for a rule update.
     Then:
-      - Verify the correct outputs are returned from the function, the response of the command in case it was executed, otherwise [].
+      - Verify the correct outputs are returned from the function, the response of the command in case it was executed,
+        otherwise [].
     """
     from BlockExternalIp import prisma_sase_security_rule_update
     rule_name = "rules"
