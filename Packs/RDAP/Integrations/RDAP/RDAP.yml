@@ -74,7 +74,7 @@ script:
     - contextPath: IP.Organization.Name
       description: The IP address organization name.
     - contextPath: IP.Registrar.Abuse.Address
-      description: The address of the abuse Team.
+      description: The address of the abuse team.
     - contextPath: IP.Registrar.Abuse.Email
       description: The email address of the abuse team.
     - contextPath: IP.Registrar.Abuse.Name
