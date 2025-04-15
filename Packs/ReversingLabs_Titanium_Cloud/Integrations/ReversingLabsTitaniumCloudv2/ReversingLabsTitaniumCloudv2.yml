@@ -85,6 +85,57 @@ script:
         - contextPath: ReversingLabs.file_reputation
           description: The file reputation.
           type: Unknown
+
+
+
+    - name: file
+      description: Retrieve File Reputation data from TitaniumCloud.
+      arguments:
+        - name: file
+          default: true
+          description: List of file hashes.
+          required: true
+      outputs:
+        - contextPath: File.MD5
+          description: Bad hash found.
+          type: Unknown
+        - contextPath: File.SHA1
+          description: Bad hash SHA1.
+          type: Unknown
+        - contextPath: File.SHA256
+          description: Bad hash SHA256.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.file_reputation
+          description: The file reputation report.
+          type: Unknown
+        - contextPath: ReversingLabs.file_reputation.status
+          description: ReversingLabs classification string.
+          type: String
+        - contextPath: ReversingLabs.file_reputation.threat_name
+          description: ReversingLabs threat name for the malware.
+          type: String
+        - contextPath: ReversingLabs.file_reputation.threat_level
+          description: ReversingLabs threat level for the sample.
+          type: Number
+        - contextPath: ReversingLabs.file_reputation.trust_factor
+          description: ReversingLabs trust factor for the sample.
+          type: Number
+
+
+
+
     - name: reversinglabs-titaniumcloud-av-scanners
       description: Retrieve AV Scanner data from TitaniumCloud.
       arguments:

@@ -2543,6 +2543,9 @@ def main():
     if command == "test-module":
         test_module_command()
 
+    elif command == "file":
+        file_reputation_command()
+
     elif command == "reversinglabs-titaniumcloud-file-reputation":
         file_reputation_command()
 
