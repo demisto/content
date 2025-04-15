@@ -1,5 +1,5 @@
 args:
-- description: List of IPs to block
+- description: List of IPs to block.
   isArray: true
   name: ip_list
   required: true
@@ -24,8 +24,8 @@ args:
   defaultValue: 'true'
   auto: PREDEFINED
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
 - description: The designated tag name for the IP.
   isArray: false
   name: tag
@@ -33,19 +33,19 @@ args:
   defaultValue: 'xsiam-blocked-external-ip'
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2"
+    For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2".
   isArray: true
   defaultValue: 'Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler'
   name: brands
   required: false
   auto: PREDEFINED
   predefined:
-    - 'Palo Alto Networks - Prisma SASE'
-    - 'Panorama'
-    - 'FortiGate'
-    - 'F5Silverline'
-    - 'Cisco ASA'
-    - 'Zscaler'
+  - 'Palo Alto Networks - Prisma SASE'
+  - 'Panorama'
+  - 'FortiGate'
+  - 'F5Silverline'
+  - 'Cisco ASA'
+  - 'Zscaler'
 - description: Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.
   name: verbose
   defaultValue: 'false'
@@ -92,3 +92,5 @@ marketplaces:
 - xsoar
 - marketplacev2
 polling: true
+tests:
+- No tests (auto formatted)
