@@ -7,7 +7,7 @@ from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
-WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
+WIZ_API_LIMIT = 1  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
 WIZ_VERSION = '1.0.0'
@@ -493,7 +493,10 @@ def checkAPIerrors(query, variables):
 
     error_message = ""
     result_json = result.json()
+    demisto.info(f"RESULT JSON KEYS: {list(result_json.keys())}")
+    demisto.info(f"ERRORS IN KEYS: {WizApiResponse.ERRORS in result_json}")
     if WizApiResponse.ERRORS in result_json:
+        demisto.info(f"Wiz error content: {result_json[WizApiResponse.ERRORS]}")
         error_message = f"Wiz API error details: {get_error_output(result_json)}"
 
     elif WizApiResponse.DATA in result_json and \
@@ -502,9 +505,9 @@ def checkAPIerrors(query, variables):
         demisto.info("No detection(/s) available to fetch.")
 
     if error_message:
-        demisto.error("An error has occurred using:\n"
-                      f"\tQuery: {query}\n"
-                      f"\tVariables: {variables}\n"
+        demisto.error("An error has occurred using:"
+                      f"\tQuery: {query} - "
+                      f"\tVariables: {variables} -"
                       f"\t{error_message}")
         demisto.error(error_message)
         raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
