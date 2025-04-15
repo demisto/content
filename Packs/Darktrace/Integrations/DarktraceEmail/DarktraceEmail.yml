@@ -136,7 +136,7 @@ script:
       description: Recipient of Email. Not required but speeds up the command.
     description: 'Apply "release" action to a specified Email. '
     execution: true
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   subtype: python3

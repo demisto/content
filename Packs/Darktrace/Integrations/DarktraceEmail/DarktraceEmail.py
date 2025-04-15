@@ -5,7 +5,7 @@ import hashlib
 import hmac
 import json
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any, cast
 from collections.abc import Mapping
 
@@ -44,6 +44,8 @@ EMAIL_ACTION_UNDETERMINED = "Could not execute the hold action on this email."
 EMAIL_ACTION_REASON = "This is because the email was previously"
 EMAIL_ACTION_RELEASED = "Email Released"
 EMAIL_ACTION_RELEASE_RESPONSE = "Email added to queue"
+TRIAD = tuple[str, float | str, str]
+
 
 DARKTRACE_API_ERRORS = {
     'SIGNATURE_ERROR': 'API Signature Error. You have invalid credentials in your config.',
@@ -154,7 +156,7 @@ class Client(BaseClient):
     def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
-        date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
+        date = (datetime.now(UTC)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {'DTAPI-Token': public_token, 'DTAPI-Date': date, 'DTAPI-Signature': signature}
 
@@ -170,7 +172,10 @@ class Client(BaseClient):
         return email
 
 
-    def search_emails(self, min_score: float, actioned: bool, tag_severity: list[str], start_time: int, end_time: int, direction: str | None) -> list[dict[str, Any]]:
+    def search_emails(
+        self, min_score: float, actioned: bool, tag_severity: list[str],
+        start_time: int, end_time: int, direction: str | None
+    ) -> list[dict[str, Any]]:
         """Searches for Darktrace emails using the '/emails/search' API endpoint
         :type min_score: ``float``
         :param min_score: min score of the email to search for. Range [0, 1].
@@ -187,7 +192,7 @@ class Client(BaseClient):
         """
         tag_mapper = self.tag_mapper
         query_uri = SEARCH_EMAILS_ENDPOINT
-        filter_triads = [("anomaly_score", min_score, '>')]
+        filter_triads: list[TRIAD] = [("anomaly_score", min_score, '>')]
         if len(tag_severity) == 1:
              filter_triads.append(("tag_severity", tag_severity[0], '='))
         if direction:
@@ -200,7 +205,6 @@ class Client(BaseClient):
             emails = self.post(query_uri, json=params)
             for email in emails:
                 email_actioned = bool(len(email['rcpts'][0]['rcpt_actions_taken']))
-                email_actions_taken = email['rcpts'][0]['rcpt_actions_taken']
                 email_tag_severities = [tag_mapper[tag] for tag in email['rcpts'][0]['tags']]
                 if actioned and not email_actioned:
                     pass
@@ -235,21 +239,22 @@ class Client(BaseClient):
         return response
 
 
-    def get_tag_mapper(self) -> list[dict[str, str]]:
+    def get_tag_mapper(self):
         """Get a list of all available tags with their details.
         :return: dictionary containing the tag IDs as keys and the human readable tag Name as values.
         :rtype: Dict[str, str]
         """
         query_uri = EMAIL_TAGS_ENDPOINT
         tags = self.get(query_uri)
-        tag_mapper = {tag.get("name"):tag.get("status") for tag in tags}
-        self.tag_mapper = tag_mapper
+        if isinstance(tags, list) and all(isinstance(tag, dict) for tag in tags):
+            tag_mapper = {tag.get("name"):tag.get("status") for tag in tags}
+            self.tag_mapper = tag_mapper
 
 
 """*****HELPER FUNCTIONS****"""
 
 
-def email_query_builder(page: int, filter_triads: list[tuple[Any]], init_date: int, end_date: int) -> dict[str, Any]:
+def email_query_builder(page: int, filter_triads: list[TRIAD], init_date: int, end_date: int) -> dict[str, Any]:
         '''
         Summary:
             Function to build the dictionary used to query the API given certain API filters.
@@ -321,7 +326,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: \'{arg_name}\'')
@@ -396,8 +401,10 @@ def _compute_xsoar_severity(tags: list['str'], actions: list['str'], score: int,
         return 4
     elif 'critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 50 and 'Hold message' not in actions:
         return 3
-    elif (('warn' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 50) or ('critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score < 50)) and 'Hold message' not in actions:
-        return 2
+    elif (('warn' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 50) or
+          ('critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and
+           score < 50)) and 'Hold message' not in actions:
+           return 2
     return 1
 
 
@@ -420,7 +427,8 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     """
     end_time = int(datetime.now().timestamp())
     try:
-        client.search_emails(min_score=0, tag_severity=["critical", "info"], direction=False, actioned=True, start_time=first_fetch_time, end_time=end_time)
+        client.search_emails(min_score=0, tag_severity=["critical", "info"], direction=False,
+                             actioned=True, start_time=first_fetch_time, end_time=end_time)
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -488,7 +496,9 @@ def fetch_incidents(client: Client, max_alerts: int,
     end_time = int(datetime.now().timestamp())
 
     #Get emails from timeframe
-    emails = client.search_emails(min_score=min_score, actioned=actioned, tag_severity=tag_severity, direction=direction, start_time=last_fetch, end_time=end_time)
+    emails = client.search_emails(min_score=min_score, actioned=actioned,
+                                  tag_severity=tag_severity, direction=direction,
+                                  start_time=last_fetch, end_time=end_time)
 
     #Sort emails from oldest to newest
     emails = sorted(emails, key = lambda d: d['dtime_unix'])
@@ -500,9 +510,8 @@ def fetch_incidents(client: Client, max_alerts: int,
         email['time'] = timestamp_to_datestring(incident_created_time)
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        if last_fetch and incident_created_time <= last_fetch:
+            continue
         sender = email['header_from_email']
         recipient = email['rcpts'][0]['rcpt_to']
         score = int(email['model_score'])

@@ -112,10 +112,12 @@ def test_fetch_incidents(requests_mock):
     uuid_02 = "8EEFBFA4-6CA2-4306-B688-BA6B9F60AEEF.1"
     
     mock_api_response_incident_01 = util_load_json("test_data/incident_01.json")
-    requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_01}?dtime=1744300527341", json=mock_api_response_incident_01)
+    requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_01}?dtime=1744300527341",
+                      json=mock_api_response_incident_01)
     
     mock_api_response_incident_02 = util_load_json("test_data/incident_02.json")
-    requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_02}?dtime=1744300434119", json=mock_api_response_incident_02)
+    requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_02}?dtime=1744300434119",
+                      json=mock_api_response_incident_02)
     
     mock_api_response_get_email = util_load_json("test_data/fetch_incidents.json")
     requests_mock.post("https://mock.darktrace.com/agemail/api/v1.0/emails/search", json=mock_api_response_get_email)
