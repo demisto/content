@@ -8,9 +8,13 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Authentication & Identity Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Amazon"
