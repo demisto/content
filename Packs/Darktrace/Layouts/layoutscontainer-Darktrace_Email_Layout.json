@@ -564,7 +564,6 @@
 	"group": "incident",
 	"id": "Darktrace Email Layout",
 	"name": "Darktrace Email Layout",
-	"quickView": null,
 	"system": false,
 	"version": -1,
     "marketplaces": ["xsoar"]
