@@ -72,8 +72,7 @@ Get search job results.
 | --- | --- | --- |
 | AnomaliSecurityAnalytics.SearchJobResults.job_id | String | Job ID of the search job. | 
 | AnomaliSecurityAnalytics.SearchJobResults.status | String | Status of the search. | 
-| AnomaliSecurityAnalytics.SearchJobResults.count | Number | Number of records returned. | 
-| AnomaliSecurityAnalytics.SearchJobResults.fields | String | List of search fields returned. | 
+| AnomaliSecurityAnalytics.SearchJobResults.count | Number | Number of records returned. |  
 | AnomaliSecurityAnalytics.SearchJobResults.has_next | Boolean | Indicates if more pages are available. | 
 | AnomaliSecurityAnalytics.SearchJobResults.is_aggregated | Boolean | Indicates if the search is aggregated. | 
 | AnomaliSecurityAnalytics.SearchJobResults.records | Array | List of records containing the fields included in the fields response attribute. | 
