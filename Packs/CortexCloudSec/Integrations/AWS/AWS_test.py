@@ -1,41 +1,192 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+import importlib
+import pytest
 
-Pytest Unit Tests: all funcion names must start with "test_"
+AWS_INTEGRATION = importlib.import_module("AWS")
 
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
+class AWSClient:
+    def aws_session(self, **kwargs):
+        return Boto3Client()
 
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
+class Boto3Client:
+    def get_public_access_block(self, **kwargs):
+        pass
 
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
+    def put_public_access_block(self, **kwargs):
+        pass
 
-from demisto_sdk.commands.common.handlers import JSON_Handler
+    def get_account_password_policy(self, **kwargs):
+        pass
 
-import json
+    def update_account_password_policy(self, **kwargs):
+        pass
+    
+    def modify_instance_metadata_options(self, **kwargs):
+        pass
 
-
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
-
-
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url="some_mock_url", verify=False)
-    args = {"dummy": "this is a dummy response", "dummy2": "a dummy value"}
-    response = baseintegration_dummy_command(client, args)
-
-    assert response.outputs == args
+AWS_CLIENT = AWSClient()
 
 
-# TODO: ADD HERE unit tests for every command
+@pytest.mark.parametrize(
+    "bucket, get_public_access_block_return, put_public_access_block_return, expected_result",
+    [
+        (
+            "bucket-pass-1",
+            {
+                "PublicAccessBlockConfiguration": {
+                    "BlockPublicAcls": False,
+                    "IgnorePublicAcls": False,
+                    "BlockPublicPolicy": False,
+                    "RestrictPublicBuckets": False,
+                }
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':200}},
+            "Successfully applied public access block to the bucket-pass-1 bucket"
+        ),
+        (
+            "bucket-fail-1",
+            {},
+            {'ResponseMetadata':{'HTTPStatusCode':200}},
+            "Couldn't check current public access block to the bucket-fail-1 bucket"
+        ),
+        (
+            "bucket-fail-2",
+            {
+                "PublicAccessBlockConfiguration": {
+                    "BlockPublicAcls": False,
+                    "IgnorePublicAcls": False,
+                    "BlockPublicPolicy": False,
+                    "RestrictPublicBuckets": False,
+                }
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':500}},
+            "Couldn't apply public access block to the bucket-fail-2 bucket"
+        )
+    ]
+)
+def test_put_public_access_block(mocker, bucket, get_public_access_block_return, put_public_access_block_return, expected_result):
+    mocker.patch.object(Boto3Client, "get_public_access_block", return_value=get_public_access_block_return)
+    mocker.patch.object(Boto3Client, "put_public_access_block", return_value=put_public_access_block_return)
+
+    args = {
+        'bucket': bucket,
+        "PublicAccessBlockConfiguration": {
+            "BlockPublicAcls": False,
+            "IgnorePublicAcls": False,
+            "BlockPublicPolicy": False,
+            "RestrictPublicBuckets": False,
+        }
+    }
+
+    result = AWS_INTEGRATION.put_public_access_block(AWS_CLIENT, args)
+    assert result.readable_output == expected_result
+
+
+def test_get_account_password_policy(mocker):
+
+    get_account_password_policy_return = {
+        'account_id': 1234567890,
+        'PasswordPolicy': {
+            'MinimumPasswordLength': 12,
+            'RequireSymbols': True,
+            'RequireNumbers': True,
+            'RequireUppercaseCharacters': True,
+            'RequireLowercaseCharacters': True,
+            'AllowUsersToChangePassword': True,
+            'ExpirePasswords': True,
+            'MaxPasswordAge': 12,
+            'PasswordReusePrevention': 12,
+            'HardExpiry': True,
+        }
+    }
+    mocker.patch.object(Boto3Client, "get_account_password_policy", return_value=get_account_password_policy_return)
+
+    result = AWS_INTEGRATION.get_account_password_policy(AWS_CLIENT, {})
+    assert result.outputs == get_account_password_policy_return.get('PasswordPolicy')
+
+
+@pytest.mark.parametrize(
+    "command_args, command_return, expected_result",
+    [
+        (
+            {
+                "account_id": 1234567890,
+                "minimum_password_length": 16
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':200}},
+            "Successfully updated account password policy for account: 1234567890"
+        ),
+        (
+            {
+                "account_id": 1234567890,
+                "require_lowercase_characters": True
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':200}},
+            "Successfully updated account password policy for account: 1234567890"
+        ),
+        (
+            {
+                "account_id": 1234567890,
+                "minimum_password_length": 16
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':500}},
+            "Couldn't updated account password policy for account: 1234567890"
+        )
+    ]
+)
+def test_update_account_password_policy(mocker, command_args, command_return, expected_result):
+
+    get_account_password_policy_return = {
+        'PasswordPolicy': {
+            'MinimumPasswordLength': 12,
+            'RequireSymbols': False,
+            'RequireNumbers': False,
+            'RequireUppercaseCharacters': False,
+            'RequireLowercaseCharacters': False,
+            'AllowUsersToChangePassword': False,
+            'ExpirePasswords': False,
+            'MaxPasswordAge': 12,
+            'PasswordReusePrevention': 12,
+            'HardExpiry': False,
+        }
+    }
+    mocker.patch.object(Boto3Client, "get_account_password_policy", return_value=get_account_password_policy_return)
+    mocker.patch.object(Boto3Client, "update_account_password_policy", return_value=command_return)
+
+    result = AWS_INTEGRATION.update_account_password_policy(AWS_CLIENT, command_args)
+    assert result.readable_output == expected_result
+
+
+@pytest.mark.parametrize(
+    "command_args, command_return, expected_result",
+    [
+        (
+            {
+                "instance_id": "i-1234567890",
+                "http_tokens": "required"
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':200}},
+            "Successfully updated EC2 instance metadata for i-1234567890"
+        ),
+        (
+            {
+                "instance_id": "i-1234567890",
+                "http_endpoint": "enabled"
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':200}},
+            "Successfully updated EC2 instance metadata for i-1234567890"
+        ),
+        (
+            {
+                "instance_id": "i-1234567890"
+            },
+            {'ResponseMetadata':{'HTTPStatusCode':500}},
+            "Couldn't updated public EC2 instance metadata for i-1234567890"
+        )
+    ]
+)
+def test_aws_ec2_instance_metadata_options_modify(mocker, command_args, command_return, expected_result):
+
+    mocker.patch.object(Boto3Client, "modify_instance_metadata_options", return_value=command_return)
+
+    result = AWS_INTEGRATION.ec2_instance_metadata_options_modify(AWS_CLIENT, command_args)
+    assert result.readable_output == expected_result
