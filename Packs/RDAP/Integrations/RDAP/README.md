@@ -4,14 +4,6 @@
 
 The RDAP (Registration Data Access Protocol) integration allows you to query domain and IP information using the RDAP protocol. This integration provides valuable data for threat intelligence and domain/IP enrichment purposes.
 
-## Configuration
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RDAP.
-3. Click **Add instance** to create and configure a new integration instance.
-4. Configure the instance name and reliability.
-5. Click **Test** to validate the configuration.
-
 ## Commands
 
 ### ip
