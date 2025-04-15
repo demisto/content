@@ -123,7 +123,7 @@ def file_command():
     )
 
     hash_list = argToList(demisto.getArg("file"))
-    results_list = []
+    result_list = []
 
     for file_hash in hash_list:
         try:
@@ -133,9 +133,9 @@ def file_command():
 
         response_json = response.json()
         result = file_reputation_output(response_json=response_json, hash_value=file_hash)
-        results_list.append(result)
+        result_list.append(result)
 
-    return_results(results_list)
+    return_results(result_list)
 
 
 def file_reputation_command():
@@ -797,6 +797,32 @@ def file_upload_command():
         )
 
         return_results(results)
+
+
+def url_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    url_list = argToList(demisto.getArg("url"))
+    result_list = []
+
+    for url in url_list:
+        try:
+            response = url_ti.get_url_report(url_input=url)
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        result = url_report_output(response_json=response_json, url=url)
+        result_list.append(result)
+
+    return_results(result_list)
 
 
 def url_report_command():
@@ -2580,6 +2606,9 @@ def main():
 
     elif command == "file":
         file_command()
+
+    elif command == "url":
+        url_command()
 
     elif command == "reversinglabs-titaniumcloud-file-reputation":
         file_reputation_command()

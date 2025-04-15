@@ -53,41 +53,6 @@ display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
 script:
   commands:
-    - name: reversinglabs-titaniumcloud-file-reputation
-      description: Retrieve File Reputation data from TitaniumCloud.
-      arguments:
-        - name: hash
-          default: true
-          description: File hash.
-          required: true
-      outputs:
-        - contextPath: File.MD5
-          description: Bad hash found.
-          type: Unknown
-        - contextPath: File.SHA1
-          description: Bad hash SHA1.
-          type: Unknown
-        - contextPath: File.SHA256
-          description: Bad hash SHA256.
-          type: Unknown
-        - contextPath: DBotScore.Score
-          description: The actual score.
-          type: Number
-        - contextPath: DBotScore.Type
-          description: The indicator type.
-          type: String
-        - contextPath: DBotScore.Indicator
-          description: The indicator that was tested.
-          type: String
-        - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
-          type: String
-        - contextPath: ReversingLabs.file_reputation
-          description: The file reputation.
-          type: Unknown
-
-
-
     - name: file
       description: Retrieve File Reputation data from TitaniumCloud.
       arguments:
@@ -133,9 +98,76 @@ script:
           description: ReversingLabs trust factor for the sample.
           type: Number
 
+    - name: url
+      description: Return a URL analysis report.
+      arguments:
+        - name: url
+          description: List of URLs.
+          default: true
+          required: true
+      outputs:
+        - contextPath: URL.Data
+          description: The URL.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.url_report
+          description: The URL report.
+          type: Unknown
+        - contextPath: ReversingLabs.url_report.rl.classification
+          description: Classification string for this URL.
+          type: String
+        - contextPath: ReversingLabs.url_report.rl.reason
+          description: Reason for the classification.
+          type: String
 
 
 
+
+
+
+    - name: reversinglabs-titaniumcloud-file-reputation
+      description: Retrieve File Reputation data from TitaniumCloud.
+      arguments:
+        - name: hash
+          default: true
+          description: File hash.
+          required: true
+      outputs:
+        - contextPath: File.MD5
+          description: Bad hash found.
+          type: Unknown
+        - contextPath: File.SHA1
+          description: Bad hash SHA1.
+          type: Unknown
+        - contextPath: File.SHA256
+          description: Bad hash SHA256.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.file_reputation
+          description: The file reputation.
+          type: Unknown
     - name: reversinglabs-titaniumcloud-av-scanners
       description: Retrieve AV Scanner data from TitaniumCloud.
       arguments:
