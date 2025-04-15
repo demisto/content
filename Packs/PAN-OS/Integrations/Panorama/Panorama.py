@@ -224,6 +224,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "low-risk",
     "real-time-detection",
     "ransomware",
+    "cloud-unavailable"
 }
 
 RULE_FILTERS = ("nat-type", "action")
