@@ -22,6 +22,10 @@
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
+        },
+        "Bonusly": {
+            "mandatory": true,
+            "display_name": "Bonusly"
         }
     },
     "marketplaces": [
