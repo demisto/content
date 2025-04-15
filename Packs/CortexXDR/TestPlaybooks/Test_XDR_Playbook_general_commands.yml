@@ -2468,9 +2468,6 @@ tasks:
     nexttasks:
       '#none#':
       - "68"
-    scriptarguments:
-      execution-timeout:
-        simple: "180"
     separatecontext: false
     continueonerrortype: ""
     view: |-
