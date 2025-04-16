@@ -252,7 +252,7 @@ def main():
 
     params = demisto.params()
     # Get the service API key for the Bearer auth
-    api_key = params.get('apikey')
+    api_key= demisto.params().get('credentials', {}).get('password')
     # get the service API url
     base_url = params.get("url")
 
