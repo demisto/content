@@ -639,5 +639,5 @@ def test_add_time_and_related_object_data_to_events(mocker):
     )
     assert len(response.get("list")) == 10
     for log in response.get("list"):
-        assert isinstance(log.get("object",{}).get("server"), dict)
-        assert isinstance(log.get("object",{}).get("project"), dict)
+        assert isinstance(log.get("details",{}).get("server"), dict)
+        assert isinstance(log.get("details",{}).get("project"), dict)
