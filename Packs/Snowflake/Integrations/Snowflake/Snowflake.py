@@ -317,36 +317,38 @@ def fetch_incidents():
     returns:
         Demisto incidents
     """
-    # demisto.getLastRun() will returns an obj with the previous run in it.
-    last_run = demisto.getLastRun()
-    # Get the last fetch time and data if it exists
-    last_fetch = last_run.get("last_fetched_data_timestamp")
-    last_fetched_data = last_run.get("last_fetched_data")
-    # Handle first time fetch, fetch incidents retroactively
-    if not last_fetch:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
-    demisto.info(f'[test] going to get incidents with {args=}')
-    column_descriptions, data = snowflake_query(args)
-    demisto.info(f'[test] got events with {column_descriptions=} and {data=}')
-    data.sort(key=lambda k: k[DATETIME_COLUMN])
-    # convert the data/events to demisto incidents
-    incidents = []
-    for row in data:
-        incident = row_to_incident(column_descriptions, row)
-        incident_timestamp = incident.get("timestamp")
+    # # demisto.getLastRun() will returns an obj with the previous run in it.
+    # last_run = demisto.getLastRun()
+    # # Get the last fetch time and data if it exists
+    # last_fetch = last_run.get("last_fetched_data_timestamp")
+    # last_fetched_data = last_run.get("last_fetched_data")
+    # # Handle first time fetch, fetch incidents retroactively
+    # if not last_fetch:
+    #     last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+    # args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
+    # demisto.info(f'[test] going to get incidents with {args=}')
+    # column_descriptions, data = snowflake_query(args)
+    # demisto.info(f'[test] got events with {column_descriptions=} and {data=}')
+    # data.sort(key=lambda k: k[DATETIME_COLUMN])
+    # # convert the data/events to demisto incidents
+    # incidents = []
+    # for row in data:
+    #     incident = row_to_incident(column_descriptions, row)
+    #     incident_timestamp = incident.get("timestamp")
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_timestamp and incident_timestamp >= last_fetch:
-            last_fetch = incident_timestamp
-            if incident.get("rawJSON") != last_fetched_data:
-                last_fetched_data = incident.get("rawJSON")
-                del incident["timestamp"]
-                incidents.append(incident)
+    #     # Update last run and add incident if the incident is newer than last fetch
+    #     if incident_timestamp and incident_timestamp >= last_fetch:
+    #         last_fetch = incident_timestamp
+    #         if incident.get("rawJSON") != last_fetched_data:
+    #             last_fetched_data = incident.get("rawJSON")
+    #             del incident["timestamp"]
+    #             incidents.append(incident)
 
-    this_run = {"last_fetched_data": last_fetched_data, "last_fetched_data_timestamp": last_fetch}
-    demisto.setLastRun(this_run)
-    demisto.incidents(incidents)
+    # this_run = {"last_fetched_data": last_fetched_data, "last_fetched_data_timestamp": last_fetch}
+    # demisto.setLastRun(this_run)
+    incident = {"name": "2792150219529", "occurred": "2024-04-25T17:17:00", "rawJSON": {"TICKET_PAYMENT_EVENT_ID": "a71e5d608b686bf62732d63498d4d09f", "TICKET_PAYMENT_ID": "71e605332aa0aa5d10d8501fb2c6bc38", "TICKET_TRANSACTION_ID": "42f45a0f1d6e5b0048674ece9da3bf39", "TICKET_ID": "8d3ad8d699d0bb02739d45c6b24f72c6", "TICKET_INCREMENTAL_ID": "2f6fdbd1ce8cad1dbc0855e3e2c6f7ae", "PNR_ID": "f7f4e68ac0c38d4ad7eee05f72ac62a5", "RECORD_INDICATOR": "22", "TICKET_NUMBER": "2792150219529", "TICKET_CREATE_DATE": "2024-04-04", "TRANSACTION_DATETIME": "2024-04-25 17:17:00.000000", "PNR_LOCATOR": "JQBKFG", "PNR_CREATE_DATE": "2024-04-04", "PAYMENT_SEQUENCE_NUMBER": 1, "FORM_OF_PAYMENT_CODE": "CC", "FORM_OF_PAYMENT_CODE_DESC": "CREDIT CARD", "PAYMENT_AMOUNT": "581.1900", "PAYMENT_VENDOR_CODE": "VI", "ACCOUNT_NUMBER": "4030P1XXXXXX0394", "PAYMENT_CURRENCY_CODE": "USD", "PAYMENT_REMARKS": "VI4030P1XXXXXX0394", "PAYMENT_APPROVAL_CODE": "004288", "PAYMENT_APPROVAL_TYPE_CODE": None, "PAYMENT_APPROVAL_TYPE_CODE_DESC": None, "SABRE_FILE_CREATION_TIMESTAMP": "2024-04-26 03:00:00.000000", "METADATA_FILENAME": "processed/tkt-payment/2024/04/TktPayment_20240426_A.dat.gz", "METADATA_ROW_NUMBER": 449206, "METADATA_INSERT_TIMESTAMP": "2024-04-26 07:35:36.003000", "ROW_INSERT_TIMESTAMP": "2024-08-14 22:43:09.851000"}}
+    incident["rawJSON"] = json.dumps(incident["rawJSON"])
+    demisto.incidents([incident])
 
 
 def snowflake_query(args):  # pylint: disable=W9014
