@@ -16,7 +16,7 @@ configuration:
   name: role_session_name
   type: 0
   section: Connect
-  required: true
+  advanced: true
   additionalinfo: Role session name to be used for authentication
 - display: Role Session Duration
   name: session_duration

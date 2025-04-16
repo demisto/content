@@ -27,7 +27,7 @@ def get_client(params, command_args):
     account_id = command_args.get('account_id')
     aws_role_arn = f'arn:aws:iam::{account_id}:role/{aws_role_name}'
     
-    aws_role_session_name = params.get('role_session_name')
+    aws_role_session_name = params.get('role_session_name') or 'cortex-session'
     aws_role_session_duration = params.get('session_duration')
     verify_certificate = not argToBoolean(params.get('insecure') or True)
     timeout = params.get('timeout')
