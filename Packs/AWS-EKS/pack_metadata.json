@@ -7,9 +7,13 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Cloud Service Provider"
+        "Cloud Service Provider",
+        "Cloud Services",
+        "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "K8S",
