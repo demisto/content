@@ -190,13 +190,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: Incident ID
-  value:
-    simple: ${incident.id}
-  required: true
-  description: ""
-  playbookInputQuery:
+inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
