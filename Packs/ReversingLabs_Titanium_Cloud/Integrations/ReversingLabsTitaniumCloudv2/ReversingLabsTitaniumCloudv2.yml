@@ -162,6 +162,35 @@ script:
           type: String
 
 
+    - name: domain
+      description: Return domain analysis reports.
+      arguments:
+        - name: domain
+          description: List of domain names.
+          default: true
+          required: true
+      outputs:
+        - contextPath: Domain.Name
+          description: The IP address.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.domain_report
+          description: The IP address analysis report.
+          type: Unknown
+        - contextPath: ReversingLabs.domain_report.rl.classification
+          description: Classification string for this URL.
+          type: String
 
 
 

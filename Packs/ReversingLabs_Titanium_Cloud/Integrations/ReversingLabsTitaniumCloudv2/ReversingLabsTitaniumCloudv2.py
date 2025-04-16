@@ -1772,6 +1772,27 @@ def bold_classification(input_list, key, value):
     return input_list
 
 
+def domain_command():
+    domain_ti = create_domain_ti_object()
+    domain_list = argToList(demisto.getArg("domain"))
+    result_list = []
+
+    for domain in domain_list:
+        try:
+            response = domain_ti.get_domain_report(domain=domain)
+        except NotFoundError:
+            return_results("No results were found for this input.")
+            return
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        result = domain_report_output(response_json=response_json, domain=domain)
+        result_list.append(result)
+
+    return_results(result_list)
+
+
 def domain_report_command():
     domain_ti = create_domain_ti_object()
 
@@ -1792,11 +1813,18 @@ def domain_report_command():
 
 
 def domain_report_output(response_json, domain):
+    classification = response_json.get("rl", {}).get("classification")
+    markdown = f"""## ReversingLabs Domain Report for {domain}\n"""
+
+    if classification:
+        classification = classification.upper()
+        markdown = f"{markdown}\n **Classification**: {classification}"
+
     last_dns_records = response_json.get("rl", {}).get("last_dns_records", [])
     dns_records_table = tableToMarkdown(name="Last DNS records", t=last_dns_records)
     dns_records_time = response_json.get("rl", {}).get("last_dns_records_time")
 
-    markdown = f"""## ReversingLabs Domain Report for {domain}\n {dns_records_table}
+    markdown = f"""{markdown}\n {dns_records_table}
     \n**Last DNS records time**: {dns_records_time}
     """
 
@@ -1834,11 +1862,13 @@ def domain_report_output(response_json, domain):
     **TOTAL**: {files_statistics.get("total")}
     """
 
+    score = classification_to_score(classification)
+
     dbot_score = Common.DBotScore(
         indicator=domain,
         indicator_type=DBotScoreType.DOMAIN,
         integration_name="ReversingLabs TitaniumCloud v2",
-        score=0,
+        score=score,
         reliability=RELIABILITY
     )
 
@@ -2642,6 +2672,9 @@ def main():
 
     elif command == "ip":
         ip_command()
+
+    elif command == "domain":
+        domain_command()
 
     elif command == "reversinglabs-titaniumcloud-file-reputation":
         file_reputation_command()
