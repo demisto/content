@@ -1,5 +1,5 @@
 This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate critical incidents along with accompanying summaries and timelines.
-This integration was integrated and tested with version xx of DarktraceEmail.
+This integration was integrated and tested with version 6.2 of DarktraceEmail.
 
 ## Configure DarktraceEmail in Cortex
 
