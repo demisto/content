@@ -315,10 +315,10 @@ def test_fetch_incidents_no_duplicates(mocker):
     armis_incident = {"time": "2021-03-09T01:00:00.000001+00:00", "type": "System Policy Violation"}
     response = {"results": [armis_incident], "next": "more data"}
     mocker.patch.object(client, "search_alerts", return_value=response)
-    next_run, incidents = fetch_incidents(client, {"last_fetch": last_fetch}, "", "Low", [], [], "", 1)
+    next_run, incidents = fetch_incidents(client, {"last_fetch": last_fetch}, None, "Low", [], [], "", 1)
     assert next_run["last_fetch"] == last_fetch
     assert incidents[0]["rawJSON"] == json.dumps(armis_incident)
-    _, incidents = fetch_incidents(client, next_run, "", "Low", [], [], "", 1)
+    _, incidents = fetch_incidents(client, next_run, None, "Low", [], [], "", 1)
     assert not incidents
 
 
@@ -449,3 +449,37 @@ def test_retry_for_401_error(mocker, requests_mock):
 
     response = search_alerts_by_aql_command(client, args)
     assert response.outputs == example_alerts
+
+
+def test_test_module_when_is_fetch_is_true(mocker):
+    """
+    Given:
+    - 'client': Armis client.
+    - 'params': A dictionary containing the parameters provided by the user.
+
+    When:
+    - Performing calls to test_module
+
+    Then:
+    - Ensure test_module returns 'ok'
+
+    """
+    from Armis import Client, test_module as armis_test_module
+
+    params = {"isFetch": True,
+              "min_severity": "Low",
+              "alert_type": [],
+              "alert_status": [],
+              "free_fetch_string": "",
+              "first_fetch": "3 days",
+              "max_fetch": 10}
+
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
+
+    armis_incident = {"time": "2025-03-09T01:00:00.000001+00:00", "type": "test_type"}
+    response = {"results": [armis_incident], "next": "more data"}
+    mocker.patch.object(client, "search_alerts", return_value=response)
+
+    assert armis_test_module(client, params) == 'ok'

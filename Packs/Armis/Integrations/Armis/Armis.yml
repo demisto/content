@@ -59,7 +59,8 @@ configuration:
   required: true
   type: 15
   section: Collect
-- defaultvalue: 3 days
+- additionalinfo: "The date or relative timestamp from which to begin fetching alerts.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 April 2025, 01 March 2025 04:45:33, 2025-02-17T14:05:44Z."
+  defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0

@@ -10,6 +10,8 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 """ CONSTANTS """
+DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_MAX_FETCH = "10"
 
 
 class Client(BaseClient):
@@ -289,22 +291,47 @@ class Client(BaseClient):
         return self.search_by_aql_string(f"in:devices {aql_string}", order_by=order_by, max_results=max_results)
 
 
-def test_module(client: Client):
+def test_module(client: Client, params: dict):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     This test works by using a Client instance to create a temporary access token using the provided secret key,
     thereby testing both the connection to the server and the validity of the secret key
     Args:
         client: Armis client
+        params: A dictionary containing the parameters provided by the user.
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
 
     try:
-        client._get_token(force_new=True)
+        if params.get('isFetch', False):
+            demisto.debug('Calling fetch incidents')
+            first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
+            fetch_incidents(client, {}, first_fetch_time, minimum_severity, alert_type, alert_status,  # type: ignore
+                            free_search_string, max_fetch, is_test=True)  # type: ignore
+        else:
+            client._get_token(force_new=True)
         return "ok"
     except Exception as e:
         return f"Test failed with the following error: {repr(e)}"
+
+
+def get_fetch_params(params: dict) -> tuple:
+    """
+    Get the tuple of parameters required for calling fetch incidents
+    Args:
+        params: A dictionary containing the parameters provided by the user
+    Returns:
+        tuple: A tuple containing the first fetch time, minimum severity, alert type,
+               alert status, free search string and max fetch
+    """
+    first_fetch_time = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
+    minimum_severity = params.get("min_severity")
+    alert_type = params.get("alert_type")
+    alert_status = params.get("alert_status")
+    free_search_string = params.get("free_fetch_string")
+    max_fetch = arg_to_number(params.get("max_fetch") or DEFAULT_MAX_FETCH)
+    return first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch
 
 
 def _ensure_timezone(date: datetime):
@@ -339,24 +366,26 @@ def _create_time_frame_string(last_fetch: datetime):
 def fetch_incidents(
     client: Client,
     last_run: dict,
-    first_fetch_time: str,
+    first_fetch_time: Optional[datetime],
     minimum_severity: str,
     alert_type: list[str],
     alert_status: list[str],
     free_search_string: str,
-    max_results: int,
+    max_results: Optional[int],
+    is_test: bool = False
 ):
     """
     This function will execute each interval (default is 1 minute).
     Args:
         client (Client): Armis client
         last_run (dict): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
+        first_fetch_time (Optional[datetime]): If last_run is None then fetch all incidents since first_fetch_time
         minimum_severity (str): the minimum severity of alerts to fetch
         alert_type (List[str]): the type of alerts to fetch
         alert_status (List[str]): the status of alerts to fetch
         free_search_string (str): A custom search string for fetching alerts
-        max_results: (int): The maximum number of alerts to fetch at once
+        max_results: (Optional[int]): The maximum number of alerts to fetch at once
+        is_test (bool): A boolean indicating whether the command is being run in test mode.
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
@@ -377,7 +406,7 @@ def fetch_incidents(
 
         last_fetch = _ensure_timezone(last_fetch_date)
     else:
-        last_fetch_time_date = dateparser.parse(first_fetch_time)
+        last_fetch_time_date = first_fetch_time
         assert last_fetch_time_date is not None
         last_fetch = _ensure_timezone(last_fetch_time_date)
 
@@ -410,6 +439,9 @@ def fetch_incidents(
             max_results=max_results,
             page_from=page_from,
         )
+
+    if is_test:
+        return last_run, []
 
     for alert in data.get("results", []):
         time_date = dateparser.parse(alert.get("time"))
@@ -688,9 +720,6 @@ def main():
         base_url = urljoin(base_url, "/api/v1/")
     verify = not params.get("insecure", False)
 
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get("first_fetch", "3 days").strip()
-
     proxy = params.get("proxy", False)
 
     demisto.info(f"Command being called is {command}")
@@ -699,14 +728,11 @@ def main():
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, params)
             return_results(result)
 
         elif command == "fetch-incidents":
-            minimum_severity = params.get("min_severity")
-            alert_status = params.get("alert_status")
-            alert_type = params.get("alert_type")
-            free_search_string = params.get("free_fetch_string")
+            first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
 
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
@@ -717,7 +743,7 @@ def main():
                 alert_status=alert_status,
                 minimum_severity=minimum_severity,
                 free_search_string=free_search_string,
-                max_results=int(params.get("max_fetch")),
+                max_results=max_fetch,
             )
 
             demisto.setLastRun(next_run)

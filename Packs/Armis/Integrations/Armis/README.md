@@ -12,7 +12,7 @@ This integration was integrated and tested with the latest version of Armis.
 | Fetch alerts with status (UNHANDLED, SUPPRESSED, RESOLVED) |  | False |
 | Fetch alerts with type | The type of alerts are Policy Violation, System Policy Violation, Anomaly Detection If no type is chosen, all types will be fetched. | False |
 | Minimum severity of alerts to fetch |  | True |
-| First fetch time |  | False |
+| First fetch time | The date or relative timestamp from which to begin fetching alerts.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 April 2025, 01 March 2025 04:45:33, 2025-02-17T14:05:44Z. | False |
 | Trust any certificate (not secure) |  | False |
 | Secret API Key |  | True |
 | Fetch Alerts AQL | Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc. | False |
