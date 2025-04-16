@@ -16,6 +16,7 @@ from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 from panos.panorama import DeviceGroup, Panorama, Template
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
+from test_data import fetch_incidents_input, mock_rules
 
 integration_firewall_params = {
     "port": "443",
@@ -2728,7 +2729,7 @@ def test_get_url_category_multiple_categories_for_url(mocker):
             "@cmd": "status",
             "@status": "success",
             "result": "https://someURL.com not-resolved (Base db) expires in 5 seconds\n"
-            "https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db) artificial-intelligence encrypted-dns",  # noqa: E501
+            "https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)",
         }
     }
     mocked_res_obj = requests.Response()
@@ -2749,22 +2750,17 @@ def test_get_url_category_multiple_categories_for_url(mocker):
             "shareware-and-freeware",
             "online-storage-and-backup",
             "low-risk",
-            "encrypted-dns",
-            "artificial-intelligence",
         ]
 
     # category with highest dbot-score
     assert return_results_mock.call_args[0][0][1].indicator.dbot_score.score == 1
 
-
 def test_get_url_category_multiple_categories_for_url_missing_categories(mocker):
     """
     Given:
         - response indicating the url has multiple categories.
-
     When:
         - Run panorama_get_url_category function
-
     Then:
         - Validate all the expected categories are present
     """
@@ -2802,7 +2798,6 @@ def test_get_url_category_multiple_categories_for_url_missing_categories(mocker)
     # validate
     for category in expected_results:
         assert category in results
-
 
 class TestDevices:
     def test_with_fw(self):
@@ -6707,126 +6702,126 @@ def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, re
 """ FETCH INCIDENTS """
 
 
-# class TestFetchIncidentsHelperFunctions:
-#     @pytest.mark.parametrize(
-#         "query, last_fetch, expected_result", fetch_incidents_input.test_add_time_filter_to_query_parameter_args
-#     )
-#     def test_add_time_filter_to_query_parameter(self, query, last_fetch, expected_result):
-#         """
-#         Given:
-#             - a query from parameters
-#         When:
-#             - every fetch incidents cycle starts
-#         Then:
-#             - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
-#               according to the queries log type last fetch time.
-#         """
-#         from Panorama import add_time_filter_to_query_parameter
+class TestFetchIncidentsHelperFunctions:
+    @pytest.mark.parametrize(
+        "query, last_fetch, expected_result", fetch_incidents_input.test_add_time_filter_to_query_parameter_args
+    )
+    def test_add_time_filter_to_query_parameter(self, query, last_fetch, expected_result):
+        """
+        Given:
+            - a query from parameters
+        When:
+            - every fetch incidents cycle starts
+        Then:
+            - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
+              according to the queries log type last fetch time.
+        """
+        from Panorama import add_time_filter_to_query_parameter
 
-#         assert add_time_filter_to_query_parameter(query, last_fetch, "time_generated") == expected_result
+        assert add_time_filter_to_query_parameter(query, last_fetch, "time_generated") == expected_result
 
-#     @pytest.mark.parametrize("params, expected_result", fetch_incidents_input.test_parse_queries_args)
-#     def test_log_types_queries_to_dict(self, params, expected_result):
-#         """
-#         Given:
-#         - valid parameters dictionary
+    @pytest.mark.parametrize("params, expected_result", fetch_incidents_input.test_parse_queries_args)
+    def test_log_types_queries_to_dict(self, params, expected_result):
+        """
+        Given:
+        - valid parameters dictionary
 
-#         When:
-#         - test_log_types_queries_to_dict function is called
+        When:
+        - test_log_types_queries_to_dict function is called
 
-#         Then:
-#         - assert that the returned queries_dict value is valid
-#         """
-#         from Panorama import log_types_queries_to_dict
+        Then:
+        - assert that the returned queries_dict value is valid
+        """
+        from Panorama import log_types_queries_to_dict
 
-#         assert log_types_queries_to_dict(params) == expected_result
+        assert log_types_queries_to_dict(params) == expected_result
 
-#     def test_incident_entry_to_incident_context(self):
-#         """
-#         Given:
-#         - raw incident entry represented by a dictionary
+    def test_incident_entry_to_incident_context(self):
+        """
+        Given:
+        - raw incident entry represented by a dictionary
 
-#         When:
-#         - incident_entry_to_incident_context function is called
+        When:
+        - incident_entry_to_incident_context function is called
 
-#         Then:
-#         - assert that the returned context formatted incident entry is valid
-#         """
-#         from Panorama import DATE_FORMAT, incident_entry_to_incident_context
+        Then:
+        - assert that the returned context formatted incident entry is valid
+        """
+        from Panorama import DATE_FORMAT, incident_entry_to_incident_context
 
-#         raw_entry = {"seqno": "1", "time_generated": "2022/01/01 12:00", "type": "TYPE", "device_name": "dummy_device"}
-#         if occured := dateparser.parse("2022/01/01 12:00", settings={"TIMEZONE": "UTC"}):
-#             context_entry = {
-#                 "name": "dummy_device 1",
-#                 "occurred": occured.strftime(DATE_FORMAT),
-#                 "rawJSON": json.dumps(raw_entry),
-#             }
-#         assert incident_entry_to_incident_context(raw_entry) == context_entry
+        raw_entry = {"seqno": "1", "time_generated": "2022/01/01 12:00", "type": "TYPE", "device_name": "dummy_device"}
+        if occured := dateparser.parse("2022/01/01 12:00", settings={"TIMEZONE": "UTC"}):
+            context_entry = {
+                "name": "dummy_device 1",
+                "occurred": occured.strftime(DATE_FORMAT),
+                "rawJSON": json.dumps(raw_entry),
+            }
+        assert incident_entry_to_incident_context(raw_entry) == context_entry
 
-#     @pytest.mark.parametrize(
-#         "last_fetch_dict, first_fetch, queries_dict, expected_result",
-#         fetch_incidents_input.test_get_fetch_start_datetime_dict_args,
-#     )
-#     @freeze_time("2022-01-02 11:00:00 UTC")
-#     def test_get_fetch_start_datetime_dict(self, last_fetch_dict, first_fetch, queries_dict, expected_result):
-#         """
-#         Given:
-#         - last fetch dictionary
-#         - first fetch parameter
-#         - queries dictionary from parameters
+    @pytest.mark.parametrize(
+        "last_fetch_dict, first_fetch, queries_dict, expected_result",
+        fetch_incidents_input.test_get_fetch_start_datetime_dict_args,
+    )
+    @freeze_time("2022-01-02 11:00:00 UTC")
+    def test_get_fetch_start_datetime_dict(self, last_fetch_dict, first_fetch, queries_dict, expected_result):
+        """
+        Given:
+        - last fetch dictionary
+        - first fetch parameter
+        - queries dictionary from parameters
 
-#         When:
-#         - get_fetch_start_datetime_dict function is called
+        When:
+        - get_fetch_start_datetime_dict function is called
 
-#         Then:
-#         - assert that the updated dictionary with fetch start time per log_type is valid
-#         """
-#         from Panorama import get_fetch_start_datetime_dict
+        Then:
+        - assert that the updated dictionary with fetch start time per log_type is valid
+        """
+        from Panorama import get_fetch_start_datetime_dict
 
-#         result_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
-#         assert fetch_incidents_input.assert_datetime_objects(result_dict.get("X_log_type"), expected_result.get("X_log_type"))
-#         assert fetch_incidents_input.assert_datetime_objects(result_dict.get("Y_log_type"), expected_result.get("Y_log_type"))
+        result_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
+        assert fetch_incidents_input.assert_datetime_objects(result_dict.get("X_log_type"), expected_result.get("X_log_type"))
+        assert fetch_incidents_input.assert_datetime_objects(result_dict.get("Y_log_type"), expected_result.get("Y_log_type"))
 
-#     @pytest.mark.parametrize("incident_entries, expected_result", fetch_incidents_input.test_parse_incident_entries_args)
-#     def test_get_parsed_incident_entries(self, incident_entries, expected_result):
-#         from Panorama import LastFetchTimes, LastIDs, get_parsed_incident_entries
+    @pytest.mark.parametrize("incident_entries, expected_result", fetch_incidents_input.test_parse_incident_entries_args)
+    def test_get_parsed_incident_entries(self, incident_entries, expected_result):
+        from Panorama import LastFetchTimes, LastIDs, get_parsed_incident_entries
 
-#         last_id_dict = LastIDs()
-#         last_fetch_dict = LastFetchTimes(Url="2022/01/01 12:00:00")
+        last_id_dict = LastIDs()
+        last_fetch_dict = LastFetchTimes(Url="2022/01/01 12:00:00")
 
-#         res = get_parsed_incident_entries({"Url": incident_entries}, last_fetch_dict, last_id_dict)
+        res = get_parsed_incident_entries({"Url": incident_entries}, last_fetch_dict, last_id_dict)
 
-#         assert last_id_dict.get("Url") == expected_result[0]
-#         assert last_fetch_dict["Url"] == expected_result[1]  # type: ignore
-#         assert res == expected_result[2]
+        assert last_id_dict.get("Url") == expected_result[0]
+        assert last_fetch_dict["Url"] == expected_result[1]  # type: ignore
+        assert res == expected_result[2]
 
-#     @pytest.mark.parametrize(
-#         "incident_entries_dict, last_fetch_dict, last_id_dict, expected_result",
-#         fetch_incidents_input.get_parsed_incident_entries_args,
-#     )
-#     def test_get_parsed_incident_entries_2(self, mocker, incident_entries_dict, last_fetch_dict, last_id_dict, expected_result):
-#         from Panorama import get_parsed_incident_entries
+    @pytest.mark.parametrize(
+        "incident_entries_dict, last_fetch_dict, last_id_dict, expected_result",
+        fetch_incidents_input.get_parsed_incident_entries_args,
+    )
+    def test_get_parsed_incident_entries_2(self, mocker, incident_entries_dict, last_fetch_dict, last_id_dict, expected_result):
+        from Panorama import get_parsed_incident_entries
 
-#         assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
+        assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
 
-#     @pytest.mark.parametrize("response, debug_msg, expected_result", fetch_incidents_input.get_query_entries_by_id_request_args)
-#     def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
-#         """
-#         Given:
-#             - A valid Panorama job id.
+    @pytest.mark.parametrize("response, debug_msg, expected_result", fetch_incidents_input.get_query_entries_by_id_request_args)
+    def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
+        """
+        Given:
+            - A valid Panorama job id.
 
-#         When:
-#             1. The Panorama job has already finished.
-#             2. The Panorama job is still running (not finished).
+        When:
+            1. The Panorama job has already finished.
+            2. The Panorama job is still running (not finished).
 
-#         Then:
-#             1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
-#             2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
-#         """
-#         from Panorama import get_query_entries_by_id_request
+        Then:
+            1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
+            2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
+        """
+        from Panorama import get_query_entries_by_id_request
 
-#         mocker.patch("Panorama.http_request", return_value=response)
-#         assert get_query_entries_by_id_request("000", 1) == expected_result
+        mocker.patch("Panorama.http_request", return_value=response)
+        assert get_query_entries_by_id_request("000", 1) == expected_result
 
 
 class TestFetchIncidentsFlows:
@@ -7155,12 +7150,12 @@ def test_filter_fetched_entries(mocker):
     }
 
 
-# @pytest.mark.parametrize("name_match, name_contain, filters, expected_result", mock_rules.get_mock_rules_and_application)
-# def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
-#     from Panorama import build_xpath_filter
+@pytest.mark.parametrize("name_match, name_contain, filters, expected_result", mock_rules.get_mock_rules_and_application)
+def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
+    from Panorama import build_xpath_filter
 
-#     mock_result = build_xpath_filter(name_match, name_contain, filters)
-#     assert mock_result == expected_result
+    mock_result = build_xpath_filter(name_match, name_contain, filters)
+    assert mock_result == expected_result
 
 
 @pytest.mark.parametrize(
