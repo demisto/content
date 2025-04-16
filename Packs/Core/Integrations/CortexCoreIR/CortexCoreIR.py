@@ -181,7 +181,7 @@ def core_execute_command_command(args: dict) -> None:
     """
     commands = args.get('command')
     if not commands:
-        raise DemistoException("command is a required field")
+        raise DemistoException("'command' is a required argument.")
     # the value of script_uid is the Unique identifier of execute_commands script.
     args |= {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
     is_raw_command = argToBoolean(args.get('is_raw_command', False))
