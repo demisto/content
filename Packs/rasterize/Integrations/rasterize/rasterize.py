@@ -113,11 +113,7 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
 
-# Define constants
-PRIVATE_NETWORKS = {
-    ipaddress.ip_network('0.0.0.0/8'),     # "This" Network
-    ipaddress.ip_network('127.0.0.0/8'),   # Loopback Network
-}
+
 class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
@@ -652,9 +648,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         demisto.debug("chrome_manager: condition chrome_instances_contents is empty")
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
-        demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true"
-        )
+        demisto.debug("chrome_manager: condition chrome_options in chrome_options_dict is true")
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
     for chrome_port_ in chrome_instances_contents:
@@ -772,7 +766,7 @@ def screenshot_image(
     if tab_event_handler.is_private_network_url:
         return None, (
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
-            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+            f" the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}"
         )
 
     try:
@@ -945,33 +939,78 @@ def kill_zombie_processes():
         demisto.debug(f"Failed to iterate over processes. Error: {e}")
 
 
+def extract_hostname(url: str) -> str:
+    """
+    Extract hostname from URL, adding http:// if protocol is missing.
+
+    Args:
+        url (str): The URL to process
+
+    Returns:
+        str: The extracted hostname
+    """
+    if not url.startswith(("http://", "https://")):
+        url = "http://" + url
+    try:
+        parsed = urlparse(url)
+        return parsed.netloc.split(":")[0]  # Remove port if exists
+    except Exception:
+        return ""
+
+
 @lru_cache(maxsize=1024)
 def is_private_network(url: str) -> bool:
     """
     Check if a URL's hostname belongs to a private network.
-    
+
     Args:
         url (str): The URL to check
-        
+
     Returns:
         bool: True if the hostname is in a private network, False otherwise
     """
     try:
-        if not url.startswith(('http://', 'https://')):
-            url = 'http://' + url
-        parsed = urlparse(url)
-        hostname = parsed.netloc.split(':')[0]  # Remove port if exists
-        
-        if not hostname:  # Handle cases where netloc is empty
+        if not (hostname := extract_hostname(url)):
+            demisto.debug(f"Problematic URL detected: Unable to extract hostname from {url}")
             return False
-            
-        ip = ipaddress.ip_address(hostname)
-        return any(ip in network for network in PRIVATE_NETWORKS)
-            
+
+        return ipaddress.ip_address(hostname).is_private
+
     except (ValueError, AttributeError):
-        # ValueError: Invalid IP address
-        # AttributeError: Invalid URL format
+        demisto.debug(f"Problematic URL detected: Unable to process {url}")
         return False
+
+
+def remove_leading_zeros_from_ip_addresses(path: str) -> str:
+    """
+    Removes leading zeros from IP addresses in the given path.
+    as leading zeros is not valid in IP addresses.
+    This function will only remove leading zeros from the IP address
+    Args:
+        path (str): The path to process.
+
+    Returns:
+        str: The processed path with leading zeros removed from IP addresses.
+    """
+    if not (hostname := extract_hostname(path)):
+        return path
+
+    # If hostname contains letters, it's not an IP address
+    if bool(re.search("[a-zA-Z]", hostname)):
+        return path
+    # Check if the hostname is an IP address
+    # Check if it's a valid IP address
+    ip_pattern = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+    if re.match(ip_pattern, hostname):
+        octets = hostname.split(".")
+        normalized_ip = ".".join(str(int(octet)) for octet in octets)
+        result = path.replace(hostname, normalized_ip)
+        if result != path:
+            demisto.info(f"IP address normalized: {path} -> {result}")
+        return result
+
+    return path
+
 
 def perform_rasterize(
     path: str | list[str],
@@ -999,7 +1038,7 @@ def perform_rasterize(
 
     # convert the path param to list in case we have only one string
     paths: list[str] = argToList(path)
-
+    paths = [remove_leading_zeros_from_ip_addresses(path_value) for path_value in paths]
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith("mailto:")]
     private_network_paths = [path_value for path_value in paths if is_private_network(path_value)]
