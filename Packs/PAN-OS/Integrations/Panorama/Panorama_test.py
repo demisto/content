@@ -2750,6 +2750,7 @@ def test_get_url_category_multiple_categories_for_url(mocker):
             "shareware-and-freeware",
             "online-storage-and-backup",
             "low-risk",
+            "not-resolved",
         ]
 
     # category with highest dbot-score
