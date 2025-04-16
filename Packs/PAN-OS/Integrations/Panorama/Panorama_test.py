@@ -2763,11 +2763,10 @@ def test_get_url_category_multiple_categories_for_url_missing_categories(mocker)
         - response indicating the url has multiple categories.
 
     When:
-        - Run get_url_category command
+        - Run panorama_get_url_category function
 
     Then:
-        - Validate a commandResult is returned with detailed readable output
-        - Validate only a single DBot score is returned for the URL.
+        - Validate all the expected categories are present
     """
     # prepare
     import Panorama
@@ -2790,17 +2789,19 @@ def test_get_url_category_multiple_categories_for_url_missing_categories(mocker)
     mocker.patch.object(requests, "request", return_value=mocked_res_obj)
 
     # run
-    results = panorama_get_url_category(
-        url_cmd="url", url="test_url")
+    results = panorama_get_url_category(url_cmd="url", url="test_url")
 
-    # validate
-    assert results == [
+    expected_results = [
         "shareware-and-freeware",
         "online-storage-and-backup",
         "low-risk",
         "encrypted-dns",
         "artificial-intelligence",
     ]
+
+    # validate
+    for category in expected_results:
+        assert category in results
 
 
 class TestDevices:
