@@ -3433,6 +3433,34 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
     return res, None
 
 
+def parse_issue_times_for_next_run(
+    issue_id: int,
+    issue_created_time: str,
+    issue_updated_time: str,
+    dateparser_settings: dict| None,
+) -> tuple[str, str]:
+    """Parses the the Jira issue created and updated timestamps based on the date parser settings (if given) and formats both
+    in the default date format. This makes sure queries by time are not affected by timezone.
+
+    Args:
+        issue_id (int): ID of the Jira issue.
+        issue_created_time (str): Time of creation of the Jira issue.
+        issue_updated_time (str): Time of last update of the Jira issue.
+        dateparser_settings (dict | None): Optional configured settings to use in `dateparser.parse()`.
+
+    Returns:
+        tuple[str, str]: Parsed and formatted created and updated Jira issue timestamps.
+    """
+    demisto.debug(f"Converting time fields for issue {issue_id}. Created: {issue_created_time}, updated: {issue_updated_time}.")
+
+    converted_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
+    demisto.debug(f"Converted created time for {issue_id} to: {converted_created_time} using settings {dateparser_settings}.")
+
+    converted_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
+    demisto.debug(f"Converted created time for {issue_id} to: {converted_updated_time} using settings {dateparser_settings}.")
+
+    return converted_created_time, converted_updated_time
+
 # Fetch Incidents
 def fetch_incidents(
     client: JiraBaseClient,
@@ -3472,7 +3500,7 @@ def fetch_incidents(
         List[Dict[str, Any]]: A list of incidents.
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"last_run: {last_run}" if last_run else "last_run is empty")
+    demisto.debug(f"Got last run: {last_run}")
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
     # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
@@ -3491,8 +3519,21 @@ def fetch_incidents(
             if last_fetch_id
             else "No smallest ID found since the fetch query returns 0 results"
         )
+    # Jira timestamp filters work based on the user timezone, so we need to convert the first fetch interval timezone accordingly
+    # To stay backwards compatible, convert timezone if empty last run (first fetch) or if 'convert_timezone' in last run is True
+    dateparser_settings: dict | None
+    if not last_run or last_run.get("convert_timezone"):
+        user_timezone = get_cached_user_timezone(client=client)
+        demisto.debug(f"Converting updated and created timestamps to user timezone: {user_timezone} for setting next run.")
+        dateparser_settings = {"TIMEZONE": user_timezone}
+    else:
+        demisto.debug("Skipping timezone conversion of updated and created timestamps keeping then unchanged.")
+        dateparser_settings = None
+
+    first_fetch_interval = convert_string_date_to_specific_format(first_fetch_interval, dateparser_settings=dateparser_settings)
     new_fetch_created_time = last_fetch_created_time = last_run.get("created_date", "")
     new_fetch_updated_time = last_fetch_updated_time = last_run.get("updated_date", "")
+
     incidents: List[Dict[str, Any]] = []
     demisto.debug("Creating the fetch query")
     fetch_incidents_query = create_fetch_incidents_query(
@@ -3501,7 +3542,7 @@ def fetch_incidents(
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
         last_fetch_updated_time=last_fetch_updated_time,
-        first_fetch_interval=convert_string_date_to_specific_format(string_date=first_fetch_interval),
+        first_fetch_interval=first_fetch_interval,
         issue_ids_to_exclude=last_fetch_issue_ids,
     )
     demisto.debug(f"The fetch query: {fetch_incidents_query}" if fetch_incidents_query else "No fetch query created")
@@ -3514,22 +3555,22 @@ def fetch_incidents(
                 demisto.debug(f"Creating an incident for Jira issue: {issue}")
 
                 issue_id: int = int(issue.get("id"))  # The ID returned by the API is an integer
-                demisto.debug(f"Creating an incident for Jira issue with ID: {issue_id}")
+                demisto.debug(f"Creating an incident for Jira issue: {issue_id}")
                 new_issue_ids.append(issue_id)
                 last_fetch_id = issue_id
-                demisto.debug(f"Incident we got so far: {new_issue_ids}")
-                new_fetch_created_time = convert_string_date_to_specific_format(
-                    string_date=demisto.get(issue, "fields.created") or ""
-                )
-                demisto.debug(f"Converted created time to {new_fetch_created_time}")
-                new_fetch_updated_time = convert_string_date_to_specific_format(
-                    string_date=demisto.get(issue, "fields.updated") or ""
-                )
-                demisto.debug(f"Converted updated time to {new_fetch_updated_time}")
-                demisto.debug("Starting to parse custom fields.")
+                demisto.debug(f"Incidents we got so far: {new_issue_ids}")
 
+                demisto.debug(f"Starting to parse created and updated fields of issue: {issue_id}")
+                new_fetch_created_time, new_fetch_updated_time = parse_issue_times_for_next_run(
+                    issue_id=issue_id,
+                    issue_created_time=demisto.get(issue, "fields.created") or "",
+                    issue_updated_time=demisto.get(issue, "fields.updated") or "",
+                    dateparser_settings=dateparser_settings,
+                )
+
+                demisto.debug(f"Starting to parse custom fields of issue: {issue_id}")
                 parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get("names", {}))
-                demisto.debug("Finished parsing custom fields. Starting build an incident")
+                demisto.debug(f"Finished parsing custom fields of issue: {issue_id}. Starting to build an incident")
 
                 incidents.append(
                     create_incident_from_issue(
@@ -3544,10 +3585,10 @@ def fetch_incidents(
                         attachment_tag_to_jira=attachment_tag_to_jira,
                     )
                 )
-                demisto.debug("Finished building incident.")
+                demisto.debug(f"Finished building incident for issue: {issue_id}")
 
     except Exception as e:
-        demisto.debug("Failure detected: {e}.")
+        demisto.debug(f"Failure detected: {e}.")
 
         if "Issue does not exist" in str(e) and issue_field_to_fetch_from == "id" and str(id_offset) == str(last_fetch_id):
             # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
@@ -3572,16 +3613,17 @@ def fetch_incidents(
         issue_field_to_fetch_from == "updated date" and new_fetch_updated_time == last_fetch_updated_time
     ):
         new_issue_ids.extend(last_fetch_issue_ids)
-    demisto.debug("Setting last run.")
 
-    demisto.setLastRun(
-        {
-            "issue_ids": new_issue_ids or last_fetch_issue_ids,
-            "id": last_fetch_id,
-            "created_date": new_fetch_created_time or last_fetch_created_time,
-            "updated_date": new_fetch_updated_time or last_fetch_updated_time,
-        }
-    )
+    next_run = {
+        "issue_ids": new_issue_ids or last_fetch_issue_ids,
+        "id": last_fetch_id,
+        "created_date": new_fetch_created_time or last_fetch_created_time,
+        "updated_date": new_fetch_updated_time or last_fetch_updated_time,
+        "convert_timezone": bool(dateparser_settings),
+    }
+    demisto.debug(f"Setting next run: {next_run}")
+    demisto.setLastRun(next_run)
+
     return incidents
 
 
@@ -3958,6 +4000,43 @@ def get_user_timezone(client: JiraBaseClient) -> str:
     return timezone_name
 
 
+def get_cached_user_timezone(client: JiraBaseClient) -> str:
+    """Tries to get user timezone from integration context. If not exists, it sends a request to API to get the timezone from
+    user info.
+
+    Args:
+        client (JiraBaseClient): The Jira client (either Cloud or OnPrem).
+
+    Returns:
+        str: The timezone of the Jira user.
+    """
+    integration_context = get_integration_context()
+
+    if user_timezone:= integration_context.get("user_timezone"):
+        demisto.debug(f"Got user timezone: {user_timezone} from integration context")
+        return user_timezone
+
+    demisto.debug("Getting user timezone from Jira client")
+    user_timezone = get_user_timezone(client)
+    integration_context["user_timezone"] = user_timezone
+    demisto.debug(f"Setting user timezone: {user_timezone} in integration context")
+    set_integration_context(integration_context)
+    return user_timezone
+
+
+def remove_from_integration_context(key_to_remove: str) -> None:
+    """Removes a key from the integration context dictionary.
+
+    Args:
+        key_to_remove (str): The key to remove.
+    """
+    integration_context = get_integration_context()
+    if not integration_context:
+        return
+    updated_integration_context = {key: value for key, value in integration_context.items() if key != key_to_remove}
+    set_integration_context(updated_integration_context)
+
+
 def get_system_timezone() -> Any:
     """Returns the system's timezone.
     This will also print to the debug console the system timezone.
@@ -3986,7 +4065,7 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
     last_update_date: str = remote_args.last_update
     modified_issues_ids = []
     try:
-        user_timezone_name = get_user_timezone(client=client)
+        user_timezone_name = get_cached_user_timezone(client=client)
         modified_issues_ids = get_modified_issue_ids(
             client=client,
             last_update_date=last_update_date,
@@ -4051,7 +4130,7 @@ def get_remote_data_command(
         demisto.debug(f"Raw issue response: {issue}")
         issue["parsedDescription"] = JiraIssueFieldsParser.get_description_context(issue).get("Description") or ""
         issue |= add_extracted_data_to_incident(issue=issue)
-        user_timezone_name = get_user_timezone(client=client)
+        user_timezone_name = get_cached_user_timezone(client=client)
         _ = get_system_timezone()
         demisto.debug(f'Issue modified date in Jira: {dateparser.parse(demisto.get(issue, "fields.updated"))}')
         demisto.debug(f"Incident Last update time: {dateparser.parse(parsed_args.last_update)}")
@@ -4408,6 +4487,16 @@ def update_remote_system_command(
         return remote_id
 
 
+def jira_rest_timezone_cache_command() -> CommandResults:
+    """Removes the cached Jira user timezone used for fetching incidents and mirroring from the integration context.
+
+    Returns:
+        CommandResults: Command results with a human readable output message.
+    """
+    remove_from_integration_context(key_to_remove="user_timezone")
+    return CommandResults(readable_output="The Jira user timezone was successfully cleared from the cache")
+
+
 def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
     """As part of keeping Jira V3 backwards compatible, this function is in charge of mapping
     the command arguments of Jira V2 to the command arguments of Jira V3, since the command arguments
@@ -4615,7 +4704,7 @@ def main():  # pragma: no cover
                 ),
             )
 
-        elif demisto.command() == "get-remote-data":
+        elif command == "get-remote-data":
             return_results(
                 get_remote_data_command(
                     client=client,
@@ -4627,11 +4716,11 @@ def main():  # pragma: no cover
                     fetch_comments=fetch_comments,
                 )
             )
-        elif demisto.command() == "get-modified-remote-data":
+        elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client=client, args=args))
-        elif demisto.command() == "get-mapping-fields":
+        elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command(client=client))
-        elif demisto.command() == "update-remote-system":
+        elif command == "update-remote-system":
             return_results(
                 update_remote_system_command(
                     client=client,
@@ -4640,6 +4729,8 @@ def main():  # pragma: no cover
                     attachment_tag_to_jira=attachment_tag_to_jira,
                 )
             )
+        elif command == "jira-reset-timezone-cache":
+            return_results(jira_rest_timezone_cache_command())
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
