@@ -8,9 +8,10 @@ This pack includes Cortex XSIAM content.
 - Modeling Rules for the following events:
    - Access Logs
    - Reverse Proxy Logs
-   
+   - Error Log
 
 ## Configuration on Server Side
+### Apache httpd configuration:
 You need to configure Apache Web Server to forward Syslog messages.
 
 Open your Apache Web Server instance, and follow these instructions [Documentation](https://httpd.apache.org/docs/2.4/configuring.html):
@@ -51,6 +52,14 @@ Open your Apache Web Server instance, and follow these instructions [Documentati
    /etc/init.d/syslog restart
 ```
 10. Restart Apache to complete the syslog configuration.
+
+### Apache Reverse Proxy configuration:
+To configure Apache Reverse Proxy logging please follow the following guide [here](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html).
+Supported log format for Reverse Proxy logs is:
+```
+%V:%{local}p %A %h %l %u %t \"%r\" %>s %B \"%{Referer}i\" \"%{User-Agent}i\" %P %D %{HTTPS}e %{SSL_PROTOCOL}x %{SSL_CIPHER}x %{UNIQUE_ID}e %{remote}p %I %O \"%{Host}i\" main %{CF_RAY_ID}e %{CF_EDGE_COLO}e
+```
+Custom Log Format string description list can be found [here](https://httpd.apache.org/docs/2.4/mod/mod_log_config.html#logformat).
 
 * Pay attention: Timestamp Parsing is only available for the default **%t** format: \[%d/%b/%Y{Key}%H:%M:%S %z\]
 
