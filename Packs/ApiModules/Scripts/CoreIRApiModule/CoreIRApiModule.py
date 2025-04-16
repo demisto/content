@@ -3993,13 +3993,19 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
 
 def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    demisto.info(f"[test] preparing to get alerts for {alert_id_list=}")
     raw_response = client.get_original_alerts(alert_id_list)
+    demisto.info(f"[test] got {raw_response=}")
     reply = copy.deepcopy(raw_response)
+    demisto.info(f"[test] got {reply=}")
     alerts = reply.get('alerts', [])
+    demisto.info(f"[test] got {alerts=}")
     filtered_alerts = []
     for alert in alerts:
+        demisto.info(f"[test] in {alert=}")
         # decode raw_response
         try:
+            demisto.info(f"[test] Preparing to safe_load_json {alert=} with original_alert_json = {alert.get('original_alert_json', '')}")
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
