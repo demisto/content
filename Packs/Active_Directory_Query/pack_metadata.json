@@ -10,7 +10,9 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM"
+    ],
     "useCases": [],
     "keywords": [
         "Active Directory"
