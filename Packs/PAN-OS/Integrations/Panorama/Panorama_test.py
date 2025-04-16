@@ -16,7 +16,7 @@ from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 from panos.panorama import DeviceGroup, Panorama, Template
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
-from test_data import fetch_incidents_input, mock_rules
+from Integrations.Panorama.test_data import fetch_incidents_input, mock_rules
 
 integration_firewall_params = {
     "port": "443",
@@ -2729,7 +2729,7 @@ def test_get_url_category_multiple_categories_for_url(mocker):
             "@cmd": "status",
             "@status": "success",
             "result": "https://someURL.com not-resolved (Base db) expires in 5 seconds\n"
-            "https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)",
+            "https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db) artificial-intelligence encrypted-dns",  # noqa: E501
         }
     }
     mocked_res_obj = requests.Response()
@@ -2750,6 +2750,8 @@ def test_get_url_category_multiple_categories_for_url(mocker):
             "shareware-and-freeware",
             "online-storage-and-backup",
             "low-risk",
+            "encrypted-dns",
+            "artificial-intelligence",
         ]
 
     # category with highest dbot-score
