@@ -240,10 +240,12 @@ class PychromeEventHandler:
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
+            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, Frame URL: {frame_url}, Original path: {self.path}")
 
             # Check if the loaded page is a Chrome error page, which indicates a failed load
-            if frame_url.lower().startswith(CHROME_ERROR_URL):
+            # Only retry loading when the URL is a direct file path
+            # This helps handle cases where local files fail to load on the first attempt
+            if frame_url.lower().startswith(CHROME_ERROR_URL) and self.path.lower().startswith("file://"):
                 demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
                 self.retry_loading()
             else:
@@ -754,11 +756,45 @@ def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_P
 
 
 def screenshot_image(
-    browser, tab, path, wait_time, navigation_timeout, full_screen=False, include_url=False, include_source=False
+    browser: pychrome.Browser,
+    tab: pychrome.Tab,
+    path: str,
+    wait_time: int,
+    navigation_timeout: int,
+    full_screen=False,
+    include_url=False,
+    include_source=False,
 ):  # pragma: no cover
+    """Takes a screenshot of a web page using Chrome browser.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab instance.
+        path: The URL or file path to capture.
+        wait_time: Time to wait before taking the screenshot.
+        navigation_timeout: Maximum time to wait for page load.
+        full_screen: Whether to capture full page. Defaults to False.
+        include_url: Whether to include URL in the image. Defaults to False.
+        include_source: Whether to include page source in the response. Defaults to False.
+
+    Returns:
+        tuple: A tuple containing:
+            - bytes: The captured image data.
+            - str: The page source if include_source is True, otherwise an empty string.
+
+    Raises:
+        DemistoException: If the URL is a local file or starts with "mailto:".
     """
-    :param include_source: Whether to include the page source in the response
-    """
+    command = demisto.command()
+    if path.lower().startswith("file://") and command not in [
+        "rasterize-email",
+        "rasterize-html",
+        "rasterize-image",
+        "test-module",
+    ]:
+        # In some rasterize commands we create a temporary file, and we only rasterize it
+        demisto.info(f"Rejected path: {path}. Local files cannot be rasterized for this command.")
+        return None, ("Cannot rasterize local files")
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
@@ -1397,7 +1433,7 @@ def rasterize_command():  # pragma: no cover
 
 def get_width_height(args: dict):
     """
-    Get commomn args.
+    Get common args.
     :param args: dict to get args from
     :return: width, height, rasterize mode
     """
