@@ -16,7 +16,7 @@ from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 from panos.panorama import DeviceGroup, Panorama, Template
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
-from Integrations.Panorama.test_data import fetch_incidents_input, mock_rules
+from test_data import fetch_incidents_input, mock_rules
 
 integration_firewall_params = {
     "port": "443",
