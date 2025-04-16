@@ -131,6 +131,37 @@ script:
           description: Reason for the classification.
           type: String
 
+    - name: ip
+      description: Return IP analysis reports.
+      arguments:
+        - name: ip
+          description: List of IP addresses.
+          default: true
+          required: true
+      outputs:
+        - contextPath: IP.Address
+          description: The IP address.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.ip_report
+          description: The IP address analysis report.
+          type: Unknown
+        - contextPath: ReversingLabs.ip_report.rl.classification
+          description: Classification string for this URL.
+          type: String
+
+
 
 
 

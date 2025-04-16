@@ -2077,6 +2077,27 @@ def create_ip_ti_object():
     return ip_ti
 
 
+def ip_command():
+    ip_ti = create_ip_ti_object()
+    ip_list = argToList(demisto.getArg("ip"))
+    result_list = []
+
+    for ip in ip_list:
+        try:
+            response = ip_ti.get_ip_report(ip_address=ip)
+        except NotFoundError:
+            return_results("No results were found for this input.")
+            return
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        result = ip_report_output(response_json=response_json, ip=ip)
+        result_list.append(result)
+
+    return_results(result_list)
+
+
 def ip_report_command():
     ip_ti = create_ip_ti_object()
 
@@ -2096,9 +2117,16 @@ def ip_report_command():
 
 
 def ip_report_output(response_json, ip):
+    classification = response_json.get("rl", {}).get("classification")
+    markdown = f"""## ReversingLabs IP address report for {ip}\n"""
+
+    if classification:
+        classification = classification.upper()
+        markdown = f"{markdown}\n **Classification**: {classification}"
+
     files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
 
-    markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **KNOWN**: {
     files_statistics.get("known")}
     **MALICIOUS**: {files_statistics.get("malicious")}
     **SUSPICIOUS**: {files_statistics.get("suspicious")}
@@ -2124,11 +2152,13 @@ def ip_report_output(response_json, ip):
         )
         markdown = f"{markdown}\n {sources_table}"
 
+    score = classification_to_score(classification)
+
     dbot_score = Common.DBotScore(
         indicator=ip,
         indicator_type=DBotScoreType.IP,
         integration_name="ReversingLabs TitaniumCloud v2",
-        score=0,
+        score=score,
         reliability=RELIABILITY
     )
 
@@ -2609,6 +2639,9 @@ def main():
 
     elif command == "url":
         url_command()
+
+    elif command == "ip":
+        ip_command()
 
     elif command == "reversinglabs-titaniumcloud-file-reputation":
         file_reputation_command()
