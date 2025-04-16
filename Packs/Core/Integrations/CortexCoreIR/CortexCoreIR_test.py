@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
-from CortexCoreIR import core_execute_command_command
+from CortexCoreIR import reformate_args
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -369,70 +369,72 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
 
 # tests for core_execute_command_command
-def test_missing_command_raises():
+def test_reformat_args_missing_command_raises():
     """
     Given:
         - args set to empty dict.
     When:
-        - Calling `core_execute_command_command` with no args.
+        - Calling `reformate_args` with no args.
     Then:
         - Should raise a DemistoException.
     """
     from CommonServerPython import DemistoException
     args = {}
-    with pytest.raises(DemistoException, match="command is a required field"):
-        core_execute_command_command(args)
+    with pytest.raises(DemistoException, match="'command' is a required argument."):
+        reformate_args(args)
 
-def test_is_raw_command_true():
+def test_reformat_args_is_raw_command_true():
     """
     Given:
         - is_raw_command argument set to True.
     When:
-        - Calling `core_execute_command_command` with is_raw_command set to True.
+        - Calling `reformate_args` with is_raw_command=True.
     Then:
-        - Verify args reformated as expected.
+        - Verify that commands_list has only one element.
     """
     args = {
-        "command": "dir",
+        "command": "dir, hostname",
         "is_raw_command": True
     }
-    core_execute_command_command(args)
+    reformate_args(args)
     params = json.loads(args["parameters"])
-    assert params["commands_list"] == ["dir"]
+    assert params["commands_list"] == ["dir, hostname"]
     assert args["is_core"] is True
     assert args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
 
-def test_is_raw_command_false():
+@pytest.mark.parametrize("separator", [',', '/', '|'])
+def test_reformat_args_separators(separator):
     """
     Given:
-        - is_raw_command argument set to False.
+        - is_raw_command argument set to False (default) and a chosen separator.
     When:
-        - Calling `core_execute_command_command` with is_raw_command set to False.
+        - Calling `reformate_args` with each of the separators options.
     Then:
-        - Verify args reformated as expected.
+        - Verify that commands_list split by the chosen separator.
     """
     args = {
-        "command": "dir,hostname",
-        "is_raw_command": False
+        "command": f"dir{separator}hostname",
+        "is_raw_command": False,
+        "command_separator": separator
     }
-    core_execute_command_command(args)
+    reformate_args(args)
     params = json.loads(args["parameters"])
     assert params["commands_list"] == ["dir", "hostname"]
 
-def test_powershell_command_formatting():
+def test_reformat_args_powershell_command_formatting():
     """
     Given:
         - command_type argument set to powershell.
     When:
-        - Calling `core_execute_command_command` with powershell command type.
+        - Calling `core_execute_command_command` with command_type=powershell.
     Then:
-        - Verify args reformated as expected.
+        - Verify command at commands_list reformated from 'command' to 'powershell -Command "command"'.
     """
     args = {
         "command": "Get-Process",
         "command_type": "powershell",
         "is_raw_command": True
     }
-    core_execute_command_command(args)
+    reformate_args(args)
     params = json.loads(args["parameters"])
     assert params["commands_list"] == ['powershell -Command "Get-Process"']

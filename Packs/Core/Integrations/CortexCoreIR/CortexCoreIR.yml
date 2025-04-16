@@ -4031,7 +4031,7 @@ script:
       required: true
       isArray: true
       type: String
-    - description: Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas.
+    - description: List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator.
       name: command
       required: true
       isArray: true
@@ -4047,11 +4047,22 @@ script:
       required: false
       isArray: false
       type: String
-    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands that are run independently.
+    - description: Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently.
       name: is_raw_command
       required: false
       isArray: false
       type: Boolean
+    - description: The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually.
+      name: command_separator
+      required: false
+      isArray: false
+      type: String
+      defaultValue: ','
+      auto: PREDEFINED
+      predefined:
+      - ","
+      - "|"
+      - "/"
     - description: Type of shell command.
       name: command_type
       auto: PREDEFINED

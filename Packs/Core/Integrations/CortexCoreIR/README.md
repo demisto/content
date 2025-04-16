@@ -3112,10 +3112,11 @@ Run command on a specific endpoint and return its result.
 | polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
 | polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| command | Comma-separated list of shell commands to execute. Set the is_raw_command argument to true to prevent splitting by commas. (Useful when using \\|\\|, &amp;amp;&amp;amp;, ; separators for controlling the flow of multiple commands. | Required | 
-| timeout | The input timeout should be used here to limit the max running time for the command. Default is 600. | Optional | 
+| command | List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator. | Required | 
+| timeout | The maximum running time of the command. Default is 600. | Optional | 
 | incident_id | Link the response action to the triggered incident. | Optional | 
-| is_raw_command | Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands that are run independently. | Optional | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently. | Optional | 
+| command_separator | The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually. Possible values are: ,, \|, /. Default is ,. | Optional | 
 | command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
 
 #### Context Output
@@ -3136,10 +3137,6 @@ Run command on a specific endpoint and return its result.
 | Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
 | Core.ScriptResult.results.command | String | The command that was executed by the script. | 
 
-##### Command Example
-
-```!core-execute-command command=dir endpoint_ids=5jhgu74i6bnh41mk45127413k4```
-
 ##### Context Example
 
 ```
@@ -3149,20 +3146,49 @@ Run command on a specific endpoint and return its result.
             "action_id": 1,
             "results": [
                 {
-                    "retrieved_files" : 0,
-                    "standard_output": ""
-                    "domain" : "222",
-                    "endpoint_id" : "111",
-                    "endpoint_ip_address" : ["1.1.1.1"],
-                    "command" : "_return_value",
-                    "_return_value": [],
-                    "retention_date" : NULL,
-                    "command_output" : [],
-                    "endpoint_name" : "test",
-                    "failed_files" : 0,
-                    "execution_status" : "COMPLETED_SUCCESSFULLY",
-                    "endpoint_status" : "STATUS_010_CONNECTED"
-                },
+                    'endpoint_name': 'name',
+                    'endpoint_ip_address': ['218.92.0.29'], 'endpoint_status': 'STATUS_010_CONNECTED', 'domain': 'domain.name',
+                    'endpoint_id':'a6f7683c8e217d85bd3c398f0d3fb6bf','execution_status': 'COMPLETED_SUCCESSFULLY', 'executed_command': 
+                    [
+                        {
+                            'command': 'echo', 
+                            'failed_files': 0, 
+                            'retention_date': None,
+                            'retrieved_files': 0,
+                            'standard_output': 'output', 'command_output': ['dir']
+                        }, 
+                        {
+                            'command': 'echo hello',
+                            'failed_files': 0, 
+                            'retention_date': None, 
+                            'retrieved_files': 0, 
+                            'standard_output': 'outputs', 
+                            'command_output': ['hello']
+                        }
+                    ]
+                    }, 
+                    {
+                        'endpoint_name': 'name2', 'endpoint_ip_address': ['11.11.11.11'], 'endpoint_status': 'STATUS_010_CONNECTED', 'domain': '', 
+                        'endpoint_id':'a6f7683c8e213f56hd3c398f0d3fb6bf',
+                        'execution_status': 'COMPLETED_SUCCESSFULLY',
+                        'executed_command': 
+                        [
+                            {
+                                'command': 'echo',
+                                'failed_files': 0,
+                                'retention_date': None,
+                                'retrieved_files': 0,
+                                'standard_output': 'out',
+                                'command_output': []
+                            },
+                            {
+                                'command': 'echo hello',
+                                'failed_files': 0,
+                                'retention_date': None, 'retrieved_files': 0,
+                                'standard_output': 'output', 'command_output': ['hello']
+                            }
+                        ]
+                    }
             ]
         }
     ],
@@ -3178,6 +3204,9 @@ Run command on a specific endpoint and return its result.
 
 ##### Human Readable Output
 
->| _return_value| domain | endpoint_id| endpoint_ip_address| endpoint_name| endpoint_status| execution_status| failed_files| retention_date| retrieved_files| standard_output|
->|---|---|---|---|---|---|---|---|---|---|---|
->||222|111|1.1.1.1|test|STATUS_010_CONNECTED|COMPLETED_SUCCESSFULLY|0||0||
+|Command|Command Output|Endpoint Id|Endpoint Ip Address|Endpoint Name|Endpoint Status|Execution Status|
+|---|---|---|---|---|---|---|
+| echo | | a6f7683c8e217d85bd3c398f0d3fb6bf | 218.92.0.29 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo hello | hello | a6f7683c8e217d85bd3c398f0d3fb6bf | 218.92.0.29 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo |  | a6f7683c8e213f56hd3c398f0d3fb6bf | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo hello | hello | a6f7683c8e213f56hd3c398f0d3fb6bf | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |

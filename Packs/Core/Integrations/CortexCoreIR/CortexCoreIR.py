@@ -1,3 +1,4 @@
+from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -28,6 +29,7 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
+COMMAND_DATA_KEYS = ['failed_files', 'retention_date', 'retrieved_files', 'standard_output', 'command_output']
 
 
 class Client(CoreClient):
@@ -172,9 +174,72 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         raw_response=parsed,
     )
 
-def core_execute_command_command(args: dict) -> None:
+def reformat_readable(script_res: PollResult) -> None:
     """
-    reformat args before start polling command
+    Reformat the human_readable output so that each command appears as a separate row in the table.
+
+    Args:
+        script_res (PollResult): The result from the polling command.
+    """
+    READABLE_FIELDS = ['command', 'command_output', 'endpoint_id', 'endpoint_ip_address', 'endpoint_name', 'endpoint_status',
+                       'execution_status']
+    if isinstance(script_res, list):
+        reformated_results = []
+        for response in script_res:
+            results = response.outputs.get('results')
+            for res in results:
+                new_d = {}
+                for key in READABLE_FIELDS:
+                    new_d[key] = res.get(key)
+                new_d['command'] = new_d['command'][1:]
+                reformated_results.append(new_d)
+        script_res[0].readable_output = tableToMarkdown(f'Script Execution Results - {script_res[0].outputs["action_id"]}',
+                                                        reformated_results,READABLE_FIELDS, removeNull=True,
+                                                        headerTransform=string_to_table_header)
+
+def new_executed_command(result: dict) -> dict:
+    """
+    Create dict with all the command relevant data from result.
+
+    Args:
+        result (dict): Data from the execution of a command on a specific endpoint.
+
+    Returns:
+        dict: _description_
+    """
+    new_command = {'command':result['command'][1:]}
+    for key in COMMAND_DATA_KEYS:
+        new_command.update({key:result.get(key)})
+    return new_command
+
+def reformat_output(script_res: PollResult) -> None:
+    """
+    Reformat the output so that each endpoint has its own result section, without any duplicated data.
+
+    Args:
+        script_res (PollResult): The result from the polling command.
+    """
+    if isinstance(script_res, list):
+        reformated_res: dict[str, Any] = {}
+        for response in script_res:
+            results = response.outputs.get('results')
+            for res in results:
+                endpoint_id = res.get('endpoint_id')
+                if endpoint_id in reformated_res:
+                    reformated_res[endpoint_id]['executed_command'].append(new_executed_command(res))
+                    reformated_res[endpoint_id].pop(res.get('command'))
+                else:
+                    res['executed_command'] = [new_executed_command(res)]
+                    res.pop(res.pop('command'))
+                    for key in COMMAND_DATA_KEYS:
+                        res.pop(key)
+                    reformated_res[endpoint_id] = res
+        new_res = [reformated_res[i] for i in reformated_res]
+        script_res[0].outputs['results'] = new_res
+
+def reformate_args(args: dict) -> None:
+    """
+    Reformat args before start polling command.
 
     Args:
         args (dict): Dictionary containing the arguments for the command.
@@ -185,10 +250,27 @@ def core_execute_command_command(args: dict) -> None:
     # the value of script_uid is the Unique identifier of execute_commands script.
     args |= {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
     is_raw_command = argToBoolean(args.get('is_raw_command', False))
-    commands_list = [commands] if is_raw_command else argToList(commands)
+    commands_list = [commands] if is_raw_command else argToList(commands, args.get('command_separator'))
     if args.get('command_type') == 'powershell':
         commands_list = [form_powershell_command(command) for command in commands_list]
     args['parameters'] = json.dumps({'commands_list': commands_list})
+
+def core_execute_command_command(client: Client, args: dict) -> PollResult:
+    """
+    Run executed_command script and reformat it's results.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+
+    Returns:
+        PollResult: Reformated script_run_polling_command result.
+    """
+    reformate_args(args)
+    script_res = script_run_polling_command(args, client, statuses = ('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
+    reformat_readable(script_res)
+    reformat_output(script_res)
+    return script_res
 
 def main():  # pragma: no cover
     """
@@ -575,27 +657,7 @@ def main():  # pragma: no cover
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-execute-command":
-            core_execute_command_command(args)
-            script_res = script_run_polling_command(args, client, statuses = ('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
-            if isinstance(script_res, list):
-                reformated_res: dict[str, Any] = {}
-                for response in script_res:
-                    results = response.outputs.get('results')
-                    for res in results:
-                        endpoint_id = res.get('endpoint_id')
-                        if endpoint_id in reformated_res:
-                            reformated_res[endpoint_id]['executed_command'].append({'command':res['command'][1:],
-                                                                                    'command_output':res.get('command_output')})
-                            reformated_res[endpoint_id].pop(res.get('command'))
-                        else:
-                            res['executed_command'] = [{'command':res['command'][1:], 'command_output':res.get('command_output')}]
-                            res.pop(res.pop('command'))
-                            res.pop('command_output')
-                            reformated_res[endpoint_id] = res
-                            
-                script_res[0].outputs['results'] = reformated_res
-                script_res[0].raw_response['results'] = reformated_res
-            return_results(script_res)
+            return_results(core_execute_command_command(client, deepcopy(args)))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
