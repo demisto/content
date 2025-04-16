@@ -1195,7 +1195,7 @@ def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[
     query_table_name: str = "url"
     context_transformer_function = url_context_transformer
     table_context_path: str = "CDL.Logging.URL"
-    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path, True)
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
 def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
@@ -1214,7 +1214,7 @@ def query_gp_logs_command(args: dict, client: Client):
     table_name: str = 'globalprotect'
     context_transformer_function = gp_context_transformer
     table_context_path: str = 'CDL.Logging.GlobalProtect'
-    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
 
 
 def query_table_logs(args: dict,
