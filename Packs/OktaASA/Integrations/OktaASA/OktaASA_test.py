@@ -330,7 +330,8 @@ def test_search_events_limit_lower_then_1000_with_no_offset(mocker):
     )
     response = util_load_json("test_data/response_10_items_descending_true.json")
     get_audit_events_request_mocker = mocker.patch.object(
-        OktaASAClient, "get_audit_events_request", return_value=response.get("list")
+        OktaASAClient, "get_audit_events_request",
+        return_value={"list": response.get("list"), "related_objects": response.get("related_objects")}
     )
     results, id, _ = client.search_events(limit=10, offset=None)
     assert generate_token_if_required_mocker.call_count == 1
@@ -360,7 +361,8 @@ def test_search_events_limit_lower_then_1000_with_offset(mocker):
     )
     response = util_load_json("test_data/response_10_items_descending_default.json")
     get_audit_events_request_mocker = mocker.patch.object(
-        OktaASAClient, "get_audit_events_request", return_value=response.get("list")
+        OktaASAClient, "get_audit_events_request",
+        return_value={"list": response.get("list"), "related_objects": response.get("related_objects")}
     )
     results, id, _ = client.search_events(limit=10, offset="0")
     assert generate_token_if_required_mocker.call_count == 1
@@ -393,19 +395,20 @@ def test_search_events_limit_higher_then_1000_without_offset(mocker):
         OktaASAClient,
         "get_audit_events_request",
         side_effect=[
-            generate_results(True, datetime.now(), range_number_start=0, range_number_end=1000),
-            generate_results(
+            {"list": generate_results(True, datetime.now(), range_number_start=0, range_number_end=1000),
+             "related_objects": {}},
+            {"list": generate_results(
                 False,
                 datetime.now() + timedelta(seconds=1000),
                 range_number_start=1000,
                 range_number_end=2000,
-            ),
-            generate_results(
+            ),"related_objects": {}},
+            {"list": generate_results(
                 False,
                 datetime.now() + timedelta(seconds=2000),
                 range_number_start=2000,
                 range_number_end=2999,
-            ),
+            ),"related_objects": {}},
         ],
     )
     results, id, _ = client.search_events(limit=2999, offset=None)
@@ -528,8 +531,9 @@ def test_search_events_limit_1001_second_page_is_empty(mocker):
         OktaASAClient,
         "get_audit_events_request",
         side_effect=[
-            generate_results(False, datetime.now(), range_number_start=0, range_number_end=1000),
-            [],
+            {"list":generate_results(False, datetime.now(), range_number_start=0, range_number_end=1000),
+             "related_objects": {}},
+            {"list": [], "related_objects": {}},
         ],
     )
     results, id, _ = client.search_events(limit=1001, offset=None)
@@ -559,7 +563,8 @@ def test_search_events_first_page_is_empty_without_offset(mocker):
         OktaASAClient,
         "generate_token_if_required",
     )
-    get_audit_events_request_mocker = mocker.patch.object(OktaASAClient, "get_audit_events_request", side_effect=[[]])
+    get_audit_events_request_mocker = mocker.patch.object(OktaASAClient, "get_audit_events_request",
+                                                          side_effect=[{"list":[], "related_objects": []}])
     results, id, timestamp = client.search_events(limit=1000, offset=None)
     assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
@@ -588,7 +593,11 @@ def test_search_events_first_page_is_empty_with_offset(mocker):
         OktaASAClient,
         "generate_token_if_required",
     )
-    get_audit_events_request_mocker = mocker.patch.object(OktaASAClient, "get_audit_events_request", side_effect=[[]])
+    get_audit_events_request_mocker = mocker.patch.object(
+        OktaASAClient,
+        "get_audit_events_request",
+        side_effect=[{"list": [], "related_objects": {}}],
+    )
     results, id, timestamp = client.search_events(limit=1000, offset="offset")
     assert generate_token_if_required_mocker.call_count == 1
     assert get_audit_events_request_mocker.call_count == 1
@@ -616,7 +625,7 @@ def test_add_time_and_related_object_data_to_events(mocker):
     response_list, response_related_objects = mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
-        return_value=(response.get("list"), response.get("related_objects")),
+        return_value={"list": response.get("list"), "related_objects": response.get("related_objects")},
     )
     add_time_and_related_object_data_to_events(
         response_list, response_related_objects, True
