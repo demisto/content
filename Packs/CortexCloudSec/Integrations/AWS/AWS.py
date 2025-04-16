@@ -61,7 +61,7 @@ def put_public_access_block(aws_client: AWSClient, args: Dict[str, Any]) -> Comm
     except Exception:
         return CommandResults(readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
 
-    command_args_map = {
+    command_args: Dict[str, tuple[str, Callable[[Any], Any]]] = {
         'block_public_acls': ('BlockPublicAcls', argToBoolean),
         'ignore_public_acls': ('IgnorePublicAcls', argToBoolean),
         'block_public_policy': ('BlockPublicPolicy', argToBoolean),
@@ -69,7 +69,7 @@ def put_public_access_block(aws_client: AWSClient, args: Dict[str, Any]) -> Comm
     }
     
     remove_nulls_from_dictionary(args)
-    for arg_key, (kwarg_key, converter_func) in command_args_map.items():
+    for arg_key, (kwarg_key, converter_func) in command_args.items():
         if arg_key in args:
             kwargs[kwarg_key] = converter_func(args[arg_key])
 
@@ -110,7 +110,7 @@ def update_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) 
     if 'ExpirePasswords' in kwargs:
         kwargs.pop('ExpirePasswords')
     
-    command_args_map: Dict[str, tuple[str, Callable[[Any], Any]]] = {
+    command_args: Dict[str, tuple[str, Callable[[Any], Any]]] = {
         'minimum_password_length': ('MinimumPasswordLength', arg_to_number),
         'require_symbols': ('RequireSymbols', argToBoolean),
         'require_numbers': ('RequireNumbers', argToBoolean),
@@ -123,7 +123,7 @@ def update_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) 
     }
     
     remove_nulls_from_dictionary(args)
-    for arg_key, (kwarg_key, converter_func) in command_args_map.items():
+    for arg_key, (kwarg_key, converter_func) in command_args.items():
         if arg_key in args:
             kwargs[kwarg_key] = converter_func(args[arg_key])
         
@@ -175,22 +175,19 @@ def main():
     try:
         match command:
             case "aws-s3-public-access-block-update":
-                result = put_public_access_block(aws_client, command_args)
+                return_results(put_public_access_block(aws_client, command_args))
             case 'aws-iam-account-password-policy-get':
-                result = get_account_password_policy(aws_client, command_args)
+                return_results(get_account_password_policy(aws_client, command_args))
             case 'aws-iam-account-password-policy-update':
-                result = update_account_password_policy(aws_client, command_args)
+                return_results(update_account_password_policy(aws_client, command_args))
             case 'aws-ec2-instance-metadata-options-modify':
-                result = ec2_instance_metadata_options_modify(aws_client, command_args)
+                return_results(ec2_instance_metadata_options_modify(aws_client, command_args))
                 
             case 'test-module':
                 return_results(test_module(aws_client))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 
-        
-        
-        return_results(result)
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
