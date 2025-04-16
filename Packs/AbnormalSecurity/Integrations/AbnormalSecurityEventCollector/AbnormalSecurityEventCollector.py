@@ -94,7 +94,6 @@ def get_list_threats(client: Client, after: str, before: str, page_number: int):
     """
     threats = []
     is_next_page = True
-    # page_number = 1
     while len(threats) < FETCH_LIMIT and is_next_page:
         page_size = min(DEFAULT_PAGE_SIZE, FETCH_LIMIT - len(threats))
         params = assign_params(pageSize=page_size, filter=f"receivedTime gte {after} lte {before}", pageNumber=page_number)
@@ -116,11 +115,12 @@ def main():
     verify = params["verify"]
     proxy = params["proxy"]
     after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    page_number = 1
     client = Client(
         base_url="https://api.abnormalplatform.com/v1", verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {token}"}
     )
 
-    last_run = demisto.getLastRun().get("last_run")
+    last_run = demisto.getLastRun()
     if last_run:
         after = last_run.get('before')
         page_number = last_run.get('page_number')
@@ -134,9 +134,9 @@ def main():
 
         elif command == "fetch-events":
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
-            if last_run.get("should_run_next_trigger"):
+            if last_run.get("page_number") > 1:
                 last_run["nextTrigger"] = "0"
-            demisto.setLastRun({"last_run": last_run})
+            demisto.setLastRun(last_run)
 
         elif command == "abnormal-security-event-collector-get-events":
             command_results = CommandResults(
