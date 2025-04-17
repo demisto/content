@@ -668,7 +668,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value={})
     mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
-        OktaASA, "mocker_add_time_and_related_object_data_to_events"
+        OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
     assert mocker_add_time_and_related_object_data_to_events.call_count == 1
@@ -703,7 +703,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     mocker.patch.object(demisto, "command", return_value="okta-asa-get-event")
     mocker.patch.object(demisto, "params", return_value={"should_push_events": "False"})
     mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
-        OktaASA, "mocker_add_time_and_related_object_data_to_events"
+        OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
     assert mocker_add_time_and_related_object_data_to_events.call_count == 1
@@ -738,7 +738,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "params", return_value={"should_push_events": "False"})
     mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
-        OktaASA, "mocker_add_time_and_related_object_data_to_events"
+        OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
     assert mocker_add_time_and_related_object_data_to_events.call_count == 1
