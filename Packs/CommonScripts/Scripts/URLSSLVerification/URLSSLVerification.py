@@ -118,7 +118,7 @@ def main():
         score = UNKNOWN_SCORE
         
         if mark_http_as_suspicious(set_http_as_suspicious):
-            if SSL_PREFIX not in url.lower():
+            if not url.startswith(SSL_PREFIX):
                 score = SUSPICIOUS_SCORE
         elif malicious:
             score = SUSPICIOUS_SCORE
