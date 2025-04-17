@@ -2,13 +2,9 @@ category: Vulnerability Management
 commonfields:
   id: CIRCL CVE Search
   version: -1
-sectionorder:
-  - Connect
-  - Collect
 configuration:
 - name: integration_reliability
   display: Source Reliability
-  section: Connect
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A+ - 3rd party enrichment
   options:
@@ -23,17 +19,14 @@ configuration:
   type: 15
 - defaultvalue: https://cve.circl.lu/api/
   display: Server URL
-  section: Connect
   name: url
   required: true
   type: 0
 - display: Use system proxy settings
-  section: Connect
   name: proxy
   type: 8
   required: false
 - display: Trust any certificate (not secure)
-  section: Connect
   name: insecure
   type: 8
   required: false
@@ -45,8 +38,7 @@ script:
   - arguments:
     - description: The maximum number of CVEs to display.
       name: limit
-    description: Returns the latest updated CVEs. Deprecated. Use the NVD Feed v2.0 integration instead
-    deprecated: true
+    description: Returns the latest updated CVEs.
     name: cve-latest
     outputs:
     - contextPath: CVE.ID
@@ -130,7 +122,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

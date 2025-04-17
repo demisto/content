@@ -8,12 +8,9 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Service Provider",
-        "Cloud Security"
+        "Cloud Service Provider"
     ],
-    "tags": [
-        "Security"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "Amazon"

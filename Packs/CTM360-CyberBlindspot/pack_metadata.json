@@ -18,10 +18,7 @@
         "Threat Intelligence"
     ],
     "useCases": [],
-    "keywords": [
-        "HackerView",
-        "CyberBlindspot"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

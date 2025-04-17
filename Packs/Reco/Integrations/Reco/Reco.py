@@ -371,19 +371,6 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-    def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:
-        """ Get alert AI summary. """
-        try:
-            response = self._http_request(
-                method="GET",
-                url_suffix=f"/alert/summarize/{alert_id}",
-                timeout=RECO_API_TIMEOUT_IN_SECONDS,
-            )
-            return response
-        except Exception as e:
-            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
-            raise e
-
     def get_exposed_publicly_files_at_risk(self) -> list[dict[str, Any]]:
         """Get exposed publicly files at risk. Returns a list of exposed publicly files at risk with analysis."""
         params: Dict[str, Any] = {
@@ -1021,24 +1008,7 @@ def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> Command
     )
 
 
-def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResults:
-    response = reco_client.get_alert_ai_summary(alert_id)
-    content = json.dumps(response)
-    if response.get("markdown"):
-        content = str(response.get("markdown"))
-
-    return CommandResults(
-        readable_output=content,
-        outputs_prefix="Reco.AlertSummary",
-        outputs_key_field="alert_id",
-        outputs=response,
-        raw_response=response,
-    )
-
-
-def enrich_incident(
-    reco_client: RecoClient, single_incident: dict[str, Any]
-) -> dict[str, Any]:
+def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) -> dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict:
         incident_id: str = str(alert_as_dict[RECO_INCIDENT_ID_FIELD])
@@ -1585,9 +1555,6 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-assets-by-id":
             result = get_assets_by_id(reco_client, demisto.args()["asset_id"])
-            return_results(result)
-        elif command == "reco-get-alert-ai-summary":
-            result = get_alert_ai_summary(reco_client, demisto.args().get("alert_id", ""))
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

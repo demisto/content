@@ -8,16 +8,15 @@
     "email": "support@agari.com",
     "created": "2020-11-06T08:37:53Z",
     "categories": [
-        "Email"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Email"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
-        "Email",
-        "Phishing",
-        "Defense"
+        "phishing",
+        "defense",
+        "message",
+        "policy"
     ],
     "githubUser": "",
     "marketplaces": [
