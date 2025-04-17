@@ -2,7 +2,7 @@
     "name": "Cyber Triage",
     "description": "Allows you to conduct a mini-forensic investigation on an endpoint. It pushes a collection tool to the remote endpoint, collects volatile and file system data, and analyzes the data. ",
     "support": "xsoar",
-    "currentVersion": "1.0.20",
+    "currentVersion": "1.0.21",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

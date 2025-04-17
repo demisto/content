@@ -1,6 +1,6 @@
 name: ProofpointTAP Parsing Rule
 id: ProofpointTAP_ParsingRule
-fromversion: 6.10.0
+fromversion: 8.3.0
 tags: []
 rules: ''
 samples: ''
