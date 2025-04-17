@@ -59,6 +59,8 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   required: false
+  hidden:
+  - marketplacev2
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -69,18 +71,6 @@ configuration:
   additionalinfo: Input a value between 1-500.
   hidden:
   - marketplacev2
-- display: Max events per fetch
-  name: events_per_fetch
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-  defaultvalue: '15'
-  additionalinfo: Input a value between 1-500.
-  hidden:
-  - xsoar
-  - xpanse
-  - platform
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
@@ -94,8 +84,6 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
   additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
@@ -232,7 +220,7 @@ configuration:
   hidden:
   - marketplacev2
 - display: 'Fetch types'
-  defaultvalue: 'IDP Detection, Endpoint Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection'
+  defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
   name: fetch_events_or_detections
   type: 16
   section: Collect
