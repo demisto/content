@@ -7,12 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Free Enricher",
-        "Network"
+        "Free Enricher"
     ],
     "created": "2020-04-01T22:23:20Z",
     "useCases": [],

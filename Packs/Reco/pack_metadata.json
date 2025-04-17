@@ -1,8 +1,8 @@
 {
     "name": "Reco",
-    "description": "Reco is the leader in Dynamic SaaS Security — the only approach that eliminates the SaaS Security Gap (the growing gap between what you can protect and what’s outpacing your security).",
+    "description": "Reco is an identity-first SaaS security solution that empowers organizations with full visibility into every app, identity, and their actions to seamlessly prioritize and control risks in the SaaS ecosystem",
     "support": "partner",
-    "currentVersion": "1.5.6",
+    "currentVersion": "1.5.5",
     "author": "Reco",
     "url": "https://reco.ai",
     "email": "support@reco.ai",

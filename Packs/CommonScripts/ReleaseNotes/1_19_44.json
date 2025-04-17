@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "clear-user-session command context changed from {'Message': str, 'Result': str, 'Source': list[str], 'Username': str} to {'Message': str, 'Result': str, 'Brand': str, 'Username': str}"
-}

@@ -111,7 +111,7 @@ sendMultipart = function (uri, entryID, body) {
     var res;
     var tries = 0;
     do {
-        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeout);
+        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeout);
         res = httpMultipart(
             requestUrl,
             entryID,
@@ -172,7 +172,7 @@ var sendRequest = function(method, uri, body, raw) {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
     timeout = 3 * 60 * 1000; // timeout in milliseconds
-    logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
+    logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ' Headers = ' + JSON.stringify(headers) + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
         requestUrl,
         {

@@ -304,9 +304,7 @@ config case_sensitive = true
     create_group_builtin = arraycreate("system:nodes", "system:serviceaccount"),
     create_accountservice_builtin = arraycreate("default","aksService", "aks-support", "system:anonymous", "kube-controller-manager", "kube-scheduler", "kube-proxy", "metrics-server", "cloud-node-manager", "azure-policy", "azure-file-csi-driver", "azure-disk-csi-driver", "omsagent", "ama-logs", "ama-metrics")
 | alter
-    create_all_builtin = arrayconcat(create_group_builtin, create_accountservice_builtin)
-| alter
-	check_identity_type = if(to_string(create_all_builtin) contains to_string(get_properties_log_requestObject_subjects_name))
+    create_all_builtin = arrayconcat(create_group_builtin, create_accountservice_builtin)    
 | alter
 	xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
 	xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations),
@@ -315,12 +313,12 @@ config case_sensitive = true
 		get_properties_log_requestObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
 		get_properties_log_requestObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
 	),
-	xdm.source.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
+	xdm.source.user.identity_type = if(arraymap(create_all_builtin, if(get_properties_log_requestObject_subjects_name ~= "@element", "@element")) != null, XDM_CONST.IDENTITY_TYPE_BUILTIN),
 	xdm.target.user.user_type = if(
 		get_properties_log_responseObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
 		get_properties_log_responseObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
 	),		
-	xdm.target.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
+	xdm.target.user.identity_type = if(arraymap(create_all_builtin, if(get_properties_log_responseObject_subjects_name ~= "@element", "@element")) != null, XDM_CONST.IDENTITY_TYPE_BUILTIN);
 
 
 
@@ -359,14 +357,12 @@ config case_sensitive = true
     create_group_builtin = arraycreate("system:nodes", "system:serviceaccount"),
     create_accountservice_builtin = arraycreate("default", "aksService", "aks-support", "system:anonymous", "kube-controller-manager", "kube-scheduler", "kube-proxy", "metrics-server", "cloud-node-manager", "azure-policy", "azure-file-csi-driver", "azure-disk-csi-driver", "omsagent", "ama-logs", "ama-metrics")
 | alter
-    create_all_builtin = arrayconcat(create_group_builtin, create_accountservice_builtin)
-| alter
-    check_user_identity_type = if(to_string(create_all_builtin) contains to_string(get_properties_log_user_username))
+    create_all_builtin = arrayconcat(create_group_builtin, create_accountservice_builtin)    
 | alter
 	xdm.target.resource.value = object_create("objectRef_namespace", get_properties_log_objectRef_namespace, "objectRef_subresource", get_properties_log_objectRef_subresource, "objectRef_resourceVersion", get_properties_log_objectRef_resourceVersion, "objectRef_apiVersion", get_properties_log_objectRef_apiVersion),
 	xdm.event.description = object_create("message", get_properties_log_responseStatus_message, "requestObject", get_properties_log_requestObject, "responseObject", get_properties_log_responseObject, "responseStatus", get_properties_log_responseStatus, "user_extra_annotations", get_properties_log_user_extra, "log_annotations", get_properties_log_annotations, "responseObject_metadata_labels", get_properties_log_responseObject_metadata_labels, "responseObject_metadata_annotations", get_properties_log_responseObject_metadata_annotations),
-	xdm.source.user.user_type = if(check_user_identity_type, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
-	xdm.source.user.identity_type = if(check_user_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
+	xdm.source.user.user_type = if(arraymap(create_all_builtin, if(get_properties_log_user_username ~= "@element", "@element")) != null, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+	xdm.source.user.identity_type = if(arraymap(create_all_builtin, if(get_properties_log_user_username ~= "@element", "@element")) != null, XDM_CONST.IDENTITY_TYPE_BUILTIN);
 
 
 

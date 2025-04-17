@@ -247,8 +247,6 @@ LOG_SOURCES_RAW_FORMATTED = {
     "target_event_collector_id": "TargetEventCollectorID",
 }
 
-TIME_FIELDS_PLACE_HOLDER = 9223372036854775807 # represents the max val that can be stored in a 64-bit signed integer data type.
-
 USECS_ENTRIES = {
     "last_persisted_time",
     "start_time",
@@ -1287,23 +1285,9 @@ def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
         (List[Dict]): New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
     """
     return [
-        {k: (get_time_parameter(v, iso_format=True) if should_get_time_parameter(k, v) else v) for k,
-         v in dict_.items()} for dict_ in dicts
+        {k: (get_time_parameter(v, iso_format=True) if k in USECS_ENTRIES else v) for k, v in dict_.items()} for dict_ in dicts
     ]
 
-def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) -> bool:
-    """Checks whether the given key should be converted or not.
-    The variable should be converted if the key is in the USECS_ENTRIES list and the value is valid.
-
-    Args:
-        k (str): the key of the field
-        v (Union[Optional[str], Optional[int]]): the field value
-
-    Returns:
-        bool: True if it should be converted, otherwise return False.
-    """
-    valid_value = isinstance(v, str) or v != TIME_FIELDS_PLACE_HOLDER
-    return k in USECS_ENTRIES and valid_value
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> List[dict]:
     """
@@ -1342,21 +1326,18 @@ def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: boo
         - (str): If 'arg' is exists and parse_format is true, returns ISO format of the date time object.
         - (int): If 'arg' is exists and epoch_format is true, returns epoch format of the date time object.
     """
-    try:
-        maybe_unaware_date = arg_to_datetime(arg, is_utc=True)
-        if not maybe_unaware_date:
-            return None
+    maybe_unaware_date = arg_to_datetime(arg, is_utc=True)
+    if not maybe_unaware_date:
+        return None
 
-        aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(maybe_unaware_date)
+    aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(maybe_unaware_date)
 
-        if iso_format:
-            return aware_time_date.isoformat()
-        if epoch_format:
-            return int(aware_time_date.timestamp() * 1000)
-        return aware_time_date
-    except Exception as e:
-        demisto.info(f"Could not convert time for {arg=}, reason {e}")
-        return arg
+    if iso_format:
+        return aware_time_date.isoformat()
+    if epoch_format:
+        return int(aware_time_date.timestamp() * 1000)
+    return aware_time_date
+
 
 def build_final_outputs(outputs: List[dict], old_new_dict: dict) -> List[dict]:
     """

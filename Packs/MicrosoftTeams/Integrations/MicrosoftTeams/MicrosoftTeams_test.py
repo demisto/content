@@ -2733,7 +2733,6 @@ def test_message_update(mocker, requests_mock):
                 Perms.CHANNEL_CREATE,
                 Perms.CHANNEL_READBASIC_ALL,
                 Perms.CHANNEL_DELETE_ALL,
-                Perms.CHANNELMESSAGE_SEND,
             },
         ),
         (
@@ -2768,17 +2767,16 @@ def test_expand_permissions_list(permissions, expected_out):
 
 
 @pytest.mark.parametrize(
-    "auth_type, command, expected_missing",
+    "command, expected_missing",
     [
-        (CLIENT_CREDENTIALS_FLOW, "microsoft-teams-create-channel", {Perms.CHANNEL_CREATE, Perms.GROUPMEMBER_READ_ALL}),
+        ("microsoft-teams-create-channel", {Perms.CHANNEL_CREATE, Perms.GROUPMEMBER_READ_ALL}),
         (
-            AUTHORIZATION_CODE_FLOW,
             "microsoft-teams-message-send-to-chat",
             {Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT},
         ),
     ],
 )
-def test_insufficient_permissions_handler(mocker, auth_type, command, expected_missing):
+def test_insufficient_permissions_handler(mocker, command, expected_missing):
     """
     Given:
         - Microsoft Graph API returns a 403 Forbidden error due to insufficient permissions.
@@ -2796,16 +2794,13 @@ def test_insufficient_permissions_handler(mocker, auth_type, command, expected_m
     mocker.patch("MicrosoftTeams.get_integration_context", return_value={
         CREDENTIALS_TOKEN_PARAMS: json.dumps({
             "graph_access_token": "mock_token"
-            }),
-        AUTHCODE_TOKEN_PARAMS: json.dumps({
-            "graph_access_token": "mock_token"
             })
     })
     missing_permissions_mock = mocker.patch(
         "MicrosoftTeams.create_missing_permissions_section", side_effect=create_missing_permissions_section
     )
 
-    error_msg = insufficient_permissions_error_handler(auth_type=auth_type)
+    error_msg = insufficient_permissions_error_handler()
 
     assert error_msg
     assert set(missing_permissions_mock.call_args[0][0]) == expected_missing
@@ -2834,8 +2829,7 @@ def test_commands_required_includes_all_commands():
         pytest.skip("yml file is unavailable for testing in this environment")
 
     for command in yml['script']['commands']:
-        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS[AUTHORIZATION_CODE_FLOW]
-        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS[CLIENT_CREDENTIALS_FLOW]
+        assert command['name'] in COMMANDS_REQUIRED_PERMISSIONS
 
 
 def test_get_one_on_one_chat_id(mocker, requests_mock):
