@@ -1,6 +1,8 @@
 import json
+from unittest.mock import MagicMock, patch
 
 import pytest
+import demistomock as demisto
 from FeedTAXII2 import *
 
 with open("test_data/results.json") as f:
@@ -517,3 +519,47 @@ def test_feed_main_enrichment_excluded(mocker):
 
     # Assertion - verify that enrichment_excluded is set to True
     assert client_mocker.call_args.kwargs.get("enrichment_excluded") is True
+
+
+def test_fetch_indicators_error_handling(mocker):
+    import FeedTAXII2
+    mock_client = MagicMock()
+    mock_client.collections = [
+        MagicMock(id='1'),  # This will simulate a failing collection
+        MagicMock(id='3'),  # This will simulate a passing collection
+    ]
+
+    # Error simulation on the first collection
+    def side_effect(limit, added_after):
+        if mock_client.collection_to_fetch.id == '1':
+            raise Exception("Simulated Error")
+        return ['dummy_indicator_1', 'dummy_indicator_2']
+
+    mock_client.build_iterator.side_effect = side_effect
+    
+
+    # Prepare mocks for Demisto functions
+    with patch('FeedTAXII2.demisto.updateModuleHealth') as mock_update_health,\
+         patch('FeedTAXII2.demisto.error') as mock_error:
+        # Execute
+        mocker.patch.object(FeedTAXII2, 'filter_previously_fetched_indicators')
+        indicators, last_run_ctx = fetch_indicators_command(
+            client=mock_client,
+            initial_interval='10 days',
+            limit=10,
+            last_run_ctx={},
+            fetch_full_feed=False
+        )
+
+        # Assertions
+        mock_update_health.assert_called_once_with({"message": "Error fetching collection 1: Simulated Error"}, is_error=True)
+        mock_error.assert_called_once_with("Failed to fetch IOCs from collection 1: Simulated Error")
+
+        # Ensure the function did not stop processing after the error
+        assert '3' in last_run_ctx, "last_run_ctx should have an entry for collection '3'"
+
+        # Ensure the function returns indicators from the second collection, not the first
+        assert indicators == [
+            "dummy_indicator_1",
+            "dummy_indicator_2",
+        ], "Indicators should only include those from the successful collection"
