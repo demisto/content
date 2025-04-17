@@ -594,5 +594,10 @@ outputs:
 - contextPath: Panorama.Push.Details
   description: The job ID details.
 tests:
-  - no tests
+- no tests
 fromversion: 6.10.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

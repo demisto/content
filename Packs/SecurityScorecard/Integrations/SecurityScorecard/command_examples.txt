@@ -13,3 +13,4 @@
 !securityscorecard-company-findings-get date=2024-08-13 domain=groupe.schmidt issue_type=tlscert_expired
 !securityscorecard-issue-metadata issue_type=spf_record_missing
 !securityscorecard-alert-rules-list
+!securityscorecard-issue-details-get domain=example.com issue_type=spf_record_missing

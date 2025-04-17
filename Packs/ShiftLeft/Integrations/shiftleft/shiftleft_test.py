@@ -1,13 +1,12 @@
-"""Base Integration for ShiftLeft CORE - Cortex XSOAR Extension
-"""
+"""Base Integration for ShiftLeft CORE - Cortex XSOAR Extension"""
 
 import json
-import io
-from shiftleft import list_app_findings_command, ShiftLeftClient
+
+from shiftleft import ShiftLeftClient, list_app_findings_command
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -32,7 +31,5 @@ def test_list_app_findings_command(requests_mock):
         "type": ["vuln"],
         "version": None,
     }
-    response = list_app_findings_command(
-        client, "2c089ac1-3378-44d5-94da-9507e84351c3", args
-    )
+    response = list_app_findings_command(client, "2c089ac1-3378-44d5-94da-9507e84351c3", args)
     assert response.outputs

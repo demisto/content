@@ -1,33 +1,25 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from typing import Any
 
+import demistomock as demisto
 import urllib3
-from typing import Dict, Any
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 MODULE_NAME_BREACHES = "breaches"
 
-MAPPING: dict = {
-    MODULE_NAME_BREACHES: {
-        "date":
-            "uploadTime",
-        "name":
-            "email",
-        "prefix":
-            "Data Breach"
-    }
-}
+MAPPING: dict = {MODULE_NAME_BREACHES: {"date": "uploadTime", "name": "email", "prefix": "Data Breach"}}
 
 # API Client params
-TIMEOUT = 60.
+TIMEOUT = 60.0
 RETRIES = 4
 STATUS_LIST_TO_RETRY = [429, 500]
 
@@ -35,16 +27,16 @@ STATUS_CODE_MSGS = {
     401: "Bad Credentials",
     403: "Forbidden. Something is wrong with your account, please, contact to Resecurity.",
     404: "Not found. There is no such data on server.",
-    500: "There are some troubles on server with your request."
+    500: "There are some troubles on server with your request.",
 }
 
 DEFAULT_RESULTS_SIZE_LIMIT = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_MODE = 2  # last results
 
-PAGINATION_HEADER_NAME = 'X-Pagination-Page-Count'
+PAGINATION_HEADER_NAME = "X-Pagination-Page-Count"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -52,13 +44,13 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def check_connection(self) -> Dict[str, Any]:
+    def check_connection(self) -> dict[str, Any]:
         """
         Check connection '/monitor/check-connection' API endpoint
         """
         return self._http_request(
-            method='GET',
-            url_suffix='/monitor/check-connection',
+            method="GET",
+            url_suffix="/monitor/check-connection",
         )
 
     def get_task_monitor_results(self, monitor_task_id, module_name: str, page, page_size, mode) -> requests.Response:
@@ -67,16 +59,12 @@ class Client(BaseClient):
         """
         response = self._http_request(
             method="GET",
-            url_suffix='/monitor/task-results-by-module',
-            resp_type='response',
-            params={
-                'id': monitor_task_id,
-                'module_name': module_name,
-                'page': page,
-                'per-page': page_size,
-                'mode': mode
-            },
-            timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY
+            url_suffix="/monitor/task-results-by-module",
+            resp_type="response",
+            params={"id": monitor_task_id, "module_name": module_name, "page": page, "per-page": page_size, "mode": mode},
+            timeout=TIMEOUT,
+            retries=RETRIES,
+            status_list_to_retry=STATUS_LIST_TO_RETRY,
         )
 
         # check response status
@@ -84,22 +72,24 @@ class Client(BaseClient):
             if response.status_code in STATUS_CODE_MSGS:
                 raise DemistoException(STATUS_CODE_MSGS[response.status_code])
             else:
-                raise DemistoException(
-                    f"Status code {response.status_code} for API request"
-                )
+                raise DemistoException(f"Status code {response.status_code} for API request")
 
         return response
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_human_readable_output(module_name, monitor_task_id, result):
-    return tableToMarkdown(name="{0} results from task with ID {1}".format(module_name, monitor_task_id),
-                           t=result, removeNull=True, date_fields=['detection_date'])
+    return tableToMarkdown(
+        name=f"{module_name} results from task with ID {monitor_task_id}",
+        t=result,
+        removeNull=True,
+        date_fields=["detection_date"],
+    )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -116,16 +106,16 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
         result = client.check_connection()
-        if result.get('message') == 'ok':
-            return 'ok'
+        if result.get("message") == "ok":
+            return "ok"
         else:
             raise DemistoException("Failed to establish connection with provided credentials.")
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
@@ -137,10 +127,10 @@ def get_task_monitor_results_command(module_name: str):
     Args:
         module_name (str): _description_
     """
-    def get_task_monitor_results(client: Client, args: Dict) -> CommandResults:
 
+    def get_task_monitor_results(client: Client, args: dict) -> CommandResults:
         # get params from user
-        monitor_task_id = arg_to_number(args.get("monitor_task_id"), 'monitor_task_id', True)
+        monitor_task_id = arg_to_number(args.get("monitor_task_id"), "monitor_task_id", True)
         limit = arg_to_number(args.get("limit", DEFAULT_RESULTS_SIZE_LIMIT))
         page = arg_to_number(args.get("page"))
         page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
@@ -167,9 +157,7 @@ def get_task_monitor_results_command(module_name: str):
                 total_pages = response.headers.get(PAGINATION_HEADER_NAME)
                 if not total_pages:
                     demisto.debug(total_pages)
-                    raise DemistoException(
-                        f"Something is wrong, header {PAGINATION_HEADER_NAME} is empty for API request"
-                    )
+                    raise DemistoException(f"Something is wrong, header {PAGINATION_HEADER_NAME} is empty for API request")
                 total_pages = int(total_pages)
 
                 result += response.json()
@@ -186,13 +174,13 @@ def get_task_monitor_results_command(module_name: str):
             outputs=result[:limit],
             readable_output=get_human_readable_output(MAPPING.get(module_name, {}).get("prefix"), monitor_task_id, result),
             raw_response=result,
-            ignore_auto_extract=True
+            ignore_auto_extract=True,
         )
 
     return get_task_monitor_results
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -206,39 +194,31 @@ def main() -> None:
     command = demisto.command()
 
     # get API key
-    api_key = params.get('credentials', {}).get('password')
+    api_key = params.get("credentials", {}).get("password")
 
     # get the service API URL
-    base_url = urljoin(params['url'], '/api')
+    base_url = urljoin(params["url"], "/api")
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
         # Add the proper headers for authentication
-        headers: Dict = {}
+        headers: dict = {}
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            auth=(api_key, ''),
-            headers=headers,
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_certificate, auth=(api_key, ""), headers=headers, proxy=proxy)
 
         # command cases implementation
-        commands = {
-            "resecurity-get-task-monitor-results-data-breaches": get_task_monitor_results_command(MODULE_NAME_BREACHES)
-        }
+        commands = {"resecurity-get-task-monitor-results-data-breaches": get_task_monitor_results_command(MODULE_NAME_BREACHES)}
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
@@ -246,15 +226,15 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
