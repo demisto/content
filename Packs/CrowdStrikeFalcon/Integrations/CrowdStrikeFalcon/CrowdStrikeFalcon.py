@@ -3305,7 +3305,7 @@ def fetch_events():
             last_run=current_fetch_info_incidents, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
         )
         
-        fetch_limit = current_fetch_info_incidents.get("limit") or MAX_FETCH_INCIDENT_PER_API_CALL 
+        fetch_limit = current_fetch_info_incidents.get("limit") or MAX_FETCH_INCIDENT_PER_API_CALL
         incident_type = "incident"
 
         fetch_query = params.get("incidents_fetch_query")
@@ -3513,7 +3513,16 @@ def fetch_events():
             current_fetch_ofp_detection,
         ]
     
-    events = ( incidents + detections + idp_detections + iom_incidents + ioa_incidents  + mobile_detections + on_demand_detections + ofp_detections)
+    events = (
+        incidents
+        + detections
+        + idp_detections
+        + iom_incidents
+        + ioa_incidents
+        + mobile_detections
+        + on_demand_detections
+        + ofp_detections
+        )
 
     return last_run, events
         
