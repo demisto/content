@@ -7,16 +7,12 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Cloud Service Provider",
-        "Cloud Security"
+        "Cloud Service Provider"
     ],
-    "tags": [
-        "IT"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
-        "AWS",
-        "Amazon"
+        "AWS"
     ],
     "marketplaces": [
         "xsoar",

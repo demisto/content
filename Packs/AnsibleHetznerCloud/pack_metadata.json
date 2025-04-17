@@ -7,19 +7,13 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Utilities",
-        "Cloud Services"
+        "Utilities"
     ],
-    "tags": [
-        "IT",
-        "Network"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "HCloud",
-        "Asset Management",
-        "Server",
-        "Network"
+        "Asset Management"
     ],
     "marketplaces": [
         "xsoar",

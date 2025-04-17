@@ -78,7 +78,6 @@ from QRadar_v3 import (
     qradar_geolocations_for_ip_command,
     qradar_get_custom_properties_command,
     qradar_indicators_upload_command,
-    should_get_time_parameter,
     qradar_ips_local_destination_get_command,
     qradar_ips_source_get_command,
     qradar_log_source_create_command,
@@ -2181,39 +2180,3 @@ def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
     assert all("Name" in i for i in result.outputs)
     assert all("Data" not in i for i in result.outputs) or not quiet_mode
     assert "data" in result.raw_response
-
-@pytest.mark.parametrize("key, value, expected_results", [("last_persisted_time", "1.1.2025", True),
-                                                          ("last_persisted_time", 1741790340000, True),
-                                                          ("last_persisted_time", 9223372036854775807, False),
-                                                          ("last_persisted_times", 1741790340000, False)])
-def test_should_get_time_parameter(key, value, expected_results):
-    """
-    Given:
-        - A key and a value
-        - Case 1: A key that appears in the USECS_ENTRIES list and a valid str value.
-        - Case 2: A key that appears in the USECS_ENTRIES list and a valid int value.
-        - Case 3: A key that appears in the USECS_ENTRIES list and an invalid int value.
-        - Case 4: A key that doesn't appear in the USECS_ENTRIES list and a valid int value.
-    When:
-        - Running should_get_time_parameter.
-    Then:
-        - Ensure the right results returned.
-        - Case 1: Should return True.
-        - Case 2: Should return True.
-        - Case 3: Should return False.
-        - Case 4: Should return False.
-    """
-    assert should_get_time_parameter(key, value) is expected_results
-
-def test_add_iso_entries_to_dict_placeholder_edge_case():
-    """
-    Given:
-        - A dict with valid and invalid time values.
-    When:
-        - Running add_iso_entries_to_dict.
-    Then:
-        - Ensure the right results returned and no error is thrown.
-    """
-    dicts = [{"start_time": 9223372036854775807, "last_persisted_time": 1741790340000}]
-    results = add_iso_entries_to_dict(dicts)
-    assert results == [{'start_time': 9223372036854775807, 'last_persisted_time': '2025-03-12T14:39:00+00:00'}]

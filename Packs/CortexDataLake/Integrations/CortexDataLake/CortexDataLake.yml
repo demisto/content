@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: Cortex Data Lake
   version: -1
@@ -11,52 +8,42 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: Connect
 - display: ID
   name: reg_id
   type: 4
   hidden: true
   required: false
-  section: Connect
 - display: Key
   name: auth_key
   type: 4
   hidden: true
   required: false
-  section: Connect
 - displaypassword: Encryption Key
   name: credentials_auth_key
   hiddenusername: true
   type: 9
   required: false
-  display: ""
-  section: Connect
 - displaypassword: Authentication Token
   additionalinfo: The API Key to use for connection
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
   required: false
-  display: ""
-  section: Connect
 - displaypassword: Registration ID
   name: credentials_reg_id
   type: 9
   hiddenusername: true
   section: Connect
   required: false
-  display: ""
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-  section: Collect
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
   type: 0
   required: false
-  section: Collect
 - additionalinfo: Choose which table incidents will be fetched from.
   defaultvalue: firewall.threat
   display: Fetch Table
@@ -77,7 +64,6 @@ configuration:
   - log.config
   type: 15
   required: false
-  section: Collect
 - display: Severity of events to fetch (Firewall)
   name: firewall_severity
   options:
@@ -90,7 +76,6 @@ configuration:
   - Unused
   type: 16
   required: false
-  section: Collect
 - display: Subtype of events to fetch (Firewall)
   name: firewall_subtype
   options:
@@ -125,50 +110,37 @@ configuration:
   - sctp
   type: 16
   required: false
-  section: Collect
 - additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
   name: fetch_fields
   type: 12
   required: false
-  section: Collect
 - additionalinfo: 'Filter the fetched incidents according to the given query. Query example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can not be used in combination with `Severity` and `Subtype` parameters.'
   display: Fetch Filter
   name: filter_query
   type: 12
   required: false
-  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-  section: Collect
 - additionalinfo: "The maximum number of incidents to fetch per query.\t\nCaution: A large number could create overload. Default is 10."
   defaultvalue: '10'
   display: Max. number of incidents fetched per query
   name: limit
   type: 0
   required: false
-  section: Collect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  section: Connect
-- defaultvalue: "1"
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
-  section: Collect
 description: Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
 display: Strata Logging Service XSOAR Connector
 name: Cortex Data Lake
@@ -192,9 +164,17 @@ script:
       - 'true'
       - 'false'
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on  any table or field.
     execution: true
     name: cdl-query-logs
@@ -262,7 +242,8 @@ script:
     - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
-    - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - auto: PREDEFINED
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -272,9 +253,17 @@ script:
       - 'true'
       - 'false'
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on the threat table according to preset queries.
     name: cdl-get-critical-threat-logs
     outputs:
@@ -413,12 +402,21 @@ script:
     - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
-    - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - auto: PREDEFINED
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on traffic table where app_sub_category = "social networking".
     name: cdl-get-social-applications
     outputs:
@@ -545,15 +543,24 @@ script:
     - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
       name: limit
-    - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - auto: PREDEFINED
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
     - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'.
     name: cdl-search-by-file-hash
     outputs:
@@ -842,15 +849,24 @@ script:
       name: start_time
     - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-    - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - auto: PREDEFINED
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     - description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: dest_ip
     - description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
@@ -1027,7 +1043,7 @@ script:
       name: query
     - auto: PREDEFINED
       defaultValue: all
-      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
+      description: The fields that are selected in the query. Selection can be "all" (same as *) or or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
       isArray: true
       name: fields
       predefined:
@@ -1167,15 +1183,24 @@ script:
       name: start_time
     - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-    - description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
+    - auto: PREDEFINED
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
@@ -1356,7 +1381,7 @@ script:
       name: query
     - auto: PREDEFINED
       defaultValue: all
-      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
+      description: The fields that are selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. List of fields can be found after viewing all the outputted fields with "all".
       isArray: true
       name: fields
       predefined:
@@ -1496,14 +1521,23 @@ script:
       name: start_time
     - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
-    - description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
+    - auto: PREDEFINED
+      description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
       name: time_range
     - description: The maximum number of logs to return. Default is 5.
       name: limit
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
@@ -1799,9 +1833,17 @@ script:
       description: The maximum number of logs to return. Default is 5.
       name: limit
     - name: page
+      isArray: false
       description: Page to return.
+      required: false
+      secret: false
+      default: false
     - name: page_size
+      isArray: false
       description: Number of entries per page. Defaults to 50 (in case only page was provided).
+      required: false
+      secret: false
+      default: false
     description: Searches the Cortex firewall.file_data table.
     name: cdl-query-file-data
     outputs:
@@ -2046,151 +2088,7 @@ script:
       type: String
   - description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     name: cdl-reset-authentication-timeout
-    arguments: []
-  - arguments:
-    - defaultValue: "10"
-      description: The maximum number of logs to return.
-      name: limit
-    - description: Page to return.
-      name: page
-    - description: Number of entries per page. Defaults to 50 (in case only page was provided).
-      name: page_size
-    - auto: PREDEFINED
-      defaultValue: "true"
-      description: If set to false, query results are not mapped into the standard command context.
-      name: transform_results
-      predefined:
-      - "true"
-      - "false"
-    - defaultValue: all
-      description: The fields selected in the query. Selection can be "all" (same as *) or a comma-separated list of specific fields. The list of fields can be found after viewing all the outputted fields with "all".
-      name: fields
-    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
-      name: end_time
-    - defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00".
-      name: start_time
-    - description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3 weeks).
-      name: time_range
-    - description: Event name for which to search.
-      name: event_name
-    - description: GlobalProtect gateway for which to search.
-      name: gateway
-    - description: Private IP address (v4) of the user that connected for which to search.
-      name: private_ipv4
-    - description: Private IP address (v6) of the user that connected for which to search.
-      name: private_ipv6
-    - description: Public IP address (v4) of the user that connected for which to search.
-      name: public_ipv4
-    - description: Public IP address (v6) of the user that connected for which to search.
-      name: public_ipv6
-    - description: The source username for which to search.
-      name: source_user
-    - description: Event status (success or failure) for which to search.
-      name: event_status
-    - description: GlobalProtect portal for which to search.
-      name: portal
-    - description: Name of the stage in the GlobalProtect connection workflow for
-        which to search.
-      name: stage
-    description: Searches the GlobalProtect VPN log table.
-    name: cdl-query-gp-logs
-    outputs:
-    - contextPath: CDL.Logging.GlobalProtect.AttemptedGateways
-      description: All gateways that were available and attempted for the client location.
-    - contextPath: CDL.Logging.GlobalProtect.AuthMethod
-      description: Authentication method used for the GlobalProtect connection.
-    - contextPath: CDL.Logging.GlobalProtect.ConnectionErrorID
-      description: Enumeration integer assigned to the connection_error field value.
-    - contextPath: CDL.Logging.GlobalProtect.ConnectionErrorValue
-      description: Error information for unsuccessful connection.
-    - contextPath: CDL.Logging.GlobalProtect.CountOfRepeats
-      description: Number of sessions with same Source IP, Destination IP, Application, and Content/Threat Type seen for the summary interval.
-    - contextPath: CDL.Logging.GlobalProtect.CustomerID
-      description: The ID that uniquely identifies the Cortex Data Lake instance which received this log record.
-    - contextPath: CDL.Logging.GlobalProtect.EndpointDeviceName
-      description: Name of the device that the user used for the connection.
-    - contextPath: CDL.Logging.GlobalProtect.EndpointGPVersion
-      description: GlobalProtect client version number.
-    - contextPath: CDL.Logging.GlobalProtect.EndpointOSType
-      description: OS type of the endpoint on which the GlobalProtect client is deployed.
-    - contextPath: CDL.Logging.GlobalProtect.EndpointOSVersion
-      description: OS version of the endpoint on which the GlobalProtect client is deployed.
-    - contextPath: CDL.Logging.GlobalProtect.EventID
-      description: The name of the event.
-    - contextPath: CDL.Logging.GlobalProtect.Gateway
-      description: Gateway for the connection.
-    - contextPath: CDL.Logging.GlobalProtect.GatewayPriority
-      description: Priority of the gateway.
-    - contextPath: CDL.Logging.GlobalProtect.GatewaySelectionType
-      description: Gateway selection method,  i.e., automatic, preferred, or manual.
-    - contextPath: CDL.Logging.GlobalProtect.HostID
-      description: Unique identifier GlobalProtect has assigned to the host.
-    - contextPath: CDL.Logging.GlobalProtect.IsDuplicateLog
-      description: Indicates whether this log data is available in multiple locations, such as from Strata Logging Service as well as from an on-premise log collector.
-    - contextPath: CDL.Logging.GlobalProtect.IsExported
-      description: Indicates if this log was exported from the firewall using the firewall's log export function.
-    - contextPath: CDL.Logging.GlobalProtect.IsForwarded
-      description: Internal use field that indicates if the log is being forwarded.
-    - contextPath: CDL.Logging.GlobalProtect.IsPrismaBranch
-      description: Internal use field. If set to 1, the log was generated on a cloud-based firewall. If 0, the firewall was running on-premise.
-    - contextPath: CDL.Logging.GlobalProtect.IsPrismaMobile
-      description: Internal use field. If set to 1, the log record was generated using a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise.
-    - contextPath: CDL.Logging.GlobalProtect.LogSource
-      description: Identifies the origin of the data.
-    - contextPath: CDL.Logging.GlobalProtect.LogSourceID
-      description: ID that uniquely identifies the source of the log.
-    - contextPath: CDL.Logging.GlobalProtect.LogSourceName
-      description: Name of the source of the log.
-    - contextPath: CDL.Logging.GlobalProtect.LogTime
-      description: Time the log was received in Strata Logging Service XSOAR Connector.
-    - contextPath: CDL.Logging.GlobalProtect.LogType
-      description: Identifies the log type.
-    - contextPath: CDL.Logging.GlobalProtect.LoginDuration
-      description: Duration for which the connected user was logged on.
-    - contextPath: CDL.Logging.GlobalProtect.Opaque
-      description: Additional information regarding the event.
-    - contextPath: CDL.Logging.GlobalProtect.PlatformType
-      description: The platform type.
-    - contextPath: CDL.Logging.GlobalProtect.Portal
-      description: GlobalProtect portal or gateway that the user connected to.
-    - contextPath: CDL.Logging.GlobalProtect.PrivateIPv4
-      description: Private IP address (v4) of the user that connected.
-    - contextPath: CDL.Logging.GlobalProtect.PrivateIPv6
-      description: Private IP address (v6) of the user that connected.
-    - contextPath: CDL.Logging.GlobalProtect.ProjectName
-      description: Project name.
-    - contextPath: CDL.Logging.GlobalProtect.PublicIPv4
-      description: Public IP address (v4) of the user that connected.
-    - contextPath: CDL.Logging.GlobalProtect.PublicIPv6
-      description: Public IP address (v6) of the user that connected.
-    - contextPath: CDL.Logging.GlobalProtect.QuarantineReason
-      description: Quarantine reason.
-    - contextPath: CDL.Logging.GlobalProtect.SequenceNo
-      description: The log entry identifier, which is incremented sequentially.
-    - contextPath: CDL.Logging.GlobalProtect.SourceRegion
-      description: Region of the gateway (or user) that connected.
-    - contextPath: CDL.Logging.GlobalProtect.SourceUser
-      description: The username that connected.
-    - contextPath: CDL.Logging.GlobalProtect.SourceUserDomain
-      description: Domain to which the source user belongs.
-    - contextPath: CDL.Logging.GlobalProtect.SourceUserName
-      description: The source user username.
-    - contextPath: CDL.Logging.GlobalProtect.SSLResponseTime
-      description: SSL response time in milliseconds.
-    - contextPath: CDL.Logging.GlobalProtect.Stage
-      description: Name of the stage in the GlobalProtect connection workflow.
-    - contextPath: CDL.Logging.GlobalProtect.EventStatus
-      description: The status (success or failure) of the event.
-    - contextPath: CDL.Logging.GlobalProtect.Subtype
-      description: The log subtype.
-    - contextPath: CDL.Logging.GlobalProtect.TimeGenerated
-      description: Time when the log was generated on the firewall's data plane.
-    - contextPath: CDL.Logging.GlobalProtect.TunnelType
-      description: Tunnel type i.e., SSL or VPN.
-    - contextPath: CDL.Logging.GlobalProtect.VendorName
-      description: The vendor that produced the data.
-  dockerimage: demisto/python_pancloud_v2:1.0.0.2027056
+  dockerimage: demisto/python_pancloud_v2:1.0.0.117311
   isfetch: true
   runonce: false
   script: '-'
