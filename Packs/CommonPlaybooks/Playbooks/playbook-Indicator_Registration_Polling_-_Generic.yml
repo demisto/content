@@ -8,18 +8,18 @@ id: Indicator Registration Polling - Generic
 inputs:
 - description: The indicators to check.
   key: indicators
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: How often to check (in minutes).
   key: frequency
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: "1"
 - description: When to timeout (in minutes).
   key: timeout
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: "10"
@@ -168,3 +168,8 @@ view: |-
   }
 tests:
 - No tests
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
