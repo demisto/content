@@ -4,6 +4,8 @@ from CommonServerPython import *  # noqa: F401
 VENDOR = "Abnormal_Security"
 PRODUCT = "Email_Protection"
 
+FETCH_LIMIT = 9000
+DEFAULT_PAGE_SIZE = 1000
 
 class Client(BaseClient):
     def list_threats(self, params):
@@ -31,7 +33,7 @@ def format_messages(messages: list):
     return messages
 
 
-def get_events(client: Client, after: str):
+def get_events(client: Client, after: str, next_page_number: int):
     """Retrieves messages by time range & ordered by datetime
 
     Args:
@@ -44,14 +46,15 @@ def get_events(client: Client, after: str):
 
     """
     before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    threats_ids = get_list_threats(client, after, before)
+    next_page_number, threats_ids = get_list_threats(client, after, before, next_page_number)
+    last_run = {'before': before, 'next_page_number': next_page_number}
     messages = []
     if threats_ids:
         for threat in reversed(threats_ids):
             messages += format_messages(get_messages_by_datetime(client, threat.get("threatId"), after, before))
         ordered_messages = sorted(messages, key=lambda d: d["receivedTime"])
-        return ordered_messages, before
-    return [], before
+        return ordered_messages, last_run
+    return [], last_run
 
 
 def get_messages_by_datetime(client: Client, threat_id: str, after: str, before: str):
@@ -78,7 +81,7 @@ def get_messages_by_datetime(client: Client, threat_id: str, after: str, before:
     return messages
 
 
-def get_list_threats(client: Client, after: str, before: str):
+def get_list_threats(client: Client, after: str, before: str, next_page_number: int):
     """get list of all threats ids in the time range
 
     Args:
@@ -91,16 +94,17 @@ def get_list_threats(client: Client, after: str, before: str):
     """
     threats = []
     is_next_page = True
-    page_number = 1
-    while is_next_page:
-        params = assign_params(pageSize=1000, filter=f"receivedTime gte {after} lte {before}", pageNumber=page_number)
+    while len(threats) < FETCH_LIMIT and is_next_page:
+        page_size = min(DEFAULT_PAGE_SIZE, FETCH_LIMIT - len(threats))
+        params = assign_params(pageSize=page_size, filter=f"receivedTime gte {after} lte {before}", pageNumber=next_page_number)
         res = client.list_threats(params)
         threats += res.get("threats")
         if res.get("nextPageNumber"):
-            page_number = res.get("nextPageNumber")
+            next_page_number = res.get("nextPageNumber")
         else:
             is_next_page = False
-    return threats
+
+    return (next_page_number, threats) if is_next_page else (1, threats)
 
 
 def main():
@@ -111,24 +115,28 @@ def main():
     verify = params["verify"]
     proxy = params["proxy"]
     after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    next_page_number = 1
     client = Client(
         base_url="https://api.abnormalplatform.com/v1", verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {token}"}
     )
 
-    last_run = demisto.getLastRun().get("last_run")
+    last_run = demisto.getLastRun()
     if last_run:
-        after = last_run
+        after = last_run.get('before')
+        next_page_number = last_run.get('next_page_number')
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
-        threats, last_run = get_events(client, after)
+        threats, last_run = get_events(client, after, next_page_number)
         if command == "test-module":
             return_results("ok")
 
         elif command == "fetch-events":
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
-            demisto.setLastRun({"last_run": last_run})
+            if last_run.get("next_page_number") > 1:
+                last_run["nextTrigger"] = "0"
+            demisto.setLastRun(last_run)
 
         elif command == "abnormal-security-event-collector-get-events":
             command_results = CommandResults(
