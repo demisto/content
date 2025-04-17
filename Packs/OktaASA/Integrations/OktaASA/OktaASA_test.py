@@ -675,7 +675,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     assert mocker_add_time_and_related_object_data_to_events.call_count == 1
     mocker_add_time_and_related_object_data_to_events.assert_called_with(events=ANY,
                                                                          related_objects=ANY,
-                                                                         add_time_mapping=True)
+                                                                         add_time_mapping=False)
 
 
 
@@ -740,7 +740,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
                      {"list": [], "related_objects": {}}],
     )
     mocker.patch.object(demisto, "command", return_value="fetch-events")
-    mocker.patch.object(demisto, "params", return_value={"should_push_events": "False", "url": "test",
+    mocker.patch.object(demisto, "params", return_value={"should_push_events": "True", "url": "test",
                                                          "max_audit_events_per_fetch": "1"})
     mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
         OktaASA, "add_time_and_related_object_data_to_events"
