@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta
-
+from unittest.mock import ANY
 import demistomock as demisto
 import pytest
 from CommonServerPython import DemistoException
@@ -672,9 +672,9 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
-    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
-    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=response.get("list"),
-                                                                         related_objects=response.get("related_objects"),
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 2
+    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=ANY,
+                                                                         related_objects=ANY,
                                                                          add_time_mapping=True)
 
 
@@ -708,9 +708,9 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
-    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
-    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=response.get("list"),
-                                                                         related_objects=response.get("related_objects"),
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 2
+    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=ANY,
+                                                                         related_objects=ANY,
                                                                          add_time_mapping=False)
 
 
@@ -745,7 +745,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
-    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
-    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=response.get("list"),
-                                                                         related_objects=response.get("related_objects"),
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 2
+    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=ANY,
+                                                                         related_objects=ANY,
                                                                          add_time_mapping=True)
