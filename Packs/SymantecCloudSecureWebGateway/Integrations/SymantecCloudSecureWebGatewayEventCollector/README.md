@@ -2,7 +2,6 @@ Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration
 
 ## Configure Symantec Cloud Secure Web Gateway Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |
