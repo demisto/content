@@ -702,7 +702,8 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
                      {"list": [], "related_objects": {}}],
     )
     mocker.patch.object(demisto, "command", return_value="okta-asa-get-events")
-    mocker.patch.object(demisto, "params", return_value={"should_push_events": "False","url": "test"})
+    mocker.patch.object(demisto, "params", return_value={"url": "test"})
+    mocker.patch.object(demisto, "args", return_value={"should_push_events": "False"})
     mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
         OktaASA, "add_time_and_related_object_data_to_events"
     )
