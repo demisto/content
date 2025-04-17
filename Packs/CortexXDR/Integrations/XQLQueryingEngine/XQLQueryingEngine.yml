@@ -215,6 +215,8 @@ script:
     - description: Time in relative date or range format.
       name: time_frame
       hidden: true
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     - description: The name of the command.
       name: command_name
       hidden: true
