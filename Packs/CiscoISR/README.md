@@ -1,9 +1,9 @@
 # Cisco ISR
 
-Cisco ISR routers have networking capabilities and provide reliable, secure branch office connectivity and have features that include cloud computing, secure networking, multimedia performance, and mobile connectivity. 
-Cisco ISR series use Cisco’s IOS operating system
+###### This pack includes Cortex XSIAM content.
 
-This pack includes Cortex XSIAM content.
+Cisco ISR routers have networking capabilities and provide reliable, secure branch office connectivity and features that include cloud computing, secure networking, multimedia performance, and mobile connectivity.  
+Cisco ISR series use Cisco’s IOS operating system.
 
 ## Configuration on Server Side
 
@@ -20,10 +20,10 @@ More information can be found [here](https://www.cisco.com/c/en/us/td/docs/route
 
 ### Syslog Time Parsing Support
 
-Syslog timestamp parsing by default support UTC timezone (offset "+00:00").
-To support other timezones you will need to modify Parsing Rules in User Define rules, change the UTC offset in parse_timestamp function to the relevant timezone.
-For example, to support EDT timezone, set the UTC offset to "-04:00"
-In addition, in the product setting, add the year and milliseconds to default datetime format.
+Syslog timestamp parsing by default support UTC timezone (offset "+00:00").  
+To support other timezones you will need to modify Parsing Rules in **Data Management** &rarr; **Data Model Rules** and select **User Defined** tab, change the UTC offset in _parse_timestamp_ functions to the relevant timezone.  
+For example, to support EDT timezone, set the UTC offset to "-04:00"  
+In addition, in the product setting, add the year and milliseconds to the default datetime format.
 
 
 * [Service timestamps command doc](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/command/cf_command_ref/R_through_setup.html#wp4972384860)
