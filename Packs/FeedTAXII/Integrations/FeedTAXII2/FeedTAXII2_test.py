@@ -521,7 +521,8 @@ def test_feed_main_enrichment_excluded(mocker):
     assert client_mocker.call_args.kwargs.get("enrichment_excluded") is True
 
 
-def test_fetch_indicators_error_handling():
+def test_fetch_indicators_error_handling(mocker):
+    import FeedTAXII2
     mock_client = MagicMock()
     mock_client.collections = [
         MagicMock(id='1'),  # This will simulate a failing collection
@@ -535,11 +536,13 @@ def test_fetch_indicators_error_handling():
         return ['dummy_indicator_1', 'dummy_indicator_2']
 
     mock_client.build_iterator.side_effect = side_effect
+    
 
     # Prepare mocks for Demisto functions
     with patch('FeedTAXII2.demisto.updateModuleHealth') as mock_update_health,\
          patch('FeedTAXII2.demisto.error') as mock_error:
         # Execute
+        mocker.patch.object(FeedTAXII2, 'filter_previously_fetched_indicators')
         indicators, last_run_ctx = fetch_indicators_command(
             client=mock_client,
             initial_interval='10 days',
