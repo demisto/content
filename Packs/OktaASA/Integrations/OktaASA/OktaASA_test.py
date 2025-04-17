@@ -672,7 +672,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
-    assert mocker_add_time_and_related_object_data_to_events.call_count == 2
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
     mocker_add_time_and_related_object_data_to_events.assert_called_with(events=ANY,
                                                                          related_objects=ANY,
                                                                          add_time_mapping=True)
@@ -732,6 +732,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         "generate_token_if_required",
     )
     response = util_load_json("test_data/response_10_items_descending_true.json")
+    mocker.patch.object(OktaASA, "send_events_to_xsiam")
     mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
@@ -745,7 +746,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
-    assert mocker_add_time_and_related_object_data_to_events.call_count == 2
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
     mocker_add_time_and_related_object_data_to_events.assert_called_with(events=ANY,
                                                                          related_objects=ANY,
                                                                          add_time_mapping=True)
