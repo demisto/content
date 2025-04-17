@@ -143,7 +143,7 @@ def prepare_list_detections_output(detections : List[dict[str, Any]]) -> str:
         }
         hr_outputs.append(hr_output)
 
-    return tableToMarkdown(f"ExtraHop-RevealX Detection(s)", hr_outputs, headers=headers, removeNull=True)
+    return tableToMarkdown("ExtraHop-RevealX Detection(s)", hr_outputs, headers=headers, removeNull=True)
 
 
 def validate_fetch_events_params(last_run: dict) -> dict:
@@ -156,13 +156,13 @@ def validate_fetch_events_params(last_run: dict) -> dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
-    detection_start_time = int(get_current_time().timestamp() * 1000)
+    detection_start_time: int = int(get_current_time().timestamp() * 1000)
     if last_run and 'detection_start_time' in last_run:
-        detection_start_time = last_run.get('detection_start_time')
+        detection_start_time = cast(int, last_run.get('detection_start_time'))
 
-    offset = 0
+    offset : int = 0
     if last_run and 'offset' in last_run:
-        offset = last_run.get("offset")
+        offset = cast(int, last_run.get("offset"))
     return {
         'detection_start_time': detection_start_time,
         'offset': offset,
