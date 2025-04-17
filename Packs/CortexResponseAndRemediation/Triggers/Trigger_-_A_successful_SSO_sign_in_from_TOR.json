@@ -20,8 +20,13 @@
                 "SEARCH_VALUE": "A successful SSO sign-in from TOR via a mobile device"
                 }
                 ]
-            }
-        ]    
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
     }
   }
 }

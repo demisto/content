@@ -1,15 +1,34 @@
 from copy import deepcopy
 
-from requests import Response
-
 from CommonServerPython import *
-from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
-    RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
-    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
-    ReanalyzeFile, ImpHashSimilarity, DomainThreatIntelligence, IPThreatIntelligence, NetworkReputation, \
-    NetworkReputationUserOverride, CustomerUsage
+from requests import Response
 from ReversingLabs.SDK.helper import NotFoundError
-
+from ReversingLabs.SDK.ticloud import (
+    AdvancedSearch,
+    AnalyzeURL,
+    AVScanners,
+    CertificateAnalytics,
+    CustomerUsage,
+    DomainThreatIntelligence,
+    DynamicAnalysis,
+    ExpressionSearch,
+    FileAnalysis,
+    FileDownload,
+    FileReputation,
+    FileUpload,
+    ImpHashSimilarity,
+    IPThreatIntelligence,
+    NetworkReputation,
+    NetworkReputationUserOverride,
+    ReanalyzeFile,
+    RHA1Analytics,
+    RHA1FunctionalSimilarity,
+    URIIndex,
+    URIStatistics,
+    URLThreatIntelligence,
+    YARAHunting,
+    YARARetroHunting,
+)
 
 VERSION = "v2.7.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -31,8 +50,8 @@ HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("passwo
 
 
 def format_proxy(addr, username=None, password=None):
-    protocol = ''
-    proxy_name = ''
+    protocol = ""
+    proxy_name = ""
     if addr.startswith("http://"):
         protocol = addr[:7]
         proxy_name = addr[7:]
@@ -57,20 +76,12 @@ def return_proxies():
     proxies = {}
 
     if HTTP_PROXY:
-        http_proxy = format_proxy(
-            addr=HTTP_PROXY,
-            username=HTTP_PROXY_USERNAME,
-            password=HTTP_PROXY_PASSWORD
-        )
+        http_proxy = format_proxy(addr=HTTP_PROXY, username=HTTP_PROXY_USERNAME, password=HTTP_PROXY_PASSWORD)
 
         proxies["http"] = http_proxy
 
     if HTTPS_PROXY:
-        https_proxy = format_proxy(
-            addr=HTTPS_PROXY,
-            username=HTTPS_PROXY_USERNAME,
-            password=HTTPS_PROXY_PASSWORD
-        )
+        https_proxy = format_proxy(addr=HTTPS_PROXY, username=HTTPS_PROXY_USERNAME, password=HTTPS_PROXY_PASSWORD)
 
         proxies["https"] = https_proxy
 
@@ -84,24 +95,12 @@ PROXIES = return_proxies()
 
 
 def classification_to_score(classification):
-    score_dict = {
-        "UNKNOWN": 0,
-        "KNOWN": 1,
-        "NO_THREATS_FOUND": 1,
-        "SUSPICIOUS": 2,
-        "MALICIOUS": 3
-    }
+    score_dict = {"UNKNOWN": 0, "KNOWN": 1, "NO_THREATS_FOUND": 1, "SUSPICIOUS": 2, "MALICIOUS": 3}
     return score_dict.get(classification, 0)
 
 
 def test_module_command():
-    mwp = FileReputation(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
-    )
+    mwp = FileReputation(host=TICLOUD_URL, username=USERNAME, password=PASSWORD, proxies=PROXIES, verify=VERIFY_CERTS)
 
     try:
         _ = mwp.get_file_reputation(hash_input="6a95d3d00267c9fd80bd42122738e726")
@@ -140,12 +139,7 @@ def file_command():
 
 def file_reputation_command():
     mwp = FileReputation(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     hash_value = demisto.getArg("hash")
@@ -203,24 +197,16 @@ def file_reputation_output(response_json, hash_value):
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs TitaniumCloud v2',
+        integration_name="ReversingLabs TitaniumCloud v2",
         score=d_bot_score,
         malicious_description=f"{reason} - {threat_name}",
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.File(
-        md5=md5,
-        sha1=sha1,
-        sha256=sha256,
-        dbot_score=dbot_score
-    )
+    indicator = Common.File(md5=md5, sha1=sha1, sha256=sha256, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'file_reputation': response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"file_reputation": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -228,12 +214,7 @@ def file_reputation_output(response_json, hash_value):
 
 def av_scanners_command():
     xref = AVScanners(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
 
@@ -290,22 +271,14 @@ def av_scanners_output(response_json, hash_value):
     dbot_score = Common.DBotScore(
         indicator=hash_value,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs TitaniumCloud v2',
+        integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
     )
 
-    indicator = Common.File(
-        md5=md5,
-        sha1=sha1,
-        sha256=sha256,
-        dbot_score=dbot_score
-    )
+    indicator = Common.File(md5=md5, sha1=sha1, sha256=sha256, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'av_scanners': response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"av_scanners": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -313,12 +286,7 @@ def av_scanners_output(response_json, hash_value):
 
 def file_analysis_command():
     rldata = FileAnalysis(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
 
@@ -332,10 +300,9 @@ def file_analysis_command():
     results = file_analysis_output(response_json=response_json, hash_value=hash_value)
 
     file_results = fileResult(
-        f'File Analysis report file for hash {hash_value}',
+        f"File Analysis report file for hash {hash_value}",
         json.dumps(response_json, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
-
+        file_type=EntryType.ENTRY_INFO_FILE,
     )
     return_results([results, file_results])
 
@@ -379,22 +346,14 @@ def file_analysis_output(response_json, hash_value):
     dbot_score = Common.DBotScore(
         indicator=hash_value,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs TitaniumCloud v2',
+        integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
     )
 
-    indicator = Common.File(
-        md5=md5,
-        sha1=sha1,
-        sha256=sha256,
-        dbot_score=dbot_score
-    )
+    indicator = Common.File(md5=md5, sha1=sha1, sha256=sha256, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'file_analysis': response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"file_analysis": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -402,12 +361,7 @@ def file_analysis_output(response_json, hash_value):
 
 def functional_similarity_command():
     similarity = RHA1FunctionalSimilarity(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
     limit = demisto.getArg("result_limit")
@@ -420,9 +374,9 @@ def functional_similarity_command():
     results = functional_similarity_output(sha1_list)
 
     file_results = fileResult(
-        f'RHA1 Functional Similarity report file for hash {hash_value}',
+        f"RHA1 Functional Similarity report file for hash {hash_value}",
         json.dumps(sha1_list, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        file_type=EntryType.ENTRY_INFO_FILE,
     )
 
     return_results([results, file_results])
@@ -430,9 +384,9 @@ def functional_similarity_command():
 
 def functional_similarity_output(sha1_list):
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'functional_similarity': sha1_list},
-        readable_output="Full report is returned in a downloadable file"
+        outputs_prefix="ReversingLabs",
+        outputs={"functional_similarity": sha1_list},
+        readable_output="Full report is returned in a downloadable file",
     )
 
     return results
@@ -440,12 +394,7 @@ def functional_similarity_output(sha1_list):
 
 def rha1_analytics_command():
     rha_analytics = RHA1Analytics(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
     hash_value = demisto.getArg("hash")
 
@@ -499,24 +448,16 @@ def rha1_analytics_output(response_json, hash_value):
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs TitaniumCloud v2',
+        integration_name="ReversingLabs TitaniumCloud v2",
         score=d_bot_score,
         malicious_description=threat_name,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.File(
-        md5=md5,
-        sha1=sha1,
-        sha256=sha256,
-        dbot_score=dbot_score
-    )
+    indicator = Common.File(md5=md5, sha1=sha1, sha256=sha256, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'rha1_analytics': response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"rha1_analytics": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -524,12 +465,7 @@ def rha1_analytics_output(response_json, hash_value):
 
 def uri_statistics_command():
     uri_stats = URIStatistics(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
     uri = demisto.getArg("uri")
 
@@ -555,7 +491,7 @@ def uri_statistics_output(response_json, uri):
         "domain": f"**Domain**: {uri}",
         "url": f"**URL**: {uri}",
         "ipv4": f"**IPv4**: {uri}",
-        "email": f"**Email**: {uri}"
+        "email": f"**Email**: {uri}",
     }
 
     markdown = f"""## ReversingLabs URI Statistics results for URI {uri}\n ### Sample counters\n **KNOWN**: {
@@ -574,9 +510,9 @@ def uri_statistics_output(response_json, uri):
             dbot_score=Common.DBotScore(
                 indicator=uri,
                 indicator_type=DBotScoreType.DOMAIN,
-                integration_name='ReversingLabs TitaniumCloud v2',
+                integration_name="ReversingLabs TitaniumCloud v2",
                 score=0,
-            )
+            ),
         )
     elif uri_type == "url":
         indicator = Common.URL(
@@ -584,9 +520,9 @@ def uri_statistics_output(response_json, uri):
             dbot_score=Common.DBotScore(
                 indicator=uri,
                 indicator_type=DBotScoreType.URL,
-                integration_name='ReversingLabs TitaniumCloud v2',
+                integration_name="ReversingLabs TitaniumCloud v2",
                 score=0,
-            )
+            ),
         )
     elif uri_type == "ipv4":
         indicator = Common.IP(
@@ -594,9 +530,9 @@ def uri_statistics_output(response_json, uri):
             dbot_score=Common.DBotScore(
                 indicator=uri,
                 indicator_type=DBotScoreType.IP,
-                integration_name='ReversingLabs TitaniumCloud v2',
+                integration_name="ReversingLabs TitaniumCloud v2",
                 score=0,
-            )
+            ),
         )
     elif uri_type == "email":
         indicator = Common.EMAIL(
@@ -604,18 +540,15 @@ def uri_statistics_output(response_json, uri):
             dbot_score=Common.DBotScore(
                 indicator=uri,
                 indicator_type=DBotScoreType.EMAIL,
-                integration_name='ReversingLabs TitaniumCloud v2',
+                integration_name="ReversingLabs TitaniumCloud v2",
                 score=0,
-            )
+            ),
         )
     else:
         return_error("This integration does not currently support this URI type")
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'uri_statistics': response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"uri_statistics": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -623,12 +556,7 @@ def uri_statistics_output(response_json, uri):
 
 def uri_index_command():
     uri_index = URIIndex(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     uri = demisto.getArg("uri")
@@ -646,15 +574,13 @@ def uri_index_command():
 
 def uri_index_output(sha1_list, uri):
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'uri_index': sha1_list},
-        readable_output="Full report is returned in a downloadable file"
+        outputs_prefix="ReversingLabs",
+        outputs={"uri_index": sha1_list},
+        readable_output="Full report is returned in a downloadable file",
     )
 
     file_results = fileResult(
-        f'URI Index report file for URI {uri}',
-        json.dumps(sha1_list, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        f"URI Index report file for URI {uri}", json.dumps(sha1_list, indent=4), file_type=EntryType.ENTRY_INFO_FILE
     )
 
     return results, file_results
@@ -662,12 +588,7 @@ def uri_index_output(sha1_list, uri):
 
 def advanced_search_command():
     advanced_search = AdvancedSearch(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     query = demisto.getArg("query")
@@ -685,15 +606,13 @@ def advanced_search_command():
 
 def advanced_search_output(result_list):
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'advanced_search': result_list},
-        readable_output="Full report is returned in a downloadable file"
+        outputs_prefix="ReversingLabs",
+        outputs={"advanced_search": result_list},
+        readable_output="Full report is returned in a downloadable file",
     )
 
     file_results = fileResult(
-        'Advanced Search report file',
-        json.dumps(result_list, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        "Advanced Search report file", json.dumps(result_list, indent=4), file_type=EntryType.ENTRY_INFO_FILE
     )
 
     return results, file_results
@@ -701,12 +620,7 @@ def advanced_search_output(result_list):
 
 def expression_search_command():
     expression_search = ExpressionSearch(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     query = demisto.getArg("query")
@@ -715,11 +629,7 @@ def expression_search_command():
     query_list = query.split(" ")
 
     try:
-        result_list = expression_search.search_aggregated(
-            query=query_list,
-            date=date,
-            max_results=int(limit)
-        )
+        result_list = expression_search.search_aggregated(query=query_list, date=date, max_results=int(limit))
     except Exception as e:
         return_error(str(e))
 
@@ -730,15 +640,13 @@ def expression_search_command():
 
 def expression_search_output(result_list):
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'expression_search': result_list},
-        readable_output="Full report is returned in a downloadable file"
+        outputs_prefix="ReversingLabs",
+        outputs={"expression_search": result_list},
+        readable_output="Full report is returned in a downloadable file",
     )
 
     file_results = fileResult(
-        'Expression Search report file',
-        json.dumps(result_list, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        "Expression Search report file", json.dumps(result_list, indent=4), file_type=EntryType.ENTRY_INFO_FILE
     )
 
     return results, file_results
@@ -746,12 +654,7 @@ def expression_search_output(result_list):
 
 def file_download_command():
     file_download = FileDownload(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     hash_value = demisto.getArg("hash")
@@ -769,21 +672,14 @@ def file_download_command():
 
 
 def file_download_output(hash_value):
-    results = CommandResults(
-        readable_output=f"Requested sample is available for download under the name {hash_value}"
-    )
+    results = CommandResults(readable_output=f"Requested sample is available for download under the name {hash_value}")
 
     return results
 
 
 def file_upload_command():
     file_upload = FileUpload(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     file_entry = demisto.getFilePath(demisto.getArg("entryId"))
@@ -792,9 +688,7 @@ def file_upload_command():
     with open(file_entry["path"], "rb") as file_handle:
         _ = file_upload.upload_sample_from_file(file_handle=file_handle, sample_name=filename)
 
-        results = CommandResults(
-            readable_output=f"Successfully uploaded file {filename}"
-        )
+        results = CommandResults(readable_output=f"Successfully uploaded file {filename}")
 
         return_results(results)
 
@@ -827,12 +721,7 @@ def url_command():
 
 def url_report_command():
     url_ti = URLThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     url = demisto.getArg("url")
@@ -900,22 +789,16 @@ def url_report_output(response_json, url):
     dbot_score = Common.DBotScore(
         indicator=url,
         indicator_type=DBotScoreType.URL,
-        integration_name='ReversingLabs TitaniumCloud v2',
+        integration_name="ReversingLabs TitaniumCloud v2",
         score=d_bot_score,
         malicious_description=classification.upper(),
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.URL(
-        url=url,
-        dbot_score=dbot_score
-    )
+    indicator = Common.URL(url=url, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'url_report': response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"url_report": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -923,12 +806,7 @@ def url_report_output(response_json, url):
 
 def analyze_url_command():
     analyze_url = AnalyzeURL(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     url = demisto.getArg("url")
@@ -951,23 +829,14 @@ def analyze_url_output(response_json, url):
     **Analysis ID**: {report_base.get("analysis_id")}
     **Requested URL**: {report_base.get("requested_url")}"""
 
-    results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'analyze_url': response_json},
-        readable_output=markdown
-    )
+    results = CommandResults(outputs_prefix="ReversingLabs", outputs={"analyze_url": response_json}, readable_output=markdown)
 
     return results
 
 
 def create_da_object():
     da = DynamicAnalysis(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     return da
@@ -983,8 +852,10 @@ def detonate_sample_command():
         response = da.detonate_sample(sample_sha1=sha1, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
+            return_error(
+                f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
@@ -1002,9 +873,7 @@ def detonate_sample_output(response_json, sha1):
     **Analysis ID**: {report_base.get("analysis_id")}"""
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'detonate_sample_dynamic': response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"detonate_sample_dynamic": response_json}, readable_output=markdown
     )
 
     return results
@@ -1021,12 +890,14 @@ def sample_dynamic_analysis_results_command():
         response = da.get_dynamic_analysis_results(
             sample_hash=sha1,
             analysis_id=analysis_id if analysis_id else None,
-            latest=latest_analysis if latest_analysis else None
+            latest=latest_analysis if latest_analysis else None,
         )
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
+            return_error(
+                f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
@@ -1054,30 +925,25 @@ def sample_dynamic_analysis_results_output(response_json, sha1):
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs TitaniumCloud v2',
+        integration_name="ReversingLabs TitaniumCloud v2",
         malicious_description=classification,
         score=d_bot_score,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.File(
-        sha1=sha1,
-        md5=md5,
-        sha256=sha256,
-        dbot_score=dbot_score
-    )
+    indicator = Common.File(sha1=sha1, md5=md5, sha256=sha256, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'sample_dynamic_analysis_results': response_json},
+        outputs_prefix="ReversingLabs",
+        outputs={"sample_dynamic_analysis_results": response_json},
         readable_output=markdown,
-        indicator=indicator
+        indicator=indicator,
     )
 
     file_results = fileResult(
-        f'Dynamic analysis report file for sample {sha1}',
+        f"Dynamic analysis report file for sample {sha1}",
         json.dumps(response_json, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        file_type=EntryType.ENTRY_INFO_FILE,
     )
 
     return results, file_results
@@ -1093,8 +959,10 @@ def detonate_url_command():
         response = da.detonate_url(url_string=url, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
+            return_error(
+                f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
@@ -1115,9 +983,7 @@ def detonate_url_output(response_json, url):
     """
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"detonate_url_dynamic": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"detonate_url_dynamic": response_json}, readable_output=markdown
     )
 
     return results
@@ -1136,22 +1002,20 @@ def url_dynamic_analysis_results_command():
             url_sha1=sha1 if sha1 else None,
             url=url if url else None,
             analysis_id=analysis_id if analysis_id else None,
-            latest=latest_analysis if latest_analysis else None
+            latest=latest_analysis if latest_analysis else None,
         )
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
-                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
+            return_error(
+                f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
+                f"message: {e.response_object.text}"  # type: ignore[attr-defined]
+            )
 
         return_error(str(e))
 
     response_json = response.json()
-    results, file_results = url_dynamic_analysis_results_output(
-        response_json=response_json,
-        passed_url=url,
-        passed_sha1=sha1
-    )
+    results, file_results = url_dynamic_analysis_results_output(response_json=response_json, passed_url=url, passed_sha1=sha1)
 
     return_results([results, file_results])
 
@@ -1173,7 +1037,9 @@ def url_dynamic_analysis_results_output(response_json, passed_url=None, passed_s
         markdown = markdown + f"**Last analysis**: {report.get('last_analysis')}\n"
 
     else:
-        markdown = markdown + f"""**Analysis ID**: {report.get("analysis_id")}\n **Analysis time**: {report.get("analysis_time")}
+        markdown = (
+            markdown
+            + f"""**Analysis ID**: {report.get("analysis_id")}\n **Analysis time**: {report.get("analysis_time")}
         **Analysis duration**: {report.get("analysis_duration")}
         **Platform**: {report.get("platform")}
         **Configuration**: {report.get("configuration")}
@@ -1182,6 +1048,7 @@ def url_dynamic_analysis_results_output(response_json, passed_url=None, passed_s
         **Screenshots lin**: {report.get("screenshots")}
         **Dropped files link**: {report.get("dropped_files_url")}
         """
+        )
 
     network = report.get("network", {})
     if network:
@@ -1206,25 +1073,20 @@ def url_dynamic_analysis_results_output(response_json, passed_url=None, passed_s
         integration_name="ReversingLabs TitaniumCloud v2",
         malicious_description=classification,
         score=d_bot_score,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.URL(
-        url=url,
-        dbot_score=dbot_score
-    )
+    indicator = Common.URL(url=url, dbot_score=dbot_score)
 
     results = CommandResults(
         outputs_prefix="ReversingLabs",
         outputs={"url_dynamic_analysis_results": response_json},
         readable_output=markdown,
-        indicator=indicator
+        indicator=indicator,
     )
 
     file_results = fileResult(
-        f"Dynamic analysis report file for URL {url}",
-        json.dumps(response_json, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        f"Dynamic analysis report file for URL {url}", json.dumps(response_json, indent=4), file_type=EntryType.ENTRY_INFO_FILE
     )
 
     return results, file_results
@@ -1232,12 +1094,7 @@ def url_dynamic_analysis_results_output(response_json, passed_url=None, passed_s
 
 def certificate_analytics_command():
     cert_analytics = CertificateAnalytics(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     thumbprint = demisto.getArg("certificate_thumbprint")
@@ -1256,15 +1113,15 @@ def certificate_analytics_command():
 
 def certificate_analytics_output(response_json, thumbprint):
     results = CommandResults(
-        outputs_prefix='ReversingLabs',
-        outputs={'certificate_analytics': response_json},
-        readable_output="Full report is returned in a downloadable file"
+        outputs_prefix="ReversingLabs",
+        outputs={"certificate_analytics": response_json},
+        readable_output="Full report is returned in a downloadable file",
     )
 
     file_results = fileResult(
-        f'Certificate Analytics report file for thumbprint {thumbprint}',
+        f"Certificate Analytics report file for thumbprint {thumbprint}",
         json.dumps(response_json, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
+        file_type=EntryType.ENTRY_INFO_FILE,
     )
 
     return results, file_results
@@ -1272,14 +1129,9 @@ def certificate_analytics_output(response_json, thumbprint):
 
 def yara_ruleset_command():
     response = Response()
-    output_key = ''
+    output_key = ""
     yara = YARAHunting(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     yara_action = demisto.getArg("yara_action")
@@ -1298,9 +1150,7 @@ def yara_ruleset_command():
 
         try:
             response = yara.create_ruleset(
-                ruleset_name=ruleset_name,
-                ruleset_text=ruleset_text,
-                sample_available=sample_available
+                ruleset_name=ruleset_name, ruleset_text=ruleset_text, sample_available=sample_available
             )
         except Exception as e:
             return_error(str(e))
@@ -1309,9 +1159,7 @@ def yara_ruleset_command():
 
     elif yara_action == "DELETE RULESET":
         try:
-            response = yara.delete_ruleset(
-                ruleset_name=ruleset_name
-            )
+            response = yara.delete_ruleset(ruleset_name=ruleset_name)
         except Exception as e:
             return_error(str(e))
 
@@ -1319,9 +1167,7 @@ def yara_ruleset_command():
 
     elif yara_action == "GET RULESET INFO":
         try:
-            response = yara.get_ruleset_info(
-                ruleset_name=ruleset_name
-            )
+            response = yara.get_ruleset_info(ruleset_name=ruleset_name)
         except Exception as e:
             return_error(str(e))
 
@@ -1329,9 +1175,7 @@ def yara_ruleset_command():
 
     elif yara_action == "GET RULESET TEXT":
         try:
-            response = yara.get_ruleset_text(
-                ruleset_name=ruleset_name
-            )
+            response = yara.get_ruleset_text(ruleset_name=ruleset_name)
         except Exception as e:
             return_error(str(e))
 
@@ -1348,33 +1192,21 @@ def yara_ruleset_command():
 
 
 def yara_ruleset_output(output_key, response_json):
-    results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={output_key: response_json},
-        readable_output=response_json
-    )
+    results = CommandResults(outputs_prefix="ReversingLabs", outputs={output_key: response_json}, readable_output=response_json)
 
     return results
 
 
 def yara_matches_feed_command():
     yara = YARAHunting(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     time_format = demisto.getArg("time_format")
     time_value = demisto.getArg("time_value")
 
     try:
-        response = yara.yara_matches_feed(
-            time_format=time_format,
-            time_value=time_value
-        )
+        response = yara.yara_matches_feed(time_format=time_format, time_value=time_value)
     except Exception as e:
         return_error(str(e))
 
@@ -1398,9 +1230,7 @@ def yara_matches_feed_output(response_json, time_value):
     markdown = f"{markdown}\n {entries}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"yara_matches_feed": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"yara_matches_feed": response_json}, readable_output=markdown
     )
 
     return results
@@ -1408,14 +1238,9 @@ def yara_matches_feed_output(response_json, time_value):
 
 def yara_retro_actions_command():
     response = Response()
-    output_key = ''
+    output_key = ""
     retro = YARARetroHunting(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     retro_action = demisto.getArg("yara_retro_action")
@@ -1464,33 +1289,21 @@ def yara_retro_actions_command():
 
 
 def yara_retro_actions_output(output_key, response_json):
-    results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={output_key: response_json},
-        readable_output=response_json
-    )
+    results = CommandResults(outputs_prefix="ReversingLabs", outputs={output_key: response_json}, readable_output=response_json)
 
     return results
 
 
 def yara_retro_matches_feed_command():
     yara = YARARetroHunting(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     time_format = demisto.getArg("time_format")
     time_value = demisto.getArg("time_value")
 
     try:
-        response = yara.yara_retro_matches_feed(
-            time_format=time_format,
-            time_value=time_value
-        )
+        response = yara.yara_retro_matches_feed(time_format=time_format, time_value=time_value)
     except Exception as e:
         return_error(str(e))
 
@@ -1514,9 +1327,7 @@ def yara_retro_matches_feed_output(response_json, time_value):
     markdown = f"{markdown}\n {entries}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"yara_retro_matches_feed": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"yara_retro_matches_feed": response_json}, readable_output=markdown
     )
 
     return results
@@ -1524,20 +1335,13 @@ def yara_retro_matches_feed_output(response_json, time_value):
 
 def reanalyze_sample_command():
     reanalyze = ReanalyzeFile(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     sample_hash = demisto.getArg("hash")
 
     try:
-        response = reanalyze.reanalyze_samples(
-            sample_hashes=sample_hash
-        )
+        response = reanalyze.reanalyze_samples(sample_hashes=sample_hash)
     except Exception as e:
         return_error(str(e))
 
@@ -1548,9 +1352,7 @@ def reanalyze_sample_command():
 
 def reanalyze_sample_output(response_text):
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"reanalyze_sample": response_text},
-        readable_output=response_text
+        outputs_prefix="ReversingLabs", outputs={"reanalyze_sample": response_text}, readable_output=response_text
     )
 
     return results
@@ -1558,22 +1360,14 @@ def reanalyze_sample_output(response_text):
 
 def imphash_similarity_command():
     imphash_similarity = ImpHashSimilarity(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     imphash = demisto.getArg("imphash")
     max_results = int(demisto.getArg("max_results"))
 
     try:
-        response = imphash_similarity.get_imphash_index_aggregated(
-            imphash=imphash,
-            max_results=max_results
-        )
+        response = imphash_similarity.get_imphash_index_aggregated(imphash=imphash, max_results=max_results)
     except Exception as e:
         return_error(str(e))
 
@@ -1586,23 +1380,14 @@ def imphash_similarity_output(response, imphash):
     hashes = tableToMarkdown("SHA-1 list", response, headers="Hashes")
     markdown = f"## ReversingLabs Imphash Similarity for {imphash}\n {hashes}"
 
-    results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"imphash_similarity": response},
-        readable_output=markdown
-    )
+    results = CommandResults(outputs_prefix="ReversingLabs", outputs={"imphash_similarity": response}, readable_output=markdown)
 
     return results
 
 
 def url_downloaded_files_command():
     url_ti = URLThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     url = demisto.getArg("url")
@@ -1623,7 +1408,7 @@ def url_downloaded_files_command():
             last_analysis=last_analysis,
             analysis_id=analysis_id,
             results_per_page=results_per_page,
-            max_results=max_results
+            max_results=max_results,
         )
     except NotFoundError:
         return_results("No results were found for this input.")
@@ -1640,33 +1425,21 @@ def url_downloaded_files_output(response, url):
     files = tableToMarkdown("Downloaded files", response)
     markdown = f"## ReversingLabs Files Downloaded from URL {url}\n {files}"
 
-    results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"url_downloaded_files": response},
-        readable_output=markdown
-    )
+    results = CommandResults(outputs_prefix="ReversingLabs", outputs={"url_downloaded_files": response}, readable_output=markdown)
 
     return results
 
 
 def url_latest_analyses_feed_command():
     url_ti = URLThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     results_per_page = int(demisto.getArg("results_per_page"))
     max_results = int(demisto.getArg("max_results"))
 
     try:
-        response = url_ti.get_latest_url_analysis_feed_aggregated(
-            results_per_page=results_per_page,
-            max_results=max_results
-        )
+        response = url_ti.get_latest_url_analysis_feed_aggregated(results_per_page=results_per_page, max_results=max_results)
     except NotFoundError:
         return_results("No results were found for this input.")
         return
@@ -1683,16 +1456,11 @@ def url_latest_analyses_feed_output(response):
     markdown = f"## ReversingLabs Latest URL Analyses Feed\n {analyses}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"url_latest_analyses_feed": response},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"url_latest_analyses_feed": response}, readable_output=markdown
     )
 
     file_results = fileResult(
-        "ReversingLabs Latest URL Analyses Feed",
-        json.dumps(response, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
-
+        "ReversingLabs Latest URL Analyses Feed", json.dumps(response, indent=4), file_type=EntryType.ENTRY_INFO_FILE
     )
 
     return results, file_results
@@ -1700,12 +1468,7 @@ def url_latest_analyses_feed_output(response):
 
 def url_analyses_feed_from_date_command():
     url_ti = URLThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     time_format = demisto.getArg("time_format")
@@ -1715,10 +1478,7 @@ def url_analyses_feed_from_date_command():
 
     try:
         response = url_ti.get_url_analysis_feed_from_date_aggregated(
-            time_format=time_format,
-            start_time=start_time,
-            results_per_page=results_per_page,
-            max_results=max_results
+            time_format=time_format, start_time=start_time, results_per_page=results_per_page, max_results=max_results
         )
     except NotFoundError:
         return_results("No results were found for this input.")
@@ -1736,16 +1496,13 @@ def url_analyses_feed_from_date_output(response, start_time):
     markdown = f"## ReversingLabs URL Analyses Feed From Date {start_time}\n {analyses}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"url_analyses_feed_from_date": response},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"url_analyses_feed_from_date": response}, readable_output=markdown
     )
 
     file_results = fileResult(
         f"ReversingLabs URL Analyses Feed From Date {start_time}",
         json.dumps(response, indent=4),
-        file_type=EntryType.ENTRY_INFO_FILE
-
+        file_type=EntryType.ENTRY_INFO_FILE,
     )
 
     return results, file_results
@@ -1754,12 +1511,7 @@ def url_analyses_feed_from_date_output(response, start_time):
 def create_domain_ti_object():
     """Creates a DomainThreatIntelligence object."""
     domain_ti = DomainThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     return domain_ti
@@ -1830,10 +1582,7 @@ def domain_report_output(response_json, domain):
 
     top_threats = response_json.get("rl", {}).get("top_threats", [])
     if top_threats:
-        threats_table = tableToMarkdown(
-            name="Top threats",
-            t=top_threats
-        )
+        threats_table = tableToMarkdown(name="Top threats", t=top_threats)
         markdown = f"{markdown}\n {threats_table}"
 
     third_party = response_json.get("rl", {}).get("third_party_reputations")
@@ -1872,16 +1621,10 @@ def domain_report_output(response_json, domain):
         reliability=RELIABILITY
     )
 
-    indicator = Common.Domain(
-        domain=domain,
-        dbot_score=dbot_score
-    )
+    indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"domain_report": response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"domain_report": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -1897,10 +1640,7 @@ def domain_downloaded_files_command():
 
     try:
         response = domain_ti.get_downloaded_files_aggregated(
-            domain=domain,
-            classification=classification,
-            results_per_page=per_page,
-            max_results=limit
+            domain=domain, classification=classification, results_per_page=per_page, max_results=limit
         )
     except Exception as e:
         return_error(str(e))
@@ -1910,10 +1650,7 @@ def domain_downloaded_files_command():
 
 
 def domain_downloaded_files_output(response, domain):
-    files_table = tableToMarkdown(
-        name="Downloaded files",
-        t=response
-    )
+    files_table = tableToMarkdown(name="Downloaded files", t=response)
 
     markdown = f"## ReversingLabs Files downloaded from domain {domain}\n {files_table}"
 
@@ -1922,19 +1659,16 @@ def domain_downloaded_files_output(response, domain):
         indicator_type=DBotScoreType.DOMAIN,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.Domain(
-        domain=domain,
-        dbot_score=dbot_score
-    )
+    indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
     results = CommandResults(
         outputs_prefix="ReversingLabs",
         outputs={"domain_downloaded_files": response},
         readable_output=markdown,
-        indicator=indicator
+        indicator=indicator,
     )
 
     return results
@@ -1948,11 +1682,7 @@ def domain_urls_command():
     per_page = int(demisto.getArg("results_per_page"))
 
     try:
-        response = domain_ti.urls_from_domain_aggregated(
-            domain=domain,
-            results_per_page=per_page,
-            max_results=limit
-        )
+        response = domain_ti.urls_from_domain_aggregated(domain=domain, results_per_page=per_page, max_results=limit)
     except Exception as e:
         return_error(str(e))
 
@@ -1961,10 +1691,7 @@ def domain_urls_command():
 
 
 def domain_urls_output(response, domain):
-    urls_table = tableToMarkdown(
-        name="URL list",
-        t=response
-    )
+    urls_table = tableToMarkdown(name="URL list", t=response)
 
     markdown = f"## ReversingLabs URL-s associated with domain {domain}\n {urls_table}"
 
@@ -1973,19 +1700,13 @@ def domain_urls_output(response, domain):
         indicator_type=DBotScoreType.DOMAIN,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.Domain(
-        domain=domain,
-        dbot_score=dbot_score
-    )
+    indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"domain_urls": response},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"domain_urls": response}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -1999,11 +1720,7 @@ def domain_to_ip_command():
     per_page = int(demisto.getArg("results_per_page"))
 
     try:
-        response = domain_ti.domain_to_ip_resolutions_aggregated(
-            domain=domain,
-            results_per_page=per_page,
-            max_results=limit
-        )
+        response = domain_ti.domain_to_ip_resolutions_aggregated(domain=domain, results_per_page=per_page, max_results=limit)
     except Exception as e:
         return_error(str(e))
 
@@ -2012,10 +1729,7 @@ def domain_to_ip_command():
 
 
 def domain_to_ip_output(response, domain):
-    ip_table = tableToMarkdown(
-        name="IP address list",
-        t=response
-    )
+    ip_table = tableToMarkdown(name="IP address list", t=response)
 
     markdown = f"## ReversingLabs IP addresses resolved from domain {domain}\n {ip_table}"
 
@@ -2024,19 +1738,13 @@ def domain_to_ip_output(response, domain):
         indicator_type=DBotScoreType.DOMAIN,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.Domain(
-        domain=domain,
-        dbot_score=dbot_score
-    )
+    indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"domain_to_ip": response},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"domain_to_ip": response}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -2050,11 +1758,7 @@ def domain_related_domains_command():
     per_page = int(demisto.getArg("results_per_page"))
 
     try:
-        response = domain_ti.related_domains_aggregated(
-            domain=domain,
-            results_per_page=per_page,
-            max_results=limit
-        )
+        response = domain_ti.related_domains_aggregated(domain=domain, results_per_page=per_page, max_results=limit)
     except Exception as e:
         return_error(str(e))
 
@@ -2063,10 +1767,7 @@ def domain_related_domains_command():
 
 
 def domain_related_domains_output(response, domain):
-    domain_table = tableToMarkdown(
-        name="Domain list",
-        t=response
-    )
+    domain_table = tableToMarkdown(name="Domain list", t=response)
 
     markdown = f"## ReversingLabs domains related to domain {domain}\n {domain_table}"
 
@@ -2075,19 +1776,16 @@ def domain_related_domains_output(response, domain):
         indicator_type=DBotScoreType.DOMAIN,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.Domain(
-        domain=domain,
-        dbot_score=dbot_score
-    )
+    indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
     results = CommandResults(
         outputs_prefix="ReversingLabs",
         outputs={"domain_related_domains": response},
         readable_output=markdown,
-        indicator=indicator
+        indicator=indicator,
     )
 
     return results
@@ -2096,12 +1794,7 @@ def domain_related_domains_output(response, domain):
 def create_ip_ti_object():
     """Creates an IPThreatIntelligence object."""
     ip_ti = IPThreatIntelligence(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     return ip_ti
@@ -2176,10 +1869,7 @@ def ip_report_output(response_json, ip):
 
         tp_sources = deepcopy(third_party.get("sources"))
         tp_sources = bold_classification(tp_sources, "detection", "malicious")
-        sources_table = tableToMarkdown(
-            name="Third party sources",
-            t=tp_sources
-        )
+        sources_table = tableToMarkdown(name="Third party sources", t=tp_sources)
         markdown = f"{markdown}\n {sources_table}"
 
     score = classification_to_score(classification)
@@ -2192,16 +1882,10 @@ def ip_report_output(response_json, ip):
         reliability=RELIABILITY
     )
 
-    indicator = Common.IP(
-        ip=ip,
-        dbot_score=dbot_score
-    )
+    indicator = Common.IP(ip=ip, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"ip_report": response_json},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"ip_report": response_json}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -2217,10 +1901,7 @@ def ip_downloaded_files_command():
 
     try:
         response = ip_ti.get_downloaded_files_aggregated(
-            ip_address=ip,
-            classification=classification,
-            results_per_page=per_page,
-            max_results=limit
+            ip_address=ip, classification=classification, results_per_page=per_page, max_results=limit
         )
     except Exception as e:
         return_error(str(e))
@@ -2232,10 +1913,7 @@ def ip_downloaded_files_command():
 def ip_downloaded_files_output(response, ip):
     readable = deepcopy(response)
     readable = bold_classification(readable, "classification", "MALICIOUS")
-    files_table = tableToMarkdown(
-        name="Downloaded files",
-        t=readable
-    )
+    files_table = tableToMarkdown(name="Downloaded files", t=readable)
 
     markdown = f"## ReversingLabs Files downloaded from IP address {ip}\n {files_table}"
 
@@ -2244,19 +1922,13 @@ def ip_downloaded_files_output(response, ip):
         indicator_type=DBotScoreType.IP,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.IP(
-        ip=ip,
-        dbot_score=dbot_score
-    )
+    indicator = Common.IP(ip=ip, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"ip_downloaded_files": response},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"ip_downloaded_files": response}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -2270,11 +1942,7 @@ def ip_urls_command():
     per_page = int(demisto.getArg("results_per_page"))
 
     try:
-        response = ip_ti.urls_from_ip_aggregated(
-            ip_address=ip,
-            results_per_page=per_page,
-            max_results=limit
-        )
+        response = ip_ti.urls_from_ip_aggregated(ip_address=ip, results_per_page=per_page, max_results=limit)
     except Exception as e:
         return_error(str(e))
 
@@ -2283,10 +1951,7 @@ def ip_urls_command():
 
 
 def ip_urls_output(response, ip):
-    urls_table = tableToMarkdown(
-        name="URL list",
-        t=response
-    )
+    urls_table = tableToMarkdown(name="URL list", t=response)
 
     markdown = f"## ReversingLabs URL-s associated with IP address {ip}\n {urls_table}"
 
@@ -2295,19 +1960,13 @@ def ip_urls_output(response, ip):
         indicator_type=DBotScoreType.IP,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.IP(
-        ip=ip,
-        dbot_score=dbot_score
-    )
+    indicator = Common.IP(ip=ip, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"ip_urls": response},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"ip_urls": response}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -2321,11 +1980,7 @@ def ip_to_domain_command():
     per_page = int(demisto.getArg("results_per_page"))
 
     try:
-        response = ip_ti.ip_to_domain_resolutions_aggregated(
-            ip_address=ip,
-            results_per_page=per_page,
-            max_results=limit
-        )
+        response = ip_ti.ip_to_domain_resolutions_aggregated(ip_address=ip, results_per_page=per_page, max_results=limit)
     except Exception as e:
         return_error(str(e))
 
@@ -2334,10 +1989,7 @@ def ip_to_domain_command():
 
 
 def ip_to_domain_output(response, ip):
-    domain_table = tableToMarkdown(
-        name="Domain list",
-        t=response
-    )
+    domain_table = tableToMarkdown(name="Domain list", t=response)
 
     markdown = f"## ReversingLabs IP to domain mappings for IP address {ip}\n {domain_table}"
 
@@ -2346,19 +1998,13 @@ def ip_to_domain_output(response, ip):
         indicator_type=DBotScoreType.IP,
         integration_name="ReversingLabs TitaniumCloud v2",
         score=0,
-        reliability=RELIABILITY
+        reliability=RELIABILITY,
     )
 
-    indicator = Common.IP(
-        ip=ip,
-        dbot_score=dbot_score
-    )
+    indicator = Common.IP(ip=ip, dbot_score=dbot_score)
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"ip_to_domain": response},
-        readable_output=markdown,
-        indicator=indicator
+        outputs_prefix="ReversingLabs", outputs={"ip_to_domain": response}, readable_output=markdown, indicator=indicator
     )
 
     return results
@@ -2366,20 +2012,13 @@ def ip_to_domain_output(response, ip):
 
 def network_reputation_command():
     net_reputation = NetworkReputation(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     network_locations = argToList(demisto.getArg("network_locations"))
 
     try:
-        response = net_reputation.get_network_reputation(
-            network_locations=network_locations
-        )
+        response = net_reputation.get_network_reputation(network_locations=network_locations)
     except NotFoundError:
         return_results("No results were found for this input.")
         return
@@ -2404,18 +2043,13 @@ def network_reputation_output(response_json, network_locations):
             entry["third_party_reputations_total"] = tp_reputations.get("total")
             del entry["third_party_reputations"]
 
-    entries_table = tableToMarkdown(
-        name="Network locations",
-        t=entries
-    )
+    entries_table = tableToMarkdown(name="Network locations", t=entries)
 
     network_locations = ", ".join(network_locations)
     markdown = f"## ReversingLabs Reputation for the following network locations: {network_locations}\n {entries_table}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"network_reputation": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"network_reputation": response_json}, readable_output=markdown
     )
 
     return results
@@ -2424,12 +2058,7 @@ def network_reputation_output(response_json, network_locations):
 def create_net_rep_override_obj():
     """Creates an NetworkReputationUserOverride object."""
     net_rep_override = NetworkReputationUserOverride(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     return net_rep_override
@@ -2442,10 +2071,7 @@ def create_override_payload(piped_string, action=None):
 
     for one_location in split_by_pipe:
         values_list = one_location.split(",")
-        location_dict = {
-            "network_location": values_list[0],
-            "type": values_list[1]
-        }
+        location_dict = {"network_location": values_list[0], "type": values_list[1]}
         if action == "set_override":
             location_dict["classification"] = values_list[2]
         list_of_dicts.append(location_dict)
@@ -2463,10 +2089,7 @@ def network_reputation_override_command():
     remove_list = create_override_payload(piped_string=remove_override_str) if remove_override_str else []
 
     try:
-        response = net_rep_override.reputation_override(
-            override_list=set_list,
-            remove_overrides_list=remove_list
-        )
+        response = net_rep_override.reputation_override(override_list=set_list, remove_overrides_list=remove_list)
     except Exception as e:
         return_error(str(e))
 
@@ -2484,33 +2107,22 @@ def network_reputation_override_output(response_json):
     markdown = "## ReversingLabs Network reputation user override"
 
     if created_overrides:
-        created_overrides_table = tableToMarkdown(
-            name="Created overrides",
-            t=created_overrides
-        )
+        created_overrides_table = tableToMarkdown(name="Created overrides", t=created_overrides)
 
         markdown = f"{markdown}\n {created_overrides_table}"
 
     if removed_overrides:
-        removed_overrides_table = tableToMarkdown(
-            name="Removed overrides",
-            t=removed_overrides
-        )
+        removed_overrides_table = tableToMarkdown(name="Removed overrides", t=removed_overrides)
 
         markdown = f"{markdown}\n {removed_overrides_table}"
 
     if invalid:
-        invalid_table = tableToMarkdown(
-            name="Invalid network locations",
-            t=invalid
-        )
+        invalid_table = tableToMarkdown(name="Invalid network locations", t=invalid)
 
         markdown = f"{markdown}\n {invalid_table}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"network_reputation_override": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"network_reputation_override": response_json}, readable_output=markdown
     )
 
     return results
@@ -2531,17 +2143,12 @@ def network_reputation_overrides_list_command():
 
 
 def network_reputation_overrides_list_output(response):
-    entries_table = tableToMarkdown(
-        name="Network location list",
-        t=response
-    )
+    entries_table = tableToMarkdown(name="Network location list", t=response)
 
     markdown = f"## ReversingLabs Network reputation active user overrides list\n {entries_table}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"network_reputation_overrides_list": response},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"network_reputation_overrides_list": response}, readable_output=markdown
     )
 
     return results
@@ -2549,12 +2156,7 @@ def network_reputation_overrides_list_output(response):
 
 def create_customer_usage_obj():
     cu = CustomerUsage(
-        host=TICLOUD_URL,
-        username=USERNAME,
-        password=PASSWORD,
-        user_agent=USER_AGENT,
-        proxies=PROXIES,
-        verify=VERIFY_CERTS
+        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
     return cu
@@ -2570,41 +2172,27 @@ def customer_usage_data_command():
     whole_company = argToBoolean(demisto.getArg("whole_company"))
 
     if data_type == "DAILY USAGE":
-        response = cu.daily_usage(
-            single_date=single_time_unit,
-            from_date=from_time,
-            to_date=to_time,
-            whole_company=whole_company
-        )
+        response = cu.daily_usage(single_date=single_time_unit, from_date=from_time, to_date=to_time, whole_company=whole_company)
 
     elif data_type == "MONTHLY USAGE":
         response = cu.monthly_usage(
-            single_month=single_time_unit,
-            from_month=from_time,
-            to_month=to_time,
-            whole_company=whole_company
+            single_month=single_time_unit, from_month=from_time, to_month=to_time, whole_company=whole_company
         )
 
     elif data_type == "DATE RANGE USAGE":
-        response = cu.date_range_usage(
-            whole_company=whole_company
-        )
+        response = cu.date_range_usage(whole_company=whole_company)
 
     elif data_type == "QUOTA LIMITS":
-        response = cu.quota_limits(
-            whole_company=whole_company
-        )
+        response = cu.quota_limits(whole_company=whole_company)
 
     else:
-        raise Exception("Unknown data type request. Precisely one of the following values needs to be set as data_type: "
-                        "DAILY USAGE, MONTHLY USAGE, DATE RANGE USAGE, QUOTA LIMITS")
+        raise Exception(
+            "Unknown data type request. Precisely one of the following values needs to be set as data_type: "
+            "DAILY USAGE, MONTHLY USAGE, DATE RANGE USAGE, QUOTA LIMITS"
+        )
 
     response_json = response.json()
-    results = customer_usage_data_output(
-        data_type=data_type,
-        whole_company=whole_company,
-        response_json=response_json
-    )
+    results = customer_usage_data_output(data_type=data_type, whole_company=whole_company, response_json=response_json)
     return_results(results)
 
 
@@ -2625,9 +2213,7 @@ def customer_usage_data_output(data_type, whole_company, response_json):
         markdown = f"{markdown} \n There were no results."
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"customer_usage_data": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"customer_usage_data": response_json}, readable_output=markdown
     )
 
     return results
@@ -2650,9 +2236,7 @@ def customer_usage_yara_output(response_json):
     markdown = f"{markdown} \n {response_table}"
 
     results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"customer_usage_yara": response_json},
-        readable_output=markdown
+        outputs_prefix="ReversingLabs", outputs={"customer_usage_yara": response_json}, readable_output=markdown
     )
 
     return results
