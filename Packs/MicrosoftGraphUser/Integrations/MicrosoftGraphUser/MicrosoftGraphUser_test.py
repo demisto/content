@@ -312,7 +312,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     main()
 
-    assert 'ok' in demisto.results.call_args[0][0]['Contents']
+    assert 'ok' in demisto.results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
@@ -389,4 +389,4 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
             assert 'Please enable the integration' in str(exc)
     else:
         result = test_function(client, {})
-        assert result[0] == expected_result
+        assert result == expected_result

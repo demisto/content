@@ -322,7 +322,7 @@ def test_function(client, _):
             response = '```✅ Success!```'
 
     client.ms_client.http_request(method='GET', url_suffix='users/')
-    return response, None, None
+    return response
 
 
 @suppress_errors_with_404_code
@@ -330,8 +330,10 @@ def disable_user_account_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.disable_user_account_session(user)
     human_readable = f'user: "{user}" account has been disabled successfully.'
-    return human_readable, None, None
-
+    
+    return CommandResults(
+        readable_output=human_readable
+    )
 
 @suppress_errors_with_404_code
 def unblock_user_command(client: MsGraphClient, args: dict):
@@ -339,7 +341,10 @@ def unblock_user_command(client: MsGraphClient, args: dict):
     client.unblock_user(user)
     human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take effect across all ' \
                      f'applications. '
-    return human_readable, None, None
+
+    return CommandResults(
+        readable_output=human_readable
+    )
 
 
 @suppress_errors_with_404_code
@@ -347,7 +352,10 @@ def delete_user_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.delete_user(user)
     human_readable = f'user: "{user}" was deleted successfully.'
-    return human_readable, None, None
+    
+    return CommandResults(
+        readable_output=human_readable
+    )
 
 
 def create_user_command(client: MsGraphClient, args: dict):
@@ -380,11 +388,15 @@ def create_user_command(client: MsGraphClient, args: dict):
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
     accounts = create_account_outputs(user_outputs)
     outputs = {
-        'MSGraphUser(val.ID == obj.ID)': user_outputs,
-        'Account(obj.ID == val.ID)': accounts
+        'MSGraphUser': user_outputs,
+        'Account': accounts[0] if accounts else []
     }
-
-    return human_readable, outputs, user_data
+    
+    return CommandResults(
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=user_data
+    )
 
 
 @suppress_errors_with_404_code
@@ -406,8 +418,12 @@ def change_password_user_command(client: MsGraphClient, args: dict):
 
     client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
     human_readable = f'User {user} password was changed successfully.'
-    return human_readable, {}, {}
-
+  
+    return CommandResults(
+        outputs={},
+        readable_output=human_readable,
+        raw_response={}
+    )
 
 def get_delta_command(client: MsGraphClient, args: dict):
     properties = args.get('properties', '') + ',userPrincipalName'
@@ -416,9 +432,13 @@ def get_delta_command(client: MsGraphClient, args: dict):
 
     users_readable, users_outputs = parse_outputs(users_data)
     human_readable = tableToMarkdown(name='All Graph Users', headers=headers, t=users_readable, removeNull=True)
-    outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
-    return human_readable, outputs, users_data
 
+    return CommandResults(
+        outputs_prefix='MSGraphUser',
+        outputs=users_outputs,
+        readable_output=human_readable,
+        raw_response=users_data
+    )
 
 def get_user_command(client: MsGraphClient, args: dict):
     user = args.get('user')
@@ -443,10 +463,16 @@ def get_user_command(client: MsGraphClient, args: dict):
     accounts = create_account_outputs(user_outputs)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
     outputs = {
-        'MSGraphUser(val.ID == obj.ID)': user_outputs,
-        'Account(obj.ID == val.ID)': accounts
+        'MSGraphUser': user_outputs,
+        'Account': accounts[0] if accounts else []
     }
-    return human_readable, outputs, user_data
+    
+    return CommandResults(
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=user_data
+    )
 
 
 def list_users_command(client: MsGraphClient, args: dict):
@@ -457,20 +483,26 @@ def list_users_command(client: MsGraphClient, args: dict):
     users_readable, users_outputs = parse_outputs(users_data)
     accounts = create_account_outputs(users_outputs)
     metadata = None
+    
     outputs = {
-        'MSGraphUser(val.ID == obj.ID)': users_outputs,
-        'Account(obj.ID == val.ID)': accounts
+        'MSGraphUser': users_outputs,
+        'Account': accounts
     }
-
+    
     if result_next_page:
         metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
 
         # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
-        outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
-
+        # outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
+        outputs['MSGraphUser'].insert(0, {'NextPage': result_next_page})
     human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
-
-    return human_readable, outputs, users_data
+    
+    return CommandResults(
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=users_data
+    )
 
 
 @suppress_errors_with_404_code
@@ -482,14 +514,17 @@ def get_direct_reports_command(client: MsGraphClient, args: dict):
     reports_readable, reports = parse_outputs(raw_reports)
     human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
     outputs = {
-        'MSGraphUserDirectReports(val.Manager == obj.Manager)': {
             'Manager': user,
             'Reports': reports
-        }
     }
-
-    return human_readable, outputs, raw_reports
-
+    return CommandResults(
+        outputs_prefix='MSGraphUserDirectReports',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=raw_reports
+    )
+    
 
 @suppress_errors_with_404_code
 def get_manager_command(client: MsGraphClient, args: dict):
@@ -498,12 +533,17 @@ def get_manager_command(client: MsGraphClient, args: dict):
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
     outputs = {
-        'MSGraphUserManager(val.User == obj.User)': {
             'User': user,
             'Manager': manager_outputs
-        }
     }
-    return human_readable, outputs, manager_data
+    
+    return CommandResults(
+        outputs_prefix='MSGraphUserManager',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=manager_data
+    )
 
 
 @suppress_errors_with_404_code
@@ -513,7 +553,11 @@ def assign_manager_command(client: MsGraphClient, args: dict):
     client.assign_manager(user, manager)
     human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
                      'to take affect across all applications.'
-    return human_readable, None, None
+
+    return CommandResults(
+        outputs_key_field='ID',
+        readable_output=human_readable
+    )
 
 
 @suppress_errors_with_404_code
@@ -521,7 +565,11 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
     user = args.get('user')
     client.revoke_user_session(user)
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
-    return human_readable, None, None
+
+    return CommandResults(
+        outputs_key_field='ID',
+        readable_output=human_readable
+    )
 
 @suppress_errors_with_404_code
 def get_tap_policy_list_command(client: MsGraphClient, args: dict):
@@ -541,10 +589,14 @@ def get_tap_policy_list_command(client: MsGraphClient, args: dict):
     headers = ['Policy ID', 'Start Date Time' , 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
     
     human_readable = tableToMarkdown(name='All TAP Policy Users', headers=headers, t=tap_readable_dict, removeNull=True)
-    outputs = {
-        'MSGraphUser.TAPPolicy(val.ID == obj.ID)': tap_policy_output
-        }
-    return human_readable, outputs, client_tap_data
+
+    return CommandResults(
+        outputs_prefix='MSGraphUser.TAPPolicy',
+        outputs_key_field='ID',
+        outputs=tap_policy_output,
+        readable_output=human_readable,
+        raw_response=client_tap_data
+    )
 
 @suppress_errors_with_404_code
 def create_tap_policy_command(client: MsGraphClient, args: dict):
@@ -570,10 +622,13 @@ def create_tap_policy_command(client: MsGraphClient, args: dict):
         )
     human_readable = f'Temporary Access Pass Authentication methods policy {user_id} was successfully created'
     _, tap_policy_output = parse_outputs(res)
-    outputs = {
-        'MSGraphUser.TAPPolicy(val.ID == obj.ID)': tap_policy_output
-        }
-    return human_readable, outputs, None
+    
+    return CommandResults(
+        outputs_prefix='MSGraphUser.TAPPolicy',
+        outputs_key_field='ID',
+        outputs=tap_policy_output,
+        readable_output=human_readable
+    )
 
 @suppress_errors_with_404_code
 def delete_tap_policy_command(client: MsGraphClient, args: dict):
@@ -581,7 +636,12 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict):
     policy_id = args.get('policy_id')
     client.delete_tap_policy(user_id, policy_id)
     human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted'
-    return human_readable, None, None
+    
+    return CommandResults(
+    outputs_key_field='ID',
+    readable_output=human_readable
+    )
+
 
 def create_zip_with_password(generated_password: str, zip_password: str):
     """
@@ -682,6 +742,40 @@ def main():
             return_results(generate_login_url(client.ms_client))
         elif command == 'msgraph-user-auth-reset':
             return_results(reset_auth())
+        elif command == 'msgraph-user-tap-policy-delete':
+            return_results(delete_tap_policy_command(client, demisto.args()))
+        elif command == 'msgraph-user-tap-policy-create':
+            return_results(create_tap_policy_command(client, demisto.args()))
+        elif command == 'msgraph-user-tap-policy-list':
+            return_results(get_tap_policy_list_command(client, demisto.args()))
+        elif command == 'msgraph-user-session-revoke':
+            return_results(revoke_user_session_command(client, demisto.args()))
+        elif command == 'msgraph-user-assign-manager':
+            return_results(assign_manager_command(client, demisto.args()))
+        elif command == 'msgraph-user-get-manager':
+            return_results(get_manager_command(client, demisto.args()))
+        elif command == 'msgraph-direct-reports':
+            return_results(get_direct_reports_command(client, demisto.args()))
+        elif command == 'msgraph-user-list':
+            return_results(list_users_command(client, demisto.args()))
+        elif command == 'msgraph-user-get':
+            return_results(get_user_command(client, demisto.args()))
+        elif command == 'msgraph-user-get-delta':
+            return_results(get_delta_command(client, demisto.args()))
+        elif command == 'msgraph-user-create':
+            return_results(create_user_command(client, demisto.args()))
+        elif command == 'msgraph-user-delete':
+            return_results(delete_user_command(client, demisto.args()))
+        elif command == 'msgraph-user-update':
+            return_results(update_user_command(client, demisto.args()))
+        elif command == 'msgraph-user-account-disable':
+            return_results(disable_user_account_command(client, demisto.args()))
+        elif command == 'msgraph-user-unblock':
+            return_results(unblock_user_command(client, demisto.args()))
+        elif command == 'msgraph-user-test':
+            return_results(test_function(client, demisto.args()))
+        elif command == 'test-module':
+            return_results(test_function(client, demisto.args()))
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
