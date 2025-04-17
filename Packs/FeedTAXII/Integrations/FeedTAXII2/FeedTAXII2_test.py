@@ -2,6 +2,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+import demistomock as demisto
 from FeedTAXII2 import *
 
 with open("test_data/results.json") as f:
