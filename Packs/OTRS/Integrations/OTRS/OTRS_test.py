@@ -187,3 +187,16 @@ def test_get_remote_data(mocker):
 | 9999 | IncidentResponse | test | 2023-09-26 11:33:28 | demistobot | text/plain; charset=utf8 | test123 |
 """
     )
+
+
+def test_calculate_age():
+    """
+    Given: An integer representing seconds
+    When
+        - Running otrs-get-ticket and calculating the age of the ticket.
+    Then
+        - The correct age is returned.
+    """
+    from OTRS import calculate_age
+    result = calculate_age(600)
+    assert result == "1 h 40 m"
