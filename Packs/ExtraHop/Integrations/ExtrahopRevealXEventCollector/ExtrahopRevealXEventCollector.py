@@ -108,7 +108,7 @@ class Client(BaseClient):
 
         return token, expires_in
 
-    def detections_list(self, body):
+    def detections_list(self, body: dict) -> dict:
         """Retrieve the detections from Reveal(X).
         """
         # Make sure we have a valid token
@@ -119,7 +119,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def prepare_list_detections_output(detections) -> str:
+def prepare_list_detections_output(detections : List[dict[str, Any]]) -> str:
     """Prepare human-readable output for list-detections command.
 
     Args:
@@ -143,7 +143,7 @@ def prepare_list_detections_output(detections) -> str:
         }
         hr_outputs.append(hr_output)
 
-    return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
+    return tableToMarkdown(f"ExtraHop-RevealX Detection(s)", hr_outputs, headers=headers, removeNull=True)
 
 
 def validate_fetch_events_params(last_run: dict) -> dict:
@@ -156,14 +156,13 @@ def validate_fetch_events_params(last_run: dict) -> dict:
     Returns:
         Dictionary containing validated configuration parameters in proper format.
     """
-    detection_start_time = int(get_current_time().timestamp() * 1000)  # type: ignore
+    detection_start_time = int(get_current_time().timestamp() * 1000)
     if last_run and 'detection_start_time' in last_run:
-        detection_start_time = last_run.get('detection_start_time')  # type: ignore
+        detection_start_time = last_run.get('detection_start_time')
 
     offset = 0
     if last_run and 'offset' in last_run:
-        offset = last_run.get("offset")  # type: ignore
-
+        offset = last_run.get("offset")
     return {
         'detection_start_time': detection_start_time,
         'offset': offset,
