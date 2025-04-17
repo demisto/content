@@ -7,6 +7,7 @@ from unittest.mock import patch
 import dateparser
 import demistomock as demisto
 import Elasticsearch_v2
+import json
 import pytest
 import requests
 
@@ -59,6 +60,32 @@ ES_V7_RESPONSE = {
                 "_id": "456",
                 "_score": 0.6814878,
                 "_source": {"Date": "2019-08-27T18:01:25.343212Z"},
+            },
+        ],
+    },
+}
+
+ES_V8_RESPONSE = {
+    "took": 8,
+    "timed_out": False,
+    "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0},
+    "hits": {
+        "total": {"value": 9, "relation": "eq"},
+        "max_score": 0.8,
+        "hits": [
+            {
+                "_index": "customer",
+                "_type": "doc",
+                "_id": "888",
+                "_score": 0.8,
+                "_source": {"Date": "2024-08-27T18:00:00Z"},
+            },
+            {
+                "_index": "customer",
+                "_type": "doc",
+                "_id": "999",
+                "_score": 0.79,
+                "_source": {"Date": "2024-08-27T18:01:25.343212Z"},
             },
         ],
     },
@@ -428,6 +455,18 @@ MOCK_PARAMS = [
         },
     },
 ]
+
+PARAMS_V8 = {
+    "client_type": "Elasticsearch_v8",
+    "fetch_index": "customer",
+    "fetch_time_field": "Date",
+    "time_method": "Simple-Date",
+    "map_labels": True,
+    "credentials": {
+        "identifier": "mock",
+        "password": "demisto",
+    },
+}
 
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
@@ -809,6 +848,45 @@ def test_execute_raw_query(mocker):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     es = Elasticsearch_v2.elasticsearch_builder({})
     assert Elasticsearch_v2.execute_raw_query(es, "dsadf") == ES_V7_RESPONSE
+
+
+@patch.dict("os.environ", {"DEMISTO_PARAMS": str(PARAMS_V8)})
+def test_execute_raw_query_v8(mocker):
+    """
+    Given
+      - index and elastic search objects
+      - instance configured to v8
+
+    When
+    - executing execute_raw_query function with query_dsl body
+
+    Then
+     - make sure that no exception was raised from the function.
+     - make sure the response came back correctly.
+     - make sure the query body can be serialized an does not throw errors.
+    """
+    import Elasticsearch_v2
+    import elastic_transport
+    class CustomExecute():
+        def to_dict(): # type: ignore
+            return ES_V8_RESPONSE
+
+    mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", Elasticsearch_v2.ELASTICSEARCH_V8)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
+    mocker.patch.object(Elasticsearch_v2.Search, "execute", return_value=CustomExecute)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
+    mocker.patch.object(elastic_transport.RequestsHttpNode, "__init__", return_value=None)
+    
+    es = Elasticsearch_v2.elasticsearch_builder({})
+    raw_query_body = {
+        "query": {
+            "match": {
+                "name": "test"
+            }
+        },
+        "size": 2
+    }
+    assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V8_RESPONSE
 
 
 @pytest.mark.parametrize(

@@ -27,12 +27,11 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import NotFoundError, RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-    from elastic_transport import RequestsHttpNode
-    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
+    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment, misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment]
+    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment, misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -159,8 +158,9 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
+    from elastic_transport import RequestsHttpNode
 
-    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection, RequestsHttpNode]] = {
         "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
@@ -846,7 +846,8 @@ def get_time_range(
 
 def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
-        raw_query = json.loads(raw_query)
+        if not isinstance(raw_query, Dict):
+            raw_query = json.loads(raw_query)
         if raw_query.get("query"):
             demisto.debug("Query provided already has a query field. Sending as is.")
             body = raw_query
@@ -859,7 +860,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     requested_index = index or FETCH_INDEX
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
-        search = Search(using=es, index=requested_index).query(body.get("query"))
+        search = Search(using=es, index=requested_index).from_dict(body)
         if size and isinstance(page, int):
             search = search[page : page + size]
         response = search.execute().to_dict()
