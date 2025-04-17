@@ -33,7 +33,7 @@ def format_messages(messages: list):
     return messages
 
 
-def get_events(client: Client, after: str, page_number: int):
+def get_events(client: Client, after: str, next_page_number: int):
     """Retrieves messages by time range & ordered by datetime
 
     Args:
@@ -46,8 +46,8 @@ def get_events(client: Client, after: str, page_number: int):
 
     """
     before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    next_page_number, threats_ids = get_list_threats(client, after, before, page_number)
-    last_run = {'before': before, 'page_number': next_page_number}
+    next_page_number, threats_ids = get_list_threats(client, after, before, next_page_number)
+    last_run = {'before': before, 'next_page_number': next_page_number}
     messages = []
     if threats_ids:
         for threat in reversed(threats_ids):
@@ -81,7 +81,7 @@ def get_messages_by_datetime(client: Client, threat_id: str, after: str, before:
     return messages
 
 
-def get_list_threats(client: Client, after: str, before: str, page_number: int):
+def get_list_threats(client: Client, after: str, before: str, next_page_number: int):
     """get list of all threats ids in the time range
 
     Args:
@@ -96,15 +96,15 @@ def get_list_threats(client: Client, after: str, before: str, page_number: int):
     is_next_page = True
     while len(threats) < FETCH_LIMIT and is_next_page:
         page_size = min(DEFAULT_PAGE_SIZE, FETCH_LIMIT - len(threats))
-        params = assign_params(pageSize=page_size, filter=f"receivedTime gte {after} lte {before}", pageNumber=page_number)
+        params = assign_params(pageSize=page_size, filter=f"receivedTime gte {after} lte {before}", pageNumber=next_page_number)
         res = client.list_threats(params)
         threats += res.get("threats")
         if res.get("nextPageNumber"):
-            page_number = res.get("nextPageNumber")
+            next_page_number = res.get("nextPageNumber")
         else:
             is_next_page = False
 
-    return page_number, threats if is_next_page else 1, threats
+    return (next_page_number, threats) if is_next_page else (1, threats)
 
 
 def main():
@@ -115,7 +115,7 @@ def main():
     verify = params["verify"]
     proxy = params["proxy"]
     after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    page_number = 1
+    next_page_number = 1
     client = Client(
         base_url="https://api.abnormalplatform.com/v1", verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {token}"}
     )
@@ -123,18 +123,18 @@ def main():
     last_run = demisto.getLastRun()
     if last_run:
         after = last_run.get('before')
-        page_number = last_run.get('page_number')
+        next_page_number = last_run.get('next_page_number')
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
-        threats, last_run = get_events(client, after, page_number)
+        threats, last_run = get_events(client, after, next_page_number)
         if command == "test-module":
             return_results("ok")
 
         elif command == "fetch-events":
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
-            if last_run.get("page_number") > 1:
+            if last_run.get("next_page_number") > 1:
                 last_run["nextTrigger"] = "0"
             demisto.setLastRun(last_run)
 
