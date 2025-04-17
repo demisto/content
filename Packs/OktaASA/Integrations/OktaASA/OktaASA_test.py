@@ -663,7 +663,8 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
-        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")}],
+        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")},
+                     {"list": [], "related_objects": {}}],
     )
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value={"url": "test"})
@@ -698,7 +699,8 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
-        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")}],
+        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")},
+                     {"list": [], "related_objects": {}}],
     )
     mocker.patch.object(demisto, "command", return_value="okta-asa-get-event")
     mocker.patch.object(demisto, "params", return_value={"should_push_events": "False","url": "test"})
@@ -733,10 +735,12 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
     mocker.patch.object(
         OktaASAClient,
         "get_audit_events_request",
-        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")}],
+        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")},
+                     {"list": [], "related_objects": {}}],
     )
     mocker.patch.object(demisto, "command", return_value="fetch-events")
-    mocker.patch.object(demisto, "params", return_value={"should_push_events": "False", "url": "test"})
+    mocker.patch.object(demisto, "params", return_value={"should_push_events": "False", "url": "test",
+                                                         "max_audit_events_per_fetch": "1"})
     mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
         OktaASA, "add_time_and_related_object_data_to_events"
     )
