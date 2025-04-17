@@ -2,7 +2,7 @@
     "name": "FortiAuthenticator",
     "description": "Manage user configuration on FortiAuthenticator.",
     "support": "community",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Jason Lo",
     "url": "",
     "email": "",

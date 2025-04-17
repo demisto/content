@@ -433,7 +433,7 @@ script:
       description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The content of the chat message.
@@ -449,7 +449,12 @@ script:
     - description: The type of chat message.
       name: message_type
       defaultValue: 'message'
-    description: Sends a new chat message in the specified chat.
+    description: |-
+      Sends a new chat message in the specified chat. 
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot. 
+      - This command will fail if the consent user is not a member of the destination chat.
+      - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
     name: microsoft-teams-message-send-to-chat
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -522,7 +527,7 @@ script:
       description: Reactions for this chat message (for example, Like).
       type: String
   - arguments:
-    - description: The chat ID or group chat name (topic) to which to add the member.
+    - description: The chat ID or group chat name (topic) to which to add the member. Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: Display name/mail/UPN of user that should be added to the chat. Can be an array.
@@ -536,13 +541,21 @@ script:
       - 'true'
       - 'false'
       defaultValue: true
-    description: Adds a member (user) to a group chat.
+    description: |-
+      Adds a member (user) to a group chat.
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, the member will be added to the given chat by the consent user, not the bot. 
+      - This command will fail if the consent user is not a member of the destination chat.
     name: microsoft-teams-chat-add-user
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
       required: true
-    description: Retrieves a list of members from a chat.
+    description: |-
+      Retrieves a list of members from a chat.
+      
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-member-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -590,7 +603,7 @@ script:
     description: Updates a message.
     name: microsoft-teams-message-update
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The number of results to retrieve.
@@ -608,7 +621,11 @@ script:
     - description: Number of results to return per page.
       name: page_size
       defaultValue: 50
-    description: Retrieves a list of messages in a chat.
+    description: |-
+      Retrieves a list of messages in a chat.
+
+       Notes: 
+      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-message-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -684,7 +701,7 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.
       name: chat
     - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. "
       name: filter
@@ -702,7 +719,9 @@ script:
     - description: Number of results to return per page.
       name: page_size
       defaultValue: 50
-    description: Retrieves a list of chats that the user is part of. If 'chat' is specified, retrieves this chat only.
+    description: |-
+      Retrieves a list of chats that the consent user is a member of. If 'chat' is specified, retrieves this chat only.
+      
     name: microsoft-teams-chat-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -736,13 +755,17 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic).
+    - description: The chat ID / group chat name (topic). Note - the consent user must be a member of the chat.
       name: chat
       required: true
     - description: The new chat name. Maximum length is 250 characters. Use of ':' is not allowed.
       name: chat_name
       required: true
-    description: Updates the chat name. It can only be set for group chats.
+    description: |-
+      Updates the chat name. It can only be set for group chats.
+
+      Notes: 
+      - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-update
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
@@ -786,7 +809,7 @@ script:
       - contextPath: MicrosoftTeams.Message.ID
         description: ID of the message sent.
         type: String
-  dockerimage: demisto/teams:1.0.0.1860894
+  dockerimage: demisto/teams:1.0.0.2027266
   longRunning: true
   longRunningPort: true
   script: ''
