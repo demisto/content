@@ -1424,6 +1424,9 @@ def safe_load_json(json_object):  # pragma: no cover
     :return: Dictionary object from a parsed JSON file or string.
     :rtype: dict
     """
+    if not json_object:
+        demisto.error("json object came with an empty value {}, returning None.".format(json_object))
+        return
     safe_json = None
     if isinstance(json_object, dict) or isinstance(json_object, list):
         return json_object
@@ -8680,6 +8683,13 @@ def is_xsiam():
     """
     return demisto.demistoVersion().get("platform") == "x2"
 
+def is_platform():
+    """Determines whether or not the platform is Platform.
+
+    :return: True iff the platform is Platform.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "x2"
 
 def is_using_engine():
     """Determines whether or not the platform is using engine.
