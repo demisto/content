@@ -1,35 +1,38 @@
+from googleapiclient.errors import HttpError
+import hashlib
+import secrets
+import urllib.parse
+import itertools as it
+from googleapiclient.discovery_cache.base import Cache
+from oauth2client.client import AccessTokenCredentials
+from apiclient import discovery
+import string
+import random
+import mimetypes
+from email.header import Header
+from email.mime.application import MIMEApplication
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.base import MIMEBase
+from email.mime.audio import MIMEAudio
+from html.entities import name2codepoint
+from html.parser import HTMLParser
+import sys
+from httplib2 import socks
+import httplib2
+from email.utils import parsedate_to_datetime, format_datetime
+from datetime import datetime, timedelta, UTC
+import base64
+import json
+import re
 import uuid
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Gmail Single User, pack version = 1.4.10')
+
 
 """ IMPORTS """
-import re
-import json
-import base64
-from datetime import datetime, timedelta, UTC
-from email.utils import parsedate_to_datetime, format_datetime
-import httplib2
-from httplib2 import socks
-import sys
-from html.parser import HTMLParser
-from html.entities import name2codepoint
-from email.mime.audio import MIMEAudio
-from email.mime.base import MIMEBase
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
-from email.header import Header
-import mimetypes
-import random
-import string
-from apiclient import discovery
-from oauth2client.client import AccessTokenCredentials
-from googleapiclient.discovery_cache.base import Cache
-import itertools as it
-import urllib.parse
-import secrets
-import hashlib
-from googleapiclient.errors import HttpError
 
 """ GLOBAL VARS """
 params = demisto.params()
@@ -446,7 +449,7 @@ class Client:
             "ThreadId": email_data.get("threadId"),
             "Labels": ", ".join(email_data.get("labelIds", [])),
             "Headers": context_headers,
-            "Attachments": email_data.get("payload", {}).get("filename", ""),
+            "Attachments": [{"Name": email_data.get("payload", {}).get("filename", ""), "ID": email_data.get("payload", {}).get("body", {}).get("attachmentId", 0)}],
             # only for format 'raw'
             "RawData": email_data.get("raw"),
             # only for format 'full' and 'metadata'
