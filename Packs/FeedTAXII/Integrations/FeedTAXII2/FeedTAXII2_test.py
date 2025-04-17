@@ -518,8 +518,8 @@ def test_feed_main_enrichment_excluded(mocker):
 
     # Assertion - verify that enrichment_excluded is set to True
     assert client_mocker.call_args.kwargs.get("enrichment_excluded") is True
-    
-    
+
+
 def test_fetch_indicators_error_handling():
     mock_client = MagicMock()
     mock_client.collections = [
@@ -555,4 +555,7 @@ def test_fetch_indicators_error_handling():
         assert '3' in last_run_ctx, "last_run_ctx should have an entry for collection '3'"
 
         # Ensure the function returns indicators from the second collection, not the first
-        assert indicators == ['dummy_indicator_1', 'dummy_indicator_2'], "Indicators should only include those from the successful collection"
+        assert indicators == [
+            "dummy_indicator_1",
+            "dummy_indicator_2",
+        ], "Indicators should only include those from the successful collection"
