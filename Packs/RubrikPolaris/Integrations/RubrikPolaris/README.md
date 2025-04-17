@@ -12,10 +12,10 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Password |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
+| Event types to fetch as incidents | Event types to fetch as incidents.<br/>Note: Supports the listed options only. If not provided, it will fetch events for all listed options. | False |
 | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
 | Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000. | False |
-| Anomaly Event Critical Severity Level Mapping | When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
-| Anomaly Event Warning Severity Level Mapping | When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| Event Critical Severity Level Mapping | When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
@@ -2647,6 +2647,8 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 | RubrikPolaris.SuspiciousFile.detectionTime | Date | The detection time of the anomaly. | 
 | RubrikPolaris.SuspiciousFile.snapshotDate | Date | The snapshot date of the anomaly. | 
 | RubrikPolaris.SuspiciousFile.encryption | String | The encryption standard of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.resolutionStatus | String | The resolution status of the anomaly. | 
+| RubrikPolaris.SuspiciousFile.anomalyType | String | The type of the anomaly. | 
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId | String | The ID of the Ransomware Strain. | 
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles | Number | The total number of affected files. | 
 | RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes | Number | The total number of ransomware notes. | 
@@ -2697,6 +2699,8 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
         "detectionTime": "2024-02-05T18:49:03.000Z",
         "snapshotDate": "2024-02-05T16:59:30.000Z",
         "encryption": "HIGH",
+        "resolutionStatus": "UNRESOLVED",
+        "anomalyType": "FILESYSTEM",
         "anomalyInfo": {
           "strainAnalysisInfo": [
             {
@@ -2733,9 +2737,9 @@ Retrieve the suspicious list of files for a snapshot ID with detected file anoma
 #### Human Readable Output
 
 >### Anomaly Information
->|Anomaly ID|Is Anomaly|Anomaly Probability|Severity|Encryption|Anomaly Type|Total Suspicious Files|Total Ransomware Note|Detection Time|Snapshot Time|
->|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001 | true | 0.949999988079071 | Critical | HIGH | LockBit | 1 | 1 | 2024-02-05T18:49:03.000Z | 2024-02-05T16:59:30.000Z |
+>|Anomaly ID|Is Anomaly|Anomaly Probability|Severity|Encryption|Anomaly|Anomaly Type|Resolution Status|Total Suspicious Files|Total Ransomware Note|Detection Time|Snapshot Time|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001:::VirtualMachine:::00000000-0000-0000-0000-000000000001-vm-206:::00000000-0000-0000-0000-000000000001 | true | 0.949999988079071 | Critical | HIGH | LockBit | FILESYSTEM | UNRESOLVED | 1 | 1 | 2024-02-05T18:49:03.000Z | 2024-02-05T16:59:30.000Z |
 >
 >
 >### Suspicious Files
@@ -3193,3 +3197,57 @@ Retrieve the sensitive information available for the given domain(s).
 >|Latest Malicious Threat Monitoring|Latest Threat Monitoring|Redirect Link|
 >|---|---|---|
 >| snapshotFid: 12345678-1234-1234-1234-123456789012<br>monitoringScanTime: 2024-10-14T04:41:15Z<br>isMalicious: Matches Found | snapshotFid: 12345678-1234-1234-1234-123456789012<br>monitoringScanTime: 2024-10-18T05:51:31Z<br>isMalicious: No Matches | [https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90](https://rubrik-test.my.rubrik.com/radar/threat_monitoring/12345678-1234-1234-1234-123456789012/Cluster_B/8b4fe6f6-cc87-4354-a125-b65e23cf8c90) |
+
+### rubrik-radar-anomaly-status-update
+
+***
+Updates the status of the Anomaly detection.
+
+Note: Run the "rubrik-radar-suspicious-file-list" command first to check the resolution status of the Anomaly Detection snapshot before executing this command.
+
+#### Base Command
+
+`rubrik-radar-anomaly-status-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| anomaly_type | The type of the anomaly.<br/><br/>Note: For Anomaly Type, users can execute the "rubrik-radar-suspicious-file-list" command. Possible values are: FILESYSTEM, HYPERVISOR. | Required | 
+| anomaly_id | The ID of the Anomaly or Activity Series ID.<br/><br/>Note: For Activity Series ID, users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | Required | 
+| workload_id | The workload ID (Snappable ID).<br/><br/>Note: Users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY" and get the value of "fid" from the context. | Required | 
+| false_positive_type | The type for marking the anomaly as a false positive. Possible values are: FP_TYPE_UNSPECIFIED, OS_UPDATE, APPLICATION_UPDATE, LOG_ROTATION, OTHER, NFA_SCHEDULED_MAINTENANCE, NFA_UNSCHEDULED_MAINTENANCE. | Optional | 
+| false_positive_reason | The reason for marking the anomaly as a false positive when the "false_positive_type" argument is set to OTHER. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.AnomalyStatus.command_name | String | The name of the command. | 
+| RubrikPolaris.AnomalyStatus.anomaly_type | String | The type of the Anomaly. | 
+| RubrikPolaris.AnomalyStatus.anomaly_id | String | The ID of the Anomaly. | 
+| RubrikPolaris.AnomalyStatus.workload_id | String | The workload ID. | 
+| RubrikPolaris.AnomalyStatus.is_resloved | Boolean | Whether the Anomaly is resolved. | 
+| RubrikPolaris.AnomalyStatus.false_positive_type | String | The type of the false positive. | 
+| RubrikPolaris.AnomalyStatus.false_positive_reason | String | The reason for marking the Anomaly detection snapshot as a false positive. | 
+
+#### Command example
+```!rubrik-radar-anomaly-status-update anomaly_id=00000000-0000-0000-0000-000000000001 anomaly_type=FILESYSTEM workload_id=00000000-0000-0000-0000-000000000002```
+#### Context Example
+```json
+{
+    "RubrikPolaris": {
+        "AnomalyStatus": {
+            "anomaly_id": "00000000-0000-0000-0000-000000000001",
+            "anomaly_type": "FILESYSTEM",
+            "command_name": "rubrik-radar-anomaly-update-status",
+            "is_resloved": true,
+            "workload_id": "00000000-0000-0000-0000-000000000002"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Anomaly detection with the ID 00000000-0000-0000-0000-000000000001 resolved successfully.
