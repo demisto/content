@@ -1,6 +1,5 @@
-Use the Blocklist.de feed integration to fetch indicators from the daily Threat Feed and Custom feeds. 
+Use the Blocklist.de feed integration to fetch indicators from the daily Threat Feed and Custom feeds.
 When you configure your servers, you can use this information to reject a connection because of the indicators received from the Blocklist.de feed.
-
 
 ## Custom Feeds
 
