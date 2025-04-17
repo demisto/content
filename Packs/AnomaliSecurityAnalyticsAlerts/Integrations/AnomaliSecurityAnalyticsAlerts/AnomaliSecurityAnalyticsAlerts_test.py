@@ -102,8 +102,8 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
     results_response = {
         'fields': ['event_time', 'sourcetype', 'dcid', 'src'],
         'records': [
-            ['1727647847687', 'myexamplesourcetype', '78', '192.1.0.0'],
-            ['1727647468096', 'aws_cloudtrail', '1', '192.1.0.1']
+            ['1727647847687', 'myexamplesourcetype', '78', '1.2.3.4'],
+            ['1727647468096', 'aws_cloudtrail', '1', '1.2.3.5']
         ],
         'types': ['timestamp', 'string', 'string', 'string'],
         "result_row_count": 2,
@@ -130,13 +130,13 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
             'event_time': '1727647847687',
             'sourcetype': 'myexamplesourcetype',
             'dcid': '78',
-            'src': '192.1.0.0'
+            'src': '1.2.3.4'
         },
         {
             'event_time': '1727647468096',
             'sourcetype': 'aws_cloudtrail',
             'dcid': '1',
-            'src': '192.1.0.1'
+            'src': '1.2.3.5'
         }
     ]
     assert outputs.get('records') == expected_records
