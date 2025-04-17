@@ -742,44 +742,9 @@ def main():
             return_results(generate_login_url(client.ms_client))
         elif command == 'msgraph-user-auth-reset':
             return_results(reset_auth())
-        elif command == 'msgraph-user-tap-policy-delete':
-            return_results(delete_tap_policy_command(client, demisto.args()))
-        elif command == 'msgraph-user-tap-policy-create':
-            return_results(create_tap_policy_command(client, demisto.args()))
-        elif command == 'msgraph-user-tap-policy-list':
-            return_results(get_tap_policy_list_command(client, demisto.args()))
-        elif command == 'msgraph-user-session-revoke':
-            return_results(revoke_user_session_command(client, demisto.args()))
-        elif command == 'msgraph-user-assign-manager':
-            return_results(assign_manager_command(client, demisto.args()))
-        elif command == 'msgraph-user-get-manager':
-            return_results(get_manager_command(client, demisto.args()))
-        elif command == 'msgraph-direct-reports':
-            return_results(get_direct_reports_command(client, demisto.args()))
-        elif command == 'msgraph-user-list':
-            return_results(list_users_command(client, demisto.args()))
-        elif command == 'msgraph-user-get':
-            return_results(get_user_command(client, demisto.args()))
-        elif command == 'msgraph-user-get-delta':
-            return_results(get_delta_command(client, demisto.args()))
-        elif command == 'msgraph-user-create':
-            return_results(create_user_command(client, demisto.args()))
-        elif command == 'msgraph-user-delete':
-            return_results(delete_user_command(client, demisto.args()))
-        elif command == 'msgraph-user-update':
-            return_results(update_user_command(client, demisto.args()))
-        elif command == 'msgraph-user-account-disable':
-            return_results(disable_user_account_command(client, demisto.args()))
-        elif command == 'msgraph-user-unblock':
-            return_results(unblock_user_command(client, demisto.args()))
-        elif command == 'msgraph-user-test':
-            return_results(test_function(client, demisto.args()))
-        elif command == 'test-module':
-            return_results(test_function(client, demisto.args()))
         else:
-            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
-
+            return_results(commands[command](client, demisto.args()))
+         
     except Exception as err:
         return_error(str(err))
 
