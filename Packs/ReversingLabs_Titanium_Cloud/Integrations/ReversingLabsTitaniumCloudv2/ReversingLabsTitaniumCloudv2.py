@@ -11,7 +11,7 @@ from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, 
 from ReversingLabs.SDK.helper import NotFoundError
 
 
-VERSION = "v2.5.0"
+VERSION = "v2.7.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
