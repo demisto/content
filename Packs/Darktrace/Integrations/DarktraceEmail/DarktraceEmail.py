@@ -228,7 +228,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
         previous_status = ""
-        if not recipients or action == "hold":
+        if not recipients or recipients == "None" or action == "hold":
             email = self.get_email(uuid)
             recipients = email['rcpts'][0]['rcpt_to']
             previous_status = email['rcpts'][0]['rcpt_status']

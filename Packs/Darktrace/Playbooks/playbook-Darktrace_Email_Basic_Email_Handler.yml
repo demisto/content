@@ -23,45 +23,7 @@ tasks:
       {
         "position": {
           "x": 860,
-          "y": -590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 2d28219e-b3c4-4cc0-8b26-69c1f03b30ac
-    type: condition
-    task:
-      id: 2d28219e-b3c4-4cc0-8b26-69c1f03b30ac
-      version: -1
-      name: Was the Email held?
-      description: Indicates whether a given value is a member of given array
-      scriptName: IsValueInArray
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "16"
-    scriptarguments:
-      array:
-        simple: ${incident.darktraceemailactionstaken}
-      value:
-        simple: Hold message
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 860,
-          "y": -170
+          "y": -710
         }
       }
     note: false
@@ -82,7 +44,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Release Email?'
+      description: Ask user if they'd like to release the email.
     nexttasks:
       "No":
       - "11"
@@ -100,14 +62,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
         simple: Would you like to Release this Email?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -129,7 +91,7 @@ tasks:
       id: 3fda3097-6acc-4823-8247-a41b33f346c4
       version: -1
       name: Hold Email?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Ask user if they'd like to hold the email.
       type: condition
       iscommand: false
       brand: ""
@@ -150,14 +112,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
         simple: Would you like to apply a Hold action to this Email?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -173,10 +135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 166daf09-a4a1-4ab0-8a05-73c85c9d1142
+    taskid: 326e884d-63ed-46b6-82f7-e5d716eab8f9
     type: regular
     task:
-      id: 166daf09-a4a1-4ab0-8a05-73c85c9d1142
+      id: 326e884d-63ed-46b6-82f7-e5d716eab8f9
       version: -1
       name: Release Email
       description: Release an Email that has previously been held.
@@ -209,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1fdb6bde-4b1a-4f91-82f7-5530455e8e6e
+    taskid: 6a305094-7176-480f-8d09-c03e3921d44c
     type: regular
     task:
-      id: 1fdb6bde-4b1a-4f91-82f7-5530455e8e6e
+      id: 6a305094-7176-480f-8d09-c03e3921d44c
       version: -1
       name: Hold Email
       description: Apply 'hold' action to specified Email.
@@ -224,6 +186,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      recipient:
+        simple: ${incident.darktraceemailrecipient}
       uuid:
         simple: ${incident.darktraceemailuuid}
     separatecontext: false
@@ -249,7 +213,7 @@ tasks:
       id: 16286256-4501-48bd-82f0-37f143143649
       version: -1
       name: closeInvestigation
-      description: Close the current incident
+      description: Close the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -277,7 +241,7 @@ tasks:
       id: e4afbc6f-5e88-459f-880e-c251bbbd6045
       version: -1
       name: Did the User request the Email be released?
-      description: Check if a given value is true. Will return 'no' otherwise
+      description: Check if a given value is true. Will return 'no' otherwise.
       scriptName: IsTrue
       type: condition
       iscommand: false
@@ -316,7 +280,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Release Email?'
+      description: Ask user if they'd like to release the Email.
     nexttasks:
       "No":
       - "11"
@@ -334,14 +298,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
         simple: Would you like to Release this Email?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -357,13 +321,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f24406d9-5ae3-423a-858a-c305a445248a
+    taskid: 151c1fa4-6a1f-4d55-8924-e4cab08c4e2f
     type: condition
     task:
-      id: f24406d9-5ae3-423a-858a-c305a445248a
+      id: 151c1fa4-6a1f-4d55-8924-e4cab08c4e2f
       version: -1
-      name: Was the Email released?
-      description: Indicates whether a given value is a member of given array
+      name: |-
+        Actions taken: ${incident.darktraceemailactionstaken}.
+
+        Was the Email released?
+      description: Indicates whether a given value is a member of given array.
       scriptName: IsValueInArray
       type: condition
       iscommand: false
@@ -377,13 +344,13 @@ tasks:
       array:
         simple: ${incident.darktraceemailreceiptstatus}
       value:
-        simple: released
+        simple: Released
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 60
+          "x": 1060,
+          "y": -130
         }
       }
     note: false
@@ -405,16 +372,52 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: Update incident fields; Read Status, Receipt Status and Action Status.
     nexttasks:
       '#none#':
-      - "2"
+      - "21"
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 860,
-          "y": -400
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1de2f4d1-8336-4887-8c20-b1ea0ef93a29
+    type: condition
+    task:
+      id: 1de2f4d1-8336-4887-8c20-b1ea0ef93a29
+      version: -1
+      name: Was the Email actioned?
+      description: Check if a given value is true. Will return 'no' otherwise.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${incident.darktraceemailactionstatus}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -420
         }
       }
     note: false
@@ -431,10 +434,10 @@ view: |-
       "12_3_yes": 0.31,
       "13_11_No": 0.29,
       "13_9_Yes": 0.49,
-      "16_12_no": 0.32,
+      "16_12_no": 0.2,
       "16_4_yes": 0.16,
-      "2_16_yes": 0.19,
-      "2_4_no": 0.12,
+      "21_16_yes": 0.36,
+      "21_4_no": 0.12,
       "3_11_No": 0.22,
       "3_9_Yes": 0.6,
       "4_10_Yes": 0.47,
@@ -442,10 +445,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1905,
+        "height": 2025,
         "width": 1760,
         "x": 460,
-        "y": -590
+        "y": -710
       }
     }
   }
