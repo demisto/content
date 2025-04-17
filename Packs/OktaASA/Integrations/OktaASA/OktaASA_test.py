@@ -708,7 +708,7 @@ def test_add_time_and_related_object_data_to_events_called_with_correct_argument
         OktaASA, "add_time_and_related_object_data_to_events"
     )
     OktaASA.main()
-    assert mocker_add_time_and_related_object_data_to_events.call_count == 2
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
     mocker_add_time_and_related_object_data_to_events.assert_called_with(response.get("list"),
                                                                          response.get("related_objects"),
                                                                          False)
