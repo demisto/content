@@ -1,0 +1,67 @@
+    {
+        "action_id": 1,
+        "results": [
+            {
+                "endpoint_name": "name",
+                "endpoint_ip_address": ["218.92.0.29"],
+                "endpoint_status": "STATUS_010_CONNECTED",
+                "domain": "domain.name",
+                "endpoint_id":"a6f7683c8e217d85bd3c398f0d3fb6bf",
+                "execution_status": "COMPLETED_SUCCESSFULLY",
+                "command": "_echo", 
+                "_echo": [],
+                "_echo hello": ["hello"],
+                "failed_files": 0, 
+                "retention_date": null,
+                "retrieved_files": 0,
+                "standard_output": "output",
+                "command_output": []
+                }, 
+                {
+                    "endpoint_name": "name",
+                    "endpoint_ip_address": ["218.92.0.29"],
+                    "endpoint_status": "STATUS_010_CONNECTED",
+                    "domain": "domain.name",
+                    "endpoint_id":"a6f7683c8e217d85bd3c398f0d3fb6bf",
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                    "command": "_echo hello",
+                    "_echo hello": ["hello"],
+                    "failed_files": 0, 
+                    "retention_date": null, 
+                    "retrieved_files": 0, 
+                    "standard_output": "outputs", 
+                    "command_output": ["hello"]
+                },
+                {
+                    "endpoint_name": "name2",
+                    "endpoint_ip_address": ["11.11.11.11"],
+                    "endpoint_status": "STATUS_010_CONNECTED", 
+                    "domain": "", 
+                    "endpoint_id":"a6f7683c8e213f56hd3c398f0d3fb6bf",
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                    "command": "_echo",
+                    "_echo hello": ["hello"],
+                    "_echo": [],
+                    "failed_files": 0,
+                    "retention_date": null,
+                    "retrieved_files": 0,
+                    "standard_output": "out",
+                    "command_output": []
+                },
+                {
+                    "endpoint_name": "name2",
+                    "endpoint_ip_address": ["11.11.11.11"],
+                    "endpoint_status": "STATUS_010_CONNECTED", 
+                    "domain": "", 
+                    "endpoint_id":"a6f7683c8e213f56hd3c398f0d3fb6bf",
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                    "command": "_echo hello",
+                    "_echo hello": ["hello"],
+                    "failed_files": 0,
+                    "retention_date": null,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "command_output": ["hello"]
+                }
+        ]
+    }
