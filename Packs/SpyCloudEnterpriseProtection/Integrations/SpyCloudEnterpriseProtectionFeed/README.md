@@ -5,7 +5,6 @@ This integration was integrated and tested with version 3.5 of SpyCloud Enterpri
 
 ## Configure SpyCloud Enterprise Protection Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- |--------------|
 | API URL | SpyCloud Enterprise Protection API Base URL | True         |

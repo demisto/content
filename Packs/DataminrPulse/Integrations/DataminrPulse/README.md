@@ -51,7 +51,6 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 
 ## Configure Dataminr Pulse in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Client ID | The Client ID required to authenticate to the service. | True |
@@ -66,8 +65,6 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 | Fetch incidents |  | False |
 | Incidents Fetch Interval | The incident fetch interval. | False |
 | First Fetch Time (not supported) | This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts. | False |
-
-
 
 #### Note
 
@@ -96,17 +93,20 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DataminrPulse.WatchLists.id | Number | Unique identifier for an individual list. This ID is needed to retrieve alerts for a given list. | 
-| DataminrPulse.WatchLists.type | String | Type of list. Can be one of the Topic, Company, or Custom. | 
-| DataminrPulse.WatchLists.name | String | Name of list as specified in Dataminr platform. | 
-| DataminrPulse.WatchLists.description | String | Description of the list as specified in Dataminr platform. | 
-| DataminrPulse.WatchLists.properties.watchlistColor | String | Watchlist color chosen within the Dataminr platform. | 
-| DataminrPulse.WatchLists.companies.id | String | ID of the company. | 
-| DataminrPulse.WatchLists.companies.name | String | Name of the company. | 
+| DataminrPulse.WatchLists.id | Number | Unique identifier for an individual list. This ID is needed to retrieve alerts for a given list. |
+| DataminrPulse.WatchLists.type | String | Type of list. Can be one of the Topic, Company, or Custom. |
+| DataminrPulse.WatchLists.name | String | Name of list as specified in Dataminr platform. |
+| DataminrPulse.WatchLists.description | String | Description of the list as specified in Dataminr platform. |
+| DataminrPulse.WatchLists.properties.watchlistColor | String | Watchlist color chosen within the Dataminr platform. |
+| DataminrPulse.WatchLists.companies.id | String | ID of the company. |
+| DataminrPulse.WatchLists.companies.name | String | Name of the company. |
 
 #### Command example
+
 ```!dataminrpulse-watchlists-get```
+
 #### Context Example
+
 ```json
 {
     "DataminrPulse": {
@@ -137,11 +137,11 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Watchlists
+>
 >|Watchlist ID|Watchlist Name|Watchlist Type|Watchlist Color|
 >|---|---|---|---|
 >| 3320156 | Cyber-Physical | TOPIC | darkblue |
 >| 3320155 | Data Security | TOPIC | red |
-
 
 ### dataminrpulse-alerts-get
 
@@ -156,117 +156,120 @@ Retrieves the alerts as per the provided watchlist_ids or query or configured wa
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchlist_ids | Comma delimited set of watchlist IDs. Required if watchlist names are not configured in integration configuration and the query is not given. | Optional | 
-| query | Terms to search within Dataminr Alerts. Required if watchlist names are not configured in integration configuration and the watchlist_ids are not given. | Optional | 
-| from | It points to a cursor that you want any alerts after. Note that only one of "from" or "to" can be included per request. | Optional | 
-| to | It points to a cursor that you want any alerts before. Note that only one of "from" and "to" can be included per request. | Optional | 
-| num | Maximum number of alerts to return. 3333 is maximum value. Default is 40. | Optional | 
-| use_configured_watchlist_names | A Boolean indicating that If user does not provide watchlist IDs then it should use configured watchlist names with query parameter. Possible values are: yes, no. Default is yes. | Optional | 
+| watchlist_ids | Comma delimited set of watchlist IDs. Required if watchlist names are not configured in integration configuration and the query is not given. | Optional |
+| query | Terms to search within Dataminr Alerts. Required if watchlist names are not configured in integration configuration and the watchlist_ids are not given. | Optional |
+| from | It points to a cursor that you want any alerts after. Note that only one of "from" or "to" can be included per request. | Optional |
+| to | It points to a cursor that you want any alerts before. Note that only one of "from" and "to" can be included per request. | Optional |
+| num | Maximum number of alerts to return. 3333 is maximum value. Default is 40. | Optional |
+| use_configured_watchlist_names | A Boolean indicating that If user does not provide watchlist IDs then it should use configured watchlist names with query parameter. Possible values are: yes, no. Default is yes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DataminrPulse.Alerts.alertId | String | Unique ID of the alert. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.id | String | Unique ID of the watchlist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.type | String | Type of the watchlist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.name | String | Name of the watchlist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.externalTopicIds | String | String containing the ID of external topic for watchlist type. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.omnilist | String | String containing the boolean value of omnilist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.uiListType | String | Type of the watchlist on the Dataminr platform. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.watchlistColor | String | Color of the watchlist defined on the Dataminr platform. | 
-| DataminrPulse.Alerts.availableRelatedAlerts | String | Whether the alert has related alerts or not. | 
-| DataminrPulse.Alerts.eventTime | Number | Timestamp of the event. | 
-| DataminrPulse.Alerts.eventVolume | Number | Volume of the event. | 
-| DataminrPulse.Alerts.eventLocation.coordinates | Unknown | Latitude and Longitude of the event. | 
-| DataminrPulse.Alerts.eventLocation.name | String | The name of the place where the event occurred. | 
-| DataminrPulse.Alerts.eventLocation.places | Unknown | Place IDs of the event location. | 
-| DataminrPulse.Alerts.eventLocation.radius | Number | Radius of the event location. | 
-| DataminrPulse.Alerts.source.displayName | String | The display name of the source. | 
-| DataminrPulse.Alerts.source.entityName | String | The entity name of the source. | 
-| DataminrPulse.Alerts.source.verified | Boolean | True if the source is verified, false otherwise. | 
-| DataminrPulse.Alerts.source.channels | Unknown | The Dataminr channel to which the source belongs. | 
-| DataminrPulse.Alerts.post.timestamp | Number | The timestamp of the post. | 
-| DataminrPulse.Alerts.post.languages.position | Number | The position of the post. | 
-| DataminrPulse.Alerts.post.languages.lang | String | The language of the post. | 
-| DataminrPulse.Alerts.post.media.type | String | The type of the media. | 
-| DataminrPulse.Alerts.post.media.url | String | The URL of the media. | 
-| DataminrPulse.Alerts.post.media.description | String | The description of the media. | 
-| DataminrPulse.Alerts.post.media.display_url | String | The display URL of the media. | 
-| DataminrPulse.Alerts.post.media.media_url | String | The URL of the media. | 
-| DataminrPulse.Alerts.post.media.source | String | The source of the media. | 
-| DataminrPulse.Alerts.post.link | String | The link to the post. | 
-| DataminrPulse.Alerts.caption | String | The text of the alert. | 
-| DataminrPulse.Alerts.categories.name | String | The name of the category to which the alert belongs. | 
-| DataminrPulse.Alerts.categories.topicType | String | The type of the Dataminr entity. Its value will be "category". | 
-| DataminrPulse.Alerts.categories.id | String | The unique identifier of the category. | 
-| DataminrPulse.Alerts.categories.idStr | String | The string value of the ID for the category. | 
-| DataminrPulse.Alerts.categories.requested | String | String containing the boolean value for a category. | 
-| DataminrPulse.Alerts.categories.path | String | The path of the Dataminr category. | 
-| DataminrPulse.Alerts.categories.retired | Boolean | Boolean value of retired for a particular category. | 
-| DataminrPulse.Alerts.headerColor | String | The hex value of the alert's header color. | 
-| DataminrPulse.Alerts.headerLabel | String | The label of the alert's header. | 
-| DataminrPulse.Alerts.alertType.id | String | The unique identifier of the alert type. | 
-| DataminrPulse.Alerts.alertType.name | String | The name of the alert type. | 
-| DataminrPulse.Alerts.alertType.color | String | The color of alert type. | 
-| DataminrPulse.Alerts.publisherCategory.id | String | The unique identifier of the publisher category. | 
-| DataminrPulse.Alerts.publisherCategory.name | String | The name of the publisher category. | 
-| DataminrPulse.Alerts.publisherCategory.color | String | The color of the publisher category. | 
-| DataminrPulse.Alerts.publisherCategory.shortName | String | The short name for publisher category. | 
-| DataminrPulse.Alerts.eventMapSmallURL | String | Value containing the URL of the small event map image. | 
-| DataminrPulse.Alerts.eventMapLargeURL | String | Value containing the URL of the large event map image. | 
-| DataminrPulse.Alerts.expandAlertURL | String | URL of the alert details page. | 
-| DataminrPulse.Alerts.expandMapURL | String | URL of the expanded map. | 
-| DataminrPulse.Alerts.relatedTerms.text | String | Text of the related terms. | 
-| DataminrPulse.Alerts.relatedTerms.url | String | URL of the related terms. | 
-| DataminrPulse.Alerts.relatedTermsQueryURL | String | URL of the related terms query. | 
-| DataminrPulse.Alerts.parentAlertId | String | Alert ID of the parent. | 
-| DataminrPulse.Alerts.metadata.cyber.URLs | Unknown | Identifier for a specific part of a website referenced in posts that could be related to a target or attacker's infrastructure. | 
-| DataminrPulse.Alerts.metadata.cyber.threats | Unknown | Name of cyber threat. | 
-| DataminrPulse.Alerts.metadata.cyber.addresses.ip | String | IP address of attacker/victim. Note that IP can have more than one open port and ports are associated with specific products via IANA \(iana.org\). | 
-| DataminrPulse.Alerts.metadata.cyber.addresses.port | Number | Port of attacker/victim. | 
-| DataminrPulse.Alerts.metadata.cyber.addresses.version | String | Version of IP address. | 
-| DataminrPulse.Alerts.metadata.cyber.asns | Unknown | Name of the autonomous systems number of the company hosting the impacted service\(s\). | 
-| DataminrPulse.Alerts.metadata.cyber.orgs | Unknown | Name of the ASN \(company hosting the impacted service\). | 
-| DataminrPulse.Alerts.metadata.cyber.products | Unknown | The server software used on an IP address. | 
-| DataminrPulse.Alerts.metadata.cyber.hashes | Unknown | A unique identifier or fingerprint for a file, often a malicious executable. | 
-| DataminrPulse.Alerts.metadata.cyber.malwares | Unknown | Malicious software posing a threat. | 
-| DataminrPulse.Alerts.metadata.cyber.asOrgs.asn | String | Autonomous system number. | 
-| DataminrPulse.Alerts.metadata.cyber.asOrgs.asOrg | String | Autonomous system organization. | 
-| DataminrPulse.Alerts.metadata.cyber.hashValues.value | String | Hash value. | 
-| DataminrPulse.Alerts.metadata.cyber.hashValues.type | String | Hash value type. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.id | String | CVE ID. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.cvss | String | CVSS value. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.exploitPocLinks | Unknown | Exploited PoC links. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productName | String | Product name. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVersion | String | Product version. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVendor | String | Product vendor. | 
-| DataminrPulse.Alerts.companies.name | String | The name of the company. | 
-| DataminrPulse.Alerts.companies.topicType | String | The type of the Dataminr entity. Its value will be "company". | 
-| DataminrPulse.Alerts.companies.id | String | The unique identifier of the company. | 
-| DataminrPulse.Alerts.companies.idStr | String | The string value of the ID for the company. | 
-| DataminrPulse.Alerts.companies.ticker | String | The ticker symbol of the company. | 
-| DataminrPulse.Alerts.companies.retired | Boolean | Boolean value of retired for a particular company. | 
-| DataminrPulse.Alerts.companies.dm_bucket.id | String | The ID of the Dataminr bucket to which the company belongs. | 
-| DataminrPulse.Alerts.companies.dm_bucket.name | String | The name of the Dataminr bucket to which the company belongs. | 
-| DataminrPulse.Alerts.companies.dm_sector.id | String | The ID of the Dataminr sector to which the company belongs. | 
-| DataminrPulse.Alerts.companies.dm_sector.name | String | The name of the Dataminr sector to which the company belongs. | 
-| DataminrPulse.Alerts.sectors.name | String | The name of the sector to which the alert belongs. | 
-| DataminrPulse.Alerts.sectors.topicType | String | The type of the Dataminr entity. Its value will be "dm_sector". | 
-| DataminrPulse.Alerts.sectors.id | String | The unique identifier of the sector. | 
-| DataminrPulse.Alerts.sectors.idStr | String | The string value of the ID for the sector. | 
-| DataminrPulse.Alerts.sectors.retired | Boolean | Boolean value of retired for sectors. | 
-| DataminrPulse.Alerts.subCaption.bullets.source | String | Source from which information about Dataminr events is obtained. | 
-| DataminrPulse.Alerts.subCaption.bullets.media | String | Media from information about Dataminr event derived exclusively from the attributed source. | 
-| DataminrPulse.Alerts.subCaption.bullets.content | String | Content from information about Dataminr event derived exclusively from the attributed source. | 
-| DataminrPulse.Alerts.userRecentImages | Unknown | User's recent images. | 
-| DataminrPulse.Alerts.userTopHashtags | Unknown | User's top hashtags. | 
-| DataminrPulse.Cursor.from | String | "from" points to a cursor that you want any alerts after. | 
-| DataminrPulse.Cursor.to | String | "to" points to a cursor that you want any alerts before. | 
+| DataminrPulse.Alerts.alertId | String | Unique ID of the alert. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.id | String | Unique ID of the watchlist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.type | String | Type of the watchlist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.name | String | Name of the watchlist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.externalTopicIds | String | String containing the ID of external topic for watchlist type. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.omnilist | String | String containing the boolean value of omnilist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.uiListType | String | Type of the watchlist on the Dataminr platform. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.watchlistColor | String | Color of the watchlist defined on the Dataminr platform. |
+| DataminrPulse.Alerts.availableRelatedAlerts | String | Whether the alert has related alerts or not. |
+| DataminrPulse.Alerts.eventTime | Number | Timestamp of the event. |
+| DataminrPulse.Alerts.eventVolume | Number | Volume of the event. |
+| DataminrPulse.Alerts.eventLocation.coordinates | Unknown | Latitude and Longitude of the event. |
+| DataminrPulse.Alerts.eventLocation.name | String | The name of the place where the event occurred. |
+| DataminrPulse.Alerts.eventLocation.places | Unknown | Place IDs of the event location. |
+| DataminrPulse.Alerts.eventLocation.radius | Number | Radius of the event location. |
+| DataminrPulse.Alerts.source.displayName | String | The display name of the source. |
+| DataminrPulse.Alerts.source.entityName | String | The entity name of the source. |
+| DataminrPulse.Alerts.source.verified | Boolean | True if the source is verified, false otherwise. |
+| DataminrPulse.Alerts.source.channels | Unknown | The Dataminr channel to which the source belongs. |
+| DataminrPulse.Alerts.post.timestamp | Number | The timestamp of the post. |
+| DataminrPulse.Alerts.post.languages.position | Number | The position of the post. |
+| DataminrPulse.Alerts.post.languages.lang | String | The language of the post. |
+| DataminrPulse.Alerts.post.media.type | String | The type of the media. |
+| DataminrPulse.Alerts.post.media.url | String | The URL of the media. |
+| DataminrPulse.Alerts.post.media.description | String | The description of the media. |
+| DataminrPulse.Alerts.post.media.display_url | String | The display URL of the media. |
+| DataminrPulse.Alerts.post.media.media_url | String | The URL of the media. |
+| DataminrPulse.Alerts.post.media.source | String | The source of the media. |
+| DataminrPulse.Alerts.post.link | String | The link to the post. |
+| DataminrPulse.Alerts.caption | String | The text of the alert. |
+| DataminrPulse.Alerts.categories.name | String | The name of the category to which the alert belongs. |
+| DataminrPulse.Alerts.categories.topicType | String | The type of the Dataminr entity. Its value will be "category". |
+| DataminrPulse.Alerts.categories.id | String | The unique identifier of the category. |
+| DataminrPulse.Alerts.categories.idStr | String | The string value of the ID for the category. |
+| DataminrPulse.Alerts.categories.requested | String | String containing the boolean value for a category. |
+| DataminrPulse.Alerts.categories.path | String | The path of the Dataminr category. |
+| DataminrPulse.Alerts.categories.retired | Boolean | Boolean value of retired for a particular category. |
+| DataminrPulse.Alerts.headerColor | String | The hex value of the alert's header color. |
+| DataminrPulse.Alerts.headerLabel | String | The label of the alert's header. |
+| DataminrPulse.Alerts.alertType.id | String | The unique identifier of the alert type. |
+| DataminrPulse.Alerts.alertType.name | String | The name of the alert type. |
+| DataminrPulse.Alerts.alertType.color | String | The color of alert type. |
+| DataminrPulse.Alerts.publisherCategory.id | String | The unique identifier of the publisher category. |
+| DataminrPulse.Alerts.publisherCategory.name | String | The name of the publisher category. |
+| DataminrPulse.Alerts.publisherCategory.color | String | The color of the publisher category. |
+| DataminrPulse.Alerts.publisherCategory.shortName | String | The short name for publisher category. |
+| DataminrPulse.Alerts.eventMapSmallURL | String | Value containing the URL of the small event map image. |
+| DataminrPulse.Alerts.eventMapLargeURL | String | Value containing the URL of the large event map image. |
+| DataminrPulse.Alerts.expandAlertURL | String | URL of the alert details page. |
+| DataminrPulse.Alerts.expandMapURL | String | URL of the expanded map. |
+| DataminrPulse.Alerts.relatedTerms.text | String | Text of the related terms. |
+| DataminrPulse.Alerts.relatedTerms.url | String | URL of the related terms. |
+| DataminrPulse.Alerts.relatedTermsQueryURL | String | URL of the related terms query. |
+| DataminrPulse.Alerts.parentAlertId | String | Alert ID of the parent. |
+| DataminrPulse.Alerts.metadata.cyber.URLs | Unknown | Identifier for a specific part of a website referenced in posts that could be related to a target or attacker's infrastructure. |
+| DataminrPulse.Alerts.metadata.cyber.threats | Unknown | Name of cyber threat. |
+| DataminrPulse.Alerts.metadata.cyber.addresses.ip | String | IP address of attacker/victim. Note that IP can have more than one open port and ports are associated with specific products via IANA \(iana.org\). |
+| DataminrPulse.Alerts.metadata.cyber.addresses.port | Number | Port of attacker/victim. |
+| DataminrPulse.Alerts.metadata.cyber.addresses.version | String | Version of IP address. |
+| DataminrPulse.Alerts.metadata.cyber.asns | Unknown | Name of the autonomous systems number of the company hosting the impacted service\(s\). |
+| DataminrPulse.Alerts.metadata.cyber.orgs | Unknown | Name of the ASN \(company hosting the impacted service\). |
+| DataminrPulse.Alerts.metadata.cyber.products | Unknown | The server software used on an IP address. |
+| DataminrPulse.Alerts.metadata.cyber.hashes | Unknown | A unique identifier or fingerprint for a file, often a malicious executable. |
+| DataminrPulse.Alerts.metadata.cyber.malwares | Unknown | Malicious software posing a threat. |
+| DataminrPulse.Alerts.metadata.cyber.asOrgs.asn | String | Autonomous system number. |
+| DataminrPulse.Alerts.metadata.cyber.asOrgs.asOrg | String | Autonomous system organization. |
+| DataminrPulse.Alerts.metadata.cyber.hashValues.value | String | Hash value. |
+| DataminrPulse.Alerts.metadata.cyber.hashValues.type | String | Hash value type. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.id | String | CVE ID. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.cvss | String | CVSS value. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.exploitPocLinks | Unknown | Exploited PoC links. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productName | String | Product name. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVersion | String | Product version. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVendor | String | Product vendor. |
+| DataminrPulse.Alerts.companies.name | String | The name of the company. |
+| DataminrPulse.Alerts.companies.topicType | String | The type of the Dataminr entity. Its value will be "company". |
+| DataminrPulse.Alerts.companies.id | String | The unique identifier of the company. |
+| DataminrPulse.Alerts.companies.idStr | String | The string value of the ID for the company. |
+| DataminrPulse.Alerts.companies.ticker | String | The ticker symbol of the company. |
+| DataminrPulse.Alerts.companies.retired | Boolean | Boolean value of retired for a particular company. |
+| DataminrPulse.Alerts.companies.dm_bucket.id | String | The ID of the Dataminr bucket to which the company belongs. |
+| DataminrPulse.Alerts.companies.dm_bucket.name | String | The name of the Dataminr bucket to which the company belongs. |
+| DataminrPulse.Alerts.companies.dm_sector.id | String | The ID of the Dataminr sector to which the company belongs. |
+| DataminrPulse.Alerts.companies.dm_sector.name | String | The name of the Dataminr sector to which the company belongs. |
+| DataminrPulse.Alerts.sectors.name | String | The name of the sector to which the alert belongs. |
+| DataminrPulse.Alerts.sectors.topicType | String | The type of the Dataminr entity. Its value will be "dm_sector". |
+| DataminrPulse.Alerts.sectors.id | String | The unique identifier of the sector. |
+| DataminrPulse.Alerts.sectors.idStr | String | The string value of the ID for the sector. |
+| DataminrPulse.Alerts.sectors.retired | Boolean | Boolean value of retired for sectors. |
+| DataminrPulse.Alerts.subCaption.bullets.source | String | Source from which information about Dataminr events is obtained. |
+| DataminrPulse.Alerts.subCaption.bullets.media | String | Media from information about Dataminr event derived exclusively from the attributed source. |
+| DataminrPulse.Alerts.subCaption.bullets.content | String | Content from information about Dataminr event derived exclusively from the attributed source. |
+| DataminrPulse.Alerts.userRecentImages | Unknown | User's recent images. |
+| DataminrPulse.Alerts.userTopHashtags | Unknown | User's top hashtags. |
+| DataminrPulse.Cursor.from | String | "from" points to a cursor that you want any alerts after. |
+| DataminrPulse.Cursor.to | String | "to" points to a cursor that you want any alerts before. |
 
 #### Command example
+
 ```!dataminrpulse-alerts-get query="Google" num=2 use_configured_watchlist_names=yes```
+
 #### Context Example
+
 ```json
 {
     "DataminrPulse": {
@@ -537,12 +540,14 @@ Retrieves the alerts as per the provided watchlist_ids or query or configured wa
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Type|Alert ID|Caption|Alert URL|Watchlist Name|Alert Time|Alert Location|Post Link|Is source verified|Publisher Category|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Alert | 263446797171227825118793783-1679036084482-1 | Credentials from Netflix, Roku and Google in post selling data from machine infected by Raccoon stealer in United States: Blog via Russian Market. | [https://app.dataminr.com/#alertDetail/5/263446797171227825118793783-1679036084482-1](https://app.dataminr.com/#alertDetail/5/263446797171227825118793783-1679036084482-1) | Data Security | 17 Mar 2023, 06:54 AM UTC | united states | [http://dummy.com/logs#b557780d27d99](http://dummy.com/logs#b557780d27d99) | false | Blog |
 >| Alert | 8182773200381469871601567489-1679036084274-1 | Credentials from Google and Paypal in post selling data from machine infected by Raccoon stealer in Venezuela: Blog via Russian Market. | [https://app.dataminr.com/#alertDetail/5/8182773200381469871601567489-1679036084274-1](https://app.dataminr.com/#alertDetail/5/8182773200381469871601567489-1679036084274-1) | Data Security | 17 Mar 2023, 06:54 AM UTC | venezuela | [http://dummy.com/logs#b05eb146256c7774f](http://dummy.com/logs#b05eb146256c7774f) | false | Blog |
 
 >### Cursor for pagination
+>
 >|from|to|
 >|---|---|
 >| from_cursor | to_cursor |
@@ -560,111 +565,114 @@ Retrieves the alerts related to the provided Alert ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Unique identifier of the alert whose related alerts to retrieve. | Required | 
-| include_root | When searching for a linked cluster, this flag<br/>determines whether the alert from which alert_id is used to make request to the server is returned to the result set. Possible values are: False, True. Default is False. | Optional | 
+| alert_id | Unique identifier of the alert whose related alerts to retrieve. | Required |
+| include_root | When searching for a linked cluster, this flag<br/>determines whether the alert from which alert_id is used to make request to the server is returned to the result set. Possible values are: False, True. Default is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DataminrPulse.Alerts.alertId | String | Unique ID of the alert. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.id | String | Unique ID of the watchlist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.type | String | Type of the watchlist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.name | String | Name of the watchlist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.externalTopicIds | String | String containing the ID of external topic for watchlist type. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.omnilist | String | String containing the boolean value of omnilist. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.uiListType | String | Type of the watchlist on the Dataminr platform. | 
-| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.watchlistColor | String | Color of the watchlist defined on the Dataminr platform. | 
-| DataminrPulse.Alerts.availableRelatedAlerts | String | Whether the alert has related alerts or not. | 
-| DataminrPulse.Alerts.eventTime | Number | Timestamp of the event. | 
-| DataminrPulse.Alerts.eventVolume | Number | Volume of the event. | 
-| DataminrPulse.Alerts.eventLocation.coordinates | Unknown | Latitude and Longitude of the event. | 
-| DataminrPulse.Alerts.eventLocation.name | String | The name of the place where the event occurred. | 
-| DataminrPulse.Alerts.eventLocation.places | Unknown | Place IDs of the event location. | 
-| DataminrPulse.Alerts.eventLocation.radius | Number | Radius of the event location. | 
-| DataminrPulse.Alerts.source.displayName | String | The display name of the source. | 
-| DataminrPulse.Alerts.source.entityName | String | The entity name of the source. | 
-| DataminrPulse.Alerts.source.verified | Boolean | True if the source is verified, false otherwise. | 
-| DataminrPulse.Alerts.source.channels | Unknown | The Dataminr channel to which the source belongs. | 
-| DataminrPulse.Alerts.post.timestamp | Number | The timestamp of the post. | 
-| DataminrPulse.Alerts.post.languages.position | Number | The position of the post. | 
-| DataminrPulse.Alerts.post.languages.lang | String | The language of the post. | 
-| DataminrPulse.Alerts.post.media.type | String | The type of the media. | 
-| DataminrPulse.Alerts.post.media.url | String | The URL of the media. | 
-| DataminrPulse.Alerts.post.media.description | String | The description of the media. | 
-| DataminrPulse.Alerts.post.media.display_url | String | The display URL of the media. | 
-| DataminrPulse.Alerts.post.media.media_url | String | The URL of the media. | 
-| DataminrPulse.Alerts.post.media.source | String | The source of the media. | 
-| DataminrPulse.Alerts.post.link | String | The link to the post. | 
-| DataminrPulse.Alerts.caption | String | The text of the alert. | 
-| DataminrPulse.Alerts.categories.name | String | The name of the category to which the alert belongs. | 
-| DataminrPulse.Alerts.categories.topicType | String | The type of the Dataminr entity. Its value will be "category". | 
-| DataminrPulse.Alerts.categories.id | String | The unique identifier of the category. | 
-| DataminrPulse.Alerts.categories.idStr | String | The string value of the ID for the category. | 
-| DataminrPulse.Alerts.categories.requested | String | String containing the boolean value for a category. | 
-| DataminrPulse.Alerts.categories.path | String | The path of the Dataminr category. | 
-| DataminrPulse.Alerts.categories.retired | Boolean | Boolean value of retired for a particular category. | 
-| DataminrPulse.Alerts.headerColor | String | The hex value of the alert's header color. | 
-| DataminrPulse.Alerts.headerLabel | String | The label of the alert's header. | 
-| DataminrPulse.Alerts.alertType.id | String | The unique identifier of the alert type. | 
-| DataminrPulse.Alerts.alertType.name | String | The name of the alert type. | 
-| DataminrPulse.Alerts.alertType.color | String | The color of alert type. | 
-| DataminrPulse.Alerts.publisherCategory.id | String | The unique identifier of the publisher category. | 
-| DataminrPulse.Alerts.publisherCategory.name | String | The name of the publisher category. | 
-| DataminrPulse.Alerts.publisherCategory.color | String | The color of the publisher category. | 
-| DataminrPulse.Alerts.publisherCategory.shortName | String | The short name for publisher category. | 
-| DataminrPulse.Alerts.eventMapSmallURL | String | Value containing the URL of the small event map image. | 
-| DataminrPulse.Alerts.eventMapLargeURL | String | Value containing the URL of the large event map image. | 
-| DataminrPulse.Alerts.expandAlertURL | String | URL of the alert details page. | 
-| DataminrPulse.Alerts.expandMapURL | String | URL of the expanded map. | 
-| DataminrPulse.Alerts.relatedTerms.text | String | Text of the related terms. | 
-| DataminrPulse.Alerts.relatedTerms.url | String | URL of the related terms. | 
-| DataminrPulse.Alerts.relatedTermsQueryURL | String | URL of the related terms query. | 
-| DataminrPulse.Alerts.parentAlertId | String | Alert ID of the parent. | 
-| DataminrPulse.Alerts.metadata.cyber.URLs | Unknown | Identifier for a specific part of a website referenced in posts that could be related to a target or attacker's infrastructure. | 
-| DataminrPulse.Alerts.metadata.cyber.threats | Unknown | Name of cyber threat. | 
-| DataminrPulse.Alerts.metadata.cyber.addresses.ip | String | IP address of attacker/victim. Note that IP can have more than one open port and ports are associated with specific products via IANA \(iana.org\). | 
-| DataminrPulse.Alerts.metadata.cyber.addresses.port | Number | Port of attacker/victim. | 
-| DataminrPulse.Alerts.metadata.cyber.addresses.version | String | Version of IP address. | 
-| DataminrPulse.Alerts.metadata.cyber.asns | Unknown | Name of the autonomous systems number of the company hosting the impacted service\(s\). | 
-| DataminrPulse.Alerts.metadata.cyber.orgs | Unknown | Name of the ASN \(company hosting the impacted service\). | 
-| DataminrPulse.Alerts.metadata.cyber.products | Unknown | The server software used on an IP address. | 
-| DataminrPulse.Alerts.metadata.cyber.hashes | Unknown | A unique identifier or fingerprint for a file, often a malicious executable. | 
-| DataminrPulse.Alerts.metadata.cyber.malwares | Unknown | Malicious software posing a threat. | 
-| DataminrPulse.Alerts.metadata.cyber.asOrgs.asn | String | Autonomous system number. | 
-| DataminrPulse.Alerts.metadata.cyber.asOrgs.asOrg | String | Autonomous system organization. | 
-| DataminrPulse.Alerts.metadata.cyber.hashValues.value | String | Hash value. | 
-| DataminrPulse.Alerts.metadata.cyber.hashValues.type | String | Hash value type. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.id | String | CVE ID. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.cvss | String | CVSS value. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.exploitPocLinks | Unknown | Exploited PoC links. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productName | String | Product name. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVersion | String | Product version. | 
-| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVendor | String | Product vendor. | 
-| DataminrPulse.Alerts.companies.name | String | The name of the company. | 
-| DataminrPulse.Alerts.companies.topicType | String | The type of the Dataminr entity. Its value will be "company". | 
-| DataminrPulse.Alerts.companies.id | String | The unique identifier of the company. | 
-| DataminrPulse.Alerts.companies.idStr | String | The string value of the ID for the company. | 
-| DataminrPulse.Alerts.companies.ticker | String | The ticker symbol of the company. | 
-| DataminrPulse.Alerts.companies.retired | Boolean | Boolean value of retired for a particular company. | 
-| DataminrPulse.Alerts.companies.dm_bucket.id | String | The ID of the Dataminr bucket to which the company belongs. | 
-| DataminrPulse.Alerts.companies.dm_bucket.name | String | The name of the Dataminr bucket to which the company belongs. | 
-| DataminrPulse.Alerts.companies.dm_sector.id | String | The ID of the Dataminr sector to which the company belongs. | 
-| DataminrPulse.Alerts.companies.dm_sector.name | String | The name of the Dataminr sector to which the company belongs. | 
-| DataminrPulse.Alerts.sectors.name | String | The name of the sector to which the alert belongs. | 
-| DataminrPulse.Alerts.sectors.topicType | String | The type of the Dataminr entity. Its value will be "dm_sector". | 
-| DataminrPulse.Alerts.sectors.id | String | The unique identifier of the sector. | 
-| DataminrPulse.Alerts.sectors.idStr | String | The string value of the ID for the sector. | 
-| DataminrPulse.Alerts.sectors.retired | Boolean | Boolean value of retired for sectors. | 
-| DataminrPulse.Alerts.subCaption.bullets.source | String | Source from which information about Dataminr events is obtained. | 
-| DataminrPulse.Alerts.subCaption.bullets.media | String | Media from information about Dataminr event derived exclusively from the attributed source. | 
-| DataminrPulse.Alerts.subCaption.bullets.content | String | Content from information about Dataminr event derived exclusively from the attributed source. | 
-| DataminrPulse.Alerts.userRecentImages | Unknown | User's recent images. | 
-| DataminrPulse.Alerts.userTopHashtags | Unknown | User's top hashtags. | 
+| DataminrPulse.Alerts.alertId | String | Unique ID of the alert. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.id | String | Unique ID of the watchlist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.type | String | Type of the watchlist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.name | String | Name of the watchlist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.externalTopicIds | String | String containing the ID of external topic for watchlist type. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.omnilist | String | String containing the boolean value of omnilist. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.uiListType | String | Type of the watchlist on the Dataminr platform. |
+| DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.watchlistColor | String | Color of the watchlist defined on the Dataminr platform. |
+| DataminrPulse.Alerts.availableRelatedAlerts | String | Whether the alert has related alerts or not. |
+| DataminrPulse.Alerts.eventTime | Number | Timestamp of the event. |
+| DataminrPulse.Alerts.eventVolume | Number | Volume of the event. |
+| DataminrPulse.Alerts.eventLocation.coordinates | Unknown | Latitude and Longitude of the event. |
+| DataminrPulse.Alerts.eventLocation.name | String | The name of the place where the event occurred. |
+| DataminrPulse.Alerts.eventLocation.places | Unknown | Place IDs of the event location. |
+| DataminrPulse.Alerts.eventLocation.radius | Number | Radius of the event location. |
+| DataminrPulse.Alerts.source.displayName | String | The display name of the source. |
+| DataminrPulse.Alerts.source.entityName | String | The entity name of the source. |
+| DataminrPulse.Alerts.source.verified | Boolean | True if the source is verified, false otherwise. |
+| DataminrPulse.Alerts.source.channels | Unknown | The Dataminr channel to which the source belongs. |
+| DataminrPulse.Alerts.post.timestamp | Number | The timestamp of the post. |
+| DataminrPulse.Alerts.post.languages.position | Number | The position of the post. |
+| DataminrPulse.Alerts.post.languages.lang | String | The language of the post. |
+| DataminrPulse.Alerts.post.media.type | String | The type of the media. |
+| DataminrPulse.Alerts.post.media.url | String | The URL of the media. |
+| DataminrPulse.Alerts.post.media.description | String | The description of the media. |
+| DataminrPulse.Alerts.post.media.display_url | String | The display URL of the media. |
+| DataminrPulse.Alerts.post.media.media_url | String | The URL of the media. |
+| DataminrPulse.Alerts.post.media.source | String | The source of the media. |
+| DataminrPulse.Alerts.post.link | String | The link to the post. |
+| DataminrPulse.Alerts.caption | String | The text of the alert. |
+| DataminrPulse.Alerts.categories.name | String | The name of the category to which the alert belongs. |
+| DataminrPulse.Alerts.categories.topicType | String | The type of the Dataminr entity. Its value will be "category". |
+| DataminrPulse.Alerts.categories.id | String | The unique identifier of the category. |
+| DataminrPulse.Alerts.categories.idStr | String | The string value of the ID for the category. |
+| DataminrPulse.Alerts.categories.requested | String | String containing the boolean value for a category. |
+| DataminrPulse.Alerts.categories.path | String | The path of the Dataminr category. |
+| DataminrPulse.Alerts.categories.retired | Boolean | Boolean value of retired for a particular category. |
+| DataminrPulse.Alerts.headerColor | String | The hex value of the alert's header color. |
+| DataminrPulse.Alerts.headerLabel | String | The label of the alert's header. |
+| DataminrPulse.Alerts.alertType.id | String | The unique identifier of the alert type. |
+| DataminrPulse.Alerts.alertType.name | String | The name of the alert type. |
+| DataminrPulse.Alerts.alertType.color | String | The color of alert type. |
+| DataminrPulse.Alerts.publisherCategory.id | String | The unique identifier of the publisher category. |
+| DataminrPulse.Alerts.publisherCategory.name | String | The name of the publisher category. |
+| DataminrPulse.Alerts.publisherCategory.color | String | The color of the publisher category. |
+| DataminrPulse.Alerts.publisherCategory.shortName | String | The short name for publisher category. |
+| DataminrPulse.Alerts.eventMapSmallURL | String | Value containing the URL of the small event map image. |
+| DataminrPulse.Alerts.eventMapLargeURL | String | Value containing the URL of the large event map image. |
+| DataminrPulse.Alerts.expandAlertURL | String | URL of the alert details page. |
+| DataminrPulse.Alerts.expandMapURL | String | URL of the expanded map. |
+| DataminrPulse.Alerts.relatedTerms.text | String | Text of the related terms. |
+| DataminrPulse.Alerts.relatedTerms.url | String | URL of the related terms. |
+| DataminrPulse.Alerts.relatedTermsQueryURL | String | URL of the related terms query. |
+| DataminrPulse.Alerts.parentAlertId | String | Alert ID of the parent. |
+| DataminrPulse.Alerts.metadata.cyber.URLs | Unknown | Identifier for a specific part of a website referenced in posts that could be related to a target or attacker's infrastructure. |
+| DataminrPulse.Alerts.metadata.cyber.threats | Unknown | Name of cyber threat. |
+| DataminrPulse.Alerts.metadata.cyber.addresses.ip | String | IP address of attacker/victim. Note that IP can have more than one open port and ports are associated with specific products via IANA \(iana.org\). |
+| DataminrPulse.Alerts.metadata.cyber.addresses.port | Number | Port of attacker/victim. |
+| DataminrPulse.Alerts.metadata.cyber.addresses.version | String | Version of IP address. |
+| DataminrPulse.Alerts.metadata.cyber.asns | Unknown | Name of the autonomous systems number of the company hosting the impacted service\(s\). |
+| DataminrPulse.Alerts.metadata.cyber.orgs | Unknown | Name of the ASN \(company hosting the impacted service\). |
+| DataminrPulse.Alerts.metadata.cyber.products | Unknown | The server software used on an IP address. |
+| DataminrPulse.Alerts.metadata.cyber.hashes | Unknown | A unique identifier or fingerprint for a file, often a malicious executable. |
+| DataminrPulse.Alerts.metadata.cyber.malwares | Unknown | Malicious software posing a threat. |
+| DataminrPulse.Alerts.metadata.cyber.asOrgs.asn | String | Autonomous system number. |
+| DataminrPulse.Alerts.metadata.cyber.asOrgs.asOrg | String | Autonomous system organization. |
+| DataminrPulse.Alerts.metadata.cyber.hashValues.value | String | Hash value. |
+| DataminrPulse.Alerts.metadata.cyber.hashValues.type | String | Hash value type. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.id | String | CVE ID. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.cvss | String | CVSS value. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.exploitPocLinks | Unknown | Exploited PoC links. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productName | String | Product name. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVersion | String | Product version. |
+| DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVendor | String | Product vendor. |
+| DataminrPulse.Alerts.companies.name | String | The name of the company. |
+| DataminrPulse.Alerts.companies.topicType | String | The type of the Dataminr entity. Its value will be "company". |
+| DataminrPulse.Alerts.companies.id | String | The unique identifier of the company. |
+| DataminrPulse.Alerts.companies.idStr | String | The string value of the ID for the company. |
+| DataminrPulse.Alerts.companies.ticker | String | The ticker symbol of the company. |
+| DataminrPulse.Alerts.companies.retired | Boolean | Boolean value of retired for a particular company. |
+| DataminrPulse.Alerts.companies.dm_bucket.id | String | The ID of the Dataminr bucket to which the company belongs. |
+| DataminrPulse.Alerts.companies.dm_bucket.name | String | The name of the Dataminr bucket to which the company belongs. |
+| DataminrPulse.Alerts.companies.dm_sector.id | String | The ID of the Dataminr sector to which the company belongs. |
+| DataminrPulse.Alerts.companies.dm_sector.name | String | The name of the Dataminr sector to which the company belongs. |
+| DataminrPulse.Alerts.sectors.name | String | The name of the sector to which the alert belongs. |
+| DataminrPulse.Alerts.sectors.topicType | String | The type of the Dataminr entity. Its value will be "dm_sector". |
+| DataminrPulse.Alerts.sectors.id | String | The unique identifier of the sector. |
+| DataminrPulse.Alerts.sectors.idStr | String | The string value of the ID for the sector. |
+| DataminrPulse.Alerts.sectors.retired | Boolean | Boolean value of retired for sectors. |
+| DataminrPulse.Alerts.subCaption.bullets.source | String | Source from which information about Dataminr events is obtained. |
+| DataminrPulse.Alerts.subCaption.bullets.media | String | Media from information about Dataminr event derived exclusively from the attributed source. |
+| DataminrPulse.Alerts.subCaption.bullets.content | String | Content from information about Dataminr event derived exclusively from the attributed source. |
+| DataminrPulse.Alerts.userRecentImages | Unknown | User's recent images. |
+| DataminrPulse.Alerts.userTopHashtags | Unknown | User's top hashtags. |
 
 #### Command example
+
 ```!dataminrpulse-related-alerts-get alert_id="969633949-1679028615394-3"```
+
 #### Context Example
+
 ```json
 {
     "DataminrPulse": {
@@ -753,6 +761,7 @@ Retrieves the alerts related to the provided Alert ID.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Type|Alert ID|Caption|Alert URL|Alert Time|Alert Location|Post Link|Is source verified|Publisher Category|
 >|---|---|---|---|---|---|---|---|---|
 >| Urgent | 1114146985-1679026540479-3 | Power outage affects 1,328 customers in Brisbane City, QLD, Australia: Government via Energex. | [https://app.dataminr.com/#alertDetail/5/1114146985-1679026540479-3](https://app.dataminr.com/#alertDetail/5/1114146985-1679026540479-3) | 17 Mar 2023, 04:16 AM UTC | Brisbane City QLD 4000, Australia | [https://www.dummy.com/residential-and-business/power-interruptions/current-interruptions](https://www.dummy.com/residential-and-business/power-interruptions/current-interruptions) | false | Government |
