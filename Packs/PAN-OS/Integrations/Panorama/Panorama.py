@@ -166,7 +166,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "artificial-intelligence",
     "auctions",
     "business-and-economy",
-    "cloud-unavailable",
     "command-and-control",
     "compromised-website",
     "computer-and-internet-info",
