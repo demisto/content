@@ -766,8 +766,8 @@ class Client(BaseClient):
         data = remove_empty_values(
             {
                 "limit": limit,
-                "filters": handle_filters(filters),
-                "timeRange": time_range,
+                "filters": [{"name": "alert.id", "operator": "=", "value": "P-22883494"}],
+                "timeRange": {"type": "absolute", "value": {"startTime": 1741442111670, "endTime": 1744034111676}},
                 "sortBy": sort_by,
                 "pageToken": page_token,
             }
@@ -1332,6 +1332,7 @@ def add_look_back(last_run_epoch_time: int, look_back_minutes: int) -> int:
 def fetch_request(
     client: Client, fetched_ids: Dict[str, int], filters: List[str], limit: int, now: int, time_range: Dict[str, Any]
 ) -> tuple[List[Dict[str, Any]], Dict[str, int], int]:
+    demisto.info('[test] sending request to alert_search_request')
     response = client.alert_search_request(
         time_range=time_range,
         filters=filters,
@@ -1339,27 +1340,28 @@ def fetch_request(
         sort_by=["alertTime:asc"],  # adding sort by 'id:asc' doesn't work
         limit=limit + len(fetched_ids),
     )
+    demisto.info('[test] aftere alert_search_request {response=}')
     response_items = response.get("items", [])
     demisto.debug(f"Finished request, got {len(response_items)} items")
     updated_last_run_time_epoch = response_items[-1].get("alertTime") if response_items else now
     incidents = filter_alerts(client, fetched_ids, response_items, limit)
 
     # there is a 'nextPageToken' value even if we already got all the results
-    while len(incidents) < limit and response.get("nextPageToken") and response.get("items"):
-        # only page_token is being used, also sending other arguments because it is not stated clearly in the
-        # API documentation
-        response = client.alert_search_request(
-            time_range=time_range,
-            filters=filters,
-            detailed="true",
-            sort_by=["alertTime:asc"],
-            limit=limit + len(fetched_ids),
-            page_token=response.get("nextPageToken"),
-        )
-        response_items = response.get("items", [])
-        demisto.debug(f"Finished request, got {len(response_items)} items.")
-        updated_last_run_time_epoch = response_items[-1].get("alertTime") if response_items else updated_last_run_time_epoch
-        incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
+    # while len(incidents) < limit and response.get("nextPageToken") and response.get("items"):
+    #     # only page_token is being used, also sending other arguments because it is not stated clearly in the
+    #     # API documentation
+    #     response = client.alert_search_request(
+    #         time_range=time_range,
+    #         filters=filters,
+    #         detailed="true",
+    #         sort_by=["alertTime:asc"],
+    #         limit=limit + len(fetched_ids),
+    #         page_token=response.get("nextPageToken"),
+    #     )
+    #     response_items = response.get("items", [])
+    #     demisto.debug(f"Finished request, got {len(response_items)} items.")
+    #     updated_last_run_time_epoch = response_items[-1].get("alertTime") if response_items else updated_last_run_time_epoch
+    #     incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
 
     return incidents, fetched_ids, updated_last_run_time_epoch
 
@@ -1383,6 +1385,7 @@ def filter_alerts(
         demisto.debug(f'Processing new fetched alert {alert.get("id")}.')
         add_mirroring_fields(client, alert)
         incidents.append(alert_to_incident_context(alert))
+        demisto.info(f"[test] incidents current status: {incidents=}")
         fetched_ids[str(alert["id"])] = int(alert["alertTime"])
 
         if len(incidents) + num_of_prev_incidents >= limit:
@@ -2831,11 +2834,13 @@ def fetch_incidents(
     fetched_ids = last_run.get("fetched_ids", {})
     limit = arg_to_number(params.get("max_fetch", MAX_INCIDENTS_TO_FETCH)) or MAX_INCIDENTS_TO_FETCH
     filters = argToList(params.get("filters"))
-
+    demisto.info('[test] going to fetch request')
     incidents, fetched_ids, updated_last_run_time = fetch_request(client, fetched_ids, filters, limit, now, time_range)
+    demisto.info(f'[test] after fetch request, get {fetched_ids=}, {incidents=}')
     updated_last_run_time = max(convert_date_to_unix(first_fetch), updated_last_run_time)
     demisto.debug(f"Fetched {len(incidents)} incidents, {updated_last_run_time=}")
     ids_to_insert = expire_stored_ids(fetched_ids, updated_last_run_time, look_back)
+    demisto.info(f'[test] {ids_to_insert=}')
 
     return incidents, ids_to_insert, updated_last_run_time
 
@@ -3839,6 +3844,7 @@ def main() -> None:
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             incidents, fetched_ids, last_run_time = fetch_incidents(client, last_run, params)
+            demisto.info(f"[test] going to push {incidents=}")
             demisto.incidents(incidents)
             demisto.setLastRun({"fetched_ids": fetched_ids, "time": last_run_time})
         elif command == "get-modified-remote-data":
