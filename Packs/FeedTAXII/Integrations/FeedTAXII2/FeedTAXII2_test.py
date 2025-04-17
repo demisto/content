@@ -537,8 +537,8 @@ def test_fetch_indicators_error_handling():
     mock_client.build_iterator.side_effect = side_effect
 
     # Prepare mocks for Demisto functions
-    with patch('demisto.updateModuleHealth') as mock_update_health,\
-         patch('demisto.error') as mock_error:
+    with patch('FeedTAXII2.demisto.updateModuleHealth') as mock_update_health,\
+         patch('FeedTAXII2.demisto.error') as mock_error:
         # Execute
         indicators, last_run_ctx = fetch_indicators_command(
             client=mock_client,
