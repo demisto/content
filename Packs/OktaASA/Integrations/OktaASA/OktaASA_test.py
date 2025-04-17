@@ -641,3 +641,107 @@ def test_add_time_and_related_object_data_to_events(mocker):
     for log in response.get("list"):
         assert isinstance(log.get("details",{}).get("server"), dict)
         assert isinstance(log.get("details",{}).get("project"), dict)
+
+
+def test_add_time_and_related_object_data_to_events_called_with_correct_arguments_for_test_module(mocker):
+    """
+    Given:
+    - command name.
+
+    When:
+    - Call the add_time_and_related_object_data_to_events method
+
+    Then:
+    - The add_time_and_related_object_data_to_events called with correct arguments according to the command.
+    """
+    import OktaASA
+    mocker.patch.object(
+        OktaASAClient,
+        "generate_token_if_required",
+    )
+    response = util_load_json("test_data/response_10_items_descending_true.json")
+    mocker.patch.object(
+        OktaASAClient,
+        "get_audit_events_request",
+        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")}],
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
+        OktaASA, "mocker_add_time_and_related_object_data_to_events"
+    )
+    OktaASA.main()
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
+    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=response.get("list"),
+                                                                         related_objects=response.get("related_objects"),
+                                                                         add_time_mapping=True)
+
+
+
+def test_add_time_and_related_object_data_to_events_called_with_correct_arguments_for_get_event(mocker):
+    """
+    Given:
+    - command name.
+
+    When:
+    - Call the add_time_and_related_object_data_to_events method
+
+    Then:
+    - The add_time_and_related_object_data_to_events called with correct arguments according to the command.
+    """
+    import OktaASA
+    mocker.patch.object(
+        OktaASAClient,
+        "generate_token_if_required",
+    )
+    response = util_load_json("test_data/response_10_items_descending_true.json")
+    mocker.patch.object(
+        OktaASAClient,
+        "get_audit_events_request",
+        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")}],
+    )
+    mocker.patch.object(demisto, "command", return_value="okta-asa-get-event")
+    mocker.patch.object(demisto, "params", return_value={"should_push_events": "False"})
+    mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
+        OktaASA, "mocker_add_time_and_related_object_data_to_events"
+    )
+    OktaASA.main()
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
+    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=response.get("list"),
+                                                                         related_objects=response.get("related_objects"),
+                                                                         add_time_mapping=False)
+
+
+
+def test_add_time_and_related_object_data_to_events_called_with_correct_arguments_for_fetch_events(mocker):
+    """
+    Given:
+    - command name.
+
+    When:
+    - Call the add_time_and_related_object_data_to_events method
+
+    Then:
+    - The add_time_and_related_object_data_to_events called with correct arguments according to the command.
+    """
+    import OktaASA
+    mocker.patch.object(
+        OktaASAClient,
+        "generate_token_if_required",
+    )
+    response = util_load_json("test_data/response_10_items_descending_true.json")
+    mocker.patch.object(
+        OktaASAClient,
+        "get_audit_events_request",
+        side_effect=[{"list": response.get("list"), "related_objects": response.get("related_objects")}],
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "params", return_value={"should_push_events": "False"})
+    mocker_add_time_and_related_object_data_to_events = mocker.patch.object(
+        OktaASA, "mocker_add_time_and_related_object_data_to_events"
+    )
+    OktaASA.main()
+    assert mocker_add_time_and_related_object_data_to_events.call_count == 1
+    mocker_add_time_and_related_object_data_to_events.assert_called_with(events=response.get("list"),
+                                                                         related_objects=response.get("related_objects"),
+                                                                         add_time_mapping=True)

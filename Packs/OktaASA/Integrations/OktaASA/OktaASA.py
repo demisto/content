@@ -179,13 +179,14 @@ def add_time_and_related_object_data_to_events(events: List[Dict], related_objec
     Returns:
         list: The events with the _time key and related object information.
     """
+    keys_to_enhance = ["project", "server"]
     for event in events:
         if add_time_mapping:
             create_time = arg_to_datetime(arg=event.get("timestamp"))
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
         event_details = event.get("details", {})
-        for key in event_details:
-            if key in ["project", "server"] and event_details.get(key):
+        for key in keys_to_enhance:
+            if key in event_details and event_details.get(key):
                 id_of_related_object = event_details.get(key)
                 related_object = related_objects.get(event_details.get(key),{})
                 if related_object.get("type") == key and related_object.get("object"):
@@ -264,6 +265,7 @@ def fetch_events_command(
     events, offset, timestamp = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
+        add_time_mapping=add_time_mapping
     )
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
@@ -289,7 +291,7 @@ def main() -> None:  # pragma: no cover
     team_name = params.get("team_name", "").lower()
     base_url = urljoin(params.get("url"), f"/v1/teams/{team_name}")
     verify_certificate = not params.get("insecure", False)
-    max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch", "10000"))
+    max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch", "5000"))
     proxy = params.get("proxy", False)
 
     demisto.debug(f"{INTEGRATION_NAME}: Command being called is {command}")
