@@ -1,4 +1,5 @@
 # WootCloud Pack
+
 WootCloud’s integration with Cortex™ XSOAR allows customers to append contextualized alerts with critical intelligence to SOAR workflows so users can build and automate workflows, simplify the incident response process and reduce the amount of human intervention necessary to handle security incidents.
 By automating time-intensive, manual processes and operational workflows and delivering powerful, consolidated analytics, real-time dashboards and reporting from across the security infrastructure, this integration maximizes the incident response capabilities of over-burdened and understaffed security operations.
 
