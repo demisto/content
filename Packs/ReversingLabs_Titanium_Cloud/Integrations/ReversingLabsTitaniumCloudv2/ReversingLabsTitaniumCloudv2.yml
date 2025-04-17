@@ -97,9 +97,8 @@ script:
         - contextPath: ReversingLabs.file_reputation.rl.malware_presence.trust_factor
           description: ReversingLabs trust factor for the sample.
           type: Number
-
     - name: url
-      description: Return a URL analysis report.
+      description: Return URL analysis reports.
       arguments:
         - name: url
           description: List of URLs.
@@ -130,7 +129,6 @@ script:
         - contextPath: ReversingLabs.url_report.rl.reason
           description: Reason for the classification.
           type: String
-
     - name: ip
       description: Return IP analysis reports.
       arguments:
@@ -158,10 +156,8 @@ script:
           description: The IP address analysis report.
           type: Unknown
         - contextPath: ReversingLabs.ip_report.rl.classification
-          description: Classification string for this URL.
+          description: Classification string for this IP address.
           type: String
-
-
     - name: domain
       description: Return domain analysis reports.
       arguments:
@@ -171,7 +167,7 @@ script:
           required: true
       outputs:
         - contextPath: Domain.Name
-          description: The IP address.
+          description: The domain name.
           type: Unknown
         - contextPath: DBotScore.Score
           description: The actual score.
@@ -186,16 +182,11 @@ script:
           description: The vendor used to calculate the score.
           type: String
         - contextPath: ReversingLabs.domain_report
-          description: The IP address analysis report.
+          description: The domain name analysis report.
           type: Unknown
         - contextPath: ReversingLabs.domain_report.rl.classification
-          description: Classification string for this URL.
+          description: Classification string for this domain name.
           type: String
-
-
-
-
-
     - name: reversinglabs-titaniumcloud-file-reputation
       description: Retrieve File Reputation data from TitaniumCloud.
       arguments:
@@ -976,7 +967,7 @@ script:
         - contextPath: ReversingLabs.customer_usage_yara
           description: Number of active YARA rulesets.
           type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.1872154
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.3030542
   runonce: false
   script: "-"
   subtype: python3
