@@ -470,6 +470,7 @@ def fetch_indicators_command(client,
     # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
     no_update = all(next(iter(iterator.values())).get('no_update', False) for iterator in iterators)
 
+    demisto.info("HTTPFEED - starting fetching indicators")
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines.get('result', []):
@@ -488,6 +489,7 @@ def fetch_indicators_command(client,
                         enrichment_excluded
                     ))
 
+    demisto.info("HTTPFEED - finished fetching indicators")
     return indicators, no_update
 
 
@@ -634,13 +636,17 @@ def feed_main(feed_name, params=None, prefix=''):
                                                              enrichment_excluded=enrichment_excluded)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
+            demisto.info(f"HTTPFEED - fetched {len(indicators)}")
             if is_demisto_version_ge('6.5.0'):
                 if not indicators:
                     demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
                 else:
+                    demisto.info("HTTPFEED - before start creating indicators in batches")
                     # we submit the indicators in batches
                     for b in batch(indicators, batch_size=2000):
+                        demisto.info("HTTPFEED - creating batch...")
                         demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+                    demisto.info("HTTPDEED - finished creating batches")
             else:
                 # call createIndicators without noUpdate arg
                 if not indicators:
