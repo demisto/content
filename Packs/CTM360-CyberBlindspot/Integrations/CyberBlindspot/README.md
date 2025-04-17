@@ -5,10 +5,12 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 
 
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
 | Module To Use | Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, and Domain/Subdomain Infringements. | False |
+| Retrieve Screenshots |  | False |
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
 | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
@@ -16,6 +18,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Incident type |  | False |
+
 
 
 
@@ -217,13 +220,13 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.subject | unknown | Asset or title of incident. | 
 | CyberBlindspot.RemoteIncident.type | unknown | Incident type on remote server. | 
 | CyberBlindspot.RemoteIncident.remarks | unknown | Remarks about the incident. | 
+| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident \(legacy\). | 
+| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated \(legacy\). | 
 | CyberBlindspot.RemoteIncident.first_seen | unknown | The creation date of the incident. | 
 | CyberBlindspot.RemoteIncident.last_seen | unknown | The date the incident last got updated. | 
-| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident (legacy). | 
-| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated (legacy). | 
 | CyberBlindspot.RemoteIncident.timestamp | unknown | The timestamp of when the record was created. | 
 | CyberBlindspot.RemoteIncident.card_number | unknown | The compromised card's number. | 
-| CyberBlindspot.RemoteIncident.cvv | unknown | The compromised card's Card Verification Value (CVV). | 
+| CyberBlindspot.RemoteIncident.cvv | unknown | The compromised card's Card Verification Value \(CVV\). | 
 | CyberBlindspot.RemoteIncident.expiry_month | unknown | The compromised card's expiration month. | 
 | CyberBlindspot.RemoteIncident.expiry_year | unknown | The compromised card's expiration year. | 
 | CyberBlindspot.RemoteIncident.breach_source | unknown | The source of the breached data. | 
@@ -234,7 +237,29 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.executive_name | unknown | Executive member's name related to the breached data. | 
 | CyberBlindspot.RemoteIncident.confirmation_time | unknown | The time of infringement confirmation. | 
 | CyberBlindspot.RemoteIncident.risks | unknown | The potential difficulties carried by the infringement. | 
-| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. |
+| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. | 
+| CyberBlindspot.RemoteIncident.screenshots | unknown | The screenshot evidence if available. | 
+
+### ctm360-cbs-incident-retrieve-screenshots
+
+***
+Retrieves screenshot evidence if available.
+
+#### Base Command
+
+`ctm360-cbs-incident-retrieve-screenshots`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| files | The files to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File | Unknown | Output list of files. | 
 
 ### get-remote-data
 

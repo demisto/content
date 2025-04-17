@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus
+from CommonServerPython import DemistoException, IncidentStatus, EntryType, CommandResults
 from CyberBlindspot import (
     LOGGING_PREFIX,
     CBS_INCOMING_DATE_FORMAT,
@@ -521,6 +521,7 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "first_seen": "The creation date of the incident",
                     "last_seen": "The date the incident got last updated",
+                    "screenshots": "The screenshot evidence if available",
                     "brand": "The organization the incident belongs to",
                     "timestamp": "The timestamp of when the record was created",
                 }
@@ -829,6 +830,12 @@ def test_ctm360_cbs_incident_list_command(
                 "remarks": "New leaked_credential with severity High found",
                 "first_seen": "27-12-2023 05:42:18 AM",
                 "last_seen": "27-12-2023 05:42:18 AM",
+                "screenshots": [
+                    {
+                        "filename": "screenshot1.png",
+                        "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"
+                    }
+                ],
                 "brand": "Mock Brand",
                 "timestamp": 1703655740964,
             },
@@ -1199,3 +1206,130 @@ def test_update_remote_system(mock_response_file, mock_args, mock_log_asserts, m
         result = update_remote_system_command(mock_client, mock_args)
         assert result == mock_args["remoteId"]
         assert mock_log_asserts in caplog.text
+
+
+@pytest.mark.parametrize(
+    "mock_response,mock_params,expected_result",
+    [
+        (
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]},
+            {"ticket_id": "COMX123456"},
+            [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]
+        ),
+        (
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            []
+        ),
+        (
+            {"results": None},
+            {"ticket_id": "COMX123456"},
+            []
+        ),
+    ],
+)
+def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_client, mocker):
+    """
+    Given:
+        - CyberBlindspot Client
+        - Parameters for the screenshot request
+        - Mock API response
+    When:
+        - get_screenshot_files is called
+    Then:
+        - Ensure the correct response is returned
+    """
+    mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+    result = mock_client.get_screenshot_files(mock_params)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "mock_conf,mock_response,mock_args,expected_result",
+    [
+        (
+            False,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+        ),
+        (
+            False,
+            {"results": [
+                {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}},
+                {"filename": "screenshot2.png", "filedata": {"data": b"test_data2"}}
+            ]},
+            {"ticket_id": "COMX123456"},
+            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+        ),
+        (
+            False,
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+        ),
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            {"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}
+        ),
+        (
+            True,
+            {"results": [
+                {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}},
+                {"filename": "screenshot2.png", "filedata": {"data": b"test_data2"}}
+            ]},
+            {"ticket_id": "COMX123456"},
+            [
+                {"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE},
+                {"File": "screenshot2.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}
+            ]
+        ),
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            CommandResults(readable_output="Failed to fetch screenshot(s)")
+        ),
+    ],
+)
+def test_ctm360_cbs_incident_retrieve_screenshots_command(
+    mock_conf, mock_response, mock_args, expected_result, mock_client, mocker
+):
+    """
+    Given:
+        - CyberBlindspot Client
+        - Command arguments
+        - Mock API response
+    When:
+        - ctm360_cbs_incident_retrieve_screenshots_command is called
+    Then:
+        - Ensure the correct file results or command results are returned
+    """
+    from CyberBlindspot import ctm360_cbs_incident_retrieve_screenshots_command
+
+    # Mock fileResult to avoid writing to disk
+    def mock_file_result(filename, data, file_type=None):
+        return {"File": filename, "FileID": "mock_file_id", "Type": file_type}
+    
+    # Patch both the import and the actual function
+    mocker.patch("CyberBlindspot.RETRIEVE_SCREENSHOTS", new=mock_conf)
+    mocker.patch("CyberBlindspot.fileResult", side_effect=mock_file_result)
+    mocker.patch("CommonServerPython.fileResult", side_effect=mock_file_result)
+    mocker.patch.object(mock_client, "get_screenshot_files", return_value=mock_response.get("results", []))
+    
+    result = ctm360_cbs_incident_retrieve_screenshots_command(mock_client, mock_args)
+    
+    if isinstance(result, list):
+        assert len(result) == len(expected_result)
+        for r, e in zip(result, expected_result):
+            assert r["File"] == e["File"]
+            assert r["Type"] == e["Type"]
+    elif isinstance(result, CommandResults):
+        assert isinstance(expected_result, CommandResults)
+        assert result.readable_output == expected_result.readable_output
+    else:
+        assert isinstance(expected_result, dict)
+        assert result["File"] == expected_result["File"]
+        assert result["Type"] == expected_result["Type"]
