@@ -863,6 +863,18 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
+    
+    if is_xsiam():
+        incident_context["_source_log_type"] = "detection"
+        # new detection
+        if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
+            incident_context["_time"] = detection.get("timestamp")
+            incident_context['_entry_status'] = "new"
+        # updated detection
+        else:
+            incident_context["_time"] = detection.get("updated_timestamp")
+            incident_context['_entry_status'] = "updated"
+
     return incident_context
 
 
