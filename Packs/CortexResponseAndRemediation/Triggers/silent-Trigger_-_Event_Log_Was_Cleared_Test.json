@@ -18,7 +18,7 @@
                         {
                             "SEARCH_FIELD": "alert_name",
                             "SEARCH_TYPE": "EQ",
-                            "SEARCH_VALUE": "Security Event Log was cleared using wevtutil.exe"
+                            "SEARCH_VALUE": "Security Event Log was cleared using wevtutil.exe and test"
                         },
                         {
                             "SEARCH_FIELD": "alert_name",
