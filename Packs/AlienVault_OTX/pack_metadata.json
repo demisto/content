@@ -8,13 +8,20 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Forensics & Malware Analysis"
     ],
     "tags": [
-        "Free Enricher"
+        "Free Enricher",
+        "Threat Intelligence",
+        "Incident Response"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Threat Hunting",
+        "IOC",
+        "Open Threat Exchange"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
