@@ -118,7 +118,7 @@ class ServiceNowClient(BaseClient):
             return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
                          f'{e.args[0]}')
 
-    def get_access_token(self):
+    def get_access_token(self, jwt = None):
         """
         Get an access token that was previously created if it is still valid, else, generate a new access token from
         the client id, client secret and refresh token.
@@ -137,6 +137,8 @@ class ServiceNowClient(BaseClient):
             if previous_token.get('refresh_token'):
                 data['refresh_token'] = previous_token.get('refresh_token')
                 data['grant_type'] = 'refresh_token'
+            elif jwt:
+                pass
             else:
                 raise Exception('Could not create an access token. User might be not logged in. Try running the'
                                 ' oauth-login command first.')
@@ -145,6 +147,10 @@ class ServiceNowClient(BaseClient):
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
+                if jwt:
+                    data['assertion'] = jwt
+                    data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                    
                 res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
                                             data=data, ok_codes=ok_codes)
                 try:
