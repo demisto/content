@@ -66,21 +66,29 @@ class EventConnection:
         Returns:
             Any: Next event received from the connection
         """
+        demisto.info(f"[test] in {self.event_type} recv, going to acquire lock.")
         with self.lock:
+            demisto.info(f"[test] in {self.event_type} recv, lock acquired.")
             event = self.connection.recv(timeout=timeout)
+            demisto.info(f"[test] in {self.event_type} recv, going to release lock.")
+        demisto.info(f"[test] in {self.event_type} recv, released lock.")
         return event
 
     def reconnect(self):
         """
         Reconnect logic for the WebSocket connection.
         """
+        demisto.info(f"[test] in {self.event_type} reconnect, going to acquire lock.")
         with self.lock:
+            demisto.info(f"[test] in {self.event_type} reconnect, lock acquired.")
             try:
                 self.connection = self.connect()
                 demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
                 raise
+            demisto.info(f"[test] in {self.event_type} reconnect, going to release lock.")
+        demisto.info(f"[test] in {self.event_type} reconnect, released lock.")
 
     def heartbeat(self):
         """
@@ -88,9 +96,12 @@ class EventConnection:
         Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         """
         while True:
+            demisto.info(f"[test] in {self.event_type} heartbeat, going to acquire lock.")
             try:
                 with self.lock:
+                    demisto.info(f"[test] in {self.event_type} heartbeat, lock acquired.")
                     self.connection.pong()
+                    demisto.info(f"[test] in {self.event_type} heartbeat, going to release lock.")
                 demisto.info(f"[{self.event_type}] Sent heartbeat pong")
                 time.sleep(self.idle_timeout)
             except exceptions.ConnectionClosedError as e:
@@ -102,6 +113,7 @@ class EventConnection:
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
                 self.reconnect()
+            demisto.info(f"[test] in {self.event_type} heartbeat, lock released.")
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
