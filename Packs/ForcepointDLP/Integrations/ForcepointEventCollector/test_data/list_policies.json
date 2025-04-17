@@ -1,0 +1,7 @@
+{
+    "enabled_policies": [
+        "Policy1",
+        "Policy2"
+    ],
+    "total_enabled_policies": 2
+}
