@@ -1,3 +1,4 @@
+from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
@@ -156,10 +157,24 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPO
                                                  build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
 
 
+XSIAM = "xsiam"
+PLATFORM = "platform"
+
+ISSUE_OR_ALERT_MAPPER = {
+    XSIAM: {
+        "original_json": "original_alert_json"
+    },
+    PLATFORM: {
+        "original_json": "original_issue_json"
+        
+    }
+}
+
 class CoreClient(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
+        self.machine_type = XSIAM if is_xsiam() else PLATFORM
         self.timeout = timeout
         # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
@@ -4000,7 +4015,8 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
     for alert in alerts:
         # decode raw_response
         try:
-            alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
+            original_json = ISSUE_OR_ALERT_MAPPER[client.machine_type]["original_json"]
+            alert[original_json] = safe_load_json(alert.get(original_json, ''))
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
@@ -4008,7 +4024,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
-        alert.update(alert.pop('original_alert_json', {}))
+        alert.update(alert.pop(original_json, {}))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
             filtered_alerts.append(demisto.get(alert, 'messageData.dynamicAnalysis'))
     if not filtered_alerts:
