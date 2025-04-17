@@ -36,6 +36,7 @@ class EventConnection:
         fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
         idle_timeout: int = SERVER_IDLE_TIMEOUT - 20,
     ):
+        demisto.info(f"[test] starting EventConnection of type {event_type.value}")
         self.event_type = event_type.value
         self.url = url
         self.headers = headers
@@ -45,11 +46,13 @@ class EventConnection:
         self.connection = self.connect()
         self.heartbeat_thread = Thread(target=self.heartbeat, daemon=True)
         self.heartbeat_thread.start()
+        demisto.info(f"[test] Done starting EventConnection of type {self.event_type}")
 
     def connect(self) -> Connection:
         """
         Establish a new WebSocket connection.
         """
+        demisto.info(f"[test] Connecting to websocket in type = {self.event_type}")
         return connect(self.url, additional_headers=self.headers)
 
     def recv(self, timeout: float | None = None) -> Any:
@@ -63,21 +66,29 @@ class EventConnection:
         Returns:
             Any: Next event received from the connection
         """
+        demisto.info(f"[test] in {self.event_type} recv, going to acquire lock.")
         with self.lock:
+            demisto.info(f"[test] in {self.event_type} recv, lock acquired.")
             event = self.connection.recv(timeout=timeout)
+            demisto.info(f"[test] in {self.event_type} recv, going to release lock.")
+        demisto.info(f"[test] in {self.event_type} recv, released lock.")
         return event
 
     def reconnect(self):
         """
         Reconnect logic for the WebSocket connection.
         """
+        demisto.info(f"[test] in {self.event_type} reconnect, going to acquire lock.")
         with self.lock:
+            demisto.info(f"[test] in {self.event_type} reconnect, lock acquired.")
             try:
                 self.connection = self.connect()
                 demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
                 raise
+            demisto.info(f"[test] in {self.event_type} reconnect, going to release lock.")
+        demisto.info(f"[test] in {self.event_type} reconnect, released lock.")
 
     def heartbeat(self):
         """
@@ -85,9 +96,12 @@ class EventConnection:
         Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         """
         while True:
+            demisto.info(f"[test] in {self.event_type} heartbeat, going to acquire lock.")
             try:
                 with self.lock:
+                    demisto.info(f"[test] in {self.event_type} heartbeat, lock acquired.")
                     self.connection.pong()
+                    demisto.info(f"[test] in {self.event_type} heartbeat, going to release lock.")
                 demisto.info(f"[{self.event_type}] Sent heartbeat pong")
                 time.sleep(self.idle_timeout)
             except exceptions.ConnectionClosedError as e:
@@ -99,6 +113,7 @@ class EventConnection:
             except Exception as e:
                 demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
                 self.reconnect()
+            demisto.info(f"[test] in {self.event_type} heartbeat, lock released.")
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -118,9 +133,11 @@ def set_the_integration_context(key: str, val: Any):
     """Adds a key-value pair to the integration context dictionary.
     If the key already exists in the integration context, the function will overwrite the existing value with the new one.
     """
+    demisto.info(f"[test] preparing to set integration context with {key=}, {val=}")
     cnx = demisto.getIntegrationContext()
     cnx[key] = val
     demisto.setIntegrationContext(cnx)
+    demisto.info(f"[test] Finished setting integration context with {cnx=}")
 
 
 @contextmanager
@@ -159,6 +176,7 @@ def websocket_connections(
 
     try:
         with ExitStack():  # Keep connection contexts for clean up
+            demisto.info("[test] starting connections")
             connections = [
                 EventConnection(
                     event_type=event_type,
@@ -168,6 +186,7 @@ def websocket_connections(
                 )
                 for event_type in EventType
             ]
+            demisto.info("[test] Done init connections")
 
             set_the_integration_context(
                 "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(tz.tzutc())}"
@@ -199,8 +218,10 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     event_ids = set()
     fetch_start_time = datetime.utcnow()
     while not is_interval_passed(fetch_start_time, fetch_interval):
+        demisto.info(f'[test] in {event_type=}, preparing to recv')
         try:
             event = json.loads(connection.recv(timeout=recv_timeout))
+            demisto.info(f'[test] in {event_type=}, finished recv')
         except TimeoutError:
             demisto.debug(f"Timeout while waiting for the event on {connection.event_type}")
             continue
@@ -209,10 +230,12 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
             connection.reconnect()
             continue
         except Exception as e:
+            demisto.error(f"[test] Got general error in fetch_events {e}")
             set_the_integration_context(
                 "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
             )
             raise DemistoException(str(e))
+        demisto.info(f'[test] processing events of type {event_type=}.')
         event_id = event.get("id", event.get("guid"))
         event_ts = event.get("ts")
         if not event_ts:
@@ -229,6 +252,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
         event["event_type"] = event_type
         events.append(event)
         event_ids.add(event_id)
+        demisto.info(f'[test] finished processing events of type {event_type=}.')
     num_events = len(events)
     demisto.debug(f"Fetched {num_events} events of type {event_type}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
@@ -270,22 +294,31 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     integration_context = demisto.getIntegrationContext()
     events_to_send = []
     for connection in connections:
+        demisto.info(f"[test] going to call fetch_events on {connection.event_type=}")
         events = fetch_events(connection, fetch_interval)
+        demisto.info(f"[test] Done calling fetch_events on {connection.event_type=}")
         events.extend(integration_context.get(connection.event_type, []))
         integration_context[connection.event_type] = events  # update events in context in case of fail
         demisto.debug(f"Adding {len(events)} {connection.event_type} Events to XSIAM")
         events_to_send.extend(events)
-
+    demisto.info(f"[test] going to send {len(events_to_send)} events to xsiam")
     # Send the events to the XSIAM, with events from the context
     try:
-        send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
+        if events_to_send:
+            send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
+        else:
+            demisto.info("[test] no events to send to xsiam.")
+        demisto.info(f"[test] done sending {len(events_to_send)} events to xsiam, going to clear context")
         # clear the context after sending the events
         for connection in connections:
             set_the_integration_context(connection.event_type, [])
+            demisto.info("[test] Done clearing context")
     except DemistoException:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
+        demisto.info(f"[test] going to set context with {integration_context=}")
         demisto.setIntegrationContext(integration_context)
+        demisto.info(f"[test] Done setting context with {integration_context=}")
 
 
 def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
@@ -300,14 +333,22 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         api_key (str): Proofpoint API key.
         fetch_interval (int): Total time allocated per fetch cycle.
     """
-    with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
-        demisto.info("Connected to websocket")
-        fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
+    support_multithreading()
+    demisto.info("[test] starting long running execution.")
+    while True:
+        try:
+            with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
+                demisto.info("Connected to websocket")
+                fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
 
-        while True:
-            perform_long_running_loop(connections, fetch_interval)
-            # sleep for a bit to not throttle the CPU
-            time.sleep(FETCH_SLEEP)
+                while True:
+                    demisto.info(f"[test] Finished sleeping {FETCH_SLEEP} seconds, starting a new interval.")
+                    perform_long_running_loop(connections, fetch_interval)
+                    demisto.info(f"[test] Finished perform_long_running_loop going to sleep {FETCH_SLEEP} seconds.")
+                    # sleep for a bit to not throttle the CPU
+                    time.sleep(FETCH_SLEEP)
+        except Exception as e:
+            demisto.error(f"Got an error while running in long running {e}")
 
 
 def main():  # pragma: no cover
