@@ -1,4 +1,6 @@
 category: Network Security
+sectionOrder:
+- Connect
 commonfields:
   id: Akamai WAF
   version: -1
@@ -8,47 +10,56 @@ configuration:
   name: host
   required: true
   type: 0
+  section: Connect
 - display: Client token
   name: clientToken
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Access token
   name: accessToken
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Client secret
   name: clientSecret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Client token
   name: credentials_client_token
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - displaypassword: Access token
   name: credentials_access_token
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - displaypassword: Client secret
   name: credentials_client_secret
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: |-
   Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
@@ -1490,7 +1501,7 @@ script:
       description: Akamai enrollments change status.
       type: Dictionary
   - arguments:
-    - description: Specify the contract on which to operate or view.
+    - description: Unique Identifier of a contract on which to operate or view.
       name: contract_id
       required: true
     description: 'Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account.'
@@ -1498,7 +1509,7 @@ script:
     outputs:
     - contextPath: Akamai.Cps.Active.Certificates.Enrollments
       description: A collection of Active Akami CPS enrollments.
-      type: Dictionary    
+      type: Dictionary
   - arguments:
     - description: The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
       name: change_id
@@ -1544,7 +1555,251 @@ script:
     - contextPath: Akamai.EdgeDns.ZoneRecordSets
       description: A collection of Edge DNS zone's record sets.
       type: Dictionary
-  dockerimage: demisto/auth-utils:1.0.0.1839651
+  - arguments:
+    - description: The name of the stream.
+      name: stream_name
+      required: true
+    - description: The unique identifier of the group that has access to the product and this stream configuration.
+      name: group_id
+      required: true
+    - description: The unique identifier of the contract that has access to the product.
+      name: contract_id
+    - description: The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager.
+      isArray: true
+      name: properties
+    - description: The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines.
+      isArray: true
+      name: dataset_fields
+    - auto: PREDEFINED
+      description: The interval in seconds (30 or 60) after which the system bundles log lines into a file and sends it to a destination.
+      name: interval_in_seconds
+      predefined:
+      - '30'
+      - '60'
+    - description: The format in which you want to receive log files. STRUCTURED or JSON are the currently available formats. When the delimiter is present in the request, STRUCTURED format needs to be defined.
+      name: log_format
+    - description: A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format.
+      name: field_delimiter
+    - description: The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character.
+      name: upload_file_prefix
+    - description: The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
+      name: upload_file_suffix
+    - description: The certification authority (CA) certificate used to verify the origin server's certificate. If the certificate is not signed by a well-known certification authority, enter the CA certificate in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it in the response as true.
+      name: ca_cert
+    - description: The PEM-formatted digital certificate you want to authenticate requests to your destination with. If you want to use mutual authentication, you need to provide both the client certificate and the client key. If you pass this member, the mTlsEnabled member replaces it in the response as true.
+      name: client_cert
+    - description: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. If you want to use mutual authentication, you need to provide both the client certificate and the client key.
+      name: client_key
+    - description: The type of the resource passed in the request's custom header.
+      name: content_type
+    - description: A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters.
+      name: custom_header_name
+    - description: The custom header's contents passed with the request that contains information about the client connection.
+      name: custom_header_value
+    - auto: PREDEFINED
+      description: Enables gzip compression for a log file sent to a destination. True by default.
+      name: compress_logs
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: SPLUNK
+      description: 'The destination configuration in the stream to send logs.
+      name: destination_type
+      predefined:
+      - HTTPS
+      - SPLUNK
+    - description: The name of the destination.
+      name: display_name
+    - description: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs.
+      name: endpoint
+    - description: The Event Collector token for your Splunk account.
+      name: event_collector_token
+    - description: The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint URL.
+      name: tls_hostname
+    - description: A list of e-mail addresses where you want to send notifications about activations and deactivations of the stream. You can omit this member and activate or deactivate the stream without notifications.
+      name: notification_emails
+    - auto: PREDEFINED
+      description: Indicates if you've opted to capture midgress traffic within the Akamai platform, such as between two edge servers.
+      name: collect_midgress
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Activates the stream at the time of the request, false by default. When Edit a stream or Patch a stream that is active, set this value to true.
+      name: activate
+      predefined:
+      - 'True'
+      - 'False'
+    description: 'Creates a stream configuration. Within a stream configuration, you can select properties to monitor in the stream, data set fields to collect in logs, and a destination to send these log files to. Get the streamId value from the response to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL. Apart from the log and delivery frequency configurations, you can decide whether to activate the stream on making the request or later using the activate parameter. Note that only active streams collect and send logs to their destinations. NOTE: "SPLUNK" and "HTTPS" are the only two types tested.'
+    name: akamai-new-datastream
+    outputs:
+    - contextPath: Akamai.DataStream
+      description: Akamai DataStream.
+  - arguments: []
+    description: Lists the properties in the current account.
+    name: akamai-list-idam-properties
+    outputs:
+    - contextPath: Akamai.Idam.Properties
+      description: Akamai properties of the current account via Identity Access Management.
+  - arguments:
+    - description: The unique identifier of the group that has access to the product and this stream configuration.
+      name: group_id
+    description: Returns the latest versions of the stream configurations for all groups within the account.
+    name: akamai-list-datastreams
+    outputs:
+    - contextPath: Akamai.DataStreams
+      description: Akamai DataStreams.
+  - arguments:
+    - description: Uniquely identifies the stream.
+      name: stream_id
+      required: true
+    - description: Identifies the version of the stream. If omitted, the operation returns the latest version of the stream.
+      name: version
+    description: Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
+    name: akamai-get-datastream
+    outputs:
+    - contextPath: Akamai.DataStreamDetails
+      description: Akamai DataStream Details.
+  - arguments:
+    - description: Uniquely identifies the contract that belongs to a group.
+      name: contract_id
+    description: Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
+    name: akamai-list-datastream-groups
+    outputs:
+    - contextPath: Akamai.DataStreamGroups
+      description: Akamai Groups within the contract.
+  - arguments:
+    - description: The unique identifier of the group that has access to the product and this stream configuration.
+      name: group_id
+      required: true
+    description: Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+    name: akamai-list-datastream-properties-bygroup
+    outputs:
+    - contextPath: Akamai.DataStream.Group
+      description: List of the active properties within the group.
+  - arguments:
+    - description: Unique identifer of a stream.
+      name: stream_id
+      required: true
+    description: Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first.
+    name: akamai-delete-datastream
+    outputs:
+    - contextPath: Akamai.DataStream
+      description: Akamai DataStream.
+  - arguments:
+    - description: The unique identifier of the stream.
+      name: stream_id
+      required: true
+    - auto: PREDEFINED
+      description: Activates the stream at the time of the request, false by default. When you Edit a stream or Patch a stream that is active, you need to set this member to true.
+      name: activate
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A JSON Pointer that identifies the values you want to replace in the stream configuration. This member's value is / followed by any of the configuration object's top-level member name.
+      name: path
+      required: true
+    - description: Specifies the data to replace at the path location, any type of data including objects and arrays. Pass complete objects to avoid overwriting current details with default values for omitted members.
+      name: value
+      required: true
+    - auto: PREDEFINED
+      description: Whether convert the value above into Json or not.
+      name: value_to_json
+      predefined:
+      - yes
+      - no
+    description: Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request.
+    name: akamai-patch-datastream
+    outputs:
+    - contextPath: Akamai.DataStream
+      description: Akamai DataStream.
+  - arguments:
+    - description: 'Properties to be activated. Sample: [{"network": "STAGING","propertyId": "prp_123445","propertyVersion": 2},{"network": "PRODUCTION","propertyId": "prp_123456","propertyVersion": 3}].'
+      name: properties
+    - description: 'Comma separated list of the emails for notification. Sample: "you@example.com","me@abcd.com".'
+      name: notify_emails
+    - description: Unique identifier of the contract.
+      name: contract_id
+    description: Bulk activate a set of property versions. Alternately, perform a bulk fallback to the previous activation within an hour of the previous bulk activation. Base the set of versions to activate on the results of a bulk patch operation, which you use in this operation's request. This operation launches an asynchronous process to update properties. To check its progress, run the List bulk-activated properties operation, whose link is available in the Location header or bulkActivationLink member of this operation's response.
+    name: akamai-bulk-property-activation
+    outputs:
+    - contextPath: Akamai.Property.BulkActivation
+      description: Akamai Property BulkActivation.
+  - arguments:
+    - description: Uniquely identifies the stream.
+      name: stream_id
+    - auto: PREDEFINED
+      description: 'activate" or "deactivate.'
+      name: option
+      predefined:
+      - activate
+      - deactivate
+    description: Activate/Deactivate the latest version of a DataStream.
+    name: akamai-activate-datastream
+    outputs:
+    - contextPath: Akamai.DataStream.Activation
+      description: Akamai DataStream Activation.
+  - arguments:
+    - description: Unique identifier of client list.
+      name: list_id
+      required: true
+    - description: For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys.
+      name: account_switch_key
+    description: Update client list entries. Append, delete, and update entries in a single batch.
+    name: akamai-update-client-list-entries
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: Akamai ClientList.
+  - arguments:
+    - description: Unique identifier of client list.
+      name: list_id
+      required: true
+    - description: For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys.
+      name: account_switch_key
+    - auto: PREDEFINED
+      description: Actions you can take for a client list.
+      name: action
+      predefined:
+      - ACTIVATE
+      - DEACTIVATE
+      required: true
+    - description: A brief description for the activation.
+      name: comments
+    - auto: PREDEFINED
+      description: The network environment where you activate your client list.
+      name: network
+      predefined:
+      - STAGING
+      - PRODUCTION
+      required: true
+    - description: Comma-separated string that contains the email of the users to notify.
+      name: notification_recipients
+    - description: Identifies the Siebel ticket, if the activation is linked to one.
+      name: siebel_ticketid
+    description: Activates a client list on the staging or production network.
+    name: akamai-activate-a-client-list
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: Akamai ClientList.
+  - arguments: []
+    description: Get accessible client lists.
+    name: akamai-get-client_lists
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: Akamai ClientList.
+  - arguments:
+    - description: Unique identifier of a contract.
+      name: contract_id
+      required: true
+    - description: Unique identifier of a group.
+      name: group_id
+    description: Lists all edge hostnames available under a contract.
+    name: akamai-list-edgehostname
+    outputs:
+    - contextPath: Akamai.Edgehostname
+      description: Akamai Edgehostnames.
+  dockerimage: demisto/auth-utils:1.0.0.2025089
   script: ''
   subtype: python3
   type: python
