@@ -511,8 +511,8 @@ def build_key_val_pair(tagDict):
     demisto.info("this is key: ")
     demisto.info(tagDict["@TagValue"])
 
-    key = filter(str.isalnum, str(tagDict["@TagName"]))
-    value = tagDict["@TagValue"].encode("utf-8")
+    key = ''.join([char for char in str(tagDict["@TagName"]) if char.isalnum()])
+    value = tagDict["@TagValue"]
     keyValPair = {key: value}
     return keyValPair
 
@@ -1255,10 +1255,10 @@ def get_export_command(export_id, matter_id):
         zip_object_name = (
             get_object_mame_by_type(response.get("cloudStorageSink").get("files"), ".zip") if export_status == "COMPLETED" else ""
         )
-        xml_object_name = (
-            get_object_mame_by_type(response.get("cloudStorageSink").get("files"), ".xml") if export_status == "COMPLETED" else ""
-        )
-
+        xml_object_name = remove_empty_elements([
+            file.get("objectName") if file.get("objectName",'').endswith(".xml") and export_status == "COMPLETED" else None
+            for file in response.get("cloudStorageSink", {}).get("files", [])
+        ])
         title = "You Export details:\n"
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
             "Matter ID": matter_id,
@@ -1339,7 +1339,6 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
     try:
         out_file = download_storage_object(object_ID, bucket_name)
         out_file_json = json.loads(xml2json(out_file.getvalue()))
-
         if not out_file_json["Root"]["Batch"].get("Documents"):
             demisto.results("The export given contains 0 documents")
             sys.exit(0)
@@ -1353,7 +1352,6 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
 
         dictList = build_dict_list(documents)
         return dictList
-
     finally:
         if out_file:
             out_file.close()
@@ -1534,5 +1532,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
