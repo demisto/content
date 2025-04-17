@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+deprecated: true
 commonfields:
   id: AutoFocus V2
   version: -1
@@ -51,8 +52,8 @@ configuration:
   name: create_relationships
   type: 8
   required: false
-description: Use the Palo Alto Networks AutoFocus integration to distinguish the most important threats from everyday commodity attacks.
-display: Palo Alto Networks AutoFocus v2
+description: Deprecated. Use the Palo Alto Networks Unit42 ATOMs Feed integration instead. Palo Alto Networks AutoFocus integration enables you to distinguish the most important threats from everyday commodity attacks.
+display: Palo Alto Networks AutoFocus v2 (Deprecated)
 name: AutoFocus V2
 script:
   commands:
