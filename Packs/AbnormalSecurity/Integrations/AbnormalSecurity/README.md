@@ -3,8 +3,6 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 
 ## Configure Abnormal Security in Cortex
 
-
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. https://api.abnormalplatform.com/v1) |  | True |
@@ -21,8 +19,6 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 | Incidents Fetch Interval |  | False |
 | Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency | False |
 | Maximum incidents pages to fetch | Maximum number of pages to fetch for incidents | False |
-
-
 
 ## Commands
 
@@ -381,8 +377,8 @@ Get details of a threat
 | threat_id         | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.             | Required     |
 | mock-data         | Returns test data if set to `True`.                                                                                                       | Optional     |
 | subtenant         | Subtenant of the user (if applicable).                                                                                                    | Optional     |
-| page_size         | Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.                 | Optional     | 
-| page_number       | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.                                      | Optional     | 
+| page_size         | Number of threats per page. Each page will contain up to page_size threats. This has no effect if no filter is specified.                 | Optional     |
+| page_number       | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.                                      | Optional     |
 
 #### Context Output
 
