@@ -462,6 +462,7 @@ def fetch_indicators_command(client,
                              itype,
                              auto_detect,
                              create_relationships=False,
+                             cidr_32_to_ip=False,
                              enrichment_excluded: bool = False,
                              **kwargs):
     iterators = client.build_iterator(**kwargs)
@@ -485,10 +486,45 @@ def fetch_indicators_command(client,
                         itype,
                         auto_detect,
                         create_relationships,
+                        cidr_32_to_ip,
                         enrichment_excluded
                     ))
 
     return indicators, no_update
+
+
+def is_cidr_32(value):
+    """
+    Checks if the given CIDR address is a /32.
+
+    Parameters:
+        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+
+    Returns:
+        bool: True if the CIDR is /32, False otherwise.
+    """
+    try:
+        return str(value).strip().endswith('/32')
+    except Exception:
+        return False
+
+def cidr32_to_ip(value):
+    """
+    Converts a CIDR /32 address to its IP part.
+
+    Parameters:
+        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+
+    Returns:
+        str: The IP address if input is a valid /32, else None.
+    """
+    try:
+        ip, subnet = value.strip().split('/')
+        if subnet == '32':
+            return ip
+    except ValueError:
+        pass
+    return None
 
 
 def process_indicator_data(client,
@@ -498,6 +534,7 @@ def process_indicator_data(client,
                            itype,
                            auto_detect,
                            create_relationships=False,
+                           cidr_32_to_ip=False,
                            enrichment_excluded: bool = False):
     """_summary_
 
@@ -523,6 +560,9 @@ def process_indicator_data(client,
         attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
     indicator_type = determine_indicator_type(
         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
+    if cidr_32_to_ip and indicator_type == FeedIndicatorType.CIDR and is_cidr_32(value):
+        value = cidr32_to_ip(value)
+        indicator_type = FeedIndicatorType.IP
     indicator_data = {
         'value': value,
         'type': indicator_type,
@@ -612,6 +652,7 @@ def feed_main(feed_name, params=None, prefix=''):
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
+    cidr_32_to_ip = argToBoolean(demisto.params().get('cidr_32_to_ip'))
     enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
                            or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
@@ -631,6 +672,7 @@ def feed_main(feed_name, params=None, prefix=''):
                                                              params.get('indicator_type'),
                                                              params.get('auto_detect_type'),
                                                              params.get('create_relationships'),
+                                                             cidr_32_to_ip,
                                                              enrichment_excluded=enrichment_excluded)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
