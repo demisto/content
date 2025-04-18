@@ -95,12 +95,21 @@ class Client(BaseClient):
         return self._http_request(
             method="GET", url_suffix="/v1/sic/alerts", params=request_params
         )
+        return self._http_request(
+            method="GET", url_suffix="/v1/sic/alerts", params=request_params
+        )
 
     def get_alert(self, alert_uuid: str) -> dict[str, Any]:
         return self._http_request(
             method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}"
         )
+        return self._http_request(
+            method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}"
+        )
 
+    def update_status_alert(
+        self, alert_uuid: str, action_uuid: str, comment: str | None
+    ) -> dict[str, Any]:
     def update_status_alert(
         self, alert_uuid: str, action_uuid: str, comment: str | None
     ) -> dict[str, Any]:
@@ -116,6 +125,9 @@ class Client(BaseClient):
             json_data=request_params,
         )
 
+    def post_comment_alert(
+        self, alert_uuid: str, content: str, author: str | None
+    ) -> dict[str, Any]:
     def post_comment_alert(
         self, alert_uuid: str, content: str, author: str | None
     ) -> dict[str, Any]:
@@ -215,6 +227,9 @@ class Client(BaseClient):
     def add_attributes_asset(
         self, asset_uuid: str, name: str, value: str
     ) -> dict[str, Any]:
+    def add_attributes_asset(
+        self, asset_uuid: str, name: str, value: str
+    ) -> dict[str, Any]:
         request_params: dict[str, Any] = {"name": name, "value": value}
 
         return self._http_request(
@@ -232,6 +247,9 @@ class Client(BaseClient):
             params=request_params,
         )
 
+    def remove_attribute_asset(
+        self, asset_uuid: str, attribute_uuid: str
+    ) -> list[dict[str, Any]]:
     def remove_attribute_asset(
         self, asset_uuid: str, attribute_uuid: str
     ) -> list[dict[str, Any]]:
@@ -255,7 +273,13 @@ class Client(BaseClient):
         return self._http_request(
             method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}"
         )
+        return self._http_request(
+            method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}"
+        )
 
+    def http_request(
+        self, method: str, url_suffix: str, params: dict
+    ) -> dict[str, Any]:
     def http_request(
         self, method: str, url_suffix: str, params: dict
     ) -> dict[str, Any]:
@@ -343,6 +367,9 @@ def time_converter(time):
     iso_8601_pattern = re.compile(
         r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$"
     )
+    iso_8601_pattern = re.compile(
+        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$"
+    )
     unix_timestamp_pattern = re.compile(r"^\d+$")
 
     if iso_8601_pattern.match(time):
@@ -417,6 +444,9 @@ def undot(json_data: dict) -> str:
     elif isinstance(json_data, dict):
         data = json_data
     else:
+        raise TypeError(
+            "JSON data sent to undot function must be a string or a dictionary"
+        )
         raise TypeError(
             "JSON data sent to undot function must be a string or a dictionary"
         )
@@ -550,6 +580,37 @@ def fetch_alerts_with_pagination(
     return final_alerts
 
 
+def handle_alert_events_query(
+    client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
+) -> dict[str, Any]:
+    # Create a query to get events
+    search = client.query_events(
+        events_earliest_time=earliest_time,
+        events_latest_time=latest_time,
+        events_term=events_term,
+        max_last_events=None,
+    )
+
+    # Get the search job uuid
+    search_job_uuid = search["uuid"]
+
+    # Check the state of the job
+    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
+    finished_status = query_status["status"] == 2
+
+    # If it's not finished, add the job uuid to the alert
+    if not finished_status:
+        alert["job_uuid"] = search_job_uuid
+
+    else:
+        # If it's finished, get the events
+        # This case is rare but can happen if the fetch is too fast
+        events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
+        alert["events"] = events
+
+    return alert
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -681,7 +742,7 @@ def fetch_incidents(
 
     # Initiate an empty list to store cached incidents
     cached_incidents = []
-
+    
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the Sekoia XDR API response
@@ -1028,7 +1089,9 @@ def get_modified_remote_data_command(client: Client, args):
 
     raw_alerts = fetch_alerts_with_pagination(client, None, None, None, 100, None, last_update_time, "updated_at")
 
-    modified_alert_ids = [item["short_id"] for item in raw_alerts]
+    # Append the modified alert ids to the list
+    # We can have alerts in this list that are already in the cache
+    modified_alert_ids += [item["short_id"] for item in raw_alerts]
 
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
 
