@@ -60,6 +60,7 @@ script:
           default: true
           description: List of file hashes.
           required: true
+          isArray: true
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
@@ -104,6 +105,7 @@ script:
           description: List of URLs.
           default: true
           required: true
+          isArray: true
       outputs:
         - contextPath: URL.Data
           description: The URL.
@@ -136,6 +138,7 @@ script:
           description: List of IP addresses.
           default: true
           required: true
+          isArray: true
       outputs:
         - contextPath: IP.Address
           description: The IP address.
@@ -165,6 +168,7 @@ script:
           description: List of domain names.
           default: true
           required: true
+          isArray: true
       outputs:
         - contextPath: Domain.Name
           description: The domain name.
