@@ -23,6 +23,12 @@ configuration:
   name: query
   type: 0
   required: false
+- defaultvalue: 'false'
+  display: Include Related Alerts
+  additionalinfo: Auto include related alerts for Dataminr Pulse incidents.
+  name: include_related_alerts
+  type: 8
+  required: false
 - additionalinfo: Filters the incoming alerts with the provided alert type. Default All.
   defaultvalue: All
   display: Alert Type
@@ -709,7 +715,7 @@ script:
     - contextPath: DataminrPulse.Alerts.userTopHashtags
       description: User's top hashtags.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'
