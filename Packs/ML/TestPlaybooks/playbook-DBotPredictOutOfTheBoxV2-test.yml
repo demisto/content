@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 861b09ed-933f-4295-8ef1-1d804f3bd783
+    taskid: 9b5f8b7e-a66f-46b2-8e19-59e44f32409e
     type: start
     task:
-      id: 861b09ed-933f-4295-8ef1-1d804f3bd783
+      id: 9b5f8b7e-a66f-46b2-8e19-59e44f32409e
       version: -1
       name: ""
       iscommand: false
@@ -16,12 +16,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "39"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 82ddcae4-60d6-4ce6-8279-0c2cec7b435e
+    taskid: 274ffab2-4d64-469f-8371-35d8e6306ce5
     type: regular
     task:
-      id: 82ddcae4-60d6-4ce6-8279-0c2cec7b435e
+      id: 274ffab2-4d64-469f-8371-35d8e6306ce5
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -56,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 265,
+          "y": 340
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7bca2804-4463-46c3-884a-457baf90d247
+    taskid: 70224c15-7c5a-42ed-8ea2-b2870e30116e
     type: regular
     task:
-      id: 7bca2804-4463-46c3-884a-457baf90d247
+      id: 70224c15-7c5a-42ed-8ea2-b2870e30116e
       version: -1
       name: Predict Using Out Of The Box Model
       scriptName: DBotPredictOutOfTheBoxV2
@@ -94,8 +94,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 265,
+          "y": 515
         }
       }
     note: false
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f0db71aa-e449-4a5a-8e4f-f45b9725eb3c
+    taskid: 62a82d33-78ef-4ec0-84ca-c21811506feb
     type: condition
     task:
-      id: f0db71aa-e449-4a5a-8e4f-f45b9725eb3c
+      id: 62a82d33-78ef-4ec0-84ca-c21811506feb
       version: -1
       name: Check Prediction
       type: condition
@@ -151,8 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 690
         }
       }
     note: false
@@ -165,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5183b8ff-ca1f-48a9-8bb7-b14c5681fa39
+    taskid: 561b2a79-e9cf-4cfa-8210-4d0ea7dac525
     type: title
     task:
-      id: 5183b8ff-ca1f-48a9-8bb7-b14c5681fa39
+      id: 561b2a79-e9cf-4cfa-8210-4d0ea7dac525
       version: -1
       name: Done
       type: title
@@ -179,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 265,
+          "y": 2935
         }
       }
     note: false
@@ -193,10 +193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 77722f64-31d6-4da4-87b2-9b876ab1eb3f
+    taskid: 48b038d4-2210-4b86-8ffa-25a98ef48a23
     type: regular
     task:
-      id: 77722f64-31d6-4da4-87b2-9b876ab1eb3f
+      id: 48b038d4-2210-4b86-8ffa-25a98ef48a23
       version: -1
       name: Predict Using Out Of The Box Model - Not Malicious
       description: Predict phishing incidents using the out-of-the-box pre-trained model.
@@ -218,8 +218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 265,
+          "y": 1040
         }
       }
     note: false
@@ -232,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6140b6eb-2472-4dc0-81b9-b0c222947802
+    taskid: bfbdf31d-bf1e-4331-8b4a-6eab49f60534
     type: regular
     task:
-      id: 6140b6eb-2472-4dc0-81b9-b0c222947802
+      id: bfbdf31d-bf1e-4331-8b4a-6eab49f60534
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -253,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 865
         }
       }
     note: false
@@ -267,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 306b2d8c-734a-4cb2-87c1-2909d1fb3a7f
+    taskid: 6145a575-8622-4d79-8282-54ce774f9b35
     type: regular
     task:
-      id: 306b2d8c-734a-4cb2-87c1-2909d1fb3a7f
+      id: 6145a575-8622-4d79-8282-54ce774f9b35
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -288,8 +288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 265,
+          "y": 1390
         }
       }
     note: false
@@ -302,10 +302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d36fbfea-a8d8-472f-8614-a56c73f2950c
+    taskid: 432a2b30-56bb-408a-8dde-caf474c0f2fe
     type: regular
     task:
-      id: d36fbfea-a8d8-472f-8614-a56c73f2950c
+      id: 432a2b30-56bb-408a-8dde-caf474c0f2fe
       version: -1
       name: Predict Using Out Of The Box Model
       scriptName: DBotPredictOutOfTheBoxV2
@@ -327,8 +327,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 265,
+          "y": 1565
         }
       }
     note: false
@@ -340,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: f871509d-b1c4-41ce-828c-0659b033b9b1
+    taskid: 8b3ccc63-2f9b-46e0-8942-6deede01a75b
     type: condition
     task:
-      id: f871509d-b1c4-41ce-828c-0659b033b9b1
+      id: 8b3ccc63-2f9b-46e0-8942-6deede01a75b
       version: -1
       name: Check Prediction
       type: condition
@@ -384,8 +384,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 265,
+          "y": 1215
         }
       }
     note: false
@@ -397,10 +397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e1ba8eba-a7e3-43e8-8a8a-031a51f1b99f
+    taskid: e6b94674-7713-4494-8d48-43f32cc1b483
     type: condition
     task:
-      id: e1ba8eba-a7e3-43e8-8a8a-031a51f1b99f
+      id: e6b94674-7713-4494-8d48-43f32cc1b483
       version: -1
       name: Check Prediction
       type: condition
@@ -408,7 +408,7 @@ tasks:
       brand: ""
     nexttasks:
       "YES":
-      - "4"
+      - "21"
     separatecontext: false
     conditions:
     - label: "YES"
@@ -441,8 +441,367 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b67eb4dc-ed4e-45a7-82ca-12ed4d576242
+    type: title
+    task:
+      id: b67eb4dc-ed4e-45a7-82ca-12ed4d576242
+      version: -1
+      name: Predict OOTB Batch
+      description: Apply a trained ML model on multiple incidents at once, to compare incidents how the incidents were labeled by analysts, to the predictions of the model. This script is aimed to help evaluate a trained model using past incidents.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6666ee5f-9d6a-4043-8a34-4c268aef41fb
+    type: regular
+    task:
+      id: 6666ee5f-9d6a-4043-8a34-4c268aef41fb
+      version: -1
+      name: Predict batch
+      description: Apply a trained ML model on multiple incidents at once, to compare incidents how the incidents were labeled by analysts, to the predictions of the model. This script is aimed to help evaluate a trained model using past incidents.
+      scriptName: DBotPredictIncidentsBatch
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      incidentTypes:
+        simple: Simulation
+      modelName:
+        simple: demisto_out_of_the_box_model_v2
+      query:
+        simple: name:ootb_1|ootb_2
+      tagField:
+        simple: name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 5bf1340c-b244-4117-80df-a1b63aec3b38
+    type: regular
+    task:
+      id: 5bf1340c-b244-4117-80df-a1b63aec3b38
+      version: -1
+      name: 'Create incident #1'
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      emailbody:
+        simple: Your account was restricted. Please click on this definitely super legit link to fix this. This is URGENT! Do it NOW!
+      emailsubject:
+        simple: '[Alert] Account Restricted Due to security reasons [Ref-160997]'
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: ootb_1
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 1595
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 3704baef-4fb4-4db6-84bc-efe74d45377e
+    type: regular
+    task:
+      id: 3704baef-4fb4-4db6-84bc-efe74d45377e
+      version: -1
+      name: 'Create incident #2'
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      emailbody:
+        simple: Dear sir. This is a very important message. We declined a transaction that very much happened (we would know of course). Please click here. Do it. Please.
+      emailsubject:
+        simple: '[IMPORTANT] We declined your last transaction for your safety.'
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: ootb_2
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 5dc93d0e-4ac6-4d78-8e00-b7c94e8f2a9c
+    type: regular
+    task:
+      id: 5dc93d0e-4ac6-4d78-8e00-b7c94e8f2a9c
+      version: -1
+      name: Parse Results
+      description: This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "37"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 5af5e11e-3fdf-4605-8b2f-b901d1fab01e
+    type: condition
+    task:
+      id: 5af5e11e-3fdf-4605-8b2f-b901d1fab01e
+      version: -1
+      name: Check Prediction 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_1").Prediction
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_1").Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.650591254234314"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 885c3d16-2fc5-4aa9-8548-afbcdac09832
+    type: condition
+    task:
+      id: 885c3d16-2fc5-4aa9-8548-afbcdac09832
+      version: -1
+      name: Check Prediction 2
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_2").Prediction
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_2").Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.6354129314422607"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: bf779237-f2b5-4ac3-86b0-aa45f21d0420
+    type: title
+    task:
+      id: bf779237-f2b5-4ac3-86b0-aa45f21d0420
+      version: -1
+      name: Predict OOTB Single
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: c14bfbc4-60b7-4532-81ce-64be1cd1f110
+    type: regular
+    task:
+      id: c14bfbc4-60b7-4532-81ce-64be1cd1f110
+      version: -1
+      name: Wait 3 Seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2235
         }
       }
     note: false
@@ -457,8 +816,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 380,
+        "height": 2950,
+        "width": 810,
         "x": 50,
         "y": 50
       }
