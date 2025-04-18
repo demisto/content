@@ -323,7 +323,7 @@ def main():  # pragma: no cover
     aws_secret_access_key = params.get("credentials", {}).get("password") or params.get("secret_key")
     verify_certificate = not params.get("insecure", True)
     timeout = params.get("timeout")
-    retries = params.get("retries") or 5
+    retries = params.get("retries") or 7
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
 
