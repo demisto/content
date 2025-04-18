@@ -399,6 +399,8 @@ class QueryParams:
 
 
 class Cache:
+    CACHE_ROOT_KEY = "XQLDSHelperCache"
+
     @staticmethod
     def __compress(val: str) -> dict[Hashable, str]:
         return {"type": "gz+b85x", "data": base64.b85encode(gzip.compress(val.encode())).decode().replace("$", ":")}
@@ -419,7 +421,7 @@ class Cache:
         query_hash: str,
         cache_node: str,
     ) -> Any:
-        cache = self.__context.get(self.__key)
+        cache = demisto.get(self.__context, self.__key)
         if not isinstance(cache, dict):
             return None
 
@@ -468,10 +470,10 @@ class Cache:
     def __init__(
         self,
         name: str,
-        context: ContextData,
+        context: dict[str, Any],
     ) -> None:
         name = urllib.parse.quote(name).replace(".", "%2E")
-        self.__key = f"XQLDSHelperCache.{name}"
+        self.__key = f"{Cache.CACHE_ROOT_KEY}.{name}"
         self.__context = context
 
     def save_recordset(
@@ -1768,7 +1770,7 @@ class Main:
             for path in paths:
                 pit = iter(path)
                 nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
-                if parent == ''.join(iter(lambda: next(nit), '')):
+                if parent == ''.join(itertools.takewhile(lambda x: x != "", iter(nit))):
                     cpaths.append(''.join(list(pit)))
             return cpaths
 
@@ -2253,7 +2255,15 @@ class Main:
             formatter=formatter,
             context=self.__context,
         )
-        cache = Cache(name=self.__template_name, context=self.__context)
+        cache = Cache(
+            name=self.__template_name,
+            context={
+                Cache.CACHE_ROOT_KEY: (
+                    self.__context.get(Cache.CACHE_ROOT_KEY) or
+                    demisto.context().get(Cache.CACHE_ROOT_KEY)
+                )
+            }
+        )
         entry = cache.load_entry(query_params.query_hash()) if self.__cache_type == CacheType.ENTRY else None
 
         need_query = not entry and self.__is_query_executable()
