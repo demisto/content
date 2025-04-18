@@ -1,7 +1,7 @@
-This command uses the Registry Parse automation to extract critical forensics data from a registry file. The essential values are specified by the argument. 
-
+This command uses the Registry Parse automation to extract critical forensics data from a registry file. The essential values are specified by the argument.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,11 +11,14 @@ This command uses the Registry Parse automation to extract critical forensics da
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Registry Parse Data Analysis
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +28,7 @@ This script is used in the following playbooks and scripts.
 | customRegistryPaths | A comma-separated list of registry paths to parse. Try to keep your searches as exact as possible, for example registry_path=\`HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug\\AutoExclusionList\`. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
