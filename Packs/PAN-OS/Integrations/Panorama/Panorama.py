@@ -4031,6 +4031,7 @@ def build_audit_comment_cmd(xpath, audit_comment, xml_type="set") -> str:
     """
     Builds up the needed `cmd` param to get or update the audit comment of a policy rule.
     """
+    audit_comment = html.escape(html.escape(audit_comment)) # special characters need to be escaped twice to be properly stored on PANOS side.
     if xml_type == "set":
         return f"<set><audit-comment><xpath>{xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>"
     elif xml_type == "show":
