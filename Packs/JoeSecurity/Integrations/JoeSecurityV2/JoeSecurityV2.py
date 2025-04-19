@@ -622,6 +622,7 @@ def file_submission(
 
     with open(file_path["path"], "rb") as f:
         file_to_send = (args.get("file_name") or name, f)
+        demisto.debug(f"PSubmitting file {name} ")
         res = client.submit_sample(sample=file_to_send, params=params, cookbook=args.get("cookbook"))
         exe_metrics.success += 1
         partial_res = CommandResults(readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
@@ -677,11 +678,14 @@ def polling_submit_command(
         result: (Dict[str, Any]): The analysis result.
     """
     if submission_id := args.get("submission_id"):
+        demisto.debug(f"Polling submit command with {submission_id=}")
         res = client.submission_info(submission_id=submission_id)
         status = res.get("status")
         if status == "finished":
+            demisto.debug(f"Polling submit finished with {submission_id=}")
             command_results = build_submission_command_result(client, res, args, exe_metrics, True)
             return PollResult(command_results)
+        demisto.debug(f"Polling submit did not finish with {submission_id=}, returning poll result")
         return PollResult(
             response=None,
             partial_result=CommandResults(
@@ -695,8 +699,10 @@ def polling_submit_command(
         )
     else:
         if file := args.get("entry_id"):
+            demisto.debug(f"Polling submit command with {file=}")
             return file_submission(client, args, params, file, exe_metrics)
         elif url := args.get("url"):
+            demisto.debug(f"Polling submit command with {url=}")
             return url_submission(client, args, params, url, exe_metrics)
         else:
             raise DemistoException("No file or URL was provided.")
