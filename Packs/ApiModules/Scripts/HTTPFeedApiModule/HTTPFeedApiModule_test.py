@@ -489,28 +489,26 @@ def test_fetch_indicators_ip_ranges_to_cidrs():
         - CIDR indicators should be returned.
     """
     feed_url_to_config = {
-        'https://www.spamhaus.org/drop/asndrop.txt': {
-            "indicator_type": 'CIDR',
-            "indicator": {
-                "regex": r"^(\S+)-(\S+)$",
-                "transform": "\\1-\\2"
-            }
+        "https://www.spamhaus.org/drop/asndrop.txt": {
+            "indicator_type": "CIDR",
+            "indicator": {"regex": r"^(\S+)-(\S+)$", "transform": "\\1-\\2"},
         }
     }
-    with open('test_data/expected_cidr_result.json') as expected_cidr_result:
+    with open("test_data/expected_cidr_result.json") as expected_cidr_result:
         expected_res = (json.loads(expected_cidr_result.read()), True)
 
-    ip_ranges = '14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255' \
-                '\nfe80::c000-fe80::cfff\n12.12.12.12'
+    ip_ranges = (
+        "14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255" "\nfe80::c000-fe80::cfff\n12.12.12.12"
+    )
     with requests_mock.Mocker() as m:
-        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=ip_ranges.encode('utf-8'))
+        m.get("https://www.spamhaus.org/drop/asndrop.txt", content=ip_ranges.encode("utf-8"))
         client = Client(
             url="https://www.spamhaus.org/drop/asndrop.txt",
-            source_name='spamhaus',
+            source_name="spamhaus",
             feed_url_to_config=feed_url_to_config,
-            indicator_type='CIDR'
+            indicator_type="CIDR",
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='CIDR', auto_detect=False)
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype="CIDR", auto_detect=False)
 
         assert indicators == expected_res
 
@@ -643,7 +641,7 @@ def test_get_no_update_value_without_headers(mocker):
     assert not no_update
     assert (
         demisto.debug.call_args[0][0] == "Last-Modified and Etag headers are not exists,createIndicators"
-                                         " will be executed with noUpdate=False."
+        " will be executed with noUpdate=False."
     )
 
 
