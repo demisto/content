@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 
 import demistomock as demisto
@@ -474,6 +475,42 @@ def test_fetch_indicators_exclude_enrichment():
             create_relationships=False,
             enrichment_excluded=True,
         )
+
+        assert indicators == expected_res
+
+
+def test_fetch_indicators_ip_ranges_to_cidrs():
+    """
+    Given:
+        - Text containing incidicators as IP ranges.
+    When:
+        - Calling the fetch_indicators_command
+    Then:
+        - CIDR indicators should be returned.
+    """
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            "indicator_type": 'CIDR',
+            "indicator": {
+                "regex": r"^(\S+)-(\S+)$",
+                "transform": "\\1-\\2"
+            }
+        }
+    }
+    with open('test_data/expected_cidr_result.json') as expected_cidr_result:
+        expected_res = (json.loads(expected_cidr_result.read()), True)
+
+    ip_ranges = '14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255' \
+                '\nfe80::c000-fe80::cfff\n12.12.12.12'
+    with requests_mock.Mocker() as m:
+        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=ip_ranges.encode('utf-8'))
+        client = Client(
+            url="https://www.spamhaus.org/drop/asndrop.txt",
+            source_name='spamhaus',
+            feed_url_to_config=feed_url_to_config,
+            indicator_type='CIDR'
+        )
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='CIDR', auto_detect=False)
 
         assert indicators == expected_res
 
