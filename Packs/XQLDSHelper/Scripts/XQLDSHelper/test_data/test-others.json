@@ -94,6 +94,56 @@
       }
     }
   },
+  "######### cache_type: recordset - hit (recordset, context.filters)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          },
+          "config": {
+            "context": {
+              "filters": [
+                "dummy"
+              ]
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "recordset"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheDataset": {
+            "data": "ABzY8#`t?@0{@GyR*Fw4ElMoO%+FJ@QZO_!HmQvT0KfN@nH2y400",
+            "type": "gz+b85"
+          },
+          "QueryHash": "663b242503dc8fe5a3e4b76f5b35d669a236c0346d60d878d8e357e6ad04a44d"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
   "######### cache_type: recordset - hit (recordset with execution_id)",
   {
     "args": {
@@ -108,6 +158,56 @@
             "type": "duration",
             "duration": {
               "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00",
+      "cache_type": "recordset"
+    },
+    "context": {
+      "XQLDSHelperCache": {
+        "test": {
+          "CacheDataset": {
+            "data": "ABzY8PuK5f0{^R4O07suE-lH-&x_AYQL<91fB_{PrJ~g2{GycN)Dk7D=xU|-l+vO^kU}LZ1w$ialiJu?0Ghkz?LGhi00",
+            "type": "gz+b85"
+          },
+          "QueryHash": "663b242503dc8fe5a3e4b76f5b35d669a236c0346d60d878d8e357e6ad04a44d"
+        }
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### cache_type: recordset - hit (recordset with execution_id, context.filters)",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "dataset = panw_ngfw_traffic_raw| limit 1| alter _duration = 1234| fields _duration"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          },
+          "config": {
+            "context": {
+              "filters": [
+                "dummy"
+              ]
             }
           }
         }
