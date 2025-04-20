@@ -80,6 +80,13 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: 'When selected, a /32 CIDR indicator will also be returned as an IP indicator.'
+  display: Set /32 CIDRs as IP Indicators
+  name: cidr_32_to_ip
+  required: true
+  type: 8
+  section: Collect
+  advanced: true
 description: This integration fetches a list that summarizes the top 20 attacking class C (/24) subnets over the last three days from Dshield.
 display: DShield Feed
 name: DShield Feed
