@@ -1561,6 +1561,6 @@
     },
     "system": false,
     "version": -1,
-    "fromVersion": "",
+    "fromVersion": "6.9.0",
     "description": ""
 }
