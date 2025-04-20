@@ -1,12 +1,10 @@
-Run JQ Query.
+Run JQ Query. 
 
 Check these links:
-
 - https://stedolan.github.io/jq/manual/#Invokingjq
 - https://jqplay.org/
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -15,7 +13,6 @@ Check these links:
 | Tags | transformer |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -24,7 +21,6 @@ Check these links:
 | query | JQ compatible query |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

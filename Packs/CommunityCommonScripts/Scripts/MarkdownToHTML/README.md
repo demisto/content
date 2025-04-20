@@ -1,7 +1,6 @@
 Converts Markdown to HTML.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Converts Markdown to HTML.
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -21,7 +19,6 @@ Converts Markdown to HTML.
 | prettifyHTML | If True - The resulted HTML will be nicely formatted as a Unicode string, with a separate line for each tag and each string. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

@@ -3,7 +3,6 @@ It should be configured as a pre-processing rule, and the logic for finding the 
 The automation collects the paths and names of the attachments of the incoming incident and passes it to the "CreateFileFromPathObject" automation that is being executed on the existing incident.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,11 +11,9 @@ The automation collects the paths and names of the attachments of the incoming i
 | Tags | preProcessing |
 
 ## Inputs
-
 ---
 There are no inputs for this script.
 
 ## Outputs
-
 ---
 There are no outputs for this script.

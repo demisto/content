@@ -5,6 +5,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure ReliaQuest GreyMatter DRP Incidents in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch incidents | Start fetching incidents | False |
@@ -19,6 +20,7 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch Limit | The maximum number of incidents to fetch | True |
 | Incidents Fetch Interval | This controls how often the integration will perform a fetch_incidents command | False |
 | Start date | Since when want to fetch the data with given format\(%Y-%m-%dT%H:%M:%SZ\) | True |
+
 
 ## Commands
 
@@ -38,7 +40,7 @@ Perform a general search against incidents, threats closed sources, etc.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | No description provided. | Required |
+| query | No description provided. | Required | 
 
 #### Context Output
 

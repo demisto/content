@@ -3,6 +3,7 @@ Purpose:      This automation will return indicator custom fields into the conte
 Author:       Mahmood Azmat
 Input1:       Query for retrieving indicator(s).
 
+
 ## Script Data
 
 ---
