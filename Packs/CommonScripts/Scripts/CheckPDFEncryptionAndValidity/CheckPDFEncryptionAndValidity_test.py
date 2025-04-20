@@ -1,10 +1,7 @@
 
-import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
-import demistomock as demisto
 from CommonServerPython import *
-import PyPDF2
 from CheckPDFEncryptionAndValidity import check_PDF_encryption_and_validity
 
 

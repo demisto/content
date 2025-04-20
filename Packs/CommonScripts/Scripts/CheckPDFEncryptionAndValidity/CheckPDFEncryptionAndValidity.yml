@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'The entry id of the PDF file'
+  description: The entry ID of the PDF file.
   isArray: false
   name: EntryID
   required: true
@@ -12,13 +12,13 @@ enabled: false
 name: CheckPDFEncryptionAndValidity
 outputs:
 - contextPath: File.IsEncrypted
-  description: 'True if PDF file is encrypted, False else'
+  description: 'True if PDF file is encrypted, False otherwise.'
   type: Boolean
 - contextPath: File.IsValid
-  description: 'True if PDF file is readable, False else'
+  description: 'True if PDF file is readable, False otherwise.'
   type: Boolean
 - contextPath: File.EntryID
-  description: 'The entry id of the file'
+  description: 'The entry ID of the file.'
   type: String
 script: '-'
 system: false

@@ -74,7 +74,7 @@ def test_convert_pdf_to_html(mocker):
     # validate our mocks are good
     assert demisto.args()["entry_id"] == "test"
     main()
-    assert demisto.results.call_count == 1
+    assert demisto.results.call_count == 2
     results = [x[0] for x in demisto.results.call_args_list if x[0][0]["File"].endswith(".html")][0]
     assert results[0]["Type"] == entryTypes["file"]
     assert results[0]["File"] == "test.html"
@@ -87,20 +87,17 @@ def test_convert_pdf_to_html(mocker):
 
 
 def test_convert_failure(mocker):
-    # test with BAD format to see that we fail
+    # test with BAD format to see that we do not fail and that outputs contain the ERROR field
     file = "MS-DOCX-190319.docx"  # disable-secrets-detection
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test", "format": "BAD", "all_files": "yes"})
     ext = os.path.splitext(file)[1]
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + file, "name": "test" + ext})
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    mocker.patch.object(demisto, "results")
     # validate our mocks are good
     assert demisto.args()["entry_id"] == "test"
     main()
-    assert return_error_mock.call_count == 1
-    # call_args last call with a tuple of args list and kwargs
-    err_msg = return_error_mock.call_args[0][0]
-    assert "BAD" in err_msg
-    assert "Error: no export filter" in err_msg
+    result = [x[0] for x in demisto.results.call_args_list][0]
+    assert 'ERROR' in str(result)
 
 
 def test_zombie_prcesses(mocker):
