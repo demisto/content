@@ -1,4 +1,4 @@
 
 # Deprecated
 
-Deprecated - merged into CreateSigmaRuleIndicator.
+Deprecated - use CreateSigmaRuleIndicator instead.
