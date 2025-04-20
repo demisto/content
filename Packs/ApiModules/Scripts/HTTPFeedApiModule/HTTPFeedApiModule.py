@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-from typing import Optional, Pattern, List
+from typing import Optional, Pattern, List, Tuple
 from ipaddress import ip_address, summarize_address_range
 
 # disable insecure warnings
@@ -357,12 +357,12 @@ def datestring_to_server_format(date_string: str) -> str:
     return parsed_date.strftime(DATE_FORMAT)  # type: ignore
 
 
-def is_cidr_32(value):
+def is_cidr_32(value:str) -> bool:
     """
     Checks if the given CIDR address is a /32.
 
     Parameters:
-        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+        value (str): A CIDR address.
 
     Returns:
         bool: True if the CIDR is /32, False otherwise.
@@ -373,23 +373,23 @@ def is_cidr_32(value):
         return False
 
 
-def convert_cidr32_to_ip(value):
+def convert_cidr32_to_ip(value : str) -> Optional[str]:
     """
     Converts a CIDR /32 address to its IP part.
 
     Parameters:
-        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+        value (str): A CIDR address with /32 in the end
 
     Returns:
-        str: The IP address if input is a valid /32, else None.
+        str: an ip address without the /32 string
     """
     try:
         ip, subnet = value.strip().split('/')
         if subnet == '32':
             return ip
     except ValueError:
-        pass
-    return None
+        return None
+
 
 
 def ip_range_to_cidr(start_ip: str, end_ip: str) -> list:
@@ -491,70 +491,22 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     return attributes, extracted_indicator
 
 
-def fetch_indicators_command(client,
-                             feed_tags,
-                             tlp_color,
-                             itype,
-                             auto_detect,
-                             create_relationships=False,
-                             cidr_32_to_ip=False,
-                             enrichment_excluded: bool = False,
-                             **kwargs):
-    iterators = client.build_iterator(**kwargs)
-    indicators = []
 
-    # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
-    no_update = all(next(iter(iterator.values())).get('no_update', False) for iterator in iterators)
+def process_indicator_type(client : Client, value : str , url : str, itype : str, auto_detect : bool, cidr_32_to_ip : bool) -> Tuple[str, bool]:
+    """
+    Processes the indicator value and configuration parameters to determine the indicator type.
 
-    for iterator in iterators:
-        for url, lines in iterator.items():
-            for line in lines.get('result', []):
-                attributes, indicator_values = get_indicator_fields(line, url, feed_tags, tlp_color, client)
-                demisto.debug(f"Got the following indicator values - {indicator_values}")
+    Args:
+        client (Client): The feed client object used.
+        value (str): The raw indicator value.
+        url (str): The source URL associated with the indicator.
+        itype (str): The indicator type provided by the user.
+        auto_detect (bool): Whether XSOAR should auto-detect the indicator type.
+        cidr_32_to_ip (bool, optional): If True, duplicate /32 CIDR indicators as IP indicators.
 
-                for indicator_value in indicator_values:
-                    indicator_type, is_32_cidr = process_indicator_type(client=client, value=indicator_value, url=url, itype=itype,
-                                                            auto_detect=auto_detect, cidr_32_to_ip=cidr_32_to_ip)
-                    indicators.append(process_indicator_data(
-                        client,
-                        indicator_value,
-                        attributes,
-                        url,
-                        indicator_type,
-                        create_relationships,
-                        enrichment_excluded
-                    ))
-
-                    if is_32_cidr:
-                        ip_value = convert_cidr32_to_ip(indicator_value)
-                        indicators.append(process_indicator_data(
-                            client,
-                            ip_value,
-                            attributes,
-                            url,
-                            FeedIndicatorType.IP,
-                            create_relationships,
-                            enrichment_excluded
-                        ))
-
-    return indicators, no_update
-
-
-def process_indicator_type(client, value, url, itype, auto_detect, cidr_32_to_ip):
-    """_summary_
-        process the indicator value and the configuration params to conclude the indicator type
-       Args:
-           client (_type_): Feed Client object
-           value (_type_): indicator value
-           url (_type_): url
-           itype (_type_): type given by the user
-           auto_detect (_type_): should XSOAR auto detect indicator
-           cidr_32_to_ip (bool, optional): present /32 CIDR indicators also as IP
-
-       Returns:
-           indicator_type: the indicator type
-           is_32_cidr : determine should we add a new indicator of ip
-       """
+    Returns:
+        Tuple[str, str, bool]: The indicator value, its determined type, and a flag indicating if it's a /32 CIDR.
+    """
     indicator_type = determine_indicator_type(
         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
 
@@ -659,6 +611,55 @@ def get_indicators_command(client: Client, args, enrichment_excluded: bool = Fal
     return hr, {}, indicators_list
 
 
+def fetch_indicators_command(client,
+                             feed_tags,
+                             tlp_color,
+                             itype,
+                             auto_detect,
+                             create_relationships=False,
+                             cidr_32_to_ip=False,
+                             enrichment_excluded: bool = False,
+                             **kwargs):
+    iterators = client.build_iterator(**kwargs)
+    indicators = []
+
+    # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
+    no_update = all(next(iter(iterator.values())).get('no_update', False) for iterator in iterators)
+
+    for iterator in iterators:
+        for url, lines in iterator.items():
+            for line in lines.get('result', []):
+                attributes, indicator_values = get_indicator_fields(line, url, feed_tags, tlp_color, client)
+                demisto.debug(f"Got the following indicator values - {indicator_values}")
+
+                for indicator_value in indicator_values:
+                    indicator_type, is_32_cidr = process_indicator_type(client=client, value=indicator_value, url=url, itype=itype,
+                                                            auto_detect=auto_detect, cidr_32_to_ip=cidr_32_to_ip)
+                    indicators.append(process_indicator_data(
+                        client,
+                        indicator_value,
+                        attributes,
+                        url,
+                        indicator_type,
+                        create_relationships,
+                        enrichment_excluded
+                    ))
+
+                    if is_32_cidr:
+                        ip_value = convert_cidr32_to_ip(indicator_value)
+                        indicators.append(process_indicator_data(
+                            client,
+                            ip_value,
+                            attributes,
+                            url,
+                            FeedIndicatorType.IP,
+                            create_relationships,
+                            enrichment_excluded
+                        ))
+
+    return indicators, no_update
+
+
 def test_module(client: Client, args):
     if not client.feed_url_to_config:
         indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
@@ -681,7 +682,7 @@ def feed_main(feed_name, params=None, prefix=''):
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
-    cidr_32_to_ip = argToBoolean(params.get('cidr_32_to_ip'))
+    cidr_32_to_ip = argToBoolean(params.get('cidr_32_to_ip', False))
     enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
                            or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
