@@ -1,7 +1,6 @@
 Gets docker image latest tag. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with the docker image latest tag if all is good, otherwise will return an error.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Gets docker image latest tag. Script simulates the docker pull flow but doesn't 
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,15 +18,14 @@ Gets docker image latest tag. Script simulates the docker pull flow but doesn't 
 | trust_any_certificate | Trust any certificate \(not secure\) |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
 
+
 ## Script Examples
-
 ### Example command
-
 ```!GetDockerImageLatestTag docker_image=demisto/python3```
+
 
 ### Human Readable Output
 

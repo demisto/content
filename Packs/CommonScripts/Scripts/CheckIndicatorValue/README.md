@@ -1,7 +1,6 @@
 Check if indicators exist in the Threat Intel DB.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Check if indicators exist in the Threat Intel DB.
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,7 +17,6 @@ Check if indicators exist in the Threat Intel DB.
 | encoding | Decode indicators by the algorithm given |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

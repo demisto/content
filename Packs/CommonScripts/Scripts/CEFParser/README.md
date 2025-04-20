@@ -1,7 +1,6 @@
 Parses CEF data into the context. Outputs will display only the 7 mandatory fields even if the CEF event includes many other custom or extended fields.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Parses CEF data into the context. Outputs will display only the 7 mandatory fiel
 | Script Type | javascript |
 | Tags | Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,7 +17,6 @@ Parses CEF data into the context. Outputs will display only the 7 mandatory fiel
 | data | The data that contains the CEF rows. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

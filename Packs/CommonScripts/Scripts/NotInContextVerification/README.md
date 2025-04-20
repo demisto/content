@@ -1,7 +1,6 @@
-Executes the given command and verifies that the specified field is not in the context after execution.
+Executes the given command and verifies that the specified field is not in the context after execution. 
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Executes the given command and verifies that the specified field is not in the c
 | Script Type | javascript |
 | Tags | Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +19,5 @@ Executes the given command and verifies that the specified field is not in the c
 | keyToWatch | The key to watch, if it is equal to value argument `(${key}==value)` then exit while loop, otherwise continue to the next loop iteration. The command will then run again.  |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

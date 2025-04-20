@@ -1,7 +1,6 @@
 Add DBot score to context for indicators with custom vendor, score, reliability, and type.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Add DBot score to context for indicators with custom vendor, score, reliability,
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +21,5 @@ Add DBot score to context for indicators with custom vendor, score, reliability,
 | reliability | The reputation reliability |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

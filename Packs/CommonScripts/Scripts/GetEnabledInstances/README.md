@@ -1,7 +1,6 @@
 Gets all currently enabled integration instances.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,12 +10,10 @@ Gets all currently enabled integration instances.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 There are no inputs for this script.
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

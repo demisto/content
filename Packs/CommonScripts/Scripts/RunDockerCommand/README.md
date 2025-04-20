@@ -1,9 +1,8 @@
-Allows you to run commands against a local Docker container. A command such as `wc` with word count, or other types of commands that you want on the docker container.
+Allows you to run commands against a local Docker container. A command such as `wc` with word count, or other types of commands that you want on the docker container. 
 
 We recommend for tools that you want to use that are not part of the default Docker container, to cope this Automation script and then create a customer docker container with /docker_image_create with a custom docker container to add any command level tool to Cortex XSOAR and output the results directly to the context.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,8 +10,8 @@ We recommend for tools that you want to use that are not part of the default Doc
 | Script Type | python |
 | Tags | Utilities |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -21,7 +20,6 @@ We recommend for tools that you want to use that are not part of the default Doc
 | sysargs | The sysargs to enter. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

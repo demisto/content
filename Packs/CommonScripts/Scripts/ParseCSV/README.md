@@ -1,7 +1,5 @@
 This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,14 +8,11 @@ This script will parse a CSV file and place the unique IPs, Domains and Hashes i
 | Tags | file, csv, Utility |
 
 ## Used In
-
 ---
 This script is used in the following playbooks and scripts.
-
 * Block IOCs from CSV - External Dynamic List
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -31,7 +26,6 @@ This script is used in the following playbooks and scripts.
 | codec | The codec type used to parse the file. \(some character sets are not UTF\-8 supported\) |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

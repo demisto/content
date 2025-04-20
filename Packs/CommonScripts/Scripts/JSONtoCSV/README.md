@@ -1,7 +1,6 @@
 Convert a JSON War Room output via EntryID to a CSV file.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Convert a JSON War Room output via EntryID to a CSV file.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +18,6 @@ Convert a JSON War Room output via EntryID to a CSV file.
 | filename | If provided will output CSV to file. Default output is to War Room. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

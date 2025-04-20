@@ -1,7 +1,6 @@
 Loads a JSON file from the war room to context.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Loads a JSON file from the war room to context.
 | Tags | Utility |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +17,5 @@ Loads a JSON file from the war room to context.
 | contextKey | The context key to put the loaded JSON under, default is JSON. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

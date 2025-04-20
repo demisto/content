@@ -1,7 +1,6 @@
 Searches for a string in a path in context. If path is null, the string will be searched in full context.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Searches for a string in a path in context. If path is null, the string will be 
 | Script Type | javascript |
 | Tags |  |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,7 +18,6 @@ Searches for a string in a path in context. If path is null, the string will be 
 | str | The string to search for in context. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

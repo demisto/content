@@ -1,7 +1,6 @@
 This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,14 +10,11 @@ This script will extract indicators from given HTML and will handle bad top-leve
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Used In
-
 ---
 This script is used in the following playbooks and scripts.
-
 * Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -29,7 +25,6 @@ This script is used in the following playbooks and scripts.
 | unescape_domain | Whether to remove brackets \[\] from the domain regex extraction. Can result in higher false positives for file extensions. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

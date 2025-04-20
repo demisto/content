@@ -1,7 +1,6 @@
 The Volatility script for command `connscan`.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ The Volatility script for command `connscan`.
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +19,5 @@ The Volatility script for command `connscan`.
 | profile | The Volatility profile to use. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

@@ -1,7 +1,6 @@
 Fetches indicators from a file.
 
 ## Supported File Types
-
 - TXT
 - XLS, XLSX
 - CSV
@@ -9,8 +8,8 @@ Fetches indicators from a file.
 
 If an Excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_number* argument, which defines the column to fetch from.
 
-## Script Data
 
+## Script Data
 ---
 
 | **Name** | **Description** |
@@ -20,7 +19,6 @@ If an Excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_n
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -40,7 +38,6 @@ If an Excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_n
 `!FetchIndicatorsFromFile auto_detect=True entry_id={entry_id}`
 
 ## Human Readable Output
-
 ---
 
 Indicators from indicator.csv:

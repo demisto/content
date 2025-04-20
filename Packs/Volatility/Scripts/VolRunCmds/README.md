@@ -1,7 +1,6 @@
 Executes Volatility with a command and returns tabular output. In casse where proper JSON output is not supported, the script will return an error. The user should use a raw command.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Executes Volatility with a command and returns tabular output. In casse where pr
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +20,5 @@ Executes Volatility with a command and returns tabular output. In casse where pr
 | profile | The Volatility profile to use. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

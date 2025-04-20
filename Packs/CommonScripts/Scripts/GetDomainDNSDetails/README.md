@@ -1,7 +1,6 @@
 Returns DNS details for a domain
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Returns DNS details for a domain
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -22,7 +20,6 @@ Returns DNS details for a domain
 | qtype | Comma separated list of query types \(default: CNAME,NS,A,AAAA\) |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -34,12 +31,11 @@ Returns DNS details for a domain
 | DomainDNSDetails.domain | Domain name used in the query. | String |
 | DomainDNSDetails.server | Name server that returned the result. | String |
 
-## Script Example
 
+## Script Example
 ```!GetDomainDNSDetails domain=example.com```
 
 ## Context Example
-
 ```json
 {
     "DomainDNSDetails": {
@@ -65,7 +61,7 @@ Returns DNS details for a domain
 ## Human Readable Output
 
 >###  Domain DNS Details for example.com
->
 >|domain|server|CNAME|NS|A|AAAA|
 >|---|---|---|---|---|---|
 >| example.com | system | test.example.com | a.iana-servers.net.,<br/>b.iana-servers.net. | 10.11.12.13 | 2001:2001:200:1:200:2001:2001:2001 |
+

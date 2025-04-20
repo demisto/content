@@ -2,7 +2,6 @@ Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extr
 If more than one URL is passed to the formatter, the separator must be a pipe ("|").
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,7 +11,6 @@ If more than one URL is passed to the formatter, the separator must be a pipe ("
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,19 +18,17 @@ If more than one URL is passed to the formatter, the separator must be a pipe ("
 | input | A pipe ("|") separated list of URL inputs. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | URL | URL formatted. | String |
 
-## Script Example
 
+## Script Example
 ```!FormatURL input=https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html```
 
 ## Context Example
-
 ```json
 {
     "URL": [

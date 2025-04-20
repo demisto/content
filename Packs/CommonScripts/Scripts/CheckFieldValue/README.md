@@ -1,7 +1,6 @@
 This script checks that a field exists (and contains data), and optionally checks the value of the field for a match against an input value. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ This script checks that a field exists (and contains data), and optionally check
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +18,6 @@ This script checks that a field exists (and contains data), and optionally check
 | regex | The regex pattern to check the field for. \(optional\). |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

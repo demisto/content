@@ -1,7 +1,5 @@
 Converts an array in to a HTML table.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +7,8 @@ Converts an array in to a HTML table.
 | Script Type | javascript |
 | Tags | Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +18,6 @@ Converts an array in to a HTML table.
 | context_key | The context key for the converted HTML table (default is: HTMLTable). |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

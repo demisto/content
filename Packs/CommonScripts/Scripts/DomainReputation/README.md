@@ -1,7 +1,6 @@
 A context script for domain entities.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ A context script for domain entities.
 | Script Type | python |
 | Tags | enhancement |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +17,5 @@ A context script for domain entities.
 | domain | The domain to look up. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

@@ -1,7 +1,6 @@
 Sends a HTTP request and returns the response as JSON.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,9 +8,8 @@ Sends a HTTP request and returns the response as JSON.
 | Script Type | javascript |
 | Tags | Utility |
 | Cortex XSOAR Version | 3.5.0+ |
-
+ 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -29,7 +27,6 @@ Sends a HTTP request and returns the response as JSON.
 | filename | The filename from headers if the filename is not given. The default is "http-file". |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

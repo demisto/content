@@ -1,7 +1,6 @@
 Checks whether the specified item is in a list. The default list is the XSOAR Indicators Whitelist.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,10 +10,8 @@ Checks whether the specified item is in a list. The default list is the XSOAR In
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
-
 ---
 This script is used in the following playbooks and scripts.
-
 * TIM - Process Domain Registrant With Whois
 * TIM - Process Indicators Against Approved Hash List
 * TIM - Process Indicators Against Business Partners Domains List
@@ -22,7 +19,6 @@ This script is used in the following playbooks and scripts.
 * TIM - Process Indicators Against Business Partners URL List
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -34,7 +30,6 @@ This script is used in the following playbooks and scripts.
 | delimiter | A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

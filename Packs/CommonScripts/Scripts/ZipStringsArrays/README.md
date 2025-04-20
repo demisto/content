@@ -1,7 +1,6 @@
 Joining values by index from 2 list according to a given format.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Joining values by index from 2 list according to a given format.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +18,6 @@ Joining values by index from 2 list according to a given format.
 | list2 | The second list. List must be at same size as list1. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

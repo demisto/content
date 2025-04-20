@@ -1,7 +1,6 @@
 Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Allows to parse and extract http flows (requests & responses) from a pcap/pcapng
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,11 +18,10 @@ Allows to parse and extract http flows (requests & responses) from a pcap/pcapng
 | entryID | File entry from the WarRoom |
 | limit | Limit the output of the capture file output's flows \(starts from 0\). |
 | start | Index of where to output flows \(starts from 0\). |
-| limitData | Limit the HttpFileData field \(in bytes\)   |
+| limitData | Limit the HttpFileData field \(in bytes\)		 |
 | allowedContentTypes | The allowed content types to display, separated with comma, uses startswith to find a match \(ie text,image will display text\\html, and image\\png\). |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

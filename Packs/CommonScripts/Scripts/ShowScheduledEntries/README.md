@@ -1,7 +1,6 @@
 Shows all scheduled entries for the specific incident.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Shows all scheduled entries for the specific incident.
 | Script Type | javascript |
 | Tags | Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,7 +17,6 @@ Shows all scheduled entries for the specific incident.
 | incidentId | The incident ID to get the tasks from. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

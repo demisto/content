@@ -30,7 +30,6 @@ The field's new value is in: `demisto.args()['new']`
 To print the whole argument structure, use this: `demisto.results(demisto.args())`
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -40,7 +39,6 @@ To print the whole argument structure, use this: `demisto.results(demisto.args()
 | Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -49,6 +47,5 @@ To print the whole argument structure, use this: `demisto.results(demisto.args()
 | new | The new value of the field that was changed. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
