@@ -22,6 +22,18 @@
       "MD047": true,
       "MD049": true,
       "MD050": true,
-      "MD058": true
+      "MD058": true,
+      "MD052" : true,
+      "MD005" : true,
+      "MD025" : true,
+      "MD042" : true,
+      "MDO39" : true,
+      "MD020" : true,
+      "MD021" : true,
+      "MD043" : true,
+      "MD044" : true,
+      "MD048" : true,
+      "MD053" : true,
+      "MD054" : true
   } , "fix" :true
 }

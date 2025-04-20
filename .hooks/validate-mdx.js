@@ -55,16 +55,16 @@ async function parseMDX(file) {
 
 const files = process.argv.slice(2);
 (async () => {
-    let hasErrors = false;
+    const promises = [];
 
-    for (const file of files) {
-        const success = await parseMDX(file);
-        if (!success) {
-            hasErrors = true;
-        }
+    for (let i = 0; i < files.length; i++) {
+        const promise = parseMDX(files[i]);
+        promises.push(promise);
     }
 
-    if (hasErrors) {
+    const results = await Promise.all(promises);
+
+    if (results.includes(false)) {
         process.exit(1);
     }
 })();

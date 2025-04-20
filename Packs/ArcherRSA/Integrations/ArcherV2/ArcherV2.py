@@ -923,14 +923,17 @@ class Client(BaseClient):
 
     def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
+        cache_key = f"{field_id}__{depth}"  # Value list depends on both field ID and depth
 
-        if cache["fieldValueList"].get(field_id):
-            return cache.get("fieldValueList").get(field_id)
+        # Get the value from cache using both field ID and depth (if exists)
+        if cached_field_value_list:= cache.get("fieldValueList", {}).get(cache_key):
+            demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
+            return cached_field_value_list
 
+        # If the value does not exist in cache, get it from the API
         res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
-        errors = get_errors_from_res(res)
-        if errors:
+        if errors:= get_errors_from_res(res):
             return_error(errors)
 
         if res.get("RequestedObject") and res.get("IsSuccessful"):
@@ -938,17 +941,18 @@ class Client(BaseClient):
                 raise Exception('The command returns values only for fields of type "Values List".\n')
 
             list_id = res["RequestedObject"]["RelatedValuesListId"]
-            values_list_res = self.do_rest_request(
-                "GET",
-                f"{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}",
-            )
+            values_list_res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}")
+
             if values_list_res.get("RequestedObject") and values_list_res.get("IsSuccessful"):
                 values_list: List[dict[str, Any]] = []
                 for value in values_list_res["RequestedObject"].get("Children", ()):
                     self.get_field_value_list_helper(value, values_list, depth)
+
                 field_data = {"FieldId": field_id, "ValuesList": values_list}
 
-                cache["fieldValueList"][field_id] = field_data
+                # Write the value to cache so it can be retrieved next time using both field ID and depth
+                cache["fieldValueList"][cache_key] = field_data
+                demisto.debug(f"Merging field value list for field ID: {field_id} and depth: {depth} into integration context.")
                 merge_integration_context(cache)
                 return field_data
         return {}
