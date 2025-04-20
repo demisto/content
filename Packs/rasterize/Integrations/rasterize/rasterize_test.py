@@ -1115,3 +1115,35 @@ def test_rasterize_email_command_error_handling(mocker):
         rasterize_email_command()
 
     mock_error.assert_called_once_with("Test error")
+    
+
+def test_basic_list_parse(mocker):
+    from rasterize import pyhtonify_list
+    s = "[\"https://www.google.com/?q='Hello World'\"]"
+    expected = ["https://www.google.com/?q='Hello World'"]
+    assert pyhtonify_list(s) == expected
+
+def test_quotes_and_escapes_pythonify(mocker):
+    s = "[\"https://www.google.com/?q='Hello World'\", " \
+        "\"https://www.google.com/?q='Hello \\\" World'\", " \
+        "\"https://www.google.com/?q='Hello \\\" World'\", " \
+        "\"https://www.google.com/?q='Hello \\\\ World'\"]"
+    expected = [
+        "https://www.google.com/?q='Hello World'",
+        "https://www.google.com/?q='Hello \" World'",
+        "https://www.google.com/?q='Hello \" World'",
+        "https://www.google.com/?q='Hello \\ World'",
+    ]
+    assert pyhtonify_list(s) == expected
+
+def test_empty_list_pythonify(mocker):
+    assert pyhtonify_list("[]") == []
+
+def test_whitespace_pythonify(mocker):
+    s = "[  \"https://a.com\"  ,   \"https://b.com\" ]"
+    expected = ["https://a.com", "https://b.com"]
+    assert pyhtonify_list(s) == expected
+
+def test_invalid_input_pythonify(mocker):
+    with pytest.raises(SyntaxError):
+        pyhtonify_list("[\"unclosed string]")
