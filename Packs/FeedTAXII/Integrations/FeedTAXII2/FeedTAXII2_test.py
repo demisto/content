@@ -539,10 +539,11 @@ def test_fetch_indicators_error_handling(mocker):
     
 
     # Prepare mocks for Demisto functions
-    with patch('FeedTAXII2.demisto.updateModuleHealth') as mock_update_health,\
-         patch('FeedTAXII2.demisto.error') as mock_error:
+    mock_update_health = mocker.patch('FeedTAXII2.demisto.updateModuleHealth')
+    mock_error = mocker.patch('FeedTAXII2.demisto.error')
         # Execute
-        mocker.patch.object(FeedTAXII2, 'filter_previously_fetched_indicators')
+    mocker.patch.object(FeedTAXII2, 'filter_previously_fetched_indicators')
+    try:
         indicators, last_run_ctx = fetch_indicators_command(
             client=mock_client,
             initial_interval='10 days',
@@ -550,6 +551,8 @@ def test_fetch_indicators_error_handling(mocker):
             last_run_ctx={},
             fetch_full_feed=False
         )
+    except Exception:
+        pass
 
-        # mock_update_health.assert_called_once_with({"message": "Error fetching collection 1: Simulated Error"}, is_error=True)
-        mock_error.assert_called_once_with("Failed to fetch IOCs from collection 1: Simulated Error")
+    mock_update_health.assert_called_once_with({"message": "Error fetching collection 1: Simulated Error"}, is_error=True)
+    mock_error.assert_called_once_with("Failed to fetch IOCs from collection 1: Simulated Error")
