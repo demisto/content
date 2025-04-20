@@ -1870,8 +1870,8 @@ def get_modified_remote_data_command(
                 continue
             updated_notable = parse_notable(item, to_dict=True)
             notable_id = updated_notable[EVENT_ID]  # in the `notable` macro - the ID are in the event_id key
-            if notable_id in already_processed_ids:
-                demisto.debug(f"Skipping already processed notable_id from notable macro: {notable_id}")
+            if notable_id not in modified_notables_map:
+                demisto.debug(f"Skipping notable_id from notable macro not in incident_review results: {notable_id}")
                 continue
 
             already_processed_ids.add(notable_id)
