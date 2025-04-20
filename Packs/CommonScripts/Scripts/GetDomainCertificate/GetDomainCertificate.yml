@@ -9,7 +9,7 @@ enabled: true
 args:
 - name: domains
   required: true
-  description: The domain to fetch the certificate from (Or a comma separated list of domains).
+  description: The domain to fetch the certificate from. (Or a comma-separated list of domains).
   isArray: true
 - name: verbose
   description: When true the script will fetch the full certificate under "full_response".

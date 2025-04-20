@@ -13,7 +13,7 @@
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| domain | The domain to retrieve the certificate for |
+| domain | The domain to retrieve the certificate for. |
 
 ## Outputs
 ---
