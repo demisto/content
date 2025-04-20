@@ -1433,8 +1433,6 @@ def main():  # pragma: no cover
             demisto.results(commands[command](client))
         if command == "gmail-get-incidents":
             return_results(get_incidents_command(client))
-        if command == "gmail-aa":
-            return_results(fetch_incidents(client))
     except Exception as e:
         # demisto.updateModuleHealth("Error fetching emails: " + str(e), is_error=True)
         return_error(f"An error occurred: {e}", error=e)
