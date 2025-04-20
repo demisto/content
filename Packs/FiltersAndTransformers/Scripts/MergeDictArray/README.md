@@ -1,7 +1,6 @@
 Each entry in an array is merged into the existing array if the keyed-value matches.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Each entry in an array is merged into the existing array if the keyed-value matc
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -28,14 +26,11 @@ Each entry in an array is merged into the existing array if the keyed-value matc
 | overwrite_by_destination | The comma separeted list of keys to overwrite by destination value if the key conflicts. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
 
 ## Example
-
 ---
-
 ```
 !MergeDictArray value=`${.=[
     {
@@ -63,9 +58,7 @@ There are no outputs for this script.
 ```
 
 ## Example Output
-
 ---
-
 ```
 {
   "res": [
@@ -91,3 +84,4 @@ There are no outputs for this script.
   ]
 }
 ```
+

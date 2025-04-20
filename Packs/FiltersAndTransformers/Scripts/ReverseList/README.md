@@ -2,9 +2,8 @@ Reverses a list.
 For example, ["Mars", "Jupiter", "Saturn"] =>  ["Saturn", "Jupiter", "Mars"].
 
 This is an example for an entire-list transformer. It operates the argument as a list (note the `entirelist` tag).
-
+ 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,8 +11,8 @@ This is an example for an entire-list transformer. It operates the argument as a
 | Script Type | python3 |
 | Tags | general, entirelist, transformer |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +20,5 @@ This is an example for an entire-list transformer. It operates the argument as a
 | value | The list to reverse. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

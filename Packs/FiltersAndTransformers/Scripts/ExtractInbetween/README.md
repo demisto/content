@@ -6,7 +6,6 @@ respectively, and returns the string that is in between the two instances.
 last instances, repectively, and returns the string that is in between the two instances.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -14,8 +13,8 @@ last instances, repectively, and returns the string that is in between the two i
 | Script Type | python |
 | Tags | transform, general, Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +24,5 @@ last instances, repectively, and returns the string that is in between the two i
 | end | The string to which to stop extracting. |
 
 ## Outputs
-
 ---
 None

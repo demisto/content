@@ -1,7 +1,6 @@
 Can be used to find duplicate emails for incidents of type phishing, including  malicious, spam, and legitimate emails.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Can be used to find duplicate emails for incidents of type phishing, including  
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -34,7 +32,6 @@ Can be used to find duplicate emails for incidents of type phishing, including  
 | exsitingIncidentsLookback | Deprecated. Use the \*existingIncidentsLookback\* argument instead. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

@@ -1,31 +1,25 @@
 <~XSIAM>
 
-### This pack includes
-
+### This pack includes:
 - Log Normalization - XDM mapping for key event types.
 
-### Supported Event Types
-
+### Supported Event Types:
 - ApplicationGatewayAccessLog
 - ApplicationGatewayFirewallLog
 
-### Supported Timestamp Formats
-
+### Supported Timestamp Formats:
 For *msft_azure_waf_raw*, timestamp ingestion is according to the **timeStamp** field in UTC (00:00) time zone.
 
 ***
 
 ## Data Collection
-
 To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below steps.
 
 ### Prerequisites
-
 - Create an **Azure event hub**. For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 - Make sure that you have at least a Security Administrator role.
 
 ### Stream logs to an event hub
-
 1. Sign in to the **Microsoft Entra admin center**.
 2. Navigate to **Identity** &rarr; **Monitoring & health** &rarr; **Diagnostic settings**.
 3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
@@ -37,11 +31,9 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
 
 ### Cortex XSIAM side
-
 To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
 
 #### Azure Event Hub Collector
-
 1. Navigate to **Settings** &rarr; **Data Sources**.
 2. If you have already configured an **Azure Event Hub Collector**, select the **3 dots**, and then select **+ Add New Instance**. If not, select **+ Add Data Source**, search for "Azure Event Hub" and then select **Connect**.
 3. Fill in the attributes based on the Azure Event Hub you streamed your data to.

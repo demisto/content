@@ -1,7 +1,6 @@
 Whether value is within a date range.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Whether value is within a date range.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -21,7 +19,6 @@ Whether value is within a date range.
 | end_date | Upper date range |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

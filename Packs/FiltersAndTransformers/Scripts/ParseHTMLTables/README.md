@@ -5,7 +5,6 @@ Find tables inside HTML and extract the contents into objects using the followin
 - If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3...
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -14,7 +13,6 @@ Find tables inside HTML and extract the contents into objects using the followin
 | Tags | transformer, general |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +23,5 @@ Find tables inside HTML and extract the contents into objects using the followin
 | filter_titles | Extract only the tables with given titles |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
