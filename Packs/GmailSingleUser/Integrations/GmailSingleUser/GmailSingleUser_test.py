@@ -3,6 +3,9 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
+from datetime import datetime, UTC
+from freezegun import freeze_time
+
 
 from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
 from email.utils import parsedate_to_datetime
@@ -551,3 +554,121 @@ def test_get_incidents_command(mocker):
     assert emails[0].get("internalDate") == "1742829478000"
     assert len(emails) == 2
     assert "2025-03-24T15:17:58.000Z | SENT | 111 |\n| test@test.com | Test message 1234 | 2025-03-24T1" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "test_input, expected_output",
+    [
+        (("date", "2023-01-01T12:00:00Z"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
+        (("date", datetime(2023, 1, 1, 12, 0)), datetime(2023, 1, 1, 12, 0)),
+        (("isoformat", datetime(2023, 1, 1, 12, 0)), "2023-01-01T12:00:00Z"),
+        (("isoformat", "2023-01-01T12:00:00Z"), "2023-01-01T12:00:00Z"),
+    ],
+    ids=["date_str_to_datetime", "date_datetime_pass", "datetime_to_iso_str", "iso_str_pass"]
+)
+def test_parse_date(test_input, expected_output):
+    """
+    Given:
+        - A tuple input specifying the format type ('date' or 'isoformat') and the date value.
+    When:
+        - The parse_date function is invoked with the given format type and date.
+    Then:
+        - Confirm that the output matches the expected datetime object or ISO formatted string.
+    """
+    from GmailSingleUser import Client, parse_date
+    client = Client()
+    result = parse_date(client, *test_input)
+    assert result == expected_output, f"Expected {expected_output} but got {result}"
+
+
+@pytest.mark.parametrize(
+    "input_args, expected",
+    [
+        ({"before": "now", "after": "1 day ago"},
+         ('1672574400', '1672488000')),  # Unix timestamps for '2023-01-01 12:00:00', '2022-12-31 12:00:00'
+        ({"before": "2023-01-01 12:00:00", "after": "2022-12-31 12:00:00"},
+         ('1672574400', '1672488000')),  # Unix timestamps for the same fixed dates
+        ({},
+         ('1672574400', '1672488000')),  # Default case: 'now' and '1 day ago' will be the same as the first case
+    ],
+    ids=["default_dates", "specific_dates", "no_params"]
+)
+@freeze_time("2023-01-01 12:00:00 UTC")
+def test_get_unix_date(input_args, expected):
+    """
+    Given:
+        - Dictionary with 'before' and 'after' date parameters, or defaults.
+    When:
+        - Converting dates to Unix timestamps using get_unix_date.
+    Then:
+        - Validate that the conversions match expected Unix timestamps.
+    """
+    from GmailSingleUser import get_unix_date
+    assert get_unix_date(input_args) == expected
+
+
+def test_fetch_incidents_set_last_run_called_correctly(mocker):
+    """
+    Test the `fetch_incidents` function to ensure it correctly updates the 'setLastRun' after fetching incidents.
+
+    Given:
+    - A GmailSingleUser client with a mocked Gmail service and necessary method patches.
+    - A patch on 'GmailSingleUser.execute_gmail_action' to simulate Gmail API responses for 'list' and 'get' actions based on the fetch count.
+    - Initial 'getLastRun' returning a specific datetime indicating the last run time.
+    - An external file 'test_data/a.json' to simulate fetched email details.
+
+    When:
+    - The `fetch_incidents` function is called twice, first with an initial fetch count of 0, then incremented to simulate a subsequent fetch.
+
+    Then:
+    - The function should update 'setLastRun' correctly after each call:
+      - After the first call, 'setLastRun' should contain exactly two messages with IDs '1' and '3'.
+      - After the second call, 'setLastRun' should contain exactly three messages with IDs '1', '2', and '3', reflecting the updated fetch.
+      - The 'lookback_msg' field in the data sent to 'setLastRun' should reflect the correct IDs of the messages fetched in each incident fetch.
+    """
+    from GmailSingleUser import fetch_incidents
+    import GmailSingleUser
+    gmail_single_user_client = Client()
+    # Mock the chain of calls: service.users().messages().send().execute()
+    mock_execute = mocker.Mock(return_value={"id": "mock_message_id"})
+    mock_send = mocker.Mock(return_value=mock_execute)
+    mock_messages = mocker.Mock(send=mocker.Mock(return_value=mock_send))
+    mock_users = mocker.Mock(messages=mocker.Mock(return_value=mock_messages))
+    mock_service = mocker.Mock(users=mocker.Mock(return_value=mock_users))
+    # Patch the service object in the Client class to use the mocked service
+    mocker.patch.object(GmailSingleUser.Client, "get_service", new=mock_service)
+    fetch_count = 0
+        
+    def execute_gmail_action_side_effect(service, action, args):
+        nonlocal fetch_count
+        if action == "list":
+            if fetch_count == 0:
+                return {'messages': [{'id': '1'}, {'id': '3'}]}
+            return {'messages': [{'id': '1'}, {'id': '2'}, {'id': '3'}]}
+        elif action == "get":
+            message_id = args.get("id")
+            for item in util_load_json("test_data/lookback_emails.json"):
+                if item.get("id") == message_id:
+                    return item
+        return {}
+    
+    # Mocking external functions and globals
+    mocker.patch('GmailSingleUser.execute_gmail_action', side_effect=execute_gmail_action_side_effect)
+    mocker.patch('GmailSingleUser.demisto.getLastRun', return_value={"gmt_time": "2025-02-24T15:17:05Z"})
+    mock_set_last_run = mocker.patch('GmailSingleUser.demisto.setLastRun')
+    
+    fetch_incidents(gmail_single_user_client)
+    
+    last_args = mock_set_last_run.call_args[0][0]
+    assert len(last_args['lookback_msg']) == 2, "lookback_msg does not contain exactly three messages in the first fetch"
+    
+    fetch_count += 1
+    fetch_incidents(gmail_single_user_client)
+
+    # Check the last arguments sent to setLastRun
+    last_args = mock_set_last_run.call_args[0][0]
+
+    # Assert the lookback_msg contains the correct messages
+    assert 'lookback_msg' in last_args, "lookback_msg key is missing in the arguments sent to setLastRun"
+    assert len(last_args['lookback_msg']) == 3, "lookback_msg does not contain exactly three messages in the secund fetch"
+    assert [id for id, _ in last_args['lookback_msg']] == ["1", "2", "3"], "lookback_msg do"

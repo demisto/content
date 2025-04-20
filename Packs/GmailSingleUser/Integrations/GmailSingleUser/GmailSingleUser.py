@@ -37,7 +37,7 @@ EMAIL = params.get("email", "")
 SEND_AS = params.get("send_as")
 PROXIES = handle_proxy()
 DISABLE_SSL = params.get("insecure", False)
-FETCH_TIME = params.get("fetch_time", "1 days")
+FETCH_TIME = params.get("fetch_time", "1 hour")
 MAX_FETCH = int(params.get("fetch_limit") or 50)
 AUTH_CODE = params.get("auth_code_creds", {}).get("password") or params.get("code")
 AUTH_CODE_UNQUOTE_PREFIX = "code="
@@ -1178,7 +1178,7 @@ def get_attachments_command(client: Client):
 
 def fetch_incidents(client: Client):
     user_key = "me"
-    query = "" if params["query"] is None else params["query"]
+    query = "" if params.get("query") is None else params.get("query")
     last_run = demisto.getLastRun()
     demisto.debug(f"last run: {last_run}")
     last_fetch = last_run.get("gmt_time")
@@ -1186,7 +1186,7 @@ def fetch_incidents(client: Client):
     page_token = last_run.get("page_token")
     ignore_ids: list[str] = last_run.get("ignore_ids") or []
     ignore_list_used = last_run.get("ignore_list_used") or False  # can we reset the ignore list if we haven't used it
-    lookback_ids_and_dates: list[tuple[str, datetime]] = last_run.get("lookback_msg", [])
+    lookback_ids_and_dates: list[tuple[str, str]] = last_run.get("lookback_msg", [])
     # handle first time fetch - gets current GMT time -1 day
     if not last_fetch:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
@@ -1260,10 +1260,11 @@ def fetch_incidents(client: Client):
             ignore_ids = []
         if emails_ids_and_dates:
             # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
-            latest_msg = max([msg_date for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
-            next_last_fetch = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)
+            latest_msg = max([parse_date(client, "date", msg_date)
+                             for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
+            next_last_fetch = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
             msg_to_exclude_in_next_fetch = [
-                (msg_id, msg_date)
+                (msg_id, parse_date(client, "str", msg_date))
                 for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
                 if msg_date >= next_last_fetch
             ]
@@ -1281,6 +1282,12 @@ def fetch_incidents(client: Client):
     demisto.debug(f"Gmail: call to setLastRun function with {new_last_run}")
     demisto.setLastRun(new_last_run)
     return incidents
+
+
+def parse_date(client: Client, return_type, date) -> datetime | str:
+    if return_type == "date":
+        return client.parse_date_isoformat_server(date) if isinstance(date, str) else date
+    return client.get_date_isoformat_server(date) if isinstance(date, datetime) else date
 
 
 def auth_link_command(client: Client):
@@ -1426,7 +1433,10 @@ def main():  # pragma: no cover
             demisto.results(commands[command](client))
         if command == "gmail-get-incidents":
             return_results(get_incidents_command(client))
+        if command == "gmail-aa":
+            return_results(fetch_incidents(client))
     except Exception as e:
+        # demisto.updateModuleHealth("Error fetching emails: " + str(e), is_error=True)
         return_error(f"An error occurred: {e}", error=e)
     finally:
         return_metrics()
