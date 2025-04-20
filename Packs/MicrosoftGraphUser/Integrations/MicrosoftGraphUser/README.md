@@ -703,3 +703,86 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-user-tap-policy-delete
+
+***
+This command will delete a specific Temporary Access Pass policy
+
+#### Base Command
+
+`msgraph-user-tap-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID. | Required | 
+| policy_id | Policy ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-user-tap-policy-create
+
+***
+Create a new temporaryAccessPassAuthenticationMethod object on a user. 
+A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
+
+#### Base Command
+
+`msgraph-user-tap-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID. | Required | 
+| zip_password | Password for the Zip file. | Required | 
+| lifetime_in_minutes | Lifetime in minutes. Default is 60. | Optional | 
+| is_usable_once | Is useable only once. Possible values are: true, false. | Optional | 
+| start_time | Start time - Specify the start time for the Temporary Access Pass. <br/>The start time can be specified in various formats, such as "now", "in 2 days", etc.<br/>Also a valid start time can be an ISO 8601 date-time string in the format "YYYY-MM-DDThh:mm:ssZ". Default is now. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. | 
+| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
+| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
+| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
+| MSGraphUser.TAPPolicy.TemporaryAccessPass | String | TAP policy's temporary access pass. | 
+| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
+| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
+| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
+
+### msgraph-user-tap-policy-list
+
+***
+This command will only return a single object in the collection 
+as a user can have only one Temporary Access Pass method.
+
+#### Base Command
+
+`msgraph-user-tap-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID. | Required | 
+| policy_id | Policy ID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. | 
+| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
+| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
+| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
+| MSGraphUser.TAPPolicy.TemporaryAccessPass | String | TAP policy's temporary access pass. | 
+| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
+| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
+| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 

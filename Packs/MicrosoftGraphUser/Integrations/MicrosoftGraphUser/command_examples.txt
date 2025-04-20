@@ -6,3 +6,6 @@
 !msgraph-user-get-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e
 !msgraph-user-assign-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e manager=259d2a3c-167b-411c-b2ee-88646ce6e054
 !msgraph-user-test
+!msgraph-user-tap-policy-create user_id=1875cf87-ebf9-4a29-b5e2-74e36591296e zip_password=123
+!msgraph-user-tap-policy-list user_id=1875cf87-ebf9-4a29-b5e2-74e36591296e
+!msgraph-user-tap-policy-delete policy_id=2e9e92e3-4e6d-4e90-9bbd-8ac196948032 user_id=1875cf87-ebf9-4a29-b5e2-74e36591296e

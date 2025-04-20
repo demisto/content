@@ -632,10 +632,10 @@ script:
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
   - arguments:
-    - description: User ID
+    - description: User ID.
       name: user_id
       required: true
-    - description: Policy ID
+    - description: Policy ID.
       name: policy_id
       required: false
     description:  |-
@@ -668,17 +668,17 @@ script:
       description: TAP policy's start date and time.
       type: String
   - arguments:
-    - description: User ID
+    - description: User ID.
       name: user_id
       required: true
-    - description: Password for the Zip file
+    - description: Password for the Zip file.
       name: zip_password
       required: true
-    - description: Lifetime in minutes
+    - description: Lifetime in minutes.
       name: lifetime_in_minutes
       required: false
       defaultValue: 60
-    - description: Is useable only once
+    - description: Is useable only once.
       name: is_usable_once
       required: false
       defaultValue: false
@@ -723,10 +723,10 @@ script:
       description: TAP policy's start date and time.
       type: String
   - arguments:
-    - description: User ID
+    - description: User ID.
       name: user_id
       required: true
-    - description: Policy ID
+    - description: Policy ID.
       name: policy_id
       required: true
     description:  This command will delete a specific Temporary Access Pass policy 
@@ -737,7 +737,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: devdemisto/crypto:1.0.0.3096068
+  dockerimage: demisto/crypto:1.0.0.3174650
   runonce: false
   script: '-'
   subtype: python3
