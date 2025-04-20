@@ -682,7 +682,7 @@ def feed_main(feed_name, params=None, prefix=''):
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
-    cidr_32_to_ip = argToBoolean(params.get('cidr_32_to_ip', False))
+    cidr_32_to_ip = argToBoolean(demisto.params().get('cidr_32_to_ip', False))
     enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
                            or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
