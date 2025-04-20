@@ -74,7 +74,6 @@ def create_indicator_relationships(indicator: str, product: str, relationships: 
                                                            relationship["type"],
                                                            relation_type="detects"))
 
-    # return_results(CommandResults(readable_output=f'Created A new Sigma Rule indicator:\n{indicator}'))
     return final_relationships
 
 
@@ -243,7 +242,7 @@ def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
         file_list = [f for f in zip_ref.namelist() if f.endswith('.yml') and not f.startswith(('__', '.'))]
         total_files = len(file_list)
 
-        for index, file_name in enumerate(file_list):
+        for file_name in file_list:
             with zip_ref.open(file_name) as file:
                 file_contents = file.read().decode('utf-8')
 
@@ -256,12 +255,39 @@ def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
                 demisto.error(f'SGM: Error parsing Sigma rule from file "{file_name}": {str(e)}')
                 continue
 
-            if index % 100 == 0:
-                demisto.debug(f'SGM: Processing file {index + 1}/{total_files}')
-
     demisto.debug(f'Extraction took {time.time() - start:.2f} seconds for {total_files} files')
 
     return indicators
+
+
+def tim_create_indicators(indicators: list[dict[str, Any]]) -> CommandResults:
+    """Creates indicators in Cortex Threat Intelligence Management (TIM) module.
+
+    This function takes a list of indicator dictionaries and creates them in XSOAR.
+    It also creates relationships between the indicators and other entities
+    as specified in the indicators data.
+
+    Args:
+        indicators (list[dict[str, Any]]): List of indicator dictionaries, each containing
+            an "indicator" key with the indicator data and a "relationships" key with
+            relationship data.
+
+    Returns:
+        CommandResults: Command results containing a readable output with the number of
+            indicators and relationships created, and the relationships data.
+    """
+    start = time.time()
+    relationships = []
+    for indicator in indicators:
+        xsoar_indicator = indicator["indicator"]
+        execute_command("createNewIndicator", xsoar_indicator)
+        relationships += create_indicator_relationships(xsoar_indicator["value"],
+                                                        xsoar_indicator.get("product", ""),
+                                                        indicator["relationships"])
+    demisto.debug(f"{len(indicators)} indicators created. in {time.time() - start} seconds")
+    md = f"{str(len(indicators))} Sigma Rule(s) Created.\n"
+    md += f"{str(len(relationships))} Relationship(s) Created."
+    return CommandResults(readable_output=md, relationships=relationships)
 
 
 def main() -> None:
@@ -275,12 +301,11 @@ def main() -> None:
         args = demisto.args()
         sigma_rule_str = args.get("sigma_rule_str", "")
         sigma_rule_entry_id = args.get("entry_id", "")
-        # zip_entry_id = args.get("zip_entry_id", "")
         create_indicators = argToBoolean(args.get("create_indicators", "True"))
 
         # Check if both arguments are empty
         if not sigma_rule_str and not sigma_rule_entry_id:
-            return_error("Either 'sigma_rule_str' or 'entry_id' or 'zip_entry_id' must be provided.")
+            return_error("Either 'sigma_rule_str' or 'entry_id' must be provided.")
 
         if sigma_rule_str:
             sigma_rule = SigmaRule.from_yaml(sigma_rule_str)
@@ -307,18 +332,7 @@ def main() -> None:
                 indicators.append(parse_and_create_indicator(sigma_rule, sigma_rule_str))
 
         if create_indicators:
-            start = time.time()
-            relationships = []
-            for indicator in indicators:
-                xsoar_indicator = indicator["indicator"]
-                execute_command("createNewIndicator", xsoar_indicator)
-                relationships += create_indicator_relationships(xsoar_indicator["value"],
-                                                                xsoar_indicator.get("product", ""),
-                                                                indicator["relationships"])
-            demisto.debug(f"{len(indicators)} indicators created. in {time.time() - start} seconds")
-            md = f"{str(len(indicators))} Sigma Rule(s) Created.\n"
-            md += f"{str(len(relationships))} Relationship(s) Created."
-            return_results(CommandResults(readable_output=md, relationships=relationships))
+            return_results(tim_create_indicators(indicators))
 
         else:
             for indicator in indicators:
