@@ -1799,7 +1799,7 @@ def get_modified_remote_data_command(
     mapper: UserMappingObject,
     comment_tag_from_splunk: str,
 ):
-    """Gets the list of the notables data that have change since a given time
+    """Gets the list of the notables data that have changed since a given time
 
     Args:
         service (splunklib.client.Service): Splunk service object
@@ -1815,9 +1815,11 @@ def get_modified_remote_data_command(
         SplunkGetModifiedRemoteDataResponse: The response containing the list of notables changed
     """
     modified_notables_map = {}
+    already_processed_ids = set()
     entries: list[dict] = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
+    demisto.debug(f"Original last_update before 1 minute reduction: {get_last_update_in_splunk_time(remote_args.last_update)}")
+    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - 60  # Subtract 1 minute (60 seconds) to allow indexing
     incident_review_search = (
         "|`incident_review` "
         "| eval last_modified_timestamp=_time "
@@ -1833,6 +1835,12 @@ def get_modified_remote_data_command(
             continue
         updated_notable = parse_notable(item, to_dict=True)
         notable_id = updated_notable["rule_id"]  # in the `incident_review` macro - the ID are in the rule_id key
+        if notable_id in already_processed_ids:
+            demisto.debug(f"Skipping already processed notable_id: {notable_id}")
+            continue
+
+        already_processed_ids.add(notable_id)
+
         modified_notables_map[notable_id] = updated_notable
 
         if close_incident:
@@ -1862,9 +1870,14 @@ def get_modified_remote_data_command(
                 continue
             updated_notable = parse_notable(item, to_dict=True)
             notable_id = updated_notable[EVENT_ID]  # in the `notable` macro - the ID are in the event_id key
+            if notable_id in already_processed_ids:
+                demisto.debug(f"Skipping already processed notable_id from notable macro: {notable_id}")
+                continue
+
+            already_processed_ids.add(notable_id)
             if modified_notables_map.get(notable_id):
                 modified_notables_map[notable_id] |= updated_notable
-                # comment in the `notable` macro, hold all the comments for an notable
+                # comment in the `notable` macro, hold all the comments for a notable
                 if comment := updated_notable.get("comment"):
                     comments = comment if isinstance(comment, list) else [comment]
                     modified_notables_map[notable_id]["SplunkComments"] = [{"Comment": comment} for comment in comments]
