@@ -758,7 +758,7 @@ There is no context output for this command.
 ### archer-get-valuelist
 
 ***
-Returns a list of values for a specified field, for example, fieldID=16114. This command only works for value list fields (type 4).
+Returns a list of values for a specified field, for example, fieldID=16114. This command is applicable only to value list fields (type 4) and will attempt to fetch the list from the internal integration instance cache. To ensure an up-to-date response, execute the `archer-reset-cache` command beforehand to clear the cache and force a new request to the API.
 
 #### Base Command
 
@@ -768,7 +768,8 @@ Returns a list of values for a specified field, for example, fieldID=16114. This
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldID | The field ID. | Required | 
+| fieldID | The field ID. | Required |
+| depth | In case of nesting, to which level to go in the depth of the recursion. Default is 0. | Optional |
 
 #### Context Output
 

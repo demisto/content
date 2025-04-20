@@ -3,4 +3,9 @@ id: ServiceNow_ServiceNow_ModelingRule
 name: ServiceNow ServiceNow Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 tags: ''
