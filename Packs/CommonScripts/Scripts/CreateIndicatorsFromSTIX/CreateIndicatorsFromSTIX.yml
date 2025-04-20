@@ -30,7 +30,7 @@ tags:
 - ioc
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests
 fromversion: 5.0.0
