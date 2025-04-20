@@ -30,6 +30,7 @@ def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
+
 class MockPychromeEventHandler:
     is_mailto = False
     is_private_network_url = False
@@ -49,6 +50,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
 
 
 def test_rasterize_email_image_array(caplog, capfd, mocker):
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-email")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -62,19 +64,7 @@ def test_rasterize_email_image_array(caplog, capfd, mocker):
 
 
 def test_rasterize_email_pdf(caplog, capfd, mocker):
-    with capfd.disabled() and NamedTemporaryFile("w+") as f:
-        f.write(
-            '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
-            "</head><body><br>---------- TEST FILE ----------<br></body></html>"
-        )
-        path = os.path.realpath(f.name)
-        f.flush()
-        mocker.patch.object(rasterize, "support_multithreading")
-        perform_rasterize(path=f"file://{path}", width=250, height=250, rasterize_type=RasterizeType.PDF)
-        caplog.clear()
-
-
-def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-pdf")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -106,6 +96,7 @@ def test_get_chrome_options():
 
 
 def test_rasterize_large_html(capfd, mocker):
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/large.html")
         mocker.patch.object(rasterize, "support_multithreading")
@@ -114,6 +105,7 @@ def test_rasterize_large_html(capfd, mocker):
 
 
 def test_rasterize_html(mocker, capfd):
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/file.html")
         mocker.patch.object(demisto, "args", return_value={"EntryID": "test"})
@@ -277,7 +269,7 @@ class TestRasterizeIncludeUrl:
             pass
 
     @pytest.mark.parametrize("include_url", [False, True])
-    def test_sanity_rasterize_with_include_url(self, mocker, include_url, capfd):
+    def test_sanity_rasterize_with_include_url(self, mocker: MockerFixture, include_url: bool, capfd: pytest.CaptureFixture):
         """
         Given:
             - A parameter that mention whether to include the URL bar in the screenshot.
@@ -287,7 +279,7 @@ class TestRasterizeIncludeUrl:
             - Verify that it runs as expected.
         """
         mocker.patch("os.remove")
-
+        mocker.patch("rasterize.demisto.command", return_value="rasterize-image")
         with capfd.disabled(), NamedTemporaryFile("w+") as f:
             f.write(
                 '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -625,6 +617,29 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
+def test_screenshot_image_local_file(mocker: MockerFixture):
+    """The function returns an error when attempting to rasterize a local file"""
+    mock_browser = mocker.Mock()
+    mock_tab = mocker.Mock()
+    mocker.patch("rasterize.demisto.command", return_value="rasterize-test")
+
+    local_file_path = "file:///path/to/local/file.html"
+
+    result, error_message = screenshot_image(
+        mock_browser,
+        mock_tab,
+        local_file_path,
+        wait_time=0,
+        navigation_timeout=30,
+        full_screen=False,
+        include_url=False,
+        include_source=False,
+    )
+
+    assert result is None
+    assert error_message == "Cannot rasterize local files"
+
+
 def test_is_private_network_urls(mocker: MockerFixture):
     """
     Given   A private network URL is called.
@@ -642,7 +657,7 @@ def test_is_private_network_urls(mocker: MockerFixture):
     assert res == (
         None,
         'URLs that belong to the "This" Network (0.0.0.0/8),'
-        ' or the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url'
+        " or the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: url",
     )
 
 
@@ -801,28 +816,52 @@ def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerF
         perform_rasterize(path="0.0.0.8/test", width=250, height=250, rasterize_type=RasterizeType.PNG)
 
     assert mocker_output.call_args.args[0].readable_output == (
-            "The following paths were skipped as they are not"
-            " valid for rasterization: ['0.0.0.8/test']"
-        )
+        "The following paths were skipped as they are not valid for rasterization: ['0.0.0.8/test']"
+    )
     assert excinfo.type is SystemExit
     assert excinfo.value.code == 0
 
 
-@pytest.mark.parametrize("url, expected", [
-    pytest.param("http://192.168.1.1", False, id="private IPv4"),
-    pytest.param("https://10.0.0.1", False, id="private IPv4 with HTTPS"),
-    pytest.param("localhost", False, id="localhost"),
-    pytest.param("http://8.8.8.8", False, id="public IPv4"),
-    pytest.param("invalid_url", False, id="invalid URL"),
-    pytest.param("http://", False, id="empty URL"),
-    pytest.param("192.168.1.1", False, id="private IPv4 without scheme"),
-    pytest.param("2001:db8::1", False, id="IPv6 address"),
-    pytest.param("https://www.example.com", False, id="public domain"),
-    pytest.param("http://127.0.0.1", True, id="loopback IPv4"),
-    pytest.param("http://0.0.0.1", True, id="this network IPv4"),
-])
+@pytest.mark.parametrize(
+    "url, expected",
+    [
+        pytest.param("http://192.168.1.1", True, id="private IPv4"),
+        pytest.param("https://10.0.0.1", True, id="private IPv4 with HTTPS"),
+        pytest.param("localhost", False, id="localhost"),
+        pytest.param("http://8.8.8.8", False, id="public IPv4"),
+        pytest.param("invalid_url", False, id="invalid URL"),
+        pytest.param("http://", False, id="empty URL"),
+        pytest.param("192.168.1.1", True, id="private IPv4"),
+        pytest.param("2001:db8::1", False, id="IPv6 address"),
+        pytest.param("https://www.example.com", False, id="public domain"),
+        pytest.param("http://127.0.0.1", True, id="loopback IPv4"),
+        pytest.param("http://0.0.0.1", True, id="this network IPv4"),
+    ],
+)
 def test_is_private_network(url: str, expected: bool):
     assert is_private_network(url) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        pytest.param("192.168.001.001", "192.168.1.1", id="ipv4_with_leading_zeros"),
+        pytest.param("010.001.001.001", "10.1.1.1", id="ipv4_with_leading_zeros_all_octets"),
+        pytest.param("http://192.168.001.001", "http://192.168.1.1", id="url_with_ipv4_leading_zeros"),
+        pytest.param("example.com", "example.com", id="domain_name_unchanged"),
+        pytest.param("256.1.2.3", "256.1.2.3", id="invalid_ipv4_unchanged"),
+        pytest.param("", "", id="empty_string"),
+        pytest.param("127.000.000.001", "127.0.0.1", id="localhost_with_leading_zeros"),
+        pytest.param("127.000.000.001:8080", "127.0.0.1:8080", id="localhost_with_leading_zeros_and_port"),
+        pytest.param("http://192.168.001.001?param=value", "http://192.168.1.1?param=value", id="url_with_ipv4_and_query_params"),
+        pytest.param("2001:db8:3333:4444:5555:6666:7777:8888", "2001:db8:3333:4444:5555:6666:7777:8888", id="ipv6"),
+    ],
+)
+def test_remove_leading_zeros_from_ip_addresses(test_input: str, expected: str):
+    """
+    Test the remove_leading_zeros_from_ip_addresses function with various inputs.
+    """
+    assert remove_leading_zeros_from_ip_addresses(test_input) == expected
 
 
 def test_handle_request_paused(mocker):
@@ -859,9 +898,9 @@ def test_retry_loading(mocker: MockerFixture):
     mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
 
     mock_event = mocker.Mock()
-    handler = PychromeEventHandler(None, mock_tab, mock_event, "http://test.com", 30)
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
 
-    mocker.patch('time.sleep')
+    mocker.patch("time.sleep")
 
     handler.retry_loading()
 
@@ -870,9 +909,50 @@ def test_retry_loading(mocker: MockerFixture):
     assert not mock_event.set.called
 
     # Test successful retry
-    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "http://test.com"}}}
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "file:///test.html"}}}
     handler.retry_loading()
     assert mock_event.set.called
+
+
+@pytest.mark.parametrize(
+    "url, mock_event_set_called, mock_retry_loading_called",
+    [
+        pytest.param("http://test.com", True, False, id="http_url"),
+        pytest.param("file:///test.html", False, True, id="local_file"),
+    ],
+)
+def test_page_frame_stopped_loading(
+    url: str, mock_event_set_called: bool, mock_retry_loading_called: bool, mocker: MockerFixture
+):
+    """
+    Test the page_frame_stopped_loading method of PychromeEventHandler.
+
+    This test covers two scenarios:
+    1. HTTP URL: Verifies that the event is set when a regular page is loaded.
+    2. Local file: Checks if retry_loading is called when a local file is loaded.
+
+    Args:
+        url (str): The URL or file path to test.
+        mock_event_set_called (bool): Expected state of the event.set() call.
+        mock_retry_loading_called (bool): Expected state of the retry_loading() call.
+        mocker (MockerFixture): pytest-mock fixture for creating mock objects.
+
+    The test uses parametrization to cover both scenarios and mocking to simulate
+    Chrome tab behavior and verify correct method calls under different conditions.
+    """
+    mock_tab = mocker.Mock()
+    mock_event = mocker.Mock()
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": CHROME_ERROR_URL}}}
+
+    handler = PychromeEventHandler(None, mock_tab, mock_event, url, 30)
+    handler.start_frame = "test_frame_id"
+
+    mock_retry_loading = mocker.patch.object(handler, "retry_loading")
+
+    handler.page_frame_stopped_loading("test_frame_id")
+
+    assert mock_event.set.called == mock_event_set_called
+    assert mock_retry_loading.called == mock_retry_loading_called
 
 
 def test_chrome_manager_one_port_use_same_port(mocker):
