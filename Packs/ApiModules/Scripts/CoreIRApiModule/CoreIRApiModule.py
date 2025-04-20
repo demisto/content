@@ -147,8 +147,9 @@ ALERT_EVENT_AZURE_FIELDS = {
 
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
-FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
-                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
+FORWARD_USER_RUN_RBAC = True
+# FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+#                                                              build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
 
 ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
 ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
@@ -2035,7 +2036,7 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
                      f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
             raw_response=result
         )
-    except Exception as e:
+    except DemistoException as e:
         return catch_and_exit_gracefully(e)
 
 
@@ -2581,7 +2582,7 @@ def quarantine_files_command(client, args):
                      f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
             raw_response=reply
         )
-    except Exception as e:
+    except DemistoException as e:
         return catch_and_exit_gracefully(e)
 
 
