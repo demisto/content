@@ -84,15 +84,15 @@ To use OAuth 2.0 authorization follow the next steps:
 
 #### Prerequisites in order to support JWT
 
-1. Create a Java Key Store and upload it to the instance (Accessing from the upper menu :All→System Definition→Certificates)
-(Private key will be used as integration parameter)
-2. Configure a JWT signing key (use keystore from above .Keep the Key Id -  it will be used as kid integration parameter) 
+1. Create a Java Key Store and upload it to the instance. (Accessing from the upper menu :**Al** > **System Definition** > **Certificates**.)
+(Private key will be used as an integration parameter)
+2. Configure a JWT signing key (Use the keystore from above. Keep the Key ID. It will be used as kid integration parameter)
 (All→System OAuth→JWT Keys)
 3. Create a JWT provider with a JWT signing key
 (Customer required to set  in Standard Claims the same values for aud, iss and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles)
 
 (All→System OAuth→JWT providers)
-4. Connect to an OAuth provider and create OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary.Value of Kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key - the value can be updated if necessary )
+4. Connect to an OAuth provider and create an OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. The value of kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key. The value can be updated if necessary.)
 (All→System OAuth→Application Registry)
 
 
@@ -102,9 +102,8 @@ To use OAuth 2.0 authorization follow the next steps:
 
 1. Standard Authentication Profile of type Oauth should be already present in ServiceNow and this one needs to be added to Policy.
 API Access Policy should be configured as global in order to cover all available resources and not just now/table
-2. Grant JWT to admin is not allowed - 
-Customer should have non-admin user with all necessary roles(only non-admin roles) in addition to existing  role snc_platform_rest_api_access that required to make API call
-
+2. Granting JWT to admin is not allowed.
+You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing  role snc_platform_rest_api_access that is required to make API calls.
 
 
 ### Using Multi-Factor Authentication (MFA)
