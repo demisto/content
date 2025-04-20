@@ -54,7 +54,7 @@ Open your Apache Web Server instance, and follow these instructions [Documentati
 10. Restart Apache to complete the syslog configuration.
 
 ### Apache Reverse Proxy configuration:
-To configure Apache Reverse Proxy logging please follow the following guide [here](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html).
+To configure Apache Reverse Proxy logging, see the following guide [here](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html).
 Supported log format for Reverse Proxy logs is:
 ```
 %V:%{local}p %A %h %l %u %t \"%r\" %>s %B \"%{Referer}i\" \"%{User-Agent}i\" %P %D %{HTTPS}e %{SSL_PROTOCOL}x %{SSL_CIPHER}x %{UNIQUE_ID}e %{remote}p %I %O \"%{Host}i\" main %{CF_RAY_ID}e %{CF_EDGE_COLO}e
@@ -80,7 +80,7 @@ You can configure the specific vendor and product for this instance.
    - product as product - httpd 
 
 ### XDRC (XDR Collector)
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Cloud-Documentation/XDR-Collector-datasets).
 
 You can configure the vendor and product by replacing [vendor]_[product]_raw with apache_httpd_raw.
 
