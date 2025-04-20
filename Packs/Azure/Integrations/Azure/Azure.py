@@ -74,8 +74,7 @@ class AzureClient:
             auth_code=auth_code,
             redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure,
-            command_prefix="azure-storage",
+            managed_identities_resource_uri=Resources.management_azure
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
