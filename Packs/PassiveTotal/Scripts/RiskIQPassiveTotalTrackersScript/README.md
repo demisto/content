@@ -1,12 +1,10 @@
 Enhancement script to enrich web trackers information for Domain and IP type of indicators.
 It can be set by following these steps:
-
-- Settings > ADVANCED > Indicator Type
-- Edit Domain and IP Indicator one by one
-- Add this script into Enhancement Scripts
-
+ - Settings > ADVANCED > Indicator Type
+ - Edit Domain and IP Indicator one by one 
+ - Add this script into Enhancement Scripts
+ 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -16,13 +14,11 @@ It can be set by following these steps:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
-
 ---
 This script uses the following commands and scripts.
-- pt-get-trackers
+* pt-get-trackers
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -30,16 +26,14 @@ This script uses the following commands and scripts.
 | indicator_value | Domain or IP indicator value that need to enrich |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
 
-## Script Example
 
+## Script Example
 ```!RiskIQPassiveTotalTrackersScript indicator_value=filmesonlinegratis.net```
 
 ## Context Example
-
 ```
 {
     "DBotScore": [
@@ -144,9 +138,7 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Total Retrieved Record(s): 10
->
 >### TRACKERS
->
 >|Hostname|First (GMT)|Last (GMT)|Type|Value|
 >|---|---|---|---|---|
 >| filmesonlinegratis.net | 2016-10-14 10:16:38 | 2020-06-14 19:43:28 | GoogleAnalyticsTrackingId | ua-70630818-3 |

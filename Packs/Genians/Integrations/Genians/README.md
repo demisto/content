@@ -20,7 +20,7 @@ Before you can use this integration in Cortex XSOAR, you need to enable certain 
     - Monitoring: (Default) Monitoring mode. No blocking.
     - Enforcement: Blocking mode
 
-#### Specifying the Tag to be assigned to the node under control
+#### Specifying the Tag to be assigned to the node under control.
 
 1. Go to *Preferences > Properties > Tag*
 2. Create new Tag or use existing Tag (e.g. THREAT)
@@ -28,6 +28,7 @@ Before you can use this integration in Cortex XSOAR, you need to enable certain 
 #### Create Enforcement Policy
 
 Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.genians.com/release/en/controlling/understanding-policy.html#enforcement-policy)
+
 
 ## Configuration Parameters
 
@@ -45,12 +46,14 @@ Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.g
 
 1. Input Tag Name for IP Block (e.g. THREAT, GUEST)
 
+
 ## Configure Genian NAC in Cortex
 
     - Name: a textual name for the integration instance.
     - Server IP
     - API Key
     - Tag Name
+
 
 ## Commands
 
@@ -60,7 +63,6 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 2. [Delete IP address from a tag: genians-unassign-ip-tag](#Delete-IP-address-from-a-tag)
 
 ### Post IP address to a tag
-
 ***
 Assigns a tag to the Node specified.
 
@@ -72,14 +74,14 @@ Assigns a tag to the Node specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP Address (e.g. 192.168.100.87) | Required |
+| ip | IP Address (e.g. 192.168.100.87) | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| genians.tag.nodeId | string | nodeid of IP |
-| genians.tag.Name | string | Tag name |
+| genians.tag.nodeId | string | nodeid of IP | 
+| genians.tag.Name | string | Tag name | 
 
 #### Raw Output
 
@@ -96,26 +98,24 @@ Assigns a tag to the Node specified.
 ```
 
 ### Delete IP address from a tag
-
 ***
 Removes the tag(s) from the Node specified.
 
 #### Base Command
 
 `genians-unassign-ip-tag`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP Address (e.g. 192.168.100.87) | Required |
+| ip | IP Address (e.g. 192.168.100.87) | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| genians.tag.nodeId | string | nodeid of IP |
-| genians.tag.Name | string | Tag name |
+| genians.tag.nodeId | string | nodeid of IP | 
+| genians.tag.Name | string | Tag name | 
 
 #### Raw Output
 

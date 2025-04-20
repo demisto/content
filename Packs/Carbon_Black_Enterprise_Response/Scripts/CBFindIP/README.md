@@ -1,7 +1,6 @@
 Search Carbon Black for connection to specified IP addresses.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Search Carbon Black for connection to specified IP addresses.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,7 +17,6 @@ Search Carbon Black for connection to specified IP addresses.
 | ip | CSV list of IP addresses to identify. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

@@ -1,7 +1,5 @@
 Updates the Actionable alert status.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |

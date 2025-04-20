@@ -1,7 +1,6 @@
 This automation creates a relationship between indicator objects.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,14 +10,11 @@ This automation creates a relationship between indicator objects.
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Used In
-
 ---
 This script is used in the following playbooks and scripts.
-
 * ACTI Create Report-Indicator Associations
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -36,7 +32,6 @@ This script is used in the following playbooks and scripts.
 | create_indicator | True, if the non-existing indicators will be created according to the specified entities and their types. Default is false. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
 

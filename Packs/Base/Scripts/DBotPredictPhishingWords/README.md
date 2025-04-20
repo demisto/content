@@ -1,7 +1,6 @@
 Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,14 +10,11 @@ Predict text label using a pre-trained machine learning phishing model, and get 
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
-
 ---
 This script is used in the following playbooks and scripts.
-
 * Phishing Investigation - Generic v2
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -40,7 +36,6 @@ This script is used in the following playbooks and scripts.
 | tokenizationMethod | Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters". |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
