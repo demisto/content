@@ -7,12 +7,20 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Utilities"
+        "IT Services",
+        "Utilities",
+        "Cloud Service Provider",
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
-        "Microsoft"
+        "Microsoft",
+        "azure",
+        "devops",
+        "devops services"
     ],
     "githubUser": [],
     "certification": "certified",
