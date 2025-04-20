@@ -1,9 +1,8 @@
 Generates a certificate signing request for fulfillment by an organization certification authority (CA)
 
-Output is the request.csr file placed directly into context under a "File" object.
+Output is the request.csr file placed directly into context under a "File" object. 
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,7 +11,6 @@ Output is the request.csr file placed directly into context under a "File" objec
 | Tags | Utility, Certificates |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -27,6 +25,5 @@ Output is the request.csr file placed directly into context under a "File" objec
 | OutputToWarRoom | Output CSR text to war room? \(Default: False\) |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

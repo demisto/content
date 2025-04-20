@@ -1,13 +1,14 @@
-Parses the output from the !SSLVerifierV2 automation into a markdown table and separate context key .
+Parses the output from the !SSLVerifierV2 automation into a markdown table and separate context key . 
 
-This automation uses the SSLVerifierV2 key by default, but a custom context key can be specified in the event extend-context is used with the SSLVerifierV2 automation.
+This automation uses the SSLVerifierV2 key by default, but a custom context key can be specified in the event extend-context is used with the SSLVerifierV2 automation. 
 
-Option to specify whether to output certificates with an expiring, warning, or good status (or all at once).
+Option to specify whether to output certificates with an expiring, warning, or good status (or all at once). 
 
-Option to specify whether or not to output the generated tables to the war room.
+Option to specify whether or not to output the generated tables to the war room. 
+
+
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -15,7 +16,6 @@ Option to specify whether or not to output the generated tables to the war room.
 | Script Type | python3 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -25,7 +25,6 @@ Option to specify whether or not to output the generated tables to the war room.
 | OutputToWarRoom | Output the resulting tables to the war room? Default: true |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

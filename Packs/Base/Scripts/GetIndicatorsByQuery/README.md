@@ -1,7 +1,6 @@
 Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Gets a list of indicator objects and the associated indicator outputs that match
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +23,5 @@ Gets a list of indicator objects and the associated indicator outputs that match
 | populateFields | A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
