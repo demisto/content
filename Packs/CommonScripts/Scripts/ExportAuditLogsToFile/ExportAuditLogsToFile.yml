@@ -25,7 +25,7 @@ contentitemexportablefields:
 dependson:
   must:
   - core-api-post
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: ExportAuditLogsToFile
 runas: DBotWeakRole
@@ -40,11 +40,5 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
-supportedModules:
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
 tests:
 - No tests (auto formatted)
