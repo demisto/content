@@ -9,10 +9,15 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
         "Asset Management",
+        "system configuration",
+        "Network",
         "Network Security"
     ],
     "marketplaces": [
