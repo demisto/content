@@ -28,11 +28,14 @@ SCOPE_BY_CONNECTION = {
 DEFAULT_LIMIT = 50
 PREFIX_URL = "https://management.azure.com/subscriptions/"
 APS_API_VERSION = "2017-08-01-preview"
-
+POLICY_ASSIGNMENT_API_VERSION="2023-04-01"
+POSTGRES_CONFIG_API_VERSION="2017-12-01"
+WEBAPP_API_VERSION="2024-04-01"
+RESOURCE_API_VERSION="2021-04-01"
 """ CLIENT CLASS """
 
 
-class AzureNSGClient:
+class AzureClient:
     @logger
     def __init__(
         self,
@@ -339,9 +342,90 @@ and resource group "{resource_group_name}" was not found.')
         data = {"properties": {"autoProvision": auto_provision}}
 
         return self.ms_client.http_request(method="PUT", url_suffix=cmd_url, json_data=data, params=params)
+    
+    def create_policy_assignment(self, name, policy_definition_id, display_name, parameters, description, subscription_id):
+        full_url=(
+                f"{PREFIX_URL}{subscription_id}"
+                f"/providers/Microsoft.Authorization/policyAssignments/{name}"
+            )
+        params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
+    
+        data = {
+            "properties":
+            {
+                "policyDefinitionId": policy_definition_id,
+                "displayName": display_name,
+                "parameters": parameters,
+                "description": description
+            }
+        }
+        ### for getting policyDefinitionId run the line below
+        # print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
+    def set_postgres_config(self, server_name, subscription_id, resource_group_name, configuration_name, source, value):
+        full_url=(
+                f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
+            )
+        params = {"api-version": POSTGRES_CONFIG_API_VERSION}
+    
+        data = {
+            "properties":
+            {
+                "source": source,
+                "value": value,
+            }
+        }
+        ### for getting policyDefinitionId run the line below
+        # print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
-
+    def set_webapp_config(self, name, subscription_id, resource_group_name, http20_enabled, remote_debugging_enabled, min_tls_version):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Web/sites/{name}/config/web"
+        )
+        params = {"api-version": WEBAPP_API_VERSION}
+        data = {
+            "properties":
+            {
+                "http20Enabled": http20_enabled,
+                "remoteDebuggingEnabled": remote_debugging_enabled,
+                "minTlsVersion":min_tls_version
+            }
+        }
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
+    def update_webapp_auth(self, name, subscription_id, resource_group_name, enabled):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
+        )
+        params = {"api-version": WEBAPP_API_VERSION}
+        data = {
+            "properties":
+            {
+                "enabled": enabled
+            }
+        }
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
+    def resource_update(self, resource_id, allow_blob_public_access, location, account_type):
+        full_url=(
+            f"https://management.azure.com/{resource_id}"
+        )
+        params = {"api-version": RESOURCE_API_VERSION}
+        data = {
+            "location": location,
+            "properties":
+            {
+                "allowBlobPublicAccess": allow_blob_public_access,
+                "accountType": account_type,
+            }
+        }
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
 
 """ HELPER FUNCTIONS """
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -364,22 +448,22 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
 
     hr = tableToMarkdown(f"Rules {security_rule_name}", rule_json, removeNull=True)
 
-    return CommandResults(outputs_prefix="AzureNSG.Rule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
+    return CommandResults(outputs_prefix="Azure.NSG.Rule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 """ COMMAND FUNCTIONS """
 
 @logger
-def start_auth(client: AzureNSGClient) -> CommandResults:
+def start_auth(client: AzureClient) -> CommandResults:
     result = client.ms_client.start_auth("!azure-nsg-auth-complete")
     return CommandResults(readable_output=result)
 
 
 @logger
-def complete_auth(client: AzureNSGClient):
+def complete_auth(client: AzureClient):
     client.ms_client.get_access_token()
     return "✅ Authorization completed successfully."
 @logger
-def update_security_rule_command(client: AzureNSGClient, params: dict, args: dict) -> CommandResults:
+def update_security_rule_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Update an existing rule.
 
@@ -405,6 +489,7 @@ def update_security_rule_command(client: AzureNSGClient, params: dict, args: dic
     destination_ports = args.get("destination_ports", "")
     priority = args.get("priority", "")
     description = args.get("description", "")
+    access = args.get("access", "")
     # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
@@ -464,20 +549,20 @@ def update_security_rule_command(client: AzureNSGClient, params: dict, args: dic
             updated_properties["sourceAddressPrefix"] = "*" if source == "Any" else source
 
     properties.update(updated_properties)
-
+    properties.update({"access": access})
     rule = client.create_rule(
         security_group=security_group_name,
         rule_name=security_rule_name,
         properties=properties,
         subscription_id=subscription_id,
-        resource_group_name=resource_group_name,
+        resource_group_name=resource_group_name
     )
 
     return format_rule(rule, security_rule_name)
 
 
 
-def storage_account_create_update(client: AzureNSGClient, params: dict, args: dict) -> Union[CommandResults, str]:
+def storage_account_create_update_command(client: AzureClient, params: dict, args: dict) -> Union[CommandResults, str]:
     """
         Creates or updates a given storage account.
     Args:
@@ -531,7 +616,7 @@ def storage_account_create_update(client: AzureNSGClient, params: dict, args: di
 
 
 
-def storage_blob_service_properties_set(client: AzureNSGClient, params: dict, args: dict):
+def storage_blob_service_properties_set_command(client: AzureClient, params: dict, args: dict):
     """
         Sets the blob service properties for the storage account.
     Args:
@@ -575,7 +660,7 @@ def storage_blob_service_properties_set(client: AzureNSGClient, params: dict, ar
     }
 
     return CommandResults(
-        outputs_prefix="AzureStorage.BlobServiceProperties",
+        outputs_prefix="Azure.Storage.BlobServiceProperties",
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -588,7 +673,7 @@ def storage_blob_service_properties_set(client: AzureNSGClient, params: dict, ar
 
 
 
-def update_aps_command(client: AzureNSGClient, params: dict, args: dict):
+def update_aps_command(client: AzureClient, params: dict, args: dict):
     """Updating Analytics Platform System
 
     Args:
@@ -618,12 +703,135 @@ def update_aps_command(client: AzureNSGClient, params: dict, args: dict):
     return md, ec, setting
 
 
-def test_module(client: AzureNSGClient) -> str:
+def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
+    name = args.get("name")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    policy_definition_id : str = args.get("policy_definition_id", "")
+    display_name = args.get("display_name", "")
+    parameters = json.loads(args.get("parameters", "{}"))
+    description = args.get("description", "")
+    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, subscription_id)
+    outputs = [
+        {
+            "Name": response.get("name"),
+            "Policy Definition ID": response.get("properties", {}).get("policyDefinitionId", ""),
+            "Display Name": response.get("properties", {}).get("displayName", ""),
+            "Description": response.get("properties", {}).get("description", ""),
+            "ID": response.get("id"),
+        }
+    ]
+    md = tableToMarkdown(
+        f"Azure policy assignment {name} was successfully created.",
+        outputs,
+        ["ID", "Name", "Policy Definition ID", "Display Name", "Description"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.PolicyAssignment",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
+    
+def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
+    server_name = args.get("server_name")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    configuration_name = args.get("configuration_name", "")
+    source = args.get("source", "")
+    value = json.loads(args.get("value", "{}"))
+    response = client.set_postgres_config(server_name, subscription_id, resource_group_name, configuration_name, source, value)
+    print(response)
+
+
+def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
+    name = args.get("name")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    http20_enabled = args.get("http20_enabled", "")
+    remote_debugging_enabled = args.get("remote_debugging_enabled", "")
+    min_tls_version = args.get("min_tls_version", "")
+    response = client.set_webapp_config(name, subscription_id, resource_group_name, http20_enabled, remote_debugging_enabled, min_tls_version)
+    print(response)
+    outputs = [
+        {
+            "Name": response.get("name"),
+            "Http20 Enabled": response.get("properties", {}).get("http20Enabled", ""),
+            "Remote Debugging Enabled": response.get("properties", {}).get("remoteDebuggingEnabled", ""),
+            "Min Tls Version": response.get("properties", {}).get("minTlsVersion", ""),
+            "ID": response.get("id"),
+        }
+    ]
+    md = tableToMarkdown(
+        f"Web App configuration for {name} was updated successfully.",
+        outputs,
+        ["Name", "Http20 Enabled", "Remote Debugging Enabled", "Min Tls Version", "ID"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.WebApp.Configuration",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
+
+def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
+    name = args.get("name")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    enabled = args.get("enabled", "")
+    response = client.update_webapp_auth(name, subscription_id, resource_group_name, enabled)
+    print(response)
+    outputs = [
+        {
+            "Name": response.get("name"),
+            "Enabled": response.get("properties", {}).get("enabled", ""),
+            "ID": response.get("id")
+        }
+    ]
+    md = tableToMarkdown(
+        f"Authentication settings for Web App {name} updated successfully.",
+        outputs,
+        ["Name", "Enabled", "ID"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.WebApp.Auth",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
+
+def resource_update_command(client: AzureClient, params: dict, args: dict):
+    resource_id = args.get("resource_id")
+    allow_blob_public_access = args.get("allow_blob_public_access")
+    location = args.get("location")
+    account_type = args.get("account_type")
+    response = client.resource_update(resource_id, allow_blob_public_access, location, account_type)
+    print(response)
+    outputs = [
+        {
+            "Name": response.get("name"),
+            "allow_blob_public_access": response.get("properties", {}).get("allow_blob_public_access", ""),
+            "ID": response.get("id")
+        }
+    ]
+    md = tableToMarkdown(
+        f"Resource {resource_id} updated successfully.",
+        outputs,
+        ["Name", "Enabled", "ID"],
+        removeNull=True,
+    )
+
+def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
-    :type AzureNSGClient: ``Client``
+    :type AzureClient: ``Client``
     :param Client: client to use
     :return: 'ok' if test passed.
     :rtype: ``str``
@@ -655,7 +863,7 @@ def main():
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
     try:
-        client = AzureNSGClient(
+        client = AzureClient(
             app_id=params.get("app_id", ""),
             subscription_id=params.get("subscription_id", ""),
             resource_group_name=params.get("resource_group_name", ""),
@@ -670,9 +878,14 @@ def main():
         )
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
-            "azure-storage-account-create-update": storage_account_create_update,
-            "azure-storage-blob-service-properties-set": storage_blob_service_properties_set,
+            "azure-storage-account-create-update": storage_account_create_update_command,
+            "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-sc-update-aps": update_aps_command,
+            "azure-policy-assignment-create": create_policy_assignment_command,
+            "azure-postgres-config-set": set_postgres_config_command,
+            "azure-webapp-config-set": set_webapp_config_command,
+            "azure-webapp-auth-update": update_webapp_auth_command,
+            "azure-resource-update": resource_update_command
         }
        
         if command == "test-module":
