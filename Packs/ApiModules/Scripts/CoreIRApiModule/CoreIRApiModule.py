@@ -147,9 +147,8 @@ ALERT_EVENT_AZURE_FIELDS = {
 
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
-FORWARD_USER_RUN_RBAC = True
-# FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
-#                                                              build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
+FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
 
 ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
 ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
