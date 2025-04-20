@@ -1,5 +1,6 @@
-id: silent-Azure AD PIM role settings change
-version: -1
+id: de07fe0e-ae13-4717-8955-46985bf95faf
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
 name: silent-Azure AD PIM role settings change
 description: |-
   This playbook addresses the following alerts:
@@ -30,7 +31,7 @@ description: |-
   For response actions, you need the following integrations:
 
   - Cortex Core - Investigation and Response
-  - Microsoft Graph User.
+  - Microsoft Graph User
 tags:
 - T1548 - Abuse Elevation Control Mechanism
 starttaskid: "0"
@@ -45,7 +46,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -73,14 +73,15 @@ tasks:
       id: 64048937-bf93-4920-8a40-424b7a8a2a04
       version: -1
       name: Retrieve role settings changes
-      description: Returns information about the role settings that were changed in Azure AD.
+      description: Returns information about the role settings that were changed in
+        Azure AD.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "56"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -113,7 +114,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -144,7 +144,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -157,7 +156,7 @@ tasks:
       {
         "position": {
           "x": 726.25,
-          "y": 441
+          "y": 603
         }
       }
     note: false
@@ -175,7 +174,9 @@ tasks:
       id: 999f3db8-bdd8-46bc-b8ab-9a35df88680d
       version: -1
       name: Detect high risk changes
-      description: Counts the number of high impact settings that were changed for the role. High impact settings are settings that create openings for possible defense evasion and privilege escalation.
+      description: Counts the number of high impact settings that were changed for
+        the role. High impact settings are settings that create openings for possible
+        defense evasion and privilege escalation.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -209,8 +210,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 841.25,
-          "y": 841
+          "x": 849.25,
+          "y": 871
         }
       }
     note: false
@@ -231,18 +232,18 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "56"
       - "57"
+      - "45"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1250.25,
-          "y": 566
+          "y": 728
         }
       }
     note: false
@@ -260,7 +261,13 @@ tasks:
       id: 68981651-82c0-44bf-8e05-ab9e9e21553e
       version: -1
       name: Check if privileged role was modified
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex see
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -286,7 +293,19 @@ tasks:
               period_matches_newline: {}
               regex:
                 value:
-                  simple: (?i)(contributor|owner|reservations administrator|role based access control administrator|user access administrator|global administrator|application administrator|application developer|authentication extensibility administrator|authentication policy administrator|b2c ief policy administrator|cloud application administrator|cloud device administrator|conditional access administrator|directory writers|domain name administrator|dynamics 365 administrator|external identity provider administrator|global reader|groups administrator|helpdesk administrator|hybrid identity administrator|intune administrator|lifecycle workflows administrator|partner tier1 support|partner tier2 support|password administrator|privileged authentication administrator|privileged role administrator|security administrator|security operator|security reader|service support administrator|user administrator)
+                  simple: (?i)(contributor|owner|reservations administrator|role based
+                    access control administrator|user access administrator|global
+                    administrator|application administrator|application developer|authentication
+                    extensibility administrator|authentication policy administrator|b2c
+                    ief policy administrator|cloud application administrator|cloud
+                    device administrator|conditional access administrator|directory
+                    writers|domain name administrator|dynamics 365 administrator|external
+                    identity provider administrator|global reader|groups administrator|helpdesk
+                    administrator|hybrid identity administrator|intune administrator|lifecycle
+                    workflows administrator|partner tier1 support|partner tier2 support|password
+                    administrator|privileged authentication administrator|privileged
+                    role administrator|security administrator|security operator|security
+                    reader|service support administrator|user administrator)
               unpack_matches: {}
           - operator: count
     separatecontext: false
@@ -294,8 +313,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1716,
-          "y": 841
+          "x": 1653,
+          "y": 1017
         }
       }
     note: false
@@ -316,7 +335,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "50"
@@ -327,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 2377,
-          "y": 567
+          "y": 729
         }
       }
     note: false
@@ -366,7 +384,9 @@ tasks:
       includeinformational:
         simple: "false"
       query:
-        simple: (name:"A cloud identity escalated its permissions to a high privilege role/policy" or name:"Suspicious Conditional Access operation for an identity") and username:"${alert.username.[0]}"
+        simple: (name:"A cloud identity escalated its permissions to a high privilege
+          role/policy" or name:"Suspicious Conditional Access operation for an identity")
+          and username:"${alert.username.[0]}"
       todate:
         simple: now
     separatecontext: false
@@ -375,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 2141,
-          "y": 807
+          "y": 969
         }
       }
     note: false
@@ -420,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 2141,
-          "y": 927
+          "y": 1089
         }
       }
     note: false
@@ -438,7 +458,8 @@ tasks:
       id: f2b93ab8-7be0-47ff-85d5-ce71528b6da5
       version: -1
       name: Get risky user detections
-      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      description: Returns a comma-separated list of the Risk Detection objects and
+        their properties.
       script: '|||azure-risky-users-risk-detections-list'
       type: regular
       iscommand: true
@@ -456,7 +477,7 @@ tasks:
       {
         "position": {
           "x": -554.75,
-          "y": 1180
+          "y": 1342
         }
       }
     note: false
@@ -494,7 +515,7 @@ tasks:
       {
         "position": {
           "x": -554.75,
-          "y": 1050
+          "y": 1212
         }
       }
     note: false
@@ -512,7 +533,8 @@ tasks:
       id: f419afa6-d69f-45f1-a5be-33d955050b6a
       version: -1
       name: Save detection results
-      description: Saves a context key with a value of 1 if the user is risky in Azure AD, 0 otherwise.
+      description: Saves a context key with a value of 1 if the user is risky in Azure
+        AD, 0 otherwise.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -564,7 +586,7 @@ tasks:
       {
         "position": {
           "x": -554.75,
-          "y": 1304
+          "y": 1466
         }
       }
     note: false
@@ -602,7 +624,7 @@ tasks:
       {
         "position": {
           "x": -554.5,
-          "y": 806
+          "y": 968
         }
       }
     note: false
@@ -623,7 +645,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -634,7 +655,7 @@ tasks:
       {
         "position": {
           "x": -338,
-          "y": 566
+          "y": 728
         }
       }
     note: false
@@ -655,7 +676,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -665,7 +685,7 @@ tasks:
       {
         "position": {
           "x": -554.5,
-          "y": 691
+          "y": 853
         }
       }
     note: false
@@ -686,7 +706,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -696,7 +715,7 @@ tasks:
       {
         "position": {
           "x": 726.25,
-          "y": 1444
+          "y": 1606
         }
       }
     note: false
@@ -717,7 +736,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -727,7 +745,7 @@ tasks:
       {
         "position": {
           "x": -123.75,
-          "y": 684
+          "y": 846
         }
       }
     note: false
@@ -745,7 +763,9 @@ tasks:
       id: d2b6bd04-ace8-4a01-9796-1445ff2ede4e
       version: -1
       name: Get user risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific user or list of users with
+        the highest risk score in the environment along with the reason affecting
+        each score.
       script: '|||core-list-risky-users'
       type: regular
       iscommand: true
@@ -767,7 +787,7 @@ tasks:
       {
         "position": {
           "x": -123.75,
-          "y": 806
+          "y": 968
         }
       }
     note: false
@@ -785,7 +805,8 @@ tasks:
       id: d9179648-e64c-4aba-b49a-a56ff0118a50
       version: -1
       name: Save detection results
-      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      description: Saves a context key with a value of 1 if the user is risky in Core
+        IR, 0 otherwise.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -819,7 +840,7 @@ tasks:
       {
         "position": {
           "x": -123.75,
-          "y": 926
+          "y": 1088
         }
       }
     note: false
@@ -840,7 +861,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -850,7 +870,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 566
+          "y": 728
         }
       }
     note: false
@@ -886,7 +906,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 692
+          "y": 854
         }
       }
     note: false
@@ -898,10 +918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 7c459b3f-eb42-4403-9444-36a5fbe9080e
+    taskid: a839fc41-dd25-4c21-b2f0-b2c3b293f5b4
     type: condition
     task:
-      id: 7c459b3f-eb42-4403-9444-36a5fbe9080e
+      id: a839fc41-dd25-4c21-b2f0-b2c3b293f5b4
       version: -1
       name: Analyze evidence
       description: |-
@@ -956,7 +976,7 @@ tasks:
       {
         "position": {
           "x": 726.25,
-          "y": 1575
+          "y": 1742
         }
       }
     note: false
@@ -974,7 +994,8 @@ tasks:
       id: 859374b8-7dac-40bf-a569-c5cc15ad90f1
       version: -1
       name: Save IP reputation
-      description: Saves a context key indicating 1 if the IP is malicious and 0 if benign.
+      description: Saves a context key indicating 1 if the IP is malicious and 0 if
+        benign.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1016,7 +1037,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 805
+          "y": 967
         }
       }
     note: false
@@ -1037,7 +1058,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -1046,8 +1066,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 1856
+          "x": 1237,
+          "y": 2011
         }
       }
     note: false
@@ -1124,21 +1144,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2362
+          "x": 1237,
+          "y": 2517
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body: {}
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1182,8 +1202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 1975
+          "x": 1237,
+          "y": 2130
         }
       }
     note: false
@@ -1224,8 +1244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 2528
+          "x": 989,
+          "y": 2660
         }
       }
     note: false
@@ -1267,8 +1287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2670
+          "x": 1504,
+          "y": 2832
         }
       }
     note: false
@@ -1304,8 +1324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 1727
+          "x": 1237,
+          "y": 1882
         }
       }
     note: false
@@ -1323,7 +1343,9 @@ tasks:
       id: 87715af1-59e8-4822-b6da-92835c744916
       version: -1
       name: Detect low risk changes
-      description: Counts the number of moderate impact settings that were changed for the role. Moderate impact settings are settings that reduce the visibility and accountability of users.
+      description: Counts the number of moderate impact settings that were changed
+        for the role. Moderate impact settings are settings that reduce the visibility
+        and accountability of users.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1359,8 +1381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1283.25,
-          "y": 841
+          "x": 1250.25,
+          "y": 871
         }
       }
     note: false
@@ -1378,7 +1400,8 @@ tasks:
       id: f66dcc63-2e20-45d6-a959-778e39e50baa
       version: -1
       name: Search Defender 365 for user alerts
-      description: Searches for user alerts in the last 2 days in Microsoft Defender 365.
+      description: Searches for user alerts in the last 2 days in Microsoft Defender
+        365.
       script: '|||microsoft-365-defender-advanced-hunting'
       type: regular
       iscommand: true
@@ -1388,7 +1411,8 @@ tasks:
       - "47"
     scriptarguments:
       query:
-        simple: let _start = now(-2d); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${Core.OriginalAlert.event.cloud_best_identity_match}"
+        simple: let _start = now(-2d); AlertEvidence | where Timestamp >= _start |
+          where AccountUpn == "${Core.OriginalAlert.event.cloud_best_identity_match}"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1396,7 +1420,7 @@ tasks:
       {
         "position": {
           "x": 2600.5,
-          "y": 800
+          "y": 962
         }
       }
     note: false
@@ -1414,7 +1438,8 @@ tasks:
       id: fcc771dd-e2b4-4708-9cc2-4494e66d395c
       version: -1
       name: Check if any unhandled detection matches TAP granter
-      description: Checks if alerts were found for the user in Microsoft Defender 365.
+      description: Checks if alerts were found for the user in Microsoft Defender
+        365.
       type: condition
       iscommand: false
       brand: ""
@@ -1447,7 +1472,7 @@ tasks:
       {
         "position": {
           "x": 2600.5,
-          "y": 937
+          "y": 1099
         }
       }
     note: false
@@ -1468,7 +1493,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -1478,7 +1502,7 @@ tasks:
       {
         "position": {
           "x": 2600.5,
-          "y": 685
+          "y": 847
         }
       }
     note: false
@@ -1499,7 +1523,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -1509,7 +1532,7 @@ tasks:
       {
         "position": {
           "x": 2141,
-          "y": 691
+          "y": 853
         }
       }
     note: false
@@ -1527,7 +1550,8 @@ tasks:
       id: ed45f6bc-cd13-457b-8707-f977a38ab6b0
       version: -1
       name: Count found Defender 365 alerts
-      description: Counts the number of related alerts that were found for the user in Microsoft Defender 365.
+      description: Counts the number of related alerts that were found for the user
+        in Microsoft Defender 365.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1554,8 +1578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2779,
-          "y": 1071
+          "x": 2600.5,
+          "y": 1226
         }
       }
     note: false
@@ -1656,8 +1680,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2106
+          "x": 1237,
+          "y": 2261
         }
       }
     note: false
@@ -1678,7 +1702,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1687,8 +1710,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2249
+          "x": 1237,
+          "y": 2404
         }
       }
     note: false
@@ -1709,14 +1732,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 736,
-          "y": 2800
+          "x": 726.25,
+          "y": 2982
         }
       }
     note: false
@@ -1734,7 +1756,8 @@ tasks:
       id: 534515d8-2df2-438e-9b82-a0059e506e06
       version: -1
       name: Save risky user results
-      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      description: Saves a context key with a value of 1 if the user is risky in Core
+        IR, 0 otherwise.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1769,7 +1792,7 @@ tasks:
       {
         "position": {
           "x": -554.5,
-          "y": 926
+          "y": 1088
         }
       }
     note: false
@@ -1781,10 +1804,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 161e6c41-24b1-4c16-a9c9-a1672a455ad6
+    taskid: b5675ca8-c1a2-4ffb-a725-669c2359b078
     type: condition
     task:
-      id: 161e6c41-24b1-4c16-a9c9-a1672a455ad6
+      id: b5675ca8-c1a2-4ffb-a725-669c2359b078
       version: -1
       name: Validate modified settings
       description: Ensures that the modified role settings exist in the context.
@@ -1793,10 +1816,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "26"
+      - "58"
       Exist:
-      - "8"
-      - "45"
+      - "6"
     separatecontext: false
     conditions:
     - label: Exist
@@ -1810,8 +1832,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 710
+          "x": 726.25,
+          "y": 431
         }
       }
     note: false
@@ -1823,10 +1845,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 9b9c14f7-983e-4dc6-8c41-2a749153e853
+    taskid: 46b953d1-ded6-4833-b625-e7ed16b3d070
     type: condition
     task:
-      id: 9b9c14f7-983e-4dc6-8c41-2a749153e853
+      id: 46b953d1-ded6-4833-b625-e7ed16b3d070
       version: -1
       name: Validate modified role
       description: Ensures that the name of the modified role exists in the context.
@@ -1847,12 +1869,44 @@ tasks:
             value:
               simple: Core.OriginalAlert.event.referenced_resource_name
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1587,
-          "y": 710
+          "x": 1653,
+          "y": 871
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 6e2e54d5-42f8-47a4-be59-07786822f78c
+    type: title
+    task:
+      id: 6e2e54d5-42f8-47a4-be59-07786822f78c
+      version: -1
+      name: No Settings Changed
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3201,
+          "y": 728
         }
       }
     note: false
@@ -1866,19 +1920,19 @@ view: |-
   {
     "linkLabelsPosition": {
       "33_43_True Positive": 0.53,
+      "33_54_#default#": 0.9,
       "38_41_Disable user": 0.85,
       "38_42_Do not disable user": 0.12,
       "47_26_#default#": 0.11,
+      "47_51_yes": 0.6,
       "52_42_#default#": 0.41,
-      "56_26_#default#": 0.12,
-      "56_45_Exist": 0.77,
-      "56_8_Exist": 0.72,
+      "56_58_#default#": 0.22,
       "57_26_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 2834,
-        "width": 3714.75,
+        "height": 3016,
+        "width": 4136.75,
         "x": -554.75,
         "y": 26
       }
@@ -1886,6 +1940,7 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: c67df46b-47de-4179-8e23-c151dc0b43d1
 issilent: true
 fromversion: 8.9.0
 tests:
