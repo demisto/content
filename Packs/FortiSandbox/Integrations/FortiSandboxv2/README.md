@@ -63,11 +63,8 @@ Runs reputation on files.
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
-
 ```!file file=936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af```
-
 #### Context Example
-
 ```json
 {
     "DBotScore": {
@@ -127,11 +124,8 @@ Runs reputation on URLs.
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
-
 ```!url url=www.google.com```
-
 #### Context Example
-
 ```json
 {
     "DBotScore": {
@@ -222,12 +216,10 @@ Scheduled command to upload any file type to be sandboxed. The system swiftly id
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
-
 ```!fortisandbox-submission-file-upload entry_id=418@e75b29e7-17a8-41bc-8555-ef233dd8bac9```
-
 #### Human Readable Output
 
->## No jobs were created yet for the submission 7048126795285831956
+>## No jobs were created yet for the submission 7048126795285831956.
 
 ### fortisandbox-submission-url-upload
 
@@ -295,12 +287,10 @@ Scheduled command to upload URLs through a text file or directly to be sandboxed
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
-
 ```!fortisandbox-submission-url-upload urls=www.google.com```
-
 #### Human Readable Output
 
->## No jobs were created yet for the submission 7048126856924000534
+>## No jobs were created yet for the submission 7048126856924000534.
 
 ### fortisandbox-submission-cancel
 
@@ -320,14 +310,11 @@ Cancel a running job submission. Note: Jobs that are already being processed can
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!fortisandbox-submission-cancel id=7047969418633282747```
-
 #### Human Readable Output
 
->## The cancellation of the submission 7047969418633282747 was successfully sent
+>## The cancellation of the submission 7047969418633282747 was successfully sent.
 
 ### fortisandbox-submission-job-verdict
 
@@ -391,11 +378,8 @@ Get the verdict of the provided job.
 | DBotScore.Message | String | Optional message to show an API response. For example, "Not found". |
 
 #### Command example
-
 ```!fortisandbox-submission-job-verdict id=7047959279104315513```
-
 #### Context Example
-
 ```json
 {
     "DBotScore": {
@@ -452,11 +436,11 @@ Get the verdict of the provided job.
 
 #### Human Readable Output
 
->### The verdict for the job 7047959279104315513
->
+>### The verdict for the job 7047959279104315513:
 >|Jid|Name|Start Ts|Finish Ts|Category|Malware Name|Rating|Detail Url|
 >|---|---|---|---|---|---|---|---|
 >| 7047959279104315513 | helloworld.txt<br/> | 1710245223 | 1710245223 | NotApplicable | N/A | Clean | https:<span>//</span>0.0.0.0/job-detail/?sid=7047959252528592869&jid=7047959279104315513&req_type=file-csearch |
+
 
 ### fortisandbox-submission-job-list
 
@@ -481,11 +465,8 @@ Get a list of jobs that were created from a submission.
 | FortiSandbox.Submission.jid | String | The ID of the job. |
 
 #### Command example
-
 ```!fortisandbox-submission-job-list id=7047969418633282747```
-
 #### Context Example
-
 ```json
 {
     "FortiSandbox": {
@@ -499,11 +480,11 @@ Get a list of jobs that were created from a submission.
 
 #### Human Readable Output
 
->### The submission 7047969418633282747 job IDs
->
+>### The submission 7047969418633282747 job IDs:
 >|Jid|
 >|---|
 >| 7047969436160637757 |
+
 
 ### fortisandbox-submission-job-report
 
@@ -531,11 +512,8 @@ Get a PDF report of the provided submission.
 | InfoFile.Info | String | Basic information of the file. |
 
 #### Command example
-
 ```!fortisandbox-submission-job-report identifier=7047959279104315513```
-
 #### Context Example
-
 ```json
 {
     "InfoFile": {
@@ -551,12 +529,11 @@ Get a PDF report of the provided submission.
 
 #### Human Readable Output
 
+
+
 ## Breaking changes from the previous version of this integration - FortiSandbox v2
-
 ### Commands
-
-#### The following commands were removed in this version
-
+#### The following commands were removed in this version:
 * ***fortisandbox-simple-file-rating-sha256*** - this command was replaced by ***file***.
 * ***fortisandbox-simple-file-rating-sha1*** - this command was replaced by ***file***.
 * ***fortisandbox-url-rating*** - this command was replaced by ***url***.
