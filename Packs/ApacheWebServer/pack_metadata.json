@@ -13,7 +13,9 @@
         "IT"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "httpd"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
