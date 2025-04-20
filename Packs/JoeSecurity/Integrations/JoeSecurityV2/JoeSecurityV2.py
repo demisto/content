@@ -527,6 +527,7 @@ def build_submission_command_result(
      Returns:
         result: (List[Union[CommandResults, Dict[str, Any]]]): A list of CommandResults objects or fileResult data.
     """
+    demisto.debug("build_submission_command_result")
     command_results: List[Union[CommandResults, Dict[str, Any]]] = []
     report_type = args.get("report_type")
     full_display = argToBoolean(args.get("full_display", True))
@@ -622,8 +623,9 @@ def file_submission(
 
     with open(file_path["path"], "rb") as f:
         file_to_send = (args.get("file_name") or name, f)
-        demisto.debug(f"PSubmitting file {name} ")
+        demisto.debug(f"Submitting file {name} ")
         res = client.submit_sample(sample=file_to_send, params=params, cookbook=args.get("cookbook"))
+        demisto.debug(f"Submitting file and got {res=}")
         exe_metrics.success += 1
         partial_res = CommandResults(readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
         return PollResult(
@@ -680,12 +682,14 @@ def polling_submit_command(
     if submission_id := args.get("submission_id"):
         demisto.debug(f"Polling submit command with {submission_id=}")
         res = client.submission_info(submission_id=submission_id)
+        demisto.debug(f"Got response from submission_info {res=}")
         status = res.get("status")
         if status == "finished":
             demisto.debug(f"Polling submit finished with {submission_id=}")
             command_results = build_submission_command_result(client, res, args, exe_metrics, True)
+            demisto.debug(f"Returning poll result with {command_results=}")
             return PollResult(command_results)
-        demisto.debug(f"Polling submit did not finish with {submission_id=}, returning poll result")
+        demisto.debug(f"Polling submit did not finish with {submission_id=}, returning poll result and waiting")
         return PollResult(
             response=None,
             partial_result=CommandResults(
