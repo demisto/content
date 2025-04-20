@@ -1,17 +1,19 @@
-from CommonServerPython import *
 import urllib3
+from CommonServerPython import *
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=(), headers: dict = None,
-                 token: str = None):
+    def __init__(
+        self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=(), headers: dict = None, token: str = None
+    ):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
-        self.agent = self.get_agent()   # Agent is different based on the platform running the integration (XSOAR/XSIAM)
+        self.agent = self.get_agent()  # Agent is different based on the platform running the integration (XSOAR/XSIAM)
         add_sensitive_log_strs(token)
 
     @staticmethod
@@ -20,39 +22,39 @@ class Client(BaseClient):
         Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
         within XSOAR (both on-prem and cloud).
         """
-        platform = get_demisto_version().get('platform')  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
-        return 'xdr' if platform == 'x2' else 'xsoartim'
+        platform = get_demisto_version().get("platform")  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
+        return "xdr" if platform == "x2" else "xsoartim"
 
     def get_file_report(self, file_hash: str):
         return self._http_request(
-            'POST',
-            url_suffix='/get/report',
+            "POST",
+            url_suffix="/get/report",
             params={
-                'apikey': self.token,
-                'agent': self.agent,
-                'format': 'pdf',
-                'hash': file_hash,
+                "apikey": self.token,
+                "agent": self.agent,
+                "format": "pdf",
+                "hash": file_hash,
             },
-            resp_type='response',
+            resp_type="response",
             ok_codes=(200, 401, 404),
         )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:  # pragma: no coverage
     try:
-        wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
+        wildfire_hash_example = "dca86121cc7427e375fd24fe5871d727"  # guardrails-disable-line
         res = client.get_file_report(wildfire_hash_example)
         if res.status_code == 401:
-            return 'Authorization Error: make sure API Key is correctly set'
+            return "Authorization Error: make sure API Key is correctly set"
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
 def wildfire_get_report_command(client: Client, args: Dict[str, str]):
@@ -61,35 +63,32 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
         client: the Client object
         args: the command arguments from demisto.args(), file hash (sha256) to query on
     """
-    sha256 = str(args.get('sha256'))
+    sha256 = str(args.get("sha256"))
     if not sha256Regex.match(sha256):
-        raise Exception('Invalid hash. Only SHA256 are supported.')
+        raise Exception("Invalid hash. Only SHA256 are supported.")
 
     res = client.get_file_report(sha256)
 
     if res.status_code == 200:
-        return_results({
-            'status': 'success',
-            'data': base64.b64encode(res.content).decode()
-        })
+        return_results({"status": "success", "data": base64.b64encode(res.content).decode()})
 
     elif res.status_code == 401:
-        return_results({
-            'status': 'error',
-            'error': {
-                'title': "Couldn't fetch the Wildfire report.",
-                'description': "Invalid apikey or expired apikey",
-                'techInfo': str(res.content)
+        return_results(
+            {
+                "status": "error",
+                "error": {
+                    "title": "Couldn't fetch the Wildfire report.",
+                    "description": "Invalid apikey or expired apikey",
+                    "techInfo": str(res.content),
+                },
             }
-        })
+        )
 
     elif res.status_code == 404:
-        return_results({
-            'status': 'not found'
-        })
+        return_results({"status": "not found"})
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():  # pragma: no coverage
@@ -97,36 +96,40 @@ def main():  # pragma: no coverage
     params = demisto.params()
     args = demisto.args()
 
-    base_url = params.get('server')
-    if base_url and base_url[-1] == '/':
+    base_url = params.get("server")
+    if base_url and base_url[-1] == "/":
         base_url = base_url[:-1]
-    if base_url and not base_url.endswith('/publicapi'):
-        base_url += '/publicapi'
-    token = params.get('credentials', {}).get('password') or params.get('token')
+    if base_url and not base_url.endswith("/publicapi"):
+        base_url += "/publicapi"
+    token = params.get("credentials", {}).get("password") or params.get("token")
     if not token:
         token = demisto.getLicenseCustomField("WildFire-Reports.token")
     if not token:
         # If token is empty when test-module is running, return a more readable output to the user.
-        if command == 'test-module':
-            return_error('Authorization Error: It\'s seems that the token is empty and you have not a TIM license '
-                         'that is up-to-date, Please fill the token or update your TIM license and try again.')
+        if command == "test-module":
+            return_error(
+                "Authorization Error: It's seems that the token is empty and you have not a TIM license "
+                "that is up-to-date, Please fill the token or update your TIM license and try again."
+            )
         else:
-            return_results({
-                'status': 'error',
-                'error': {
-                    'title': "Couldn't fetch the Wildfire report.",
-                    'description': "The token can't be empty.",
-                    'techInfo': "The token can't be empty, Please fill the token in the instance configuration "
-                                "or update your TIM license."
+            return_results(
+                {
+                    "status": "error",
+                    "error": {
+                        "title": "Couldn't fetch the Wildfire report.",
+                        "description": "The token can't be empty.",
+                        "techInfo": "The token can't be empty, Please fill the token in the instance configuration "
+                        "or update your TIM license.",
+                    },
                 }
-            })
+            )
             sys.exit()
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
         client = Client(
@@ -137,28 +140,30 @@ def main():  # pragma: no coverage
             proxy=proxy,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module(client)
             return_results(result)
 
-        elif command == 'internal-wildfire-get-report':
+        elif command == "internal-wildfire-get-report":
             wildfire_get_report_command(client, args)
 
     # Log exceptions and return errors
     except Exception as e:
         # Its not an error because it's not return to the warroom
-        return_results({
-            'status': 'error',
-            'error': {
-                'title': "Couldn't fetch the Wildfire report.",
-                'description': f'Failed to download report.\nError:\n{str(e)}',
-                'techInfo': f'Failed to execute command {demisto.command()}.\nError:\n{str(e)}\n'
-                            f'Trace back:\n{traceback.format_exc()}'
+        return_results(
+            {
+                "status": "error",
+                "error": {
+                    "title": "Couldn't fetch the Wildfire report.",
+                    "description": f"Failed to download report.\nError:\n{e!s}",
+                    "techInfo": f"Failed to execute command {demisto.command()}.\nError:\n{e!s}\n"
+                    f"Trace back:\n{traceback.format_exc()}",
+                },
             }
-        })
+        )
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
