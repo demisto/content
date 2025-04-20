@@ -10,11 +10,16 @@
     "categories": [
         "Deception & Breach Simulation"
     ],
-    "tags": [],
+    "tags": [
+        "Incident Handling",
+        "Security",
+        "Forensics",
+        "Breach Simulation"
+    ],
     "useCases": [],
     "keywords": [
-        "deception",
-        "apt"
+        "Acalvio",
+        "ShadowPlex"
     ],
     "githubUser": [],
     "marketplaces": [
