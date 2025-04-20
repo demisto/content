@@ -8,9 +8,7 @@ import pytest
 from CommonServerPython import *  # noqa: F401
 from CreateSigmaRuleIndicator import (
     create_indicator_relationships,
-    create_relationship,
     get_mitre_technique_name,
-    main,
     parse_and_create_indicator,
     parse_detection_field,
     parse_tags,
