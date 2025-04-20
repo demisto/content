@@ -3,7 +3,6 @@ For example: "Niño שָׁלוֹם Montréal اَلسَّلَامُ عَلَيْ
 Will return: "Nino שלום Montreal السلام عليكم"
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,7 +11,6 @@ Will return: "Nino שלום Montreal السلام عليكم"
 | Tags | transformer, string |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +18,5 @@ Will return: "Nino שלום Montreal السلام عليكم"
 | value |  |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

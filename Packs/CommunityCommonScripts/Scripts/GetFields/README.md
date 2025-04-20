@@ -1,7 +1,6 @@
 Retrieves fields from an object using dot notation
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Retrieves fields from an object using dot notation
 | Tags | transformer, general, entirelist |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +18,5 @@ Retrieves fields from an object using dot notation
 | stringify | Whether the argument should be saved as a string \(Optional\). |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

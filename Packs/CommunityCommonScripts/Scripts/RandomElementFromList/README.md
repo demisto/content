@@ -1,7 +1,6 @@
 randomly select elements from a list in Python
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ randomly select elements from a list in Python
 | Tags | transformer |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +17,5 @@ randomly select elements from a list in Python
 | count | Number of elements to select |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

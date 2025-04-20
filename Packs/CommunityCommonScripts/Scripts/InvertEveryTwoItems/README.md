@@ -13,7 +13,6 @@ Result:
 If the item is not an array the output will be same passed object.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -22,7 +21,6 @@ If the item is not an array the output will be same passed object.
 | Tags | transformer, list |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -30,6 +28,5 @@ If the item is not an array the output will be same passed object.
 | value |  |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

@@ -15,7 +15,6 @@ TotalSeconds         : 868339
 TotalMilliseconds : 868339000
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -24,7 +23,6 @@ TotalMilliseconds : 868339000
 | Tags | Utilities |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -33,7 +31,6 @@ TotalMilliseconds : 868339000
 | end_time | Specifies the end of a time span. If no value supplied the current date and time will be used. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

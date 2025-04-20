@@ -1,7 +1,6 @@
 Retrieves all Playbook (and Sub-Playbook) names, Integrations, Automation Scripts, Commands and Lists for a provided Playbook name.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,7 +8,6 @@ Retrieves all Playbook (and Sub-Playbook) names, Integrations, Automation Script
 | Script Type | python3 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -17,7 +15,6 @@ Retrieves all Playbook (and Sub-Playbook) names, Integrations, Automation Script
 | playbook_name | Name of Playbook |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -31,7 +28,6 @@ Retrieves all Playbook (and Sub-Playbook) names, Integrations, Automation Script
 | RetrievePlaybookDependencies.MarkdownString | Markdown formatted string data of playbook dependencies. | Unknown |
 
 ### Troubleshooting
-
-Multi-tenant environments should be configured with the Cortex Rest API instance when using this
-automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
 to ensure that API calls are made to the current tenant instead of the master tenant.
