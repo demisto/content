@@ -1819,7 +1819,8 @@ def get_modified_remote_data_command(
     entries: list[dict] = []
     remote_args = GetModifiedRemoteDataArgs(args)
     demisto.debug(f"Original last_update before 1 minute reduction: {get_last_update_in_splunk_time(remote_args.last_update)}")
-    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - 60  # Subtract 1 minute (60 seconds) to allow indexing
+    # Subtract 1 minute (60 seconds) to allow indexing
+    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - 60
     incident_review_search = (
         "|`incident_review` "
         "| eval last_modified_timestamp=_time "
