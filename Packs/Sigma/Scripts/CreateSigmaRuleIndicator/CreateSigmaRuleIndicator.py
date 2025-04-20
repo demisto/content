@@ -26,7 +26,7 @@ def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
 
     try:
         query = f'type:"{indicator_type}" and {mitre_id}'
-        demisto.debug(f'Querying for {query} in TIM')
+        demisto.debug(f"Querying for {query} in TIM")
 
         success, response = execute_command(command="SearchIndicator", args={"query": query}, fail_on_error=False)
 
@@ -46,7 +46,7 @@ def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
         return indicator
 
     except Exception as e:
-        demisto.debug(f"Error searching for Attack Pattern indicator: {str(e)}")
+        demisto.debug(f"Error searching for Attack Pattern indicator: {e!s}")
         return ""
 
 
@@ -93,11 +93,11 @@ def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str,
             entity_a_type="Sigma Rule Indicator",
             name=relation_type,
             entity_b=entity_b,
-            entity_b_type=entity_b_type
+            entity_b_type=entity_b_type,
         )
 
     except Exception as e:
-        demisto.debug(f"Failed to create relationship: {str(e)}")
+        demisto.debug(f"Failed to create relationship: {e!s}")
 
     return relationship
 
@@ -116,15 +116,14 @@ def parse_detection_field(rule: SigmaRule) -> list:
     row = {}
 
     def build_row(selection, data):
-        row['selection'] = selection
-        row['key'] = data.field or ''
-        row['modifiers'] = ','.join([reverse_modifier_mapping[modifier.__name__] for modifier in data.modifiers])
-        row['values'] = '\n'.join([f'({index}){value.to_plain()}' for index, value in enumerate(data.original_value, 1)])
+        row["selection"] = selection
+        row["key"] = data.field or ""
+        row["modifiers"] = ",".join([reverse_modifier_mapping[modifier.__name__] for modifier in data.modifiers])
+        row["values"] = "\n".join([f"({index}){value.to_plain()}" for index, value in enumerate(data.original_value, 1)])
         return row
 
     for selection, value in rule.detection.detections.items():
         for fields in value.detection_items:
-
             try:
                 for field in fields.detection_items:
                     row = build_row(selection, field)
@@ -142,11 +141,10 @@ def parse_detection_field(rule: SigmaRule) -> list:
 def parse_tags(tags: list) -> tuple[list[dict[str, str]], list[str], str]:
     relationships = []
     processed_tags = []
-    tlp = 'CLEAR'
+    tlp = "CLEAR"
 
     for tag in tags.copy():
         if tag.namespace == "attack" and re.match(r"[ts]\d{4}", tag.name):
-
             if tag.name.lower().startswith("t"):
                 indicator_type = "Attack Pattern"
                 mitre_name = get_mitre_technique_name(tag.name, indicator_type)
@@ -157,25 +155,25 @@ def parse_tags(tags: list) -> tuple[list[dict[str, str]], list[str], str]:
 
             if mitre_name:
                 relationships.append({"value": mitre_name, "type": indicator_type})
-                processed_tags.append(f'{tag.name.upper()} - {mitre_name}')
+                processed_tags.append(f"{tag.name.upper()} - {mitre_name}")
 
             else:
-                processed_tags.append(f'{tag.name.upper()}')
+                processed_tags.append(f"{tag.name.upper()}")
 
-        elif tag.namespace == 'attack':
+        elif tag.namespace == "attack":
             processed_tags.append(tag.name.replace("_", " ").replace("-", " ").title())
 
-        elif tag.namespace == 'cve':
-            demisto.debug(f'Found a CVE tag - {tag}')
+        elif tag.namespace == "cve":
+            demisto.debug(f"Found a CVE tag - {tag}")
             cve = tag.name.replace(".", "-").upper()
 
-            if not cve.startswith('CVE-'):
-                cve = f'CVE-{cve}'
+            if not cve.startswith("CVE-"):
+                cve = f"CVE-{cve}"
 
             relationships.append({"value": cve, "type": "CVE"})
             processed_tags.append(cve)
 
-        elif tag.namespace == 'tlp':
+        elif tag.namespace == "tlp":
             tlp = tag.name.upper()
 
     return relationships, processed_tags, tlp
@@ -194,8 +192,8 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
     indicator = {
         "type": "Sigma Rule",
         "value": rule.title,
-        "creationdate": f'{rule.date}',
-        "sigmaruleid": f'{rule.id}',
+        "creationdate": f"{rule.date}",
+        "sigmaruleid": f"{rule.id}",
         "sigmarulestatus": rule.status.name,
         "author": rule.author,
         "sigmarulelevel": rule.level.name,
@@ -207,10 +205,9 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         "sigmacondition": [{"condition": condition} for condition in rule.detection.condition],
         "sigmadetection": parse_detection_field(rule),
         "sigmafalsepositives": [{"reason": fp} for fp in rule.falsepositives],
-        "publications": [{"link": ref,
-                          "source": "Sigma Rule",
-                          "title": rule.title,
-                          "date": f'{rule.date}'} for ref in rule.references]
+        "publications": [
+            {"link": ref, "source": "Sigma Rule", "title": rule.title, "date": f"{rule.date}"} for ref in rule.references
+        ],
     }
 
     if hasattr(rule.logsource, "custom_attributes"):
@@ -345,5 +342,5 @@ def main() -> None:
         return_error(f"Exception. Failed to import Sigma rule: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

@@ -44,6 +44,8 @@ script:
       name: tenant_id
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     - description: The maximum number of returned fields per result.
       name: max_fields
       defaultValue: 20
@@ -202,6 +204,8 @@ script:
     - description: Time in relative date or range format.
       name: time_frame
       hidden: true
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     - description: The name of the command.
       name: command_name
       hidden: true
@@ -1561,6 +1565,7 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - XQL Query Engine - Test
 fromversion: 8.7.0

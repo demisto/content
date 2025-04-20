@@ -262,9 +262,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.fetch_incidents()
 
@@ -297,9 +295,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.search_playbook_alerts()
 
@@ -334,9 +330,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"resonse": {"data": "mock respose"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.details_playbook_alerts()
 
@@ -368,9 +362,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"resonse": {"data": "mock respose"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.update_playbook_alerts()
 
@@ -405,9 +397,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"resonse": {"data": "mock respose"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.search_playbook_alerts()
 
@@ -437,9 +427,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.details_playbook_alerts()
 
@@ -469,9 +457,7 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {"response": {"data": "mock response"}}
-        mock_call = mocker.patch.object(
-            client, "_call", return_value=mock_call_response
-        )
+        mock_call = mocker.patch.object(client, "_call", return_value=mock_call_response)
 
         response = client.update_playbook_alerts()
 
@@ -574,9 +560,7 @@ class TestActions:
         result_actions = actions._process_result_actions(response=response)  # type: ignore
         assert result_actions is None
 
-    def test_process_result_actions_no_or_empty_result_actions_in_response(
-        self, mocker
-    ):
+    def test_process_result_actions_no_or_empty_result_actions_in_response(self, mocker):
         from RecordedFuturePlaybookAlerts import Actions
 
         mock_client = mocker.Mock()
@@ -739,15 +723,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_playbook_alert_details = mocker.patch.object(
-            client, "details_playbook_alerts", return_value=mock_response
-        )
+        mock_client_playbook_alert_details = mocker.patch.object(client, "details_playbook_alerts", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -770,9 +750,7 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_playbook_alert_details = mocker.patch.object(
-            client, "details_playbook_alerts", return_value=mock_response
-        )
+        mock_client_playbook_alert_details = mocker.patch.object(client, "details_playbook_alerts", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -796,9 +774,7 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_playbook_alert_search = mocker.patch.object(
-            client, "search_playbook_alerts", return_value=mock_response
-        )
+        mock_client_playbook_alert_search = mocker.patch.object(client, "search_playbook_alerts", return_value=mock_response)
 
         actions = Actions(client)
 
@@ -822,15 +798,11 @@ class TestActions:
 
         mock_response = "mock_response"
 
-        mock_client_alert_set_status = mocker.patch.object(
-            client, "update_playbook_alerts", return_value=mock_response
-        )
+        mock_client_alert_set_status = mocker.patch.object(client, "update_playbook_alerts", return_value=mock_response)
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            "mock_process_result_actions_return_value"
-        )
+        mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
         mock_process_result_actions = mocker.patch.object(
             actions,
             "_process_result_actions",
@@ -852,17 +824,11 @@ class TestActions:
         import RecordedFuturePlaybookAlerts
 
         mocker.patch.object(demisto, "command", return_value="test-module")
-        mocker.patch.object(
-            demisto, "demistoVersion", return_value={"version": "mock_version"}
-        )
-        mocker.patch.object(
-            demisto, "params", return_value={"token": {"password": "example"}}
-        )
+        mocker.patch.object(demisto, "demistoVersion", return_value={"version": "mock_version"})
+        mocker.patch.object(demisto, "params", return_value={"token": {"password": "example"}})
         mocker.patch.object(platform, "platform", return_value="mock_platform")
         mocker.patch.object(RecordedFuturePlaybookAlerts.Client, "whoami")
-        mocked_return_res = mocker.patch.object(
-            RecordedFuturePlaybookAlerts, "return_results"
-        )
+        mocked_return_res = mocker.patch.object(RecordedFuturePlaybookAlerts, "return_results")
         RecordedFuturePlaybookAlerts.main()
         mocked_return_res.assert_called_with("ok")
 
@@ -873,18 +839,12 @@ class TestActions:
         import RecordedFuturePlaybookAlerts
 
         mocker.patch.object(demisto, "command", return_value="test-module")
-        mocker.patch.object(
-            demisto, "demistoVersion", return_value={"version": "mock_version"}
-        )
-        mocker.patch.object(
-            demisto, "params", return_value={"token": {"password": "example"}}
-        )
+        mocker.patch.object(demisto, "demistoVersion", return_value={"version": "mock_version"})
+        mocker.patch.object(demisto, "params", return_value={"token": {"password": "example"}})
         mocker.patch.object(platform, "platform", return_value="mock_platform")
         mock_whoami = mocker.patch.object(RecordedFuturePlaybookAlerts.Client, "whoami")
         mock_whoami.side_effect = Exception("Side effect triggered")
-        mocked_return_err = mocker.patch.object(
-            RecordedFuturePlaybookAlerts, "return_error"
-        )
+        mocked_return_err = mocker.patch.object(RecordedFuturePlaybookAlerts, "return_error")
         RecordedFuturePlaybookAlerts.main()
         mocked_return_err.assert_called_with(
             message=(
@@ -959,9 +919,7 @@ class TestMain:
         RecordedFuturePlaybookAlerts.main()
 
         mock_get_client.assert_called_once()
-        mock_return_error.assert_called_once_with(
-            message="Unknown command: unknown-command"
-        )
+        mock_return_error.assert_called_once_with(message="Unknown command: unknown-command")
 
     def test_get_client_no_api_token(self, mocker):
         """Test get_client when no API token is provided."""
@@ -979,9 +937,7 @@ class TestMain:
         proxies = {}
         RecordedFuturePlaybookAlerts.get_client(proxies=proxies)
 
-        mock_return_error.assert_called_once_with(
-            message="Please provide a valid API token"
-        )
+        mock_return_error.assert_called_once_with(message="Please provide a valid API token")
 
     def test_main_exception_handling(self, mocker):
         """Test main function's exception handling."""
@@ -1079,15 +1035,11 @@ def test_main_calls_handle_proxy(mocker):
 
     proxies = {"http": "example.com", "https": "example.com"}
 
-    mock_handle_proxy = mocker.patch(
-        "RecordedFuturePlaybookAlerts.handle_proxy", return_value=proxies
-    )
+    mock_handle_proxy = mocker.patch("RecordedFuturePlaybookAlerts.handle_proxy", return_value=proxies)
 
     mocker.patch.object(demisto, "command", return_value="test-module")
 
-    mocker.patch.object(
-        demisto, "params", return_value={"token": {"password": "example"}}
-    )
+    mocker.patch.object(demisto, "params", return_value={"token": {"password": "example"}})
 
     mock_get_client = mocker.patch("RecordedFuturePlaybookAlerts.get_client")
 
