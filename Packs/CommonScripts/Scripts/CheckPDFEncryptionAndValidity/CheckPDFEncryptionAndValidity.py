@@ -7,15 +7,34 @@ import PyPDF2
 
 
 
-def check_PDF_encryption_and_validity(entry_id):
-    
-    file_path = demisto.getFilePath(entry_id).get("path")
-    if not file_path:
-        raise DemistoException("File not found. Please enter a valid entry ID.")
-    
+def check_PDF_encryption_and_validity(entry_id) -> CommandResults:
+    """This function checks the encryption and validity of a PDF file based on the provided entry ID.
+
+    Args:
+        entry_id (str): The entry ID of the PDF file to be checked.
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        Returns a CommandResults object containing the following fields:
+        outputs_prefix (str): The prefix for the outputs (always 'File').
+        outputs_key_field (str): The key field for the outputs (always 'EntryID').
+        outputs (dict): A dictionary containing the following key-value pairs:
+        EntryID (str): The provided entry ID.
+        IsValid (bool): Indicates whether the PDF file is valid or not.
+        IsEncrypted (bool): Indicates whether the PDF file is encrypted or not.
+        Error (str): If an error occurs during the process, it contains the error message.
+    """
     is_valid = False
     is_encrypted = False
     try:
+        
+        file_path = demisto.getFilePath(entry_id).get("path")
+        
+        if not file_path:
+            raise DemistoException("File not found. Please enter a valid entry ID.")
+        
         demisto.debug("Trying to open file")
         
         with open(file_path, "rb") as f:

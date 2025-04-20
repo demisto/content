@@ -1,38 +1,49 @@
-"""Base Script for Cortex XSOAR - Unit Tests file
 
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-"""
-
-import json
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
+import demistomock as demisto
+from CommonServerPython import *
+import PyPDF2
+from CheckPDFEncryptionAndValidity import check_PDF_encryption_and_validity
 
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
-
-
-# TODO: REMOVE the following dummy unit test function
-def test_basescript_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_file_openable():
     """
-    from BaseScript import basescript_dummy_command
-
-    args = {"dummy": "this is a dummy response"}
-    response = basescript_dummy_command(args)
-
-    mock_response = util_load_json("test_data/basescript-dummy.json")
-
-    assert response.outputs == mock_response
-
-
-# TODO: ADD HERE your unit tests
+    Given: A readable pdf file that is not encrypted
+    When: running check_PDF_encryption_and_validity
+    Then: The function returns CommandResult with the file EntryID, IsValid==True and IsEncrypted == False
+    """
+    entry_id = "test_entry_id"
+    with patch("builtins.open") as mock_open, patch("PyPDF2.PdfReader") as mock_PdfReader:
+        mock_open.return_value.__enter__.return_value = MagicMock()
+        mock_PdfReader.return_value.is_encrypted = False
+        
+        result = check_PDF_encryption_and_validity(entry_id)
+        
+        assert result.outputs_key_field == 'EntryID'
+        assert result.outputs['EntryID'] == entry_id
+        assert result.outputs['IsValid']
+        assert not result.outputs['IsEncrypted']
+        assert 'Error' not in str(result.outputs)
+    
+def test_file_not_openable():
+    """
+    Given: A not readable pdf file
+    When: running check_PDF_encryption_and_validity
+    Then: The function returns CommandResult with the file EntryID, IsValid==False and IsEncrypted == False
+        and a error field in the outputs.
+    """
+    entry_id = "test_entry_id"
+    with patch("builtins.open", side_effect=Exception("File could not be opened")) as mock_open,\
+    patch("PyPDF2.PdfReader") as mock_PdfReader:
+        mock_open.return_value.__enter__.return_value = MagicMock()
+        mock_PdfReader.return_value.is_encrypted = False
+    result = check_PDF_encryption_and_validity(entry_id)
+        
+    assert result.outputs_prefix == 'File'
+    assert result.outputs_key_field == 'EntryID'
+    assert result.outputs['EntryID'] == entry_id
+    assert not result.outputs['IsValid']
+    assert not result.outputs['IsEncrypted']
+    assert 'Error' in str(result.outputs)

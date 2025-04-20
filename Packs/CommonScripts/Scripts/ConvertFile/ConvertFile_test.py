@@ -29,7 +29,7 @@ def test_convert_to_pdf(mocker, file):
     main()
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
-    assert demisto.results.call_count == 1
+    assert demisto.results.call_count == 2
     assert len(results) == 1
     assert results[0]["Type"] == entryTypes["file"]
     assert results[0]["File"] == "test.pdf"
