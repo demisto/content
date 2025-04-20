@@ -1,7 +1,6 @@
 Find the differences between two indicators lists.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Find the differences between two indicators lists.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +18,6 @@ Find the differences between two indicators lists.
 | compare_to_list | Either a list of Indicators of Compromise or an EntryID to a File containing a list. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,12 +25,11 @@ Find the differences between two indicators lists.
 | IndicatorsCompare.BaseList | Indicators that appear in the first indicators list only. | String |
 | IndicatorsCompare.CompareList | Indicators that appear in the second indicators list only. | String |
 
-## Script Example
 
+## Script Example
 ```!CompareIndicators base_list="abcd,1.1.1.0/30,2.2.2.2,3.3.3.3-3.3.3.6" compare_to_list="bcde,1.1.1.2,2.2.2.2,3.3.3.2-3.3.3.5"```
 
 ## Context Example
-
 ```json
 {
     "IndicatorCompare": {
@@ -54,7 +50,6 @@ Find the differences between two indicators lists.
 ## Human Readable Output
 
 >### Results
->
 >|BaseList|CompareList|
 >|---|---|
 >| 1.1.1.0-1.1.1.1,<br/>3.3.3.6,<br/>abcd,<br/>1.1.1.3 | 3.3.3.2,<br/>bcde |

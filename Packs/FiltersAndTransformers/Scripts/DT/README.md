@@ -1,7 +1,6 @@
 Allows the usage of DT scripts within playbooks transformers.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Allows the usage of DT scripts within playbooks transformers.
 | Script Type | python |
 | Tags | transformer, general |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +18,5 @@ Allows the usage of DT scripts within playbooks transformers.
 | dt | DT expression. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

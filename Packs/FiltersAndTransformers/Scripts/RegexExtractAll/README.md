@@ -6,7 +6,6 @@ Extraction of all matches from a specified regular expression pattern from a pro
 * It uses the 'regex'  library, which supports more some more advanced regex functionality than the standard 're' library.  For more info, see https://pypi.org/project/regex/.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -16,7 +15,6 @@ Extraction of all matches from a specified regular expression pattern from a pro
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -30,6 +28,5 @@ Extraction of all matches from a specified regular expression pattern from a pro
 | unpack_matches | Whether to unpack the tuple values of results. Default is "false". |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

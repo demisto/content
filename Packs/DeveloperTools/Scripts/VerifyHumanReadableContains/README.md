@@ -1,7 +1,5 @@
 Verifies if a given entry contains a string.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +7,8 @@ Verifies if a given entry contains a string.
 | Script Type | javascript |
 | Tags | - |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +17,5 @@ Verifies if a given entry contains a string.
 | substring | The substring to look for. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

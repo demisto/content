@@ -19,5 +19,4 @@ Inputs
 | value | the input value. |
 
 ## Outputs
-
 There are no outputs for this script.

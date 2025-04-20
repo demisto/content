@@ -2,7 +2,6 @@ The script receives a list of fields and a context key base path. For example, K
 The Get field of the task must have the value ${.=[]}.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,7 +11,6 @@ The Get field of the task must have the value ${.=[]}.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +20,5 @@ The Get field of the task must have the value ${.=[]}.
 | value | The value to set in context for the key. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
