@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import tempfile
 import traceback
+import hashlib
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -27,7 +28,7 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) -> list[str]:
+def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str, entry_id) -> list[str]:
     try:
         run_cmd = [
             "soffice",
@@ -63,11 +64,15 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) 
             else:
                 demisto.debug(f"No zombie processes found for ps output: {ps_out}")
         except Exception as ex:
-            demisto.error(f"Failed checking for zombie processes: {ex}. Trace: {traceback.format_exc()}")
+            error = f"Failed checking for zombie processes: {ex}. Trace: {traceback.format_exc()}"
+            return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": error}))
 
 
 def make_sha(file_path):
-    return None
+    with open(file_path, "rb") as file:
+        file_data = file.read()
+        sha1_hash = hashlib.sha1(file_data).hexdigest()
+    return sha1_hash
 
 
 def main():
@@ -86,27 +91,28 @@ def main():
         if file_name:  # remove the extension
             file_name = os.path.splitext(file_name)[0]
         with tempfile.TemporaryDirectory() as outdir:
-            files = convert_file(file_path, out_format, all_files, outdir)
+            files = convert_file(file_path, out_format, all_files, outdir, entry_id)
             if not files:
                 return_error(f"No file result returned for convert format: {out_format}")
                 return
             for f in files:
-                temp = demisto.uniqueFile()
-                shutil.copy(f, demisto.investigation()["id"] + "_" + temp)
-                name = os.path.basename(f)
-                if file_name:
-                    name = name.replace(file_path_name_only, file_name)
-                demisto.results(
-                    {"Contents": "", "ContentsFormat": formats["text"], "Type": entryTypes["file"], "File": name, "FileID": temp}
-                )
-                sha1 = make_sha(f)
-                return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'FileSHA1': sha1, 'Convertable': 'yes'}))
+                try:
+                    temp = demisto.uniqueFile()
+                    shutil.copy(f, demisto.investigation()["id"] + "_" + temp)
+                    name = os.path.basename(f)
+                    if file_name:
+                        name = name.replace(file_path_name_only, file_name)
+                    demisto.results(
+                        {"Contents": "", "ContentsFormat": formats["text"], "Type": entryTypes["file"], "File": name, "FileID": temp}
+                    )
+                    sha1 = make_sha(f)
+                    return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'FileSHA1': sha1, 'Convertable': 'yes'}))
+                except Exception as e:
+                    return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
     except subprocess.CalledProcessError as e:
-        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no'}))
-        return_error(f"Failed converting file. Output: {e.output}. Error: {e}")
+        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
     except Exception as e:
-        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no'}))
-        return_error(f"Failed converting file. General exception: {e}.\n\nTrace:\n{traceback.format_exc()}")
+        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
 
 
 # python2 uses __builtin__ python3 uses builtins
