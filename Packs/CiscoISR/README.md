@@ -21,7 +21,7 @@ More information can be found [here](https://www.cisco.com/c/en/us/td/docs/route
 ### Syslog Time Parsing Support
 
 By default, syslog timestamp parsing supports a UTC timezone (offset "+00:00").  
-To support other timezones you will need to modify Parsing Rules in **Data Management** &rarr; **Data Model Rules** and select **User Defined** tab, change the UTC offset in _parse_timestamp_ functions to the relevant timezone.  
+To support other timezones you will need to modify Parsing Rules in **Data Management** &rarr; **Data Model Rules** and select the **User Defined** tab, and change the UTC offset in _parse_timestamp_ functions to the relevant timezone.  
 For example, to support EDT timezone, set the UTC offset to "-04:00"  
 In addition, in the product setting, add the year and milliseconds to the default datetime format.
 
