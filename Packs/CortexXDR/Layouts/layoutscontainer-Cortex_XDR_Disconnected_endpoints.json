@@ -342,9 +342,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "Designed to display information about endpoints that are no longer connected to the Cortex XDR service, providing insights into their status and potential reasons for disconnection.",
-    "marketplaces": [
-        "xsoar",
-        "xpanse"
-    ]
+    "description": ""
 }

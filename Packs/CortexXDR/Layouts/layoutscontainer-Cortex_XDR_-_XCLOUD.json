@@ -632,9 +632,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",
-    "description": "Designed to display data of Cortex XDR Cloud alerts.",
-    "marketplaces": [
-        "xsoar",
-        "xpanse"
-    ]
+    "description": ""
 }

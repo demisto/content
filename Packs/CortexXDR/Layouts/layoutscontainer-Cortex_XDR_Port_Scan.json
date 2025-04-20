@@ -2,13 +2,9 @@
     "id": "Cortex XDR Port Scan",
     "group": "incident",
     "name": "Cortex XDR Port Scan",
-    "description": "Designed to display data about incident which are related to port scanning activities detected by Cortex XDR",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
-    "marketplaces": [
-        "xsoar",
-        "xpanse"
-    ],
     "detailsV2": {
         "tabs": [
             {
