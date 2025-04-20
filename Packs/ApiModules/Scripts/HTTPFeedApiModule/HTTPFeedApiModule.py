@@ -15,9 +15,9 @@ urllib3.disable_warnings()
 TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
+THRESHOLD_IN_SECONDS = 43200  # 12 hours in seconds
 IP_RANGE_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))" \
-                     r"\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
+                         r"\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
 
 
 class Client(BaseClient):
@@ -354,7 +354,42 @@ def datestring_to_server_format(date_string: str) -> str:
     :return: ISO-8601 date string
     """
     parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
-    return parsed_date.strftime(DATE_FORMAT)    # type: ignore
+    return parsed_date.strftime(DATE_FORMAT)  # type: ignore
+
+
+def is_cidr_32(value):
+    """
+    Checks if the given CIDR address is a /32.
+
+    Parameters:
+        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+
+    Returns:
+        bool: True if the CIDR is /32, False otherwise.
+    """
+    try:
+        return str(value).strip().endswith('/32')
+    except Exception:
+        return False
+
+
+def convert_cidr32_to_ip(value):
+    """
+    Converts a CIDR /32 address to its IP part.
+
+    Parameters:
+        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+
+    Returns:
+        str: The IP address if input is a valid /32, else None.
+    """
+    try:
+        ip, subnet = value.strip().split('/')
+        if subnet == '32':
+            return ip
+    except ValueError:
+        pass
+    return None
 
 
 def ip_range_to_cidr(start_ip: str, end_ip: str) -> list:
@@ -478,63 +513,62 @@ def fetch_indicators_command(client,
                 demisto.debug(f"Got the following indicator values - {indicator_values}")
 
                 for indicator_value in indicator_values:
+                    indicator_type, is_32_cidr = process_indicator_type(client=client, value=indicator_value, url=url, itype=itype,
+                                                            auto_detect=auto_detect, cidr_32_to_ip=cidr_32_to_ip)
                     indicators.append(process_indicator_data(
                         client,
                         indicator_value,
                         attributes,
                         url,
-                        itype,
-                        auto_detect,
+                        indicator_type,
                         create_relationships,
-                        cidr_32_to_ip,
                         enrichment_excluded
                     ))
+
+                    if is_32_cidr:
+                        ip_value = convert_cidr32_to_ip(indicator_value)
+                        indicators.append(process_indicator_data(
+                            client,
+                            ip_value,
+                            attributes,
+                            url,
+                            FeedIndicatorType.IP,
+                            create_relationships,
+                            enrichment_excluded
+                        ))
 
     return indicators, no_update
 
 
-def is_cidr_32(value):
-    """
-    Checks if the given CIDR address is a /32.
+def process_indicator_type(client, value, url, itype, auto_detect, cidr_32_to_ip):
+    """_summary_
+        process the indicator value and the configuration params to conclude the indicator type
+       Args:
+           client (_type_): Feed Client object
+           value (_type_): indicator value
+           url (_type_): url
+           itype (_type_): type given by the user
+           auto_detect (_type_): should XSOAR auto detect indicator
+           cidr_32_to_ip (bool, optional): present /32 CIDR indicators also as IP
 
-    Parameters:
-        value (str): A CIDR address, e.g., '192.168.1.1/32'.
+       Returns:
+           indicator_type: the indicator type
+           is_32_cidr : determine should we add a new indicator of ip
+       """
+    indicator_type = determine_indicator_type(
+        client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
 
-    Returns:
-        bool: True if the CIDR is /32, False otherwise.
-    """
-    try:
-        return str(value).strip().endswith('/32')
-    except Exception:
-        return False
+    is_32_cidr = cidr_32_to_ip and indicator_type == FeedIndicatorType.CIDR and is_cidr_32(value)
 
-def cidr32_to_ip(value):
-    """
-    Converts a CIDR /32 address to its IP part.
-
-    Parameters:
-        value (str): A CIDR address, e.g., '192.168.1.1/32'.
-
-    Returns:
-        str: The IP address if input is a valid /32, else None.
-    """
-    try:
-        ip, subnet = value.strip().split('/')
-        if subnet == '32':
-            return ip
-    except ValueError:
-        pass
-    return None
+    return indicator_type, is_32_cidr
 
 
 def process_indicator_data(client,
                            value,
                            attributes,
                            url,
-                           itype,
-                           auto_detect,
+                           indicator_type,
                            create_relationships=False,
-                           cidr_32_to_ip=False,
                            enrichment_excluded: bool = False):
     """_summary_
 
@@ -543,8 +577,7 @@ def process_indicator_data(client,
         value (_type_): _description_
         attributes (_type_): _description_
         url (_type_): _description_
-        itype (_type_): _description_
-        auto_detect (_type_): _description_
+        indicator_type (_type_): _description_
         create_relationships (bool, optional): _description_. Defaults to False.
         enrichment_excluded (bool, optional): _description_. Defaults to False.
 
@@ -558,11 +591,7 @@ def process_indicator_data(client,
 
     if 'firstseenbysource' in attributes:
         attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
-    indicator_type = determine_indicator_type(
-        client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
-    if cidr_32_to_ip and indicator_type == FeedIndicatorType.CIDR and is_cidr_32(value):
-        value = cidr32_to_ip(value)
-        indicator_type = FeedIndicatorType.IP
+        # if user asked that CIDR indicators will also appear as IP indicators.
     indicator_data = {
         'value': value,
         'type': indicator_type,
@@ -572,9 +601,9 @@ def process_indicator_data(client,
         indicator_data['enrichmentExcluded'] = enrichment_excluded
 
     if (create_relationships
-            and client.feed_url_to_config.get(url, {}).get('relationship_name')
-            and attributes.get('relationship_entity_b')
-        ):
+        and client.feed_url_to_config.get(url, {}).get('relationship_name')
+        and attributes.get('relationship_entity_b')
+    ):
         relationships_lst = EntityRelationship(
             name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
             entity_a=value,
@@ -652,7 +681,7 @@ def feed_main(feed_name, params=None, prefix=''):
         params['feed_name'] = feed_name
     feed_tags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
-    cidr_32_to_ip = argToBoolean(demisto.params().get('cidr_32_to_ip'))
+    cidr_32_to_ip = argToBoolean(params.get('cidr_32_to_ip'))
     enrichment_excluded = (demisto.params().get('enrichmentExcluded', False)
                            or (demisto.params().get('tlp_color') == 'RED' and is_xsiam_or_xsoar_saas()))
     client = Client(**params)
