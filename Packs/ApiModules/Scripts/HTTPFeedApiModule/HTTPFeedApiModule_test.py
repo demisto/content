@@ -498,7 +498,7 @@ def test_fetch_indicators_ip_ranges_to_cidrs():
         expected_res = (json.loads(expected_cidr_result.read()), True)
 
     ip_ranges = (
-        "14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255" "\nfe80::c000-fe80::cfff\n12.12.12.12"
+        "14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255\nfe80::c000-fe80::cfff\n12.12.12.12"
     )
     with requests_mock.Mocker() as m:
         m.get("https://www.spamhaus.org/drop/asndrop.txt", content=ip_ranges.encode("utf-8"))
