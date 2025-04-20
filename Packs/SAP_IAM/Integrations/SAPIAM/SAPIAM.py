@@ -1,8 +1,9 @@
+import traceback
+
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
 from IAMApiModule import *
-import traceback
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
