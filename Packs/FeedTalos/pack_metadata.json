@@ -2,7 +2,7 @@
     "name": "Talos Feed",
     "description": "Talos Threat Intelligence IPv4 Feed",
     "support": "community",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Guillermo Serrano",
     "url": "",
     "email": "",
@@ -21,6 +21,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

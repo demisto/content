@@ -11,16 +11,17 @@ def test_main(mocker):
         - Validating the incidents outputs as expected.
     """
     from CybereasonPreProcessingExample import get_guid_from_system_incident
+
     test_data = {
-        'labels': [
-            {'type': 'x', 'value': 'not found'},
-            {'type': 'guidString', 'value': '12345678'},
-            {'type': 'x', 'value': 'nothing'},
-            {'type': 'GUID', 'value': '12345678'},
-            {'type': 'y', 'value': 'nanana'}
+        "labels": [
+            {"type": "x", "value": "not found"},
+            {"type": "guidString", "value": "12345678"},
+            {"type": "x", "value": "nothing"},
+            {"type": "GUID", "value": "12345678"},
+            {"type": "y", "value": "nanana"},
         ]
     }
 
     malopGuid = get_guid_from_system_incident(test_data)
 
-    assert malopGuid == '12345678'
+    assert malopGuid == "12345678"
