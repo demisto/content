@@ -1,7 +1,6 @@
 Reads an image file's metadata and provides `Exif` tags.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Reads an image file's metadata and provides `Exif` tags.
 | Script Type | python |
 | Tags | Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,7 +17,6 @@ Reads an image file's metadata and provides `Exif` tags.
 | EntryID | The entry ID of the image file. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

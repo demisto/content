@@ -1,7 +1,6 @@
 Finds the targets nameservers and shuffle DNS lookups between them. If a lookup fails on the target domains nameservers, Aquatone Discover will use the Google public DNS servers to maximize discovery.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Finds the targets nameservers and shuffle DNS lookups between them. If a lookup 
 | Script Type | python |
 | Tags |  |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,7 +17,6 @@ Finds the targets nameservers and shuffle DNS lookups between them. If a lookup 
 | domain | The domain to discover. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

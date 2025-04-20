@@ -1,7 +1,6 @@
 Uses the ssh integration to grab the host server logs
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,12 +9,11 @@ Uses the ssh integration to grab the host server logs
 | Tags | widget |
 | Cortex XSOAR Version | 6.0.0 |
 
-## Inputs
 
+## Inputs
 ---
 There are no inputs for this script.
 
 ## Outputs
-
 ---
 There are no outputs for this script.

@@ -1,7 +1,5 @@
 Gets hashes (such as, MD5, SHA1, SHA256) from context.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +7,8 @@ Gets hashes (such as, MD5, SHA1, SHA256) from context.
 | Script Type | javascript |
 | Tags |  |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +16,5 @@ Gets hashes (such as, MD5, SHA1, SHA256) from context.
 | hash | The type of hash to get. Can be, "MD5", "SHA1", "SHA256", or "all". |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

@@ -1,7 +1,6 @@
 Extracts strings from a file with an optional filter. This is similar to `binutils` strings command.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Extracts strings from a file with an optional filter. This is similar to `binuti
 | Script Type | python |
 | Tags | server, file |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +20,5 @@ Extracts strings from a file with an optional filter. This is similar to `binuti
 | filter | The regex to filter the strings. This will be compiled with the ignore case. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

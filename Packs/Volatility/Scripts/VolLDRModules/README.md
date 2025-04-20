@@ -1,7 +1,6 @@
-Volatility script for command `ldrmodules`.
+Volatility script for command `ldrmodules`. 
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Volatility script for command `ldrmodules`.
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +19,5 @@ Volatility script for command `ldrmodules`.
 | profile | The Volatility profile to use. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

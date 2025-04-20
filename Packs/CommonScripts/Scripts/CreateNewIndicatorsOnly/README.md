@@ -1,7 +1,6 @@
 Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Create indicators to the Threat Intel database only if they are not registered. 
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -24,7 +22,6 @@ Create indicators to the Threat Intel database only if they are not registered. 
 | verbose | Whether to output additional messages as readable output. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -36,7 +33,6 @@ Create indicators to the Threat Intel database only if they are not registered. 
 | CreateNewIndicatorsOnly.CreationStatus | The status of the indicator requested to add. Value is either new, existing, or unavailable. | string |
 
 ## Notice
-
 ---
 
-When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue. 

@@ -1,7 +1,6 @@
 Generates a random string.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Generates a random string.
 | Script Type | python |
 | Tags | - |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -22,7 +21,6 @@ Generates a random string.
 | Digits | Whether digits should be included. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

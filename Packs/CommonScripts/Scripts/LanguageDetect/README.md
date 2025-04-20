@@ -1,7 +1,5 @@
 Detects language based on Google's language-detection.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +7,8 @@ Detects language based on Google's language-detection.
 | Script Type | python |
 | Tags | Utility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,7 +16,6 @@ Detects language based on Google's language-detection.
 | text | The text to analyse for language detection. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

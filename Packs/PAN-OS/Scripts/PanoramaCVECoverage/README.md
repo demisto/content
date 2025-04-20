@@ -1,7 +1,6 @@
 Check coverage given a list of CVEs.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,13 +10,11 @@ Check coverage given a list of CVEs.
 | Demisto Version | 5.0.0 |
 
 ## Used In
-
 ---
 This script is used in the following playbook and script.
 NetOps Panorama coverage by CVE
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -27,7 +24,6 @@ NetOps Panorama coverage by CVE
 | outputFormat | Raw output of the panorama command into a file. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -38,3 +34,4 @@ NetOps Panorama coverage by CVE
 | Panorama.CVECoverage.Coverage.severity | The threat severity. | String |
 | Panorama.CVECoverage.Coverage.threat_id | The threat ID. | Number |
 | Panorama.CVECoverage.Coverage.default_action | The threat default action. | String |
+

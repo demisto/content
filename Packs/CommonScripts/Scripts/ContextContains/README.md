@@ -1,7 +1,6 @@
 Searches for a value in a context path.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Searches for a value in a context path.
 | Script Type | python |
 | Tags |  |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +18,5 @@ Searches for a value in a context path.
 | value | The value to search for. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

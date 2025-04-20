@@ -1,7 +1,6 @@
-Is a volatility script for command `apihooks`.
+Is a volatility script for command `apihooks`. 
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Is a volatility script for command `apihooks`.
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +20,5 @@ Is a volatility script for command `apihooks`.
 | profile | The Volatility profile to use. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

@@ -1,7 +1,5 @@
 Calculates the entropy for the given data.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +9,6 @@ Calculates the entropy for the given data.
 | Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +17,6 @@ Calculates the entropy for the given data.
 | minimum_entropy | The minimum entropy value. Default is 0. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,12 +24,11 @@ Calculates the entropy for the given data.
 | EntropyResult.checked_value | The given value \(data\). | String |
 | EntropyResult.entropy | The entropy score. | Number |
 
-## Script Example
 
+## Script Example
 ```!CalculateEntropy data=abcd```
 
 ## Context Example
-
 ```
 {
     "EntropyResult": {
@@ -44,9 +39,8 @@ Calculates the entropy for the given data.
 ```
 
 ## Human Readable Output
-
 ### Entropy results
-
 |Checked Value|Entropy|
 |---|---|
 | abcd | 2.0 |
+

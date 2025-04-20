@@ -1,7 +1,6 @@
 A wrapper script for the ***panorama-security-policy-match*** command that receives multiple values for the source, destination, and destination port arguments and performs the policy match for each combination of the inputs.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ A wrapper script for the ***panorama-security-policy-match*** command that recei
 | Cortex XSOAR Version | 6.1.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -30,7 +28,6 @@ A wrapper script for the ***panorama-security-policy-match*** command that recei
 | limit | Maximum number of API calls that script sends. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -43,14 +40,11 @@ A wrapper script for the ***panorama-security-policy-match*** command that recei
 | Panorama.SecurityPolicyMatch.Rules.Source | The matching rule source. | String |
 | Panorama.SecurityPolicyMatch.Rules.To | The matching rule to zone. | String |
 
+
 ## Script Examples
-
 ### Example command
-
 ```!PanoramaSecurityPolicyMatchWrapper destination=2.2.2.2 source=1.1.1.1,8.8.8.8 protocol=1```
-
 ### Context Example
-
 ```json
 {
     "Panorama": {
@@ -71,8 +65,7 @@ A wrapper script for the ***panorama-security-policy-match*** command that recei
 
 ### Human Readable Output
 
->### Matching Security Policies
->
+>### Matching Security Policies:
 >|Action|Category|Destination|From|Name|Source|To|
 >|---|---|---|---|---|---|---|
 >| deny | any | 2.2.2.2 | any | test rule | 1.1.1.1 | any |

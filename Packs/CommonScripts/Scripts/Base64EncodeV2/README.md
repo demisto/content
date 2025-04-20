@@ -1,7 +1,5 @@
 Encode an input to Base64 format.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +8,6 @@ Encode an input to Base64 format.
 | Tags | Utility |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -18,7 +15,6 @@ Encode an input to Base64 format.
 | input | The input to encode using Base64 format. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

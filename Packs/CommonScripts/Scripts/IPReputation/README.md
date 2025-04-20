@@ -1,7 +1,6 @@
 A context script for IP address entities.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ A context script for IP address entities.
 | Script Type | python |
 | Tags | enhancement |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +17,5 @@ A context script for IP address entities.
 | ip | The IP address to look up. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

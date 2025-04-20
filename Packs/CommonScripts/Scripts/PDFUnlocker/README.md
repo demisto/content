@@ -1,7 +1,6 @@
 Removes the password protection from a PDF file and adds a new file entry with the unlocked PDF.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Removes the password protection from a PDF file and adds a new file entry with t
 | Script Type | python |
 | Tags | - |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +18,5 @@ Removes the password protection from a PDF file and adds a new file entry with t
 | password | The password for the PDF file. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

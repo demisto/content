@@ -1,7 +1,6 @@
 Calculates A1000 final classification based on A1000 classification and A1000 full reports.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Calculates A1000 final classification based on A1000 classification and A1000 fu
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,7 +17,6 @@ Calculates A1000 final classification based on A1000 classification and A1000 fu
 | a1000_full_report | A1000 full report |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

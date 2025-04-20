@@ -1,7 +1,6 @@
 Prints an error entry with a given message.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Prints an error entry with a given message.
 | Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +17,5 @@ Prints an error entry with a given message.
 | message | The error message to be printed. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

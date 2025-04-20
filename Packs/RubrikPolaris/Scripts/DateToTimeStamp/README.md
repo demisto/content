@@ -1,7 +1,6 @@
 Converts a date to timestamp.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Converts a date to timestamp.
 | Tags | transformer, date |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +16,5 @@ Converts a date to timestamp.
 | value | Date to convert |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

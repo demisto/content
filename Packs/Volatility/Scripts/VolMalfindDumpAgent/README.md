@@ -1,7 +1,5 @@
 Use the Volatility script to command ldrmodules.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +7,8 @@ Use the Volatility script to command ldrmodules.
 | Script Type | javascript |
 | Tags | volatility |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +20,5 @@ Use the Volatility script to command ldrmodules.
 | system | The Volatility system to run the script on. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

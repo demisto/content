@@ -1,7 +1,6 @@
 Runs a one time specified polling command. This is useful for initiating a local playbook context before running a polling scheduled task.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Runs a one time specified polling command. This is useful for initiating a local
 | Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +21,5 @@ Runs a one time specified polling command. This is useful for initiating a local
 | additionalPollingCommandArgValues | The comma-separated arguments values of the polling command. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
