@@ -474,6 +474,9 @@ script:
     - name: policy_id
       description: Optional. The ID of the Conditional Access policy to retrieve. If not provided, all policies will be returned.
       required: false
+    - name: filter
+      description: Optional. The OData filter query to retrieve specific Conditional Access policies.
+      required: false
   - description: Delete specific Conditional Access policy by id.
     name: msgraph-identity-ca-policy-delete
     arguments:
@@ -796,6 +799,17 @@ script:
         - approvedApplication
         - compliantApplication
         - passwordChange
+    - name: command_action
+      description: |
+        Defines how to update fields in the policy.
+        - `override` (default): Replaces existing values.
+        - `append`: Adds new values to existing ones without removing them.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - override
+        - append
+
   isfetch: true
   script: '-'
   type: python
