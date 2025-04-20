@@ -81,7 +81,7 @@ The payload could then be mapped in the [Mapping wizard (Cortex XSOAR 6.13)](htt
 
 - Note that the *Store sample events for mapping* parameter needs to be set.
 
-    <img width="900" src="./../../doc_files/mapping.png" />
+    <img width="900" src="../../doc_files/mapping.png" />
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 
