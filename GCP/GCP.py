@@ -4,9 +4,12 @@ from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
-#common
 
-#taken from GoogleCloudCompute
+# common
+
+# taken from GoogleCloudCompute
+
+
 def parse_resource_ids(resource_id):
     """
     Split the resource ids to a list
@@ -16,6 +19,7 @@ def parse_resource_ids(resource_id):
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
     return resource_ids
+
 
 def parse_firewall_rule(rule_str):
     """
@@ -38,7 +42,30 @@ def parse_firewall_rule(rule_str):
 
     return rules
 
-### 
+
+def parse_metadata_items(tags_str):
+    """
+    Transforms a string of multiple inputes to a dictionary list
+    parameter: (string) metadata_items
+
+    Return metadata items as a dictionary list
+    """
+    tags = []
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
+    for f in tags_str.split(";"):
+        match = regex.match(f)
+        if match is None:
+            raise ValueError(
+                f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
+            )
+
+        tags.append({"key": match.group(1), "value": match.group(2)})
+
+    return tags
+
+
+###
+
 
 urllib3.disable_warnings()
 REQUIRED_PERMISSIONS: Dict[str, List[str]] = {
@@ -196,7 +223,8 @@ def compute_update_subnet(creds: Credentials, args: Dict[str, Any]) -> CommandRe
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'project_id', 'region', 'resource_name', and optional flow log and private access flags.
+        args (Dict[str, Any]): Must include 'project_id', 'region', 'resource_name',
+        and optional flow log and private access flags.
 
     Returns:
         CommandResults: Result of the subnet patch operation.
@@ -249,11 +277,7 @@ def compute_add_metadata(creds: Credentials, args: Dict[str, Any]) -> CommandRes
     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()
     fingerprint = instance.get("metadata", {}).get("fingerprint")
 
-    items = [
-        {"key": k.strip(), "value": v.strip()}
-        for part in metadata_str.split(",")
-        for k, v in [part.split("=")]
-    ]
+    items = parse_metadata_items(metadata_str)
 
     body = {"fingerprint": fingerprint, "items": items}
     response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name, body=body).execute()
