@@ -6,7 +6,6 @@ import demistomock as demisto
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
 WIZ_API_LIMIT = 1  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
@@ -56,6 +55,12 @@ class DemistoParams:
     API_ENDPOINT = 'api_endpoint'
     MAX_FETCH = 'max_fetch'
     FIRST_FETCH = 'first_fetch'
+    TIME = 'time'
+    NAME = 'name'
+    OCCURRED = 'occurred'
+    RAW_JSON = 'rawJSON'
+    SEVERITY = 'severity'
+    MIRROR_ID = 'dbotMirrorId'
 
 
 class WizApiVariables:
@@ -66,7 +71,6 @@ class WizApiVariables:
     STATUS = 'status'
     CREATED_AT = 'createdAt'
     AFTER_TIME = 'after'
-    RELATED_ENTITY = 'relatedEntity'
     FIELD = 'field'
     DIRECTION = 'direction'
     TYPE = 'type'
@@ -83,6 +87,9 @@ class WizApiVariables:
     MATCHED_RULE = 'matchedRule'
     MATCHED_RULE_NAME = 'matchedRuleName'
     PROJECT_ID = 'projectId'
+    NAME = 'name'
+    RULE = 'rule'
+    RULE_MATCH = 'ruleMatch'
 
 
 class WizOrderByFields:
@@ -478,6 +485,56 @@ def get_token():
     return TOKEN
 
 
+def get_entries(query, variables):
+    if not TOKEN:
+        get_token()
+
+    data = {"variables": variables, "query": query}
+    demisto.info(f"Invoking the API with {json.dumps(data)}")
+
+    try:
+        response = requests.post(url=URL, json=data, headers=HEADERS)
+        response_json = response.json()
+
+        demisto.info(f"Response status code is {response.status_code}")
+        demisto.info(f"The response is {response_json}")
+
+        if response.status_code != requests.codes.ok:
+            raise Exception('Error authenticating to Wiz [{}] - {}'.format(response.status_code, response.text))
+
+        if WizApiResponse.ERRORS in response_json:
+            demisto.error(f"Wiz error content: {response_json[WizApiResponse.ERRORS]}")
+            error_message = f"Wiz API error details: {get_error_output(response_json)}"
+            demisto.error("An error has occurred using:"
+                          f"\tQuery: {query} - "
+                          f"\tVariables: {variables} -"
+                          f"\t{error_message}")
+            demisto.error(error_message)
+            raise Exception(f"{error_message}\n"
+                            f"Check 'server.log' instance file to get additional information")
+
+        return response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES], \
+               response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO]
+
+    except Exception as e:
+        error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
+        demisto.error(error_message)
+        raise Exception(f"An unexpected error occurred.\nError info: {error_message}")
+
+
+def query_api(query, variables):
+    entries, page_info = get_entries(query, variables)
+    if not entries:
+        demisto.info("No detection(/s) available to fetch.")
+
+    while page_info[WizApiResponse.HAS_NEXT_PAGE]:
+        variables[WizApiVariables.AFTER] = page_info[WizApiResponse.END_CURSOR]
+        new_entries, page_info = get_entries(query, variables)
+        if new_entries is not None:
+            entries += new_entries
+    return entries
+
+
 def checkAPIerrors(query, variables):
     if not TOKEN:
         get_token()
@@ -488,13 +545,11 @@ def checkAPIerrors(query, variables):
 
     result = requests.post(url=URL, json=data, headers=HEADERS)
 
-    demisto.info(f"Result is {result}")
-    demisto.info(f"Result Json is {result.json()}")
+    demisto.info(f"Response status code is {result.status_code}")
+    demisto.info(f"The response is {result.json()}")
 
     error_message = ""
     result_json = result.json()
-    demisto.info(f"RESULT JSON KEYS: {list(result_json.keys())}")
-    demisto.info(f"ERRORS IN KEYS: {WizApiResponse.ERRORS in result_json}")
     if WizApiResponse.ERRORS in result_json:
         demisto.info(f"Wiz error content: {result_json[WizApiResponse.ERRORS]}")
         error_message = f"Wiz API error details: {get_error_output(result_json)}"
@@ -538,53 +593,40 @@ def build_incidents(detection):
         return {}
 
     return {
-        'name': detection.get('sourceRule', {}).get('name', 'No sourceRule') + ' - ' + detection.get('id'),
-        'occurred': detection['createdAt'],
-        'rawJSON': json.dumps(detection),
-        'severity': translate_severity(detection)
+        DemistoParams.NAME: detection.get(WizApiVariables.RULE_MATCH, {}).get(WizApiVariables.RULE, {}).get(
+            WizApiVariables.NAME, f'No {WizApiVariables.NAME}') + ' - ' + detection.get(WizApiVariables.ID),
+        DemistoParams.OCCURRED: detection[WizApiVariables.CREATED_AT],
+        DemistoParams.RAW_JSON: json.dumps(detection),
+        DemistoParams.SEVERITY: translate_severity(detection),
+        DemistoParams.MIRROR_ID: str(detection[WizApiVariables.ID]),
     }
 
 
-def fetch_incidents(max_fetch):
+def fetch_incidents():
     """
     Fetch all Detections (OOB XSOAR Fetch)
     """
 
-    if max_fetch > 500:
-        max_fetch = 500
+    last_run = demisto.getLastRun().get(DemistoParams.TIME)
 
-    last_run = demisto.getLastRun().get('time')
     if not last_run:  # first time fetch
-        last_run = dateparser.parse(demisto.params().get(DemistoParams.FIRST_FETCH, '7 days').strip())
+        last_run = dateparser.parse(demisto.params().get(DemistoParams.FIRST_FETCH, '3 days').strip())
         last_run = (last_run.isoformat()[:-3] + 'Z')
 
-    query = PULL_DETECTIONS_QUERY
-    variables = {
-        WizApiVariables.FIRST: max_fetch,
-        WizApiVariables.FILTER_BY: {
-            WizApiVariables.STATUS: [
-                WizDetectionStatus.OPEN,
-                WizDetectionStatus.IN_PROGRESS
-            ],
+    detection_variables = PULL_DETECTIONS_VARIABLES.copy()
+    if WizApiVariables.FILTER_BY not in detection_variables:
+        detection_variables[WizApiVariables.FILTER_BY] = {}
 
-            WizApiVariables.CREATED_AT: {
-                WizApiVariables.AFTER_TIME: last_run
-            },
-            WizApiVariables.RELATED_ENTITY: {}
-        },
-        WizApiVariables.ORDER_BY: {
-            WizApiVariables.FIELD: WizOrderByFields.SEVERITY,
-            WizApiVariables.DIRECTION: WizOrderDirection.DESC
-        }
-    }
+    detection_variables = apply_creation_after_days_filter(detection_variables, last_run)
+    api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
 
-    response_json = checkAPIerrors(query, variables)
+    response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
 
     detections = response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES]
     while response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO][WizApiResponse.HAS_NEXT_PAGE]:
-        variables[WizApiVariables.AFTER] = \
+        detection_variables[WizApiVariables.AFTER] = \
             response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO][WizApiResponse.END_CURSOR]
-        response_json = checkAPIerrors(query, variables)
+        response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
         if response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES] != []:
             detections.extend(response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES])
 
@@ -594,8 +636,7 @@ def fetch_incidents(max_fetch):
         incidents.append(incident)
 
     demisto.incidents(incidents)
-    demisto.setLastRun(
-        {'time': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+    demisto.setLastRun({DemistoParams.TIME: api_start_run_time})
 
 
 def get_detection(detection_id=None, issue_id=None):
@@ -640,22 +681,19 @@ def get_detection(detection_id=None, issue_id=None):
         if not is_valid_id:
             demisto.debug(message)
             return message
-
         detection_variables[WizApiVariables.FILTER_BY][WizApiVariables.ISSUE_ID] = issue_id
-    response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
 
-    demisto.debug(f"The API response is {response_json}")
+    wiz_detection = query_api(PULL_DETECTIONS_QUERY, detection_variables)
+    demisto.info(f"wiz detection is {wiz_detection} and the type is {type(wiz_detection)}")
 
-    detections = {}
-    if response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES]:
-        detections = response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES]
-    else:
+    if not wiz_detection:
+        wiz_detection = {}
         if detection_id:
             demisto.info(f"There was no result for Detection ID: {detection_id}")
         else:
             demisto.info(f"There was no result for Issue ID: {issue_id}")
 
-    return detections
+    return wiz_detection
 
 
 def validate_detection_type(detection_type):
@@ -917,8 +955,7 @@ def validate_all_parameters(parameters_dict):
     return True, None, validated_values
 
 
-
-def apply_creation_days_filter(variables, days_back):
+def apply_creation_in_last_days_filter(variables, days_back):
     """
     Adds the creation_days_back filter to the query variables
 
@@ -938,6 +975,30 @@ def apply_creation_days_filter(variables, days_back):
     variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {
         WizApiVariables.IN_LAST: {WizApiVariables.AMOUNT: days_back,
                                   WizApiVariables.UNIT: DurationUnit.DAYS}
+    }
+
+    return variables
+
+
+def apply_creation_after_days_filter(variables, after_time):
+    """
+    Adds the creation_days_back filter to the query variables
+
+    Args:
+        variables (dict): The query variables
+        after_time (str): The time to filter after
+
+    Returns:
+        dict: Updated variables with the filter
+    """
+    if not after_time:
+        return variables
+
+    if WizApiVariables.FILTER_BY not in variables:
+        variables[WizApiVariables.FILTER_BY] = {}
+
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {
+        WizApiVariables.AFTER: after_time
     }
 
     return variables
@@ -1122,7 +1183,7 @@ def apply_all_filters(variables, validated_values):
     Returns:
         dict: Updated query variables with all filters applied
     """
-    variables = apply_creation_days_filter(variables, validated_values.get(WizInputParam.CREATION_DAYS_BACK))
+    variables = apply_creation_in_last_days_filter(variables, validated_values.get(WizInputParam.CREATION_DAYS_BACK))
     variables = apply_detection_type_filter(variables, validated_values.get(WizInputParam.DETECTION_TYPE))
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.DETECTION_PLATFORM))
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID))
@@ -1269,10 +1330,7 @@ def main():
                 demisto.results("Invalid token")
 
         elif command == DemistoCommands.FETCH_INCIDENTS:
-            max_fetch = int(demisto.params().get(DemistoParams.MAX_FETCH, 50))
-            fetch_incidents(
-                max_fetch=max_fetch
-            )
+            fetch_incidents()
 
         elif command == DemistoCommands.WIZ_GET_DETECTIONS:
             demisto_args = demisto.args()
