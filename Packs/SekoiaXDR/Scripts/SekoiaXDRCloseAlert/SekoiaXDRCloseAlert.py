@@ -23,11 +23,7 @@ def post_closure_comment(
             "sekoia-xdr-post-comment-alert",
             {
                 "id": alert_id,
-                "comment": (
-                    f"{close_reason}-{close_notes}"
-                    if close_reason and close_notes
-                    else None
-                ),
+                "comment": (f"{close_reason}-{close_notes}" if close_reason and close_notes else None),
                 "author": get_username(username),  # type: ignore
             },
         )
@@ -104,7 +100,13 @@ def main():  # pragma: no cover
     close_notes = demisto.getArg("closeNotes")
     username = demisto.getArg("closingUserId")  # type: ignore
     close_alert(
-        alert_short_id, reject, close_reason, close_notes, username, mirror_direction, is_mirror_out  # type: ignore
+        alert_short_id,
+        reject,
+        close_reason,
+        close_notes,
+        username,
+        mirror_direction,
+        is_mirror_out,  # type: ignore
     )
 
 

@@ -49,9 +49,7 @@ def test_fetch_incidents(mocker):
     client = get_test_client()
 
     mocker.patch.object(client, "get_alerts", return_value=alert_data())
-    mocker.patch.object(
-        client, "get_escalation_path", return_value=escalation_path_data()
-    )
+    mocker.patch.object(client, "get_escalation_path", return_value=escalation_path_data())
     mocker.patch.object(client, "get_events", return_value=event_data())
     mocker.patch.object(client, "get_active_user", return_value=user_data())
 
@@ -135,9 +133,7 @@ def test_fetch_incidents_first_fetch(mocker):
     )
 
     mocker.patch.object(client, "get_alerts", return_value=alert_data())
-    mocker.patch.object(
-        client, "get_escalation_path", return_value=recent_escalation_path
-    )
+    mocker.patch.object(client, "get_escalation_path", return_value=recent_escalation_path)
     mocker.patch.object(client, "get_events", return_value=event_data())
     mocker.patch.object(client, "get_active_user", return_value=user_data())
 
@@ -165,9 +161,7 @@ def test_fetch_incidents_existing_ids(mocker):
     client = get_test_client()
 
     mocker.patch.object(client, "get_alerts", return_value=alert_data())
-    mocker.patch.object(
-        client, "get_escalation_path", return_value=escalation_path_data()
-    )
+    mocker.patch.object(client, "get_escalation_path", return_value=escalation_path_data())
     mocker.patch.object(client, "get_events", return_value=event_data())
     mocker.patch.object(client, "get_active_user", return_value=user_data())
 

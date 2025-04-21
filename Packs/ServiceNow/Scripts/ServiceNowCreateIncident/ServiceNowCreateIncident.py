@@ -14,11 +14,7 @@ stating that a required field is missing.
 """
 Mapping of severity display names to their corresponding values in the API
 """
-TICKET_SEVERITY = {
-    '1 - High': '1',
-    '2 - Medium': '2',
-    '3 - Low': '3'
-}
+TICKET_SEVERITY = {"1 - High": "1", "2 - Medium": "2", "3 - Low": "3"}
 
 """
 Function to use the query command to retrieve records from the users table.
@@ -26,37 +22,37 @@ Function to use the query command to retrieve records from the users table.
 
 
 def get_user(query):
-    using = demisto.args().get('using')
+    using = demisto.args().get("using")
     user_args = {
-        'table_name': 'sys_user',
-        'query': query,
-        'using': using,
+        "table_name": "sys_user",
+        "query": query,
+        "using": using,
     }
 
-    user_result = demisto.executeCommand('servicenow-query-table', user_args)[0]
-    user_data = demisto.get(user_result, 'Contents')
+    user_result = demisto.executeCommand("servicenow-query-table", user_args)[0]
+    user_data = demisto.get(user_result, "Contents")
     if not user_data:
-        return_error('Could not get the contents from the command result: ' + json.dumps(user_result))
+        return_error("Could not get the contents from the command result: " + json.dumps(user_result))
     if not isinstance(user_data, dict):
         # In case of string result, e.g "No incidents found"
-        demisto.results('User not found')
+        demisto.results("User not found")
         sys.exit(0)
-    user = user_data['result']
+    user = user_data["result"]
 
     if not user or len(user) == 0:
-        demisto.results('User not found')
+        demisto.results("User not found")
         sys.exit(0)
 
     return user
 
 
 def get_user_id(user_name):
-    user_name = user_name.split(' ')
-    query = 'first_name={}^last_name={}'.format(user_name[0], user_name[1])
+    user_name = user_name.split(" ")
+    query = f"first_name={user_name[0]}^last_name={user_name[1]}"
 
     user = get_user(query)
 
-    return user[0]['sys_id']
+    return user[0]["sys_id"]
 
 
 """
@@ -65,65 +61,60 @@ Function to use the query command to retrieve records from the groups table.
 
 
 def get_group(query):
-    using = demisto.args().get('using')
+    using = demisto.args().get("using")
     group_args = {
-        'table_name': 'sys_user_group',
-        'query': query,
-        'using': using,
+        "table_name": "sys_user_group",
+        "query": query,
+        "using": using,
     }
 
-    group_result = demisto.executeCommand('servicenow-query-table', group_args)[0]
-    group_data = demisto.get(group_result, 'Contents')
+    group_result = demisto.executeCommand("servicenow-query-table", group_args)[0]
+    group_data = demisto.get(group_result, "Contents")
     if not group_data:
-        return_error('Could not get the contents from the command result: ' + json.dumps(group_result))
+        return_error("Could not get the contents from the command result: " + json.dumps(group_result))
     if not isinstance(group_data, dict):
         # In case of string result, e.g "No incidents found"
-        demisto.results('Group not found')
+        demisto.results("Group not found")
         sys.exit(0)
-    group = group_data['result']
+    group = group_data["result"]
 
     if not group or len(group) == 0:
-        demisto.results('Group not found')
+        demisto.results("Group not found")
         sys.exit(0)
 
     return group
 
 
 def get_group_id(group_name):
-    query = 'name=' + group_name
+    query = "name=" + group_name
 
     group = get_group(query)
 
-    return group[0]['sys_id']
+    return group[0]["sys_id"]
 
 
 def main():
     """
     The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
     """
-    command_args = {
-        'table_name': 'incident'
-    }
+    command_args = {"table_name": "incident"}
 
     """
     These record fields(columns) are mapped from their names in ServiceNow to your choice of field names.
     To view all fields for a given table, use the servicenow-list-fields command.
     The ID field must be included to manage unique context entries.
     """
-    fields_to_map = {
-        'sys_id': 'ID',
-        'number': 'Number'
-    }
+    fields_to_map = {"sys_id": "ID", "number": "Number"}
 
     """
     For each field in the arguments, you need to check if it was provided and apply
     any operations required (e.g, get a user id from a user name) to send them to the API.
     """
-    incident_severity = demisto.args().get('severity')
-    group_name = demisto.args().get('assigned_group')
-    user_name = demisto.args().get('assignee')
-    description = demisto.args().get('description')
-    using = demisto.args().get('using')
+    incident_severity = demisto.args().get("severity")
+    group_name = demisto.args().get("assigned_group")
+    user_name = demisto.args().get("assignee")
+    description = demisto.args().get("description")
+    using = demisto.args().get("using")
     user_id = None
     group_id = None
 
@@ -144,52 +135,51 @@ def main():
     fields = []
 
     if incident_severity:
-        fields.append('severity' + '=' + TICKET_SEVERITY[incident_severity])
+        fields.append("severity" + "=" + TICKET_SEVERITY[incident_severity])
     if user_id:
-        fields.append('assigned_to' + '=' + user_id)
+        fields.append("assigned_to" + "=" + user_id)
     if description:
-        fields.append('short_description' + '=' + description)
+        fields.append("short_description" + "=" + description)
     if group_id:
-        fields.append('assignment_group' + '=' + group_id)
+        fields.append("assignment_group" + "=" + group_id)
 
-    command_args['fields'] = ';'.join(fields)
-    command_args['using'] = using
+    command_args["fields"] = ";".join(fields)
+    command_args["using"] = using
 
-    command_res = demisto.executeCommand('servicenow-create-record', command_args)
+    command_res = demisto.executeCommand("servicenow-create-record", command_args)
     result = {}
     try:
         entry = command_res[0]
         if isError(entry):
-            return_error(entry['Contents'])
+            return_error(entry["Contents"])
         else:
-            record_data = demisto.get(entry, 'Contents')
+            record_data = demisto.get(entry, "Contents")
             if not record_data:
-                return_error('Could not get the contents from the command result: ' + json.dumps(entry))
+                return_error("Could not get the contents from the command result: " + json.dumps(entry))
             if not isinstance(record_data, dict):
                 # In case of string result, e.g "No incidents found"
                 result = record_data
             else:
                 # Get the actual record
-                record = record_data['result']
+                record = record_data["result"]
                 # Map fields according to fields_to_map that were defined earlier
-                mapped_record = dict(
-                    (fields_to_map[key], value) for (key, value) in
-                    list([k_v for k_v in list(record.items()) if k_v[0] in list(fields_to_map.keys())])
+                mapped_record = dict(  # noqa: C402
+                    (fields_to_map[key], value)
+                    for (key, value) in [k_v for k_v in list(record.items()) if k_v[0] in list(fields_to_map.keys())]
                 )
 
-                display_headers = ['ID', 'Number']
+                display_headers = ["ID", "Number"]
 
                 # Output entry
                 result = {
-                    'Type': entryTypes['note'],
-                    'Contents': record_data,
-                    'ContentsFormat': formats['json'],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': tableToMarkdown('Incident successfully created', mapped_record,
-                                                     headers=display_headers, removeNull=True),
-                    'EntryContext': {
-                        'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
-                    }
+                    "Type": entryTypes["note"],
+                    "Contents": record_data,
+                    "ContentsFormat": formats["json"],
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": tableToMarkdown(
+                        "Incident successfully created", mapped_record, headers=display_headers, removeNull=True
+                    ),
+                    "EntryContext": {"ServiceNow.Incident(val.ID===obj.ID)": createContext(mapped_record)},
                 }
 
     except Exception as ex:
@@ -198,5 +188,5 @@ def main():
     demisto.results(result)
 
 
-if __name__ in ["__builtin__", "builtins", '__main__']:
+if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()

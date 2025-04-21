@@ -1,26 +1,22 @@
 import json
-
-import pytest
 from datetime import datetime
 
+import pytest
 from freezegun import freeze_time
-
-from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
+from ProofpointTAP_v2 import ALL_EVENTS, ISSUES_EVENTS, Client, fetch_incidents, get_events_command
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MOCK_URL = "http://123-fake-api.com"
 MOCK_DELIVERED_MESSAGE = {
     "GUID": "1111",
     "QID": "r2FNwRHF004109",
-    "ccAddresses": [
-        "bruce.wayne@university-of-education.zz"
-    ],
+    "ccAddresses": ["bruce.wayne@university-of-education.zz"],
     "clusterId": "pharmtech_hosted",
     "fromAddress": "badguy@evil.zz",
-    "headerCC": "\"Bruce Wayne\" <bruce.wayne@university-of-education.zz>",
-    "headerFrom": "\"A. Badguy\" <badguy@evil.zz>",
+    "headerCC": '"Bruce Wayne" <bruce.wayne@university-of-education.zz>',
+    "headerFrom": '"A. Badguy" <badguy@evil.zz>',
     "headerReplyTo": None,
-    "headerTo": "\"Clark Kent\" <clark.kent@pharmtech.zz>; \"Diana Prince\" <diana.prince@pharmtech.zz>",
+    "headerTo": '"Clark Kent" <clark.kent@pharmtech.zz>; "Diana Prince" <diana.prince@pharmtech.zz>',
     "impostorScore": 0,
     "malwareScore": 100,
     "messageID": "1111@evil.zz",
@@ -33,7 +29,7 @@ MOCK_DELIVERED_MESSAGE = {
             "threatStatus": "active",
             "threatTime": "2010-01-30T00:00:40.000Z",
             "threatType": "ATTACHMENT",
-            "threatUrl": "https://threatinsight.proofpoint.com/43fc1aa4c1cd0146d334c5593b1428f6d062b2c406e5efe8abe95ca"
+            "threatUrl": "https://threatinsight.proofpoint.com/43fc1aa4c1cd0146d334c5593b1428f6d062b2c406e5efe8abe95ca",
         },
         {
             "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
@@ -42,48 +38,35 @@ MOCK_DELIVERED_MESSAGE = {
             "threatId": "3ba97fc852c66a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
             "threatTime": "2010-01-30T00:00:30.000Z",
             "threatType": "URL",
-            "threatUrl": "https://threatinsight.proofpoint.com/a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa"
-        }
+            "threatUrl": "https://threatinsight.proofpoint.com/a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
+        },
     ],
     "messageTime": "2010-01-30T00:00:59.000Z",
-    "modulesRun": [
-        "pdr",
-        "sandbox",
-        "spam",
-        "urldefense"
-    ],
+    "modulesRun": ["pdr", "sandbox", "spam", "urldefense"],
     "phishScore": 46,
-    "policyRoutes": [
-        "default_inbound",
-        "executives"
-    ],
+    "policyRoutes": ["default_inbound", "executives"],
     "quarantineFolder": "Attachment Defense",
     "quarantineRule": "module.sandbox.threat",
-    "recipient": [
-        "clark.kent@pharmtech.zz",
-        "diana.prince@pharmtech.zz"
-    ],
+    "recipient": ["clark.kent@pharmtech.zz", "diana.prince@pharmtech.zz"],
     "replyToAddress": None,
     "sender": "e99d7ed5580193f36a51f597bc2c0210@evil.zz",
     "senderIP": "192.0.2.255",
     "spamScore": 4,
     "subject": "Please find a totally safe invoice attached.",
     "toAddresses": "xx@xxx.com",
-    "xmailer": None
+    "xmailer": None,
 }
 
 MOCK_BLOCKED_MESSAGE = {
     "GUID": "2222",
     "QID": "r2FNwRHF004109",
-    "ccAddresses": [
-        "bruce.wayne@university-of-education.zz"
-    ],
+    "ccAddresses": ["bruce.wayne@university-of-education.zz"],
     "clusterId": "pharmtech_hosted",
     "fromAddress": "badguy@evil.zz",
-    "headerCC": "\"Bruce Wayne\" <bruce.wayne@university-of-education.zz>",
-    "headerFrom": "\"A. Badguy\" <badguy@evil.zz>",
+    "headerCC": '"Bruce Wayne" <bruce.wayne@university-of-education.zz>',
+    "headerFrom": '"A. Badguy" <badguy@evil.zz>',
     "headerReplyTo": None,
-    "headerTo": "\"Clark Kent\" <clark.kent@pharmtech.zz>; \"Diana Prince\" <diana.prince@pharmtech.zz>",
+    "headerTo": '"Clark Kent" <clark.kent@pharmtech.zz>; "Diana Prince" <diana.prince@pharmtech.zz>',
     "impostorScore": 0,
     "malwareScore": 100,
     "messageID": "2222@evil.zz",
@@ -96,7 +79,7 @@ MOCK_BLOCKED_MESSAGE = {
             "threatStatus": "active",
             "threatTime": "2010-01-25T00:00:40.000Z",
             "threatType": "ATTACHMENT",
-            "threatUrl": "https://threatinsight.proofpoint.com/43fc1aa4c1cd0146d334c5593b1428f6d062b2c406e5efe8abe95ca"
+            "threatUrl": "https://threatinsight.proofpoint.com/43fc1aa4c1cd0146d334c5593b1428f6d062b2c406e5efe8abe95ca",
         },
         {
             "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
@@ -105,35 +88,23 @@ MOCK_BLOCKED_MESSAGE = {
             "threatId": "3ba97fc852c66a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
             "threatTime": "2010-01-25T00:00:30.000Z",
             "threatType": "URL",
-            "threatUrl": "https://threatinsight.proofpoint.com/a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa"
-        }
+            "threatUrl": "https://threatinsight.proofpoint.com/a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
+        },
     ],
     "messageTime": "2010-01-25T00:00:10.000Z",
-    "modulesRun": [
-        "pdr",
-        "sandbox",
-        "spam",
-        "urldefense"
-    ],
+    "modulesRun": ["pdr", "sandbox", "spam", "urldefense"],
     "phishScore": 46,
-    "policyRoutes": [
-        "default_inbound",
-        "executives"
-    ],
+    "policyRoutes": ["default_inbound", "executives"],
     "quarantineFolder": "Attachment Defense",
     "quarantineRule": "module.sandbox.threat",
-    "recipient": [
-        "clark.kent@pharmtech.zz",
-        "diana.prince@pharmtech.zz"
-    ],
+    "recipient": ["clark.kent@pharmtech.zz", "diana.prince@pharmtech.zz"],
     "replyToAddress": None,
     "sender": "e99d7ed5580193f36a51f597bc2c0210@evil.zz",
     "senderIP": "192.0.2.255",
     "spamScore": 4,
     "subject": "Please find a totally safe invoice attached.",
     "toAddresses": "xx@xxx.com",
-    "xmailer": None
-
+    "xmailer": None,
 }
 
 MOCK_PERMITTED_CLICK = {
@@ -149,7 +120,7 @@ MOCK_PERMITTED_CLICK = {
     "threatTime": "2010-01-11T00:00:10.000Z",
     "threatURL": "https://threatinsight.proofpoint.com/#/f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
     "url": "http://badguy.zz/",
-    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
+    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0",
 }
 
 MOCK_BLOCKED_CLICK = {
@@ -165,31 +136,16 @@ MOCK_BLOCKED_CLICK = {
     "threatTime": "2010-01-22T00:00:20.000Z",
     "threatURL": "https://threatinsight.proofpoint.com/#/f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
     "url": "http://badguy.zz/",
-    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
+    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0",
 }
 
-MOCK_ISSUES = {
-    "messagesDelivered": [
-        MOCK_DELIVERED_MESSAGE
-    ],
-    "clicksPermitted": [
-        MOCK_PERMITTED_CLICK
-    ]
-}
+MOCK_ISSUES = {"messagesDelivered": [MOCK_DELIVERED_MESSAGE], "clicksPermitted": [MOCK_PERMITTED_CLICK]}
 
 MOCK_ALL_EVENTS = {
-    "messagesDelivered": [
-        MOCK_DELIVERED_MESSAGE
-    ],
-    "clicksPermitted": [
-        MOCK_PERMITTED_CLICK
-    ],
-    "clicksBlocked": [
-        MOCK_BLOCKED_CLICK
-    ],
-    "messagesBlocked": [
-        MOCK_BLOCKED_MESSAGE
-    ]
+    "messagesDelivered": [MOCK_DELIVERED_MESSAGE],
+    "clicksPermitted": [MOCK_PERMITTED_CLICK],
+    "clicksBlocked": [MOCK_BLOCKED_CLICK],
+    "messagesBlocked": [MOCK_BLOCKED_MESSAGE],
 }
 
 
@@ -198,23 +154,15 @@ def get_mocked_time():
 
 
 def test_command(requests_mock):
-    requests_mock.get(MOCK_URL + "/v2/siem/issues?format=json&sinceSeconds=100&threatType=url&threatType=attachment",
-                      json=MOCK_ISSUES)
-
-    client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/issues?format=json&sinceSeconds=100&threatType=url&threatType=attachment", json=MOCK_ISSUES
     )
 
-    args = {
-        "threatType": "url,attachment",
-        "sinceSeconds": "100",
-        "eventTypes": ISSUES_EVENTS
-    }
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    args = {"threatType": "url,attachment", "sinceSeconds": "100", "eventTypes": ISSUES_EVENTS}
     _, outputs, _ = get_events_command(client, args)
 
     assert len(outputs["Proofpoint.MessagesDelivered(val.GUID == obj.GUID)"]) == 1
@@ -228,45 +176,32 @@ def return_self(return_date):
 @freeze_time("2010-01-01T00:00:00Z", tz_offset=0)
 def test_first_fetch_incidents(requests_mock, mocker):
     requests_mock.get(
-        MOCK_URL + '/v2/siem/all?format=json&interval=2009-12-31T23%3A30%3A00Z%2F2010-01-01T00%3A00%3A00Z',
-        json=MOCK_ALL_EVENTS)
+        MOCK_URL + "/v2/siem/all?format=json&interval=2009-12-31T23%3A30%3A00Z%2F2010-01-01T00%3A00%3A00Z", json=MOCK_ALL_EVENTS
+    )
 
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
 
     next_run, incidents, _ = fetch_incidents(
-        client=client,
-        last_run={},
-        first_fetch_time="30 minutes",
-        event_type_filter=ALL_EVENTS,
-        threat_status="",
-        threat_type=""
+        client=client, last_run={}, first_fetch_time="30 minutes", event_type_filter=ALL_EVENTS, threat_status="", threat_type=""
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[3]['rawJSON'])["messageID"] == "4444"
+    assert json.loads(incidents[3]["rawJSON"])["messageID"] == "4444"
 
 
 def test_next_fetch(requests_mock, mocker):
     mock_date = "2010-01-01T00:00:00Z"
-    mocker.patch('ProofpointTAP_v2.get_now', return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
-    requests_mock.get(MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%'
-                                 '2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared',
-                      json=MOCK_ALL_EVENTS)
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%"
+        "2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared",
+        json=MOCK_ALL_EVENTS,
+    )
 
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
 
     next_run, incidents, _ = fetch_incidents(
@@ -276,26 +211,21 @@ def test_next_fetch(requests_mock, mocker):
         event_type_filter=ALL_EVENTS,
         threat_status=["active", "cleared"],
         threat_type="",
-        limit=50
+        limit=50,
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[3]['rawJSON'])["messageID"] == "4444"
+    assert json.loads(incidents[3]["rawJSON"])["messageID"] == "4444"
 
 
 def test_fetch_limit(requests_mock, mocker):
     mock_date = "2010-01-01T00:00:00Z"
     this_run = {"last_fetch": "2010-01-01T00:00:00Z"}
-    mocker.patch('ProofpointTAP_v2.get_now', return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
-    requests_mock.get(MOCK_URL + '/v2/siem/all', json=MOCK_ALL_EVENTS)
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
 
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
 
     next_run, incidents, remained = fetch_incidents(
@@ -305,10 +235,10 @@ def test_fetch_limit(requests_mock, mocker):
         event_type_filter=ALL_EVENTS,
         threat_status=["active", "cleared"],
         threat_type="",
-        limit=3
+        limit=3,
     )
 
-    assert next_run['last_fetch'] == '2010-01-01T00:00:00Z'
+    assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
     assert len(incidents) == 3
     assert len(remained) == 1
     # test another run
@@ -320,9 +250,9 @@ def test_fetch_limit(requests_mock, mocker):
         threat_status=["active", "cleared"],
         threat_type="",
         limit=3,
-        integration_context={'incidents': remained}
+        integration_context={"incidents": remained},
     )
-    assert next_run['last_fetch'] == '2010-01-01T00:00:00Z'
+    assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
     assert len(incidents) == 1
     assert not remained
 
@@ -340,21 +270,15 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     Then:
         - Ensure subject is returned properly in the raw JSON
     """
-    mocker.patch(
-        'ProofpointTAP_v2.get_now',
-        return_value=get_mocked_time()
-    )
-    mocker.patch(
-        'ProofpointTAP_v2.parse_date_range',
-        return_value=("2010-01-01T00:00:00Z", 'never mind')
-    )
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=get_mocked_time())
+    mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
     requests_mock.get(
-        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
+        MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z",
         json={
             "messagesDelivered": [
                 {
-                    'subject': 'p\u00c3\u00a9rdida',
-                    'messageTime': '2010-01-30T00:00:59.000Z',
+                    "subject": "p\u00c3\u00a9rdida",
+                    "messageTime": "2010-01-30T00:00:59.000Z",
                 },
             ],
         },
@@ -362,9 +286,9 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
 
     client = Client(
         proofpoint_url=MOCK_URL,
-        api_version='v2',
-        service_principal='user1',
-        secret='123',
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
         verify=False,
         proxies=None,
     )
@@ -372,26 +296,24 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     _, incidents, _ = fetch_incidents(
         client=client,
         last_run={},
-        first_fetch_time='now',
+        first_fetch_time="now",
         event_type_filter=ALL_EVENTS,
-        threat_status='',
-        threat_type='',
-        raw_json_encoding='latin-1',
+        threat_status="",
+        threat_type="",
+        raw_json_encoding="latin-1",
     )
 
-    assert json.loads(incidents[0]['rawJSON'])['subject'] == 'pérdida'
+    assert json.loads(incidents[0]["rawJSON"])["subject"] == "pérdida"
 
 
-FETCH_TIMES_MOCK = [
-    ("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 5),
-    ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 2)
-]
+FETCH_TIMES_MOCK = [("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 5), ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 2)]
 
 
-@pytest.mark.parametrize('mock_past, mock_now, expected', FETCH_TIMES_MOCK)
+@pytest.mark.parametrize("mock_past, mock_now, expected", FETCH_TIMES_MOCK)
 def test_get_fetch_times(mocker, mock_past, mock_now, expected):
     from ProofpointTAP_v2 import get_fetch_times
-    mocker.patch('ProofpointTAP_v2.get_now', return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
     times = get_fetch_times(mock_past)
     assert len(times) == expected
 
@@ -420,7 +342,7 @@ class TestGetForensics:
             "sha256": "string",
             "size": "integer",
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_REGISTRY = {
         "type": "registry",
@@ -434,7 +356,7 @@ class TestGetForensics:
             "rule": "string",
             "value": "string",
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_PROCESS = {
         "type": "process",
@@ -445,7 +367,7 @@ class TestGetForensics:
             "action": "string",
             "path": "string",
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_NETWORK = {
         "type": "network",
@@ -458,7 +380,7 @@ class TestGetForensics:
             "port": "string",
             "type": "string",
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_MUTEX = {
         "type": "mutex",
@@ -469,7 +391,7 @@ class TestGetForensics:
             "name": "string",
             "path": "string",
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_IDS = {
         "type": "ids",
@@ -480,34 +402,23 @@ class TestGetForensics:
             "name": "string",
             "signatureId": "integer",
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_FILE = {
         "type": "file",
         "display": "string",
         "time": "string",
         "malicious": "string",
-        "what": {
-            "action": "string",
-            "md5": "string",
-            "path": "string",
-            "rule": "string",
-            "sha256": "string",
-            "size": "integer"
-        },
-        "platforms": PLATFORMS_OBJECT
+        "what": {"action": "string", "md5": "string", "path": "string", "rule": "string", "sha256": "string", "size": "integer"},
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_DROPPER = {
         "type": "dropper",
         "display": "string",
         "time": "string",
         "malicious": "string",
-        "what": {
-            "path": "string",
-            "rule": "string",
-            "url": "string"
-        },
-        "platforms": PLATFORMS_OBJECT
+        "what": {"path": "string", "rule": "string", "url": "string"},
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_DNS = {
         "type": "dns",
@@ -519,36 +430,25 @@ class TestGetForensics:
             "cnames": ["string1", "string2"],
             "ips": ["string1", "string2"],
             "nameservers": ["string1", "string2"],
-            "nameserversList": ["string1", "string2"]
+            "nameserversList": ["string1", "string2"],
         },
-        "platforms": PLATFORMS_OBJECT
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_COOKIE = {
         "type": "cookie",
         "display": "string",
         "time": "string",
         "malicious": "string",
-        "what": {
-            "action": "string",
-            "domain": "string",
-            "key": "string",
-            "value": "string"
-        },
-        "platforms": PLATFORMS_OBJECT
+        "what": {"action": "string", "domain": "string", "key": "string", "value": "string"},
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_OBJECT_ATTACHMENT = {
         "type": "attachment",
         "display": "string",
         "time": "string",
         "malicious": "string",
-        "what": {
-            "sha256": "string",
-            "md5": "string",
-            "offset": "integer",
-            "rule": "string",
-            "size": "integer"
-        },
-        "platforms": PLATFORMS_OBJECT
+        "what": {"sha256": "string", "md5": "string", "offset": "integer", "rule": "string", "size": "integer"},
+        "platforms": PLATFORMS_OBJECT,
     }
     EVIDENCE_LIST = [
         EVIDENCE_OBJECT_ATTACHMENT,
@@ -563,17 +463,19 @@ class TestGetForensics:
         EVIDENCE_OBJECT_REGISTRY,
         EVIDENCE_OBJECT_URL,
     ]
-    REPORT_OBJECT = [{
-        'name': 'string',
-        'scope': 'string',
-        'type': 'string',
-        'id': 'string',
-        'forensics': EVIDENCE_LIST,
-    }]
+    REPORT_OBJECT = [
+        {
+            "name": "string",
+            "scope": "string",
+            "type": "string",
+            "id": "string",
+            "forensics": EVIDENCE_LIST,
+        }
+    ]
 
     REPORT = {
-        'generated': 'string',
-        'reports': REPORT_OBJECT * 2,
+        "generated": "string",
+        "reports": REPORT_OBJECT * 2,
     }
 
     FORENSICS_REPORT = {
@@ -585,17 +487,11 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "SHA256": "string",
                 "MD5": "string",
                 "Offset": "integer",
-                "Size": "integer"
+                "Size": "integer",
             }
         ],
         "Cookie": [
@@ -603,17 +499,11 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Action": "string",
                 "Domain": "string",
                 "Key": "string",
-                "Value": "string"
+                "Value": "string",
             }
         ],
         "DNS": [
@@ -621,30 +511,12 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Host": "string",
-                "CNames": [
-                    "string1",
-                    "string2"
-                ],
-                "IP": [
-                    "string1",
-                    "string2"
-                ],
-                "NameServers": [
-                    "string1",
-                    "string2"
-                ],
-                "NameServersList": [
-                    "string1",
-                    "string2"
-                ]
+                "CNames": ["string1", "string2"],
+                "IP": ["string1", "string2"],
+                "NameServers": ["string1", "string2"],
+                "NameServersList": ["string1", "string2"],
             }
         ],
         "Dropper": [
@@ -652,16 +524,10 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Path": "string",
                 "URL": "string",
-                "Rule": "string"
+                "Rule": "string",
             }
         ],
         "File": [
@@ -669,18 +535,12 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Path": "string",
                 "Action": "string",
                 "SHA256": "string",
                 "MD5": "string",
-                "Size": "integer"
+                "Size": "integer",
             }
         ],
         "IDS": [
@@ -688,15 +548,9 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Name": "string",
-                "SignatureID": "integer"
+                "SignatureID": "integer",
             }
         ],
         "Mutex": [
@@ -704,15 +558,9 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Name": "string",
-                "Path": "string"
+                "Path": "string",
             }
         ],
         "Network": [
@@ -720,17 +568,11 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Action": "string",
                 "IP": "string",
                 "Port": "string",
-                "Protocol": "string"
+                "Protocol": "string",
             }
         ],
         "Process": [
@@ -738,15 +580,9 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Action": "string",
-                "Path": "string"
+                "Path": "string",
             }
         ],
         "Registry": [
@@ -754,17 +590,11 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "Name": "string",
                 "Action": "string",
                 "Key": "string",
-                "Value": "string"
+                "Value": "string",
             }
         ],
         "URL": [
@@ -772,38 +602,28 @@ class TestGetForensics:
                 "Time": "string",
                 "Display": "string",
                 "Malicious": "string",
-                "Platform": [
-                    {
-                        "Name": "windows 7 sp1",
-                        "OS": "windows 7",
-                        "Version": "4.5.661"
-                    }
-                ],
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
                 "URL": "string",
                 "Blacklisted": "boolean",
                 "SHA256": "string",
                 "MD5": "string",
                 "Size": "integer",
                 "HTTPStatus": "string",
-                "IP": "string"
+                "IP": "string",
             }
-        ]
+        ],
     }
 
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
 
     def test_get_forensics(self, requests_mock):
         from ProofpointTAP_v2 import get_forensic_command
-        requests_mock.get('http://123-fake-api.com/v2/forensics?threatId=1256', json=self.REPORT)
-        _, output, _ = get_forensic_command(self.client, {'threatId': '1256'})
-        reports = output['Proofpoint.Report(var.ID === obj.ID)']
+
+        requests_mock.get("http://123-fake-api.com/v2/forensics?threatId=1256", json=self.REPORT)
+        _, output, _ = get_forensic_command(self.client, {"threatId": "1256"})
+        reports = output["Proofpoint.Report(var.ID === obj.ID)"]
         assert len(reports) == 2
         report = reports[0]
         assert all(report)
@@ -821,287 +641,268 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
 
     """
-    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
+    with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
         return mock_file.read()
 
 
 def test_get_clicks_command(requests_mock):
     """
-        Scenario: Retrieves clicks to malicious URLs blocked and permitted in the specified time period.
-        Given:
-         - User has provided valid credentials and arguments.
-        When:
-         - A get-clicks command is called and there is clicks in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves clicks to malicious URLs blocked and permitted in the specified time period.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A get-clicks command is called and there is clicks in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, get_clicks_command
-    requests_mock.get(f'{MOCK_URL}/v2/siem/clicks/blocked',
-                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'clicksBlocked': [MOCK_BLOCKED_CLICK]})
-    requests_mock.get(f'{MOCK_URL}/v2/siem/clicks/permitted',
-                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'clicksPermitted': [MOCK_PERMITTED_CLICK]})
+
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/clicks/blocked", json={"queryEndTime": "2021-03-23T14:00:00Z", "clicksBlocked": [MOCK_BLOCKED_CLICK]}
+    )
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/clicks/permitted",
+        json={"queryEndTime": "2021-03-23T14:00:00Z", "clicksPermitted": [MOCK_PERMITTED_CLICK]},
+    )
 
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     blocked_result = get_clicks_command(client, True, "3 days")
     permitted_result = get_clicks_command(client, False, "3 days")
     assert len(blocked_result.outputs) == 1
-    assert blocked_result.outputs_prefix == 'Proofpoint.ClicksBlocked'
-    assert blocked_result.outputs[0].get('messageID') == '4444'
+    assert blocked_result.outputs_prefix == "Proofpoint.ClicksBlocked"
+    assert blocked_result.outputs[0].get("messageID") == "4444"
     assert len(permitted_result.outputs) == 1
-    assert permitted_result.outputs_prefix == 'Proofpoint.ClicksPermitted'
-    assert permitted_result.outputs[0].get('messageID') == '3333'
+    assert permitted_result.outputs_prefix == "Proofpoint.ClicksPermitted"
+    assert permitted_result.outputs[0].get("messageID") == "3333"
 
 
 def test_get_messages_command(requests_mock):
     """
-        Scenario: Retrieves messages to malicious URLs blocked and delivered in the specified time period.
-        Given:
-         - User has provided valid credentials and arguments.
-        When:
-         - A get-messages command is called and there is messages in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves messages to malicious URLs blocked and delivered in the specified time period.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A get-messages command is called and there is messages in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, get_messages_command
-    requests_mock.get(f'{MOCK_URL}/v2/siem/messages/blocked',
-                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'messagesBlocked': [MOCK_BLOCKED_MESSAGE]})
-    requests_mock.get(f'{MOCK_URL}/v2/siem/messages/delivered',
-                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'messagesDelivered': [MOCK_DELIVERED_MESSAGE]})
+
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/messages/blocked",
+        json={"queryEndTime": "2021-03-23T14:00:00Z", "messagesBlocked": [MOCK_BLOCKED_MESSAGE]},
+    )
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/messages/delivered",
+        json={"queryEndTime": "2021-03-23T14:00:00Z", "messagesDelivered": [MOCK_DELIVERED_MESSAGE]},
+    )
 
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     blocked_result = get_messages_command(client, True, "3 days")
     delivered_result = get_messages_command(client, False, "3 days")
     assert len(blocked_result.outputs) == 1
-    assert blocked_result.outputs_prefix == 'Proofpoint.MessagesBlocked'
-    assert blocked_result.outputs[0].get('messageID') == "2222@evil.zz"
+    assert blocked_result.outputs_prefix == "Proofpoint.MessagesBlocked"
+    assert blocked_result.outputs[0].get("messageID") == "2222@evil.zz"
     assert len(delivered_result.outputs) == 1
-    assert delivered_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
-    assert delivered_result.outputs[0].get('messageID') == "1111@evil.zz"
+    assert delivered_result.outputs_prefix == "Proofpoint.MessagesDelivered"
+    assert delivered_result.outputs[0].get("messageID") == "1111@evil.zz"
 
 
 def test_list_campaigns_command(requests_mock):
     """
-        Scenario: Retrieves a list of IDs of campaigns active in a time window.
-        Given:
-         - User has provided valid credentials.
-        When:
-         - A list-campaign-ids command is called and there is campaigns in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves a list of IDs of campaigns active in a time window.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - A list-campaign-ids command is called and there is campaigns in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, list_campaigns_command
-    mock_response = json.loads(load_mock_response('campaigns.json'))
-    requests_mock.get(f'{MOCK_URL}/v2/campaign/ids', json=mock_response)
+
+    mock_response = json.loads(load_mock_response("campaigns.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/campaign/ids", json=mock_response)
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     result = list_campaigns_command(client, "3 days")
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'Proofpoint.Campaign'
-    assert result.outputs[0].get('id') == "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"
-    assert result.outputs[0].get('lastUpdatedAt') == "2021-03-25T10:37:46.000Z"
+    assert result.outputs_prefix == "Proofpoint.Campaign"
+    assert result.outputs[0].get("id") == "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"
+    assert result.outputs[0].get("lastUpdatedAt") == "2021-03-25T10:37:46.000Z"
 
 
 def test_get_campaign(requests_mock):
     """
-        Scenario: Retrieves information for a given campaign.
-        Given:
-         - User has provided valid credentials and argument.
-        When:
-         - A get-campaign command is called and there is a campaign in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves information for a given campaign.
+    Given:
+     - User has provided valid credentials and argument.
+    When:
+     - A get-campaign command is called and there is a campaign in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, get_campaign_command
-    mock_response = json.loads(load_mock_response('campaign_information.json'))
-    requests_mock.get(f'{MOCK_URL}/v2/campaign/1', json=mock_response)
+
+    mock_response = json.loads(load_mock_response("campaign_information.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/campaign/1", json=mock_response)
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     result = get_campaign_command(client, "1")
     assert len(result.outputs) == 7
-    assert result.outputs_prefix == 'Proofpoint.Campaign'
-    assert result.outputs.get('info').get('id') == "aa9b3d62-4d72-4ebc-8f39-3da3833e7038"
+    assert result.outputs_prefix == "Proofpoint.Campaign"
+    assert result.outputs.get("info").get("id") == "aa9b3d62-4d72-4ebc-8f39-3da3833e7038"
 
 
 def test_list_most_attacked_users_command(requests_mock):
     """
-        Scenario: Retrieves a list of the most attacked users in the organization for a given period.
-        Given:
-         - User has provided valid credentials and argument.
-        When:
-         - A get-vap command is called and there is a attacked people in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves a list of the most attacked users in the organization for a given period.
+    Given:
+     - User has provided valid credentials and argument.
+    When:
+     - A get-vap command is called and there is a attacked people in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, list_most_attacked_users_command
-    mock_response = json.loads(load_mock_response('most_attacked_users.json'))
-    requests_mock.get(f'{MOCK_URL}/v2/people/vap', json=mock_response)
+
+    mock_response = json.loads(load_mock_response("most_attacked_users.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/people/vap", json=mock_response)
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     result = list_most_attacked_users_command(client, "")
     assert len(result.outputs) == 5
-    assert result.outputs_prefix == 'Proofpoint.Vap'
-    assert result.outputs.get('users')[0].get('identity').get('guid') == "88e36bf359-99e8-7e53-f58a-6df8b430be6d"
-    assert result.outputs.get('totalVapUsers') == 2
+    assert result.outputs_prefix == "Proofpoint.Vap"
+    assert result.outputs.get("users")[0].get("identity").get("guid") == "88e36bf359-99e8-7e53-f58a-6df8b430be6d"
+    assert result.outputs.get("totalVapUsers") == 2
 
 
 def test_get_top_clickers_command(requests_mock):
     """
-        Scenario: Retrieves a list of the top clickers in the organization for a given period.
-        Given:
-         - User has provided valid credentials and argument.
-        When:
-         - A get_top_clickers command is called and there is clickers in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves a list of the top clickers in the organization for a given period.
+    Given:
+     - User has provided valid credentials and argument.
+    When:
+     - A get_top_clickers command is called and there is clickers in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, get_top_clickers_command
-    mock_response = json.loads(load_mock_response('top_clickers.json'))
-    requests_mock.get(f'{MOCK_URL}/v2/people/top-clickers', json=mock_response)
+
+    mock_response = json.loads(load_mock_response("top_clickers.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/people/top-clickers", json=mock_response)
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     result = get_top_clickers_command(client, "")
     assert len(result.outputs) == 3
-    assert result.outputs_prefix == 'Proofpoint.Topclickers'
-    assert result.outputs.get('users')[1].get('identity').get('guid') == "b4077fsv0e-3a2e-767f-7315-c049f831cc95"
-    assert result.outputs.get('totalTopClickers') == 2
+    assert result.outputs_prefix == "Proofpoint.Topclickers"
+    assert result.outputs.get("users")[1].get("identity").get("guid") == "b4077fsv0e-3a2e-767f-7315-c049f831cc95"
+    assert result.outputs.get("totalTopClickers") == 2
 
 
 def test_url_decode(requests_mock):
     """
-        Scenario: Decode URLs that have been rewritten by TAP to their original, target URL.
-        Given:
-         - User has provided valid credentials and arguments.
-        When:
-         - A url-decode command is called.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Decode URLs that have been rewritten by TAP to their original, target URL.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A url-decode command is called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, url_decode_command
-    mock_response = json.loads(load_mock_response('url_decode.json'))
-    requests_mock.post(f'{MOCK_URL}/v2/url/decode', json=mock_response)
+
+    mock_response = json.loads(load_mock_response("url_decode.json"))
+    requests_mock.post(f"{MOCK_URL}/v2/url/decode", json=mock_response)
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     result = url_decode_command(client, "")
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'Proofpoint.URL'
-    assert result.outputs[1].get('decodedUrl') == "http://www.bouncycastle.org/"
+    assert result.outputs_prefix == "Proofpoint.URL"
+    assert result.outputs[1].get("decodedUrl") == "http://www.bouncycastle.org/"
 
 
 def test_list_issues_command(requests_mock):
     """
-        Scenario: Retrieves events for clicks to malicious URLs permitted and messages delivered in the specified time period.
-        Given:
-         - User has provided valid credentials and arguments.
-        When:
-         - A list_issues command is called and there is clicks and messages in the response.
-        Then:
-         - Ensure number of items is correct.
-         - Ensure outputs prefix is correct.
-         - Ensure a sample value from the API matches what is generated in the context.
+    Scenario: Retrieves events for clicks to malicious URLs permitted and messages delivered in the specified time period.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A list_issues command is called and there is clicks and messages in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
 
     """
     from ProofpointTAP_v2 import Client, list_issues_command
-    requests_mock.get(f'{MOCK_URL}/v2/siem/issues',
-                      json={"queryEndTime": "2021-04-16T14:00:00Z", "messagesDelivered": [MOCK_DELIVERED_MESSAGE],
-                            "clicksPermitted": [MOCK_PERMITTED_CLICK]})
+
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/issues",
+        json={
+            "queryEndTime": "2021-04-16T14:00:00Z",
+            "messagesDelivered": [MOCK_DELIVERED_MESSAGE],
+            "clicksPermitted": [MOCK_PERMITTED_CLICK],
+        },
+    )
     client = Client(
-        proofpoint_url=MOCK_URL,
-        api_version="v2",
-        service_principal="user1",
-        secret="123",
-        verify=False,
-        proxies=None
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
     )
     result = list_issues_command(client, "3 days")
     messages_result = result[0]
     clicks_result = result[1]
 
     assert len(clicks_result.outputs) == 1
-    assert clicks_result.outputs_prefix == 'Proofpoint.ClicksPermitted'
-    assert clicks_result.outputs[0].get('messageID') == '3333'
+    assert clicks_result.outputs_prefix == "Proofpoint.ClicksPermitted"
+    assert clicks_result.outputs[0].get("messageID") == "3333"
 
     assert len(messages_result.outputs) == 1
-    assert messages_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
-    assert messages_result.outputs[0].get('messageID') == "1111@evil.zz"
+    assert messages_result.outputs_prefix == "Proofpoint.MessagesDelivered"
+    assert messages_result.outputs[0].get("messageID") == "1111@evil.zz"
 
 
 @freeze_time("2024-05-03T11:00:00")
 def test_validate_first_fetch_time_valid_str():
     """
-        Given:
-         - A valid str first_fetch_time
-        When:
-         - running test_module.
-        Then:
-         - No exception is thrown.
+    Given:
+     - A valid str first_fetch_time
+    When:
+     - running test_module.
+    Then:
+     - No exception is thrown.
     """
     from ProofpointTAP_v2 import validate_first_fetch_time
-    first_fetch_time = '1 day ago'
+
+    first_fetch_time = "1 day ago"
     try:
         validate_first_fetch_time(first_fetch_time)
     except Exception as e:
@@ -1111,17 +912,20 @@ def test_validate_first_fetch_time_valid_str():
 @freeze_time("2024-05-03T11:00:00")
 def test_validate_first_fetch_time_not_valid():
     """
-        Given:
-         - A first_fetch_time bigger than 7 days ago
-        When:
-         - running test_module.
-        Then:
-         - Exception is thrown.
+    Given:
+     - A first_fetch_time bigger than 7 days ago
+    When:
+     - running test_module.
+    Then:
+     - Exception is thrown.
     """
     from ProofpointTAP_v2 import validate_first_fetch_time
-    first_fetch_time = '8 days ago'
+
+    first_fetch_time = "8 days ago"
     try:
         validate_first_fetch_time(first_fetch_time)
     except Exception as e:
-        assert ('The First fetch time range is more than 7 days ago. Please update this parameter since '
-                'Proofpoint supports a maximum 1 week fetch back.') in str(e)
+        assert (
+            "The First fetch time range is more than 7 days ago. Please update this parameter since "
+            "Proofpoint supports a maximum 1 week fetch back."
+        ) in str(e)

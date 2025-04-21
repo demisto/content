@@ -1,23 +1,25 @@
+import hashlib
+
 import demistomock as demisto
 from CommonServerPython import *
-import hashlib
 
 NUM_OF_RETRIES = 3
 BACKOFF_FACTOR = 1.0
-API_VERSION = 'v2'
+API_VERSION = "v2"
 MAX_EVENTS_PER_TYPE = 50000
 PAGE_SIZE = 10000
 MAX_AUDIT_API_COUNT = 10000
-ALERT_TIME_FIELD = 'latestTimestampUsecs'
-AUDIT_LOGS_TIME_FIELD = 'timestampUsecs'
+ALERT_TIME_FIELD = "latestTimestampUsecs"
+AUDIT_LOGS_TIME_FIELD = "timestampUsecs"
 
 
 class EventType:
     """
     Class used to as Enum for the Cohesity event type
     """
-    alert = 'Alert'
-    audit_log = 'Audit Log'
+
+    alert = "Alert"
+    audit_log = "Audit Log"
 
 
 class Client(BaseClient):
@@ -26,43 +28,36 @@ class Client(BaseClient):
     """
 
     def get_alerts(self, fetch_start_timestamp: int, fetch_end_timestamp: int) -> dict:
-        request_params = {
-            'startDateUsecs': fetch_start_timestamp,
-            'endDateUsecs': fetch_end_timestamp
-        }
+        request_params = {"startDateUsecs": fetch_start_timestamp, "endDateUsecs": fetch_end_timestamp}
         res = self._http_request(  # type: ignore
-            method='GET',
-            url_suffix='/mcm/alerts',
+            method="GET",
+            url_suffix="/mcm/alerts",
             params=request_params,
             retries=NUM_OF_RETRIES,
             backoff_factor=BACKOFF_FACTOR,
-            resp_type='response'
+            resp_type="response",
         )
         # In case there are no results the API returns 'null' which parsed into None object by response.json().
         try:
             json_res = res.json() or {}
         except ValueError as exception:
-            raise DemistoException(f'Failed to parse response into json object. Response: {res.content}', exception, res)
+            raise DemistoException(f"Failed to parse response into json object. Response: {res.content}", exception, res)
 
         return json_res
 
     def get_audit_logs(self, start_time: int, end_time: int) -> dict:
-        request_params = {
-            'startTimeUsecs': start_time,
-            'endTimeUsecs': end_time,
-            'count': MAX_AUDIT_API_COUNT
-        }
+        request_params = {"startTimeUsecs": start_time, "endTimeUsecs": end_time, "count": MAX_AUDIT_API_COUNT}
 
         return self._http_request(
-            method='GET',
-            url_suffix='/mcm/audit-logs',
+            method="GET",
+            url_suffix="/mcm/audit-logs",
             params=request_params,
             retries=NUM_OF_RETRIES,
             backoff_factor=BACKOFF_FACTOR,
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def adjust_and_dedup_elements(new_elements: list[dict], existing_element_ids: list[str], time_field_name: str) -> list[dict]:
@@ -79,13 +74,13 @@ def adjust_and_dedup_elements(new_elements: list[dict], existing_element_ids: li
     """
     filtered_list: list = []
     for element in new_elements:
-        if element.get('id') not in existing_element_ids:
+        if element.get("id") not in existing_element_ids:
             try:
-                element['_time'] = timestamp_to_datestring(element.get(time_field_name) / 1000)  # type: ignore[operator]
+                element["_time"] = timestamp_to_datestring(element.get(time_field_name) / 1000)  # type: ignore[operator]
 
             except TypeError as e:
                 # modeling rule will default on ingestion time if _time is missing
-                demisto.error(f'Could not parse _time field, for event {element}: {e}')
+                demisto.error(f"Could not parse _time field, for event {element}: {e}")
 
             filtered_list.append(element)
     return filtered_list
@@ -110,7 +105,7 @@ def get_earliest_event_ids_with_the_same_time(events: list, time_field: str) -> 
             if arg_to_number(event.get(time_field)) > earliest_event_fetched_timestamp:  # type: ignore[operator]
                 break
             # Audit logs don't have an ID, so we create it from the other fields
-            event_id = event.get('id') if event.get('id') else hash_fields_to_create_id(event)
+            event_id = event.get("id") if event.get("id") else hash_fields_to_create_id(event)
             earliest_event_fetched_ids.append(event_id)
 
     return earliest_event_fetched_ids
@@ -126,7 +121,7 @@ def hash_fields_to_create_id(event: dict) -> str:
     Return:
         str: hash created from the event properties
     """
-    string = ''
+    string = ""
     for val in event.values():
         string += str(val)
     _id = hashlib.sha256(str.encode(string)).hexdigest()
@@ -145,16 +140,16 @@ def fetch_events_per_type(client: Client, event_type: str, fetch_start_timestamp
     Return:
         List: the list of pulled events (Audit Logs | Alerts)
     """
-    demisto.debug(f'Pulling {event_type}s with {fetch_start_timestamp=}, {fetch_end_timestamp=}')
+    demisto.debug(f"Pulling {event_type}s with {fetch_start_timestamp=}, {fetch_end_timestamp=}")
     if event_type == EventType.alert:
         event_pulling_function = client.get_alerts
-        data_field = 'alertsList'
+        data_field = "alertsList"
 
     elif event_type == EventType.audit_log:
         event_pulling_function = client.get_audit_logs  # type: ignore[assignment]
-        data_field = 'auditLogs'
+        data_field = "auditLogs"
     else:
-        raise DemistoException(f'Event Type: {event_type} is not supported by the integration')
+        raise DemistoException(f"Event Type: {event_type} is not supported by the integration")
 
     try:
         res = event_pulling_function(fetch_start_timestamp, fetch_end_timestamp)
@@ -165,8 +160,8 @@ def fetch_events_per_type(client: Client, event_type: str, fetch_start_timestamp
             events.sort(key=lambda alert: alert.get(ALERT_TIME_FIELD), reverse=True)
 
     except DemistoException as e:
-        if 'Unauthorized' in e.message:
-            raise DemistoException('Unauthorized - API key is invalid')
+        if "Unauthorized" in e.message:
+            raise DemistoException("Unauthorized - API key is invalid")
         raise e
 
     return events
@@ -187,24 +182,22 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
             in multiple fetch executions. Thus, in addition to what we do in case 2 we also save in cache the earliest timestamp
             we fetched to continue in the next execution.
     """
-    demisto.debug(f'Starting fetch_events for event_type={event_type}s')
+    demisto.debug(f"Starting fetch_events for event_type={event_type}s")
     time_field_name = ALERT_TIME_FIELD if event_type == EventType.alert else AUDIT_LOGS_TIME_FIELD
 
-    ids_for_dedup = cache.get('ids_for_dedup', [])
-    fetch_start_timestamp = cache.get('next_start_timestamp') or \
-        int(arg_to_datetime('1 min').timestamp() * 1000000)  # type: ignore[union-attr]
-    fetch_end_timestamp = cache.get('next_end_timestamp') or \
-        int(arg_to_datetime('Now').timestamp() * 1000000)  # type: ignore[union-attr]
+    ids_for_dedup = cache.get("ids_for_dedup", [])
+    fetch_start_timestamp = cache.get("next_start_timestamp") or int(arg_to_datetime("1 min").timestamp() * 1000000)  # type: ignore[union-attr]
+    fetch_end_timestamp = cache.get("next_end_timestamp") or int(arg_to_datetime("Now").timestamp() * 1000000)  # type: ignore[union-attr]
 
     # The latest_event_fetched_timestamp acts like a pointer to the newest event we ever fetched.
-    latest_fetched_event_timestamp = cache.get('latest_event_fetched_timestamp')
+    latest_fetched_event_timestamp = cache.get("latest_event_fetched_timestamp")
     aggregated_events: list = []
     temp_events: list = []
     while len(aggregated_events) < max_fetch:
         temp_events = fetch_events_per_type(client, event_type, fetch_start_timestamp, fetch_end_timestamp)
-        demisto.debug(f'Number of events before de-duping {len(temp_events)}:\n{temp_events}')
+        demisto.debug(f"Number of events before de-duping {len(temp_events)}:\n{temp_events}")
         deduped_events = adjust_and_dedup_elements(temp_events, ids_for_dedup, time_field_name)
-        demisto.debug(f'Number of events after de-duping {len(deduped_events)}:{deduped_events}')
+        demisto.debug(f"Number of events after de-duping {len(deduped_events)}:{deduped_events}")
         if not deduped_events:
             break
         aggregated_events.extend(deduped_events)
@@ -213,17 +206,18 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
         # round. In cases where we have not reached the user limit we will pass it on to the next fetch-events execution.
         fetch_end_timestamp = deduped_events[-1].get(time_field_name)
         ids_for_dedup = get_earliest_event_ids_with_the_same_time(deduped_events, time_field_name)
-        demisto.debug(f'Saved {len(ids_for_dedup)} alert IDs for de-duplication in next iteration')
+        demisto.debug(f"Saved {len(ids_for_dedup)} alert IDs for de-duplication in next iteration")
         # This means we know there are no more events to pull using the current fetch_start_timestamp and fetch_end_timestamp.
         if len(temp_events) < PAGE_SIZE:
-            demisto.debug(f'Received {len(temp_events)} events, which is less than {PAGE_SIZE=}')
+            demisto.debug(f"Received {len(temp_events)} events, which is less than {PAGE_SIZE=}")
             break
 
     # We only update latest_fetched_event_timestamp if it is empty, o/w it means we are still fetch past events.
     if not latest_fetched_event_timestamp:
-        latest_fetched_event_timestamp = aggregated_events[0].get(time_field_name) + 1 if aggregated_events else \
-            fetch_end_timestamp  # type: ignore[operator]
-        demisto.debug(f'latest_fetched_event_timestamp is empty, setting it to \'{latest_fetched_event_timestamp}\'')
+        latest_fetched_event_timestamp = (
+            aggregated_events[0].get(time_field_name) + 1 if aggregated_events else fetch_end_timestamp
+        )  # type: ignore[operator]
+        demisto.debug(f"latest_fetched_event_timestamp is empty, setting it to '{latest_fetched_event_timestamp}'")
 
     in_progress_pagination: bool = False
     # In case the last events list has less than PAGE_SIZE events we know there are no more events to pull using the current
@@ -233,11 +227,13 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     #   3. clear the next_end_timestamp, latest_fetched_event_timestamp and latest_fetched_events_ids
     if len(temp_events) < PAGE_SIZE:
         next_start_timestamp = latest_fetched_event_timestamp
-        next_end_timestamp = ''
-        latest_fetched_event_timestamp = ''
+        next_end_timestamp = ""
+        latest_fetched_event_timestamp = ""
         ids_for_dedup = []
-        demisto.debug(f'Last events list has {len(temp_events)} events, which is less than {PAGE_SIZE=}, setting '
-                      f'{next_start_timestamp=}')
+        demisto.debug(
+            f"Last events list has {len(temp_events)} events, which is less than {PAGE_SIZE=}, setting "
+            f"{next_start_timestamp=}"
+        )
 
     # If we exited the loop and the last list of pulled events is not smaller than PAGE_SIZE (the first if condition)
     # it must mean that len(events) == PAGE_SIZE, and that we have reached the user limit, implying we are missing more events to
@@ -247,105 +243,104 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     else:
         in_progress_pagination = True
         next_start_timestamp = fetch_start_timestamp
-        next_end_timestamp = fetch_end_timestamp    # type: ignore[assignment]
-        demisto.debug(f'Last events list has {len(temp_events)} events. The aggregated events list has {len(aggregated_events)} '
-                      f'events which should equal to {max_fetch=}. This means we are missing more events.')
+        next_end_timestamp = fetch_end_timestamp  # type: ignore[assignment]
+        demisto.debug(
+            f"Last events list has {len(temp_events)} events. The aggregated events list has {len(aggregated_events)} "
+            f"events which should equal to {max_fetch=}. This means we are missing more events."
+        )
 
     new_cache = {
-        'ids_for_dedup': ids_for_dedup,
-        'next_start_timestamp': next_start_timestamp,
-        'next_end_timestamp': next_end_timestamp,
-        'latest_event_fetched_timestamp': latest_fetched_event_timestamp,
+        "ids_for_dedup": ids_for_dedup,
+        "next_start_timestamp": next_start_timestamp,
+        "next_end_timestamp": next_end_timestamp,
+        "latest_event_fetched_timestamp": latest_fetched_event_timestamp,
     }
 
-    demisto.debug(f'Returning {len(aggregated_events)=} events, and a new {new_cache=}')
+    demisto.debug(f"Returning {len(aggregated_events)=} events, and a new {new_cache=}")
     return aggregated_events, new_cache, in_progress_pagination
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module_command(client, max_fetch):
     fetch_events_command(client, {}, max_fetch)
-    return 'ok'
+    return "ok"
 
 
 def fetch_events_command(client: Client, last_run: dict, max_fetch: int):
-    audit_logs, audit_cache, in_progress_pagination_audit_log = fetch_events_loop(client, EventType.audit_log,
-                                                                                  last_run.get('audit_cache', {}), max_fetch)
-    last_run['audit_cache'] = audit_cache
-    alerts, alerts_cache, in_progress_pagination_alert = fetch_events_loop(client, EventType.alert,
-                                                                           last_run.get('alert_cache', {}), max_fetch)
-    last_run['alert_cache'] = alerts_cache
+    audit_logs, audit_cache, in_progress_pagination_audit_log = fetch_events_loop(
+        client, EventType.audit_log, last_run.get("audit_cache", {}), max_fetch
+    )
+    last_run["audit_cache"] = audit_cache
+    alerts, alerts_cache, in_progress_pagination_alert = fetch_events_loop(
+        client, EventType.alert, last_run.get("alert_cache", {}), max_fetch
+    )
+    last_run["alert_cache"] = alerts_cache
     if in_progress_pagination_audit_log or in_progress_pagination_alert:
-        last_run["nextTrigger"] = '0'
+        last_run["nextTrigger"] = "0"
 
     return alerts + audit_logs, last_run
 
 
 def get_events_command(client: Client, args: dict):
-    start_time = int(arg_to_datetime(args.get('start_time')).timestamp() * 1000000)  # type: ignore[union-attr]
-    end_time = int(arg_to_datetime(args.get('end_time'), 'now').timestamp() * 1000000)   # type: ignore[union-attr]
+    start_time = int(arg_to_datetime(args.get("start_time")).timestamp() * 1000000)  # type: ignore[union-attr]
+    end_time = int(arg_to_datetime(args.get("end_time"), "now").timestamp() * 1000000)  # type: ignore[union-attr]
     raw_audit_logs = client.get_audit_logs(start_time, end_time)
     raw_alerts = client.get_alerts(start_time, end_time)
-    events = raw_audit_logs.get('auditLogs', []) + raw_alerts.get('alertsList', [])
-    if argToBoolean(args.get('should_push_events')):
-        send_events_to_xsiam(events=events, vendor='cohesity', product='helios')
-    return CommandResults(readable_output=tableToMarkdown('Events returned from Cohesity Helios', t=events),
-                          raw_response=raw_audit_logs.get('auditLogs', []) + raw_alerts.get('alertsList', []))
+    events = raw_audit_logs.get("auditLogs", []) + raw_alerts.get("alertsList", [])
+    if argToBoolean(args.get("should_push_events")):
+        send_events_to_xsiam(events=events, vendor="cohesity", product="helios")
+    return CommandResults(
+        readable_output=tableToMarkdown("Events returned from Cohesity Helios", t=events),
+        raw_response=raw_audit_logs.get("auditLogs", []) + raw_alerts.get("alertsList", []),
+    )
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    """
+    """main function, parses params and runs command functions"""
 
     params = demisto.params()
     # Get API key for authentication.
-    api_key = params.get('api_key', {}).get('password')
+    api_key = params.get("api_key", {}).get("password")
 
     # Get helios service API url.
-    base_url = urljoin(params.get('url'), API_VERSION)
-    max_fetch: int = min(arg_to_number(params.get('max_fetch', MAX_EVENTS_PER_TYPE)),
-                         MAX_EVENTS_PER_TYPE)  # type: ignore[assignment, type-var]
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    base_url = urljoin(params.get("url"), API_VERSION)
+    max_fetch: int = min(arg_to_number(params.get("max_fetch", MAX_EVENTS_PER_TYPE)), MAX_EVENTS_PER_TYPE)  # type: ignore[assignment, type-var]
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
         # Prepare client and set authentication headers.
         headers: dict = {
-            'apikey': api_key,
+            "apikey": api_key,
         }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module_command(client, max_fetch)
             return_results(result)
-        if command == 'cohesity-helios-get-events':
+        if command == "cohesity-helios-get-events":
             args = demisto.args()
             return_results(get_events_command(client, args))
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f'{last_run=}')
+            demisto.debug(f"{last_run=}")
             events, new_last_run = fetch_events_command(client, last_run, max_fetch)
-            send_events_to_xsiam(events=events, vendor='cohesity', product='helios')
+            send_events_to_xsiam(events=events, vendor="cohesity", product="helios")
             demisto.setLastRun(new_last_run)
-            demisto.debug(f'{new_last_run=}')
+            demisto.debug(f"{new_last_run=}")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

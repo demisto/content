@@ -3,21 +3,20 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 
-import dataclasses
 import collections
+import dataclasses
 import functools
 import itertools
 import json
 import math
 import time
 import typing
-import urllib3
-
 from collections.abc import Callable, Mapping, MutableMapping
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any, Generic, Literal, TypeAlias, TypeVar
 
 import dateutil.parser
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -103,13 +102,9 @@ STATUS_XSOAR_TO_HFL = {
     "Closed": "closed",
 }
 
-HFL_THREAT_OUTGOING_ARGS = {
-    "status": f"Updated threat status, one of {'/'.join(STATUS_HFL_TO_XSOAR.keys())}"
-}
+HFL_THREAT_OUTGOING_ARGS = {"status": f"Updated threat status, one of {'/'.join(STATUS_HFL_TO_XSOAR.keys())}"}
 
-HFL_SECURITY_EVENT_OUTGOING_ARGS = {
-    "status": f"Updated security event status, one of {'/'.join(STATUS_HFL_TO_XSOAR.keys())}"
-}
+HFL_SECURITY_EVENT_OUTGOING_ARGS = {"status": f"Updated security event status, one of {'/'.join(STATUS_HFL_TO_XSOAR.keys())}"}
 
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
@@ -186,9 +181,7 @@ class Client(BaseClient):
     def get_api_token(self):
         data = assign_params(is_expirable=True)
 
-        return self._http_request(
-            method="POST", url_suffix="/api/user/api_token/", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="/api/user/api_token/", json_data=data)
 
     def get_endpoint_info(self, agent_id=None):
         if agent_id:
@@ -198,9 +191,7 @@ class Client(BaseClient):
             )
         return None
 
-    def api_call(
-        self, api_method="GET", api_endpoint="/api/version", params={}, json_data={}
-    ):
+    def api_call(self, api_method="GET", api_endpoint="/api/version", params={}, json_data={}):
         return self._http_request(
             method=api_method,
             url_suffix=api_endpoint,
@@ -220,17 +211,13 @@ class Client(BaseClient):
             limit=10000,
         )
 
-        return self._http_request(
-            method="GET", url_suffix="/api/data/endpoint/Agent/", params=data
-        )
+        return self._http_request(method="GET", url_suffix="/api/data/endpoint/Agent/", params=data)
 
     def user_search(self, threat_id=None, fields=None):
         fields_str = None
         if fields:
             fields_str = ",".join(fields)
-        data = assign_params(
-            offset=0, threat_id=threat_id, fields=fields_str, limit=10000
-        )
+        data = assign_params(offset=0, threat_id=threat_id, fields=fields_str, limit=10000)
 
         return self._http_request(
             method="GET",
@@ -266,9 +253,7 @@ class Client(BaseClient):
         if filehash:
             data["hashes.sha256"] = filehash
 
-        return self._http_request(
-            method="GET", url_suffix="/api/data/telemetry/Processes/", params=data
-        )
+        return self._http_request(method="GET", url_suffix="/api/data/telemetry/Processes/", params=data)
 
     def job_create(self, agent_id, action, parameters=None):
         data = {
@@ -283,9 +268,7 @@ class Client(BaseClient):
 
         demisto.debug(str(data))
 
-        return self._http_request(
-            method="POST", url_suffix="/api/data/Job/", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="/api/data/Job/", json_data=data)
 
     def jobinstance_list(self, data=None):
         kwargs = {
@@ -375,9 +358,7 @@ class Client(BaseClient):
             f"ordering=-last_update&provided_by_hlab={provided_by_hlab}",
         )
 
-    def add_whitelist(
-        self, comment, sigma_rule_id, target, field, case_insensitive, operator, value
-    ):
+    def add_whitelist(self, comment, sigma_rule_id, target, field, case_insensitive, operator, value):
         data = {
             "comment": comment,
             "sigma_rule_id": sigma_rule_id,
@@ -451,9 +432,7 @@ class Client(BaseClient):
         elif status.lower() == "closed":
             data["new_status"] = "closed"
 
-        return self._http_request(
-            method="POST", url_suffix="/api/data/alert/alert/Alert/tag/", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="/api/data/alert/alert/Alert/tag/", json_data=data)
 
     def change_threat_status(self, threat_id, status):
         data = {}  # type: Dict[str,Any]
@@ -482,9 +461,7 @@ class Client(BaseClient):
         )
 
     def update_threat_description(self, threat_id, content):
-        threat = self._http_request(
-            method="GET", url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/"
-        )
+        threat = self._http_request(method="GET", url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/")
 
         # API doesn't return a JSON response when the note doesn't exist, but
         # rather an empty one...
@@ -514,9 +491,7 @@ class Client(BaseClient):
         if policy_name:
             data["search"] = policy_name
 
-        return self._http_request(
-            method="GET", url_suffix="/api/data/endpoint/Policy/", params=data
-        )
+        return self._http_request(method="GET", url_suffix="/api/data/endpoint/Policy/", params=data)
 
     def list_sources(self, source_type="ioc", source_name=None):
         data = {}
@@ -544,9 +519,7 @@ class Client(BaseClient):
             params=data,
         )
 
-    def add_ioc_to_source(
-        self, ioc_value, ioc_type, ioc_comment, ioc_status, source_id
-    ):
+    def add_ioc_to_source(self, ioc_value, ioc_type, ioc_comment, ioc_status, source_id):
         testing_status = None
 
         if ioc_status == "testing":
@@ -596,9 +569,7 @@ def assign_policy_to_agent(client, args):
             break
     if policyid:
         client.assign_policy_to_agent(policyid, args["agentid"])
-        context["Message"] = (
-            f"Policy {policy_name} successfully assigned to agent {args['agentid']}"
-        )
+        context["Message"] = f"Policy {policy_name} successfully assigned to agent {args['agentid']}"
     else:
         context["Message"] = f"Unknown policy {policy_name}"
 
@@ -611,14 +582,12 @@ def test_module(client: Client, *args: Any, **kwargs: Any) -> str:
 
 @dataclasses.dataclass(kw_only=True)
 class FetchHistory(Generic[IncidentId]):
-
     last_fetch: Optional[int] = None
     already_fetched: list[IncidentId] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass(kw_only=True, frozen=True)
 class LastRun:
-
     security_event: FetchHistory
     threat: FetchHistory
 
@@ -686,12 +655,8 @@ def _adjust_max_fetch_value(max_fetch: int, already_fetched_count: int) -> int:
 
 
 def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
-
     if not isinstance(fetch_history.last_fetch, int | float):
-        raise ValueError(
-            f"Expected an integer value for 'fetch_history.last_fetch', "
-            f"get '{fetch_history.last_fetch}'"
-        )
+        raise ValueError(f"Expected an integer value for 'fetch_history.last_fetch', get '{fetch_history.last_fetch}'")
 
     return datetime.fromtimestamp(
         # minus 1sec to overlap with previous fetch and ensure to miss nothing
@@ -744,8 +709,7 @@ def _incident_should_be_fetched(
     # by a simple raise error.
     if incident_id in fetched_from_last_fetch:
         demisto.error(
-            f"'{incident_id}' was already fetched from a previous fetch: "
-            f"this {incident_type} shouldn't have been re-fetched"
+            f"'{incident_id}' was already fetched from a previous fetch: this {incident_type} shouldn't have been re-fetched"
         )
         return False
 
@@ -806,19 +770,12 @@ def _generate_xsoar_incident(
     match incident_type:
         case "alert":
             additional_data["incident_type"] = f"{INTEGRATION_NAME} alert"
-            additional_data["incident_link"] = (
-                f"{integration_base_url}/security-event/{incident_id}/summary"
-            )
+            additional_data["incident_link"] = f"{integration_base_url}/security-event/{incident_id}/summary"
         case "threat":
             additional_data["incident_type"] = f"{INTEGRATION_NAME} threat"
-            additional_data["incident_link"] = (
-                f"{integration_base_url}/threat/{incident_id}/summary"
-            )
+            additional_data["incident_link"] = f"{integration_base_url}/threat/{incident_id}/summary"
         case _:
-            raise ValueError(
-                f"Invalid value for 'incident_type' argument: "
-                f"expected 'alert' or 'threat', get '{incident_type}'"
-            )
+            raise ValueError(f"Invalid value for 'incident_type' argument: expected 'alert' or 'threat', get '{incident_type}'")
 
     additional_data["mirror_instance"] = mirror_instance
     additional_data["mirror_direction"] = mirror_direction
@@ -899,15 +856,11 @@ def _fetch_security_event_incidents(
 
     if fetched_from_last_fetch:
         # exclude every security events that has been already fetched
-        exclude_fetched_from_last_fetch_filter["id__exact!"] = ",".join(
-            fetched_from_last_fetch
-        )
+        exclude_fetched_from_last_fetch_filter["id__exact!"] = ",".join(fetched_from_last_fetch)
 
     fetching_cursor: datetime = _get_fetching_cursor(fetch_history)
 
-    demisto.info(
-        f"Fetch security events created after {fetching_cursor}... (max. {max_fetch})"
-    )
+    demisto.info(f"Fetch security events created after {fetching_cursor}... (max. {max_fetch})")
 
     security_events: list[SecurityEvent] = get_security_events(
         client=client,
@@ -921,21 +874,16 @@ def _fetch_security_event_incidents(
         },
     )
 
-    demisto.info(
-        f"{len(security_events)} security events fetched from {mirror_instance}"
-    )
+    demisto.info(f"{len(security_events)} security events fetched from {mirror_instance}")
 
     security_event: SecurityEvent
 
     # fetched security events are expected to be already sorted by time creation,
     # but better be safe
     for security_event in sorted(security_events, key=lambda d: d["alert_time"]):
-
         security_event_id: str = security_event["id"]  # id should be always present
 
-        security_event_creation_timestamp: int = math.floor(
-            dateutil.parser.isoparse(security_event["alert_time"]).timestamp()
-        )
+        security_event_creation_timestamp: int = math.floor(dateutil.parser.isoparse(security_event["alert_time"]).timestamp())
 
         if not _incident_should_be_fetched(
             incident_type="security event",
@@ -962,18 +910,13 @@ def _fetch_security_event_incidents(
         incidents.append(incident)
         fetched.append(security_event_id)
 
-        fetch_history.last_fetch = max(
-            (fetch_history.last_fetch, security_event_creation_timestamp)
-        )
+        fetch_history.last_fetch = max((fetch_history.last_fetch, security_event_creation_timestamp))
 
         if len(incidents) >= max_fetch:
             break
 
     if fetched:
-
-        demisto.info(
-            f"{len(fetched)}/{len(security_events)} new security events send to XSOAR"
-        )
+        demisto.info(f"{len(fetched)}/{len(security_events)} new security events send to XSOAR")
 
         if fetch_history.last_fetch > fetching_cursor.timestamp() + 1:
             # Only clear previously fetched security events if the last_fetch
@@ -1072,12 +1015,9 @@ def _fetch_threat_incidents(
     # fetched threats are expected to be already sorted by time creation,
     # but better be safe
     for threat in sorted(threats, key=lambda d: d["creation_date"]):
-
         threat_id: int = threat["id"]  # id should be always present
 
-        threat_creation_timestamp: int = math.floor(
-            dateutil.parser.isoparse(threat["creation_date"]).timestamp()
-        )
+        threat_creation_timestamp: int = math.floor(dateutil.parser.isoparse(threat["creation_date"]).timestamp())
 
         if not _incident_should_be_fetched(
             incident_type="threat",
@@ -1104,9 +1044,7 @@ def _fetch_threat_incidents(
         incidents.append(incident)
         fetched.append(threat_id)
 
-        fetch_history.last_fetch = max(
-            (fetch_history.last_fetch, threat_creation_timestamp)
-        )
+        fetch_history.last_fetch = max((fetch_history.last_fetch, threat_creation_timestamp))
 
         if len(incidents) >= max_fetch:
             break
@@ -1115,7 +1053,6 @@ def _fetch_threat_incidents(
         demisto.debug("There is something wrong in threats fetching order")
 
     if fetched:
-
         demisto.info(f"{len(fetched)}/{len(threats)} new threats send to XSOAR")
 
         if fetch_history.last_fetch > fetching_cursor.timestamp() + 1:
@@ -1129,9 +1066,7 @@ def _fetch_threat_incidents(
         fetch_history.already_fetched.extend(fetched)
 
 
-def fetch_incidents(
-    client: Client, args: dict[str, Any]
-) -> tuple[dict, list[XSOARIncident]]:
+def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[XSOARIncident]]:
     """Fetch incident from remote EDR to XSOAR.
 
     incident = security event, threat or both (see 'FetchType' for valid values)
@@ -1194,15 +1129,11 @@ def fetch_incidents(
     for value in fetch_types:
         if value not in typing.get_args(FetchType):
             raise ValueError(
-                f"Invalid value for 'fetch_types' argument: "
-                f"expected one of {typing.get_args(FetchType)}, get '{value}'"
+                f"Invalid value for 'fetch_types' argument: expected one of {typing.get_args(FetchType)}, get '{value}'"
             )
 
     if min_severity not in SEVERITIES:
-        raise ValueError(
-            f"Invalid value for 'min_severity' argument: "
-            f"expected one of {SEVERITIES}, get '{min_severity}'"
-        )
+        raise ValueError(f"Invalid value for 'min_severity' argument: expected one of {SEVERITIES}, get '{min_severity}'")
 
     if mirror_direction not in MIRROR_DIRECTION_MAPPING:
         raise ValueError(
@@ -1212,21 +1143,15 @@ def fetch_incidents(
 
     if alert_status and alert_status not in typing.get_args(AlertStatus):
         raise ValueError(
-            f"Invalid value for 'alert_status' argument: "
-            f"expected one of {typing.get_args(AlertStatus)}, get '{alert_status}'"
+            f"Invalid value for 'alert_status' argument: expected one of {typing.get_args(AlertStatus)}, get '{alert_status}'"
         )
 
     if max_fetch <= 0:
-        raise ValueError(
-            f"Invalid value for 'max_fetch' argument: "
-            f"expected a strict positive integer, get '{max_fetch}'"
-        )
+        raise ValueError(f"Invalid value for 'max_fetch' argument: expected a strict positive integer, get '{max_fetch}'")
 
     # how many past days should be fetched (on first fetch only)
     past_days_to_fetch = int(first_fetch or 0)
-    past_days_to_fetch_timestamp: int = math.floor(
-        (utcnow() - timedelta(days=past_days_to_fetch)).timestamp()
-    )
+    past_days_to_fetch_timestamp: int = math.floor((utcnow() - timedelta(days=past_days_to_fetch)).timestamp())
 
     # incident's status to fetch
     status_to_fetch: list[str] | None
@@ -1240,10 +1165,7 @@ def fetch_incidents(
             status_to_fetch = None
         case _:
             # unreachable code - only here for semantic purpose
-            raise ValueError(
-                f"Invalid value for 'alert_status': "
-                f"expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'"
-            )
+            raise ValueError(f"Invalid value for 'alert_status': expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'")
 
     incidents: list[XSOARIncident] = []
 
@@ -1283,9 +1205,7 @@ def get_endpoint_info(client, args):
 
     agent = client.get_endpoint_info(agent_id)
 
-    readable_output = tableToMarkdown(
-        f"Endpoint information for agent_id : {agent_id}", agent, removeNull=True
-    )
+    readable_output = tableToMarkdown(f"Endpoint information for agent_id : {agent_id}", agent, removeNull=True)
 
     outputs = {"Harfanglab.Agent(val.agentid == obj.agentid)": agent}
 
@@ -1332,7 +1252,6 @@ def endpoint_search(client, args):
 
 
 def get_frequent_users(client: Client, args: dict[str, Any]) -> CommandResults:
-
     authentications: collections.Counter[tuple[str, str]] = collections.Counter()
     output = []
 
@@ -1345,7 +1264,6 @@ def get_frequent_users(client: Client, args: dict[str, Any]) -> CommandResults:
         ("linux", "TelemetryLinuxAuthentication"),
         ("macos", "TelemetryMacosAuthentication"),
     ):
-
         obj = globals()[class_name]()
 
         if system == "windows":
@@ -1440,9 +1358,7 @@ def job_info(client, args):
     for job_id in job_ids:
         context.append(get_job_status(client, job_id))
 
-    readable_output = tableToMarkdown(
-        "Jobs Info", context, headers=["ID", "Status", "Creation date"], removeNull=True
-    )
+    readable_output = tableToMarkdown("Jobs Info", context, headers=["ID", "Status", "Creation date"], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1453,9 +1369,7 @@ def job_info(client, args):
 
 
 def find_previous_job(client, action, agent_id):
-    starttime = (datetime.now(UTC) - timedelta(minutes=5)).strftime(
-        "%Y-%m-%d %H:%M"
-    )
+    starttime = (datetime.now(UTC) - timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M")
     args = {
         "agent_id": agent_id,
         "action": action,
@@ -1504,9 +1418,7 @@ def result_pipelist(client, args):
 
     data = client.job_data(job_id, "pipe", ordering="name")
     pipes = [x["name"] for x in data["results"]]
-    readable_output = tableToMarkdown(
-        "Pipe List", pipes, headers=["name"], removeNull=True
-    )
+    readable_output = tableToMarkdown("Pipe List", pipes, headers=["name"], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1537,9 +1449,7 @@ def result_prefetchlist(client, args):
         last_executed = ""
         if len(x["last_executed"]) > 0:
             last_executed = x["last_executed"][0]
-        prefetchs.append(
-            {"executable name": executable_name, "last executed": last_executed}
-        )
+        prefetchs.append({"executable name": executable_name, "last executed": last_executed})
 
     readable_output = tableToMarkdown(
         "Prefetch List",
@@ -1578,9 +1488,7 @@ def result_runkeylist(client, args):
             {
                 "name": x["name"],
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5", ""),
             }
         )
@@ -1621,9 +1529,7 @@ def result_scheduledtasklist(client, args):
             {
                 "name": x["short_name"],
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5"),
             }
         )
@@ -1703,16 +1609,12 @@ def result_driverlist(client, args):
         output.append(
             {
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5"),
             }
         )
 
-    readable_output = tableToMarkdown(
-        "Driver List", output, headers=["fullpath", "signed", "md5"], removeNull=True
-    )
+    readable_output = tableToMarkdown("Driver List", output, headers=["fullpath", "signed", "md5"], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1745,9 +1647,7 @@ def result_servicelist(client, args):
                 "name": x["service_name"],
                 "image path": x.get("image_path", None),
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5"),
             }
         )
@@ -1789,9 +1689,7 @@ def result_startuplist(client, args):
                 "startup_name": x["filename"],
                 "startup_fullpath": x.get("fullpathfilename", x.get("fullpathname")),
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5"),
             }
         )
@@ -1851,9 +1749,7 @@ def result_wmilist(client, args):
         removeNull=True,
     )
 
-    return CommandResults(
-        readable_output=readable_output, outputs_prefix="Harfanglab.Wmi", outputs=output
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Harfanglab.Wmi", outputs=output)
 
 
 def job_processlist(client, args):
@@ -1888,9 +1784,7 @@ def result_processlist(client, args):
                 "ppid": x["ppid"],
                 "cmdline": x["cmdline"],
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5"),
             }
         )
@@ -2120,35 +2014,23 @@ def job_ioc(client, args):
         size = arg_to_number(filehash_size)
 
     if filename is not None:
-        job_parameters["values"].append(
-            {"global": False, "size": size, "type": "filename", "value": filename}
-        )
+        job_parameters["values"].append({"global": False, "size": size, "type": "filename", "value": filename})
         good = True
     if filepath is not None:
-        job_parameters["values"].append(
-            {"global": False, "type": "filepath", "value": filepath}
-        )
+        job_parameters["values"].append({"global": False, "type": "filepath", "value": filepath})
         good = True
     if filehash is not None:
-        job_parameters["values"].append(
-            {"global": False, "size": size, "type": "hash", "value": filehash}
-        )
+        job_parameters["values"].append({"global": False, "size": size, "type": "hash", "value": filehash})
         good = True
     if registry is not None:
-        job_parameters["values"].append(
-            {"global": False, "type": "registry", "value": registry}
-        )
+        job_parameters["values"].append({"global": False, "type": "registry", "value": registry})
         good = True
     if filepath_regex is not None:
-        job_parameters["values"].append(
-            {"global": False, "type": "regex", "value": filepath_regex}
-        )
+        job_parameters["values"].append({"global": False, "type": "regex", "value": filepath_regex})
         good = True
 
     if good and search_in_path is not None:
-        job_parameters["values"].append(
-            {"global": True, "type": "path", "value": search_in_path}
-        )
+        job_parameters["values"].append({"global": True, "type": "path", "value": search_in_path})
 
     if not good:
         return False
@@ -2172,9 +2054,7 @@ def result_ioc(client, args):
                 "type": x["hit_type"],
                 "search_value": x["search_value"],
                 "fullpath": x.get("binaryinfo", {}).get("fullpath", ""),
-                "signed": x.get("binaryinfo", {})
-                .get("binaryinfo", {})
-                .get("signed", False),
+                "signed": x.get("binaryinfo", {}).get("binaryinfo", {}).get("signed", False),
                 "md5": x.get("binaryinfo", {}).get("binaryinfo", {}).get("md5"),
                 "registry_path": x.get("found_registry_path"),
                 "registry_key": x.get("found_registry_key"),
@@ -2241,9 +2121,7 @@ def global_result_artifact(client, args, artifact_type):
     for i in range(len(data["results"])):
         result = data["results"][i]
         if api_token is not None:
-            result["download_link"] = (
-                f"{base_url}/api/data/investigation/artefact/Artefact/{result['id']}/download/"
-            )
+            result["download_link"] = f"{base_url}/api/data/investigation/artefact/Artefact/{result['id']}/download/"
             result["download_link"] += f"?hl_expiring_key={api_token}"
         else:
             result["download_link"] = "N/A"
@@ -2451,9 +2329,7 @@ def result_artifact_ramdump(client, args):
 
     output = []
     for x in data["results"]:
-        link = (
-            f"{base_url}/api/data/investigation/artefact/Artefact/{x['id']}/download/"
-        )
+        link = f"{base_url}/api/data/investigation/artefact/Artefact/{x['id']}/download/"
         link += f"?hl_expiring_key={api_token}"
         output.append(
             {
@@ -2555,18 +2431,12 @@ def add_whitelist(client, args):
             '"orion", "glimps", "cape" or "driver"'
         )
     elif operator not in ["eq", "regex", "contains"]:
-        raise ValueError(
-            "Invalid operator - operator must be 'eq', 'regex' or 'contains'"
-        )
+        raise ValueError("Invalid operator - operator must be 'eq', 'regex' or 'contains'")
     else:
-        data = client.add_whitelist(
-            comment, sigma_rule_id, target, field, case_insensitive, operator, value
-        )
+        data = client.add_whitelist(comment, sigma_rule_id, target, field, case_insensitive, operator, value)
         message = f"Successfully added whitelist (id: {data['id']})"
 
-    return CommandResults(
-        readable_output=message, outputs_prefix="Harfanglab.Whitelists", outputs=data
-    )
+    return CommandResults(readable_output=message, outputs_prefix="Harfanglab.Whitelists", outputs=data)
 
 
 def add_criterion_to_whitelist(client, args):
@@ -2580,18 +2450,12 @@ def add_criterion_to_whitelist(client, args):
     data = None
 
     if operator not in ["eq", "regex", "contains"]:
-        raise ValueError(
-            "Invalid operator - operator must be 'eq', 'regex' or 'contains'"
-        )
+        raise ValueError("Invalid operator - operator must be 'eq', 'regex' or 'contains'")
     else:
-        data = client.add_criterion_to_whitelist(
-            id, field, case_insensitive, operator, value
-        )
+        data = client.add_criterion_to_whitelist(id, field, case_insensitive, operator, value)
         message = "Successfully added criterion to whitelist"
 
-    return CommandResults(
-        readable_output=message, outputs_prefix="Harfanglab.Whitelists", outputs=data
-    )
+    return CommandResults(readable_output=message, outputs_prefix="Harfanglab.Whitelists", outputs=data)
 
 
 def delete_whitelist(client, args):
@@ -2635,9 +2499,7 @@ def hunt_search_hash(client, args):
                     outputs_prefix="Harfanglab.Hash",
                     outputs_key_field="hash",
                     outputs=outputs,
-                    readable_output=tableToMarkdown(
-                        "Hash search results", outputs, removeNull=True
-                    ),
+                    readable_output=tableToMarkdown("Hash search results", outputs, removeNull=True),
                 )
             )
 
@@ -2646,15 +2508,8 @@ def hunt_search_hash(client, args):
                 curr_running = True
             if x["telemetryProcessCount"] > 0:
                 prev_runned = True
-            currently_running = (
-                str(curr_running) + " (" + str(x["processCount"]) + " are running)"
-            )
-            previously_executed = (
-                str(prev_runned)
-                + " ("
-                + str(x["telemetryProcessCount"])
-                + " were previously executed)"
-            )
+            currently_running = str(curr_running) + " (" + str(x["processCount"]) + " are running)"
+            previously_executed = str(prev_runned) + " (" + str(x["telemetryProcessCount"]) + " were previously executed)"
             prefetchs.append(
                 {
                     "process associated to hash currently running": currently_running,
@@ -2672,9 +2527,7 @@ def hunt_search_hash(client, args):
                     outputs_prefix="Harfanglab.Hash",
                     outputs_key_field="hash",
                     outputs=outputs,
-                    readable_output=tableToMarkdown(
-                        "Hash search results", outputs, removeNull=True
-                    ),
+                    readable_output=tableToMarkdown("Hash search results", outputs, removeNull=True),
                 )
             )
 
@@ -2793,9 +2646,7 @@ def isolate_endpoint(client, args) -> CommandResults:
 
     if agentid in data["policy_not_allowed"]:
         context["Status"] = False
-        context["Message"] = (
-            "Agent isolation request failed (not allowed by the agent policy)"
-        )
+        context["Message"] = "Agent isolation request failed (not allowed by the agent policy)"
 
     return CommandResults(
         outputs_prefix="Harfanglab.Isolation",
@@ -2854,12 +2705,8 @@ def add_ioc_to_source(client, args):
     if results["count"] > 0:
         context["Message"] = f"IOC {ioc_value} already exists in source {source_name}"
     else:
-        client.add_ioc_to_source(
-            ioc_value, ioc_type, ioc_comment, ioc_status, source_id
-        )
-        context["Message"] = (
-            f"IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status"
-        )
+        client.add_ioc_to_source(ioc_value, ioc_type, ioc_comment, ioc_status, source_id)
+        context["Message"] = f"IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status"
 
     return CommandResults(outputs=context, readable_output=context["Message"])
 
@@ -2937,9 +2784,7 @@ class Telemetry:
 
         # Determines headers for readable output
         headers = list(output[0].keys()) if len(output) > 0 else []
-        readable_output = tableToMarkdown(
-            self.title, output, headers=headers, removeNull=True
-        )
+        readable_output = tableToMarkdown(self.title, output, headers=headers, removeNull=True)
 
         return CommandResults(
             outputs_prefix=f"Harfanglab.Telemetry{self.telemetry_type}",
@@ -3190,7 +3035,7 @@ class TelemetryBinary(Telemetry):
 
         output = []
         for x in results:
-            for i in range(0, len(x["names"])):
+            for i in range(len(x["names"])):
                 name = x["names"][i]
                 path = x["paths"][i] if len(x["paths"]) > i else None
 
@@ -3206,9 +3051,7 @@ class TelemetryBinary(Telemetry):
                         "path": path,
                         "size": x["size"],
                         "signed": x.get("signed", ""),
-                        "signer": x.get("signature_info", {})
-                        .get("signer_info", {})
-                        .get("display_name", None),
+                        "signer": x.get("signature_info", {}).get("signer_info", {}).get("display_name", None),
                         "sha256": x["hashes"].get("sha256", None),
                         "download link": link,
                     }
@@ -3224,7 +3067,6 @@ class TelemetryBinary(Telemetry):
 
 @functools.lru_cache(maxsize=100)
 def get_function_from_command_name(command: str) -> Fn:
-
     mapping: dict[str, Fn] = {
         "harfanglab-get-endpoint-info": get_endpoint_info,
         "harfanglab-endpoint-search": endpoint_search,
@@ -3362,9 +3204,7 @@ def get_security_events(
 
     args = {
         "ordering": ordering,
-        "level": ",".join(
-            SEVERITIES[SEVERITIES.index(min_severity):]
-        ).lower(),
+        "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
         "limit": limit,
         "offset": 0,
     }  # type: Dict[str,Any]
@@ -3397,9 +3237,7 @@ def get_security_events(
     demisto.debug(f"Args for fetch_security_events: {args}")
 
     while True:
-        results = client._http_request(
-            method="GET", url_suffix="/api/data/alert/alert/Alert/", params=args
-        )
+        results = client._http_request(method="GET", url_suffix="/api/data/alert/alert/Alert/", params=args)
 
         results_count: int = len(results["results"])
 
@@ -3435,11 +3273,7 @@ def get_security_events(
                 break
 
         args["offset"] += results_count
-        if (
-            results["count"] == 0
-            or not results["next"]
-            or (max_fetch and len(security_events) >= max_fetch)
-        ):
+        if results["count"] == 0 or not results["next"] or (max_fetch and len(security_events) >= max_fetch):
             break
 
     return security_events
@@ -3466,12 +3300,8 @@ def enrich_threat(client, threat):
     threat["impacted_users"] = results["results"]
 
     # Get rules
-    args = assign_params(
-        threat_id=threat_id, fields="rule_level,rule_name,security_event_count"
-    )
-    results = client._http_request(
-        method="GET", url_suffix="/api/data/alert/alert/Threat/rules/", params=args
-    )
+    args = assign_params(threat_id=threat_id, fields="rule_level,rule_name,security_event_count")
+    results = client._http_request(method="GET", url_suffix="/api/data/alert/alert/Threat/rules/", params=args)
     threat["rules"] = results["results"]
 
 
@@ -3494,9 +3324,7 @@ def get_threats(
         threat_ids = []
         args = {
             "ordering": ordering,
-            "level": ",".join(
-                SEVERITIES[SEVERITIES.index(min_severity):]
-            ).lower(),
+            "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
             "limit": limit,
             "offset": 0,
         }  # type: Dict[str,Any]
@@ -3523,9 +3351,7 @@ def get_threats(
         demisto.debug(f"Args for get_threats: {args}")
 
         while True:
-            results = client._http_request(
-                method="GET", url_suffix="/api/data/alert/alert/Threat/", params=args
-            )
+            results = client._http_request(method="GET", url_suffix="/api/data/alert/alert/Threat/", params=args)
 
             results_count: int = len(results["results"])
 
@@ -3541,17 +3367,11 @@ def get_threats(
                     break
 
             args["offset"] += results_count
-            if (
-                results["count"] == 0
-                or not results["next"]
-                or (max_fetch and len(threat_ids) >= max_fetch)
-            ):
+            if results["count"] == 0 or not results["next"] or (max_fetch and len(threat_ids) >= max_fetch):
                 break
 
     for threat_id in threat_ids:
-        threat = client._http_request(
-            method="GET", url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/"
-        )
+        threat = client._http_request(method="GET", url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/")
         enrich_threat(client, threat)
         threats.append(threat)
 
@@ -3576,17 +3396,13 @@ def get_modified_remote_data(
     modified_remote_data_args = GetModifiedRemoteDataArgs(args)
 
     # every timestamp in remote instance are stored as UTC
-    last_update: Optional[datetime] = dateparser.parse(
-        modified_remote_data_args.last_update, settings={"TIMEZONE": "UTC"}
-    )
+    last_update: Optional[datetime] = dateparser.parse(modified_remote_data_args.last_update, settings={"TIMEZONE": "UTC"})
 
     if not last_update:
         raise ValueError(f"Unable to parse '{modified_remote_data_args.last_update}'")
 
     if last_update.tzname() != "UTC":
-        raise ValueError(
-            f"Expect an 'UTC' datetime, get an '{last_update.tzname()}' one ({last_update})"
-        )
+        raise ValueError(f"Expect an 'UTC' datetime, get an '{last_update.tzname()}' one ({last_update})")
 
     fetch_limit: int
     fetch_base_limit = 10000
@@ -3608,7 +3424,6 @@ def get_modified_remote_data(
     # A more clever way to fetch data, should be to use 'offset' and 'next' values
 
     for fetch_limit in (fetch_base_limit * i for i in itertools.count(start=1)):
-
         security_events_to_update.clear()
         security_events_to_update.extend(
             get_security_events(
@@ -3627,12 +3442,9 @@ def get_modified_remote_data(
 
     demisto.debug(f"Found {len(security_events_to_update)} security events to update")
 
-    modified_incident_ids.extend(
-        f"{IncidentType.SECURITY_EVENT}:{s['id']}" for s in security_events_to_update
-    )
+    modified_incident_ids.extend(f"{IncidentType.SECURITY_EVENT}:{s['id']}" for s in security_events_to_update)
 
     for fetch_limit in (fetch_base_limit * i for i in itertools.count(start=1)):
-
         threats_to_update.clear()
         threats_to_update.extend(
             get_threats(
@@ -3650,9 +3462,7 @@ def get_modified_remote_data(
 
     demisto.debug(f"Found {len(threats_to_update)} threats to update")
 
-    modified_incident_ids.extend(
-        f"{IncidentType.THREAT}:{t['id']}" for t in threats_to_update
-    )
+    modified_incident_ids.extend(f"{IncidentType.THREAT}:{t['id']}" for t in threats_to_update)
 
     demisto.info(
         f"Found {len(modified_incident_ids)} incidents to update "
@@ -3689,7 +3499,6 @@ def set_updated_object(
     nested_mirrored_data: list | dict | None
 
     for field in mirroring_fields:
-
         # check that the field is present in the mirrored data from the EDR
         # (data can be null)
         if field in mirrored_data:
@@ -3701,7 +3510,6 @@ def set_updated_object(
             root_field, sub_field = field.split(".", 1)
 
             if root_field in mirrored_data:
-
                 nested_mirrored_data = mirrored_data[root_field]
 
                 if isinstance(nested_mirrored_data, list):
@@ -3716,14 +3524,10 @@ def set_updated_object(
                 elif isinstance(nested_mirrored_data, dict):
                     if sub_field in nested_mirrored_data:
                         updated_object.setdefault(root_field, {})
-                        updated_object[root_field][sub_field] = nested_mirrored_data[
-                            sub_field
-                        ]
+                        updated_object[root_field][sub_field] = nested_mirrored_data[sub_field]
 
                 else:
-                    demisto.debug(
-                        f"Nested field '{field}' is not a list, nor a dictionary"
-                    )
+                    demisto.debug(f"Nested field '{field}' is not a list, nor a dictionary")
             else:
                 demisto.debug(f"Nested field '{field}' doesn't appear to exist")
         else:
@@ -3736,9 +3540,7 @@ def get_remote_secevent_data(client, remote_incident_id: str):
     Gets the relevant security event entity from the remote system (HarfangLab EDR). The remote system returns a list with this
     entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
     """
-    mirrored_data_list = get_security_events(
-        client, security_event_ids=[remote_incident_id]
-    )
+    mirrored_data_list = get_security_events(client, security_event_ids=[remote_incident_id])
     mirrored_data = mirrored_data_list[0]
 
     if "status" in mirrored_data:
@@ -3857,7 +3659,6 @@ def get_remote_data(
     entries: list[dict] = []
 
     match incident_type:
-
         case IncidentType.SECURITY_EVENT:
             _get_remote_data = get_remote_secevent_data
             _set_xsoar_entries = set_xsoar_security_events_entries
@@ -3875,9 +3676,7 @@ def get_remote_data(
     mirrored_data, updated_object = _get_remote_data(client, incident_id)
 
     if updated_object:
-        demisto.debug(
-            f"Update incident {remote_incident_id} with fields: {updated_object}"
-        )
+        demisto.debug(f"Update incident {remote_incident_id} with fields: {updated_object}")
         _set_xsoar_entries(updated_object, entries, remote_incident_id)
 
     else:
@@ -3913,11 +3712,9 @@ def update_remote_incident(
     *,
     change_incident_status_fn: Callable[[str, str], Any],
 ) -> None:
-
     new_remote_status: Optional[str] = None
 
     match incident_status:
-
         case IncidentStatus.PENDING:
             new_remote_status = "new"
 
@@ -3929,9 +3726,7 @@ def update_remote_incident(
                 new_remote_status = "closed"
 
         case IncidentStatus.ARCHIVE:
-            demisto.debug(
-                "The 'ARCHIVE' status is not supported on HarfangLab EDR side"
-            )
+            demisto.debug("The 'ARCHIVE' status is not supported on HarfangLab EDR side")
 
         case _:
             raise ValueError(
@@ -3941,17 +3736,12 @@ def update_remote_incident(
             )
 
     if new_remote_status:
-
         if new_remote_status not in SECURITY_EVENT_STATUS:
             raise ValueError(
-                f"Invalid value for 'new_remote_status': "
-                f"expected one of {SECURITY_EVENT_STATUS}, get '{new_remote_status}'"
+                f"Invalid value for 'new_remote_status': expected one of {SECURITY_EVENT_STATUS}, get '{new_remote_status}'"
             )
 
-        demisto.debug(
-            f"Incident '{incident_type}:{incident_id}', will have its status "
-            f"changed to '{new_remote_status}'"
-        )
+        demisto.debug(f"Incident '{incident_type}:{incident_id}', will have its status changed to '{new_remote_status}'")
 
         change_incident_status_fn(incident_id, new_remote_status)
 
@@ -3963,7 +3753,6 @@ def update_remote_security_event(
     incident_type: str,
     incident_id: str,
 ) -> None:
-
     update_remote_incident(
         delta,
         incident_status,
@@ -3980,7 +3769,6 @@ def update_remote_threat(
     incident_type: str,
     incident_id: str,
 ) -> None:
-
     if "details" in delta:
         client.update_threat_description(incident_id, delta["details"])
 
@@ -4023,7 +3811,6 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
     incident_type, incident_id = remote_incident_id.split(":", 1)
 
     match incident_type:
-
         case IncidentType.SECURITY_EVENT:
             _update_remote_incident = update_remote_security_event
 
@@ -4038,11 +3825,7 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
 
     if incident_has_changed:
         if delta:
-
-            demisto.debug(
-                f"The following fields has been changed for incident "
-                f"'{remote_incident_id}': {delta.items()}"
-            )
+            demisto.debug(f"The following fields has been changed for incident '{remote_incident_id}': {delta.items()}")
 
             _update_remote_incident(
                 client,
@@ -4055,10 +3838,7 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
             demisto.debug(f"Incident '{remote_incident_id}' successfully updated")
 
         else:
-            demisto.error(
-                f"Incident '{remote_incident_id}' is marked as changed, "
-                f"but have no delta"
-            )
+            demisto.error(f"Incident '{remote_incident_id}' is marked as changed, but have no delta")
     else:
         demisto.debug(f"No change found for incident '{remote_incident_id}'")
 
@@ -4073,9 +3853,7 @@ def get_mapping_fields(client, args) -> GetMappingFieldsResponse:
     demisto.debug("In get_mapping_fields")
     mapping_response = GetMappingFieldsResponse()
 
-    security_event_type_scheme = SchemeTypeMapping(
-        type_name="HarfangLab EDR Security Event"
-    )
+    security_event_type_scheme = SchemeTypeMapping(type_name="HarfangLab EDR Security Event")
     for argument, description in HFL_SECURITY_EVENT_OUTGOING_ARGS.items():
         security_event_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(security_event_type_scheme)
@@ -4089,7 +3867,6 @@ def get_mapping_fields(client, args) -> GetMappingFieldsResponse:
 
 
 def main() -> None:
-
     # keys in "integration_params" are granted to be present (no need to use dict.get())
     # but the value can still be null/empty
     integration_params: dict[str, Any] = demisto.params()
@@ -4119,7 +3896,6 @@ def main() -> None:
         raise ValueError(f"unknown command: {command}")
 
     if command == "fetch-incidents":
-
         command_arguments["last_run"] = get_last_run()
 
         for fetch_arg in (

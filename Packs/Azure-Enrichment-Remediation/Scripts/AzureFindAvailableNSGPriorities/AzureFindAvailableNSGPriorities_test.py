@@ -1,8 +1,6 @@
-import pytest
-
 import demistomock as demisto
+import pytest
 from AzureFindAvailableNSGPriorities import find_available_priorities, main
-
 
 BASE_TEST_PARAMS = {
     "target_rule_priority": "300",

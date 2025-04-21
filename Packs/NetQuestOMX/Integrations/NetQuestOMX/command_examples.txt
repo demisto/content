@@ -1,0 +1,6 @@
+!netquest-address-list-upload entry_id='test'
+!netquest-address-list-optimize
+!netquest-address-list-create name='test'
+!netquest-address-list-rename new_name='new_test' existing_name='test'
+!netquest-address-list-delete name='test'
+!get-events statistic_types_to_fetch='Metering Stats,Export Stats'

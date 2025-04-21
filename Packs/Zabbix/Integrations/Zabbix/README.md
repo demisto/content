@@ -555,3 +555,20 @@ No current known limitations
 
 ## Troubleshooting
 Verify if the user has the necessary permissions to execute the operation
+### test-module
+
+***
+Test if module is working.
+
+#### Base Command
+
+`test-module`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

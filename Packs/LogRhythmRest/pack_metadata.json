@@ -2,7 +2,7 @@
     "name": "LogRhythm",
     "description": "LogRhythm security intelligence.",
     "support": "xsoar",
-    "currentVersion": "2.0.23",
+    "currentVersion": "2.0.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

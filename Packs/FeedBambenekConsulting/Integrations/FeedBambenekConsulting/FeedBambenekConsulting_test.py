@@ -1,8 +1,8 @@
-import demistomock as demisto
-from unittest.mock import MagicMock
-
 import csv
 from io import StringIO
+from unittest.mock import MagicMock
+
+import demistomock as demisto
 
 data = {
     "value": "23.82.12.29",
@@ -68,18 +68,9 @@ def test_fetch_indicators_main(mocker):
     ]
     mocker.patch("CSVFeedApiModule.Client", return_value=API_CLIENT_MOCK)
     main()
-    assert (
-        create_indicators_mocker.call_args.args[0][0]["rawJSON"]["value"]
-        == "23.82.12.29"
-    )
-    assert (
-        create_indicators_mocker.call_args.args[0][0]["rawJSON"]["description"]
-        == "IP used by beebone C&C"
-    )
-    assert (
-        create_indicators_mocker.call_args.args[0][0]["rawJSON"]["date_created"]
-        == "2023-12-18 08:06"
-    )
+    assert create_indicators_mocker.call_args.args[0][0]["rawJSON"]["value"] == "23.82.12.29"
+    assert create_indicators_mocker.call_args.args[0][0]["rawJSON"]["description"] == "IP used by beebone C&C"
+    assert create_indicators_mocker.call_args.args[0][0]["rawJSON"]["date_created"] == "2023-12-18 08:06"
     assert (
         create_indicators_mocker.call_args.args[0][0]["rawJSON"]["info"]
         == "http://osint.bambenekconsulting.com/manual/beebone.txt"

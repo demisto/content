@@ -8,20 +8,16 @@ GREY_HTML_STYLE = "'color:#404142;font-size:48px;padding: 60px; text-align:cente
 
 def main():
     incident = demisto.incidents()
-    query = incident[0].get('CustomFields', {}).get('huntingtaskcount', 0)
+    query = incident[0].get("CustomFields", {}).get("huntingtaskcount", 0)
 
     if not query:
         html = f"<div style={GREY_HTML_STYLE}{0}</div>"
     elif int(query) == 0:
-        html = f"<div style={ORANGE_HTML_STYLE}{str(query)}</div>"
+        html = f"<div style={ORANGE_HTML_STYLE}{query!s}</div>"
     else:
-        html = f"<div style={GREEN_HTML_STYLE}{str(query)}</div>"
+        html = f"<div style={GREEN_HTML_STYLE}{query!s}</div>"
 
-    demisto.results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
-        'Contents': html
-    })
+    demisto.results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

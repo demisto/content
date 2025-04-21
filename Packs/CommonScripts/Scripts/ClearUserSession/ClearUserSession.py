@@ -156,30 +156,32 @@ def run_execute_command(
     return entry_context_list, human_readable, errors_command_results
 
 
-def remove_system_user(users_names: list[str]) -> tuple[list, list]:
+def remove_system_user(users_names: list[str], brands: list[str]) -> tuple[list, list]:
     """
     Filters out system users from the provided list of user names and returns the remaining users along with status details.
 
     Args:
         users_names (list[str]): A list of user names to be processed.
+        brands (list[str]): A list of brands to check.
 
     Returns:
         tuple: A tuple containing:
             - list: A list of user names that are not system users.
-            - dict: A dictionary containing information about users that were identified as system users,
-            including their status and messages.
+            - dict: A list of dictionaries containing information about users that were identified as system users,
+            including their status, brand and messages.
     """
     outputs = []
     filtered_users = []
     for user in users_names:
         if user in SYSTEM_USERS:
             demisto.debug(f"Skipping user: '{user}' is a system user.")
-            outputs.append({
-                "UserName": user,
-                "Result": "Failed",
-                "Message": "Skipping session clearing: User is a system user.",
-                "Source": [],
-            })
+            for brand in brands:
+                outputs.append({
+                    "Message": "Skipping session clearing: User is a system user.",
+                    "Result": "Failed",
+                    "Brand": brand,
+                    "UserName": user,
+                })
         else:
             filtered_users.append(user)
 
@@ -205,13 +207,19 @@ def extract_usernames_with_ids(context: dict, output_key: str) -> dict:
                   "user2@example.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]
               }
     """
-    user_id_mapping = {}
+    user_id_mapping: dict[str, list] = {}
     users = context.get(output_key, [])
+
     for user in users:
-        username = user.get("Username")
-        id_info = user.get("ID", [])
-        if username and id_info:
-            user_id_mapping[username] = id_info
+        usernames = user.get("Username", [])
+        for username in usernames:
+            username = username.get("Value", "")
+            id_info = user.get("ID", {})
+
+            if username and id_info:
+                if username not in user_id_mapping:
+                    user_id_mapping[username] = []
+                user_id_mapping[username].extend(id_info)
 
     return user_id_mapping
 
@@ -233,14 +241,16 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
     entry_context, human_readable, readable_errors = run_execute_command(
         command.name, command.args
     )
-
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(
         prepare_human_readable(command.name, command.args, human_readable)
     )
+    id_info = {}
 
-    output_key = get_output_key("Account", entry_context[-1])
-    id_info = extract_usernames_with_ids(entry_context[-1], output_key)
+    for entry in entry_context:
+        if entry:
+            output_key = get_output_key("Account", entry)
+            id_info.update(extract_usernames_with_ids(entry, output_key))
 
     return readable_outputs_list, id_info
 
@@ -288,6 +298,7 @@ def clear_user_sessions(command: Command) -> tuple[list[CommandResults], str, Op
         prepare_human_readable(command.name, command.args, human_readable)
     )
     error_message = readable_errors[0].readable_output if readable_errors else ""
+
     return readable_outputs_list, human_readable, error_message
 
 
@@ -302,19 +313,22 @@ def create_readable_output(outputs: list):
     Args:
         outputs (dict): A dictionary where each key is a username and the value is
             another dictionary containing:
-            - "Result" (str): The session result (e.g., Success, Failure).
-            - "Source" (str, optional): The brand(s) associated with the session.
+            - "UserName" (str): The user name a session cleared for.
             - "Message" (str): A detailed message related to the session status.
+            - "Result" (str): The session result (e.g., Success, Failure).
+            - "Brand" (str): The brand associated with the session.
+
 
     Returns:
         str: A markdown-formatted table summarizing user session statuses.
     """
     data_users_list = [
         {
-            "User Name": details["UserName"],
-            "Result": details["Result"],
-            "Source": ", ".join(details.get("Source", [])),
+            "UserName": details["UserName"],
             "Message": details["Message"],
+            "Result": details["Result"],
+            "Brand": details["Brand"],
+
         }
         for details in outputs
     ]
@@ -322,9 +336,10 @@ def create_readable_output(outputs: list):
     readable_output = tableToMarkdown(
         name="User(s) Session Status",
         t=data_users_list,
-        headers=["User Name", "Result", "Source", "Message"],
+        headers=["UserName", "Message", "Result", "Brand"],
         removeNull=True,
     )
+
     return readable_output
 
 
@@ -336,12 +351,12 @@ def main():
         args = demisto.args()
         users_names = argToList(args.get("user_name", ""))
         verbose = argToBoolean(args.get("verbose", False))
-        brands = args.get("brands", "")
+        brands = argToList(args.get("brands", DEFAULT_BRANDS))
 
         outputs: list = []
         results_for_verbose: list[CommandResults] = []
 
-        filtered_users_names, outputs = remove_system_user(users_names)
+        filtered_users_names, outputs = remove_system_user(users_names, brands)
 
         # get ID for users
         get_user_data_command = Command(
@@ -363,22 +378,7 @@ def main():
 
             demisto.debug(f"Start getting user account data for user: {user_name=}")
 
-            user_output = {
-                "UserName": "",
-                "Result": "",
-                "Source": [],
-                "Message": "",
-            }
-            if user_name not in users_ids:
-                user_output["Result"] = "Failed"
-                user_output["Message"] = "Username not found or no integration configured."
-                user_output["UserName"] = user_name
-                outputs.append(user_output)
-                continue
-
-            brands_succeeded: list = []
-            brands_failed: list = []
-            failed_message = ""
+            clear_session_results: list[tuple[str, str, str]] = []
 
             # Okta v2
             if okta_v2_id := get_user_id(users_ids, OKTA_BRAND, user_name):
@@ -391,12 +391,14 @@ def main():
                     readable_outputs, _, error_message = clear_user_sessions(okta_clear_user_sessions_command)
                     results_for_verbose.extend(readable_outputs)
                     if not error_message:
-                        brands_succeeded.append(OKTA_BRAND)
+                        clear_session_results.append((OKTA_BRAND, "Success", f"User session was cleared for {user_name}"))
                     else:
-                        failed_message += f"Okta v2: {error_message.lstrip('#').strip()}"
+                        failed_message = f"Okta v2: {error_message.lstrip('#').strip()}"
                         demisto.debug(f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
                                       f"Error message: {error_message}. Response details: {readable_outputs}.")
-                        brands_failed.append(OKTA_BRAND)
+                        clear_session_results.append((OKTA_BRAND, "Failed", failed_message))
+            elif OKTA_BRAND in brands:
+                clear_session_results.append((OKTA_BRAND, "Failed", "Username not found or no integration configured."))
 
             # Microsoft Graph User
             if microsoft_graph_id := get_user_id(users_ids, brand_name=MS_GRAPH_BRAND, user_name=user_name):
@@ -409,24 +411,23 @@ def main():
                     readable_outputs, human_readable, _ = clear_user_sessions(msgraph_user_session_revoke_command)
                     results_for_verbose.extend(readable_outputs)
                     if "successfully" in human_readable:
-                        brands_succeeded.append(MS_GRAPH_BRAND)
+                        clear_session_results.append((MS_GRAPH_BRAND, "Success", f"User session was cleared for {user_name}"))
                     else:
-                        brands_failed.append(MS_GRAPH_BRAND)
-                        failed_message += f"\nMG User: {human_readable.lstrip('#').strip()}"
+                        failed_message = f"\nMG User: {human_readable.lstrip('#').strip()}"
                         demisto.debug(f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
                                       f"Response details: {readable_outputs}")
+                        clear_session_results.append((MS_GRAPH_BRAND, "Failed", failed_message))
+            elif MS_GRAPH_BRAND in brands:
+                clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
 
-            if brands_succeeded:
-                user_output["Result"] = "Success"
-                user_output["Source"] = brands_succeeded
-                user_output["Message"] = SUCCESS_MESSAGE
-            else:
-                user_output["Result"] = "Failed"
-                user_output["Source"] = brands_failed
-                user_output["Message"] = failed_message
-
-            user_output["UserName"] = user_name
-            outputs.append(user_output)
+            for (brand, result, message) in clear_session_results:
+                user_output = {
+                    "Message": message,
+                    "Result": result,
+                    "Brand": brand,
+                    "UserName": user_name,
+                }
+                outputs.append(user_output)
 
         ##############################
         ### Complete for all users ###

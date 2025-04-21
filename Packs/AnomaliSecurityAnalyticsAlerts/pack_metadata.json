@@ -1,0 +1,29 @@
+{
+    "name": "Anomali Security Analytics",
+    "description": "The Anomali Security Analytics pack allows users to manage security alerts by interacting directly with the Anomali Security Analytics platform. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Anomali",
+    "url": "www.anomali.com",
+    "email": "support@anomali.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],      
+    "tags": [
+        "Alerts",
+        "Incident Response",
+        "Security Analytics",
+        "Incident Handling"
+    ],      
+    "created": "2025-03-14T00:00:00Z",
+    "useCases": [
+        "Incident Response"
+    ],
+    "keywords": [
+        "Analytics & SIEM"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

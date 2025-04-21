@@ -93,7 +93,7 @@ tasks:
               simple: Malware
     - label: Port Scan
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               complex:

@@ -1,5 +1,5 @@
 fromversion: 8.2.0
-id: Forcepoint_Email_Security_Modeling_Rules
+id: Forcepoint_Email_Security_ModelingRule
 name: Forcepoint Email Security Modeling Rules
 rules: ''
 schema: ''

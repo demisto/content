@@ -1,39 +1,35 @@
-import demistomock as demisto
-from CommonServerPython import *
-import urllib3
-from typing import Any
 import hashlib
+from typing import Any
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-AUDIT = 'audit'
-NETWORK_ACTIVITIES = 'network_activities'
+AUDIT = "audit"
+NETWORK_ACTIVITIES = "network_activities"
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
-VALID_EVENT_TITLES = ['Audit', 'Network Activities']
-VENDOR = 'ZeroNetworks'
-PRODUCT = 'Segment'
-FIRST_FETCH = 'one minute'
+VALID_EVENT_TITLES = ["Audit", "Network Activities"]
+VENDOR = "ZeroNetworks"
+PRODUCT = "Segment"
+FIRST_FETCH = "one minute"
 MAX_CALLS_FOR_LOG_TYPE = {AUDIT: 10000, NETWORK_ACTIVITIES: 400}
-URL = {AUDIT: '/audit', NETWORK_ACTIVITIES: '/activities/network'}
+URL = {AUDIT: "/audit", NETWORK_ACTIVITIES: "/activities/network"}
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
     API_VERSION = "/api/v1"
 
     def __init__(self, server_url: str, proxy: bool, verify: bool, headers: dict):
-        super().__init__(
-            base_url=urljoin(server_url, self.API_VERSION),
-            verify=verify,
-            proxy=proxy,
-            headers=headers
-        )
+        super().__init__(base_url=urljoin(server_url, self.API_VERSION), verify=verify, proxy=proxy, headers=headers)
 
     def search_events(self, limit: int, cursor: int, log_type: str, filters=None) -> dict[str, Any]:
         """
@@ -60,7 +56,7 @@ class Client(BaseClient):
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def handle_log_types(event_types_to_fetch: list) -> list:
@@ -77,13 +73,14 @@ def handle_log_types(event_types_to_fetch: list) -> list:
               If an event type title is not found, an exception is raised.
     """
     log_types = []
-    titles_to_types = {'Audit': AUDIT, 'Network Activities': NETWORK_ACTIVITIES}
+    titles_to_types = {"Audit": AUDIT, "Network Activities": NETWORK_ACTIVITIES}
     for type_title in event_types_to_fetch:
         if log_type := titles_to_types.get(type_title):
             log_types.append(log_type)
         else:
             raise DemistoException(
-                f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}")
+                f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}"
+            )
 
     return log_types
 
@@ -122,9 +119,12 @@ def get_max_results_and_limit(params: dict[str, Any], log_type: str, args={}) ->
             - limit (int): The limit for fetching results, adjusted to be at least 20.
     """
     max_results_for_log_type = {AUDIT: 10000, NETWORK_ACTIVITIES: 2000}
-    max_fetch_param_name = {AUDIT: 'max_fetch_audit', NETWORK_ACTIVITIES: 'max_fetch_network'}
-    max_results = arg_to_number(args.get(max_fetch_param_name[log_type])) \
-        or arg_to_number(params.get(max_fetch_param_name[log_type])) or max_results_for_log_type[log_type]
+    max_fetch_param_name = {AUDIT: "max_fetch_audit", NETWORK_ACTIVITIES: "max_fetch_network"}
+    max_results = (
+        arg_to_number(args.get(max_fetch_param_name[log_type]))
+        or arg_to_number(params.get(max_fetch_param_name[log_type]))
+        or max_results_for_log_type[log_type]
+    )
     limit = min(max_results, MAX_CALLS_FOR_LOG_TYPE[log_type])
     if limit < 20:
         limit = 20
@@ -145,10 +145,7 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: in
     Returns:
         Dict[str, Any]: Updated dictionary containing the last run details.
     """
-    last_run[log_type] = {
-        "last_fetch": last_event_time,
-        "previous_ids": previous_ids
-    }
+    last_run[log_type] = {"last_fetch": last_event_time, "previous_ids": previous_ids}
     return last_run
 
 
@@ -181,8 +178,9 @@ def create_id(event: dict, log_type: str) -> str:
     return hash_object.hexdigest()
 
 
-def process_events(events: list, previous_ids: list, last_event_time: int, max_results: int, num_results: int,
-                   log_type: str) -> tuple[list, list, int]:
+def process_events(
+    events: list, previous_ids: list, last_event_time: int, max_results: int, num_results: int, log_type: str
+) -> tuple[list, list, int]:
     """
     Process a list of events to filter out new ones and update tracking information.
 
@@ -206,8 +204,8 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
             break
 
         if event_id not in previous_ids:
-            event['_time'] = event.get('timestamp')
-            event['source_log_type'] = log_type
+            event["_time"] = event.get("timestamp")
+            event["source_log_type"] = log_type
             new_events.append(event)
             event_timestamp = event.get("timestamp")
             num_results += 1
@@ -222,11 +220,12 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
     return new_events, previous_ids, last_event_time
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
-def fetch_events(client: Client, last_run: dict, start_timestamp: int, log_type: str,
-                 filters: list, max_results: int, limit: int) -> tuple[dict, list]:
+def fetch_events(
+    client: Client, last_run: dict, start_timestamp: int, log_type: str, filters: list, max_results: int, limit: int
+) -> tuple[dict, list]:
     """
     Fetches events from ZeroNetworks API by log type.
 
@@ -253,8 +252,8 @@ def fetch_events(client: Client, last_run: dict, start_timestamp: int, log_type:
             demisto.debug("No response received from client.")
             break
 
-        events = response.get('items', [])
-        scroll_cursor = response.get('scrollCursor')
+        events = response.get("items", [])
+        scroll_cursor = response.get("scrollCursor")
         if scroll_cursor:
             cursor = int(scroll_cursor)
 
@@ -262,8 +261,9 @@ def fetch_events(client: Client, last_run: dict, start_timestamp: int, log_type:
             demisto.debug("No events found in response.")
             break
 
-        new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time, max_results,
-                                                                   len(collected_events), log_type)
+        new_events, previous_ids, last_event_time = process_events(
+            events, previous_ids, last_event_time, max_results, len(collected_events), log_type
+        )
 
         # If no new events are returned from process_events, but there are existing events:
         # It indicates that all events might be within the range of previously processed IDs.
@@ -282,8 +282,7 @@ def fetch_events(client: Client, last_run: dict, start_timestamp: int, log_type:
         collected_events.extend(new_events)
 
     last_run = update_last_run(last_run, log_type, last_event_time, previous_ids)
-    demisto.debug(
-        f"Updated last_run for {log_type=} with {last_event_time=} and previous_ids {previous_ids=}")
+    demisto.debug(f"Updated last_run for {log_type=} with {last_event_time=} and previous_ids {previous_ids=}")
 
     return last_run, collected_events
 
@@ -302,7 +301,7 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict, log_typ
         events (list): List of fetched events.
         CommandResults: An object containing the formatted results for output.
     """
-    types_to_titles = {AUDIT: 'Audit', NETWORK_ACTIVITIES: 'Network Activities'}
+    types_to_titles = {AUDIT: "Audit", NETWORK_ACTIVITIES: "Network Activities"}
     all_events: list = []
     filters = params.get("network_activity_filters", [])
     hr = ""
@@ -313,9 +312,8 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict, log_typ
             start_timestamp = initialize_start_timestamp(last_run, log_type)
 
         max_results, limit = get_max_results_and_limit(params, log_type, args)
-        last_run, collected_events = fetch_events(client, last_run, start_timestamp,
-                                                  log_type, filters, max_results, limit)
-        hr += tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=collected_events)
+        last_run, collected_events = fetch_events(client, last_run, start_timestamp, log_type, filters, max_results, limit)
+        hr += tableToMarkdown(name=f"{types_to_titles[log_type]} Events", t=collected_events)
         all_events.extend(collected_events)
 
     return all_events, CommandResults(readable_output=hr)
@@ -339,8 +337,7 @@ def fetch_all_events(client: Client, params: dict, last_run: dict, log_types: li
     for log_type in log_types:
         start_timestamp = initialize_start_timestamp(last_run, log_type)
         max_results, limit = get_max_results_and_limit(params, log_type)
-        last_run, collected_events = fetch_events(client, last_run, start_timestamp,
-                                                  log_type, filters, max_results, limit)
+        last_run, collected_events = fetch_events(client, last_run, start_timestamp, log_type, filters, max_results, limit)
         all_events.extend(collected_events)
 
     return last_run, all_events
@@ -362,14 +359,14 @@ def test_module(client: Client) -> str:
         start_timestamp = initialize_start_timestamp({}, "")
         client.search_events(limit=1, cursor=start_timestamp, log_type=AUDIT)
     except Exception as e:
-        if 'Unauthorized' in str(e):
-            return 'Authorization Error: make sure the API Key is correctly set'
+        if "Unauthorized" in str(e):
+            return "Authorization Error: make sure the API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -380,58 +377,55 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('credentials', {}).get('password')
-    server_url = urljoin(params.get('url'))
-    verify_certificate = not argToBoolean(params.get('insecure', False))
-    proxy = params.get('proxy', False)
-    should_push_events = argToBoolean(args.get('should_push_events', False))
-    event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
+    api_key = params.get("credentials", {}).get("password")
+    server_url = urljoin(params.get("url"))
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = params.get("proxy", False)
+    should_push_events = argToBoolean(args.get("should_push_events", False))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", []))
     log_types = handle_log_types(event_types_to_fetch)
-    isFetch = params.get('isFetchEvents')
+    isFetch = params.get("isFetchEvents")
     if isFetch and not log_types:
         raise DemistoException("At least one event type must be specified for fetching.")
 
-    demisto.debug(f'Event types that will be fetched in this instance: {log_types}')
+    demisto.debug(f"Event types that will be fetched in this instance: {log_types}")
 
-    filters = params.get('network_activity_filters', '')
-    if 'network_activities' in log_types and not filters:
+    filters = params.get("network_activity_filters", "")
+    if "network_activities" in log_types and not filters:
         raise DemistoException(
-            "Using network_activity_filters is required when fetching network events, to limit the number of events.")
+            "Using network_activity_filters is required when fetching network events, to limit the number of events."
+        )
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        headers: dict = {'accept': 'application/json', 'Authorization': api_key}
+        headers: dict = {"accept": "application/json", "Authorization": api_key}
 
-        client = Client(
-            server_url=server_url,
-            proxy=proxy,
-            verify=verify_certificate,
-            headers=headers)
+        client = Client(server_url=server_url, proxy=proxy, verify=verify_certificate, headers=headers)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'zero-networks-segment-get-events':
+        elif command == "zero-networks-segment-get-events":
             last_run = demisto.getLastRun()
             events, results = get_events(client, args, last_run, params, log_types)  # type: ignore
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
             next_run, events = fetch_all_events(client, params, last_run, log_types)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
-# Log exceptions and return errors
+    # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

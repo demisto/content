@@ -1,11 +1,14 @@
 """Axonius Integration for Cortex XSOAR - Unit Tests file."""
 
 import warnings
-from TestData.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS, DUMMY_DEVICES
-from TestData.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
+
 from Axonius import run_command
 from marshmallow.warnings import RemovedInMarshmallow4Warning
-warnings.filterwarnings('ignore', category=RemovedInMarshmallow4Warning)
+
+from TestData.Expected_data import EXPECTED_DEVICE, EXPECTED_DEVICE_TAGS, EXPECTED_USERS_SQS
+from TestData.Raw_data import DUMMY_DEVICES, DUMMY_DEVICES_IDS, DUMMY_TAGS, DUMMY_USER_IDS, USERS_SQS
+
+warnings.filterwarnings("ignore", category=RemovedInMarshmallow4Warning)
 
 
 class DummyDevices:
@@ -119,7 +122,7 @@ def test_get_device():
 
 def test_get_by_aql():
     client = DummyConnect()
-    args: dict = {"query": "(\"specific_data.data.name\" == regex(\"john\", \"i\"))"}
+    args: dict = {"query": '("specific_data.data.name" == regex("john", "i"))'}
     result = run_command(client=client, args=args, command="axonius-get-devices-by-aql")
     assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
 

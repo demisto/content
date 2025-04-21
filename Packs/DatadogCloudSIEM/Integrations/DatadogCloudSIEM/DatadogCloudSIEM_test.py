@@ -10,59 +10,89 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+import datetime
 import json
 import os
-import pytest
 from unittest.mock import MagicMock
+
+import demistomock as demisto
+import pytest
 from CommonServerPython import CommandResults, DemistoException
-from DatadogCloudSIEM import (
-    get_tags_command,
-    create_event_command,
-    add_tags_to_host_command,
-    get_events_command,
-    create_incident_command,
-    update_incident_command,
-    update_host_tags_command,
-    get_incident_command,
-    update_metric_metadata_command,
-    metrics_search_command,
-    get_metric_metadata_command,
-    active_metrics_list_command,
-    get_host_tags_command,
-    delete_incident_command,
-    metric_command_results,
-    delete_host_tags_command,
-    query_timeseries_points_command,
-    get_paginated_results,
-    table_header,
-    is_within_time,
-    event_for_lookup,
-    incident_for_lookup,
-    pagination,
-    PAGE_SIZE_ERROR_MSG,
-    PAGE_NUMBER_ERROR_MSG,
-    DEFAULT_PAGE_SIZE,
-    convert_datetime_to_str,
-    tags_context_and_readable_output,
-    module_test,
-    fetch_incidents,
-)
-from datadog_api_client.v1.model.metrics_list_response import MetricsListResponse
+from datadog_api_client.v1.model.metric_metadata import MetricMetadata
 from datadog_api_client.v1.model.metric_search_response import MetricSearchResponse
 from datadog_api_client.v1.model.metric_search_response_results import (
     MetricSearchResponseResults,
 )
-from datadog_api_client.v1.model.metric_metadata import MetricMetadata
-from test_data.inputs import TIME_SERIES_POINT_QUERY_RESPONSE, TIME_SERIES_POINT_QUERY_CONTEXT, CREATE_INCIDENT_RESPONSE, \
-    CREATE_INCIDENT_CONTEXT, UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT, GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT, \
-    INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED, METRIC_COMMAND_RESULT_INPUT, METRIC_COMMAND_RESULT_OUTPUT,  \
-    TAGS_CONTEXT_READABLE_OUTPUT, LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT, EVENT_CREATE_RESPONSE, TAGS_LIST_CONTEXT, \
-    EVENT_CREATE_CONTEXT, EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT, EVENT_GET_RESPONSE, EVENT_GET_CONTEXT, \
-    HOST_TAG_CREATE_CONTEXT, HOST_TAG_GET_CONTEXT, HOST_TAG_UPDATE_CONTEXT, ACTIVE_METRIC_LIST_RESPONSE, \
-    ACTIVE_METRIC_LIST_CONTEXT, METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT, METRIC_METADATA_GET_RESPONSE, \
-    METRIC_METADATA_GET_CONTEXT, METRIC_METADATA_UPDATE_RESPONSE, METRIC_METADATA_UPDATE_CONTEXT, EVENT_MOCK, EXPECTED_EVENT_MOCK
-import datetime
-import demistomock as demisto
+from datadog_api_client.v1.model.metrics_list_response import MetricsListResponse
+from DatadogCloudSIEM import (
+    DEFAULT_PAGE_SIZE,
+    PAGE_NUMBER_ERROR_MSG,
+    PAGE_SIZE_ERROR_MSG,
+    active_metrics_list_command,
+    add_tags_to_host_command,
+    convert_datetime_to_str,
+    create_event_command,
+    create_incident_command,
+    delete_host_tags_command,
+    delete_incident_command,
+    event_for_lookup,
+    fetch_incidents,
+    get_events_command,
+    get_host_tags_command,
+    get_incident_command,
+    get_metric_metadata_command,
+    get_paginated_results,
+    get_tags_command,
+    incident_for_lookup,
+    is_within_time,
+    metric_command_results,
+    metrics_search_command,
+    module_test,
+    pagination,
+    query_timeseries_points_command,
+    table_header,
+    tags_context_and_readable_output,
+    update_host_tags_command,
+    update_incident_command,
+    update_metric_metadata_command,
+)
+from test_data.inputs import (
+    ACTIVE_METRIC_LIST_CONTEXT,
+    ACTIVE_METRIC_LIST_RESPONSE,
+    CREATE_INCIDENT_CONTEXT,
+    CREATE_INCIDENT_RESPONSE,
+    EVENT_CREATE_CONTEXT,
+    EVENT_CREATE_RESPONSE,
+    EVENT_GET_CONTEXT,
+    EVENT_GET_RESPONSE,
+    EVENT_LIST_CONTEXT,
+    EVENT_LIST_RESPONSE,
+    EVENT_MOCK,
+    EXPECTED_EVENT_MOCK,
+    GET_INCIDENT_CONTEXT,
+    GET_INCIDENT_RESPONSE,
+    HOST_TAG_CREATE_CONTEXT,
+    HOST_TAG_GET_CONTEXT,
+    HOST_TAG_UPDATE_CONTEXT,
+    INCIDENT_LOOKUP_DATA,
+    INCIDENT_LOOKUP_DATA_EXPECTED,
+    LIST_INCIDENT_CONTEXT,
+    LIST_INCIDENT_RESPONSE,
+    METRIC_COMMAND_RESULT_INPUT,
+    METRIC_COMMAND_RESULT_OUTPUT,
+    METRIC_METADATA_GET_CONTEXT,
+    METRIC_METADATA_GET_RESPONSE,
+    METRIC_METADATA_UPDATE_CONTEXT,
+    METRIC_METADATA_UPDATE_RESPONSE,
+    METRIC_SEARCH_CONTEXT,
+    METRIC_SEARCH_RESPONSE,
+    TAGS_CONTEXT_READABLE_OUTPUT,
+    TAGS_LIST_CONTEXT,
+    TIME_SERIES_POINT_QUERY_CONTEXT,
+    TIME_SERIES_POINT_QUERY_RESPONSE,
+    UPDATE_INCIDENT_CONTEXT,
+    UPDATE_INCIDENT_RESPONSE,
+)
 
 
 def util_load_json(path):
@@ -109,9 +139,7 @@ class Datadog:
         dict: A dictionary representation of the Datadog object.
         """
         return {
-            attr: getattr(self, attr)
-            for attr in dir(self)
-            if not callable(getattr(self, attr)) and not attr.startswith("__")
+            attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")
         }
 
 
@@ -120,9 +148,7 @@ def configuration():
     return MagicMock()
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(EVENT_CREATE_RESPONSE, EVENT_CREATE_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(EVENT_CREATE_RESPONSE, EVENT_CREATE_CONTEXT)])
 def test_create_event_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the create_event_command function in DatadogCloudSIEM.
@@ -159,9 +185,7 @@ def test_create_event_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT)])
 def test_list_events_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the list_events function in DatadogCloudSIEM.
@@ -197,9 +221,7 @@ def test_list_events_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(EVENT_GET_RESPONSE, EVENT_GET_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(EVENT_GET_RESPONSE, EVENT_GET_CONTEXT)])
 def test_get_events_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the get_events_command function in DatadogCloudSIEM.
@@ -228,9 +250,7 @@ def test_get_events_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(HOST_TAG_CREATE_RESPONSE, HOST_TAG_CREATE_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_CREATE_RESPONSE, HOST_TAG_CREATE_CONTEXT)])
 def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the add_tags_to_host_command function in DatadogCloudSIEM.
@@ -254,9 +274,7 @@ def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = add_tags_to_host_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/add_tags_to_host_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/add_tags_to_host_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -264,9 +282,7 @@ def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(HOST_TAG_GET_RESPONSE, HOST_TAG_GET_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_GET_RESPONSE, HOST_TAG_GET_CONTEXT)])
 def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the get_host_tags_command function in DatadogCloudSIEM.
@@ -295,9 +311,7 @@ def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(HOST_TAG_UPDATE_RESPONSE, HOST_TAG_UPDATE_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_UPDATE_RESPONSE, HOST_TAG_UPDATE_CONTEXT)])
 def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the update_host_tags_command function in DatadogCloudSIEM.
@@ -321,9 +335,7 @@ def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = update_host_tags_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/update_host_tags_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/update_host_tags_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -331,9 +343,7 @@ def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(ACTIVE_METRIC_LIST_RESPONSE, ACTIVE_METRIC_LIST_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(ACTIVE_METRIC_LIST_RESPONSE, ACTIVE_METRIC_LIST_CONTEXT)])
 def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the active_metrics_list_command function in DatadogCloudSIEM.
@@ -348,17 +358,13 @@ def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
     None. The function asserts the output of the active_metrics_list_command function against the expected output.
     """
     args = {"from": "2 days ago"}
-    resp_obj = MetricsListResponse(
-        _from=raw_resp.get("_from"), metrics=raw_resp.get("metrics")
-    )
+    resp_obj = MetricsListResponse(_from=raw_resp.get("_from"), metrics=raw_resp.get("metrics"))
     DATADOG_API_CLIENT_MOCK.list_active_metrics.return_value = resp_obj
     mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
     mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = active_metrics_list_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/active_metrics_list_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/active_metrics_list_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -367,9 +373,7 @@ def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
 
 
 # check readable output
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT)])
 def test_metrics_search_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the metrics_search_command function in DatadogCloudSIEM.
@@ -384,17 +388,13 @@ def test_metrics_search_command(mocker, raw_resp, expected, configuration):
     None. The function asserts the output of the metrics_search_command function against the expected output.
     """
     args = {"query": "datadog.agent.python.version"}
-    resp_obj = MetricSearchResponse(
-        results=MetricSearchResponseResults(metrics=raw_resp["results"]["metrics"])
-    )
+    resp_obj = MetricSearchResponse(results=MetricSearchResponseResults(metrics=raw_resp["results"]["metrics"]))
     DATADOG_API_CLIENT_MOCK.list_metrics.return_value = resp_obj
     mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
     mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = metrics_search_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/metrics_search_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/metrics_search_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -402,9 +402,7 @@ def test_metrics_search_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(METRIC_METADATA_GET_RESPONSE, METRIC_METADATA_GET_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(METRIC_METADATA_GET_RESPONSE, METRIC_METADATA_GET_CONTEXT)])
 def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the get_metric_metadata_command function in DatadogCloudSIEM.
@@ -426,9 +424,7 @@ def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_metric_metadata_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/get_metric_metadata_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/get_metric_metadata_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -468,9 +464,7 @@ def test_update_metric_metadata_command(mocker, raw_resp, expected, configuratio
     mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = update_metric_metadata_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/update_metric_metadata_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/update_metric_metadata_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -478,9 +472,7 @@ def test_update_metric_metadata_command(mocker, raw_resp, expected, configuratio
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(TAGS_LIST_RESPONSE, TAGS_LIST_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(TAGS_LIST_RESPONSE, TAGS_LIST_CONTEXT)])
 def test_get_tags_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the get_tags_command function in DatadogCloudSIEM.
@@ -504,9 +496,7 @@ def test_get_tags_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
     mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_tags_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")
-    ) as f:
+    with open(os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
     assert result.to_context()["Contents"] == expected
@@ -537,9 +527,7 @@ def test_query_timeseries_points_command(mocker, raw_resp, expected, configurati
     mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = query_timeseries_points_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/query_timeseries_points_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/query_timeseries_points_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result[0], CommandResults)
@@ -547,9 +535,7 @@ def test_query_timeseries_points_command(mocker, raw_resp, expected, configurati
     assert result[0].readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(None, "### Host tags deleted successfully!\n")]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(None, "### Host tags deleted successfully!\n")])
 def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the delete_host_tags_command function in DatadogCloudSIEM.
@@ -572,9 +558,7 @@ def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == expected
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(None, "### Incident deleted successfully!\n")]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(None, "### Incident deleted successfully!\n")])
 def test_delete_incident_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the delete_incident_command function in DatadogCloudSIEM.
@@ -597,9 +581,7 @@ def test_delete_incident_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == expected
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(CREATE_INCIDENT_RESPONSE, CREATE_INCIDENT_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(CREATE_INCIDENT_RESPONSE, CREATE_INCIDENT_CONTEXT)])
 def test_create_incident_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the create_incident_command function in DatadogCloudSIEM.
@@ -632,9 +614,7 @@ def test_create_incident_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = create_incident_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/create_incident_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/create_incident_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -642,9 +622,7 @@ def test_create_incident_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT)])
 def test_update_incident_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the update_incident_command function in DatadogCloudSIEM.
@@ -679,9 +657,7 @@ def test_update_incident_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = update_incident_command(configuration, args)
     with open(
-        os.path.join(
-            "test_data", "readable_outputs/update_incident_command_readable.md"
-        ),
+        os.path.join("test_data", "readable_outputs/update_incident_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -689,9 +665,7 @@ def test_update_incident_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT)])
 def test_get_incident_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the get_incident_command function in DatadogCloudSIEM.
@@ -720,9 +694,7 @@ def test_get_incident_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
 def test_list_incident_command(mocker, raw_resp, expected, configuration):
     """
     Test function for the incident list function in DatadogCloudSIEM.
@@ -751,9 +723,7 @@ def test_list_incident_command(mocker, raw_resp, expected, configuration):
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
-    "raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)]
-)
+@pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
 def test_fetch_incidents(mocker, raw_resp, expected, configuration):
     """
     Test function for the fetch_incidents function in DatadogCloudSIEM.
@@ -769,9 +739,7 @@ def test_fetch_incidents(mocker, raw_resp, expected, configuration):
     """
     args = {"first_fetch_time": "3 days", "fetch_limit": 50}
     resp_obj = Datadog(**raw_resp)
-    mocker.patch.object(
-        demisto, "getLastRun", return_value={"lastRun": "2023-04-27 10:41:04.316926"}
-    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"lastRun": "2023-04-27 10:41:04.316926"})
     DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
     mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
     mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
@@ -794,9 +762,7 @@ def test_test_module(mocker, configuration):
     """
     DATADOG_API_CLIENT_MOCK.list_events.return_value = {}
     mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch(
-        "DatadogCloudSIEM.AuthenticationApi", return_value=DATADOG_API_CLIENT_MOCK
-    )
+    mocker.patch("DatadogCloudSIEM.AuthenticationApi", return_value=DATADOG_API_CLIENT_MOCK)
     mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = module_test(configuration)
     assert result == "ok"
@@ -920,9 +886,7 @@ def test_event_for_lookup(raw, expected):
     assert event_for_lookup(raw) == expected
 
 
-@pytest.mark.parametrize(
-    "raw, expected", [(INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED)]
-)
+@pytest.mark.parametrize("raw, expected", [(INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED)])
 def test_incident_for_lookup(raw, expected):
     """
     Test function for the incident_for_lookup function in DatadogCloudSIEM.
@@ -948,9 +912,7 @@ def test_incident_for_lookup(raw, expected):
         (None, None, None, (DEFAULT_PAGE_SIZE, 0)),
     ],
 )
-def test_pagination(
-    limit: int | None, page: int | None, page_size: int | None, expected
-):
+def test_pagination(limit: int | None, page: int | None, page_size: int | None, expected):
     """
     Test function for the pagination function in DatadogCloudSIEM.
 
@@ -1001,14 +963,14 @@ def test_metric_command_results(raw, metric_name, expected):
     [
         (
             {"date": datetime.datetime(2022, 4, 13, 12, 0, 0)},
-            {'date': '2022-04-13T12:00:00+00:00'},
+            {"date": "2022-04-13T12:00:00+00:00"},
         ),
         (
             {
                 "date1": datetime.datetime(2022, 4, 13, 12, 0, 0),
                 "date2": datetime.datetime(2022, 4, 14, 12, 0, 0),
             },
-            {'date1': '2022-04-13T12:00:00+00:00', 'date2': '2022-04-14T12:00:00+00:00'},
+            {"date1": "2022-04-13T12:00:00+00:00", "date2": "2022-04-14T12:00:00+00:00"},
         ),
         ({"name": "John", "age": 30}, {"name": "John", "age": 30}),
         (
@@ -1016,8 +978,7 @@ def test_metric_command_results(raw, metric_name, expected):
                 "date": datetime.datetime(2022, 4, 13, 12, 0, 0),
                 "nested": {"date": datetime.datetime(2022, 4, 14, 12, 0, 0)},
             },
-            {'date': '2022-04-13T12:00:00+00:00',
-             'nested': {'date': '2022-04-14T12:00:00+00:00'}},
+            {"date": "2022-04-13T12:00:00+00:00", "nested": {"date": "2022-04-14T12:00:00+00:00"}},
         ),
     ],
 )
@@ -1035,9 +996,7 @@ def test_convert_datetime_to_str(raw, expected):
     assert convert_datetime_to_str(raw) == expected
 
 
-@pytest.mark.parametrize(
-    "raw, expected", [(HOST_TAG_CREATE_RESPONSE, TAGS_CONTEXT_READABLE_OUTPUT)]
-)
+@pytest.mark.parametrize("raw, expected", [(HOST_TAG_CREATE_RESPONSE, TAGS_CONTEXT_READABLE_OUTPUT)])
 def test_tags_context_and_readable_output(raw, expected):
     """
     Test the `tags_context_and_readable_output` function with the given raw data and

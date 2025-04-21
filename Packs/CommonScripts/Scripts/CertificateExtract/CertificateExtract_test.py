@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'script': True})
+    mocker.patch.object(demisto, "callingContext", {"script": True})
 
 
 def load_json_data(path):
@@ -25,13 +25,13 @@ def test_pem():
     """
     from CertificateExtract import certificate_extract_command
 
-    with open('test_data/test.pem') as f:
+    with open("test_data/test.pem") as f:
         contents = f.read()
 
-    context = certificate_extract_command({'pem': contents}).to_context()
-    expected_result = load_json_data('test_data/pem_result.json')
+    context = certificate_extract_command({"pem": contents}).to_context()
+    expected_result = load_json_data("test_data/pem_result.json")
 
-    assert context['EntryContext'] == expected_result
+    assert context["EntryContext"] == expected_result
 
 
 def test_load_pem(mocker):
@@ -43,16 +43,13 @@ def test_load_pem(mocker):
     Then
         - the result of the function should match the one loaded from a specific JSON file
     """
-    mocker.patch('demistomock.getFilePath', return_value={
-        "path": 'test_data/pandev.pem',
-        "name": 'test'
-    })
+    mocker.patch("demistomock.getFilePath", return_value={"path": "test_data/pandev.pem", "name": "test"})
 
     from CertificateExtract import certificate_extract_command
 
-    context = certificate_extract_command({'entry_id': 'test'}).to_context()
-    expected_result = load_json_data('test_data/pandev_result.json')
-    assert context['EntryContext'] == expected_result
+    context = certificate_extract_command({"entry_id": "test"}).to_context()
+    expected_result = load_json_data("test_data/pandev_result.json")
+    assert context["EntryContext"] == expected_result
 
 
 def test_load_der(mocker):
@@ -64,17 +61,14 @@ def test_load_der(mocker):
     Then
         - the result of the function should match the one loaded from a specific JSON file
     """
-    mocker.patch('demistomock.getFilePath', return_value={
-        "path": 'test_data/pandev.der',
-        "name": 'test'
-    })
+    mocker.patch("demistomock.getFilePath", return_value={"path": "test_data/pandev.der", "name": "test"})
 
     from CertificateExtract import certificate_extract_command
 
-    context = certificate_extract_command({'entry_id': 'test'}).to_context()
-    expected_result = load_json_data('test_data/pandev_result.json')
+    context = certificate_extract_command({"entry_id": "test"}).to_context()
+    expected_result = load_json_data("test_data/pandev_result.json")
 
-    assert context['EntryContext'] == expected_result
+    assert context["EntryContext"] == expected_result
 
 
 def test_load_pem2(mocker):
@@ -86,14 +80,11 @@ def test_load_pem2(mocker):
     Then
         - the result of the function should match the one loaded from a specific JSON file
     """
-    mocker.patch('demistomock.getFilePath', return_value={
-        "path": 'test_data/test2.pem',
-        "name": 'test'
-    })
+    mocker.patch("demistomock.getFilePath", return_value={"path": "test_data/test2.pem", "name": "test"})
 
     from CertificateExtract import certificate_extract_command
 
-    context = certificate_extract_command({'entry_id': 'test'}).to_context()
-    expected_result = load_json_data('test_data/test2_result.json')
+    context = certificate_extract_command({"entry_id": "test"}).to_context()
+    expected_result = load_json_data("test_data/test2_result.json")
 
-    assert context['EntryContext'] == expected_result
+    assert context["EntryContext"] == expected_result

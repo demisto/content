@@ -137,5 +137,11 @@ script:
 fromversion: 8.4.0
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 tests:
 - No tests

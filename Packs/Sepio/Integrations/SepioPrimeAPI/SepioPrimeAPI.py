@@ -1,5 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 #
 #
 #                 _____            _         _____      _
@@ -24,47 +22,44 @@ from CommonServerPython import *  # noqa: F401
 #
 # info : https://www.sepio.systems/
 # support : support@sepio.systems
-
 # IMPORTS
 import json
+
 import dateparser
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
+
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 # CONSTANTS
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 MAX_RESULTS = 1000000
 MAX_RESULTS_EVENTS = 50
 
-SEPIO = 'Sepio Systems'
+SEPIO = "Sepio Systems"
 
 # Convert Sepio Prime events severity to Demisto severity
 SEPIO_PRIME_SEVERITY_TO_DEMOISTO_SEVERITY_CONVERT = {
-    'Debug': 1,
-    'Notice': 1,
-    'Informational': 1,
-    'Alert': 2,
-    'Warning': 2,
-    'Error': 3,
-    'Emergency': 4,
-    'Critical': 4
+    "Debug": 1,
+    "Notice": 1,
+    "Informational": 1,
+    "Alert": 2,
+    "Warning": 2,
+    "Error": 3,
+    "Emergency": 4,
+    "Critical": 4,
 }
 
 # Agents set mode values
-AGENTS_ARMED_MODE_CONVERT = {
-    'Free': 'free',
-    'Armed': 'ARM'
-}
+AGENTS_ARMED_MODE_CONVERT = {"Free": "free", "Armed": "ARM"}
 
 # Peripherals set mode values
-AGENT_PERIPHERALS_APPROVE_MODE_CONVERT = {
-    'Approve': 'APPROVE',
-    'Disapprove': 'DISAPPROVE'
-}
+AGENT_PERIPHERALS_APPROVE_MODE_CONVERT = {"Approve": "APPROVE", "Disapprove": "DISAPPROVE"}
 
 
 class Client(BaseClient):
@@ -74,11 +69,19 @@ class Client(BaseClient):
     """
 
     def __init__(self, *args, **kwargs):
-        self._prime_auth = kwargs.pop('auth')
+        self._prime_auth = kwargs.pop("auth")
         super().__init__(*args, **kwargs)
 
-    def prime_get_agents(self, host_identifier, ip_address, uuid, has_unapproved_peripherals, has_vulnerable_peripherals,
-                         has_known_attack_tools, limit):
+    def prime_get_agents(
+        self,
+        host_identifier,
+        ip_address,
+        uuid,
+        has_unapproved_peripherals,
+        has_vulnerable_peripherals,
+        has_known_attack_tools,
+        limit,
+    ):
         """Gets Agents from Sepio Prime using the '/agents' API endpoint
 
         :type host_identifier: ``str``
@@ -107,19 +110,30 @@ class Client(BaseClient):
         """
 
         get_agents_params = {
-            'hostIdentifier': host_identifier,
-            'ipAddress': ip_address,
-            'uuid': uuid,
-            'hasUnapprovedPeripherals': has_unapproved_peripherals,
-            'hasVulnerablePeripherals': has_vulnerable_peripherals,
-            'hasKnownAttackTools': has_known_attack_tools
+            "hostIdentifier": host_identifier,
+            "ipAddress": ip_address,
+            "uuid": uuid,
+            "hasUnapprovedPeripherals": has_unapproved_peripherals,
+            "hasVulnerablePeripherals": has_vulnerable_peripherals,
+            "hasKnownAttackTools": has_known_attack_tools,
         }
 
-        res = self.__prime_get_from_api_retries('/agents', get_agents_params, 'lastConfiguration_desc', limit)
+        res = self.__prime_get_from_api_retries("/agents", get_agents_params, "lastConfiguration_desc", limit)
         return res
 
-    def prime_get_global_peripherals(self, host_identifier, ip_address, host_uuid, vendor_name, product_name, serial_number,
-                                     is_unapproved_peripheral, is_vulnerable_peripheral, is_known_attack_tool, limit):
+    def prime_get_global_peripherals(
+        self,
+        host_identifier,
+        ip_address,
+        host_uuid,
+        vendor_name,
+        product_name,
+        serial_number,
+        is_unapproved_peripheral,
+        is_vulnerable_peripheral,
+        is_known_attack_tool,
+        limit,
+    ):
         """Gets Peripherals from Sepio Prime using the '/peripherals' API endpoint
 
         :type host_identifier: ``str``
@@ -157,18 +171,18 @@ class Client(BaseClient):
         """
 
         get_global_peripherals_params = {
-            'hostIdentifier': host_identifier,
-            'ipAddress': ip_address,
-            'hostUuid': host_uuid,
-            'productInfo': product_name,
-            'vendor': vendor_name,
-            'serialNumber': serial_number,
-            'isUnapprovedPeripheral': is_unapproved_peripheral,
-            'isVulnerablePeripheral': is_vulnerable_peripheral,
-            'isKnownAttackTool': is_known_attack_tool
+            "hostIdentifier": host_identifier,
+            "ipAddress": ip_address,
+            "hostUuid": host_uuid,
+            "productInfo": product_name,
+            "vendor": vendor_name,
+            "serialNumber": serial_number,
+            "isUnapprovedPeripheral": is_unapproved_peripheral,
+            "isVulnerablePeripheral": is_vulnerable_peripheral,
+            "isKnownAttackTool": is_known_attack_tool,
         }
 
-        res = self.__prime_get_from_api_retries('/peripherals', get_global_peripherals_params, 'hostUuid_asc', limit)
+        res = self.__prime_get_from_api_retries("/peripherals", get_global_peripherals_params, "hostUuid_asc", limit)
         return res
 
     def prime_get_switches(self):
@@ -178,11 +192,12 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
 
-        res = self.__prime_get_from_api_retries('/switches/switches', None, None, MAX_RESULTS, results_key=None)
+        res = self.__prime_get_from_api_retries("/switches/switches", None, None, MAX_RESULTS, results_key=None)
         return res
 
-    def prime_get_switch_ports(self, switch_ip_address, switch_name, port_id, port_name, link_partner_data_contains,
-                               is_alarmed, limit):
+    def prime_get_switch_ports(
+        self, switch_ip_address, switch_name, port_id, port_name, link_partner_data_contains, is_alarmed, limit
+    ):
         """Gets Switch Ports from Sepio Prime using the '/switches/ports' API endpoint
 
         :type switch_ip_address: ``str``
@@ -211,19 +226,28 @@ class Client(BaseClient):
         """
 
         get_switch_ports_params = {
-            'switchIp': switch_ip_address,
-            'switchName': switch_name,
-            'portID': port_id,
-            'assignedName': port_name,
-            'linkPartnerData': link_partner_data_contains,
-            'alarmed': is_alarmed
+            "switchIp": switch_ip_address,
+            "switchName": switch_name,
+            "portID": port_id,
+            "assignedName": port_name,
+            "linkPartnerData": link_partner_data_contains,
+            "alarmed": is_alarmed,
         }
 
-        res = self.__prime_get_from_api_retries('/switches/ports', get_switch_ports_params, 'switchIp_asc', limit)
+        res = self.__prime_get_from_api_retries("/switches/ports", get_switch_ports_params, "switchIp_asc", limit)
         return res
 
-    def prime_get_events(self, from_datetime, min_severity, categories, max_results,
-                         to_datetime=None, source=None, peripheral_type=None, from_eventid=None):
+    def prime_get_events(
+        self,
+        from_datetime,
+        min_severity,
+        categories,
+        max_results,
+        to_datetime=None,
+        source=None,
+        peripheral_type=None,
+        from_eventid=None,
+    ):
         """Gets Events from Sepio Prime using the '/events/getevents' API endpoint
 
         :type from_datetime: ``str``
@@ -253,10 +277,10 @@ class Client(BaseClient):
 
         search_category = categories[0] if categories and len(categories) == 1 else None
         get_events_params = {
-            'category': search_category,
-            'minimumSeverity': min_severity,
-            'source': source,
-            'peripheralIcon': peripheral_type
+            "category": search_category,
+            "minimumSeverity": min_severity,
+            "source": source,
+            "peripheralIcon": peripheral_type,
         }
         if from_eventid is None:
             get_events_params["FromDate"] = from_datetime
@@ -264,7 +288,7 @@ class Client(BaseClient):
         else:
             get_events_params["FromEventId"] = from_eventid
 
-        res = self.__prime_get_from_api_retries('/events/getevents', get_events_params, 'date_asc', max_results)
+        res = self.__prime_get_from_api_retries("/events/getevents", get_events_params, "date_asc", max_results)
         return res
 
     def prime_set_agent_mode(self, uuid, host_identifier, ip_address, mode):
@@ -292,17 +316,14 @@ class Client(BaseClient):
 
         set_agent_mode_data = [
             {
-                'uuid': uuid,
-                'hostIdentifier': host_identifier,
-                'ipAddress': ip_address,
-                'agentConfigViewResource':
-                {
-                    'isSystemArmed': mode
-                }
+                "uuid": uuid,
+                "hostIdentifier": host_identifier,
+                "ipAddress": ip_address,
+                "agentConfigViewResource": {"isSystemArmed": mode},
             }
         ]
 
-        res = self.__prime_post_to_api_retries('/agents/configuration', set_agent_mode_data)
+        res = self.__prime_post_to_api_retries("/agents/configuration", set_agent_mode_data)
         return res
 
     def prime_set_agent_peripherals_mode(self, uuid, host_identifier, ip_address, vid, pid, mode):
@@ -335,19 +356,13 @@ class Client(BaseClient):
         """
 
         set_agent_peripherals_data = {
-            'opCode': mode,
-            'peripheralsIds': [
-                {
-                    'uuid': uuid,
-                    'hostIdentifier': host_identifier,
-                    'ipAddress': ip_address,
-                    'vid': vid,
-                    'pid': pid
-                }
-            ]
+            "opCode": mode,
+            "peripheralsIds": [
+                {"uuid": uuid, "hostIdentifier": host_identifier, "ipAddress": ip_address, "vid": vid, "pid": pid}
+            ],
         }
 
-        res = self.__prime_post_to_api_retries('/peripherals/command', set_agent_peripherals_data)
+        res = self.__prime_post_to_api_retries("/peripherals/command", set_agent_peripherals_data)
         return res
 
     def prime_test_connection(self):
@@ -361,8 +376,8 @@ class Client(BaseClient):
 
         try:
             res = self.__prime_request_token()
-            is_successfull = bool(res and res.get('token'))
-            message = res.get('text') if not is_successfull else None
+            is_successfull = bool(res and res.get("token"))
+            message = res.get("text") if not is_successfull else None
             return is_successfull, message
         except Exception as e:
             error_message = str(e)
@@ -374,25 +389,18 @@ class Client(BaseClient):
             return False, error_message
 
     def __prime_request_token(self):
-        data = {'username': self._prime_auth[0], 'password': self._prime_auth[1]}
-        res = self._http_request('POST', '/auth/signin', json_data=data, ok_codes=(200, 400), resp_type='response')
-        return {
-            'is_successfull': res.ok,
-            'token': res.json()['token'] if res.ok else None,
-            'text': res.text
-        }
+        data = {"username": self._prime_auth[0], "password": self._prime_auth[1]}
+        res = self._http_request("POST", "/auth/signin", json_data=data, ok_codes=(200, 400), resp_type="response")
+        return {"is_successfull": res.ok, "token": res.json()["token"] if res.ok else None, "text": res.text}
 
-    def __prime_get_from_api(self, url_suffix, search_params, sort_by, max_size, resp_type='response'):
+    def __prime_get_from_api(self, url_suffix, search_params, sort_by, max_size, resp_type="response"):
         params = {}
 
         if max_size:
-            params.update({
-                'pageSize': str(max_size),
-                'pageNumber': '1'
-            })
+            params.update({"pageSize": str(max_size), "pageNumber": "1"})
 
         if sort_by:
-            params['sortBy'] = sort_by
+            params["sortBy"] = sort_by
 
         if search_params:
             for key, value in search_params.items():
@@ -400,13 +408,13 @@ class Client(BaseClient):
                     params[key] = value
 
         headers = self.__prime_api_auth_headers_format(self.__prime_get_token_from_cache())
-        res = self._http_request('GET', url_suffix, headers=headers, params=params, resp_type=resp_type)
+        res = self._http_request("GET", url_suffix, headers=headers, params=params, resp_type=resp_type)
 
         return res
 
-    def __prime_get_from_api_retries(self, url_suffix, search_params, sort_by, max_size, retries=2, results_key='data'):
+    def __prime_get_from_api_retries(self, url_suffix, search_params, sort_by, max_size, retries=2, results_key="data"):
         i = 1
-        while i <= retries:
+        while i <= retries:  # noqa: RET503
             i += 1
             try:
                 res = self.__prime_get_from_api(url_suffix, search_params, sort_by, max_size)
@@ -423,15 +431,15 @@ class Client(BaseClient):
                 demisto.error(str(e))
                 raise
 
-    def __prime_post_to_api(self, url_suffix, json_data, resp_type='response'):
+    def __prime_post_to_api(self, url_suffix, json_data, resp_type="response"):
         headers = self.__prime_api_auth_headers_format(self.__prime_get_token_from_cache())
-        res = self._http_request('POST', url_suffix, headers=headers, json_data=json_data, resp_type=resp_type)
+        res = self._http_request("POST", url_suffix, headers=headers, json_data=json_data, resp_type=resp_type)
 
         return res
 
     def __prime_post_to_api_retries(self, url_suffix, json_data, retries=2):
         i = 1
-        while i <= retries:
+        while i <= retries:  # noqa: RET503
             i += 1
             try:
                 res = self.__prime_post_to_api(url_suffix, json_data)
@@ -443,30 +451,30 @@ class Client(BaseClient):
                 self.__prime_handle_http_response(res, url_suffix)
 
                 res_obj = res.json() if res.ok else None
-                return {'ok': res.ok, 'text': res.text, 'object': res_obj}
+                return {"ok": res.ok, "text": res.text, "object": res_obj}
             except Exception as e:
                 demisto.error(str(e))
                 raise
 
     def __prime_set_token_to_cache(self, token):
-        demisto.setIntegrationContext({'api_token': token})
+        demisto.setIntegrationContext({"api_token": token})
 
     def __prime_get_token_from_cache(self, renew=False):
         integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('api_token')
+        access_token = integration_context.get("api_token")
         #  renew token
         if not access_token or renew:
             token_new = None
             try:
                 res = self.__prime_request_token()
-                token_new = res.get('token')
+                token_new = res.get("token")
             except Exception as e:
                 demisto.error(str(e))
 
             #  if an error to connect with prime and get token
             if not token_new:
-                self.__prime_set_cache_keys_to_none('api_token')
-                raise Exception(f'Cannot get token from Sepio Prime server at ({self._base_url})')
+                self.__prime_set_cache_keys_to_none("api_token")
+                raise Exception(f"Cannot get token from Sepio Prime server at ({self._base_url})")
 
             self.__prime_set_token_to_cache(token_new)
             return token_new
@@ -482,7 +490,7 @@ class Client(BaseClient):
 
     @staticmethod
     def __prime_api_auth_headers_format(token):
-        return {'Authorization': f'Bearer {token}'}
+        return {"Authorization": f"Bearer {token}"}
 
     @staticmethod
     def __prime_handle_http_response(http_res, url_suffix):
@@ -490,12 +498,12 @@ class Client(BaseClient):
             raise Exception(http_res.text)
 
         if http_res.status_code == 403:  # forbbiden for users with this type of user
-            raise Exception('This command can be used only by Sepio Prime '
-                            'users with higher user profile')
+            raise Exception("This command can be used only by Sepio Prime users with higher user profile")
 
         if not http_res.ok:
             raise Exception(
-                f'Failed to request {url_suffix}, reason: ({http_res.status_code}) {http_res.reason}: {http_res.text}')
+                f"Failed to request {url_suffix}, reason: ({http_res.status_code}) {http_res.reason}: {http_res.text}"
+            )
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -591,20 +599,20 @@ def arg_to_timestamp(arg, arg_name, required):
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
         # For example: format 2019-10-23T00:00:00 or "1 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        date = dateparser.parse(arg, settings={"TIMEZONE": "UTC"})
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
+            raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 def validate_fetch_data_max_result(user_results, max_results, arg_name):
-    """ Validate and handle cases where the limit of result requested from Sepio Prime API
+    """Validate and handle cases where the limit of result requested from Sepio Prime API
     is exceeding or not positive value
 
     :type user_results: ``int``
@@ -623,7 +631,7 @@ def validate_fetch_data_max_result(user_results, max_results, arg_name):
     """
 
     if not user_results or not isinstance(user_results, int) or user_results <= 0 or user_results > max_results:
-        raise ValueError(f'{arg_name} must be an integer, in the range between 1 to {max_results}')
+        raise ValueError(f"{arg_name} must be an integer, in the range between 1 to {max_results}")
     return user_results
 
 
@@ -716,11 +724,11 @@ def empty_get_result_to_readable_result(readable_output_markdown):
     """
 
     return {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output_markdown
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
+        "Contents": [],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": readable_output_markdown,
     }
 
 
@@ -737,7 +745,7 @@ def test_module(client):
 
     is_successfull, message = client.prime_test_connection()
     if is_successfull:
-        return 'ok'
+        return "ok"
     return message
 
 
@@ -757,44 +765,58 @@ def sepio_query_agents_command(client, args):
                         for other tasks in the playbook
     """
 
-    host_identifier = args.get('host_identifier')
-    ip_address = args.get('ip_address')
-    uuid = args.get('uuid')
-    has_unapproved_peripherals = args.get('has_unapproved_peripherals')
-    has_vulnerable_peripherals = args.get('has_vulnerable_peripherals')
-    has_known_attack_tools = args.get('has_known_attack_tools')
-    limit = validate_fetch_data_max_result(arg_to_int(args.get('limit', 20), 'limit', False), MAX_RESULTS, 'limit')
+    host_identifier = args.get("host_identifier")
+    ip_address = args.get("ip_address")
+    uuid = args.get("uuid")
+    has_unapproved_peripherals = args.get("has_unapproved_peripherals")
+    has_vulnerable_peripherals = args.get("has_vulnerable_peripherals")
+    has_known_attack_tools = args.get("has_known_attack_tools")
+    limit = validate_fetch_data_max_result(arg_to_int(args.get("limit", 20), "limit", False), MAX_RESULTS, "limit")
 
-    agents = client.prime_get_agents(host_identifier, ip_address, uuid, has_unapproved_peripherals,
-                                     has_vulnerable_peripherals, has_known_attack_tools, limit)
+    agents = client.prime_get_agents(
+        host_identifier, ip_address, uuid, has_unapproved_peripherals, has_vulnerable_peripherals, has_known_attack_tools, limit
+    )
 
-    outputs = [{
-        'HostIdentifier': agent['hostIdentifier'],
-        'IpAddress': agent['localIpAddress'],
-        'UUID': agent['uuid'],
-        'OsVersion': agent['osVersion'],
-        'HardwareModel': agent['pcModel'],
-        'NicInfo': agent['nicsText'].split('**') if agent['nicsText'] is not None else None,
-        'LastUpdate': agent['lastUpdated'],
-        'Status': agent['displayStatusCombined'],
-        'HasUnapprovedPeripherals': agent['hasUnapprovedPeripherals'],
-        'HasVulnerablePeripherals': agent['hasVulnerablePeripherals'],
-        'HasKnownAttackTools': agent['hasKnownAttackTools'],
-        'LastConfiguration': agent['lastConfiguered'],
-        'Version': agent['serviceVersion'],
-        'License': agent['licenseStatus']
-    } for agent in agents]
+    outputs = [
+        {
+            "HostIdentifier": agent["hostIdentifier"],
+            "IpAddress": agent["localIpAddress"],
+            "UUID": agent["uuid"],
+            "OsVersion": agent["osVersion"],
+            "HardwareModel": agent["pcModel"],
+            "NicInfo": agent["nicsText"].split("**") if agent["nicsText"] is not None else None,
+            "LastUpdate": agent["lastUpdated"],
+            "Status": agent["displayStatusCombined"],
+            "HasUnapprovedPeripherals": agent["hasUnapprovedPeripherals"],
+            "HasVulnerablePeripherals": agent["hasVulnerablePeripherals"],
+            "HasKnownAttackTools": agent["hasKnownAttackTools"],
+            "LastConfiguration": agent["lastConfiguered"],
+            "Version": agent["serviceVersion"],
+            "License": agent["licenseStatus"],
+        }
+        for agent in agents
+    ]
 
-    outputs_headers = ['UUID', 'IpAddress', 'HostIdentifier',
-                       'HasUnapprovedPeripherals', 'HasVulnerablePeripherals', 'HasKnownAttackTools']
-    readable_output = list_of_objects_to_readable_output('Agents', outputs, outputs_headers)
-    return CommandResults(
-        outputs_prefix='Sepio.Agent',
-        outputs_key_field='UUID',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=agents
-    ) if outputs else empty_get_result_to_readable_result(readable_output)
+    outputs_headers = [
+        "UUID",
+        "IpAddress",
+        "HostIdentifier",
+        "HasUnapprovedPeripherals",
+        "HasVulnerablePeripherals",
+        "HasKnownAttackTools",
+    ]
+    readable_output = list_of_objects_to_readable_output("Agents", outputs, outputs_headers)
+    return (
+        CommandResults(
+            outputs_prefix="Sepio.Agent",
+            outputs_key_field="UUID",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=agents,
+        )
+        if outputs
+        else empty_get_result_to_readable_result(readable_output)
+    )
 
 
 def sepio_query_global_peripherals_command(client, args):
@@ -813,48 +835,63 @@ def sepio_query_global_peripherals_command(client, args):
                         for other tasks in the playbook
     """
 
-    host_identifier = args.get('host_identifier')
-    ip_address = args.get('ip_address')
-    host_uuid = args.get('host_uuid')
-    vendor_name = args.get('vendor_name')
-    product_name = args.get('product_name')
-    serial_number = args.get('serial_number')
-    is_unapproved_peripheral = args.get('is_unapproved_peripheral')
-    is_vulnerable_peripheral = args.get('is_vulnerable_peripheral')
-    is_known_attack_tool = args.get('is_known_attack_tool')
-    limit = validate_fetch_data_max_result(arg_to_int(args.get('limit', 20), 'limit', False), MAX_RESULTS, 'limit')
+    host_identifier = args.get("host_identifier")
+    ip_address = args.get("ip_address")
+    host_uuid = args.get("host_uuid")
+    vendor_name = args.get("vendor_name")
+    product_name = args.get("product_name")
+    serial_number = args.get("serial_number")
+    is_unapproved_peripheral = args.get("is_unapproved_peripheral")
+    is_vulnerable_peripheral = args.get("is_vulnerable_peripheral")
+    is_known_attack_tool = args.get("is_known_attack_tool")
+    limit = validate_fetch_data_max_result(arg_to_int(args.get("limit", 20), "limit", False), MAX_RESULTS, "limit")
 
-    peripherals = client.prime_get_global_peripherals(host_identifier, ip_address, host_uuid,
-                                                      vendor_name, product_name, serial_number,
-                                                      is_unapproved_peripheral, is_vulnerable_peripheral, is_known_attack_tool,
-                                                      limit)
+    peripherals = client.prime_get_global_peripherals(
+        host_identifier,
+        ip_address,
+        host_uuid,
+        vendor_name,
+        product_name,
+        serial_number,
+        is_unapproved_peripheral,
+        is_vulnerable_peripheral,
+        is_known_attack_tool,
+        limit,
+    )
 
-    outputs = [{
-        'HostIdentifier': peripheral['hostIdentifier'],
-        'HostUUID': peripheral['uuid'],
-        'DeviceID': peripheral['deviceID'],
-        'DeviceIcon': peripheral['devIcon'],
-        'DeviceType': peripheral['devIconDescription'],
-        'VID': peripheral['vid'],
-        'VendorName': peripheral['guiVid'],
-        'PID': peripheral['pid'],
-        'ProductName': peripheral['guiPid'],
-        'SerialNumber': peripheral['guiSerial'],
-        'Status': peripheral['status'],
-        'IsUnapprovedPeripheral': not peripheral['approved'],
-        'IsVulnerablePeripheral': peripheral['isVulnerablePeripheral'],
-        'IsKnownAttackTool': peripheral['isKnownAttackTool']
-    } for peripheral in peripherals]
+    outputs = [
+        {
+            "HostIdentifier": peripheral["hostIdentifier"],
+            "HostUUID": peripheral["uuid"],
+            "DeviceID": peripheral["deviceID"],
+            "DeviceIcon": peripheral["devIcon"],
+            "DeviceType": peripheral["devIconDescription"],
+            "VID": peripheral["vid"],
+            "VendorName": peripheral["guiVid"],
+            "PID": peripheral["pid"],
+            "ProductName": peripheral["guiPid"],
+            "SerialNumber": peripheral["guiSerial"],
+            "Status": peripheral["status"],
+            "IsUnapprovedPeripheral": not peripheral["approved"],
+            "IsVulnerablePeripheral": peripheral["isVulnerablePeripheral"],
+            "IsKnownAttackTool": peripheral["isKnownAttackTool"],
+        }
+        for peripheral in peripherals
+    ]
 
-    outputs_headers = ['HostUUID', 'DeviceID', 'Status', 'IsUnapprovedPeripheral', 'IsVulnerablePeripheral', 'IsKnownAttackTool']
-    readable_output = list_of_objects_to_readable_output('Peripherals', outputs, outputs_headers)
-    return CommandResults(
-        outputs_prefix='Sepio.Peripheral((val.HostUUID == obj.HostUUID) && (val.DeviceID == obj.DeviceID))',
-        outputs_key_field='',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=peripherals
-    ) if outputs else empty_get_result_to_readable_result(readable_output)
+    outputs_headers = ["HostUUID", "DeviceID", "Status", "IsUnapprovedPeripheral", "IsVulnerablePeripheral", "IsKnownAttackTool"]
+    readable_output = list_of_objects_to_readable_output("Peripherals", outputs, outputs_headers)
+    return (
+        CommandResults(
+            outputs_prefix="Sepio.Peripheral((val.HostUUID == obj.HostUUID) && (val.DeviceID == obj.DeviceID))",
+            outputs_key_field="",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=peripherals,
+        )
+        if outputs
+        else empty_get_result_to_readable_result(readable_output)
+    )
 
 
 def sepio_query_switches_command(client, args):
@@ -874,58 +911,65 @@ def sepio_query_switches_command(client, args):
                         for other tasks in the playbook
     """
 
-    ip_address = args.get('ip_address')
-    switch_name = args.get('switch_name')
-    model = args.get('model')
-    ios_version = args.get('ios_version')
-    is_alarmed = args.get('is_alarmed')
+    ip_address = args.get("ip_address")
+    switch_name = args.get("switch_name")
+    model = args.get("model")
+    ios_version = args.get("ios_version")
+    is_alarmed = args.get("is_alarmed")
     is_alarmed_bool_or_none = argToBoolean(is_alarmed) if is_alarmed is not None else None
-    limit = validate_fetch_data_max_result(arg_to_int(args.get('limit', 20), 'limit', False), MAX_RESULTS, 'limit')
+    limit = validate_fetch_data_max_result(arg_to_int(args.get("limit", 20), "limit", False), MAX_RESULTS, "limit")
 
     switches = client.prime_get_switches()
 
     outputs = []
     for switch in switches:
+        switch_connection_data = switch["connectionData"]
+        switch_ip_address = switch_connection_data["ipAddress"]
+        switch_assigned_name = switch["assignedName"]
+        switch_model = switch["model"]
+        switch_ios = switch["ios"]
+        switch_status = switch["statusDescription"]
+        switch_is_alarmed = switch_status == "Alarmed"
 
-        switch_connection_data = switch['connectionData']
-        switch_ip_address = switch_connection_data['ipAddress']
-        switch_assigned_name = switch['assignedName']
-        switch_model = switch['model']
-        switch_ios = switch['ios']
-        switch_status = switch['statusDescription']
-        switch_is_alarmed = switch_status == 'Alarmed'
-
-        if ((ip_address and not string_contains(switch_ip_address, ip_address))
-                or (switch_name and not string_contains(switch_assigned_name, switch_name))
-                or (model and not string_startswith(switch_model, model))
-                or (ios_version and not string_contains(switch_ios, ios_version))
-                or (is_alarmed_bool_or_none is not None and is_alarmed_bool_or_none != switch_is_alarmed)):
+        if (
+            (ip_address and not string_contains(switch_ip_address, ip_address))
+            or (switch_name and not string_contains(switch_assigned_name, switch_name))
+            or (model and not string_startswith(switch_model, model))
+            or (ios_version and not string_contains(switch_ios, ios_version))
+            or (is_alarmed_bool_or_none is not None and is_alarmed_bool_or_none != switch_is_alarmed)
+        ):
             continue
 
-        outputs.append({
-            'SwitchID': switch['switchID'],
-            'IpAddress': switch_ip_address,
-            'Name': switch_assigned_name,
-            'Model': switch_model,
-            'IosVersion': switch_ios,
-            'LastUpdate': switch_connection_data['lastUpdated'],
-            'NumberOfPorts': switch['numOfPorts'],
-            'Status': switch_status,
-            'IsAlarmed': switch_is_alarmed
-        })
+        outputs.append(
+            {
+                "SwitchID": switch["switchID"],
+                "IpAddress": switch_ip_address,
+                "Name": switch_assigned_name,
+                "Model": switch_model,
+                "IosVersion": switch_ios,
+                "LastUpdate": switch_connection_data["lastUpdated"],
+                "NumberOfPorts": switch["numOfPorts"],
+                "Status": switch_status,
+                "IsAlarmed": switch_is_alarmed,
+            }
+        )
 
         if len(outputs) == limit:
             break
 
-    outputs_headers = ['SwitchID', 'Status', 'IsAlarmed']
-    readable_output = list_of_objects_to_readable_output('Switches', outputs, outputs_headers)
-    return CommandResults(
-        outputs_prefix='Sepio.Switch',
-        outputs_key_field='SwitchID',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=switches
-    ) if outputs else empty_get_result_to_readable_result(readable_output)
+    outputs_headers = ["SwitchID", "Status", "IsAlarmed"]
+    readable_output = list_of_objects_to_readable_output("Switches", outputs, outputs_headers)
+    return (
+        CommandResults(
+            outputs_prefix="Sepio.Switch",
+            outputs_key_field="SwitchID",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=switches,
+        )
+        if outputs
+        else empty_get_result_to_readable_result(readable_output)
+    )
 
 
 def sepio_query_switch_ports_command(client, args):
@@ -944,41 +988,48 @@ def sepio_query_switch_ports_command(client, args):
                         for other tasks in the playbook
     """
 
-    switch_ip_address = args.get('switch_ip_address')
-    switch_name = args.get('switch_name')
-    port_id = args.get('port_id')
-    port_name = args.get('port_name')
-    link_partner_data_contains = args.get('link_partner_data_contains')
-    is_alarmed = args.get('is_alarmed')
-    limit = validate_fetch_data_max_result(arg_to_int(args.get('limit', 20), 'limit', False), MAX_RESULTS, 'limit')
+    switch_ip_address = args.get("switch_ip_address")
+    switch_name = args.get("switch_name")
+    port_id = args.get("port_id")
+    port_name = args.get("port_name")
+    link_partner_data_contains = args.get("link_partner_data_contains")
+    is_alarmed = args.get("is_alarmed")
+    limit = validate_fetch_data_max_result(arg_to_int(args.get("limit", 20), "limit", False), MAX_RESULTS, "limit")
 
-    ports = client.prime_get_switch_ports(switch_ip_address, switch_name, port_id,
-                                          port_name, link_partner_data_contains, is_alarmed,
-                                          limit)
+    ports = client.prime_get_switch_ports(
+        switch_ip_address, switch_name, port_id, port_name, link_partner_data_contains, is_alarmed, limit
+    )
 
-    outputs = [{
-        'SwitchID': port['switchID'],
-        'SwitchIpAddress': port['switchIp'],
-        'SwitchName': port['switchName'],
-        'PortID': port['portID'],
-        'Name': port['assignedName'],
-        'LastUpdate': port['switchLastPolled'],
-        'NumberOfMacAddresses': port['portMacsDataCount'],
-        'LinkPartners': [mac_data['mac'] for mac_data in port['linkPartnerInfo']['portMacsData']],
-        'Status': port['portStatusString'],
-        'IsAlarmed': port['alarmed'],
-        'AlarmInfo': port['identifiedString']
-    } for port in ports]
+    outputs = [
+        {
+            "SwitchID": port["switchID"],
+            "SwitchIpAddress": port["switchIp"],
+            "SwitchName": port["switchName"],
+            "PortID": port["portID"],
+            "Name": port["assignedName"],
+            "LastUpdate": port["switchLastPolled"],
+            "NumberOfMacAddresses": port["portMacsDataCount"],
+            "LinkPartners": [mac_data["mac"] for mac_data in port["linkPartnerInfo"]["portMacsData"]],
+            "Status": port["portStatusString"],
+            "IsAlarmed": port["alarmed"],
+            "AlarmInfo": port["identifiedString"],
+        }
+        for port in ports
+    ]
 
-    outputs_headers = ['SwitchID', 'PortID', 'Status', 'IsAlarmed', 'AlarmInfo']
-    readable_output = list_of_objects_to_readable_output('Ports', outputs, outputs_headers)
-    return CommandResults(
-        outputs_prefix='Sepio.Port((val.SwitchID == obj.SwitchID) && (val.PortID == obj.PortID))',
-        outputs_key_field='',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=ports
-    ) if outputs else empty_get_result_to_readable_result(readable_output)
+    outputs_headers = ["SwitchID", "PortID", "Status", "IsAlarmed", "AlarmInfo"]
+    readable_output = list_of_objects_to_readable_output("Ports", outputs, outputs_headers)
+    return (
+        CommandResults(
+            outputs_prefix="Sepio.Port((val.SwitchID == obj.SwitchID) && (val.PortID == obj.PortID))",
+            outputs_key_field="",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=ports,
+        )
+        if outputs
+        else empty_get_result_to_readable_result(readable_output)
+    )
 
 
 def sepio_query_system_events_command(client, args):
@@ -997,36 +1048,43 @@ def sepio_query_system_events_command(client, args):
                         for other tasks in the playbook
     """
 
-    start_datetime = args.get('start_datetime')
-    end_datetime = args.get('end_datetime')
-    min_severity = args.get('min_severity')
-    category = argToList(args.get('category'))
-    source = args.get('source')
-    peripheral_type = args.get('peripheral_type')
-    limit = validate_fetch_data_max_result(arg_to_int(args.get('limit', 20), 'limit', False), MAX_RESULTS, 'limit')
+    start_datetime = args.get("start_datetime")
+    end_datetime = args.get("end_datetime")
+    min_severity = args.get("min_severity")
+    category = argToList(args.get("category"))
+    source = args.get("source")
+    peripheral_type = args.get("peripheral_type")
+    limit = validate_fetch_data_max_result(arg_to_int(args.get("limit", 20), "limit", False), MAX_RESULTS, "limit")
 
     events = client.prime_get_events(start_datetime, min_severity, category, limit, end_datetime, source, peripheral_type)
 
-    outputs = [{
-        'EventID': event['eventID'],
-        'CreationDatetime': event['creationTime'],
-        'Severity': event['severityString'],
-        'Description': event['description'],
-        'Category': event['category'],
-        'Source': event['eventEntityID'],
-        'PeripheralType': event['peripheralIcon'],
-        'Details': event['details']
-    } for event in events]
+    outputs = [
+        {
+            "EventID": event["eventID"],
+            "CreationDatetime": event["creationTime"],
+            "Severity": event["severityString"],
+            "Description": event["description"],
+            "Category": event["category"],
+            "Source": event["eventEntityID"],
+            "PeripheralType": event["peripheralIcon"],
+            "Details": event["details"],
+        }
+        for event in events
+    ]
 
-    outputs_headers = ['EventID', 'CreationDatetime', 'Category', 'Source', 'Description']
-    readable_output = list_of_objects_to_readable_output('Events', outputs, outputs_headers)
-    return CommandResults(
-        outputs_prefix='Sepio.Event',
-        outputs_key_field='EventID',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=events
-    ) if outputs else empty_get_result_to_readable_result(readable_output)
+    outputs_headers = ["EventID", "CreationDatetime", "Category", "Source", "Description"]
+    readable_output = list_of_objects_to_readable_output("Events", outputs, outputs_headers)
+    return (
+        CommandResults(
+            outputs_prefix="Sepio.Event",
+            outputs_key_field="EventID",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=events,
+        )
+        if outputs
+        else empty_get_result_to_readable_result(readable_output)
+    )
 
 
 def sepio_set_agent_mode_command(client, args):
@@ -1041,14 +1099,14 @@ def sepio_set_agent_mode_command(client, args):
         (str) update response
     """
 
-    uuid = args.get('uuid')
-    host_identifier = args.get('host_identifier')
-    ip_address = args.get('ip_address')
-    mode = args.get('mode')
+    uuid = args.get("uuid")
+    host_identifier = args.get("host_identifier")
+    ip_address = args.get("ip_address")
+    mode = args.get("mode")
 
     prime_agent_mode = AGENTS_ARMED_MODE_CONVERT.get(mode)
     if not prime_agent_mode:
-        raise ValueError('mode must be one value from ' + ' or '.join(AGENTS_ARMED_MODE_CONVERT.keys()))
+        raise ValueError("mode must be one value from " + " or ".join(AGENTS_ARMED_MODE_CONVERT.keys()))
 
     res = client.prime_set_agent_mode(uuid, host_identifier, ip_address, prime_agent_mode)
 
@@ -1067,16 +1125,16 @@ def sepio_set_agent_peripherals_mode_command(client, args):
         (str) update response
     """
 
-    uuid = args.get('uuid')
-    ip_address = args.get('ip_address')
-    host_identifier = args.get('host_identifier')
-    vid = args.get('vid')
-    pid = args.get('pid')
-    mode = args.get('mode')
+    uuid = args.get("uuid")
+    ip_address = args.get("ip_address")
+    host_identifier = args.get("host_identifier")
+    vid = args.get("vid")
+    pid = args.get("pid")
+    mode = args.get("mode")
 
     prime_agent_peripherals_mode = AGENT_PERIPHERALS_APPROVE_MODE_CONVERT.get(mode)
     if not prime_agent_peripherals_mode:
-        raise ValueError('mode must be one value from ' + ' or '.join(AGENT_PERIPHERALS_APPROVE_MODE_CONVERT.keys()))
+        raise ValueError("mode must be one value from " + " or ".join(AGENT_PERIPHERALS_APPROVE_MODE_CONVERT.keys()))
 
     res = client.prime_set_agent_peripherals_mode(uuid, host_identifier, ip_address, vid, pid, prime_agent_peripherals_mode)
 
@@ -1101,8 +1159,8 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
     """
 
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
-    last_fetch_eventid = last_run.get('last_fetch_eventid')
+    last_fetch = last_run.get("last_fetch")
+    last_fetch_eventid = last_run.get("last_fetch_eventid")
 
     # Handle first time fetch
     last_fetch_dt = None
@@ -1114,20 +1172,28 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
     last_fetch_timestamp = date_to_timestamp(last_fetch_dt)
 
     #  the number of new incidents for each time is limited
-    max_results = validate_fetch_data_max_result(max_results, MAX_RESULTS_EVENTS, 'limit')
+    max_results = validate_fetch_data_max_result(max_results, MAX_RESULTS_EVENTS, "limit")
 
     incidents = []
-    items = client.prime_get_events(timestamp_to_datestring(last_fetch_timestamp), min_serverity,
-                                    categories, max_results, None, None, None, last_fetch_eventid)
+    items = client.prime_get_events(
+        timestamp_to_datestring(last_fetch_timestamp),
+        min_serverity,
+        categories,
+        max_results,
+        None,
+        None,
+        None,
+        last_fetch_eventid,
+    )
     for item in items:
-        item['eventSource'] = SEPIO  # constant for mapping
-        incident_created_time = dateparser.parse(item['creationTime'])
+        item["eventSource"] = SEPIO  # constant for mapping
+        incident_created_time = dateparser.parse(item["creationTime"])
         incident_created_timestamp = date_to_timestamp(incident_created_time)
         incident = {
-            'name': f'[{item["eventSource"]}] ' + item["description"] + ' ' + item["details"],
-            'occurred': timestamp_to_datestring(incident_created_timestamp, DATE_FORMAT),
-            'rawJSON': json.dumps(item),
-            'severity': convert_to_demisto_severity(item.get('severityString', 'Debug'))
+            "name": f'[{item["eventSource"]}] ' + item["description"] + " " + item["details"],
+            "occurred": timestamp_to_datestring(incident_created_timestamp, DATE_FORMAT),
+            "rawJSON": json.dumps(item),
+            "severity": convert_to_demisto_severity(item.get("severityString", "Debug")),
         }
 
         incidents.append(incident)
@@ -1137,79 +1203,78 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
             last_fetch_timestamp = incident_created_timestamp
     if len(items):
         last_fetch_eventid = items[0]["eventID"] + 1
-    next_run = {'last_fetch': timestamp_to_datestring(
-        last_fetch_timestamp, DATE_FORMAT), 'last_fetch_eventid': last_fetch_eventid}
+    next_run = {
+        "last_fetch": timestamp_to_datestring(last_fetch_timestamp, DATE_FORMAT),
+        "last_fetch_eventid": last_fetch_eventid,
+    }
     return next_run, incidents
 
 
 def main():
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
 
-    credentials = params.get('credentials')
-    username = credentials.get('identifier')
-    password = credentials.get('password')
+    credentials = params.get("credentials")
+    username = credentials.get("identifier")
+    password = credentials.get("password")
 
     # get the service API url
-    base_url = urljoin(params['url'], '/prime/webui')
+    base_url = urljoin(params["url"], "/prime/webui")
 
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get('fetch_time', '1 days').strip()
+    first_fetch_time = params.get("fetch_time", "1 days").strip()
 
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
     # Maximum number of alerts to receive teach run of fetch_incidents
-    fetch_incidents_max_alerts = arg_to_int(
-        arg=params.get('max_alerts'),
-        arg_name='max_alerts',
-        required=False
-    )
+    fetch_incidents_max_alerts = arg_to_int(arg=params.get("max_alerts"), arg_name="max_alerts", required=False)
 
     # Categories for events to be receive in fetch_incidents, the values are USB, Network
-    fetch_incidents_categories = argToList(params.get('category'))
+    fetch_incidents_categories = argToList(params.get("category"))
 
-    fetch_incidents_min_severity = params.get('min_severity')
+    fetch_incidents_min_severity = params.get("min_severity")
 
-    LOG(f'Command being called is {demisto.command()}')
+    LOG(f"Command being called is {demisto.command()}")
     try:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             auth=(username, password),
             proxy=proxy,
-            ok_codes=(200, 201, 204, 400, 401, 403))
+            ok_codes=(200, 201, 204, 400, 401, 403),
+        )
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
-        elif demisto.command() == 'sepio-query-agents':
+        elif demisto.command() == "sepio-query-agents":
             return_results(sepio_query_agents_command(client, demisto.args()))
 
-        elif demisto.command() == 'sepio-query-peripherals':
+        elif demisto.command() == "sepio-query-peripherals":
             return_results(sepio_query_global_peripherals_command(client, demisto.args()))
 
-        elif demisto.command() == 'sepio-query-switches':
+        elif demisto.command() == "sepio-query-switches":
             return_results(sepio_query_switches_command(client, demisto.args()))
 
-        elif demisto.command() == 'sepio-query-switch-ports':
+        elif demisto.command() == "sepio-query-switch-ports":
             return_results(sepio_query_switch_ports_command(client, demisto.args()))
 
-        elif demisto.command() == 'sepio-query-system-events':
+        elif demisto.command() == "sepio-query-system-events":
             return_results(sepio_query_system_events_command(client, demisto.args()))
 
-        elif demisto.command() == 'sepio-set-agent-mode':
+        elif demisto.command() == "sepio-set-agent-mode":
             return_results(sepio_set_agent_mode_command(client, demisto.args()))
 
-        elif demisto.command() == 'sepio-set-peripherals-mode':
+        elif demisto.command() == "sepio-set-peripherals-mode":
             return_results(sepio_set_agent_peripherals_mode_command(client, demisto.args()))
 
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -1217,15 +1282,16 @@ def main():
                 first_fetch_time=first_fetch_time,
                 min_serverity=fetch_incidents_min_severity,
                 categories=fetch_incidents_categories,
-                max_results=fetch_incidents_max_alerts)
+                max_results=fetch_incidents_max_alerts,
+            )
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

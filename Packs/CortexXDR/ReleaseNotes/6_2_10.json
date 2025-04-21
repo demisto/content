@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "*Palo Alto Networks Cortex XDR - Investigation and Response*: Added the *Minimize Alert Information* parameter. Default value: null_values. This parameter will filter out the specified fields from the Cortex XDR alerts. If null_values is specified, will remove all None values from the alerts data."
+}

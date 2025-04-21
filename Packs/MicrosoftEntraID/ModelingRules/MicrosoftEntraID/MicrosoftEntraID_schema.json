@@ -1,5 +1,9 @@
 {
     "msft_azure_raw": {
+        "Type": {
+            "type": "string",
+            "is_array": false
+        },
         "activitystatusvalue": {
             "type": "string",
             "is_array": false

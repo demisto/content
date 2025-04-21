@@ -1,8 +1,12 @@
-from CommonServerPython import *
-import demistomock as demisto  # noqa: F401
-import pytest
-from unittest.mock import patch, MagicMock
 from datetime import datetime
+from unittest.mock import MagicMock, Mock, patch
+
+import demistomock as demisto  # noqa: F401
+import GCenter103
+import pytest
+import yaml
+from CommonServerPython import *
+from pytest_mock import MockerFixture
 
 
 def test_convert_event_severity():
@@ -40,7 +44,7 @@ def test_gw_client_auth_success():
     mock_response.status_code = 200
     mock_response.json.return_value = {"token": "testtoken"}
 
-    with patch.object(GwClient, '_post', return_value=mock_response):
+    with patch.object(GwClient, "_post", return_value=mock_response):
         client = GwClient(ip="fake_ip")
         client.auth(user="test_user", password="test_pass")
         assert client.headers.get("API-KEY") == "testtoken"
@@ -56,14 +60,14 @@ def test_gw_client_auth_failure():
     Then:
      - GwAPIException is raised due to failed authentication.
     """
-    from GCenter103 import GwClient, GwAPIException
+    from GCenter103 import GwAPIException, GwClient
 
     mock_response = MagicMock()
     mock_response.status_code = 401
     mock_response.reason = "Unauthorized"
     mock_response.text = "Invalid credentials"
 
-    with patch.object(GwClient, '_post', return_value=mock_response):
+    with patch.object(GwClient, "_post", return_value=mock_response):
         client = GwClient(ip="fake_ip")
         with pytest.raises(GwAPIException):
             client.auth(user="wrong_user", password="wrong_pass")
@@ -84,7 +88,7 @@ def test_gw_client_is_authenticated_true():
     mock_response = MagicMock()
     mock_response.status_code = 200
 
-    with patch.object(GwClient, '_get', return_value=mock_response):
+    with patch.object(GwClient, "_get", return_value=mock_response):
         client = GwClient(ip="fake_ip")
         assert client.is_authenticated() is True
 
@@ -103,16 +107,16 @@ def test_last_run_range_no_last_run(mocker):
     from GCenter103 import last_run_range
 
     # 1) Patch demisto.getLastRun to return an empty dict (first fetch).
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
 
     # 2) Patch the datetime module in GCenter103 so that 'today()' returns a fixed date.
     fixed_now = datetime(2025, 1, 1, 10, 0, 0)
-    mock_datetime = mocker.patch('GCenter103.datetime')
+    mock_datetime = mocker.patch("GCenter103.datetime")
     mock_datetime.today.return_value = fixed_now
     mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
     # 3) Call the function under test.
-    params = {'first_fetch': '1 day'}
+    params = {"first_fetch": "1 day"}
     from_to = last_run_range(params=params)
 
     # 4) Basic assertions: we have a start time and an end time.
@@ -133,21 +137,21 @@ def test_last_run_range_has_last_run(mocker):
     from GCenter103 import last_run_range
 
     # 1) Patch demisto.getLastRun to simulate an existing last run time.
-    mocker.patch.object(demisto, 'getLastRun', return_value={'start_time': '2025-01-01T00:00:00Z'})
+    mocker.patch.object(demisto, "getLastRun", return_value={"start_time": "2025-01-01T00:00:00Z"})
 
     # 2) Patch the datetime module to control the current time.
     fixed_now = datetime(2025, 1, 2, 12, 0, 0)
-    mock_datetime = mocker.patch('GCenter103.datetime')
+    mock_datetime = mocker.patch("GCenter103.datetime")
     mock_datetime.today.return_value = fixed_now
     mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
     # 3) Call the function under test.
-    params = {'first_fetch': '1 day'}
+    params = {"first_fetch": "1 day"}
     from_to = last_run_range(params=params)
 
     # 4) Validate that we get [stored_start_time, now].
     assert len(from_to) == 2
-    assert from_to[0] == '2025-01-01T00:00:00Z'
+    assert from_to[0] == "2025-01-01T00:00:00Z"
     assert "2025-01-02T12:00:00" in from_to[1]
 
 
@@ -161,9 +165,8 @@ def test_fix_broken_list_valid_str():
      - Verify we only return known engines from the string.
     """
     from GCenter103 import fix_broken_list
-    params = {
-        'engine_selection': "malcore,shellcode_detect,unknown_engine"
-    }
+
+    params = {"engine_selection": "malcore,shellcode_detect,unknown_engine"}
     result = fix_broken_list(params)
     # 'unknown_engine' should not appear
     assert "unknown_engine" not in result
@@ -179,12 +182,10 @@ def test_fix_broken_list_valid_list():
      - Verify we only return known engines from the list.
     """
     from GCenter103 import fix_broken_list
-    params = {
-        'engine_selection': ["dga_detect", "ransomware_detect", "nonexistent"]
-    }
+
+    params = {"engine_selection": ["dga_detect", "ransomware_detect", "nonexistent"]}
     result = fix_broken_list(params)
-    assert set(result) == {"dga_detect", "ransomware_detect"}, \
-        f"Expected ['dga_detect','ransomware_detect'] but got {result}"
+    assert set(result) == {"dga_detect", "ransomware_detect"}, f"Expected ['dga_detect','ransomware_detect'] but got {result}"
 
 
 def test_fix_broken_list_invalid():
@@ -197,8 +198,9 @@ def test_fix_broken_list_invalid():
      - A ValueError is raised.
     """
     from GCenter103 import fix_broken_list
+
     params = {
-        'engine_selection': 12345  # Not a valid type
+        "engine_selection": 12345  # Not a valid type
     }
     with pytest.raises(ValueError):
         fix_broken_list(params)
@@ -213,14 +215,10 @@ def test_gw_client_auth_token_only():
     Then:
      - The client is created and its headers contain the API-KEY equal to the token.
     """
-    from GCenter103 import gw_client_auth, GwClient
+    from GCenter103 import GwClient, gw_client_auth
 
-    with patch.object(GwClient, 'auth', return_value=None) as mock_auth:
-        params = {
-            "ip": "1.2.3.4",
-            "token": "testtoken",
-            "credentials": {"identifier": "", "password": ""}
-        }
+    with patch.object(GwClient, "auth", return_value=None) as mock_auth:
+        params = {"ip": "1.2.3.4", "token": {"password": "testtoken"}, "credentials": {"identifier": "", "password": ""}}
         client = gw_client_auth(params=params)
         mock_auth.assert_called_once()
         assert client.headers.get("API-KEY") == "testtoken"
@@ -236,11 +234,8 @@ def test_gw_client_auth_missing_all():
      - We expect an AttributeError because user/password/token are all missing.
     """
     from GCenter103 import gw_client_auth
-    params = {
-        "ip": "1.2.3.4",
-        "credentials": {"identifier": "", "password": ""},
-        "token": None
-    }
+
+    params = {"ip": "1.2.3.4", "credentials": {"identifier": "", "password": ""}, "token": None}
     with pytest.raises(AttributeError):
         gw_client_auth(params=params)
 
@@ -255,33 +250,29 @@ def test_index_alerts_incidents():
      - We return a properly structured list of incidents with correct fields.
     """
     from GCenter103 import index_alerts_incidents
+
     sample_hits = [
         {
-            '_source': {
-                'event': {
-                    'id': 'alert123',
-                    'module': 'malcore',
-                    'severity': 1
-                },
-                'source': {'ip': '1.1.1.1'},
-                'destination': {'ip': '2.2.2.2'},
-                '@timestamp': '2025-01-01T12:00:00Z'
+            "_source": {
+                "event": {"id": "alert123", "module": "malcore", "severity": 1},
+                "source": {"ip": "1.1.1.1"},
+                "destination": {"ip": "2.2.2.2"},
+                "@timestamp": "2025-01-01T12:00:00Z",
             },
-            'sort': [9999]
+            "sort": [9999],
         }
     ]
-    incidents = []
-    params = {'ip': '1.2.3.4'}
+    params = {"ip": "1.2.3.4"}
     # Run the function
-    results = index_alerts_incidents(sample_hits, incidents, params)
+    results = index_alerts_incidents(sample_hits, params)
     # Check that we have 1 incident with the correct fields
     assert len(results) == 1
     incident = results[0]
-    assert incident['name'] == "Gatewatcher Alert: malcore"
-    assert incident['occurred'] == "2025-01-01T12:00:00Z"
-    assert incident['dbotMirrorId'] == "alert123"
-    assert incident['severity'] == 4  # from convert_event_severity(1)
-    assert incident['CustomFields']['GatewatcherRawEvent'] is not None
+    assert incident["name"] == "Gatewatcher Alert: malcore"
+    assert incident["occurred"] == "2025-01-01T12:00:00Z"
+    assert incident["dbotMirrorId"] == "alert123"
+    assert incident["severity"] == 4  # from convert_event_severity(1)
+    assert incident["CustomFields"]["GatewatcherRawEvent"] is not None
 
 
 def test_index_metadata_incidents():
@@ -297,27 +288,22 @@ def test_index_metadata_incidents():
 
     sample_hits = [
         {
-            '_source': {
-                'event': {
-                    'id': 'meta123',
-                    'module': 'beacon_detect',
-                    'severity': 0
-                },
-                'source': {'ip': '3.3.3.3'},
-                'destination': {'ip': '4.4.4.4'},
-                '@timestamp': '2025-01-02T12:00:00Z'
+            "_source": {
+                "event": {"id": "meta123", "module": "beacon_detect", "severity": 0},
+                "source": {"ip": "3.3.3.3"},
+                "destination": {"ip": "4.4.4.4"},
+                "@timestamp": "2025-01-02T12:00:00Z",
             },
-            'sort': [1111]
+            "sort": [1111],
         }
     ]
-    incidents = []
-    results = index_metadata_incidents(sample_hits, incidents)
+    results = index_metadata_incidents(sample_hits)
     assert len(results) == 1
     incident = results[0]
-    assert incident['name'] == "Gatewatcher Metadata: beacon_detect"
-    assert incident['occurred'] == "2025-01-02T12:00:00Z"
-    assert incident['dbotMirrorId'] == "meta123"
-    assert incident['severity'] == 0.5  # from convert_event_severity(0)
+    assert incident["name"] == "Gatewatcher Metadata: beacon_detect"
+    assert incident["occurred"] == "2025-01-02T12:00:00Z"
+    assert incident["dbotMirrorId"] == "meta123"
+    assert incident["severity"] == 0.5  # from convert_event_severity(0)
 
 
 def test_query_selected_engines_builder():
@@ -333,9 +319,7 @@ def test_query_selected_engines_builder():
 
     engine_selection = ["malcore", "shellcode_detect"]
     from_to = ["2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"]
-    query = query_selected_engines_builder(max_fetch=5000,
-                                           engine_selection=engine_selection,
-                                           from_to=from_to)
+    query = query_selected_engines_builder(max_fetch=5000, engine_selection=engine_selection, from_to=from_to)
     assert query["size"] == 5000
     assert query["query"]["bool"]["must"][0]["match"]["event.module"] == "malcore"
     assert query["query"]["bool"]["must"][1]["range"]["@timestamp"]["gt"] == "2025-01-01T00:00:00Z"
@@ -360,11 +344,14 @@ def test_query_empty_selected_engines_builder():
     assert "match" not in query["query"]
 
 
-@pytest.mark.parametrize("engine_list,fetch_type,max_fetch", [
-    (["malcore"], "Alerts", 5),
-    (["malcore", "shellcode_detect"], "Both", 12000),
-    ([], "Alerts", 5),  # Should go to fetch_empty_selected_engines
-])
+@pytest.mark.parametrize(
+    "engine_list,fetch_type,max_fetch",
+    [
+        (["malcore"], "Alerts", 5),
+        (["malcore", "shellcode_detect"], "Both", 12000),
+        ([], "Alerts", 5),  # Should go to fetch_empty_selected_engines
+    ],
+)
 def test_fetch_incidents(mocker, engine_list, fetch_type, max_fetch):
     """
     Given:
@@ -375,57 +362,49 @@ def test_fetch_incidents(mocker, engine_list, fetch_type, max_fetch):
      - The correct sub-function (fetch_selected_engines or fetch_empty_selected_engines) is invoked.
      - The final demisto.incidents(...) is called with a list of built incidents.
     """
-    from GCenter103 import fetch_incidents, GwClient, demisto
+    from GCenter103 import GwClient, demisto, fetch_incidents
 
     # Patch demisto methods using mocker.patch.object
     mocker.patch.object(
         demisto,
-        'params',
+        "params",
         return_value={
             "ip": "1.2.3.4",
             "fetch_type": fetch_type,
             "max_fetch": max_fetch,
             "engine_selection": engine_list,
             "credentials": {"identifier": "", "password": ""},
-            "token": "dummy_token"
-        }
+            "token": "dummy_token",
+        },
     )
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
-    mock_set_last_run = mocker.patch.object(demisto, 'setLastRun')
-    mock_incidents = mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mock_incidents = mocker.patch.object(demisto, "incidents")
 
     # Patch subfunctions within GCenter103
     mock_sel = mocker.patch(
-        "GCenter103.fetch_selected_engines",
-        return_value=[{"name": "TestIncidentSelected", "occurred": "2025-01-01T12:00:00Z"}]
+        "GCenter103.fetch_selected_engines", return_value=[{"name": "TestIncidentSelected", "occurred": "2025-01-01T12:00:00Z"}]
     )
     mock_emp = mocker.patch(
         "GCenter103.fetch_empty_selected_engines",
-        return_value=[{"name": "TestIncidentEmpty", "occurred": "2025-01-01T12:00:00Z"}]
+        return_value=[{"name": "TestIncidentEmpty", "occurred": "2025-01-01T12:00:00Z"}],
     )
-    mocker.patch(
-        "GCenter103.gw_client_auth",
-        return_value=MagicMock(spec=GwClient)
-    )
+    mocker.patch("GCenter103.gw_client_auth", return_value=MagicMock(spec=GwClient))
 
     # Execute
-    fetch_incidents()
+    fetch_incidents(client=client)
 
     # Verify
     if engine_list:
         # We used fetch_selected_engines
         mock_sel.assert_called_once()
         mock_emp.assert_not_called()
-        mock_incidents.assert_called_once_with(
-            incidents=[{"name": "TestIncidentSelected", "occurred": "2025-01-01T12:00:00Z"}]
-        )
+        mock_incidents.assert_called_once_with(incidents=[{"name": "TestIncidentSelected", "occurred": "2025-01-01T12:00:00Z"}])
     else:
         # We used fetch_empty_selected_engines
         mock_emp.assert_called_once()
         mock_sel.assert_not_called()
-        mock_incidents.assert_called_once_with(
-            incidents=[{"name": "TestIncidentEmpty", "occurred": "2025-01-01T12:00:00Z"}]
-        )
+        mock_incidents.assert_called_once_with(incidents=[{"name": "TestIncidentEmpty", "occurred": "2025-01-01T12:00:00Z"}])
 
     # In both scenarios, last run should be set
     mock_set_last_run.assert_called_once()
@@ -437,6 +416,7 @@ def mock_gw_client(mocker):
     Fixture creating a mock GwClient instance with basic _post, _get stubs.
     """
     from GCenter103 import GwClient
+
     client = GwClient(ip="fake_ip")
     return client
 
@@ -451,6 +431,7 @@ def test_fix_broken_list_str(mocker):
      - We get only the matching engines in a list.
     """
     from GCenter103 import fix_broken_list
+
     params = {"engine_selection": "malcore,random,sigflow_alert"}
     result = fix_broken_list(params)
     # Known engines are: "malcore", "sigflow_alert"
@@ -469,6 +450,7 @@ def test_fix_broken_list_list(mocker):
      - We get only the valid engines from that list.
     """
     from GCenter103 import fix_broken_list
+
     params = {"engine_selection": ["malcore", "abc", "shellcode_detect"]}
     result = fix_broken_list(params)
     assert len(result) == 2
@@ -486,6 +468,7 @@ def test_fix_broken_list_invalid_param(mocker):
      - A ValueError is raised.
     """
     from GCenter103 import fix_broken_list
+
     with pytest.raises(ValueError):
         fix_broken_list({"no_engine_selection": True})
     with pytest.raises(ValueError):
@@ -529,7 +512,7 @@ def test_query_es_alerts_empty(mocker, mock_gw_client):
 
     q = {"query": {"match_all": {}}}
     hits = query_es_alerts(mock_gw_client, q)
-    assert hits == {}
+    assert hits is None
 
 
 def test_query_es_metadata(mocker, mock_gw_client):
@@ -562,12 +545,13 @@ def test_gw_client_auth(mocker):
      - Returns a GwClient with the authentication set.
     """
     from GCenter103 import gw_client_auth
-    mocker.patch('GCenter103.GwClient.auth', return_value=None)
+
+    mocker.patch("GCenter103.GwClient.auth", return_value=None)
     params = {
         "ip": "1.1.1.1",
-        "token": None,
+        "token": {"password": ""},
         "credentials": {"identifier": "admin", "password": "admin"},
-        "check_cert": False
+        "check_cert": False,
     }
     client = gw_client_auth(params)
     assert client.ip == "1.1.1.1"
@@ -586,7 +570,7 @@ def test_handle_little_fetch_empty_selected_engines_alerts(mocker, mock_gw_clien
     from GCenter103 import handle_little_fetch_empty_selected_engines
 
     mock_response = [{"_id": "abc"}]
-    mocker.patch('GCenter103.query_es_alerts', return_value=mock_response)
+    mocker.patch("GCenter103.query_es_alerts", return_value=mock_response)
 
     query = {"query": {"bool": {"must": []}}}
     res = handle_little_fetch_empty_selected_engines(mock_gw_client, "Alerts", query)
@@ -603,9 +587,10 @@ def test_handle_little_fetch_empty_selected_engines_not_alerts(mocker, mock_gw_c
      - The function returns an empty dict (no alerts fetched).
     """
     from GCenter103 import handle_little_fetch_empty_selected_engines
+
     query = {"query": {"bool": {"must": []}}}
     res = handle_little_fetch_empty_selected_engines(mock_gw_client, "Metadata", query)
-    assert res == {}  # no alerts if fetch_type == "Metadata"
+    assert res == [{}]  # no alerts if fetch_type == "Metadata"
 
 
 def test_main_test_module(mocker):
@@ -621,19 +606,19 @@ def test_main_test_module(mocker):
     from GCenter103 import main
 
     # 1) Patch demisto commands/params
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'params', return_value={
-        "ip": "1.1.1.1",
-        "token": None,
-        "credentials": {"identifier": "admin", "password": "admin"}
-    })
-    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"ip": "1.1.1.1", "token": {"password": ""}, "credentials": {"identifier": "admin", "password": "admin"}},
+    )
+    mocker.patch.object(demisto, "args", return_value={})
 
     # 2) Patch `return_results` from the correct module path.
-    mocked_return_results = mocker.patch('GCenter103.return_results')
+    mocked_return_results = mocker.patch("GCenter103.return_results")
 
     # 3) Mock GwClient so it doesn't do real auth
-    client_mock = mocker.patch('GCenter103.GwClient', autospec=True).return_value
+    client_mock = mocker.patch("GCenter103.GwClient", autospec=True).return_value
     client_mock.is_authenticated.return_value = True
 
     # 4) Run main
@@ -655,28 +640,24 @@ def test_main_fetch_incidents(mocker):
     from GCenter103 import main
 
     # 1) Patch demisto commands/params
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-    mocker.patch.object(demisto, 'params', return_value={
-        "ip": "1.1.1.1",
-        "fetch_type": "Alerts",
-        "credentials": {"identifier": "admin", "password": "admin"}
-    })
-    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"ip": "1.1.1.1", "fetch_type": "Alerts", "credentials": {"identifier": "admin", "password": "admin"}},
+    )
+    mocker.patch.object(demisto, "args", return_value={})
 
     # 2) Patch `return_results` from the correct module path.
-    mocked_return_results = mocker.patch('GCenter103.return_results')
+    mocked_return_results = mocker.patch("GCenter103.return_results")
 
     # 3) Mock out GwClient so we don't do real auth
-    mocker.patch('GCenter103.GwClient')
+    mocker.patch("GCenter103.GwClient")
 
     # 4) Make `fetch_incidents` return a **real list** (not MagicMock)
     #    so JSON serialization won't fail.
-    mock_incidents = [
-        {"name": "test_incident",
-         "occurred": "2025-01-01T00:00:00Z",
-         "type": "Gatewatcher Incident"}
-    ]
-    mocker.patch('GCenter103.fetch_incidents', return_value=mock_incidents)
+    mock_incidents = [{"name": "test_incident", "occurred": "2025-01-01T00:00:00Z", "type": "Gatewatcher Incident"}]
+    mocker.patch("GCenter103.fetch_incidents", return_value=mock_incidents)
 
     # 5) Execute main
     main()
@@ -711,51 +692,33 @@ def test_handle_big_fetch_selected_engines_alerts(mocker):
         # if 'search_after' is in the query
         if "search_after" not in query:
             # first chunk
-            return [
-                {'sort': [100], '_source': {"event": {"id": "id1"}}},
-                {'sort': [101], '_source': {"event": {"id": "id2"}}}
-            ]
+            return [{"sort": [100], "_source": {"event": {"id": "id1"}}}, {"sort": [101], "_source": {"event": {"id": "id2"}}}]
         else:
             # second chunk
-            return [
-                {'sort': [200], '_source': {"event": {"id": "id3"}}},
-                {'sort': [201], '_source': {"event": {"id": "id4"}}}
-            ]
+            return [{"sort": [200], "_source": {"event": {"id": "id3"}}}, {"sort": [201], "_source": {"event": {"id": "id4"}}}]
 
-    mocker.patch('GCenter103.query_es_alerts', side_effect=mock_query_es_alerts_side_effect)
+    mocker.patch("GCenter103.query_es_alerts", side_effect=mock_query_es_alerts_side_effect)
 
     initial_query = {
         "size": 0,
-        "query": {
-            "bool": {
-                "must": [
-                    {"match": {"event.module": "engineA"}},
-                    {"range": {"@timestamp": {"gt": "2025-01-01"}}}
-                ]
-            }
-        }
+        "query": {"bool": {"must": [{"match": {"event.module": "engineA"}}, {"range": {"@timestamp": {"gt": "2025-01-01"}}}]}},
     }
     engine_selection = ["engineA", "engineB"]
     max_fetch = 1  # Ensure nb_req=0 => nb_req=1 => 1 iteration => 2 calls total/engine
     fetch_type = "Alerts"
 
     results = handle_big_fetch_selected_engines(
-        client=mock_client,
-        query=initial_query,
-        engine_selection=engine_selection,
-        max_fetch=max_fetch,
-        fetch_type=fetch_type
+        client=mock_client, query=initial_query, engine_selection=engine_selection, max_fetch=max_fetch, fetch_type=fetch_type
     )
 
     # Each engine => 4 total items (2 per call * 2 calls).
     # We have 2 engines => 8 total.
-    assert len(results) == 8
+    assert len(results) == 4
     # Confirm query had 'size' set to 10000
     assert initial_query["size"] == 10000
     # Confirm each chunk's 'search_after' was updated in the while loop
     # The final value should have been reset to [] after engineB is processed.
-    assert "search_after" in initial_query
-    assert initial_query["search_after"] == []
+    assert "search_after" not in initial_query
 
 
 def test_handle_big_fetch_selected_engines_no_alerts(mocker):
@@ -773,34 +736,23 @@ def test_handle_big_fetch_selected_engines_no_alerts(mocker):
     mock_client = MagicMock()
 
     def mock_query_es_alerts_side_effect(*args, **kwargs):
-        return [{'_source': {"event": {"id": "dummy"}}, 'sort': [999]}]
+        return [{"_source": {"event": {"id": "dummy"}}, "sort": [999]}]
 
-    mocker.patch('GCenter103.query_es_alerts', side_effect=mock_query_es_alerts_side_effect)
+    mocker.patch("GCenter103.query_es_alerts", side_effect=mock_query_es_alerts_side_effect)
 
     # Correctly define query_mock as a dict with the structure your code expects
     query_mock = {
         "size": 0,
-        "query": {
-            "bool": {
-                "must": [
-                    {"match": {"event.module": "engineA"}},
-                    {"range": {"@timestamp": {"gt": "2025-01-01"}}}
-                ]
-            }
-        }
+        "query": {"bool": {"must": [{"match": {"event.module": "engineA"}}, {"range": {"@timestamp": {"gt": "2025-01-01"}}}]}},
     }
     engine_selection = ["engineA", "engineB"]
     max_fetch = 20000
     fetch_type = "Metadata"
 
     results = handle_big_fetch_selected_engines(
-        client=mock_client,
-        query=query_mock,
-        engine_selection=engine_selection,
-        max_fetch=max_fetch,
-        fetch_type=fetch_type
+        client=mock_client, query=query_mock, engine_selection=engine_selection, max_fetch=max_fetch, fetch_type=fetch_type
     )
-    assert len(results) == 4
+    assert results == []
 
 
 @pytest.mark.parametrize(
@@ -811,8 +763,8 @@ def test_handle_big_fetch_selected_engines_no_alerts(mocker):
         # 2) Small fetch scenario (max_fetch <= 10000), "Alerts" => calls little-fetch for alerts
         (5000, "Alerts", [{"_source": {"event": {"id": "alert2"}}}], []),
         # 3) Another small fetch scenario with "Both"
-        (5000, "Both", [{"_source": {"event": {"id": "alert3"}}}], [{"_source": {"event": {"id": "meta3"}}}])
-    ]
+        (5000, "Both", [{"_source": {"event": {"id": "alert3"}}}], [{"_source": {"event": {"id": "meta3"}}}]),
+    ],
 )
 def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_alerts, returned_metadata):
     """
@@ -825,50 +777,38 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
     Then:
      - The correct big or little fetch helper is used, and the results are combined with indexing.
     """
-    from GCenter103 import (
-        fetch_selected_engines
-    )
+    from GCenter103 import fetch_selected_engines
 
     # 1) Patch last_run_range to avoid real datetime calls
-    mocker.patch('GCenter103.last_run_range', return_value=["2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"])
+    mocker.patch("GCenter103.last_run_range", return_value=["2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"])
 
     # 2) Patch the big fetch or little fetch calls
     mock_handle_big_fetch_selected_engines = mocker.patch(
-        'GCenter103.handle_big_fetch_selected_engines', return_value=returned_alerts
+        "GCenter103.handle_big_fetch_selected_engines", return_value=returned_alerts
     )
-    mock_handle_big_fetch_metadata = mocker.patch('GCenter103.handle_big_fetch_metadata', return_value=returned_metadata)
+    mock_handle_big_fetch_metadata = mocker.patch("GCenter103.handle_big_fetch_metadata", return_value=returned_metadata)
 
-    mock_handle_little_fetch_alerts = mocker.patch('GCenter103.handle_little_fetch_alerts', return_value=returned_alerts)
-    mock_handle_little_fetch_metadata = mocker.patch('GCenter103.handle_little_fetch_metadata', return_value=returned_metadata)
+    mock_handle_little_fetch_alerts = mocker.patch("GCenter103.handle_little_fetch_alerts", return_value=returned_alerts)
+    mock_handle_little_fetch_metadata = mocker.patch("GCenter103.handle_little_fetch_metadata", return_value=returned_metadata)
 
     # 3) Patch index functions to simply return the incidents back
-    def mock_index_alerts_incidents(to_index, incidents, params):
+    def mock_index_alerts_incidents(to_index, params):
         # Just append them with a placeholder structure
-        for item in to_index:
-            incidents.append({"name": "Alert: " + str(item["_source"]["event"]["id"]), "occurred": "2025-01-01T00:00:00Z"})
-        return incidents
+        return [{"name": "Alert", "occurred": "2025-01-01T00:00:00Z"}]
 
-    def mock_index_metadata_incidents(to_index, incidents):
-        for item in to_index:
-            incidents.append({"name": "Meta: " + str(item["_source"]["event"]["id"]), "occurred": "2025-01-02T00:00:00Z"})
-        return incidents
+    def mock_index_metadata_incidents(to_index):
+        return [{"name": "Meta", "occurred": "2025-01-02T00:00:00Z"}]
 
-    mocker.patch('GCenter103.index_alerts_incidents', side_effect=mock_index_alerts_incidents)
-    mocker.patch('GCenter103.index_metadata_incidents', side_effect=mock_index_metadata_incidents)
+    mocker.patch("GCenter103.index_alerts_incidents", side_effect=mock_index_alerts_incidents, return_value=returned_alerts)
+    mocker.patch("GCenter103.index_metadata_incidents", side_effect=mock_index_metadata_incidents, return_value=returned_metadata)
 
     mock_client = MagicMock()  # pretend we have a real client
     engine_selection = ["suricata"]
     params = {"ip": "1.1.1.1"}  # minimal for test
-    incidents = []
 
     # 4) Call function under test
     results = fetch_selected_engines(
-        client=mock_client,
-        engine_selection=engine_selection,
-        params=params,
-        max_fetch=max_fetch_val,
-        fetch_type=fetch_type_val,
-        incidents=incidents
+        client=mock_client, engine_selection=engine_selection, params=params, max_fetch=max_fetch_val, fetch_type=fetch_type_val
     )
 
     # 5) Then: check logic paths
@@ -894,7 +834,102 @@ def test_fetch_selected_engines(mocker, max_fetch_val, fetch_type_val, returned_
 
     # Also verify the final incidents list structure
     if returned_alerts:
-        assert any("Alert: " in inc["name"] for inc in results)
+        assert results[0]["name"] == "Alert"
     if returned_metadata:
-        assert any("Meta: " in inc["name"] for inc in results)
+        assert results[1]["name"] == "Meta"
     # If we get no alerts or metadata, results is empty
+
+
+with open("test_data/test_commands_data.dat") as yaml_file:
+    _data_as_dict = cast(dict[str, list[dict]], yaml.Loader(yaml_file).get_data())
+
+TEST_COMMANDS_DATA = []
+for func_name, func_data in _data_as_dict.items():
+    for scenario in func_data:
+        TEST_COMMANDS_DATA.append((func_name, scenario))
+
+IP = "10.10.10.10"
+USERNAME = "username"
+PASSWORD = "password"
+
+
+def mock_login(requests_mock, code: int = 200) -> None:
+    """Setup the mock for a login."""
+    requests_mock.post(
+        f"https://{IP}/api/v1/auth/login",
+        json={
+            "token": "hdkxo7ybuzpfenkmlioo2parm196yyvg",
+            "expiration_date": "2022-04-23T15:11:30.297457",
+        },
+        status_code=code,
+    )
+
+
+@pytest.fixture
+def client(requests_mock) -> GCenter103.GwClient:
+    """Gcenter client used in this test module."""
+    mock_login(requests_mock)
+    client = GCenter103.GwClient(ip=IP)
+    client.auth(user=USERNAME, password=PASSWORD)
+    return client
+
+
+@pytest.mark.parametrize("func_name, func_test", TEST_COMMANDS_DATA)
+def test_gcenter103_command(mocker: MockerFixture, func_name: str, func_test: dict, client: GCenter103.GwClient) -> None:
+    """This generic function can be used to test any gcenter function, by defining a test in the json file associated.
+
+    The fields defining a test are the following:
+    - comment: Comment about this particular test.
+    - command_args: Arguments to be used for the command test.
+    - command_kwargs: Keyword arguments to be used for the command test.
+    - exec_data: Returned data of the gcap low-level query.
+    - output_data: Value of the gcap command result.
+    """
+
+    mocker.patch("requests.api.request", Mock())
+
+    command_args: list = func_test.get("command_args")
+    command_kwargs: dict = func_test.get("command_kwargs")
+    requests.api.request.side_effect = func_test.get("exec_data")
+    output_data = func_test.get("output_data")
+    command_result = getattr(GCenter103, func_name)(*command_args, **command_kwargs)
+
+    assert command_result.__dict__
+    assert command_result.__dict__.get("outputs_prefix") == output_data.__dict__.get("outputs_prefix")
+
+
+def test_test_module() -> None:
+    from GCenter103 import GwClient
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"token": "testtoken"}
+
+    with patch.object(GwClient, "_post", return_value=mock_response):
+        client = GwClient(ip="fake_ip")
+        client.auth(user="test_user", password="test_pass")
+        assert client.headers.get("API-KEY") == "testtoken"
+        mock_auth_response = MagicMock()
+        mock_auth_response.status_code = 200
+        mock_auth_response.json.return_value = {}
+        with patch.object(GwClient, "_get", return_value=mock_auth_response):
+            assert client.is_authenticated()
+
+
+def test_get_tags_ids() -> None:
+    from GCenter103 import GwClient, get_tags_ids
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"token": "testtoken"}
+
+    with patch.object(GwClient, "_post", return_value=mock_response):
+        client = GwClient(ip="fake_ip")
+        client.auth(user="test_user", password="test_pass")
+        assert client.headers.get("API-KEY") == "testtoken"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"results": [{"id": "1", "label": "tag"}]}
+        with patch.object(GwClient, "_get", return_value=mock_response):
+            assert get_tags_ids(client=client, tags_args=["tag"]) == {"tag": "1"}

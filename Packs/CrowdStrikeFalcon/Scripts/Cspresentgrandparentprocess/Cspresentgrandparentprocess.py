@@ -17,7 +17,7 @@ def convert_json_to_markdown_table(json_data):
             value = f"```json\n{json.dumps(value, indent=4)}\n```"
         # If it's a list, we join the list into a string for display
         elif isinstance(value, list):
-            value = ', '.join(map(str, value))
+            value = ", ".join(map(str, value))
         markdown += f"| {key} | {value} |\n"
 
     return markdown
@@ -25,29 +25,26 @@ def convert_json_to_markdown_table(json_data):
 
 def main():
     # Fetch the dynamic context key input from the demisto args
-    context_key = 'CrowdStrike'  # Get the context key from arguments
+    context_key = "CrowdStrike"  # Get the context key from arguments
     try:
-        context_value = demisto.context().get(context_key, None).get('Detection', None)
+        context_value = demisto.context().get(context_key, None).get("Detection", None)
         results = []
         for _idx, detection in enumerate(context_value):
-            if isinstance(detection, dict) and 'grandparentprocess' in detection:
+            if isinstance(detection, dict) and "grandparentprocess" in detection:
                 results.append(detection)
 
         if not results:
             return_results("### No policyactions data available.")
 
-        results = results[0].get('grandparentprocess', None)
+        results = results[0].get("grandparentprocess", None)
         # Set the markdown in the outputs
         # Convert the dictionary to markdown JSON format
 
-        MD = (convert_json_to_markdown_table(results))
-        return_results({
-            'Type': entryTypes['note'],
-            'Contents': MD,
-            'ContentsFormat': formats['markdown']})
+        MD = convert_json_to_markdown_table(results)
+        return_results({"Type": entryTypes["note"], "Contents": MD, "ContentsFormat": formats["markdown"]})
     except Exception:
         return_results("No grand parent process information were found on CrowdStrike.Detection key")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

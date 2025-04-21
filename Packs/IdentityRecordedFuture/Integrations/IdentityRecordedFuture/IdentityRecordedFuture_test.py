@@ -198,9 +198,7 @@ def test_call_return_error(mock_http_request: Mock, return_error_mock: Mock):
     error_message_res = {"message": "error"}
     mock_error_response = Mock()
     mock_error_response.json.return_value = error_message_res
-    mock_http_request.side_effect = DemistoException(
-        message="", res=mock_error_response
-    )
+    mock_http_request.side_effect = DemistoException(message="", res=mock_error_response)
     client._call(url_suffix=mock_url_suffix)
     return_error_mock.assert_called_once_with(**error_message_res)
 
@@ -215,21 +213,15 @@ def test_call_return_error_not_json(mock_http_request: Mock):
     client = create_client()
     mock_url_suffix = "mock_url_suffix"
     mock_error_response = Mock()
-    mock_error_response.json.side_effect = json.JSONDecodeError(
-        "some not json error", "some", 3
-    )
-    mock_http_request.side_effect = DemistoException(
-        message="", res=mock_error_response
-    )
+    mock_error_response.json.side_effect = json.JSONDecodeError("some not json error", "some", 3)
+    mock_http_request.side_effect = DemistoException(message="", res=mock_error_response)
     with pytest.raises(DemistoException):
         client._call(url_suffix=mock_url_suffix)
 
 
 @patch("IdentityRecordedFuture.CommandResults")
 @patch("IdentityRecordedFuture.BaseClient._http_request")
-def test_call_return_http_404_error(
-    mock_http_request: Mock, command_results_mock: Mock
-):
+def test_call_return_http_404_error(mock_http_request: Mock, command_results_mock: Mock):
     """Test _call() when error message was returned."""
     from CommonServerPython import DemistoException
 
@@ -1084,15 +1076,11 @@ def test_playbook_alert_details_command_with_result_actions(mocker):
 
     mock_response = "mock_response"
 
-    mock_client_playbook_alert_details = mocker.patch.object(
-        client, "details_playbook_alerts", return_value=mock_response
-    )
+    mock_client_playbook_alert_details = mocker.patch.object(client, "details_playbook_alerts", return_value=mock_response)
 
     actions = Actions(client)
 
-    mock_process_result_actions_return_value = (
-        "mock_process_result_actions_return_value"
-    )
+    mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
     mock_process_result_actions = mocker.patch.object(
         actions,
         "_process_result_actions",
@@ -1119,9 +1107,7 @@ def test_playbook_alert_details_command_without_result_actions(mocker):
 
     mock_response = "mock_response"
 
-    mock_client_playbook_alert_details = mocker.patch.object(
-        client, "details_playbook_alerts", return_value=mock_response
-    )
+    mock_client_playbook_alert_details = mocker.patch.object(client, "details_playbook_alerts", return_value=mock_response)
 
     actions = Actions(client)
 
@@ -1149,9 +1135,7 @@ def test_playbook_alert_search_command_without_result_actions(mocker):
 
     mock_response = "mock_response"
 
-    mock_client_playbook_alert_search = mocker.patch.object(
-        client, "search_playbook_alerts", return_value=mock_response
-    )
+    mock_client_playbook_alert_search = mocker.patch.object(client, "search_playbook_alerts", return_value=mock_response)
 
     actions = Actions(client)
 
@@ -1179,15 +1163,11 @@ def test_playbook_alert_update_command(mocker):
 
     mock_response = "mock_response"
 
-    mock_client_alert_set_status = mocker.patch.object(
-        client, "update_playbook_alerts", return_value=mock_response
-    )
+    mock_client_alert_set_status = mocker.patch.object(client, "update_playbook_alerts", return_value=mock_response)
 
     actions = Actions(client)
 
-    mock_process_result_actions_return_value = (
-        "mock_process_result_actions_return_value"
-    )
+    mock_process_result_actions_return_value = "mock_process_result_actions_return_value"
     mock_process_result_actions = mocker.patch.object(
         actions,
         "_process_result_actions",
@@ -1213,12 +1193,8 @@ def test_test_module(mocker):
     import IdentityRecordedFuture
 
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(
-        demisto, "demistoVersion", return_value={"version": "mock_version"}
-    )
-    mocker.patch.object(
-        demisto, "params", return_value={"credential": {"password": "example"}}
-    )
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "mock_version"})
+    mocker.patch.object(demisto, "params", return_value={"credential": {"password": "example"}})
     mocker.patch.object(platform, "platform", return_value="mock_platform")
     mocker.patch.object(IdentityRecordedFuture.Client, "whoami")
     mocked_return_res = mocker.patch.object(IdentityRecordedFuture, "return_results")
@@ -1236,12 +1212,8 @@ def test_test_module_with_boom(mocker):
     import IdentityRecordedFuture
 
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(
-        demisto, "demistoVersion", return_value={"version": "mock_version"}
-    )
-    mocker.patch.object(
-        demisto, "params", return_value={"credential": {"password": "example"}}
-    )
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "mock_version"})
+    mocker.patch.object(demisto, "params", return_value={"credential": {"password": "example"}})
     mocker.patch.object(platform, "platform", return_value="mock_platform")
     mock_whoami = mocker.patch.object(IdentityRecordedFuture.Client, "whoami")
     mock_whoami.side_effect = Exception("Side effect triggered")
@@ -1296,9 +1268,7 @@ def test_main_with_unknown_command(mocker):
     IdentityRecordedFuture.main()
 
     mock_get_client.assert_called_once()
-    mock_return_error.assert_called_once_with(
-        message="Unknown command: unknown-command"
-    )
+    mock_return_error.assert_called_once_with(message="Unknown command: unknown-command")
 
 
 def test_main_exception_handling(mocker):
@@ -1340,9 +1310,7 @@ def test_get_client_no_api_token(mocker):
     proxies = {}
     IdentityRecordedFuture.get_client(proxies=proxies)
 
-    mock_return_error.assert_called_once_with(
-        message="Please provide a valid API token"
-    )
+    mock_return_error.assert_called_once_with(message="Please provide a valid API token")
 
 
 @patch("IdentityRecordedFuture.Client")
@@ -1413,14 +1381,10 @@ def test_main_calls_handle_proxy(mocker):
     import IdentityRecordedFuture
 
     mock_proxies = {"http": "example.com", "https": "example.com"}
-    mock_handle_proxy = mocker.patch(
-        "IdentityRecordedFuture.handle_proxy", return_value=mock_proxies
-    )
+    mock_handle_proxy = mocker.patch("IdentityRecordedFuture.handle_proxy", return_value=mock_proxies)
 
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(
-        demisto, "params", return_value={"credential": {"password": "example"}}
-    )
+    mocker.patch.object(demisto, "params", return_value={"credential": {"password": "example"}})
     mock_get_client = mocker.patch("IdentityRecordedFuture.get_client")
     mocker.patch("IdentityRecordedFuture.Client.whoami")
     mock_return_results = mocker.patch("IdentityRecordedFuture.return_results")

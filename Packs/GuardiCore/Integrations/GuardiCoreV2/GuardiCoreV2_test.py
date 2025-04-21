@@ -1,28 +1,27 @@
-from CommonServerPython import *
-
 import json
-import pytest
-from pytest import raises
 
-from freezegun import freeze_time
+import pytest
+from CommonServerPython import *
 from dateparser import parse
+from freezegun import freeze_time
+from pytest import raises  # noqa: PT013
 from pytz import utc
 
 # Only a test key, no worries.
-TEST_API_KEY = '1.eyJleHAiOiAxNjI1NjYxMDc3fQ=='
+TEST_API_KEY = "1.eyJleHAiOiAxNjI1NjYxMDc3fQ=="
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 @pytest.mark.parametrize(
-    'input, output',
+    "input, output",
     [
-        ('', 0),
+        ("", 0),
         (TEST_API_KEY, 1625661077),
-    ]
+    ],
 )
 def test_get_jwt_expiration(input, output):
     """Unit test
@@ -38,17 +37,18 @@ def test_get_jwt_expiration(input, output):
     Validate that the expiration is correct.
     """
     from GuardiCoreV2 import get_jwt_expiration
+
     assert get_jwt_expiration(input) == output
 
 
 @pytest.mark.parametrize(
-    'input, columns, output',
+    "input, columns, output",
     [
         ({}, [], {}),
-        ({'a': 123, 'b': 321}, [], {}),
-        ({'a': 123, 'b': 321}, ['b'], {'b': 321}),
-        ({'a': 123, 'b': 321}, ['a', 'b'], {'a': 123, 'b': 321}),
-    ]
+        ({"a": 123, "b": 321}, [], {}),
+        ({"a": 123, "b": 321}, ["b"], {"b": 321}),
+        ({"a": 123, "b": 321}, ["a", "b"], {"a": 123, "b": 321}),
+    ],
 )
 def test_filter_human_readable(input, columns, output):
     """Unit test
@@ -67,15 +67,16 @@ def test_filter_human_readable(input, columns, output):
     Validate that the filter human readable returns correct values.
     """
     from GuardiCoreV2 import filter_human_readable
+
     assert filter_human_readable(input, human_columns=columns) == output
 
 
 @pytest.mark.parametrize(
-    'last_fetch, first_fetch, output',
+    "last_fetch, first_fetch, output",
     [
         (100000, None, 100000),
-        (100000, '1 days', 100000),
-    ]
+        (100000, "1 days", 100000),
+    ],
 )
 def test_calculate_fetch_start_time(last_fetch, first_fetch, output):
     """Unit test
@@ -90,6 +91,7 @@ def test_calculate_fetch_start_time(last_fetch, first_fetch, output):
     Validate that the calculation is correct.
     """
     from GuardiCoreV2 import calculate_fetch_start_time
+
     assert calculate_fetch_start_time(last_fetch, first_fetch) == output
 
 
@@ -107,14 +109,15 @@ def test_calculate_fetch_start_time_dynamic(mocker):
     Validate that the calculation is correct.
     """
     from GuardiCoreV2 import calculate_fetch_start_time
-    out = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
+
+    out = int(parse("3 days").replace(tzinfo=utc).timestamp()) * 1000
     assert calculate_fetch_start_time(None, None) - out < 1000
-    out = int(parse('4 days').replace(tzinfo=utc).timestamp()) * 1000
-    assert calculate_fetch_start_time(None, '4 days') - out < 1000
+    out = int(parse("4 days").replace(tzinfo=utc).timestamp()) * 1000
+    assert calculate_fetch_start_time(None, "4 days") - out < 1000
 
 
 @pytest.mark.parametrize(
-    'guardicore_severity, dbot_score',
+    "guardicore_severity, dbot_score",
     [
         (0, 1),
         (None, 0),
@@ -123,7 +126,7 @@ def test_calculate_fetch_start_time_dynamic(mocker):
         (50, 3),
         (40, 2),
         (30, 1),
-    ]
+    ],
 )
 def test_incident_severity_to_dbot_score(guardicore_severity, dbot_score):
     """Unit test
@@ -147,37 +150,39 @@ def test_incident_severity_to_dbot_score(guardicore_severity, dbot_score):
     - return Low (1)
     """
     from GuardiCoreV2 import incident_severity_to_dbot_score
+
     assert incident_severity_to_dbot_score(guardicore_severity) == dbot_score
 
 
 @pytest.mark.parametrize(
-    'guardicore_os, os_string',
+    "guardicore_os, os_string",
     [
-        (-1, 'Unknown'),
-        (None, 'Unknown'),
-        (0, 'Unknown'),
-        (1, 'Windows'),
-        (2, 'Linux'),
-    ]
+        (-1, "Unknown"),
+        (None, "Unknown"),
+        (0, "Unknown"),
+        (1, "Windows"),
+        (2, "Linux"),
+    ],
 )
 def test_map_guardicore_os(guardicore_os, os_string):
     """Unit test
-       Given
-       - minus one
-       - None
-       - zero
-       - one
-       - two
-       When
-       - trying to map the guardicore os number to string
-       Then
-       - should return Unknown
-       - should return Unknown
-       - should return Unknown
-       - should return Windows
-       - should return Linux
-   """
+    Given
+    - minus one
+    - None
+    - zero
+    - one
+    - two
+    When
+    - trying to map the guardicore os number to string
+    Then
+    - should return Unknown
+    - should return Unknown
+    - should return Unknown
+    - should return Windows
+    - should return Linux
+    """
     from GuardiCoreV2 import map_guardicore_os
+
     assert map_guardicore_os(guardicore_os) == os_string
 
 
@@ -191,11 +196,11 @@ def test_authenticate(requests_mock):
     - Validate that the access_token is returned correctly.
     """
     from GuardiCoreV2 import Client
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
+
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
 
     assert client.access_token == TEST_API_KEY
 
@@ -210,16 +215,14 @@ def test_get_incident(mocker, requests_mock):
     - Validate that the correct response is returned
     """
     from GuardiCoreV2 import Client, get_indicent
-    mock_response = util_load_json('test_data/get_incident_response.json')
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
-    args = {
-        'id': 'c2acca07-e9bf-4d63-9a26-ff6c749d24d2'
-    }
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
+
+    mock_response = util_load_json("test_data/get_incident_response.json")
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
+    args = {"id": "c2acca07-e9bf-4d63-9a26-ff6c749d24d2"}
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
     response = get_indicent(client, args)
     assert response.outputs == mock_response
 
@@ -235,26 +238,25 @@ def test_get_assets(mocker, requests_mock):
     - Validate that the correct output is returned
     """
     from GuardiCoreV2 import Client, get_assets
-    mock_response = util_load_json('test_data/get_assets_response.json')
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
-    args = {
-        'ip_address': '1.1.1.1'
-    }
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
+
+    mock_response = util_load_json("test_data/get_assets_response.json")
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
+    args = {"ip_address": "1.1.1.1"}
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
     response = get_assets(client, args)
     assert len(response) == 1
     response = response[0]
     assert response.outputs == {
-        'asset_id': '920b9a05-889e-429e-97d0-94a92ccbe376',
-        'ip_addresses': ['1.1.1.1', 'fe80::250:56ff:fe84:da1e'],
-        'last_seen': 1627910241995,
-        'name': 'Accounting-web-1',
-        'status': 'on',
-        'tenant_name': 'esx10/lab_a/Apps/Accounting'}
+        "asset_id": "920b9a05-889e-429e-97d0-94a92ccbe376",
+        "ip_addresses": ["1.1.1.1", "fe80::250:56ff:fe84:da1e"],
+        "last_seen": 1627910241995,
+        "name": "Accounting-web-1",
+        "status": "on",
+        "tenant_name": "esx10/lab_a/Apps/Accounting",
+    }
 
 
 def test_endpoint_command_fails(mocker, requests_mock):
@@ -267,14 +269,14 @@ def test_endpoint_command_fails(mocker, requests_mock):
     - Validate that there is a correct error
     """
     from GuardiCoreV2 import Client, endpoint_command
-    mock_response = util_load_json('test_data/get_endpoint_response.json')
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
+
+    mock_response = util_load_json("test_data/get_endpoint_response.json")
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
     args = {}
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
     with raises(DemistoException):
         endpoint_command(client, args)
 
@@ -290,20 +292,17 @@ def test_endpoint_command(mocker, requests_mock):
     - Validate that the correct readable output is returned
     """
     from GuardiCoreV2 import Client, endpoint_command
-    mock_response = util_load_json('test_data/get_endpoint_response.json')
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
-    args = {
-        'hostname': 'Accounting-web-1'
-    }
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
+
+    mock_response = util_load_json("test_data/get_endpoint_response.json")
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
+    args = {"hostname": "Accounting-web-1"}
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
     response = endpoint_command(client, args)
     assert len(response) == 1
-    assert response[0].readable_output == open(
-        'test_data/endpoint_command_human.md').read()
+    assert response[0].readable_output == open("test_data/endpoint_command_human.md").read()
 
 
 def test_get_incidents(mocker, requests_mock):
@@ -315,30 +314,27 @@ def test_get_incidents(mocker, requests_mock):
     Then
     - Validate that the correct responses are returned
     """
-    from GuardiCoreV2 import Client, get_incidents, INCIDENT_COLUMNS, \
-        filter_human_readable
+    from GuardiCoreV2 import INCIDENT_COLUMNS, Client, filter_human_readable, get_incidents
 
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
-    args = {'from_time': '2021-07-07T15:31:17Z',
-            'to_time': '2022-07-07T15:31:17Z', 'limit': 3}
-    mock_response = util_load_json('test_data/get_incidents_response.json')
-    mocker.patch.object(client, '_http_request', return_value=mock_response)
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
+    args = {"from_time": "2021-07-07T15:31:17Z", "to_time": "2022-07-07T15:31:17Z", "limit": 3}
+    mock_response = util_load_json("test_data/get_incidents_response.json")
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
     response = get_incidents(client, args)
 
     # Transform the raw results to be more readable
     hr = []
     for res in response.raw_response:
         row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
-        row['start_time'] = timestamp_to_datestring(row['start_time'])
-        row['end_time'] = timestamp_to_datestring(row['end_time'])
+        row["start_time"] = timestamp_to_datestring(row["start_time"])
+        row["end_time"] = timestamp_to_datestring(row["end_time"])
         hr.append(row)
 
     assert response.outputs == hr
-    assert response.raw_response == mock_response.get('objects')
+    assert response.raw_response == mock_response.get("objects")
 
 
 @freeze_time("2021-10-26 10:12:03")
@@ -352,21 +348,19 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
     - Validate that the last_fetch is correct (deafult of 3 past days)
     """
     from dateparser import parse
-    from pytz import utc
     from GuardiCoreV2 import Client, fetch_incidents
+    from pytz import utc
 
-    incidents_data = util_load_json('test_data/fetch_incidents_response.json')
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
-                      json=incidents_data.get('first'))
+    incidents_data = util_load_json("test_data/fetch_incidents_response.json")
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    requests_mock.get("https://api.guardicoreexample.com/api/v3.0/incidents", json=incidents_data.get("first"))
 
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
     incidents, last_fetch, _ = fetch_incidents(client, {})
     # Fetch first time, then change last fetch
-    last_three = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
+    last_three = int(parse("3 days").replace(tzinfo=utc).timestamp()) * 1000
     assert last_fetch == last_three
 
 
@@ -385,31 +379,26 @@ def test_fetch_incidents(mocker, requests_mock):
     - Validate that the last_fetch is the last incident fetched
     - Validate that the incidents are all fetched (only 1 new one)
     """
+    from CommonServerPython import demisto  # noqa # pylint: disable=unused-wildcard-importcommon
     from GuardiCoreV2 import Client, fetch_incidents
-    from CommonServerPython import \
-        demisto  # noqa # pylint: disable=unused-wildcard-importcommon
-    incidents_data = util_load_json(
-        'test_data/fetch_incidents_response.json')
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
-                      json=incidents_data.get('first'))
 
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch, _ = fetch_incidents(client, {
-        'first_fetch': '40 years'})  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
+    incidents_data = util_load_json("test_data/fetch_incidents_response.json")
+    requests_mock.post("https://api.guardicoreexample.com/api/v3.0/authenticate", json={"access_token": TEST_API_KEY})
+    requests_mock.get("https://api.guardicoreexample.com/api/v3.0/incidents", json=incidents_data.get("first"))
+
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
+    incidents, last_fetch, _ = fetch_incidents(
+        client, {"first_fetch": "40 years"}
+    )  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
     # Fetch first time, then change last fetch
     assert last_fetch == 1611322222222
-    assert incidents[0].get('name') == 'Guardicore Incident (INC-ADB636B7)'
+    assert incidents[0].get("name") == "Guardicore Incident (INC-ADB636B7)"
     assert len(incidents) == 2
 
-    mocker.patch.object(demisto, 'getLastRun',
-                        return_value={
-                            'last_fetch': last_fetch})
-    requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
-                      json=incidents_data.get('second'))
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": last_fetch})
+    requests_mock.get("https://api.guardicoreexample.com/api/v3.0/incidents", json=incidents_data.get("second"))
 
     incidents, last_fetch, _ = fetch_incidents(client, {})
     # Now we should see the last fetch changed
@@ -435,19 +424,21 @@ def test_fetch_incidents_no_duplicates(mocker, requests_mock):
     - Verify last_fetch is increased and last_ids contains the ID of the latest incident
     """
     from GuardiCoreV2 import Client, fetch_incidents
-    fetch_params = {'first_fetch': '3 days'}
-    incidents_data = util_load_json('test_data/fetch_incidents_no_duplicates.json')
+
+    fetch_params = {"first_fetch": "3 days"}
+    incidents_data = util_load_json("test_data/fetch_incidents_no_duplicates.json")
     requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY},
+        "https://api.guardicoreexample.com/api/v3.0/authenticate",
+        json={"access_token": TEST_API_KEY},
     )
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
+    client = Client(
+        base_url="https://api.guardicoreexample.com/api/v3.0", verify=False, proxy=False, username="test", password="test"
+    )
 
     # fetch first
     requests_mock.get(
-        'https://api.guardicoreexample.com/api/v3.0/incidents',
-        json=incidents_data.get('first'),
+        "https://api.guardicoreexample.com/api/v3.0/incidents",
+        json=incidents_data.get("first"),
     )
     incidents, last_fetch, last_ids = fetch_incidents(client, fetch_params)
     assert len(incidents) == 2
@@ -457,12 +448,12 @@ def test_fetch_incidents_no_duplicates(mocker, requests_mock):
     # second fetch
     mocker.patch.object(
         demisto,
-        'getLastRun',
-        return_value={'last_fetch': last_fetch, 'last_ids': last_ids},
+        "getLastRun",
+        return_value={"last_fetch": last_fetch, "last_ids": last_ids},
     )
     requests_mock.get(
-        'https://api.guardicoreexample.com/api/v3.0/incidents',
-        json=incidents_data.get('second'),
+        "https://api.guardicoreexample.com/api/v3.0/incidents",
+        json=incidents_data.get("second"),
     )
     incidents, second_run_last_fetch, last_ids = fetch_incidents(client, fetch_params)
     assert len(incidents) == 1

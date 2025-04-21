@@ -1,0 +1,1806 @@
+id: silent-Azure AD PIM role settings change
+version: -1
+name: silent-Azure AD PIM role settings change
+description: |-
+  This playbook addresses the following alerts:
+
+  - Azure AD PIM role settings change
+
+  Playbook Stages:
+
+  Triage:
+
+  - Collect initial alert data regarding the Azure AD role settings modification.
+
+  Investigation:
+
+  - Analyze the impact of the role settings changes, categorizing them as high or moderate risk.
+  - Determine if the changes affect privileged roles in Azure AD.
+  - Correlate recent user activity with related security alerts.
+  - Assess the user's risk status in Azure AD and Cortex XDR.
+  - Evaluate the reputation of the IP address used for the changes.
+
+  Containment:
+
+  - Automatically revoke the user's active sessions across all applications.
+  - Present findings to an analyst for review and potential user account disablement.
+
+  Requirements:
+
+  For response actions, you need the following integrations:
+
+  - Cortex Core - Investigation and Response
+  - Microsoft Graph User.
+tags:
+- T1548 - Abuse Elevation Control Mechanism
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1abbc626-b92c-44fc-8129-8bceb614984b
+    type: start
+    task:
+      id: 1abbc626-b92c-44fc-8129-8bceb614984b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 726.25,
+          "y": 26
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 64048937-bf93-4920-8a40-424b7a8a2a04
+    type: regular
+    task:
+      id: 64048937-bf93-4920-8a40-424b7a8a2a04
+      version: -1
+      name: Retrieve role settings changes
+      description: Returns information about the role settings that were changed in Azure AD.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 726.25,
+          "y": 298
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 334f5ea1-f1a3-437c-89df-8b95162c291a
+    type: title
+    task:
+      id: 334f5ea1-f1a3-437c-89df-8b95162c291a
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 726.25,
+          "y": 178
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 738b2937-87a8-465a-ab05-43d3b8379f11
+    type: title
+    task:
+      id: 738b2937-87a8-465a-ab05-43d3b8379f11
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "14"
+      - "24"
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 726.25,
+          "y": 441
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 999f3db8-bdd8-46bc-b8ab-9a35df88680d
+    type: regular
+    task:
+      id: 999f3db8-bdd8-46bc-b8ab-9a35df88680d
+      version: -1
+      name: Detect high risk changes
+      description: Counts the number of high impact settings that were changed for the role. High impact settings are settings that create openings for possible defense evasion and privilege escalation.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: HighRiskChangesCount
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: operation_status_reason_provided
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case:
+                value:
+                  simple: "true"
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (permanently\s+(active|eligible)\s+assignments\s+enabled|approval\s+disabled|MFA\s+on\s+(activation|active\s+assignment)\s+requirement\s+disabled)
+              unpack_matches: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850.25,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 09274c16-f734-46e6-881c-ec149a57d1ab
+    type: title
+    task:
+      id: 09274c16-f734-46e6-881c-ec149a57d1ab
+      version: -1
+      name: Modified Settings Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+      - "8"
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1250.25,
+          "y": 566
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 68981651-82c0-44bf-8e05-ab9e9e21553e
+    type: regular
+    task:
+      id: 68981651-82c0-44bf-8e05-ab9e9e21553e
+      version: -1
+      name: Check if privileged role was modified
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: PrivilegedRoleModifiedCount
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: referenced_resource_name
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case:
+                value:
+                  simple: "true"
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?i)(contributor|owner|reservations administrator|role based access control administrator|user access administrator|global administrator|application administrator|application developer|authentication extensibility administrator|authentication policy administrator|b2c ief policy administrator|cloud application administrator|cloud device administrator|conditional access administrator|directory writers|domain name administrator|dynamics 365 administrator|external identity provider administrator|global reader|groups administrator|helpdesk administrator|hybrid identity administrator|intune administrator|lifecycle workflows administrator|partner tier1 support|partner tier2 support|password administrator|privileged authentication administrator|privileged role administrator|security administrator|security operator|security reader|service support administrator|user administrator)
+              unpack_matches: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1662.25,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ad20428a-d27a-4146-87ed-6fa2c52c6cc9
+    type: title
+    task:
+      id: ad20428a-d27a-4146-87ed-6fa2c52c6cc9
+      version: -1
+      name: Related Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2360,
+          "y": 566
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 78a54269-4d35-413b-94ad-fca9a9af60cb
+    type: regular
+    task:
+      id: 78a54269-4d35-413b-94ad-fca9a9af60cb
+      version: -1
+      name: Search for user alerts
+      description: |-
+        Searches for alerts for the same user, with the following names:
+        - A cloud identity escalated its permissions to a high privilege role/policy
+        - Suspicious Conditional Access operation for an identity
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      extend-context:
+        simple: RelatedUserAlertsResults=
+      fromdate:
+        simple: 2 hours ago
+      ignore-outputs:
+        simple: "true"
+      includeinformational:
+        simple: "false"
+      query:
+        simple: (name:"A cloud identity escalated its permissions to a high privilege role/policy" or name:"Suspicious Conditional Access operation for an identity") and username:"${alert.username.[0]}"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2124,
+          "y": 806
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4db6b6bf-089f-44d7-b7ed-43e0ea5204bb
+    type: regular
+    task:
+      id: 4db6b6bf-089f-44d7-b7ed-43e0ea5204bb
+      version: -1
+      name: Count found related alerts
+      description: Counts the number of found related alerts.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: RelatedUserAlertsCount
+      value:
+        complex:
+          root: RelatedUserAlertsResults
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=Array.isArray(val) ? val : Object.values(val)'
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2124,
+          "y": 926
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: f2b93ab8-7be0-47ff-85d5-ce71528b6da5
+    type: regular
+    task:
+      id: f2b93ab8-7be0-47ff-85d5-ce71528b6da5
+      version: -1
+      name: Get risky user detections
+      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      script: '|||azure-risky-users-risk-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -554.75,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 86b2f42c-206c-49c6-b8ea-31b8645a21f2
+    type: regular
+    task:
+      id: 86b2f42c-206c-49c6-b8ea-31b8645a21f2
+      version: -1
+      name: Generate search timestamp
+      description: Retrieves the current date and time for use in the search.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -554.75,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f419afa6-d69f-45f1-a5be-33d955050b6a
+    type: regular
+    task:
+      id: f419afa6-d69f-45f1-a5be-33d955050b6a
+      version: -1
+      name: Save detection results
+      description: Saves a context key with a value of 1 if the user is risky in Azure AD, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: AzureRiskyUserDetectionsCount
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.cloud_best_identity_match
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -554.75,
+          "y": 1304
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 0d707528-17eb-4308-a565-eb0d954c99bd
+    type: regular
+    task:
+      id: 0d707528-17eb-4308-a565-eb0d954c99bd
+      version: -1
+      name: Get Azure risky users
+      description: Returns a list of all risky users and their properties.
+      script: '|||azure-risky-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      risk_level:
+        simple: high
+      updated_after:
+        simple: 2 days
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -554.5,
+          "y": 806
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6a3da802-b143-4d68-b29f-12c5f1145bd7
+    type: title
+    task:
+      id: 6a3da802-b143-4d68-b29f-12c5f1145bd7
+      version: -1
+      name: User Risk Assessment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -338,
+          "y": 566
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4b8a97d1-60d5-45d6-adec-169b86962add
+    type: title
+    task:
+      id: 4b8a97d1-60d5-45d6-adec-169b86962add
+      version: -1
+      name: Azure AD Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -554.5,
+          "y": 691
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 69a866a7-ac83-4b6e-81ed-dd661245f416
+    type: title
+    task:
+      id: 69a866a7-ac83-4b6e-81ed-dd661245f416
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 736,
+          "y": 1463
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3d63468c-37fd-4643-af9e-82b4d813ba04
+    type: title
+    task:
+      id: 3d63468c-37fd-4643-af9e-82b4d813ba04
+      version: -1
+      name: Core IR Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -123.75,
+          "y": 684
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d2b6bd04-ace8-4a01-9796-1445ff2ede4e
+    type: regular
+    task:
+      id: d2b6bd04-ace8-4a01-9796-1445ff2ede4e
+      version: -1
+      name: Get user risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      user_id:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -123.75,
+          "y": 806
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: d9179648-e64c-4aba-b49a-a56ff0118a50
+    type: regular
+    task:
+      id: d9179648-e64c-4aba-b49a-a56ff0118a50
+      version: -1
+      name: Save detection results
+      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CoreRiskyUserDetectionsCount
+      value:
+        complex:
+          root: Core.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser..risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -123.75,
+          "y": 926
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8996bb86-10ac-4a74-9200-50e4ef4b0086
+    type: title
+    task:
+      id: 8996bb86-10ac-4a74-9200-50e4ef4b0086
+      version: -1
+      name: Caller IP Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 385.25,
+          "y": 566
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: efc2798d-bbc1-4dd6-ba67-abec796a0e83
+    type: regular
+    task:
+      id: efc2798d-bbc1-4dd6-ba67-abec796a0e83
+      version: -1
+      name: Enrich the Caller IP address
+      description: Checks the reputation of an IP address in Threat Intelligence integrations.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      ip:
+        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.additionalDetails.[7].value}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 385.25,
+          "y": 692
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 7c459b3f-eb42-4403-9444-36a5fbe9080e
+    type: condition
+    task:
+      id: 7c459b3f-eb42-4403-9444-36a5fbe9080e
+      version: -1
+      name: Analyze evidence
+      description: |-
+        Analyzes the evidence gathered in the investigation to reach a verdict for the alert.
+
+        The verdict is influenced by the following factors:
+        - Whether the modified role is a built-in privileged role
+        - Whether the modifications pose a risk
+        - The reputation of the Caller IP address
+        - Related alerts for the user in the last 2 hours
+        - The user risk retrieved from Azure AD
+        - The internal user risk
+        - The number of days on which was seen successfully executing PIM operations
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      True Positive:
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: PrivilegedRoleModifiedCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: HighRiskChangesCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: LowMedRiskChangesCount
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 736,
+          "y": 1578
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d28d849f-54cd-4765-afc0-a36e99c60e20
+    type: regular
+    task:
+      id: d28d849f-54cd-4765-afc0-a36e99c60e20
+      version: -1
+      name: Save IP reputation
+      description: Saves a context key indicating 1 if the IP is malicious and 0 if benign.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: MaliciousIPCount
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+              ignorecase: true
+          accessor: Indicator
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 385.25,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 08866340-e099-45d9-9e3b-dc2c04e431e2
+    type: title
+    task:
+      id: 08866340-e099-45d9-9e3b-dc2c04e431e2
+      version: -1
+      name: Soft Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 1856
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 863db3d8-6450-4e31-a002-229739732974
+    type: condition
+    task:
+      id: 863db3d8-6450-4e31-a002-229739732974
+      version: -1
+      name: Manual - analyst review & approval
+      description: |-
+        The investigation shows a combination of suspicious indicators which requires your attention.
+
+        Review the following findings and decide whether you want to disable the user.
+
+        #### User Information
+        Username: `${alert.username.[0]}`
+
+        User Principal Name: `${Core.OriginalAlert.raw_abioc.event.identity_orig.user.userPrincipalName}`
+
+        ---
+
+        #### Role Privileges
+        Whether the role settings of an Azure AD privileged/sensitive role were modified.
+
+        Detected: `${.=val.PrivilegedRoleModifiedCount > 0 ? "Privileged" : "Unprivileged/Not built-in"}`
+
+        ---
+
+        #### Suspicious Modified Settings
+        Whether the settings that were modified pose a risk for potential privilege escalation, or reduce visibility and accountability of users.
+
+        Detected: `${.=val.HighRiskChangesCount >= 2|| val.LowMedRiskChangesCount >= 4 ? "True" : "False"}`
+
+        ---
+
+        #### Suspicious user alerts
+        Whether there were alerts indicating that the user recently changed conditional access policies or escalated their privileges, and whether there were alerts for the user in Microsoft Defender 365.
+
+        Detected (Core): `${.=val.RelatedUserAlertsCount > 0 ? "True" : "False"}`
+        Detected (Defender 365):  `${.=val.Defender365AlertsCount > 0 ? "True" : "False"}`
+
+        ---
+
+        #### User Risk
+
+        Detected (Core IR): `${.=val.CoreRiskyUserDetectionsCount > 0 ? "Risky" : "Not risky"}`
+
+        Detected (Azure AD): `${.=val.AzureRiskyUserDetectionsCount > 0 ? "Risky" : "Not risky"}`
+
+
+        ---
+
+        #### Historical events
+
+        The user was seen executing successful PIM operation on `${Core.OriginalAlert.raw_abioc.event.cloud_best_identity_days_seen_count_azure_pim_operations_successful}` days in the last month.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Disable user:
+      - "41"
+      Do not disable user:
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 2362
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable user
+      - Do not disable user
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: efba9d28-2546-4a90-82b0-eda68da106e6
+    type: regular
+    task:
+      id: efba9d28-2546-4a90-82b0-eda68da106e6
+      version: -1
+      name: Revoke user session
+      description: |-
+        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      user:
+        complex:
+          root: Core.OriginalAlert.raw_abioc.event.identity_orig.user
+          accessor: userPrincipalName
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 2b21d939-a654-43e8-affd-e9c8c3476f3a
+    type: regular
+    task:
+      id: 2b21d939-a654-43e8-affd-e9c8c3476f3a
+      version: -1
+      name: Disable source user
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
+        but does not terminate an existing session. Supported only in a self-deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      user:
+        complex:
+          root: Core.OriginalAlert.raw_abioc.event.identity_orig.user
+          accessor: userPrincipalName
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 2528
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 3e5b4ce2-2256-4a7a-94cd-8080900f72d8
+    type: regular
+    task:
+      id: 3e5b4ce2-2256-4a7a-94cd-8080900f72d8
+      version: -1
+      name: Close alert
+      description: Closes the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      closeReason:
+        complex:
+          root: CloseReason
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Resolved - Auto Resolve
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: c50420c8-40ad-4e17-987d-015ab895ce0d
+    type: regular
+    task:
+      id: c50420c8-40ad-4e17-987d-015ab895ce0d
+      version: -1
+      name: Save closing reason
+      description: Saves a closing reason of Resolved - True Positive.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: CloseReason
+      value:
+        simple: Resolved - True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 1727
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 87715af1-59e8-4822-b6da-92835c744916
+    type: regular
+    task:
+      id: 87715af1-59e8-4822-b6da-92835c744916
+      version: -1
+      name: Detect low risk changes
+      description: Counts the number of moderate impact settings that were changed for the role. Moderate impact settings are settings that reduce the visibility and accountability of users.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: LowMedRiskChangesCount
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: operation_status_reason_provided
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case:
+                value:
+                  simple: "true"
+              multi_line:
+                value:
+                  simple: "true"
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: ((admin|requestor|approver)\s+settings\s+-\s+(default|additional)\s+recipients\s+(settings\s+disabled|deleted))|(justification.*disabled)
+              unpack_matches: {}
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1250.25,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: f66dcc63-2e20-45d6-a959-778e39e50baa
+    type: regular
+    task:
+      id: f66dcc63-2e20-45d6-a959-778e39e50baa
+      version: -1
+      name: Search Defender 365 for user alerts
+      description: Searches for user alerts in the last 2 days in Microsoft Defender 365.
+      script: '|||microsoft-365-defender-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      query:
+        simple: let _start = now(-2d); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${Core.OriginalAlert.event.cloud_best_identity_match}"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2583.5,
+          "y": 799
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: fcc771dd-e2b4-4708-9cc2-4494e66d395c
+    type: condition
+    task:
+      id: fcc771dd-e2b4-4708-9cc2-4494e66d395c
+      version: -1
+      name: Check if any unhandled detection matches TAP granter
+      description: Checks if alerts were found for the user in Microsoft Defender 365.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender.Hunt.results
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Microsoft365Defender.Hunt.results
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2583.5,
+          "y": 926
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: dc1c8ebc-bb7b-40fd-ae1c-18087ff18db1
+    type: title
+    task:
+      id: dc1c8ebc-bb7b-40fd-ae1c-18087ff18db1
+      version: -1
+      name: Defender 365 Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2583.5,
+          "y": 684
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: e08c063b-db71-45f7-84b2-ae971eebd013
+    type: title
+    task:
+      id: e08c063b-db71-45f7-84b2-ae971eebd013
+      version: -1
+      name: Core Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2124,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: ed45f6bc-cd13-457b-8707-f977a38ab6b0
+    type: regular
+    task:
+      id: ed45f6bc-cd13-457b-8707-f977a38ab6b0
+      version: -1
+      name: Count found Defender 365 alerts
+      description: Counts the number of related alerts that were found for the user in Microsoft Defender 365.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: Defender365AlertsCount
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt
+          accessor: results
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=Array.isArray(val) ? val : Object.values(val)'
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2583.5,
+          "y": 1069
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 9a53a683-6cbc-4482-8ba1-43186cf6a47a
+    type: condition
+    task:
+      id: 9a53a683-6cbc-4482-8ba1-43186cf6a47a
+      version: -1
+      name: Check if hard remediation is needed
+      description: |-
+        Analyzes the evidence gathered in the investigation to reach a verdict for the alert.
+
+        The verdict is influenced by the following factors:
+        - Whether the modified role is a built-in privileged role
+        - Whether the modifications pose a risk
+        - The reputation of the Caller IP address
+        - Related alerts for the user in the last 2 hours
+        - The user risk retrieved from Azure AD
+        - The internal user risk
+        - The number of days on which was seen successfully executing PIM operations
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "Yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.cloud_best_identity_days_seen_count_azure_pim_operations_successful
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThan
+          left:
+            value:
+              simple: CoreRiskyUserDetectionsCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: greaterThan
+          left:
+            value:
+              simple: AzureRiskyUserDetectionsCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: greaterThan
+          left:
+            value:
+              simple: RelatedUserAlertsCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: greaterThan
+          left:
+            value:
+              simple: MaliciousIPCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: greaterThan
+          left:
+            value:
+              simple: AzureRiskyUserCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+        - operator: greaterThan
+          left:
+            value:
+              simple: Defender365AlertsCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 2106
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: a2567a1f-0152-413e-9dd6-2de43c3ec58f
+    type: title
+    task:
+      id: a2567a1f-0152-413e-9dd6-2de43c3ec58f
+      version: -1
+      name: Hard Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 2249
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 0d0548ee-f6ae-460d-be1a-56c3463129b7
+    type: title
+    task:
+      id: 0d0548ee-f6ae-460d-be1a-56c3463129b7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 736,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 534515d8-2df2-438e-9b82-a0059e506e06
+    type: regular
+    task:
+      id: 534515d8-2df2-438e-9b82-a0059e506e06
+      version: -1
+      name: Save risky user results
+      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: AzureRiskyUserCount
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskyUser.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.cloud_best_identity_match
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -554.5,
+          "y": 926
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "33_43_True Positive": 0.53,
+      "38_41_Disable user": 0.85,
+      "38_42_Do not disable user": 0.12,
+      "47_26_#default#": 0.11,
+      "52_42_#default#": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2834,
+        "width": 3519.25,
+        "x": -554.75,
+        "y": 26
+      }
+    }
+  }
+inputs: []
+outputs: []
+issilent: true
+fromversion: 8.9.0
+tests:
+- No tests (auto formatted)

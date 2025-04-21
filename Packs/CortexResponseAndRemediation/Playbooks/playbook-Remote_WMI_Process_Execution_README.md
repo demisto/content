@@ -5,7 +5,7 @@ This playbook addresses the following alerts:
 
 **Playbook Stages:**
 
-**Enrichment:**
+**Analysis:**
 
 * Enrich the attacker’s IP address to identify any known malicious activity.
 
@@ -37,7 +37,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 

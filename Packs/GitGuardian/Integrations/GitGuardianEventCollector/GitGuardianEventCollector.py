@@ -1,7 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-import urllib3
 from typing import Any
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -25,8 +26,9 @@ EVENT_TYPE_TO_ENDPOINT = {
 
 
 class Client(BaseClient):
-
-    def search_events(self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
+    def search_events(
+        self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str
+    ) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
         """
         Searches for GitGuardian alerts using the '/secrets' and '/audit_logs' API endpoints.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -60,8 +62,14 @@ class Client(BaseClient):
         return events, last_fetched_event_ids, next_fetch_url, is_pagination_in_progress, next_run_from_fetch_time
 
     def retrieve_events(
-            self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int],
-            event_type: str, next_url: str) -> tuple[List[Dict], List[int], str, bool]:
+        self,
+        from_fetch_time: str,
+        to_fetch_time: str,
+        max_events_per_fetch: int,
+        prev_run_fetched_event_ids: List[int],
+        event_type: str,
+        next_url: str,
+    ) -> tuple[List[Dict], List[int], str, bool]:
         """retrieve events from the API
 
         Args:
@@ -89,7 +97,7 @@ class Client(BaseClient):
                 demisto.debug(f"GG: Fetching events using the params: {params}")
                 response = self._http_request(
                     method="GET",
-                    url_suffix=EVENT_TYPE_TO_ENDPOINT.get(event_type, ''),
+                    url_suffix=EVENT_TYPE_TO_ENDPOINT.get(event_type, ""),
                     params=params,
                     retries=3,
                 )
@@ -100,7 +108,9 @@ class Client(BaseClient):
             if not next_url:
                 break
 
-        last_fetched_events_ids, next_fetch_url, is_pagination_in_progress = self.handle_events(events, event_type, to_fetch_time, next_url, prev_run_fetched_event_ids)  # noqa: E501
+        last_fetched_events_ids, next_fetch_url, is_pagination_in_progress = self.handle_events(
+            events, event_type, to_fetch_time, next_url, prev_run_fetched_event_ids
+        )  # noqa: E501
 
         if response.get("count") == 0:
             demisto.debug("GG: No events were fetched.")
@@ -109,8 +119,9 @@ class Client(BaseClient):
 
         return events, last_fetched_events_ids, next_fetch_url, is_pagination_in_progress
 
-    def handle_events(self, events: list, event_type: str, to_fetch_time: str, next_url: str,
-                      prev_run_fetched_event_ids: List[int]) -> tuple[List[int], str, bool]:
+    def handle_events(
+        self, events: list, event_type: str, to_fetch_time: str, next_url: str, prev_run_fetched_event_ids: List[int]
+    ) -> tuple[List[int], str, bool]:
         """handle the newly fetched events.
 
         Args:
@@ -131,7 +142,7 @@ class Client(BaseClient):
             # there are no more events to fetch in the current time window
             last_fetched_events_ids = self.extract_event_ids_with_same_to_fetch_time(events, to_fetch_time, event_type)
             is_pagination_in_progress = False
-            next_fetch_url = ''
+            next_fetch_url = ""
         return last_fetched_events_ids, next_fetch_url, is_pagination_in_progress
 
     @staticmethod
@@ -144,21 +155,16 @@ class Client(BaseClient):
         """
         if events:
             for event in events:
-                create_time = arg_to_datetime(
-                    arg=event.get(EVENT_TYPE_TO_TIME_MAPPING[event_type])
-                )
-                event["_time"] = (
-                    create_time.strftime(DATE_FORMAT) if create_time else None
-                )
+                create_time = arg_to_datetime(arg=event.get(EVENT_TYPE_TO_TIME_MAPPING[event_type]))
+                event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
                 event["source_log_type"] = event_type
 
     @staticmethod
     def remove_duplicated_events(events: List[Dict], prev_fetched_events_id: List[int]):
-        """Remove events that were already fetched in the last fetch,
-        """
+        """Remove events that were already fetched in the last fetch,"""
         new_events = []
         for event in events:
-            if event.get('id') not in prev_fetched_events_id:
+            if event.get("id") not in prev_fetched_events_id:
                 new_events.append(event)
 
         return new_events
@@ -168,34 +174,46 @@ class Client(BaseClient):
         """Extract event ids of incidents with the same to_fetch_time as the _time field time.
         Returns the events in an ascending manner (earliest to latest).
         """
+
         def format_date_string(date_string, event_type):
             if event_type == "audit_log":
                 return datetime.strptime(date_string, DATE_FORMAT).strftime("%Y-%m-%dT%H:%M:%SZ")
             return date_string
 
-        ids_with_same_occurrence_date = [event["id"] for event in events if format_date_string(event[EVENT_TYPE_TO_TIME_MAPPING[event_type]], event_type) == to_fetch_time]  # noqa: E501
+        ids_with_same_occurrence_date = [
+            event["id"]
+            for event in events
+            if format_date_string(event[EVENT_TYPE_TO_TIME_MAPPING[event_type]], event_type) == to_fetch_time
+        ]  # noqa: E501
 
         return ids_with_same_occurrence_date
 
 
-def handle_last_run(last_run: dict, is_pagination_in_progress_incident: bool, is_pagination_in_progress_auditlog: bool,
-                    next_run_incident_from_fetch_time: str, next_run_audit_log_from_fetch_time: str, last_fetched_incident_ids: list,  # noqa: E501
-                    last_fetched_audit_log_ids: list, next_fetch_incident_url: str, next_fetch_auditlog_url: str):
-    """Creates the next_run dictionary for the next fetch.
-    """
+def handle_last_run(
+    last_run: dict,
+    is_pagination_in_progress_incident: bool,
+    is_pagination_in_progress_auditlog: bool,
+    next_run_incident_from_fetch_time: str,
+    next_run_audit_log_from_fetch_time: str,
+    last_fetched_incident_ids: list,  # noqa: E501
+    last_fetched_audit_log_ids: list,
+    next_fetch_incident_url: str,
+    next_fetch_auditlog_url: str,
+):
+    """Creates the next_run dictionary for the next fetch."""
     next_run: Dict[str, Any] = {}
     if is_pagination_in_progress_incident or is_pagination_in_progress_auditlog:
         next_run["nextTrigger"] = "0"
     next_run["incident"] = {
         "from_fetch_time": next_run_incident_from_fetch_time,
-        "to_fetch_time": last_run["incident"]['to_fetch_time'],
+        "to_fetch_time": last_run["incident"]["to_fetch_time"],
         "last_fetched_event_ids": last_fetched_incident_ids,
         "next_url_link": next_fetch_incident_url,
         "is_pagination_in_progress": is_pagination_in_progress_incident,
     }
     next_run["audit_log"] = {
         "from_fetch_time": next_run_audit_log_from_fetch_time,
-        "to_fetch_time": last_run["audit_log"]['to_fetch_time'],
+        "to_fetch_time": last_run["audit_log"]["to_fetch_time"],
         "last_fetched_event_ids": last_fetched_audit_log_ids,
         "next_url_link": next_fetch_auditlog_url,
         "is_pagination_in_progress": is_pagination_in_progress_auditlog,
@@ -204,9 +222,7 @@ def handle_last_run(last_run: dict, is_pagination_in_progress_incident: bool, is
     return next_run
 
 
-def test_module(
-    client: Client, from_fetch_time: str, max_events_per_fetch: int = 1
-) -> str:
+def test_module(client: Client, from_fetch_time: str, max_events_per_fetch: int = 1) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -228,7 +244,7 @@ def test_module(
             "last_fetched_ids": [],
             "next_url_link": "",
         }
-        client.search_events(last_run, max_events_per_fetch, 'incident')
+        client.search_events(last_run, max_events_per_fetch, "incident")
 
     except Exception as e:
         if "Forbidden" in str(e):
@@ -239,19 +255,15 @@ def test_module(
     return "ok"
 
 
-def get_events(
-    client: Client, args: dict
-) -> tuple[List[Dict], List[Dict], CommandResults]:
+def get_events(client: Client, args: dict) -> tuple[List[Dict], List[Dict], CommandResults]:
     limit = int(args.get("limit", 50))
-    from_date = args.get(
-        "from_date", ""
-    )  # if no from_date, will return all of the available incidents and audit logs
+    from_date = args.get("from_date", "")  # if no from_date, will return all of the available incidents and audit logs
     last_run = {
         "from_fetch_time": from_date,
         "last_fetched_event_ids": [],
     }
-    incidents, _, _, _, _ = client.search_events(last_run, limit, 'incident')
-    audit_logs, _, _, _, _ = client.search_events(last_run, limit, 'audit_log')
+    incidents, _, _, _, _ = client.search_events(last_run, limit, "incident")
+    audit_logs, _, _, _, _ = client.search_events(last_run, limit, "audit_log")
     incidents = incidents[:limit]
     audit_logs = audit_logs[:limit]
 
@@ -271,9 +283,7 @@ def get_events(
     return incidents, audit_logs, CommandResults(readable_output=hr)
 
 
-def fetch_events(
-    client: Client, last_run: dict[str, Any], max_events_per_fetch: int
-) -> tuple[Dict, List[Dict], List[Dict]]:
+def fetch_events(client: Client, last_run: dict[str, Any], max_events_per_fetch: int) -> tuple[Dict, List[Dict], List[Dict]]:
     """
     Args:
         client (Client): GitGuardian client to use.
@@ -284,14 +294,36 @@ def fetch_events(
         list: List of events that will be created in XSIAM.
     """
 
-    incidents, last_fetched_incident_ids, next_fetch_incident_url, is_pagination_in_progress_incident, next_run_incident_from_fetch_time = client.search_events(  # noqa: E501
-        last_run.get("incident", {}), max_events_per_fetch, 'incident')
-    audit_logs, last_fetched_audit_log_ids, next_fetch_auditlog_url, is_pagination_in_progress_auditlog, next_run_audit_log_from_fetch_time = client.search_events(  # noqa: E501
-        last_run.get("audit_log", {}), max_events_per_fetch, 'audit_log')
+    (
+        incidents,
+        last_fetched_incident_ids,
+        next_fetch_incident_url,
+        is_pagination_in_progress_incident,
+        next_run_incident_from_fetch_time,
+    ) = client.search_events(  # noqa: E501
+        last_run.get("incident", {}), max_events_per_fetch, "incident"
+    )
+    (
+        audit_logs,
+        last_fetched_audit_log_ids,
+        next_fetch_auditlog_url,
+        is_pagination_in_progress_auditlog,
+        next_run_audit_log_from_fetch_time,
+    ) = client.search_events(  # noqa: E501
+        last_run.get("audit_log", {}), max_events_per_fetch, "audit_log"
+    )
 
-    next_run = handle_last_run(last_run, is_pagination_in_progress_incident, is_pagination_in_progress_auditlog,
-                               next_run_incident_from_fetch_time, next_run_audit_log_from_fetch_time, last_fetched_incident_ids,
-                               last_fetched_audit_log_ids, next_fetch_incident_url, next_fetch_auditlog_url)
+    next_run = handle_last_run(
+        last_run,
+        is_pagination_in_progress_incident,
+        is_pagination_in_progress_auditlog,
+        next_run_incident_from_fetch_time,
+        next_run_audit_log_from_fetch_time,
+        last_fetched_incident_ids,
+        last_fetched_audit_log_ids,
+        next_fetch_incident_url,
+        next_fetch_auditlog_url,
+    )
 
     return next_run, incidents, audit_logs
 
@@ -319,26 +351,30 @@ def main() -> None:  # pragma: no cover
         # first fetch of the collector, will fetch events
         demisto.debug("GG: first fetch of the collector.")
         last_run = {
-            "incident": {"from_fetch_time": current_fetch_time,
-                         "to_fetch_time": current_fetch_time,
-                         "last_fetched_event_ids": [],
-                         "next_url_link": "",
-                         "is_pagination_in_progress": False},
+            "incident": {
+                "from_fetch_time": current_fetch_time,
+                "to_fetch_time": current_fetch_time,
+                "last_fetched_event_ids": [],
+                "next_url_link": "",
+                "is_pagination_in_progress": False,
+            },
             "audit_log": {
                 "from_fetch_time": current_fetch_time,
                 "to_fetch_time": current_fetch_time,
                 "last_fetched_event_ids": [],
                 "next_url_link": "",
-                "is_pagination_in_progress": False
-            }
+                "is_pagination_in_progress": False,
+            },
         }
 
     if not last_run["incident"].get("is_pagination_in_progress"):
         last_run["incident"]["to_fetch_time"] = current_fetch_time
     if not last_run["audit_log"].get("is_pagination_in_progress"):
         last_run["audit_log"]["to_fetch_time"] = current_fetch_time
-    demisto.debug(f"GG: fetching incidents from {last_run['incident']['from_fetch_time']} to {last_run['incident']['to_fetch_time']}. "  # noqa: E501
-                  f"fetching audit logs from {last_run['audit_log']['from_fetch_time']} to {last_run['audit_log']['to_fetch_time']}.")  # noqa: E501
+    demisto.debug(
+        f"GG: fetching incidents from {last_run['incident']['from_fetch_time']} to {last_run['incident']['to_fetch_time']}. "  # noqa: E501
+        f"fetching audit logs from {last_run['audit_log']['from_fetch_time']} to {last_run['audit_log']['to_fetch_time']}."
+    )  # noqa: E501
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -353,8 +389,8 @@ def main() -> None:  # pragma: no cover
             should_push_events = argToBoolean(args.pop("should_push_events"))
             incidents, audit_logs, results = get_events(client, args)
             if should_push_events:
-                client.add_time_to_events(audit_logs, 'audit_log')
-                client.add_time_to_events(incidents, 'incident')
+                client.add_time_to_events(audit_logs, "audit_log")
+                client.add_time_to_events(incidents, "incident")
                 send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             return_results(results)
 
@@ -364,15 +400,16 @@ def main() -> None:  # pragma: no cover
                 last_run=last_run,
                 max_events_per_fetch=max_events_per_fetch,
             )
-            client.add_time_to_events(audit_logs, 'audit_log')
-            client.add_time_to_events(incidents, 'incident')
+            client.add_time_to_events(audit_logs, "audit_log")
+            client.add_time_to_events(incidents, "incident")
             send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"GG: Setting next run: {next_run}.")
             demisto.setLastRun(next_run)
-
+        else:
+            raise NotImplementedError(f"{command} command is not implemented.")
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

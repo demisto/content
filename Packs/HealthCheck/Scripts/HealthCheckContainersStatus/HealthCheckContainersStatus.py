@@ -7,7 +7,7 @@ XSOARV8_HTML_STYLE = "color:#FFBE98;text-align:center;font-size:150%;>"
 def main():
     if is_demisto_version_ge("8.0.0"):
         msg = "Not Available for XSOAR v8"
-        html = f"<h3 style={XSOARV8_HTML_STYLE}{str(msg)}</h3>"
+        html = f"<h3 style={XSOARV8_HTML_STYLE}{msg!s}</h3>"
         demisto.results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
         sys.exit()
     incident = demisto.incidents()[0]

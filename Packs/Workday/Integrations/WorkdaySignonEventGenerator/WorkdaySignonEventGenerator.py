@@ -1,18 +1,17 @@
 import random
 import string
 
-from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response
-from CommonServerPython import *
-
 import urllib3
+from CommonServerPython import *
+from flask import Flask, Response, request
+from gevent.pywsgi import WSGIServer
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-APP: Flask = Flask('xsoar-workday-signon')
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+""" CONSTANTS """
+APP: Flask = Flask("xsoar-workday-signon")
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 SIGNON_ITEM_TEMPLATE = """
                 <wd:Workday_Account_Signon>
@@ -89,7 +88,7 @@ def random_datetime_in_range(start_str: str, end_str: str):
 
 
 def random_string(length: int = 10):
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def xml_generator(from_datetime: str, to_datetime: str, count: int):
@@ -99,16 +98,15 @@ def xml_generator(from_datetime: str, to_datetime: str, count: int):
     # Determine the number of Workday_Account_Signon items
     num_signon_items = random.randint(1, count)
 
-    template = generate_xml_template(from_date=from_datetime, to_date=to_datetime, total_responses=num_signon_items,
-                                     count=num_signon_items)
+    template = generate_xml_template(
+        from_date=from_datetime, to_date=to_datetime, total_responses=num_signon_items, count=num_signon_items
+    )
 
     # Generate Workday_Account_Signon items
     signon_items = []
     for _ in range(num_signon_items):
         signon_item = SIGNON_ITEM_TEMPLATE.format(
-            signon_datetime=random_signon_datetime,
-            user_name=random_string(),
-            short_session_id=random_string(length=6)
+            signon_datetime=random_signon_datetime, user_name=random_string(), short_session_id=random_string(length=6)
         )
         signon_items.append(signon_item)
 
@@ -118,15 +116,15 @@ def xml_generator(from_datetime: str, to_datetime: str, count: int):
     return populated_template
 
 
-@APP.route('/', methods=['POST'])
+@APP.route("/", methods=["POST"])
 def mock_workday_endpoint():
     request_text = request.get_data(as_text=True)
     demisto.info(f"{request_text}")
 
     # Define regex patterns
-    from_datetime_pattern = r'<bsvc:From_DateTime>(.*?)</bsvc:From_DateTime>'
-    to_datetime_pattern = r'<bsvc:To_DateTime>(.*?)</bsvc:To_DateTime>'
-    count_pattern = r'<bsvc:Count>(\d+)</bsvc:Count>'
+    from_datetime_pattern = r"<bsvc:From_DateTime>(.*?)</bsvc:From_DateTime>"
+    to_datetime_pattern = r"<bsvc:To_DateTime>(.*?)</bsvc:To_DateTime>"
+    count_pattern = r"<bsvc:Count>(\d+)</bsvc:Count>"
 
     # Extract values using regex
     from_datetime_match = re.search(from_datetime_pattern, request_text)
@@ -142,48 +140,44 @@ def mock_workday_endpoint():
     response_xml = xml_generator(from_datetime, to_datetime, count)
 
     # Return the generated XML
-    return Response(response_xml, mimetype='text/xml')
+    return Response(response_xml, mimetype="text/xml")
 
 
 def module_of_testing(is_longrunning: bool, longrunning_port: int):
     if longrunning_port and is_longrunning:
-        xml_response = xml_generator('2023-08-21T11:46:02Z', '2023-08-21T11:47:02Z', 2)
+        xml_response = xml_generator("2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z", 2)
         if xml_response:
-            return_results('ok')
+            return_results("ok")
         else:
-            raise DemistoException('Could not connect to the long running server. Please make sure everything is '
-                                   'configured.')
+            raise DemistoException("Could not connect to the long running server. Please make sure everything is configured.")
     else:
-        raise DemistoException('Please make sure the long running port is filled and the long running checkbox is '
-                               'marked.')
+        raise DemistoException("Please make sure the long running port is filled and the long running checkbox is marked.")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     command = demisto.command()
     params = demisto.params()
-    port = int(params.get('longRunningPort', '5000'))
+    port = int(params.get("longRunningPort", "5000"))
     is_longrunning = params.get("longRunning")
     try:
-        if command == 'test-module':
+        if command == "test-module":
             module_of_testing(longrunning_port=port, is_longrunning=is_longrunning)
-        elif command == 'long-running-execution':
+        elif command == "long-running-execution":
             while True:
-                server = WSGIServer(('0.0.0.0', port), APP)
+                server = WSGIServer(("0.0.0.0", port), APP)
                 server.serve_forever()
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

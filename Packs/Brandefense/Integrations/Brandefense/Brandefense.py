@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import requests
+from CommonServerPython import *  # noqa: F401
 
 
 def get_assets(api_token):
@@ -26,9 +26,7 @@ def get_specific_asset(api_token, args):
     }
     response = requests.get(url, headers=headers)
     requestedasset = {"assets": response.json()}
-    result = CommandResults(
-        outputs=requestedasset, outputs_prefix="branddefense_requested_asset"
-    )
+    result = CommandResults(outputs=requestedasset, outputs_prefix="branddefense_requested_asset")
     return_results(result)
     return result
 
@@ -57,9 +55,7 @@ def get_specific_audit_log(api_token, args):
     }
     response = requests.get(url, headers=headers)
     requestedauditlog = {"requestedauditlog": response.json()}
-    result = CommandResults(
-        outputs=requestedauditlog, outputs_prefix="branddefense_requested_audit_log"
-    )
+    result = CommandResults(outputs=requestedauditlog, outputs_prefix="branddefense_requested_audit_log")
     return_results(result)
     return result
 
@@ -90,9 +86,7 @@ def get_specific_incident(api_token, args):
         "authorization": "Bearer " + api_token,
     }
     response = requests.get(url, headers=headers)
-    branddefense_requested_incident = {
-        "branddefense_requested_incident": response.json()
-    }
+    branddefense_requested_incident = {"branddefense_requested_incident": response.json()}
     result = CommandResults(
         outputs=branddefense_requested_incident,
         outputs_prefix="branddefense_requested_incident",
@@ -106,11 +100,7 @@ def change_incident_status(api_token, args):
     incident_code = str(incident_code)
     incident_status = args.get("incident_status")
     incident_status = str(incident_status)
-    url = (
-        "https://api.brandefense.io/api/v1/incidents/"
-        + incident_code
-        + "/change-status"
-    )
+    url = "https://api.brandefense.io/api/v1/incidents/" + incident_code + "/change-status"
     payload = {"status": incident_status}
     headers = {
         "accept": "application/json",
@@ -119,9 +109,7 @@ def change_incident_status(api_token, args):
     }
     response = requests.patch(url, json=payload, headers=headers)
     incident_status_to_changed = {"incident_status_to_changed": response.json()}
-    result = CommandResults(
-        outputs=incident_status_to_changed, outputs_prefix="incident_status_to_changed"
-    )
+    result = CommandResults(outputs=incident_status_to_changed, outputs_prefix="incident_status_to_changed")
     return_results(result)
     return result
 
@@ -136,9 +124,7 @@ def get_incident_indicators(api_token, args):
         "authorization": "Bearer " + api_token,
     }
     response = requests.get(url, headers=headers)
-    branddefense_requested_incident_indicators = {
-        "branddefense_requested_incident_indicators": response.json()
-    }
+    branddefense_requested_incident_indicators = {"branddefense_requested_incident_indicators": response.json()}
     result = CommandResults(
         outputs=branddefense_requested_incident_indicators,
         outputs_prefix="branddefense_requested_incident_indicators",
@@ -158,9 +144,7 @@ def get_indicator(api_token, args):
         "authorization": "Bearer " + api_token,
     }
     response = requests.get(url, headers=headers, params=querystring)
-    branddefense_requested_indicator = {
-        "branddefense_requested_indicator": response.json()
-    }
+    branddefense_requested_indicator = {"branddefense_requested_indicator": response.json()}
     result = CommandResults(
         outputs=branddefense_requested_indicator,
         outputs_prefix="branddefense_requested_indicator",
@@ -201,9 +185,7 @@ def get_cti_rules(api_token, args):
     except Exception:
         response = requests.get(url, headers=headers)
     branddefense_cti_rules = {"branddefense_cti_rules": response.json()}
-    result = CommandResults(
-        outputs=branddefense_cti_rules, outputs_prefix="branddefense_cti_rules"
-    )
+    result = CommandResults(outputs=branddefense_cti_rules, outputs_prefix="branddefense_cti_rules")
     return_results(result)
     return result
 
@@ -236,9 +218,7 @@ def get_incidents(api_token, args):
     }
     response = requests.get(url, headers=headers, params=querystring)
     branddefense_all_incidents = {"branddefense_incidents": response.json()}
-    result = CommandResults(
-        outputs=branddefense_all_incidents, outputs_prefix="branddefense_all_incidents"
-    )
+    result = CommandResults(outputs=branddefense_all_incidents, outputs_prefix="branddefense_all_incidents")
     return_results(result)
     return result
 
@@ -300,7 +280,7 @@ def main():
         elif command == "test-module":
             test_module(api_token, args, params)
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

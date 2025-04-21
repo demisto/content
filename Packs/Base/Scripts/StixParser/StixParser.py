@@ -1,19 +1,18 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import collections
 import copy
 import tempfile
-from typing import Tuple
 
-from lxml import etree
-from bs4 import BeautifulSoup
 import dateutil.parser
+import demistomock as demisto  # noqa: F401
+import pytz
+from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
+from lxml import etree
 from netaddr import IPNetwork
 from six import string_types
-import pytz
-import collections
 
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
-SCRIPT_NAME = 'STIXParser'
+SCRIPT_NAME = "STIXParser"
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
@@ -22,34 +21,46 @@ TAXII_VER_2_1 = "2.1"
 DFLT_LIMIT_PER_REQUEST = 100
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
-XSOAR_TAXII2_SERVER_SCHEMA = "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/" \
-                             "Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json"
-SYSTEM_FIELDS = ['id', 'version', 'modified', 'sortValues', 'timestamp', 'indicator_type',
-                 'value', 'sourceInstances', 'sourceBrands', 'investigationIDs', 'lastSeen', 'firstSeen',
-                 'firstSeenEntryID', 'score', 'insightCache', 'moduleToFeedMap', 'expirationStatus',
-                 'expirationSource', 'calculatedTime', 'lastReputationRun', 'modifiedTime', 'aggregatedReliability']
+XSOAR_TAXII2_SERVER_SCHEMA = (
+    "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/"
+    "Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json"
+)
+SYSTEM_FIELDS = [
+    "id",
+    "version",
+    "modified",
+    "sortValues",
+    "timestamp",
+    "indicator_type",
+    "value",
+    "sourceInstances",
+    "sourceBrands",
+    "investigationIDs",
+    "lastSeen",
+    "firstSeen",
+    "firstSeenEntryID",
+    "score",
+    "insightCache",
+    "moduleToFeedMap",
+    "expirationStatus",
+    "expirationSource",
+    "calculatedTime",
+    "lastReputationRun",
+    "modifiedTime",
+    "aggregatedReliability",
+]
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 # Pattern Regexes - used to extract indicator type and value, spaces are removed before matching the following regexes
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
 INDICATOR_IN_VAL_PATTERN = r"(\w.*?valueIN)\(+('.*?')\)"
-INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="="
-)
-CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="ISSUBSET"
-)
-CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="ISSUPPERSET"
-)
-HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value=r"hashes\..*?", operator="="
-)
-REGISTRY_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="key", operator="="
-)
+INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="=")
+CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="ISSUBSET")
+CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="ISSUPPERSET")
+HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value=r"hashes\..*?", operator="=")
+REGISTRY_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="key", operator="=")
 
 TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
@@ -78,28 +89,27 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
-    'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
-    'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
-    'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
-    'credential-access': ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
-    'exfiltration': ThreatIntel.KillChainPhases.EXFILTRATION,
-    'lateral-movement': ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
-    'defense-evasion': ThreatIntel.KillChainPhases.DEFENSE_EVASION,
-    'persistence': ThreatIntel.KillChainPhases.PERSISTENCE,
-    'collection': ThreatIntel.KillChainPhases.COLLECTION,
-    'impact': ThreatIntel.KillChainPhases.IMPACT,
-    'initial-access': ThreatIntel.KillChainPhases.INITIAL_ACCESS,
-    'discovery': ThreatIntel.KillChainPhases.DISCOVERY,
-    'execution': ThreatIntel.KillChainPhases.EXECUTION,
-    'installation': ThreatIntel.KillChainPhases.INSTALLATION,
-    'delivery': ThreatIntel.KillChainPhases.DELIVERY,
-    'weaponization': ThreatIntel.KillChainPhases.WEAPONIZATION,
-    'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
-    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
+    "build-capabilities": ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
+    "privilege-escalation": ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
+    "adversary-opsec": ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
+    "credential-access": ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
+    "exfiltration": ThreatIntel.KillChainPhases.EXFILTRATION,
+    "lateral-movement": ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
+    "defense-evasion": ThreatIntel.KillChainPhases.DEFENSE_EVASION,
+    "persistence": ThreatIntel.KillChainPhases.PERSISTENCE,
+    "collection": ThreatIntel.KillChainPhases.COLLECTION,
+    "impact": ThreatIntel.KillChainPhases.IMPACT,
+    "initial-access": ThreatIntel.KillChainPhases.INITIAL_ACCESS,
+    "discovery": ThreatIntel.KillChainPhases.DISCOVERY,
+    "execution": ThreatIntel.KillChainPhases.EXECUTION,
+    "installation": ThreatIntel.KillChainPhases.INSTALLATION,
+    "delivery": ThreatIntel.KillChainPhases.DELIVERY,
+    "weaponization": ThreatIntel.KillChainPhases.WEAPONIZATION,
+    "act-on-objectives": ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
+    "command-and-control": ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
 }
 
 STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
@@ -108,15 +118,15 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 }
 
 THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
-    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-    'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    'report': ThreatIntel.ObjectsNames.REPORT,
-    'malware': ThreatIntel.ObjectsNames.MALWARE,
-    'course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
-    'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
-    'tool': ThreatIntel.ObjectsNames.TOOL,
-    'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "report": ThreatIntel.ObjectsNames.REPORT,
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "tool": ThreatIntel.ObjectsNames.TOOL,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
 }
 
 
@@ -138,14 +148,32 @@ def convert_to_json(string):
 
 
 class STIX2Parser:
-    OBJECTS_TO_PARSE = ["indicator", "report", "malware", "campaign", "attack-pattern", "course-of-action",
-                        "intrusion-set", "tool", "threat-actor", "infrastructure", "autonomous-system",
-                        "domain-name", "email-addr", "file", "ipv4-addr", "ipv6-addr", "mutex", "url",
-                        "user-account", "windows-registry-key", "relationship", "extension-definition"]
+    OBJECTS_TO_PARSE = [
+        "indicator",
+        "report",
+        "malware",
+        "campaign",
+        "attack-pattern",
+        "course-of-action",
+        "intrusion-set",
+        "tool",
+        "threat-actor",
+        "infrastructure",
+        "autonomous-system",
+        "domain-name",
+        "email-addr",
+        "file",
+        "ipv4-addr",
+        "ipv6-addr",
+        "mutex",
+        "url",
+        "user-account",
+        "windows-registry-key",
+        "relationship",
+        "extension-definition",
+    ]
 
-    def __init__(
-            self
-    ):
+    def __init__(self):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
         """
@@ -153,7 +181,7 @@ class STIX2Parser:
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(INDICATOR_IN_VAL_PATTERN),
             re.compile(HASHES_EQUALS_VAL_PATTERN),
-            re.compile(REGISTRY_EQUALS_VAL_PATTERN)
+            re.compile(REGISTRY_EQUALS_VAL_PATTERN),
         ]
         self.cidr_regexes = [
             re.compile(CIDR_ISSUBSET_VAL_PATTERN),
@@ -174,18 +202,18 @@ class STIX2Parser:
             list. publications grid field
         """
         publications = []
-        for external_reference in indicator.get('external_references', []):
-            url = external_reference.get('url', '')
-            description = external_reference.get('description', '')
-            source_name = external_reference.get('source_name', '')
-            publications.append({'link': url, 'title': description, 'source': source_name})
+        for external_reference in indicator.get("external_references", []):
+            url = external_reference.get("url", "")
+            description = external_reference.get("description", "")
+            source_name = external_reference.get("source_name", "")
+            publications.append({"link": url, "title": description, "source": source_name})
         return publications
 
     @staticmethod
     def change_attack_pattern_to_stix_attack_pattern(indicator: Dict[str, Any]):
-        indicator['indicator_type'] = f'STIX {indicator["indicator_type"]}'
-        indicator['customFields']['stixkillchainphases'] = indicator['customFields'].pop('killchainphases', None)
-        indicator['customFields']['stixdescription'] = indicator['customFields'].pop('description', None)
+        indicator["indicator_type"] = f'STIX {indicator["indicator_type"]}'
+        indicator["customFields"]["stixkillchainphases"] = indicator["customFields"].pop("killchainphases", None)
+        indicator["customFields"]["stixdescription"] = indicator["customFields"].pop("description", None)
 
         return indicator
 
@@ -201,11 +229,11 @@ class STIX2Parser:
         Returns:
             str. the IOC type.
         """
-        ioc_type = ''
+        ioc_type = ""
         indicator_obj = id_to_object.get(indicator, {})
-        pattern = indicator_obj.get('pattern', '')
+        pattern = indicator_obj.get("pattern", "")
         for stix_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-            if pattern.startswith(f'[{stix_type}'):
+            if pattern.startswith(f"[{stix_type}"):
                 ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
                 break
         return ioc_type
@@ -218,12 +246,12 @@ class STIX2Parser:
         :return: changes indicators list in-place.
         """
         for indicator in indicators:
-            if indicator.get('indicator_type') == FeedIndicatorType.IP:
-                value = indicator.get('value')
-                if value.endswith('/32'):
+            if indicator.get("indicator_type") == FeedIndicatorType.IP:
+                value = indicator.get("value")
+                if value.endswith("/32"):
                     pass
-                elif '/' in value:
-                    indicator['indicator_type'] = FeedIndicatorType.CIDR
+                elif "/" in value:
+                    indicator["indicator_type"] = FeedIndicatorType.CIDR
 
     """ PARSING FUNCTIONS"""
 
@@ -241,9 +269,7 @@ class STIX2Parser:
             # supported indicators have no spaces, so this action shouldn't affect extracted values
             trimmed_pattern = pattern.replace(" ", "")
 
-            indicator_groups = self.extract_indicator_groups_from_pattern(
-                trimmed_pattern, self.indicator_regexes
-            )
+            indicator_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.indicator_regexes)
 
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
@@ -254,9 +280,7 @@ class STIX2Parser:
                 )
             )
 
-            cidr_groups = self.extract_indicator_groups_from_pattern(
-                trimmed_pattern, self.cidr_regexes
-            )
+            cidr_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.cidr_regexes)
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
                     cidr_groups,
@@ -278,28 +302,28 @@ class STIX2Parser:
         """
         publications = STIX2Parser.get_indicator_publication(attack_pattern_obj)
 
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_pattern_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in attack_pattern_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         attack_pattern = {
-            "value": attack_pattern_obj.get('name'),
+            "value": attack_pattern_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
             "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
             "rawJSON": attack_pattern_obj,
         }
         fields = {
-            'stixid': attack_pattern_obj.get('id'),
+            "stixid": attack_pattern_obj.get("id"),
             "killchainphases": kill_chain_phases,
-            "firstseenbysource": attack_pattern_obj.get('created'),
-            "modified": attack_pattern_obj.get('modified'),
-            'description': attack_pattern_obj.get('description', ''),
-            'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
+            "firstseenbysource": attack_pattern_obj.get("created"),
+            "modified": attack_pattern_obj.get("modified"),
+            "description": attack_pattern_obj.get("description", ""),
+            "operatingsystemrefs": attack_pattern_obj.get("x_mitre_platforms"),
             "publications": publications,
         }
 
         attack_pattern["customFields"] = fields
 
-        if not is_demisto_version_ge('6.2.0'):
+        if not is_demisto_version_ge("6.2.0"):
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
             attack_pattern = STIX2Parser.change_attack_pattern_to_stix_attack_pattern(attack_pattern)
 
@@ -312,35 +336,37 @@ class STIX2Parser:
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
-        object_refs = report_obj.get('object_refs', [])
+        object_refs = report_obj.get("object_refs", [])
         new_relationships = []
         for obj_id in object_refs:
-            new_relationships.append({
-                "type": "relationship",
-                "id": "relationship--fakeid",
-                "created": report_obj.get('created'),
-                "modified": report_obj.get('modified'),
-                "relationship_type": "contains",
-                "source_ref": report_obj.get('id'),
-                "target_ref": obj_id,
-            })
+            new_relationships.append(
+                {
+                    "type": "relationship",
+                    "id": "relationship--fakeid",
+                    "created": report_obj.get("created"),
+                    "modified": report_obj.get("modified"),
+                    "relationship_type": "contains",
+                    "source_ref": report_obj.get("id"),
+                    "target_ref": obj_id,
+                }
+            )
 
         report = {
             "indicator_type": ThreatIntel.ObjectsNames.REPORT,
-            "value": report_obj.get('name'),
+            "value": report_obj.get("name"),
             "score": ThreatIntel.ObjectsScore.REPORT,
             "rawJSON": report_obj,
         }
         fields = {
-            'stixid': report_obj.get('id'),
-            'firstseenbysource': report_obj.get('created'),
-            'published': report_obj.get('published'),
-            'description': report_obj.get('description', ''),
-            "report_types": report_obj.get('report_types', []),
-            "tags": list(set(report_obj.get('labels', []))),
+            "stixid": report_obj.get("id"),
+            "firstseenbysource": report_obj.get("created"),
+            "published": report_obj.get("published"),
+            "description": report_obj.get("description", ""),
+            "report_types": report_obj.get("report_types", []),
+            "tags": list(set(report_obj.get("labels", []))),
         }
 
-        report['customFields'] = fields
+        report["customFields"] = fields
 
         return [report], new_relationships
 
@@ -353,28 +379,28 @@ class STIX2Parser:
         """
 
         threat_actor = {
-            "value": threat_actor_obj.get('name'),
+            "value": threat_actor_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.THREAT_ACTOR,
             "score": ThreatIntel.ObjectsScore.THREAT_ACTOR,
-            "rawJSON": threat_actor_obj
+            "rawJSON": threat_actor_obj,
         }
         fields = {
-            'stixid': threat_actor_obj.get('id'),
-            "firstseenbysource": threat_actor_obj.get('created'),
-            "modified": threat_actor_obj.get('modified'),
-            'description': threat_actor_obj.get('description', ''),
-            'aliases': threat_actor_obj.get("aliases", []),
-            "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
-            'roles': threat_actor_obj.get("roles", []),
-            'goals': threat_actor_obj.get("goals", []),
-            'sophistication': threat_actor_obj.get("sophistication", ''),
-            "resource_level": threat_actor_obj.get('resource_level', ''),
-            "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
-            "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
-            "tags": list(set(threat_actor_obj.get('labels', []))),
+            "stixid": threat_actor_obj.get("id"),
+            "firstseenbysource": threat_actor_obj.get("created"),
+            "modified": threat_actor_obj.get("modified"),
+            "description": threat_actor_obj.get("description", ""),
+            "aliases": threat_actor_obj.get("aliases", []),
+            "threat_actor_types": threat_actor_obj.get("threat_actor_types", []),
+            "roles": threat_actor_obj.get("roles", []),
+            "goals": threat_actor_obj.get("goals", []),
+            "sophistication": threat_actor_obj.get("sophistication", ""),
+            "resource_level": threat_actor_obj.get("resource_level", ""),
+            "primary_motivation": threat_actor_obj.get("primary_motivation", ""),
+            "secondary_motivations": threat_actor_obj.get("secondary_motivations", []),
+            "tags": list(set(threat_actor_obj.get("labels", []))),
         }
 
-        threat_actor['customFields'] = fields
+        threat_actor["customFields"] = fields
 
         return [threat_actor]
 
@@ -385,27 +411,26 @@ class STIX2Parser:
         :param infrastructure_obj: infrastructure object
         :return: infrastructure extracted from the infrastructure object in cortex format
         """
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in infrastructure_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in infrastructure_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         infrastructure = {
-            "value": infrastructure_obj.get('name'),
+            "value": infrastructure_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
             "score": ThreatIntel.ObjectsScore.INFRASTRUCTURE,
-            "rawJSON": infrastructure_obj
-
+            "rawJSON": infrastructure_obj,
         }
         fields = {
-            "stixid": infrastructure_obj.get('id'),
-            "description": infrastructure_obj.get('description', ''),
+            "stixid": infrastructure_obj.get("id"),
+            "description": infrastructure_obj.get("description", ""),
             "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
-            "aliases": infrastructure_obj.get('aliases', []),
+            "aliases": infrastructure_obj.get("aliases", []),
             "kill_chain_phases": kill_chain_phases,
-            "firstseenbysource": infrastructure_obj.get('created'),
-            "modified": infrastructure_obj.get('modified'),
+            "firstseenbysource": infrastructure_obj.get("created"),
+            "modified": infrastructure_obj.get("modified"),
         }
 
-        infrastructure['customFields'] = fields
+        infrastructure["customFields"] = fields
         return [infrastructure]
 
     @staticmethod
@@ -416,32 +441,32 @@ class STIX2Parser:
         :return: malware extracted from the malware object in cortex format
         """
 
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in malware_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in malware_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         malware = {
-            "value": malware_obj.get('name'),
+            "value": malware_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.MALWARE,
             "score": ThreatIntel.ObjectsScore.MALWARE,
-            "rawJSON": malware_obj
+            "rawJSON": malware_obj,
         }
         fields = {
-            'stixid': malware_obj.get('id'),
-            "firstseenbysource": malware_obj.get('created'),
-            "modified": malware_obj.get('modified'),
-            "description": malware_obj.get('description', ''),
-            "malware_types": malware_obj.get('malware_types', []),
-            "is_family": malware_obj.get('is_family', False),
-            "aliases": malware_obj.get('aliases', []),
+            "stixid": malware_obj.get("id"),
+            "firstseenbysource": malware_obj.get("created"),
+            "modified": malware_obj.get("modified"),
+            "description": malware_obj.get("description", ""),
+            "malware_types": malware_obj.get("malware_types", []),
+            "is_family": malware_obj.get("is_family", False),
+            "aliases": malware_obj.get("aliases", []),
             "kill_chain_phases": kill_chain_phases,
-            "os_execution_envs": malware_obj.get('os_execution_envs', []),
-            "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
-            "capabilities": malware_obj.get('capabilities', []),
-            "sample_refs": malware_obj.get('sample_refs', []),
-            "tags": list((set(malware_obj.get('labels', [])))),
+            "os_execution_envs": malware_obj.get("os_execution_envs", []),
+            "architecture_execution_envs": malware_obj.get("architecture_execution_envs", []),
+            "capabilities": malware_obj.get("capabilities", []),
+            "sample_refs": malware_obj.get("sample_refs", []),
+            "tags": list(set(malware_obj.get("labels", []))),
         }
 
-        malware['customFields'] = fields
+        malware["customFields"] = fields
         return [malware]
 
     @staticmethod
@@ -451,27 +476,27 @@ class STIX2Parser:
         :param tool_obj: tool object
         :return: tool extracted from the tool object in cortex format
         """
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in tool_obj.get('kill_chain_phases', [])]
+        kill_chain_mitre = [chain.get("phase_name", "") for chain in tool_obj.get("kill_chain_phases", [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         tool = {
-            "value": tool_obj.get('name'),
+            "value": tool_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.TOOL,
             "score": ThreatIntel.ObjectsScore.TOOL,
-            "rawJSON": tool_obj
+            "rawJSON": tool_obj,
         }
         fields = {
-            'stixid': tool_obj.get('id'),
+            "stixid": tool_obj.get("id"),
             "killchainphases": kill_chain_phases,
-            "firstseenbysource": tool_obj.get('created'),
-            "modified": tool_obj.get('modified'),
+            "firstseenbysource": tool_obj.get("created"),
+            "modified": tool_obj.get("modified"),
             "tool_types": tool_obj.get("tool_types", []),
-            "description": tool_obj.get('description', ''),
-            "aliases": tool_obj.get('aliases', []),
-            "tool_version": tool_obj.get('tool_version', ''),
+            "description": tool_obj.get("description", ""),
+            "aliases": tool_obj.get("aliases", []),
+            "tool_version": tool_obj.get("tool_version", ""),
         }
 
-        tool['customFields'] = fields
+        tool["customFields"] = fields
         return [tool]
 
     @staticmethod
@@ -484,21 +509,21 @@ class STIX2Parser:
         publications = STIX2Parser.get_indicator_publication(coa_obj)
 
         course_of_action = {
-            "value": coa_obj.get('name'),
+            "value": coa_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
             "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
             "rawJSON": coa_obj,
         }
         fields = {
-            'stixid': coa_obj.get('id'),
-            "firstseenbysource": coa_obj.get('created'),
-            "modified": coa_obj.get('modified'),
-            'description': coa_obj.get('description', ''),
-            "action_type": coa_obj.get('action_type', ''),
+            "stixid": coa_obj.get("id"),
+            "firstseenbysource": coa_obj.get("created"),
+            "modified": coa_obj.get("modified"),
+            "description": coa_obj.get("description", ""),
+            "action_type": coa_obj.get("action_type", ""),
             "publications": publications,
         }
 
-        course_of_action['customFields'] = fields
+        course_of_action["customFields"] = fields
         return [course_of_action]
 
     @staticmethod
@@ -509,21 +534,21 @@ class STIX2Parser:
         :return: campaign extracted from the campaign object in cortex format
         """
         campaign = {
-            "value": campaign_obj.get('name'),
+            "value": campaign_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.CAMPAIGN,
             "score": ThreatIntel.ObjectsScore.CAMPAIGN,
-            "rawJSON": campaign_obj
+            "rawJSON": campaign_obj,
         }
         fields = {
-            'stixid': campaign_obj.get('id'),
-            "firstseenbysource": campaign_obj.get('created'),
-            "modified": campaign_obj.get('modified'),
-            'description': campaign_obj.get('description', ''),
-            "aliases": campaign_obj.get('aliases', []),
-            "objective": campaign_obj.get('objective', ''),
+            "stixid": campaign_obj.get("id"),
+            "firstseenbysource": campaign_obj.get("created"),
+            "modified": campaign_obj.get("modified"),
+            "description": campaign_obj.get("description", ""),
+            "aliases": campaign_obj.get("aliases", []),
+            "objective": campaign_obj.get("objective", ""),
         }
 
-        campaign['customFields'] = fields
+        campaign["customFields"] = fields
         return [campaign]
 
     @staticmethod
@@ -536,28 +561,28 @@ class STIX2Parser:
         publications = STIX2Parser.get_indicator_publication(intrusion_set_obj)
 
         intrusion_set = {
-            "value": intrusion_set_obj.get('name'),
+            "value": intrusion_set_obj.get("name"),
             "indicator_type": ThreatIntel.ObjectsNames.INTRUSION_SET,
             "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
-            "rawJSON": intrusion_set_obj
+            "rawJSON": intrusion_set_obj,
         }
         fields = {
-            'stixid': intrusion_set_obj.get('id'),
-            "firstseenbysource": intrusion_set_obj.get('created'),
-            "modified": intrusion_set_obj.get('modified'),
-            'description': intrusion_set_obj.get('description', ''),
-            "aliases": intrusion_set_obj.get('aliases', []),
-            "goals": intrusion_set_obj.get('goals', []),
-            "resource_level": intrusion_set_obj.get('resource_level', ''),
-            "primary_motivation": intrusion_set_obj.get('primary_motivation', ''),
-            "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
+            "stixid": intrusion_set_obj.get("id"),
+            "firstseenbysource": intrusion_set_obj.get("created"),
+            "modified": intrusion_set_obj.get("modified"),
+            "description": intrusion_set_obj.get("description", ""),
+            "aliases": intrusion_set_obj.get("aliases", []),
+            "goals": intrusion_set_obj.get("goals", []),
+            "resource_level": intrusion_set_obj.get("resource_level", ""),
+            "primary_motivation": intrusion_set_obj.get("primary_motivation", ""),
+            "secondary_motivations": intrusion_set_obj.get("secondary_motivations", []),
             "publications": publications,
         }
-        intrusion_set['customFields'] = fields
+        intrusion_set["customFields"] = fields
         return [intrusion_set]
 
     @staticmethod
-    def parse_general_sco_indicator(sco_object: Dict[str, Any], value_mapping: str = 'value') -> List[Dict[str, Any]]:
+    def parse_general_sco_indicator(sco_object: Dict[str, Any], value_mapping: str = "value") -> List[Dict[str, Any]]:
         """
         Parses a single SCO indicator.
 
@@ -566,17 +591,15 @@ class STIX2Parser:
             value_mapping (str): the key that extracts the value from the indicator response.
         """
         sco_indicator = {
-            'value': sco_object.get(value_mapping),
-            'score': Common.DBotScore.NONE,
-            'rawJSON': sco_object,
-            'indicator_type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
+            "value": sco_object.get(value_mapping),
+            "score": Common.DBotScore.NONE,
+            "rawJSON": sco_object,
+            "indicator_type": STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get("type")),  # type: ignore[arg-type]
         }
 
-        fields = {
-            'stixid': sco_object.get('id')
-        }
+        fields = {"stixid": sco_object.get("id")}
 
-        sco_indicator['customFields'] = fields
+        sco_indicator["customFields"] = fields
         return [sco_indicator]
 
     @staticmethod
@@ -587,9 +610,8 @@ class STIX2Parser:
         Args:
             autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
         """
-        autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(autonomous_system_obj,
-                                                                              value_mapping='number')
-        autonomous_system_indicator[0]['customFields']['name'] = autonomous_system_obj.get('name')
+        autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(autonomous_system_obj, value_mapping="number")
+        autonomous_system_indicator[0]["customFields"]["name"] = autonomous_system_obj.get("name")
 
         return autonomous_system_indicator
 
@@ -601,22 +623,22 @@ class STIX2Parser:
         Args:
             file_obj (dict): indicator as an observable object of file type.
         """
-        file_hashes = file_obj.get('hashes', {})
-        value = file_hashes.get('SHA-256') or file_hashes.get('SHA-1') or file_hashes.get('MD5')
+        file_hashes = file_obj.get("hashes", {})
+        value = file_hashes.get("SHA-256") or file_hashes.get("SHA-1") or file_hashes.get("MD5")
         if not value:
             return []
 
-        file_obj['value'] = value
+        file_obj["value"] = value
 
         file_indicator = STIX2Parser.parse_general_sco_indicator(file_obj)
-        file_indicator[0]['customFields'].update(
+        file_indicator[0]["customFields"].update(
             {
-                'associatedfilenames': file_obj.get('name'),
-                'size': file_obj.get('size'),
-                'path': file_obj.get('parent_directory_ref'),
-                'md5': file_hashes.get('MD5'),
-                'sha1': file_hashes.get('SHA-1'),
-                'sha256': file_hashes.get('SHA-256')
+                "associatedfilenames": file_obj.get("name"),
+                "size": file_obj.get("size"),
+                "path": file_obj.get("parent_directory_ref"),
+                "md5": file_hashes.get("MD5"),
+                "sha1": file_hashes.get("SHA-1"),
+                "sha256": file_hashes.get("SHA-256"),
             }
         )
 
@@ -630,7 +652,7 @@ class STIX2Parser:
         Args:
             mutex_obj (dict): indicator as an observable object of mutex type.
         """
-        return STIX2Parser.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping='name')
+        return STIX2Parser.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping="name")
 
     @staticmethod
     def parse_sco_account_indicator(account_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -640,12 +662,9 @@ class STIX2Parser:
         Args:
             account_obj (dict): indicator as an observable object of account type.
         """
-        account_indicator = STIX2Parser.parse_general_sco_indicator(account_obj, value_mapping='user_id')
-        account_indicator[0]['customFields'].update(
-            {
-                'displayname': account_obj.get('user_id'),
-                'accounttype': account_obj.get('account_type')
-            }
+        account_indicator = STIX2Parser.parse_general_sco_indicator(account_obj, value_mapping="user_id")
+        account_indicator[0]["customFields"].update(
+            {"displayname": account_obj.get("user_id"), "accounttype": account_obj.get("account_type")}
         )
         return account_indicator
 
@@ -657,12 +676,12 @@ class STIX2Parser:
         Args:
             registry_key_obj (dict): indicator as an observable object of registry_key type.
         """
-        registry_key_indicator = STIX2Parser.parse_general_sco_indicator(registry_key_obj, value_mapping='key')
-        registry_key_indicator[0]['customFields'].update(
+        registry_key_indicator = STIX2Parser.parse_general_sco_indicator(registry_key_obj, value_mapping="key")
+        registry_key_indicator[0]["customFields"].update(
             {
-                'registryvalue': registry_key_obj.get('values'),
-                'modified_time': registry_key_obj.get('modified_time'),
-                'number_of_subkeys': registry_key_obj.get('number_of_subkeys')
+                "registryvalue": registry_key_obj.get("values"),
+                "modified_time": registry_key_obj.get("modified_time"),
+                "number_of_subkeys": registry_key_obj.get("number_of_subkeys"),
             }
         )
         return registry_key_indicator
@@ -673,42 +692,44 @@ class STIX2Parser:
         Returns:
             A dict of relationship value to processed relationships as indicator object.
         """
-        a_value_to_relationship: Dict[str, Any] = dict()
+        a_value_to_relationship: Dict[str, Any] = {}
         for relationships_object in relationships_lst:
-            relationship_type = relationships_object.get('relationship_type')
-            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():
-                if relationship_type == 'indicates':
-                    relationship_type = 'indicated-by'
+            relationship_type = relationships_object.get("relationship_type")
+            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES:
+                if relationship_type == "indicates":
+                    relationship_type = "indicated-by"
                 else:
                     demisto.debug(f"Invalid relation type: {relationship_type}")
                     continue
 
-            a_stixid = relationships_object.get('source_ref', '')
+            a_stixid = relationships_object.get("source_ref", "")
             a_object = self.parsed_object_id_to_object.get(a_stixid, {})
-            b_stixid = relationships_object.get('target_ref', '')
+            b_stixid = relationships_object.get("target_ref", "")
             b_object = self.parsed_object_id_to_object.get(b_stixid, {})
 
             if not a_object or not b_object:
-                demisto.debug(f'Cant find {a_object=} or {b_object=}.')
+                demisto.debug(f"Cant find {a_object=} or {b_object=}.")
                 continue
 
-            a_value, a_type = a_object.get('value'), a_object.get('indicator_type')
-            b_value, b_type = b_object.get('value'), b_object.get('indicator_type')
+            a_value, a_type = a_object.get("value"), a_object.get("indicator_type")
+            b_value, b_type = b_object.get("value"), b_object.get("indicator_type")
 
             if not (a_value and a_type and b_value and b_type):
                 continue
 
             mapping_fields = {
-                'lastseenbysource': relationships_object.get('modified'),
-                'firstseenbysource': relationships_object.get('created'),
+                "lastseenbysource": relationships_object.get("modified"),
+                "firstseenbysource": relationships_object.get("created"),
             }
 
-            entity_relation = EntityRelationship(name=relationship_type,
-                                                 entity_a=a_value,
-                                                 entity_a_type=a_type,
-                                                 entity_b=b_value,
-                                                 entity_b_type=b_type,
-                                                 fields=mapping_fields)
+            entity_relation = EntityRelationship(
+                name=relationship_type,
+                entity_a=a_value,
+                entity_a_type=a_type,
+                entity_b=b_value,
+                entity_b_type=b_type,
+                fields=mapping_fields,
+            )
             indicator_relationship = entity_relation.to_indicator()
             if a_value_to_relationship.get(a_value):
                 a_value_to_relationship[a_value].append(indicator_relationship)
@@ -722,8 +743,8 @@ class STIX2Parser:
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :return: Cortex indicators list
         """
-        if js_content.get('objects'):
-            envelopes = STIX2Parser.create_envelopes_by_type(js_content['objects'])
+        if js_content.get("objects"):
+            envelopes = STIX2Parser.create_envelopes_by_type(js_content["objects"])
         else:
             envelopes = STIX2Parser.create_envelopes_by_type([js_content])
         indicators = self.load_stix_objects_from_envelope(envelopes)
@@ -731,7 +752,6 @@ class STIX2Parser:
         return indicators
 
     def load_stix_objects_from_envelope(self, envelopes: Dict[str, Any]):
-
         parse_stix_2_objects = {
             "indicator": self.parse_indicator,
             "attack-pattern": self.parse_attack_pattern,
@@ -752,32 +772,28 @@ class STIX2Parser:
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
             "user-account": self.parse_sco_account_indicator,
-            "windows-registry-key": self.parse_sco_windows_registry_key_indicator
+            "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
         }
         indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
-        demisto.debug(
-            f"{SCRIPT_NAME} has extracted {len(indicators)} indicators"
-        )
+        demisto.debug(f"{SCRIPT_NAME} has extracted {len(indicators)} indicators")
         return indicators
 
-    def parse_dict_envelope(self, envelopes: Dict[str, Any],
-                            parse_objects_func):
+    def parse_dict_envelope(self, envelopes: Dict[str, Any], parse_objects_func):
         indicators = []
         relationships_list: List[Dict[str, Any]] = []
 
-        xsoar_taxii_server_extensions = self.get_taxii2_extensions_from_envelope(
-            envelopes.get('extension-definition', []))
+        xsoar_taxii_server_extensions = self.get_taxii2_extensions_from_envelope(envelopes.get("extension-definition", []))
 
         for obj_type, stix_objects in envelopes.items():
-            if obj_type == 'relationship':
+            if obj_type == "relationship":
                 relationships_list.extend(stix_objects)
             else:
                 for obj in stix_objects:
                     # handled separately
-                    if obj.get('type') == 'extension-definition':
+                    if obj.get("type") == "extension-definition":
                         continue
-                    self.id_to_object[obj.get('id')] = obj
-                    if obj.get('type') == 'report':
+                    self.id_to_object[obj.get("id")] = obj
+                    if obj.get("type") == "report":
                         result, relationships = self.parse_report(obj)
                         relationships_list.extend(relationships)
                     else:
@@ -785,7 +801,7 @@ class STIX2Parser:
                     if not result:
                         continue
                     self.update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result)
-                    self.parsed_object_id_to_object[obj.get('id')] = result[0]
+                    self.parsed_object_id_to_object[obj.get("id")] = result[0]
                     indicators.extend(result)
 
         if relationships_list:
@@ -801,9 +817,9 @@ class STIX2Parser:
         types_envelopes: dict = {}
         index = 0
         for obj in objects:
-            obj_type = obj.get('type')
+            obj_type = obj.get("type")
             if obj_type not in STIX2Parser.OBJECTS_TO_PARSE:
-                demisto.debug(f'Cannot parse object of type {obj_type}, skipping.')
+                demisto.debug(f"Cannot parse object of type {obj_type}, skipping.")
                 index += 1
                 continue
             if obj_type not in types_envelopes:
@@ -814,10 +830,10 @@ class STIX2Parser:
 
     @staticmethod
     def get_indicators_from_indicator_groups(
-            indicator_groups: List[Tuple[str, str]],
-            indicator_obj: Dict[str, str],
-            indicator_types: Dict[str, str],
-            field_map: Dict[str, str],
+        indicator_groups: List[tuple[str, str]],
+        indicator_obj: Dict[str, str],
+        indicator_types: Dict[str, str],
+        field_map: Dict[str, str],
     ) -> List[Dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -830,18 +846,16 @@ class STIX2Parser:
         indicators = []
         if indicator_groups:
             for term in indicator_groups:
-                for taxii_type in indicator_types.keys():
+                for taxii_type in indicator_types:
                     # term should be list with 2 argument parsed with regex - [`type`, `indicator`]
                     if len(term) == 2 and taxii_type in term[0]:
                         type_ = indicator_types[taxii_type]
                         value = term[1]
 
                         # support added for cases as 'value1','value2','value3' for 3 different indicators
-                        for indicator_value in value.split(','):
+                        for indicator_value in value.split(","):
                             indicator_value = indicator_value.strip("'")
-                            indicator = STIX2Parser.create_indicator(
-                                indicator_obj, type_, indicator_value.strip("'"), field_map
-                            )
+                            indicator = STIX2Parser.create_indicator(indicator_obj, type_, indicator_value.strip("'"), field_map)
                             indicators.append(indicator)
                         break
         return indicators
@@ -889,20 +903,18 @@ class STIX2Parser:
 
         fields["tags"] = tags
 
-        indicator['customFields'] = fields
+        indicator["customFields"] = fields
         return indicator
 
     @staticmethod
-    def extract_indicator_groups_from_pattern(
-            pattern: str, regexes: List
-    ) -> List[Tuple[str, str]]:
+    def extract_indicator_groups_from_pattern(pattern: str, regexes: List) -> List[tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
         :param pattern: stix pattern
         :param regexes: regexes to run to pattern
         :return: extracted indicators list from pattern
         """
-        groups: List[Tuple[str, str]] = []
+        groups: List[tuple[str, str]] = []
         for regex in regexes:
             find_result = regex.findall(pattern)
             if find_result:
@@ -917,9 +929,8 @@ class STIX2Parser:
         :param indicators: all indicators that were fetched from file.
         """
         for indicator in indicators:
-            if a_value := indicator.get('value'):
-                if relationships := relationships_mapping.get(a_value):
-                    indicator['relationships'] = relationships
+            if (a_value := indicator.get("value")) and (relationships := relationships_mapping.get(a_value)):
+                indicator["relationships"] = relationships
 
     @staticmethod
     def update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result):
@@ -931,19 +942,19 @@ class STIX2Parser:
         :return: updated xsoar indicator
         """
         parsed_result = result[0]
-        if extensions := obj.get('extensions'):
-            custom_fields = parsed_result.get('customFields', {})
+        if extensions := obj.get("extensions"):
+            custom_fields = parsed_result.get("customFields", {})
             for ext_id, extension in extensions.items():
                 if ext_id in xsoar_taxii_server_extensions:
-                    extension.pop('extension_type')
+                    extension.pop("extension_type")
                     for field, value in extension.items():
                         if field in SYSTEM_FIELDS:
                             parsed_result[field] = value
-                        elif field.lower() == 'customfields':
+                        elif field.lower() == "customfields":
                             custom_fields.update(value)
                         else:
                             custom_fields[field] = value
-                    parsed_result['customFields'] = custom_fields
+                    parsed_result["customFields"] = custom_fields
 
     @staticmethod
     def get_taxii2_extensions_from_envelope(stix_objects):
@@ -953,9 +964,10 @@ class STIX2Parser:
         """
         xsoar_taxii_server_extensions = []
         for obj in stix_objects:
-            if obj.get('schema') == XSOAR_TAXII2_SERVER_SCHEMA:
-                xsoar_taxii_server_extensions.append(obj.get('id'))
+            if obj.get("schema") == XSOAR_TAXII2_SERVER_SCHEMA:
+                xsoar_taxii_server_extensions.append(obj.get("id"))
         return xsoar_taxii_server_extensions
+
 
 # STIX 1 Parsing
 
@@ -964,52 +976,52 @@ def package_extract_properties(package):
     """Extracts properties from the STIX package"""
     result: Dict[str, str] = {}
 
-    header = package.find_all('STIX_Header')
+    header = package.find_all("STIX_Header")
     if len(header) == 0:
         return result
 
     # share level
-    mstructures = header[0].find_all('Marking_Structure')
+    mstructures = header[0].find_all("Marking_Structure")
     for ms in mstructures:
-        type_ = ms.get('xsi:type')
+        type_ = ms.get("xsi:type")
         if type_ is result:
             continue
 
-        color = ms.get('color')
+        color = ms.get("color")
         if color is result:
             continue
 
         type_ = type_.lower()
-        if 'tlpmarkingstructuretype' not in type_:
+        if "tlpmarkingstructuretype" not in type_:
             continue
 
-        result['share_level'] = color.lower()  # To keep backward compatibility
-        result['TLP'] = color.upper()  # https://www.us-cert.gov/tlp
+        result["share_level"] = color.lower()  # To keep backward compatibility
+        result["TLP"] = color.upper()  # https://www.us-cert.gov/tlp
         break
 
     # decode title
-    title = next((c for c in header[0] if c.name == 'Title'), None)
+    title = next((c for c in header[0] if c.name == "Title"), None)
     if title is not None:
-        result['stix_package_title'] = title.text
+        result["stix_package_title"] = title.text
 
     # decode description
-    description = next((c for c in header[0] if c.name == 'Description'), None)
+    description = next((c for c in header[0] if c.name == "Description"), None)
     if description is not None:
-        result['stix_package_description'] = description.text
+        result["stix_package_description"] = description.text
 
     # decode description
-    sdescription = next((c for c in header[0] if c.name == 'Short_Description'), None)
+    sdescription = next((c for c in header[0] if c.name == "Short_Description"), None)
     if sdescription is not None:
-        result['stix_package_short_description'] = sdescription.text
+        result["stix_package_short_description"] = sdescription.text
 
     # decode identity name from information_source
-    information_source = next((c for c in header[0] if c.name == 'Information_Source'), None)
+    information_source = next((c for c in header[0] if c.name == "Information_Source"), None)
     if information_source is not None:
-        identity = next((c for c in information_source if c.name == 'Identity'), None)
+        identity = next((c for c in information_source if c.name == "Identity"), None)
         if identity is not None:
-            name = next((c for c in identity if c.name == 'Name'))
+            name = next(c for c in identity if c.name == "Name")
             if name is not None:
-                result['stix_package_information_source'] = name.text
+                result["stix_package_information_source"] = name.text
 
     return result
 
@@ -1018,18 +1030,18 @@ def observable_extract_properties(observable):
     """Extracts properties from observable"""
     result = {}
 
-    if id_ref := observable.get('id'):
-        result['indicator_ref'] = id_ref
+    if id_ref := observable.get("id"):
+        result["indicator_ref"] = id_ref
 
-    title = next((c for c in observable if c.name == 'Title'), None)
+    title = next((c for c in observable if c.name == "Title"), None)
     if title is not None:
         title = title.text
-        result['stix_title'] = title
+        result["stix_title"] = title
 
-    description = next((c for c in observable if c.name == 'Description'), None)
+    description = next((c for c in observable if c.name == "Description"), None)
     if description is not None:
         description = description.text
-        result['stix_description'] = description
+        result["stix_description"] = description
 
     return result
 
@@ -1047,31 +1059,31 @@ def indicator_extract_properties(indicator) -> Dict[str, Any]:
 
     result: Dict[str, Any] = {}
 
-    title = next((c for c in indicator if c.name == 'Title'), None)
+    title = next((c for c in indicator if c.name == "Title"), None)
     if title is not None:
         title = title.text
-        result['stix_indicator_name'] = title
+        result["stix_indicator_name"] = title
 
-    description = next((c for c in indicator if c.name == 'Description'), None)
+    description = next((c for c in indicator if c.name == "Description"), None)
     if description is not None:
         description = description.text
-        result['stix_indicator_description'] = description
+        result["stix_indicator_description"] = description
 
-    confidence = next((c for c in indicator if c.name == 'Confidence'), None)
+    confidence = next((c for c in indicator if c.name == "Confidence"), None)
     if confidence is not None:
-        value = next((c for c in confidence if c.name == 'Value'), None)
+        value = next((c for c in confidence if c.name == "Value"), None)
         if value is not None:
             value = value.text
-            result['confidence'] = value
+            result["confidence"] = value
 
-    if indicated_ttp := indicator.find_all('Indicated_TTP'):
-        result['ttp_ref'] = []
+    if indicated_ttp := indicator.find_all("Indicated_TTP"):
+        result["ttp_ref"] = []
         # Each indicator can be related to few ttps
         for ttp_value in indicated_ttp:
-            ttp = next((c for c in ttp_value if c.name == 'TTP'), None)
+            ttp = next((c for c in ttp_value if c.name == "TTP"), None)
             if ttp is not None:
-                value = ttp.get('idref')
-                result['ttp_ref'].append(value)
+                value = ttp.get("idref")
+                result["ttp_ref"].append(value)
 
     return result
 
@@ -1088,44 +1100,44 @@ def ttp_extract_properties(ttp, behavior) -> Dict[str, str]:
 
     """
 
-    result = {'type': behavior}
+    result = {"type": behavior}
 
-    if behavior == 'Malware':
-        type_ = next((c for c in ttp if c.name == 'Type'), None)
+    if behavior == "Malware":
+        type_ = next((c for c in ttp if c.name == "Type"), None)
         if type_ is not None:
             type_ = type_.text
-            result['malware_type'] = type_
+            result["malware_type"] = type_
 
-        name = next((c for c in ttp if c.name == 'Name'), None)
+        name = next((c for c in ttp if c.name == "Name"), None)
         if name is not None:
             name = name.text
-            result['indicator'] = name
+            result["indicator"] = name
 
-        title = next((c for c in ttp if c.name == 'Title'), None)
+        title = next((c for c in ttp if c.name == "Title"), None)
         if title is not None:
             title = title.text
-            result['title'] = title
+            result["title"] = title
 
-    if behavior == 'Attack Pattern':
-        id_ref = next((c for c in ttp if c.name == 'idref'), None)
+    if behavior == "Attack Pattern":
+        id_ref = next((c for c in ttp if c.name == "idref"), None)
         if id_ref is not None:
             id_ref = id_ref.text
-            result['stix_id_ref'] = id_ref
+            result["stix_id_ref"] = id_ref
 
-        title = next((c for c in ttp if c.name == 'Title'), None)
+        title = next((c for c in ttp if c.name == "Title"), None)
         if title is not None:
             title = title.text
-            result['indicator'] = title
+            result["indicator"] = title
 
-    description = next((c for c in ttp if c.name == 'Description'), None)
+    description = next((c for c in ttp if c.name == "Description"), None)
     if description is not None:
         description = description.text
-        result['description'] = description
+        result["description"] = description
 
-    short_description = next((c for c in ttp if c.name == 'Short_Description'), None)
+    short_description = next((c for c in ttp if c.name == "Short_Description"), None)
     if short_description is not None:
         short_description = short_description.text
-        result['short_description'] = short_description
+        result["short_description"] = short_description
 
     return result
 
@@ -1133,25 +1145,27 @@ def ttp_extract_properties(ttp, behavior) -> Dict[str, str]:
 def create_relationships(indicator):
     results = []
 
-    for relationship in indicator.get('relationships', {}):
-        if relationship.get('type') == 'Malware':
-            name = 'indicator-of'
-            relationship_type = 'Malware'
+    for relationship in indicator.get("relationships", {}):
+        if relationship.get("type") == "Malware":
+            name = "indicator-of"
+            relationship_type = "Malware"
         else:
-            name = 'related-to'
-            relationship_type = 'Attack Pattern'
+            name = "related-to"
+            relationship_type = "Attack Pattern"
 
-        entity_relationship = EntityRelationship(name=name,
-                                                 entity_a=indicator.get('value'),
-                                                 entity_a_type=indicator.get('type'),
-                                                 entity_b=relationship.get('indicator'),
-                                                 entity_b_type=relationship_type)
+        entity_relationship = EntityRelationship(
+            name=name,
+            entity_a=indicator.get("value"),
+            entity_a_type=indicator.get("type"),
+            entity_b=relationship.get("indicator"),
+            entity_b_type=relationship_type,
+        )
         results.append(entity_relationship.to_indicator())
 
     return results
 
 
-class AddressObject(object):
+class AddressObject:
     """
     Implements address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
@@ -1161,35 +1175,35 @@ class AddressObject(object):
     def decode(props, **kwargs):
         result: List[Dict[str, str]] = []
 
-        indicator = props.find('Address_Value')
+        indicator = props.find("Address_Value")
         if indicator is None:
             return result
 
-        indicator = indicator.string.encode('ascii', 'replace').decode()
-        category = props.get('category', None)
-        address_list = indicator.split('##comma##')
+        indicator = indicator.string.encode("ascii", "replace").decode()
+        category = props.get("category", None)
+        address_list = indicator.split("##comma##")
 
-        if category == 'e-mail':
-            return [{'indicator': address, 'type': 'Email'} for address in address_list]
+        if category == "e-mail":
+            return [{"indicator": address, "type": "Email"} for address in address_list]
 
         try:
             for address in address_list:
                 ip = IPNetwork(address)
                 if ip.version == 4:
-                    if len(address.split('/')) > 1:
-                        type_ = 'CIDR'
+                    if len(address.split("/")) > 1:
+                        type_ = "CIDR"
                     else:
-                        type_ = 'IP'
+                        type_ = "IP"
                 elif ip.version == 6:
-                    if len(address.split('/')) > 1:
-                        type_ = 'IPv6CIDR'
+                    if len(address.split("/")) > 1:
+                        type_ = "IPv6CIDR"
                     else:
-                        type_ = 'IPv6'
+                        type_ = "IPv6"
                 else:
-                    LOG('Unknown ip version: {!r}'.format(ip.version))
+                    LOG(f"Unknown ip version: {ip.version!r}")
                     return []
 
-                result.append({'indicator': address, 'type': type_})
+                result.append({"indicator": address, "type": type_})
 
         except Exception:
             return result
@@ -1197,7 +1211,7 @@ class AddressObject(object):
         return result
 
 
-class DomainNameObject(object):
+class DomainNameObject:
     """
     Implements domain object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
@@ -1206,22 +1220,19 @@ class DomainNameObject(object):
     @staticmethod
     def decode(props, **kwargs):
         domains = []
-        dtype = props.get('type', 'FQDN')
-        if dtype != 'FQDN':
+        dtype = props.get("type", "FQDN")
+        if dtype != "FQDN":
             return []
 
-        if domain_value := props.find('Value'):
-            domain_list = domain_value.string.split('##comma##')
+        if domain_value := props.find("Value"):
+            domain_list = domain_value.string.split("##comma##")
             for domain in domain_list:
-                domains.append({
-                    'indicator': domain,
-                    'type': 'Domain'
-                })
+                domains.append({"indicator": domain, "type": "Domain"})
 
         return domains
 
 
-class FileObject(object):
+class FileObject:
     """
     Implements file object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
@@ -1231,17 +1242,17 @@ class FileObject(object):
     def _decode_basic_props(props):
         result = {}
 
-        name = next((c for c in props if c.name == 'File_Name'), None)
+        name = next((c for c in props if c.name == "File_Name"), None)
         if name is not None:
-            result['stix_file_name'] = name.text
+            result["stix_file_name"] = name.text
 
-        size = next((c for c in props if c.name == 'File_Size'), None)
+        size = next((c for c in props if c.name == "File_Size"), None)
         if size is not None:
-            result['stix_file_size'] = size.text
+            result["stix_file_size"] = size.text
 
-        file_format = next((c for c in props if c.name == 'File_Format'), None)
+        file_format = next((c for c in props if c.name == "File_Format"), None)
         if file_format is not None:
-            result['stix_file_format'] = file_format.text
+            result["stix_file_format"] = file_format.text
 
         return result
 
@@ -1251,35 +1262,31 @@ class FileObject(object):
 
         bprops = FileObject._decode_basic_props(props)
 
-        hashes = props.find_all('Hash')
+        hashes = props.find_all("Hash")
         for h in hashes:
-            value = h.find('Simple_Hash_Value')
+            value = h.find("Simple_Hash_Value")
             if value is None:
                 continue
             value = value.string.lower()
-            value_list = value.split('##comma##')
+            value_list = value.split("##comma##")
             for v in value_list:
                 v = v.strip()
                 if type := detect_file_indicator_type(v):
-                    result.append({
-                        'indicator': v,
-                        'htype': type,
-                        'type': 'File'
-                    })
+                    result.append({"indicator": v, "htype": type, "type": "File"})
 
         for r in result:
             for r2 in result:
-                if r['htype'] == r2['htype']:
+                if r["htype"] == r2["htype"]:
                     continue
 
-                r[f"stix_file_{r2['htype']}"] = r2['indicator']
+                r[f"stix_file_{r2['htype']}"] = r2["indicator"]
 
             r.update(bprops)
 
         return result
 
 
-class URIObject(object):
+class URIObject:
     """
     Implements URI object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
@@ -1288,26 +1295,23 @@ class URIObject(object):
     @staticmethod
     def decode(props, **kwargs):
         urls = []
-        utype = props.get('type', 'URL')
-        if utype == 'URL':
-            type_ = 'URL'
-        elif utype == 'Domain Name':
-            type_ = 'Domain'
+        utype = props.get("type", "URL")
+        if utype == "URL":
+            type_ = "URL"
+        elif utype == "Domain Name":
+            type_ = "Domain"
         else:
             return []
 
-        if url_value := props.find('Value'):
-            url_list = url_value.string.split('##comma##')
+        if url_value := props.find("Value"):
+            url_list = url_value.string.split("##comma##")
             for url in url_list:
-                urls.append({
-                    'indicator': url,
-                    'type': type_
-                })
+                urls.append({"indicator": url, "type": type_})
 
         return urls
 
 
-class SocketAddressObject(object):
+class SocketAddressObject:
     """
     Implements socket address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
@@ -1315,13 +1319,13 @@ class SocketAddressObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
-        ip = props.get('ip_address', None)
+        ip = props.get("ip_address", None)
         if ip:
             return AddressObject.decode(ip)
         return []
 
 
-class LinkObject(object):
+class LinkObject:
     """
     Implements link object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
@@ -1329,26 +1333,23 @@ class LinkObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
-        ltype = props.get('type', 'URL')
-        if ltype != 'URL':
-            LOG('Unhandled LinkObjectType type: {}'.format(ltype))
+        ltype = props.get("type", "URL")
+        if ltype != "URL":
+            LOG(f"Unhandled LinkObjectType type: {ltype}")
             return []
-        value = props.get('value', None)
+        value = props.get("value", None)
         if value is None:
-            LOG('no value in observable LinkObject')
+            LOG("no value in observable LinkObject")
             return []
         if not isinstance(value, string_types):
-            value = value.get('value', None)
+            value = value.get("value", None)
             if value is None:
-                LOG('no value in observable LinkObject')
+                LOG("no value in observable LinkObject")
                 return []
-        return [{
-            'indicator': value,
-            'type': ltype
-        }]
+        return [{"indicator": value, "type": ltype}]
 
 
-class HTTPSessionObject(object):
+class HTTPSessionObject:
     """
     Implements http session object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
@@ -1356,48 +1357,51 @@ class HTTPSessionObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
-        if props.get('http_request_response'):
-            tmp = props.get('http_request_response')
+        if props.get("http_request_response"):
+            tmp = props.get("http_request_response")
 
             if len(tmp) == 1:
                 item = tmp[0]
-                http_client_request = item.get('http_client_request', None)
+                http_client_request = item.get("http_client_request", None)
                 if http_client_request is not None:
-                    http_request_header = http_client_request.get('http_request_header', None)
+                    http_request_header = http_client_request.get("http_request_header", None)
                     if http_request_header is not None:
-                        raw_header = http_request_header.get('raw_header', None)
+                        raw_header = http_request_header.get("raw_header", None)
                         if raw_header is not None:
-                            return [{
-                                'indicator': raw_header.split('\n')[0],
-                                'type': 'http-session',  # we don't support this type natively in demisto
-                                'header': raw_header
-                            }]
+                            return [
+                                {
+                                    "indicator": raw_header.split("\n")[0],
+                                    "type": "http-session",  # we don't support this type natively in demisto
+                                    "header": raw_header,
+                                }
+                            ]
             else:
-                LOG('multiple HTTPSessionObjectTypes not supported')
+                LOG("multiple HTTPSessionObjectTypes not supported")
         return []
 
 
-class StixDecode(object):
+class StixDecode:
     """
     Decode STIX strings formatted as xml, and extract indicators from them
     """
+
     DECODERS = {
-        'DomainNameObjectType': DomainNameObject.decode,
-        'FileObjectType': FileObject.decode,
-        'WindowsFileObjectType': FileObject.decode,
-        'URIObjectType': URIObject.decode,
-        'AddressObjectType': AddressObject.decode,
-        'SocketAddressObjectType': SocketAddressObject.decode,
-        'LinkObjectType': LinkObject.decode,
-        'HTTPSessionObjectType': HTTPSessionObject.decode,
+        "DomainNameObjectType": DomainNameObject.decode,
+        "FileObjectType": FileObject.decode,
+        "WindowsFileObjectType": FileObject.decode,
+        "URIObjectType": URIObject.decode,
+        "AddressObjectType": AddressObject.decode,
+        "SocketAddressObjectType": SocketAddressObject.decode,
+        "LinkObjectType": LinkObject.decode,
+        "HTTPSessionObjectType": HTTPSessionObject.decode,
     }
 
     @staticmethod
     def object_extract_properties(props, kwargs):
-        type_ = props.get('xsi:type').rsplit(':')[-1]
+        type_ = props.get("xsi:type").rsplit(":")[-1]
 
         if type_ not in StixDecode.DECODERS:
-            LOG('Unhandled cybox Object type: {!r} - {!r}'.format(type_, props))
+            LOG(f"Unhandled cybox Object type: {type_!r} - {props!r}")
             return []
 
         return StixDecode.DECODERS[type_](props, **kwargs)
@@ -1416,7 +1420,7 @@ class StixDecode(object):
         result = {}
 
         for iv in indicators:
-            result['{}:{}'.format(iv['indicator'], iv['type'])] = iv
+            result["{}:{}".format(iv["indicator"], iv["type"])] = iv
 
         return list(result.values())
 
@@ -1426,25 +1430,25 @@ class StixDecode(object):
         indicator_result: Dict[str, dict] = {}
         ttp_result: Dict[str, dict] = {}
 
-        package = BeautifulSoup(content, 'xml')
+        package = BeautifulSoup(content, "xml")
 
-        timestamp = package.get('timestamp', None)
+        timestamp = package.get("timestamp", None)
         if timestamp is not None:
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
         # extract the Observable info
-        if observables := package.find_all('Observable'):
+        if observables := package.find_all("Observable"):
             pprops = package_extract_properties(package)
 
             for o in observables:
                 gprops = observable_extract_properties(o)
 
-                obj = next((ob for ob in o if ob.name == 'Object'), None)
+                obj = next((ob for ob in o if ob.name == "Object"), None)
                 if obj is None:
                     continue
 
                 # main properties
-                properties = next((c for c in obj if c.name == 'Properties'), None)
+                properties = next((c for c in obj if c.name == "Properties"), None)
                 if properties is not None:
                     for r in StixDecode.object_extract_properties(properties, kwargs):
                         r.update(gprops)
@@ -1453,13 +1457,13 @@ class StixDecode(object):
                         observable_result.append(r)
 
                 # then related objects
-                related = next((c for c in obj if c.name == 'Related_Objects'), None)
+                related = next((c for c in obj if c.name == "Related_Objects"), None)
                 if related is not None:
                     for robj in related:
-                        if robj.name != 'Related_Object':
+                        if robj.name != "Related_Object":
                             continue
 
-                        properties = next((c for c in robj if c.name == 'Properties'), None)
+                        properties = next((c for c in robj if c.name == "Properties"), None)
                         if properties is None:
                             continue
 
@@ -1469,37 +1473,35 @@ class StixDecode(object):
                             observable_result.append(r)
 
         # extract the Indicator info
-        if indicators := package.find_all('Indicator'):
+        if (indicators := package.find_all("Indicator")) and observables:
+            indicator_ref = observables[0].get("idref")
 
-            if observables:
-                indicator_ref = observables[0].get('idref')
-
-                if indicator_ref:
-                    indicator_info = indicator_extract_properties(indicators[0])
-                    indicator_result[indicator_ref] = indicator_info
+            if indicator_ref:
+                indicator_info = indicator_extract_properties(indicators[0])
+                indicator_result[indicator_ref] = indicator_info
 
         # extract the TTP info
-        if ttp := package.find_all('TTP'):
+        if ttp := package.find_all("TTP"):
             ttp_info: Dict[str, str] = {}
 
-            id_ref = ttp[0].get('id')
+            id_ref = ttp[0].get("id")
 
-            title = next((c for c in ttp[0] if c.name == 'Title'), None)
+            title = next((c for c in ttp[0] if c.name == "Title"), None)
             if title is not None:
                 title = title.text
-                ttp_info['stix_ttp_title'] = title
+                ttp_info["stix_ttp_title"] = title
 
-            description = next((c for c in ttp[0] if c.name == 'Description'), None)
+            description = next((c for c in ttp[0] if c.name == "Description"), None)
             if description is not None:
                 description = description.text
-                ttp_info['ttp_description'] = description
+                ttp_info["ttp_description"] = description
 
-            if behavior := package.find_all('Behavior'):
-                if behavior[0].find_all('Malware'):
-                    ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
+            if behavior := package.find_all("Behavior"):
+                if behavior[0].find_all("Malware"):
+                    ttp_info.update(ttp_extract_properties(package.find_all("Malware_Instance")[0], "Malware"))
 
-                elif behavior[0].find_all('Attack_Patterns'):
-                    ttp_info.update(ttp_extract_properties(package.find_all('Attack_Pattern')[0], 'Attack Pattern'))
+                elif behavior[0].find_all("Attack_Patterns"):
+                    ttp_info.update(ttp_extract_properties(package.find_all("Attack_Pattern")[0], "Attack Pattern"))
 
                 ttp_result[id_ref] = ttp_info
 
@@ -1512,19 +1514,18 @@ def build_observables(file_name):
     indicators = {}
     ttps = {}
 
-    for action, element in etree.iterparse(file_name, events=('start', 'end'), recover=True):
-        if action == 'start':
+    for action, element in etree.iterparse(file_name, events=("start", "end"), recover=True):
+        if action == "start":
             tag_stack.append(element.tag)
 
         else:
             last_tag = tag_stack.pop()
             if last_tag != element.tag:
-                raise RuntimeError(
-                    f'{SCRIPT_NAME} - error parsing poll response, mismatched tags')
+                raise RuntimeError(f"{SCRIPT_NAME} - error parsing poll response, mismatched tags")
 
-        if action == 'end' and element.tag.endswith('STIX_Package'):
+        if action == "end" and element.tag.endswith("STIX_Package"):
             for c in element:
-                content = etree.tostring(c, encoding='unicode')
+                content = etree.tostring(c, encoding="unicode")
                 timestamp, observable, indicator, ttp = StixDecode.decode(content)
                 if observable:
                     observables.extend(observable)
@@ -1536,19 +1537,17 @@ def build_observables(file_name):
             element.clear()
 
     for observable in observables:
+        if (indicator_ref := observable.get("indicator_ref")) and (indicator_info := indicators.get(indicator_ref)):
+            observable.update(indicator_info)
 
-        if indicator_ref := observable.get('indicator_ref'):
-            if indicator_info := indicators.get(indicator_ref):
-                observable.update(indicator_info)
-
-        ttp_ref = observable.get('ttp_ref', [])
+        ttp_ref = observable.get("ttp_ref", [])
         relationships = []
 
         for reference in ttp_ref:
             if relationship := ttps.get(reference):
                 relationships.append(relationship)
         if relationships:
-            observable['relationships'] = relationships
+            observable["relationships"] = relationships
 
     return observables, ttps
 
@@ -1561,61 +1560,63 @@ def parse_stix(file_name):
     indicators = []
 
     indicator_custom_fields = {
-        'title': 'stix_title',
-        'description': 'stix_description',
-        'name': 'stix_indicator_name',
-        'stixdescription': 'stix_indicator_description',
-        'confidence': 'confidence'
+        "title": "stix_title",
+        "description": "stix_description",
+        "name": "stix_indicator_name",
+        "stixdescription": "stix_indicator_description",
+        "confidence": "confidence",
     }
 
     # Create the indicators from the observables
     observables, ttps = build_observables(file_name)
     for item in observables:
-        if indicator := item.get('indicator'):
-            item['value'] = indicator.strip()
+        if indicator := item.get("indicator"):
+            item["value"] = indicator.strip()
             indicator_obj = {
-                'value': indicator.strip(),
-                'indicator_type': item.get('type'),
-                'customFields': {
+                "value": indicator.strip(),
+                "indicator_type": item.get("type"),
+                "customFields": {
                     xsoar_field: item.get(stix_field)
-                    for xsoar_field, stix_field in indicator_custom_fields.items() if item.get(stix_field)
-                }
+                    for xsoar_field, stix_field in indicator_custom_fields.items()
+                    if item.get(stix_field)
+                },
             }
 
-            if item.get('relationships'):
+            if item.get("relationships"):
                 relationships = create_relationships(item)
-                indicator_obj['relationships'] = relationships
+                indicator_obj["relationships"] = relationships
 
-            indicator_obj['rawJSON'] = item
+            indicator_obj["rawJSON"] = item
             indicators.append(indicator_obj)
 
     # Create the indicators from the ttps
     ttps_custom_fields = {
-        'title': 'title',
-        'description': 'description',
-        'shortdescription': 'short_description',
-        'stixdescription': 'ttp_description',
-        'stixttptitle': 'stix_ttp_title'
+        "title": "title",
+        "description": "description",
+        "shortdescription": "short_description",
+        "stixdescription": "ttp_description",
+        "stixttptitle": "stix_ttp_title",
     }
     for item in ttps.values():
-        if indicator := item.get('indicator'):
-            item['value'] = indicator.strip()
+        if indicator := item.get("indicator"):
+            item["value"] = indicator.strip()
             indicator_obj = {
-                'value': indicator.strip(),
-                'indicator_type': item.get('type'),
-                'customFields': {
+                "value": indicator.strip(),
+                "indicator_type": item.get("type"),
+                "customFields": {
                     xsoar_field: item.get(stix_field)
-                    for xsoar_field, stix_field in ttps_custom_fields.items() if item.get(stix_field)
-                }
+                    for xsoar_field, stix_field in ttps_custom_fields.items()
+                    if item.get(stix_field)
+                },
             }
 
-            if item.get('type') == 'Malware':
-                indicator_obj['score'] = ThreatIntel.ObjectsScore.MALWARE
-                indicator_obj['stixmalwaretypes'] = item.get('malware_type', '').lower().replace(' ', '-')
+            if item.get("type") == "Malware":
+                indicator_obj["score"] = ThreatIntel.ObjectsScore.MALWARE
+                indicator_obj["stixmalwaretypes"] = item.get("malware_type", "").lower().replace(" ", "-")
             else:
-                indicator_obj['score'] = ThreatIntel.ObjectsScore.ATTACK_PATTERN
+                indicator_obj["score"] = ThreatIntel.ObjectsScore.ATTACK_PATTERN
 
-            indicator_obj['rawJSON'] = item
+            indicator_obj["rawJSON"] = item
 
             indicators.append(indicator_obj)
 
@@ -1625,21 +1626,21 @@ def parse_stix(file_name):
 def main():  # pragma: no cover
     args = demisto.args()
 
-    indicator_txt = args.get('iocXml')
-    entry_id = args.get('entry_id')
+    indicator_txt = args.get("iocXml")
+    entry_id = args.get("entry_id")
 
     if not indicator_txt and not entry_id:
-        raise Exception('You must enter iocXml or entry_id of the Indicator.')
+        raise Exception("You must enter iocXml or entry_id of the Indicator.")
     elif entry_id:
-        file_path = demisto.getFilePath(entry_id).get('path')
-        with open(file_path, 'r') as f:
+        file_path = demisto.getFilePath(entry_id).get("path")
+        with open(file_path) as f:
             indicator_txt = f.read()
 
     if stix2 := convert_to_json(indicator_txt):
         stix2_parser = STIX2Parser()
         observables = stix2_parser.parse_stix2(stix2)
     else:
-        if 'file_path' not in locals():
+        if "file_path" not in locals():
             with tempfile.NamedTemporaryFile() as temp:
                 temp.write(str.encode(indicator_txt))
                 temp.flush()
@@ -1650,5 +1651,5 @@ def main():  # pragma: no cover
     return_results(json_data)
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

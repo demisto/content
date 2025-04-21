@@ -34,9 +34,7 @@ def test_check_last_enrichment(mocker):
 @freeze_time("2024-01-01 14:00:00")
 def test_check_last_enrichment_recent_date(mocker):
     last_enrichment = (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%d")
-    mocker.patch.object(
-        demisto, "args", return_value={"last_enrichment": last_enrichment}
-    )
+    mocker.patch.object(demisto, "args", return_value={"last_enrichment": last_enrichment})
     mocker.patch.object(demisto, "results")
 
     main()
@@ -68,7 +66,4 @@ def test_main_exception(mocker):
 
     main()
     results = demisto.results.call_args[0]
-    assert (
-        results[0]["Contents"]
-        == "Failed to execute CheckLastEnrichment. Error: 'last_enrichment'"
-    )
+    assert results[0]["Contents"] == "Failed to execute CheckLastEnrichment. Error: 'last_enrichment'"

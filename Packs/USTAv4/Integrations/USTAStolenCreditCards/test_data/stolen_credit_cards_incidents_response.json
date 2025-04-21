@@ -1,0 +1,24 @@
+[
+    {
+        "id": 13371337,
+        "status": "open",
+        "status_timestamp": "2024-11-27T08:04:45.106457Z",
+        "created": "2024-11-27T08:04:45.106412Z",
+        "content_type": "credit-card",
+        "content": {
+          "number": "1234567890123456",
+          "expiration_date": "2031-09-30"
+        }
+      },
+      {
+        "id": 13371338,
+        "status": "open",
+        "status_timestamp": "2024-11-26T07:17:14.368041Z",
+        "created": "2024-11-26T07:17:14.367992Z",
+        "content_type": "credit-card",
+        "content": {
+          "number": "1234567890123457",
+          "expiration_date": "2027-11-30"
+        }
+      }
+]

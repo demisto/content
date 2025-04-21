@@ -35,6 +35,7 @@ configuration:
   section: Connect
   required: false
 - displaypassword: Key
+  section: Connect
   name: credentials
   type: 9
   hiddenusername: true
@@ -5665,6 +5666,141 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's software details.
+    name: microsoft-atp-get-machine-software
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.Software.ID
+      description: The software ID.
+      type: String
+    - contextPath: MicrosoftATP.Software.Name
+      description: The software name.
+      type: String
+    - contextPath: MicrosoftATP.Software.Vendor
+      description: The software vendor name.
+      type: String
+    - contextPath: MicrosoftATP.Software.Weaknesses
+      description: The amount of weaknesses present in the software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.PublicExploit
+      description: Does this software have a public exploit?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.ActiveAlert
+      description: Does this software have an active alert?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.ExposedMachines
+      description: The amount of machines exposed to this software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.InstalledMachines
+      description: The amount of machines with this software installed.
+      type: Number
+    - contextPath: MicrosoftATP.Software.ImpactScore
+      description: The impact score of the software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.IsNormalized
+      description: Is the software value normalized?
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.Category
+      description: The software category.
+      type: String
+    - contextPath: MicrosoftATP.Software.Distributions
+      description: The distributions on which this software is present.
+      type: String
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's missing security updates (KBs).
+    name: microsoft-atp-get-machine-missing-kbs
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.PublicProductFix.ID
+      description: The missing KB ID.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.Name
+      description: The missing KB name.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.ProductsNames
+      description: The product names.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.URL
+      description: The KB URL.
+      type: String
+    - contextPath: MicrosoftATP.PublicProductFix.MachineMissedOn
+      description: The amount of machines that is missing this KB.
+      type: Number
+    - contextPath: MicrosoftATP.PublicProductFix.CVEAddressed
+      description: The CVE addressed by this KB.
+      type: Number
+    - contextPath: MicrosoftATP.PublicProductFix.OSBuild
+      description: The OS build.
+      type: String
+  - arguments:
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      name: machine_id
+      required: true
+    description: Get the specific machine's vulnerabilities
+    name: microsoft-atp-get-machine-vulnerabilities
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.PublicVulnerability.ID
+      description: The vulnerability ID.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Name
+      description: The vulnerability name.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.CVESupportability
+      description: The CVE supportability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.CVSSV3
+      description: The CVSS V3.
+      type: Number
+    - contextPath: MicrosoftATP.PublicVulnerability.CVSSVector
+      description: The CVSS vector.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Description
+      description: A description of this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.EPSS
+      description: The EPSS.
+      type: Number
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitInKit
+      description: Is this vulnerability in an exploit kit?
+      type: Boolean
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitTypes
+      description: The type(s) of exploit(s).
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitUris
+      description: The exploit URIs.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.ExploitVerified
+      description: Is this exploit verified?
+      type: Boolean
+    - contextPath: MicrosoftATP.PublicVulnerability.ExposedMachines
+      description: The amount of machines exposed to this vulnerability.
+      type: Number
+    - contextPath: MicrosoftATP.PublicVulnerability.FirstDetected
+      description: The date and time when this vulnerability was first detected.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.PublicExploit
+      description: Does this vulnerability have a public exploit?
+      type: Boolean
+    - contextPath: MicrosoftATP.PublicVulnerability.PublishedOn
+      description: The date and time when this vulnerability was published.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Severity
+      description: The severity of this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.Tags
+      description: The tags associated with this vulnerability.
+      type: String
+    - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
+      description: The date and time when this vulnerability was last updated.
+      type: String
   dockerimage: demisto/crypto:1.0.0.117163
   isfetch: true
   runonce: false

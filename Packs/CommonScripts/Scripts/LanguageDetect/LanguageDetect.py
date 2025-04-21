@@ -10,19 +10,26 @@ def detect_language(text):
     langs = []
 
     for line in res:
-        lang = str(line).split(':')[0]
-        prob = float(str(line).split(':')[1])
+        lang = str(line).split(":")[0]
+        prob = float(str(line).split(":")[1])
         langs.append({"lang": lang, "probability": prob})
         md += "- " + lang + " (" + str(prob) + ")\n"
 
-    demisto.results({"ContentsFormat": formats["json"], "Type": entryTypes["note"],
-                     "Contents": langs, "HumanReadable": md, "EntryContext": {"langDetect": langs}})
+    demisto.results(
+        {
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": langs,
+            "HumanReadable": md,
+            "EntryContext": {"langDetect": langs},
+        }
+    )
 
 
 def main():
-    text = demisto.args().get('text')
+    text = demisto.args().get("text")
     detect_language(text)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -39,7 +39,7 @@ def test_client_get_pan_os_advisories():
     result = ClIENT.get_advisories("PAN-OS", {"sort": "-cvss"})
     assert result.get("data")[0].get("impact").get("cvss").get("baseScore") == 10
 
-    result = ClIENT.get_advisories("PAN-OS", {"q": "\"CVE-2021-3056\""})
+    result = ClIENT.get_advisories("PAN-OS", {"q": '"CVE-2021-3056"'})
     assert len(result.get("data")) == 1
 
 
@@ -61,6 +61,15 @@ def test_fetch_indicators_command(patched_get_advisories):
     assert result[0].get("rawJSON")
     for _field, field_value in result[0].get("fields").items():
         assert field_value
+
+    # Tests to cover CVE extraction issue. This test ensures the data which is expected in the CVE information is correct and
+    # present. Fields effected are: cvss_score, cvss_severity, cvss_vector_string
+    assert result[0].get("fields", {}).get("cvss", 0.0) == 9.3
+    assert result[0].get("fields", {}).get("cvssscore", 0.0) == 9.3
+    assert result[0].get("fields", {}).get("cvssvector", "NONE") == (
+        "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:L/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red"
+    )
+    assert result[0].get("fields", {}).get("cvssversion", "NONE") == "4.0"
 
 
 def test_advisory_to_indicator() -> None:

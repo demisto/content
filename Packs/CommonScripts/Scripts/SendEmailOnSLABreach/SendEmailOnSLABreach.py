@@ -11,46 +11,47 @@ def get_owner_email():
     owner_username = demisto.incidents()[0].get("owner")
     if owner_username:
         try:
-            owner_info = demisto.executeCommand('getUserByUsername', {"username": owner_username})[0]
+            owner_info = demisto.executeCommand("getUserByUsername", {"username": owner_username})[0]
             owner_email = owner_info.get("EntryContext").get("UserByUsername").get("email")
             return owner_email
         except Exception as ex:
-            demisto.results({
+            demisto.results(
+                {
+                    "Type": entryTypes["error"],
+                    "ContentsFormat": formats["text"],
+                    "Contents": f"Could not retrieve user email. Maybe the user has no associated email to it.\
+            Error: {ex}",
+                }
+            )
+            return None
+    else:
+        demisto.results(  # noqa: RET503
+            {
                 "Type": entryTypes["error"],
                 "ContentsFormat": formats["text"],
-                "Contents": "Could not retrieve user email. Maybe the user has no associated email to it.\
-            Error: {}".format(ex)
-
-            })
-            return
-    else:
-        demisto.results({
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents": "An email can't be sent to the owner of the incident, because no owner was assigned."
-        })
+                "Contents": "An email can't be sent to the owner of the incident, because no owner was assigned.",
+            }
+        )
 
 
 def get_subject():
     incident_name = demisto.incidents()[0].get("name")
     incident_id = demisto.incidents()[0].get("id")
-    subject = "SLA Breached in incident \"{}\" #{}".format(incident_name, incident_id)
+    subject = f'SLA Breached in incident "{incident_name}" #{incident_id}'
     return subject
 
 
 def send_email(to, subject, body):
-    demisto.results(demisto.executeCommand('send-mail', {
-        "to": to,
-        "subject": subject,
-        "body": body}))
+    demisto.results(demisto.executeCommand("send-mail", {"to": to, "subject": subject, "body": body}))
 
 
 def get_body():
     field_name = demisto.args().get("field").get("cliName")
     sla = demisto.args().get("fieldValue").get("sla")
     start_date = demisto.args().get("fieldValue").get("startDate")
-    body = "We have detected a breach in your SLA \"{}\".\nThe SLA was set to {} minute and was started on {}.".format(
-        field_name, sla, start_date.split(".")[0])
+    body = 'We have detected a breach in your SLA "{}".\nThe SLA was set to {} minute and was started on {}.'.format(
+        field_name, sla, start_date.split(".")[0]
+    )
     return body
 
 

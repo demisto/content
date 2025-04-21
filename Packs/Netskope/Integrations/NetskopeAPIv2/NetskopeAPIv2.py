@@ -1,9 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import copy
+from collections.abc import Callable
 from http import HTTPStatus
 from typing import Any, NamedTuple
-from collections.abc import Callable
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 MAX_IDS_NUMBER = 289262
 DEFAULT_WAIT_TIME = 5
@@ -13,7 +14,7 @@ MIN_PAGE_SIZE = 1
 MAX_LIMIT = 50
 MIN_LIMIT = 1
 MAX_FETCH_PER_EVENT_TYPE = 50
-JS_NUMBER_LIMIT = 2 ** 53 - 1
+JS_NUMBER_LIMIT = 2**53 - 1
 TIME_FORMAT = "%d-%m-%Y %H:%M"
 
 ALERT_HEADERS = [
@@ -119,9 +120,7 @@ INCIDENT_HEADERS = [
     "instance_id",
     "object_type",
 ]
-MIRRORING_FIELDS = [
-    "status", "severity", "original_status", "original_severity"
-]
+MIRRORING_FIELDS = ["status", "severity", "original_status", "original_severity"]
 
 MIRROR_DIRECTION_MAPPING = {
     "Incoming": "In",
@@ -144,7 +143,6 @@ class TimeArgs(NamedTuple):
 
 
 class Client(BaseClient):
-
     def __init__(
         self,
         server_url: str,
@@ -155,10 +153,7 @@ class Client(BaseClient):
     ):
         self.user_mail = user_mail
         headers = {"Netskope-Api-Token": api_token}
-        super().__init__(base_url=server_url,
-                         verify=verify,
-                         proxy=proxy,
-                         headers=headers)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
     def list_alert(
         self,
@@ -207,9 +202,7 @@ class Client(BaseClient):
             acked=acked,
         )
 
-        return self._http_request("GET",
-                                  "api/v2/events/data/alert",
-                                  params=params)
+        return self._http_request("GET", "api/v2/events/data/alert", params=params)
 
     def list_event(
         self,
@@ -252,9 +245,7 @@ class Client(BaseClient):
             query=query,
         )
 
-        return self._http_request("GET",
-                                  f"api/v2/events/data/{event_type}",
-                                  params=params)
+        return self._http_request("GET", f"api/v2/events/data/{event_type}", params=params)
 
     def update_url_list(
         self,
@@ -276,16 +267,11 @@ class Client(BaseClient):
         """
 
         data = {
-            "data": {
-                "type": list_type,
-                "urls": urls
-            },
+            "data": {"type": list_type, "urls": urls},
             "name": name,
         }
 
-        return self._http_request("PUT",
-                                  f"api/v2/policy/urllist/{url_list_id}",
-                                  json_data=data)
+        return self._http_request("PUT", f"api/v2/policy/urllist/{url_list_id}", json_data=data)
 
     def patch_url_list(
         self,
@@ -306,10 +292,7 @@ class Client(BaseClient):
 
         data = {"data": {"type": list_type, "urls": urls}}
 
-        return self._http_request(
-            "PATCH",
-            f"api/v2/policy/urllist/{url_list_id}/append",
-            json_data=data)
+        return self._http_request("PATCH", f"api/v2/policy/urllist/{url_list_id}/append", json_data=data)
 
     def create_url_list(
         self,
@@ -329,16 +312,11 @@ class Client(BaseClient):
         """
 
         data = {
-            "data": {
-                "type": list_type,
-                "urls": urls
-            },
+            "data": {"type": list_type, "urls": urls},
             "name": name,
         }
 
-        return self._http_request("POST",
-                                  "api/v2/policy/urllist",
-                                  json_data=data)
+        return self._http_request("POST", "api/v2/policy/urllist", json_data=data)
 
     def list_url_list(
         self,
@@ -402,9 +380,7 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Netskope.
         """
 
-        params = assign_params(count=limit,
-                               startIndex=page,
-                               filter=client_filter)
+        params = assign_params(count=limit, startIndex=page, filter=client_filter)
 
         return self._http_request(
             "GET",
@@ -463,15 +439,19 @@ class Client(BaseClient):
         return self._http_request(
             "PATCH",
             url_suffix="api/v2/incidents/update",
-            json_data=remove_empty_elements({
-                "payload": [{
-                    "object_id": object_id,
-                    "field": field,
-                    "old_value": old_value,
-                    "new_value": new_value,
-                    "user": self.user_mail,
-                }]
-            }),
+            json_data=remove_empty_elements(
+                {
+                    "payload": [
+                        {
+                            "object_id": object_id,
+                            "field": field,
+                            "old_value": old_value,
+                            "new_value": new_value,
+                            "user": self.user_mail,
+                        }
+                    ]
+                }
+            ),
         )
 
 
@@ -741,8 +721,7 @@ def create_url_list_command(
     )
 
 
-def lists_url_list_command(client: Client, args: dict[str,
-                                                      Any]) -> CommandResults:
+def lists_url_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get all URL Lists or a specific URL list.
 
     Args:
@@ -760,13 +739,9 @@ def lists_url_list_command(client: Client, args: dict[str,
     pending = int(pending == "pending")
 
     updated_fields = []
-    updated_fields = [
-        "data" if field in ("urls", "type") else field for field in fields
-    ]
+    updated_fields = ["data" if field in ("urls", "type") else field for field in fields]
 
-    response = client.list_url_list(url_list_id=url_list_id,
-                                    pending=pending,
-                                    field=updated_fields)
+    response = client.list_url_list(url_list_id=url_list_id, pending=pending, field=updated_fields)
     output = get_updated_url_list(response)
 
     if not all_results:
@@ -837,8 +812,7 @@ def list_client_command(
     pagination_message = pagination_data.pagination_message
 
     client_filter = args.get("filter")
-    updated_client_filter = (convert_client_filter(client_filter)
-                             if client_filter else None)
+    updated_client_filter = convert_client_filter(client_filter) if client_filter else None
 
     response = client.list_client(page, limit, updated_client_filter)
     output = response.get("Resources", [])
@@ -928,9 +902,9 @@ def test_module(client: Client) -> str:
 
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
-                HTTPStatus.UNAUTHORIZED,
-                HTTPStatus.NOT_FOUND,
-                HTTPStatus.FORBIDDEN,
+            HTTPStatus.UNAUTHORIZED,
+            HTTPStatus.NOT_FOUND,
+            HTTPStatus.FORBIDDEN,
         ]:
             return "Authorization Error: Unknown API key or Netskope URL"
 
@@ -938,7 +912,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_incidents(client: Client, params: dict[str, Any]):
-    """ Fetch Netskope alerts, DLP incidents, and events (if requested) as incidents in XSOAR.
+    """Fetch Netskope alerts, DLP incidents, and events (if requested) as incidents in XSOAR.
         In case of DLP incidents: the incidents will fetch by timestamp and will saved in XSOAR
         and integration context to handle duplicates issue.
 
@@ -950,8 +924,7 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     incidents: list[dict] = []
     last_run: dict[str, Any] = {}
 
-    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params["mirror_direction"],
-                                                    None)
+    mirror_direction = MIRROR_DIRECTION_MAPPING.get(params["mirror_direction"], None)
 
     event_types = argToList(params.get("event_types"))
     alert_query = params.get("alerts_query")
@@ -959,8 +932,7 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
 
     num_event_types = len(event_types) if event_types else 1
     max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // num_event_types
-    if (event_types and (event_max_fetch := arg_to_number(
-            params["max_events_fetch"])) is not None):
+    if event_types and (event_max_fetch := arg_to_number(params["max_events_fetch"])) is not None:
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
 
     if params.get("fetch_events") and event_types:
@@ -1010,8 +982,7 @@ def get_modified_remote_data(client: Client) -> GetModifiedRemoteDataResponse:
         GetModifiedRemoteDataResponse: modified tickets from Netskope.
     """
     # get the fetch last run time to check if exist incidents was updated for sync incidents
-    start_timestamp = get_demisto_integration_context(
-        "dlp_incident_last_run_timestamp", None)
+    start_timestamp = get_demisto_integration_context("dlp_incident_last_run_timestamp", None)
 
     end_timestamp = date_to_seconds_timestamp(datetime.now())
 
@@ -1023,8 +994,7 @@ def get_modified_remote_data(client: Client) -> GetModifiedRemoteDataResponse:
         end_time=end_timestamp,
     )
 
-    demisto.debug(
-        f"Get modified remote data from {start_timestamp} - {end_timestamp}")
+    demisto.debug(f"Get modified remote data from {start_timestamp} - {end_timestamp}")
 
     dlp_incidents = []
     modified_tickets = []
@@ -1037,14 +1007,12 @@ def get_modified_remote_data(client: Client) -> GetModifiedRemoteDataResponse:
     dlp_incidents = remove_duplicates(dlp_incidents, "object_id")
 
     # save the updated incidents for get_remote_data_command
-    set_demisto_integration_context("dlp_incidents_to_update", dlp_incidents,
-                                    "append")
+    set_demisto_integration_context("dlp_incidents_to_update", dlp_incidents, "append")
 
     for ticket in dlp_incidents:
         modified_tickets.append(ticket["object_id"])
 
-    demisto.debug(
-        f"There are {len(modified_tickets)} modified incidents from Netskope")
+    demisto.debug(f"There are {len(modified_tickets)} modified incidents from Netskope")
 
     return GetModifiedRemoteDataResponse(modified_tickets)
 
@@ -1089,14 +1057,14 @@ def update_remote_system(
     incident_id = parsed_args.remote_incident_id
 
     demisto.debug(
-        f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
-        if parsed_args.delta else "There is no delta fields in Netskope")
+        f"Got the following delta keys {list(parsed_args.delta.keys())!s}"
+        if parsed_args.delta
+        else "There is no delta fields in Netskope"
+    )
 
     try:
         if parsed_args.incident_changed and parsed_args.delta:
-            demisto.debug(
-                f"Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}, {parsed_args.inc_status=}"
-            )
+            demisto.debug(f"Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}, {parsed_args.inc_status=}")
 
             update_args: dict[str, Any] = parsed_args.delta
             # fetch old arguments data for API call
@@ -1104,33 +1072,27 @@ def update_remote_system(
 
             updated_arguments = {}
 
-            if parsed_args.inc_status == IncidentStatus.DONE and params.get(
-                    'close_netskope_incident'):
-                updated_arguments["field"] = 'status'
-                updated_arguments["old_value"] = old_args['original_status']
-                updated_arguments["new_value"] = 'closed'
+            if parsed_args.inc_status == IncidentStatus.DONE and params.get("close_netskope_incident"):
+                updated_arguments["field"] = "status"
+                updated_arguments["old_value"] = old_args["original_status"]
+                updated_arguments["new_value"] = "closed"
                 updated_arguments["object_id"] = incident_id
 
             else:
                 for key, value in update_args.items():
                     if key in MIRRORING_FIELDS:
                         updated_arguments["field"] = key
-                        updated_arguments["old_value"] = old_args[
-                            f'original_{key}']
+                        updated_arguments["old_value"] = old_args[f"original_{key}"]
                         updated_arguments["new_value"] = value
                         updated_arguments["object_id"] = incident_id
 
             if updated_arguments:
-                demisto.debug(
-                    f"Send remote ID [{incident_id}] updates to Netskope. {updated_arguments=}|| {update_args=}"
-                )
+                demisto.debug(f"Send remote ID [{incident_id}] updates to Netskope. {updated_arguments=}|| {update_args=}")
 
                 client.update_dlp_incident(**updated_arguments)
 
     except Exception as error:
-        demisto.info(
-            f"Error in Netskope outgoing mirror for incident {incident_id}. Error message: {error}"
-        )
+        demisto.info(f"Error in Netskope outgoing mirror for incident {incident_id}. Error message: {error}")
 
     finally:
         return incident_id
@@ -1155,8 +1117,7 @@ def get_remote_data_command(
     demisto.debug(f"Check if incident {incident_id} updated")
 
     # fetch updated incidents (that saved in get_modified_remote_data command)
-    dlp_incidents: list = get_demisto_integration_context(
-        "dlp_incidents_to_update", [])
+    dlp_incidents: list = get_demisto_integration_context("dlp_incidents_to_update", [])
 
     mirrored_ticket = {}
 
@@ -1166,23 +1127,23 @@ def get_remote_data_command(
             mirrored_ticket = incident
             # remove the incident from integration context
             dlp_incidents.remove(mirrored_ticket)
-            set_demisto_integration_context("dlp_incidents_to_update",
-                                            dlp_incidents, "override")
+            set_demisto_integration_context("dlp_incidents_to_update", dlp_incidents, "override")
             break
 
     entries = []
-    mirrored_ticket["incident_type"] = 'dlp_incident'
+    mirrored_ticket["incident_type"] = "dlp_incident"
 
-    if mirrored_ticket.get("status") == "closed" and params.get(
-            "close_incident"):
-        entries.append({
-            "Type": EntryType.NOTE,
-            "Contents": {
-                "dbotIncidentClose": True,
-                "closeReason": "Closed from Netskope.",
-            },
-            "ContentsFormat": EntryFormat.JSON,
-        })
+    if mirrored_ticket.get("status") == "closed" and params.get("close_incident"):
+        entries.append(
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": "Closed from Netskope.",
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        )
 
     return GetRemoteDataResponse(mirrored_ticket, entries)
 
@@ -1191,7 +1152,7 @@ def get_remote_data_command(
 
 
 def get_hourly_timestamps(start_time: int, end_time: int) -> list[int]:
-    """ Get a list of timestamps with a one hour gap between the received start and end timestamps.
+    """Get a list of timestamps with a one hour gap between the received start and end timestamps.
 
     Args:
         start_time (int): The start timestamp.
@@ -1214,7 +1175,7 @@ def remove_duplicates(
     dicts_list: list[dict[str, Any]],
     key: str,
 ) -> list[dict[str, Any]]:
-    """ Remove duplicates from a list of dicts by unique key.
+    """Remove duplicates from a list of dicts by unique key.
 
     Args:
         dicts_list (list[dict[str, Any]]): The list of dicts to update.
@@ -1247,8 +1208,7 @@ def parse_incident(
     Returns:
         dict: XSOAR Incident.
     """
-    incident_id = (incident["object_id"]
-                   if incident_type == "dlp_incident" else incident["_id"])
+    incident_id = incident["object_id"] if incident_type == "dlp_incident" else incident["_id"]
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
@@ -1323,9 +1283,7 @@ def fetch_events_as_incidents(
         for event in events:
             if last_run_id != event["_id"]:
                 event["incident_type"] = event_type
-                incidents.append(
-                    parse_incident(event, f"{event_type}-event",
-                                   mirror_direction))
+                incidents.append(parse_incident(event, f"{event_type}-event", mirror_direction))
                 relevant_events.append(event)
 
         last_run = update_last_run(
@@ -1345,7 +1303,7 @@ def fetch_dlp_incidents_as_incidents(
     last_run: dict[str, Any],
     mirror_direction: str | None = None,
 ) -> tuple[list, dict]:
-    """ Fetch DLP incidents from Netskope as incidents.
+    """Fetch DLP incidents from Netskope as incidents.
         The incidents will be saved in the integration context to avoid duplicates.
 
     Args:
@@ -1366,10 +1324,8 @@ def fetch_dlp_incidents_as_incidents(
     # when last run is rest - update integration context data
     if not last_run_id:
         set_demisto_integration_context("dlp_incident_ids", [], "override")
-        set_demisto_integration_context("dlp_incident_last_run_timestamp",
-                                        None, "override")
-        set_demisto_integration_context("dlp_incidents_to_update", [],
-                                        "override")
+        set_demisto_integration_context("dlp_incident_last_run_timestamp", None, "override")
+        set_demisto_integration_context("dlp_incidents_to_update", [], "override")
 
     end_time_number = date_to_seconds_timestamp(datetime.now())
     max_fetch = int(params["max_dlp_incidents_fetch"])
@@ -1381,8 +1337,7 @@ def fetch_dlp_incidents_as_incidents(
     dlp_incidents = []
 
     # get incident IDs that exist in XSOAR to avoid duplicates
-    exist_dlp_incidents: list = get_demisto_integration_context(
-        "dlp_incident_ids", [])
+    exist_dlp_incidents: list = get_demisto_integration_context("dlp_incident_ids", [])
 
     for timestamp in hourly_timestamps:
         response = list_event_func(timestamp)
@@ -1401,23 +1356,20 @@ def fetch_dlp_incidents_as_incidents(
         incident_id = incident["object_id"]
 
         if incident_id not in exist_dlp_incidents:
-            incidents.append(
-                parse_incident(incident, "dlp_incident", mirror_direction))
+            incidents.append(parse_incident(incident, "dlp_incident", mirror_direction))
             new_incidents.append(incident)
             new_incident_ids.append(incident_id)
 
     if new_incident_ids:
         # set the new incident IDs to avoid duplicates on next fetch
-        set_demisto_integration_context("dlp_incident_ids", new_incident_ids,
-                                        "append")
-
+        set_demisto_integration_context("dlp_incident_ids", new_incident_ids, "append")
+        last_run_timestamp = max(new_incidents, key=lambda k: k["timestamp"])["timestamp"] + 1
     else:
         last_run_timestamp = end_time_number
 
     # set the updated fetch last run time for get_modified_remote_data command
     # to update existing incidents and ensure full sync
-    set_demisto_integration_context("dlp_incident_last_run_timestamp",
-                                    last_run_timestamp, "override")
+    set_demisto_integration_context("dlp_incident_last_run_timestamp", last_run_timestamp, "override")
 
     last_run = update_last_run(
         relevant_events=new_incidents,
@@ -1506,13 +1458,9 @@ def update_last_run(
         last_run_alert = max(relevant_events, key=lambda k: k["timestamp"])
 
         last_run[incident_type] = {
-            "id": (last_run_alert["object_id"] if incident_type
-                   == "dlp_incident" else last_run_alert["_id"]),
-            "time":
-            last_run_time_number if incident_type == "dlp_incident" else
-            last_run_alert["timestamp"] + 1,
-            "date":
-            convert_number_to_str_date(last_run_time_number),
+            "id": (last_run_alert["object_id"] if incident_type == "dlp_incident" else last_run_alert["_id"]),
+            "time": last_run_time_number if incident_type == "dlp_incident" else last_run_alert["timestamp"] + 1,
+            "date": convert_number_to_str_date(last_run_time_number),
         }
 
     else:
@@ -1547,14 +1495,9 @@ def get_last_run(
         last_run_time = ticket_last_run.get("time")
         last_run_id = ticket_last_run.get("id")
     else:
-        if incident_type == "dlp_incident":
-            last_run_time = "1 Day"
-        else:
-            last_run_time = args.get("first_fetch", "3 Days")
+        last_run_time = args.get("first_fetch", "3 Days")
 
-    first_fetch = arg_to_datetime(arg=last_run_time,
-                                  arg_name="First fetch time",
-                                  required=True)
+    first_fetch = arg_to_datetime(arg=last_run_time, arg_name="First fetch time", required=True)
     if not first_fetch:
         raise ValueError("First fetch time not specified")
 
@@ -1615,9 +1558,7 @@ def get_updated_list_client(response: list | dict) -> list:
         output = copy.deepcopy(list_client)
         output["client_id"] = output.pop("id")
         output |= output.pop("name", {})
-        output["emails"] = [
-            email.get("value") for email in output.get("emails", [])
-        ]
+        output["emails"] = [email.get("value") for email in output.get("emails", [])]
         output = snakify(output)
         outputs.append(output)
     return outputs
@@ -1646,8 +1587,7 @@ def get_updated_url_list(response: list | dict) -> list:
     return outputs
 
 
-def parse_start_end_times(
-        start_str: str, end_str: str | None) -> tuple[int | None, int | None]:
+def parse_start_end_times(start_str: str, end_str: str | None) -> tuple[int | None, int | None]:
     """Convert string date to timestamp.
 
     Args:
@@ -1658,8 +1598,7 @@ def parse_start_end_times(
         Tuple: Timestamp start & end dates.
     """
     start_number = arg_to_seconds_timestamp(start_str) if start_str else None
-    end_number = (arg_to_seconds_timestamp(end_str)
-                  if end_str else date_to_seconds_timestamp(datetime.now()))
+    end_number = arg_to_seconds_timestamp(end_str) if end_str else date_to_seconds_timestamp(datetime.now())
     return start_number, end_number
 
 
@@ -1683,15 +1622,13 @@ def convert_time_args_to_num(args: dict[str, Any]) -> TimeArgs:
     insertion_end_time_number = None
 
     if start_time_str:
-        start_time_number, end_time_number = parse_start_end_times(
-            start_time_str, end_time_str)
+        start_time_number, end_time_number = parse_start_end_times(start_time_str, end_time_str)
     elif insertion_start_time_str:
         insertion_start_time_number, insertion_end_time_number = parse_start_end_times(
-            insertion_start_time_str, insertion_end_time_str)
-    else:
-        raise ValueError(
-            "Provide either the `start_time` argument or `insertion_start_time`."
+            insertion_start_time_str, insertion_end_time_str
         )
+    else:
+        raise ValueError("Provide either the `start_time` argument or `insertion_start_time`.")
 
     return TimeArgs(
         start_time_number,
@@ -1802,7 +1739,7 @@ def get_demisto_integration_context(
     key: str,
     default_value: Any,
 ) -> Any:
-    """ Get the integration context for a given key.
+    """Get the integration context for a given key.
 
     Args:
         key (str): The key to retrieve.
@@ -1819,7 +1756,7 @@ def set_demisto_integration_context(
     value_to_update: Any,
     action: str,
 ):
-    """ Set the integration context for the given key and value.
+    """Set the integration context for the given key and value.
 
     Args:
         key (str): The integration context key to update his value.
@@ -1828,7 +1765,7 @@ def set_demisto_integration_context(
     """
     integration_context = get_integration_context()
 
-    if action == 'append':
+    if action == "append":
         if not integration_context.get(key):
             integration_context[key] = []
 
@@ -1837,10 +1774,8 @@ def set_demisto_integration_context(
         # check if integration context size is reached to 40mb
         if len(integration_context[key]) >= MAX_IDS_NUMBER:
             # remove the first items to avoid overflow
-            number_of_items_to_remove = len(
-                integration_context[key]) - MAX_IDS_NUMBER
-            integration_context[key] = integration_context[key][
-                number_of_items_to_remove:]
+            number_of_items_to_remove = len(integration_context[key]) - MAX_IDS_NUMBER
+            integration_context[key] = integration_context[key][number_of_items_to_remove:]
     else:
         integration_context[key] = value_to_update
 

@@ -1,7 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """
 Use the IvantiHeatCreateProblemExample script to create a problem object (JSON) in Ivanti Heat.
@@ -18,12 +18,12 @@ Then add the new field argument to the script. See the Ivanti documentation for 
 
 
 def main():
-    category = demisto.args().get('category')
-    owner = demisto.args().get('owner')
-    source = demisto.args().get('source')
-    status = demisto.args().get('status')
-    subject = demisto.args().get('subject')
-    description = demisto.args().get('description')
+    category = demisto.args().get("category")
+    owner = demisto.args().get("owner")
+    source = demisto.args().get("source")
+    status = demisto.args().get("status")
+    subject = demisto.args().get("subject")
+    description = demisto.args().get("description")
 
     data = {
         "Category": category,
@@ -31,9 +31,9 @@ def main():
         "Owner": owner,
         "Status": status,
         "Subject": subject,
-        "Description": description
+        "Description": description,
     }
-    return_outputs(json.dumps(data, indent=4), {'IvantiHeat.CreateProblemJSON': json.dumps(data)}, data)
+    return_outputs(json.dumps(data, indent=4), {"IvantiHeat.CreateProblemJSON": json.dumps(data)}, data)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

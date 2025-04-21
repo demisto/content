@@ -375,3 +375,8 @@ outputs:
 tests:
 - Get Original Email - Gmail v2 - test
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

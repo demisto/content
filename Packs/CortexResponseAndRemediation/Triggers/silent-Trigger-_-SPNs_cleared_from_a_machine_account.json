@@ -1,0 +1,29 @@
+{
+  "trigger_id": "13a2173a91061cfcdaca7a0885565143",
+  "playbook_id": "silent-SPNs cleared from a machine account",
+  "suggestion_reason": "Recommended for SPNs cleared from a machine account alerts.",
+  "description": "This trigger is responsible for handling alerts where the Service Principal Names (SPNs) are cleared from a domain machine account.",
+  "trigger_name": "silent-SPNs cleared from a machine account",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "SPNs cleared from a machine account"
+            },
+            {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "SPNs cleared from a machine account for the first time"
+            }
+        ]
+        }
+      ]
+    }
+  }
+}

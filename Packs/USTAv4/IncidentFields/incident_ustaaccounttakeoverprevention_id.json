@@ -1,0 +1,32 @@
+{
+    "id": "incident_ustaaccounttakeoverprevention_id",
+    "version": -1,
+    "modified": "2024-11-11T16:15:34.34081608Z",
+    "name": "USTA Account Takeover Prevention ID",
+    "ownerOnly": false,
+    "placeholder": "USTA Ticket ID",
+    "cliName": "ustaaccounttakeoverpreventionid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "USTA Account Takeover Prevention"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -34,6 +34,8 @@ See the table below that lists these additional log types, along the relevant ma
   | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------- |
   | [Azure Firewall Resource Logs](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#resource-logs) | [Azure Firewall](https://cortex.marketplace.pan.dev/marketplace/details/AzureFirewall/) |
   | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs) | [Azure WAF](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/) |
+  | [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs) | [Azure Kubernetes Services](https://cortex.marketplace.pan.dev/marketplace/details/AzureKubernetesServices/) |
+  | [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#overview-of-logging-types) | [Azure App Service](https://cortex.marketplace.pan.dev/marketplace/details/AzureAppService/) |
 
 ***
 
@@ -48,7 +50,7 @@ When configuring the Office 365 data source, mark the following checkboxes under
   * **`Collect all sign-in event types`**
 * **`Azure AD Audit Logs`**
 
-![MicrosoftEntraID_Office_365](https://raw.githubusercontent.com/demisto/content/refs/heads/master/Packs/MicrosoftEntraID/doc_files/MicrosoftEntraID_Office_365.png)
+![MicrosoftEntraID_Office_3652](./././doc_files/MicrosoftEntraID_Office_365.png)
 
 ### Azure Event Hub Logs
 
@@ -57,6 +59,6 @@ To collect Azure Logs from an Azure Event Hub and ingest them into the *`msft_az
 When configuring the Azure Event Hub data source, mark the following checkbox under the *Enhanced Cloud Protection* section, as demonstrated in the screenshot below:
 * **`Use audit logs in analytics`** 
 
-![MicrosoftEntraID_Azure_Event_Hub](https://raw.githubusercontent.com/demisto/content/refs/heads/master/Packs/MicrosoftEntraID/doc_files/MicrosoftEntraID_Azure_Event_Hub.png)
+![MicrosoftEntraID_Azure_Event_Hub](./././doc_files/MicrosoftEntraID_Azure_Event_Hub.png)
 
 </~XSIAM>

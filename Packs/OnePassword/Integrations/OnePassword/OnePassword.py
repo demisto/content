@@ -1,19 +1,19 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
-
+from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from operator import itemgetter
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from requests.structures import CaseInsensitiveDict
-from datetime import datetime, timedelta, UTC
 
+from CommonServerUserPython import *  # noqa
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-EVENT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # For XSIAM events - second precision
-FILTER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # For 1Password date filter - microsecond precision
-VENDOR = '1Password'
-PRODUCT = '1Password'
+EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # For XSIAM events - second precision
+FILTER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # For 1Password date filter - microsecond precision
+VENDOR = "1Password"
+PRODUCT = "1Password"
 
 # Default results per page (optimal value)
 # > 1000 causes HTTP 400 [Bad Request]
@@ -27,23 +27,23 @@ DEFAULT_FETCH_FROM_DATE = datetime.now(tz=UTC) - timedelta(minutes=1)  # 1 minut
 EVENT_TYPE_FEATURE = CaseInsensitiveDict(
     {
         # Display name: API Feature and endpoint name
-        'Item usage actions': 'itemusages',
-        'Audit events': 'auditevents',
-        'Sign in attempts': 'signinattempts',
+        "Item usage actions": "itemusages",
+        "Audit events": "auditevents",
+        "Sign in attempts": "signinattempts",
     }
 )
 
 EVENT_TYPE_LIMIT_PARAM = CaseInsensitiveDict(
     {
         # Display name: Max events per fetch (limit) param name
-        'Item usage actions': 'item_usage_actions_limit',
-        'Audit events': 'audit_events_limit',
-        'Sign in attempts': 'sign_in_attempts_limit',
+        "Item usage actions": "item_usage_actions_limit",
+        "Audit events": "audit_events_limit",
+        "Sign in attempts": "sign_in_attempts_limit",
     }
 )
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -62,11 +62,11 @@ class Client(BaseClient):
         Returns:
             dict: The response JSON from the event endpoint.
         """
-        demisto.debug(f'Requesting events of feature: {event_feature} using request body: {body}')
-        return self._http_request(method='POST', url_suffix=f'/api/v2/{event_feature}', json_data=body, raise_on_status=True)
+        demisto.debug(f"Requesting events of feature: {event_feature} using request body: {body}")
+        return self._http_request(method="POST", url_suffix=f"/api/v2/{event_feature}", json_data=body, raise_on_status=True)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> int:
@@ -81,7 +81,7 @@ def get_limit_param_for_event_type(params: dict[str, str], event_type: str) -> i
     """
     param_name = EVENT_TYPE_LIMIT_PARAM[event_type]
     limit = arg_to_number(params.get(param_name)) or DEFAULT_MAX_EVENTS_PER_FETCH
-    demisto.debug(f'Maximum number of events per fetch for {event_type} is set to {limit}.')
+    demisto.debug(f"Maximum number of events per fetch for {event_type} is set to {limit}.")
     return limit
 
 
@@ -104,11 +104,11 @@ def create_get_events_request_body(
         dict[str, Any]: The request body.
     """
     if pagination_cursor:
-        return {'cursor': pagination_cursor}
+        return {"cursor": pagination_cursor}
 
     if from_date:
         formatted_from_date: str = from_date.strftime(FILTER_DATE_FORMAT)
-        return {'limit': results_per_page, 'start_time': formatted_from_date}
+        return {"limit": results_per_page, "start_time": formatted_from_date}
 
     raise ValueError("Either a 'pagination_cursor' or a 'from_date' need to be specified.")
 
@@ -120,20 +120,16 @@ def add_fields_to_event(event: dict[str, Any], event_type: str):
         event (dict): Event dictionary with the new fields.
         event_type (str): Type of 1Password event (e.g. 'Item usage actions', 'Sign in attempts').
     """
-    event_time = arg_to_datetime(event['timestamp'], required=True)
+    event_time = arg_to_datetime(event["timestamp"], required=True)
     # Required by XSIAM
-    event['SOURCE_LOG_TYPE'] = event_type.upper()
-    event['_time'] = event_time.strftime(EVENT_DATE_FORMAT)  # type: ignore[union-attr]
+    event["SOURCE_LOG_TYPE"] = event_type.upper()
+    event["_time"] = event_time.strftime(EVENT_DATE_FORMAT)  # type: ignore[union-attr]
     # Matches precision of date filter - ensures correct and accurate list of already fetched IDs
-    event['timestamp_ms'] = event_time.strftime(FILTER_DATE_FORMAT)  # type: ignore[union-attr]
+    event["timestamp_ms"] = event_time.strftime(FILTER_DATE_FORMAT)  # type: ignore[union-attr]
 
 
 def get_events_from_client(
-    client: Client,
-    event_type: str,
-    from_date: datetime,
-    max_events: int,
-    already_fetched_ids_to_skip: set[str] | None = None
+    client: Client, event_type: str, from_date: datetime, max_events: int, already_fetched_ids_to_skip: set[str] | None = None
 ) -> list[dict]:
     """Gets events of the specified type based on the `from_date` filter and `max_events` argument using cursor-based pagination.
 
@@ -157,7 +153,7 @@ def get_events_from_client(
     """
     event_feature = EVENT_TYPE_FEATURE.get(event_type)
     if not event_feature:
-        raise ValueError(f'Invalid or unsupported {VENDOR} event type: {event_type}.')
+        raise ValueError(f"Invalid or unsupported {VENDOR} event type: {event_type}.")
 
     events: list[dict] = []
     already_fetched_ids_to_skip = already_fetched_ids_to_skip or set()
@@ -170,18 +166,18 @@ def get_events_from_client(
         response_events: list[dict] = []
         response_skipped_ids: set[str] = set()
         response = client.get_events(event_feature, body=request_body)
-        pagination_cursor = response['cursor']
+        pagination_cursor = response["cursor"]
 
-        for event in response['items']:
-            event_id = event['uuid']
+        for event in response["items"]:
+            event_id = event["uuid"]
 
             if event_id in already_fetched_ids_to_skip:
                 response_skipped_ids.add(event_id)
-                demisto.debug(f'Skipped duplicate event with ID: {event_id}')
+                demisto.debug(f"Skipped duplicate event with ID: {event_id}")
                 continue
 
             if len(events) == max_events:
-                demisto.debug(f'Reached maximum number of events {max_events}. Last event ID: {event_id}')
+                demisto.debug(f"Reached maximum number of events {max_events}. Last event ID: {event_id}")
                 break
 
             add_fields_to_event(event, event_type)
@@ -196,7 +192,7 @@ def get_events_from_client(
         events.extend(response_events)
 
         # Pagination / Continuing cursor - Followup API calls need to the unique page ID (if any more events)
-        has_more_events = False if len(events) == max_events else response['has_more']
+        has_more_events = False if len(events) == max_events else response["has_more"]
         request_body = create_get_events_request_body(pagination_cursor=pagination_cursor)
 
     return events
@@ -208,7 +204,7 @@ def push_events(events: list[dict]) -> None:
     Args:
         events (list): List of event dictionaries.
     """
-    demisto.debug(f'Starting to send {len(events)} events to XSIAM.')
+    demisto.debug(f"Starting to send {len(events)} events to XSIAM.")
     send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
 
@@ -221,11 +217,11 @@ def set_next_run(next_run: dict[str, Any]) -> None:
     Example:
         >>> set_next_run({"auditevents": {"from_date": "2024-12-02T11:54:19.710457Z", "ids": []}, "itemusages": ...})
     """
-    demisto.debug(f'Setting next run to {next_run}.')
+    demisto.debug(f"Setting next run to {next_run}.")
     demisto.setLastRun(next_run)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def fetch_events(
@@ -245,10 +241,10 @@ def fetch_events(
     Returns:
         tuple[dict, list]: Dictionary of the next run of the event type with 'from_date' and 'ids' list, list of fetched events.
     """
-    last_run_ids_to_skip = set(event_type_last_run.get('ids') or [])
-    from_date = arg_to_datetime(event_type_last_run.get('from_date')) or DEFAULT_FETCH_FROM_DATE
+    last_run_ids_to_skip = set(event_type_last_run.get("ids") or [])
+    from_date = arg_to_datetime(event_type_last_run.get("from_date")) or DEFAULT_FETCH_FROM_DATE
 
-    demisto.debug(f'Fetching events of type: {event_type} from date: {from_date.strftime(FILTER_DATE_FORMAT)}')
+    demisto.debug(f"Fetching events of type: {event_type} from date: {from_date.strftime(FILTER_DATE_FORMAT)}")
 
     event_type_events = get_events_from_client(
         client=client,
@@ -260,16 +256,16 @@ def fetch_events(
 
     if event_type_events:
         # Use event 'timestamp_ms' since it is consistent with FILTER_DATE_FORMAT
-        last_event_time = max(event_type_events, key=itemgetter('timestamp_ms'))['timestamp_ms']
-        next_run_ids_to_skip = {event['uuid'] for event in event_type_events if event['timestamp_ms'] == last_event_time}
-        event_type_next_run = {'from_date': last_event_time, 'ids': list(next_run_ids_to_skip)}
+        last_event_time = max(event_type_events, key=itemgetter("timestamp_ms"))["timestamp_ms"]
+        next_run_ids_to_skip = {event["uuid"] for event in event_type_events if event["timestamp_ms"] == last_event_time}
+        event_type_next_run = {"from_date": last_event_time, "ids": list(next_run_ids_to_skip)}
     else:
         last_event_time = None
-        event_type_next_run = {'from_date': from_date.strftime(FILTER_DATE_FORMAT), 'ids': list(last_run_ids_to_skip)}
+        event_type_next_run = {"from_date": from_date.strftime(FILTER_DATE_FORMAT), "ids": list(last_run_ids_to_skip)}
 
     demisto.debug(
-        f'Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}. '
-        f'Last event time: {last_event_time}.'
+        f"Fetched {len(event_type_events)} events of type: {event_type} out of a maximum of {event_type_max_results}. "
+        f"Last event time: {last_event_time}."
     )
 
     return event_type_next_run, event_type_events
@@ -298,15 +294,15 @@ def test_module_command(client: Client, event_types: list[str]) -> str:
             error_status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
 
             if error_status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
-                return 'Authorization Error: Make sure the API server URL and token are correctly set'
+                return "Authorization Error: Make sure the API server URL and token are correctly set"
 
             if error_status_code == HTTPStatus.NOT_FOUND:
-                return 'Endpoint Not Found: Make sure the API server URL is correctly set'
+                return "Endpoint Not Found: Make sure the API server URL is correctly set"
 
             # Some other unknown / unexpected error
             raise
 
-    return 'ok'
+    return "ok"
 
 
 def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict], CommandResults]:
@@ -319,9 +315,9 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
     Returns:
         tuple[list[dict], CommandResults]: List of events and CommandResults with human readable output.
     """
-    event_type = args['event_type']
-    limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_EVENTS_PER_FETCH
-    from_date = arg_to_datetime(args.get('from_date')) or DEFAULT_FETCH_FROM_DATE
+    event_type = args["event_type"]
+    limit = arg_to_number(args.get("limit")) or DEFAULT_MAX_EVENTS_PER_FETCH
+    from_date = arg_to_datetime(args.get("from_date")) or DEFAULT_FETCH_FROM_DATE
 
     events = get_events_from_client(client, event_type=event_type, from_date=from_date, max_events=limit)
 
@@ -330,7 +326,7 @@ def get_events_command(client: Client, args: dict[str, str]) -> tuple[list[dict]
     return events, CommandResults(readable_output=human_readable)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -339,29 +335,29 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     # required
-    base_url: str = params['url']
-    token: str = params.get('credentials', {}).get('password', '')
-    event_types: list[str] = argToList(params['event_types'], transform=lambda event_type: event_type.strip())
+    base_url: str = params["url"]
+    token: str = params.get("credentials", {}).get("password", "")
+    event_types: list[str] = argToList(params["event_types"], transform=lambda event_type: event_type.strip())
 
     # optional
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy: bool = params.get('proxy', False)
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy: bool = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {command!r}')
+    demisto.debug(f"Command being called is {command!r}")
     try:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
             proxy=proxy,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             result = test_module_command(client, event_types)
             return_results(result)
 
-        elif command == 'one-password-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
+        elif command == "one-password-get-events":
+            should_push_events = argToBoolean(args.pop("should_push_events"))
 
             events, results = get_events_command(client, args)
             return_results(results)
@@ -369,7 +365,7 @@ def main() -> None:  # pragma: no cover
             if should_push_events:
                 push_events(events)
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             all_events: list[dict] = []
             last_run = demisto.getLastRun()
             next_run: dict[str, Any] = {}
@@ -393,15 +389,15 @@ def main() -> None:  # pragma: no cover
             set_next_run(next_run)
 
         else:
-            raise NotImplementedError(f'Unknown command {command!r}')
+            raise NotImplementedError(f"Unknown command {command!r}")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command!r} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command!r} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

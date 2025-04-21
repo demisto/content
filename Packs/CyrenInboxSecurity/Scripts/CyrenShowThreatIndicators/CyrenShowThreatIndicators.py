@@ -1,53 +1,49 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-import json
 
 
 def stringify_indicators(threat_indicators):
     #
 
-    indicator_type = threat_indicators.get('type')
+    indicator_type = threat_indicators.get("type")
 
     # url indicators
-    if indicator_type == 'url':
-        return tableToMarkdown("", threat_indicators, ["type", "subType", "value"], pretty_title) + '\n\n'
+    if indicator_type == "url":
+        return tableToMarkdown("", threat_indicators, ["type", "subType", "value"], pretty_title) + "\n\n"
 
     # attachment indicators
-    if indicator_type == 'attachment':
-        attachment = threat_indicators.get('attachment', [])
+    if indicator_type == "attachment":
+        attachment = threat_indicators.get("attachment", [])
         attachment["type"] = "attachment"
-        return tableToMarkdown("", attachment,
-                               ["type", "file_name", "file_size", "file_category", "file_hash"],
-                               pretty_title) + '\n\n'
+        return (
+            tableToMarkdown("", attachment, ["type", "file_name", "file_size", "file_category", "file_hash"], pretty_title)
+            + "\n\n"
+        )
 
     # other indicators
     if threat_indicators.get("type") is not None:
-        return tableToMarkdown("", threat_indicators, ["type", "value"], pretty_title) + '\n\n'
+        return tableToMarkdown("", threat_indicators, ["type", "value"], pretty_title) + "\n\n"
     return None
 
 
 def pretty_title(s):
-    s = s.replace('_', ' ')
+    s = s.replace("_", " ")
     return pascalToSpace(s)
 
 
 def no_indicators():
     return {
-        'ContentsFormat': formats['markdown'],
-        'Type': entryTypes['note'],
-        'Contents': "No indicators identified by system."
-                    " _Refer to user feedback._\n"
+        "ContentsFormat": formats["markdown"],
+        "Type": entryTypes["note"],
+        "Contents": "No indicators identified by system. _Refer to user feedback._\n",
     }
 
 
 def main():
-
     try:
-        threat_indicators = demisto.get(
-            demisto.incidents()[0],
-            'CustomFields.cyrenthreatindicators'
-        )
+        threat_indicators = demisto.get(demisto.incidents()[0], "CustomFields.cyrenthreatindicators")
         if not threat_indicators:
             threat_indicators = "[]"
 
@@ -56,10 +52,7 @@ def main():
 
         # show threat indicators
         if isinstance(threat_indicators, list):
-            markdown_result +=\
-                "**Number of" \
-                " indicators:**&nbsp;&nbsp;&nbsp;&nbsp; {}\n\n".\
-                format(len(threat_indicators))
+            markdown_result += f"**Number of indicators:**&nbsp;&nbsp;&nbsp;&nbsp; {len(threat_indicators)}\n\n"
             for x in threat_indicators:
                 markdown_result += stringify_indicators(x)
         else:
@@ -68,15 +61,12 @@ def main():
         if markdown_result == "":
             return no_indicators()
 
-        return {'ContentsFormat': formats['markdown'],
-                'Type': entryTypes['note'],
-                'Contents': markdown_result}
+        return {"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": markdown_result}
 
     except Exception as e:
-        return_error(f'Failed to execute'
-                     f' CyrenShowThreatIndicators. Error: {str(e)}')
+        return_error(f"Failed to execute CyrenShowThreatIndicators. Error: {e!s}")
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     entry = main()
     return_results(entry)

@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Reco
   version: -1
@@ -7,6 +10,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - section: Connect
   display: JWT app token
   displaypassword: API Token
@@ -18,43 +22,52 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '200'
   display: Max fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incidents SaaS Source
   display: Source
   name: source
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Created At time before which incidents will be fetched
   display: Before
   name: before
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Created At time after which incidents will be fetched
   display: After
   name: after
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Risk level of the incidents to fetch
   display: Risk level
   name: risk_level
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -65,7 +78,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: "-"
@@ -412,6 +425,16 @@ script:
       - contextPath: Reco.SensitiveAssets.sensitivity_level
         description: The sensitivity level of the asset.
         type: Number
+  - arguments:
+      - description: Alert ID.
+        name: alert_id
+        required: true
+    description: Get alert ai summary from Reco.
+    name: reco-get-alert-ai-summary
+    outputs:
+      - contextPath: Reco.AlertSummary.markdown
+        description: The markdown of the alert summary.
+        type: String
 tests:
 - No tests
 fromversion: 6.5.0

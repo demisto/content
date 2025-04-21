@@ -2,10 +2,7 @@ from MapValuesTransformer import mapvalues
 
 
 def test_mapvalues_dict():
-    value = {
-        "testkey1": "testvalue1",
-        "testkey2": "testvalue2"
-    }
+    value = {"testkey1": "testvalue1", "testkey2": "testvalue2"}
     input_v = "testkey2: testvalue2"
     mapped_v = "testvalue2changed"
     assert mapvalues(value, input_v, mapped_v) == '{"testkey1": "testvalue1", "testkey2": "testvalue2changed"}'
@@ -26,10 +23,7 @@ def test_mapvalues_int():
 
 
 def test_mapvalues_dict_abnorm():
-    value = {
-        "testkey1": "testvalue1",
-        "testkey2": "testvalue2"
-    }
+    value = {"testkey1": "testvalue1", "testkey2": "testvalue2"}
     input_v = "testkey2:testvalue2"
     mapped_v = "testvalue2changed"
     assert mapvalues(value, input_v, mapped_v) == '{"testkey1": "testvalue1", "testkey2": "testvalue2changed"}'

@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Rasterize
   version: -1
@@ -9,57 +12,67 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  section: Connect
 - name: wait_time
   display: Time to wait before taking a screenshot (in seconds)
   required: false
   defaultvalue: "0"
   type: 0
   additionalinfo:
+  section: Connect
 - name: max_page_load_time
   display: Maximum time to wait for a page to load (in seconds)
   required: false
   defaultvalue: "180"
   type: 0
   additionalinfo:
+  section: Connect
 - name: chrome_options
   display: Chrome options (Advanced. See [?])
   required: false
   defaultvalue:
   type: 0
   additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
+  section: Connect
 - name: max_chromes_count
   display: Number of maximum Chrome instances to keep running simultaneously.
   required: false
   defaultvalue: "64"
   type: 0
   additionalinfo:
+  section: Connect
 - name: max_chrome_tabs_count
   display: Number of maximum tabs each Chrome will be allowed to open.
   required: false
   defaultvalue: "10"
   type: 0
   additionalinfo:
+  section: Connect
 - name: is_https
   display: Use secure requests protocol (HTTPS).
   defaultvalue: 'false'
   type: 8
   advanced: true
+  section: Connect
 - name: rasterize_mode
   display: Rasterize Mode
   required: false
   type: 0
   additionalinfo: Deprecated.
   defaultvalue:
+  section: Connect
 - name: blocked_urls
   display: List of domains to block
   required: false
   defaultvalue: "cloudflare.com"
   type: 0
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   required: false
   type: 8
   additionalinfo:
+  section: Connect
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize

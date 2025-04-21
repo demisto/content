@@ -25,7 +25,7 @@ This script clears user sessions across multiple integrations for a list of user
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| SessionClearResults.UserName | The username for which the session clearing process was executed. | String |
-| SessionClearResults.Result | The result of the session clearing process for the user (*Success* or *Failed*). | String |
-| SessionClearResults.Source | The integrations (e.g., *Microsoft Graph*, *Okta v2*) where the session clearing succeeded. | List |
 | SessionClearResults.Message | Additional information or error details if the session clearing process failed. | String |
+| SessionClearResults.Result | The result of the session clearing process for the user (*Success* or *Failed*). | String |
+| SessionClearResults.Brand | The integration (e.g., *Microsoft Graph*, *Okta v2*) where the session clearing succeeded. | String |
+| SessionClearResults.UserName | The username for which the session clearing process was executed. | String |

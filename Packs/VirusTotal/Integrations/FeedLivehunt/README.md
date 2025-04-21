@@ -58,3 +58,19 @@ f221425286c9073cbb2168f73120b6...|59/69|Win32 EXE|Wannacry Ransomware|WannaCry_R
 <iframe width="560" height="315" src="https://www.youtube.com/watch?v=Qv89-iS9HVY" frameborder="0"
 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
 allowfullscreen="true"></iframe>
+### vt-reset-fetch-indicators
+
+***
+This command will reset your fetch history.
+
+#### Base Command
+
+`vt-reset-fetch-indicators`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

@@ -2,11 +2,12 @@
     "name": "ExtraHop Reveal(x)",
     "description": "Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.",
     "support": "partner",
-    "currentVersion": "2.2.10",
+    "currentVersion": "2.3.0",
     "author": "ExtraHop",
     "url": "https://customer.extrahop.com/s/",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
+    "defaultDataSource": "ExtraHop v2",
     "categories": [
         "Network Security"
     ],
@@ -19,7 +20,8 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "CommonScripts": {
@@ -44,5 +46,11 @@
         "CoreAlertFields",
         "CommonTypes",
         "CommonPlaybooks"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

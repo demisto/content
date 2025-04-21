@@ -1,0 +1,103 @@
+{
+    "reports": [
+        {
+            "abstract": "",
+            "abuse_email": "test",
+            "analysis": "",
+            "asset_urls": [],
+            "attachments": [],
+            "board": "",
+            "category": "dns",
+            "city": "",
+            "country_code": "",
+            "created_at": "test",
+            "detected_at": "test",
+            "domain_registered_at": "test",
+            "hostnames": [],
+            "id": "test",
+            "incident_id": "test",
+            "incident_type": "test",
+            "investigation_id": "test",
+            "ip": "test",
+            "keywords": [
+                {
+                    "id": "test",
+                    "name": "test"
+                }
+            ],
+            "liveness": {
+                "online": true,
+                "last_checked_at": "test"
+            },
+            "location": "",
+            "mx_servers": [
+                {
+                    "priority": 50,
+                    "value": "test"
+                },
+                {
+                    "priority": 50,
+                    "value": "test"
+                }
+            ],
+            "ns_servers": [
+                "btest",
+                "test",
+                "test",
+                "test"
+            ],
+            "origins": [],
+            "port": 80,
+            "registrant_email": "",
+            "registrar_name": "test, Inc.",
+            "report_content": "### test",
+            "report_type": "itest",
+            "risks": [
+                {
+                    "type": "test",
+                    "message": "test "
+                },
+                {
+                    "type": "test",
+                    "message": "test"
+                }
+            ],
+            "samples": [
+                {
+                    "type": "test",
+                    "sample": ""
+                }
+            ],
+            "screenshots": [],
+            "sender": "test",
+            "sender_tenant_id": "cybelangel",
+            "sent_at": "test",
+            "severity": 2,
+            "source": "",
+            "status": "test",
+            "stream": "v-test-test-test-test",
+            "suggestions": [
+                {
+                    "type": "test",
+                    "message": "test"
+                }
+            ],
+            "tags": [],
+            "threat": "test-test.org",
+            "title": "test-test.org",
+            "updated_at": "test-01-test:30:test.test",
+            "url": "https://test.test.test/reports/test-test-test-v-test",
+            "usergroups": [
+                "test",
+                "test"
+            ],
+            "volume": null,
+            "whois": "test",
+            "malware_name": null,
+            "malware_location": null,
+            "machine_name": null,
+            "user_session": null,
+            "module": "domain_protection"
+        }
+    ]
+}

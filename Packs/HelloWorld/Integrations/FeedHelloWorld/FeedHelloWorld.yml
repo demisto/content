@@ -100,7 +100,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: helloworld-get-indicators
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
   script: '-'

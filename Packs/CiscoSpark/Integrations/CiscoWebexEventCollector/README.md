@@ -19,13 +19,19 @@ This integration was integrated and tested with version 1 of CiscoWebex API.
     | Compliance Officer Redirect URI |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Fetch security audit events | In order to fetch security audit events, pro pack needs to be installed on the Webex instance. | False |
+    | Fetch security audit events | To fetch security audit events, the Pro Pack must be installed on the Webex instance, and *Allow user authentication data* must be enabled. See the note below. | False |
     | Maximum number of events per fetch |  | False |
 
 4. 
     1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sign in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). You will then be redirected to the `redirect URI` you defined in the application. The URL will contain a query parameter called `code`. The value of this query parameter will be used in the next command. 
     2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`). The **code** argument should be set to the value returned in the code query parameter from the previous command.
     3. Run the ***cisco-webex-oauth-test*** command with the **user** argument. The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`) to ensure connectivity to Cisco Webex.
+
+   **Note:** To fetch *security audit events*, the Pro Pack must be installed on the Webex instance. Additionally, the *Allow user authentication data* setting must be enabled:
+
+     Go to Management > Organization Settings.
+        In the User authentication data section, toggle Allow user authentication data ON.
+        For more details, refer to the [official documentation.](https://help.webex.com/en-us/article/pf66vg/Log-and-analyze-user-sign-ins-and-sign-outs)
 
 ## Commands
 

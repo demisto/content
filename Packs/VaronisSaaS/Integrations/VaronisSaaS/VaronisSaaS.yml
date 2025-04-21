@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: VaronisSaaS
   version: -1
@@ -7,44 +10,52 @@ configuration:
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
   defaultvalue: Varonis SaaS Incident
+  section: Collect
 - display: The FQDN/IP the integration should connect to
   hidden: false
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: X-API-Key
   hidden: false
   name: apiKey
   required: true
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
 - defaultvalue: '1000'
   display: Maximum number of incidents per fetch
   additionalinfo:
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 1 week
   display: First fetch time
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   hidden: false
@@ -55,12 +66,14 @@ configuration:
   - High
   required: false
   type: 15
+  section: Collect
 - display: Varonis threat model name
   additionalinfo: Pipe-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
   hidden: false
   name: threat_model
   required: false
   type: 0
+  section: Collect
 - defaultvalue: New
   display: Varonis alert status
   hidden: false
@@ -73,6 +86,7 @@ configuration:
   - Auto-Resolved
   required: false
   type: 15
+  section: Collect
 - additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS).'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -82,6 +96,7 @@ configuration:
   - Outgoing
   type: 15
   required: false
+  section: Collect
 description: Streamline alerts and related forensic information from Varonis SaaS.
 display: Varonis SaaS
 name: VaronisSaaS
@@ -523,7 +538,7 @@ script:
     name: get-mapping-fields
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: false
   isfetch: true
   ismappable: true
@@ -536,7 +551,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- No tests
 fromversion: 6.5.0
 defaultmapperin: Varonis SaaS Incident - Incoming Mapper
 

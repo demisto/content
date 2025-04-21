@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 # Defining global variables
 layouts: list = []
 integrations: list = []
@@ -99,16 +100,13 @@ def post_api_request(url: str, body: dict) -> dict:
     Returns:
         Dict: dictionary representation of the response
     """
-    api_args = {
-        "uri": url,
-        "body": body
-    }
+    api_args = {"uri": url, "body": body}
     raw_res = demisto.executeCommand("core-api-post", api_args)
     try:
-        res = raw_res[0]['Contents']['response']
+        res = raw_res[0]["Contents"]["response"]
     except (TypeError, KeyError):
         demisto.debug(f'error with "core-api-post" {api_args=}')
-        return_error(f'API Request failed, unable to parse: {raw_res}')
+        return_error(f"API Request failed, unable to parse: {raw_res}")
     return res
 
 
@@ -123,13 +121,13 @@ def get_api_request(url: str) -> list | str | None:
     """
     raw_res = demisto.executeCommand("core-api-get", {"uri": url})
     try:
-        res = raw_res[0]['Contents']['response']
+        res = raw_res[0]["Contents"]["response"]
         # If it's a string and not an object response, means this command has failed.
         if isinstance(res, str):
             return res if autodata is True else None
     except KeyError:
         demisto.debug(f'error with "core-api-get" {url=}')
-        return_error(f'API Request failed, no response from API call to {url}')
+        return_error(f"API Request failed, no response from API call to {url}")
     return res
 
 
@@ -149,7 +147,7 @@ def get_layouts() -> list:
     Returns:
         dict: Filtered data for the custom layouts having the data only for the fields mentioned.
     """
-    fields = ['description', 'details', 'detailsV2', 'group', 'id', 'modified', 'name', 'packID', 'packName', 'system']
+    fields = ["description", "details", "detailsV2", "group", "id", "modified", "name", "packID", "packName", "system"]
     resp = get_api_request("/layouts")
     filtered_data = create_context(resp, fields)
     return cast(list, filtered_data)
@@ -161,7 +159,7 @@ def get_incident_types() -> list:
     Returns:
         dict: Filtered data for the incident types having the data only for the fields mentioned.
     """
-    fields = ['id', 'layout', 'modified', 'name', 'playbookId', 'system', 'packID', 'packName']
+    fields = ["id", "layout", "modified", "name", "playbookId", "system", "packID", "packName"]
     resp = get_api_request("/incidenttype")
     filtered_data = create_context(resp, fields)
     return cast(list, filtered_data)
@@ -173,8 +171,20 @@ def get_incident_fields() -> list:
     Returns:
         dict: Filtered data for the custom incident fields having the data only for the fields mentioned.
     """
-    fields = ['associatedToAll', 'associatedTypes', 'cliName', 'description',
-              'id', 'modified', 'name', 'type', 'system', 'locked', 'packID', 'packName']
+    fields = [
+        "associatedToAll",
+        "associatedTypes",
+        "cliName",
+        "description",
+        "id",
+        "modified",
+        "name",
+        "type",
+        "system",
+        "locked",
+        "packID",
+        "packName",
+    ]
     resp = get_api_request("/incidentfields")
     filtered_data = create_context(resp, fields)
     return cast(list, filtered_data)
@@ -186,8 +196,19 @@ def get_classifier_mapper() -> tuple[Any, Any, Any]:
     Returns:
         dict: Filtered data for the custom classifers, incoming mapper and outgoing mapper only for the fields mentioned.
     """
-    fields = ['description', 'id', 'modified', 'name', 'system', 'type',
-              'defaultIncidentType', 'keyTypeMap', 'mapping', 'packID', 'packName']
+    fields = [
+        "description",
+        "id",
+        "modified",
+        "name",
+        "system",
+        "type",
+        "defaultIncidentType",
+        "keyTypeMap",
+        "mapping",
+        "packID",
+        "packName",
+    ]
     resp: list = post_api_request("/classifier/search", {}).get("classifiers", [])
     if resp:
         filtered_data = cast(list, create_context(resp, fields))
@@ -203,7 +224,7 @@ def get_playbooks() -> list:
     Returns:
         dict: Filtered data for the custom playbooks having the data only for the fields mentioned.
     """
-    fields = ['commands', 'id', 'inputs', 'modified', 'name', 'outputs', 'packID', 'packName', 'tasks', 'system', 'comment']
+    fields = ["commands", "id", "inputs", "modified", "name", "outputs", "packID", "packName", "tasks", "system", "comment"]
     resp = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks")
     filtered_data = create_context(resp, fields)
     return cast(list, filtered_data)
@@ -215,7 +236,7 @@ def get_automations() -> list:
     Returns:
         dict: Filtered data for the custom automation, having the data only for the fields mentioned.
     """
-    fields = ['arguments', 'comment', 'contextKeys', 'id', 'modified', 'name', 'system', 'tags', 'type']
+    fields = ["arguments", "comment", "contextKeys", "id", "modified", "name", "system", "tags", "type"]
     resp = post_api_request("/automation/search", {"query": "hidden:F"}).get("scripts")
     filtered_data = create_context(resp, fields)
     return cast(list, filtered_data)
@@ -230,23 +251,41 @@ def get_integrations() -> tuple[list, dict]:
     command_data : dictionary containing filtered configuration data
     """
     command_data = {}
-    instance_fields = ['brand', 'category', 'id', 'incomingMapperId', 'isBuiltin', 'isSystemIntegration', 'mappingId', 'modified',
-                       'name', 'outgoingMapperId', 'packID', 'packName', 'configvalues']
-    configuration_fields = ['description', 'detailedDescription', 'display',
-                            'id', 'name']  # if require script then add 'integrationScript'
+    instance_fields = [
+        "brand",
+        "category",
+        "id",
+        "incomingMapperId",
+        "isBuiltin",
+        "isSystemIntegration",
+        "mappingId",
+        "modified",
+        "name",
+        "outgoingMapperId",
+        "packID",
+        "packName",
+        "configvalues",
+    ]
+    configuration_fields = [
+        "description",
+        "detailedDescription",
+        "display",
+        "id",
+        "name",
+    ]  # if require script then add 'integrationScript'
 
     resp = post_api_request("/settings/integration/search", {})
     int_data: list = resp.get("configurations", [])
     for data in int_data:
         command_list = []
         command_value: dict[str, Union[str, list[str], None]] = {
-            'id': None,
-            'name': None,
-            'display': None,
-            'description': None,
-            'commands': []
+            "id": None,
+            "name": None,
+            "display": None,
+            "description": None,
+            "commands": [],
         }
-        command_data[data['display']] = command_value
+        command_data[data["display"]] = command_value
         if data is not None:
             int_script = data.get("integrationScript")
             if int_script is not None:
@@ -254,10 +293,10 @@ def get_integrations() -> tuple[list, dict]:
                 if commands is not None:
                     for i_name in commands:
                         command_list.append(i_name.get("name"))
-        command_value["id"] = data['id']
-        command_value["name"] = data['name']
-        command_value["display"] = data['display']
-        command_value["description"] = data['description']
+        command_value["id"] = data["id"]
+        command_value["name"] = data["name"]
+        command_value["display"] = data["display"]
+        command_value["description"] = data["description"]
         command_value["commands"] = command_list
     instance_data = cast(list, create_context(resp.get("instances", []), instance_fields))
     configuration_data = cast(list, create_context(resp.get("configurations", []), configuration_fields))
@@ -278,7 +317,7 @@ def get_playbook_data(playbook_name: str) -> dict:
     for data_item in playbooks:
         if data_item["name"] == playbook_name:
             return dict(data_item)
-    demisto.debug(f'playbook {playbook_name} not found')
+    demisto.debug(f"playbook {playbook_name} not found")
     return {}
 
 
@@ -294,31 +333,16 @@ def get_playbook_dependencies(playbook: dict) -> dict:
     """
     pb_id = playbook["id"]
     pb_name = playbook["name"]
-    body = {
-        "items": [
-            {
-                "id": f"{pb_id}",
-                "type": "playbook"
-            }
-        ],
-        "dependencyLevel": "optional"
-    }
+    body = {"items": [{"id": f"{pb_id}", "type": "playbook"}], "dependencyLevel": "optional"}
     resp = cast(list, dict_safe_get(post_api_request("/itemsdependencies", body), ("existing", "playbook", pb_id)))
     if not resp:
         raise DemistoException(f"Failed to retrieve dependencies for {pb_name}")
 
-    dependencies: Dict[str, List] = {
-        "automation": [],
-        "playbook": [],
-        "integration": []
-    }
+    dependencies: Dict[str, List] = {"automation": [], "playbook": [], "integration": []}
     if resp:
         for resp_item in resp:
             if resp_item["type"] in dependencies:
-                data = {
-                    "name": resp_item["name"],
-                    "system": resp_item["system"]
-                }
+                data = {"name": resp_item["name"], "system": resp_item["system"]}
                 dependencies[resp_item["type"]].append(data)
     return dependencies
 
@@ -515,7 +539,8 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
             if integration.get("name") in int_names or integration["brand"] in int_names or integration.get("id") in int_names:
                 # get integration incident types
                 classifier_data, incident_types_data = get_instance_classifier_incident_type(
-                    integration, incident_types, classifiers)
+                    integration, incident_types, classifiers
+                )
                 # get integration incoming mapper
                 incoming_mapper_data = get_instance_incoming_mapper(integration, incoming_mappers)
                 # get integration outgoing mapper
@@ -532,38 +557,34 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
                         field_t = {}
                         evidence_data = {}
                         field_list = []
-                        t = v.get('detailsV2')
+                        t = v.get("detailsV2")
                         if t is not None:
                             e = t.get("tabs")
                             for test in e:
-                                if 'sections' in test:
+                                if "sections" in test:
                                     section_data = test.get("sections")
                                     for tab in section_data:
-                                        name = tab.get('name')
+                                        name = tab.get("name")
                                         field_type = {}
                                         field_t[name] = field_type
-                                        items = tab.get('items')
-                                        columns = tab.get('columns')
+                                        items = tab.get("items")
+                                        columns = tab.get("columns")
                                         for a in incident_fields:
                                             if items is not None:
                                                 for j in items:
-                                                    if (
-                                                        j.get("fieldId") in (a.get("cliName"), a.get("name"))
-                                                    ) and (
-                                                        j.get("fieldId") not in field_type.keys()
+                                                    if (j.get("fieldId") in (a.get("cliName"), a.get("name"))) and (
+                                                        j.get("fieldId") not in field_type
                                                     ):
                                                         field_type[j.get("fieldId")] = a.get("type")
                                             if columns is not None:
                                                 for c_data in columns:
-                                                    if c_data.get("key") == a.get(
-                                                        "name"
-                                                    ) or c_data.get("key") == a.get(
+                                                    if c_data.get("key") == a.get("name") or c_data.get("key") == a.get(
                                                         "cliName"
                                                     ):
-                                                        field_type[c_data.get('key')] = a.get("type")
-                                            if tab.get('type') == 'evidence' and a.get("id").startswith("evidence_"):
+                                                        field_type[c_data.get("key")] = a.get("type")
+                                            if tab.get("type") == "evidence" and a.get("id").startswith("evidence_"):
                                                 evidence_data[a["name"]] = a["type"]
-                                                field_t[tab.get('name')] = evidence_data
+                                                field_t[tab.get("name")] = evidence_data
                     field_list.append(field_t)
                 # adding additional data into integration
                 pb_integration[integration["display"]][integration["instance_name"]] |= {
@@ -573,7 +594,7 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
                     "field_type": field_t,
                     "fields": fields_data,
                     "incoming_mapper": incoming_mapper_data,
-                    "outgoing_mapper": outgoing_mapper_data
+                    "outgoing_mapper": outgoing_mapper_data,
                 }
 
     return pb_integration
@@ -597,18 +618,18 @@ def sub_data(playbook: dict) -> tuple:
     task_dict: dict = {}
     for data_key in playbook:
         if data_key == "tasks":
-            task_data: dict = playbook.get('tasks', [])
+            task_data: dict = playbook.get("tasks", [])
             for data in task_data:
                 task_dict = task_data[data]
                 for k in task_dict:
-                    if k == 'task':
+                    if k == "task":
                         new = task_dict.get(k)
-                        if new is not None and new.get('type') == 'playbook':
-                            test_d.add(new.get('playbookId'))
+                        if new is not None and new.get("type") == "playbook":
+                            test_d.add(new.get("playbookId"))
                         # if 'brand' in new.keys():
                         #     int_name.add(new.get('brand'))
-                        if new is not None and 'scriptId' in new:
-                            task_name.add(new.get('scriptId'))
+                        if new is not None and "scriptId" in new:
+                            task_name.add(new.get("scriptId"))
 
     command_list = playbook.get("commands", [])
     if configuration is not None:
@@ -645,8 +666,8 @@ def create_config_file(pb_name: str, ignore_playbook: list) -> dict:
         for _k, v in playbook["automation"].items():
             auto_id = v.get("id")
             resp = json.dumps(get_api_request(f"/automation/export/{auto_id}"))
-            resp = (resp.split("script: |")[1])
-            resp = (resp.split("type: python")[0])
+            resp = resp.split("script: |")[1]
+            resp = resp.split("type: python")[0]
             resp = resp.lstrip("\\n ")
             resp = resp.rstrip("\\n")
             auto_script[auto_id] = resp
@@ -717,8 +738,8 @@ def main() -> None:  # pragma: no cover
         else:
             return_error("No playbooks found. Please ensure that playbooks are present to generate the configuration file.")
     except Exception as ex:
-        return_error(f'Failed to execute Script. Error: {ex}')
+        return_error(f"Failed to execute Script. Error: {ex}")
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ("__builtin__", "builtins"):
     main()

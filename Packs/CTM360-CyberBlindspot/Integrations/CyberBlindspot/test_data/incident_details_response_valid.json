@@ -7,8 +7,8 @@
     "status": "Member Feedback",
     "coa": "Member Side Action",
     "remarks": "New leaked_credential with severity High found",
-    "created_date": "27-12-2023 05:42:18 AM",
-    "updated_date": "27-12-2023 05:42:18 AM",
+    "first_seen": "27-12-2023 05:42:18 AM",
+    "last_seen": "27-12-2023 05:42:18 AM",
     "brand": "Mock Brand",
     "timestamp": 1703655740964
 }

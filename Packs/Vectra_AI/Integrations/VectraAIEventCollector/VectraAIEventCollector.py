@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """
 Vectra Event Collector XSIAM Integration
 
@@ -10,10 +11,9 @@ It uses version 2.2 of Vectra AI REST API.
 See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
-from typing import Dict, Any, Tuple, List
 from datetime import datetime, timedelta
+from typing import Any
 from urllib.parse import urljoin  # type: ignore
-
 
 """ CONSTANTS """
 
@@ -55,7 +55,7 @@ class VectraClient(BaseClient):
             headers=self._create_headers(),
         )
 
-    def _create_headers(self) -> Dict[str, str]:
+    def _create_headers(self) -> dict[str, str]:
         """
         Generates the necessary HTTP headers.
 
@@ -68,7 +68,7 @@ class VectraClient(BaseClient):
             "Authorization": f"Token {self.api_key}",
         }
 
-    def get_detections(self, first_timestamp: str) -> Dict[str, Any]:
+    def get_detections(self, first_timestamp: str) -> dict[str, Any]:
         """
         Retrieve detections. Detection objects contain all the information related to security events detected on the network.
 
@@ -91,7 +91,7 @@ class VectraClient(BaseClient):
             params=params,
         )
 
-    def get_audits(self, start: str) -> Dict[str, Any]:
+    def get_audits(self, start: str) -> dict[str, Any]:
         """
         Retrieve audits. Audit objects contain data that lists requested accesses to resources. This information includes but
         is not limited to:
@@ -118,7 +118,7 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def add_parsing_rules(event: Dict[str, Any]) -> Any:
+def add_parsing_rules(event: dict[str, Any]) -> Any:
     """
     Helper method to add the Parsing Rules to an event.
 
@@ -134,7 +134,8 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
         if DETECTION_TIMESTAMP_KEY in event:
             event["_time"] = timestamp_to_datestring(
                 datetime.strptime(
-                    event.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
+                    event.get(DETECTION_TIMESTAMP_KEY),  # type: ignore[arg-type]
+                    DETECTION_TIMESTAMP_FORMAT,  # type: ignore
                 ).timestamp()
                 * 1000,
                 is_utc=True,
@@ -150,16 +151,14 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
 
     except Exception as e:
         demisto.debug(
-            f"""Failed adding parsing rules to event '{str(event)}': {str(e)}.
+            f"""Failed adding parsing rules to event '{event!s}': {e!s}.
             Will be added in ingestion time"""
         )
 
         return event
 
 
-def get_audits_to_send(
-    audits: List[Dict[str, Any]], is_first_fetch: bool, prev_fetch_timestamp: str
-) -> List[Dict[str, Any]]:
+def get_audits_to_send(audits: list[dict[str, Any]], is_first_fetch: bool, prev_fetch_timestamp: str) -> list[dict[str, Any]]:
     """
     Helper method to filter out audits that should not be sent. Since the API
     returns audits on a day resolution, we need to check the audit timestamp
@@ -187,7 +186,7 @@ def get_audits_to_send(
         return audits
 
 
-def get_most_recent_detection(detections: List[Dict[str, Any]]) -> Dict[str, Any]:
+def get_most_recent_detection(detections: list[dict[str, Any]]) -> dict[str, Any]:
     """
     Helper method to return the most recent detection.
 
@@ -239,7 +238,7 @@ def get_detections_cmd(client: VectraClient, first_timestamp: str) -> CommandRes
     - `CommandResults` to War Room.
     """
 
-    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
+    detections: list[dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
     if detections:
         md = tableToMarkdown(
             "Detections",
@@ -284,13 +283,11 @@ def get_audits_cmd(client: VectraClient, start: str) -> CommandResults:
     - `CommandResults` to War Room.
     """
 
-    audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])  # type: ignore
+    audits: list[dict[str, Any]] = client.get_audits(start=start).get("audits", [])  # type: ignore
     if audits:
         md = tableToMarkdown(f"Audits since {start}", audits)
 
-        results = CommandResults(
-            outputs_prefix=f"{VENDOR}.Audits", outputs=audits, readable_output=md
-        )
+        results = CommandResults(outputs_prefix=f"{VENDOR}.Audits", outputs=audits, readable_output=md)
 
     else:
         results = CommandResults(
@@ -317,25 +314,23 @@ def fetch_events_cmd(client) -> None:
 
     detections, audits, next_fetch = fetch_events(client=client)
 
-    demisto.debug(f"Setting last run to {str(next_fetch)}...")
+    demisto.debug(f"Setting last run to {next_fetch!s}...")
     demisto.setLastRun(next_fetch)
 
-    parsed_events: List[Dict[str, Any]] = []
+    parsed_events: list[dict[str, Any]] = []
 
     demisto.debug("Attempting to add parsing rules to event...")
     for event in detections + audits:
         parsed_events.append(add_parsing_rules(event))
     demisto.debug("Finished adding parsing rules.")
 
-    demisto.debug(
-        f"Sending {len(parsed_events)} events to XSIAM ({len(detections)} detections, {len(audits)} audits)"
-    )
+    demisto.debug(f"Sending {len(parsed_events)} events to XSIAM ({len(detections)} detections, {len(audits)} audits)")
     send_events_to_xsiam(parsed_events, vendor=VENDOR, product=VENDOR)  # type: ignore
 
 
 def fetch_events(
     client: VectraClient,
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, str]]:
     """
     Fetch detections based on whether it's the first fetch or not.
 
@@ -348,7 +343,7 @@ def fetch_events(
     - `Dict[str, str]` of the next_fetch
     """
 
-    is_first_fetch: bool = False if demisto.getLastRun() else True
+    is_first_fetch: bool = not demisto.getLastRun()
 
     # The first fetch
     if is_first_fetch:
@@ -367,17 +362,13 @@ def fetch_events(
 
         # If we're already fetching, we want only from today
         start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
-        previous_fetch_most_recent_audit_timestamp_str = demisto.getLastRun().get(
-            AUDIT_NEXT_RUN_KEY
-        )
+        previous_fetch_most_recent_audit_timestamp_str = demisto.getLastRun().get(AUDIT_NEXT_RUN_KEY)
 
     # Fetch Audits
     demisto.debug(f"Fetching audits from {start} to now...")
-    returned_audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])
+    returned_audits: list[dict[str, Any]] = client.get_audits(start=start).get("audits", [])
 
-    audits = get_audits_to_send(
-        returned_audits, is_first_fetch, previous_fetch_most_recent_audit_timestamp_str
-    )
+    audits = get_audits_to_send(returned_audits, is_first_fetch, previous_fetch_most_recent_audit_timestamp_str)
 
     demisto.debug(f"Fetched {len(audits)} audits.")
     if audits:
@@ -399,7 +390,8 @@ def fetch_events(
         # The filter for detections by first_timestamp is inclusive so we need to increase it by 1 minute
         next_run_detection_first_timestamp = datetime.strftime(
             datetime.strptime(
-                most_recent_detection.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
+                most_recent_detection.get(DETECTION_TIMESTAMP_KEY),  # type: ignore
+                DETECTION_TIMESTAMP_FORMAT,  # type: ignore
             )
             + timedelta(minutes=1),
             DETECTION_TIMESTAMP_QUERY_FORMAT,
@@ -419,9 +411,7 @@ def fetch_events(
     )
 
 
-def get_events(
-    client: VectraClient, first_fetch: datetime
-) -> Tuple[CommandResults, CommandResults]:
+def get_events(client: VectraClient, first_fetch: datetime) -> tuple[CommandResults, CommandResults]:
     """
     Command function to retrieve detections and audits.
 
@@ -434,13 +424,9 @@ def get_events(
     - `CommandResults` of audits to War Room.
     """
 
-    detection_res = get_detections_cmd(
-        client=client, first_timestamp=first_fetch.strftime(DETECTION_TIMESTAMP_QUERY_FORMAT)
-    )
+    detection_res = get_detections_cmd(client=client, first_timestamp=first_fetch.strftime(DETECTION_TIMESTAMP_QUERY_FORMAT))
 
-    audits_res = get_audits_cmd(
-        client=client, start=first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
-    )
+    audits_res = get_audits_cmd(client=client, start=first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT))
 
     return detection_res, audits_res
 
@@ -476,7 +462,8 @@ def main() -> None:  # pragma: no cover
         elif cmd in ("vectra-get-events", "fetch-events"):
             if cmd == "vectra-get-events":
                 first_fetch: datetime = arg_to_datetime(
-                    arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"  # type: ignore
+                    arg=config.get("first_fetch", "3 days"),
+                    arg_name="First fetch time",  # type: ignore
                 )
                 detections_cmd_res, audits_cmd_res = get_events(client, first_fetch)
 
@@ -484,7 +471,7 @@ def main() -> None:  # pragma: no cover
                 return_results(audits_cmd_res)
 
                 if argToBoolean(args.pop("should_push_events")):
-                    parsed_events: List[Dict[str, Any]] = []
+                    parsed_events: list[dict[str, Any]] = []
 
                     demisto.debug("Attempting to add parsing rules to event...")
                     for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore
@@ -506,7 +493,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
 
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

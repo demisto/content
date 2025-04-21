@@ -1,5 +1,5 @@
-from IbmUpdateTask import update_task
 import demistomock as demisto
+from IbmUpdateTask import update_task
 
 
 def test_update_task_success(mocker):
@@ -10,4 +10,4 @@ def test_update_task_success(mocker):
     result = update_task(args)
 
     assert result.readable_output == "Task updated successfully"
-    demisto.executeCommand.assert_called_once_with('rs-update-task', args=args)
+    demisto.executeCommand.assert_called_once_with("rs-update-task", args=args)

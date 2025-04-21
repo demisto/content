@@ -1,36 +1,29 @@
 import json
-import io
 from datetime import datetime
+
+from CommonServerPython import *
 from XMCyberIntegration import (
-    enrich_from_entity_id,
-    affected_entities_list_command,
-    affected_critical_assets_list_command,
-    enrich_entity_from_fields,
-    get_version_command,
-    is_xm_version_supported_command,
-    enrich_from_ip,
-)
-from XMCyberIntegration import (
-    Client,
-    XM,
-    URLS,
-    PAGE_SIZE,
     DEFAULT_TIME_ID,
-    TOP_ENTITIES,
+    PAGE_SIZE,
     PREVIOUS_DEFAULT_TIME_ID,
-)
-from XMCyberIntegration import (
     SEVERITY,
+    TOP_ENTITIES,
+    URLS,
+    XM,
     XM_CYBER_INCIDENT_TYPE_ASSET,
-    XM_CYBER_INCIDENT_TYPE_TECHNIQUE,
-)
-from XMCyberIntegration import (
     XM_CYBER_INCIDENT_TYPE_CHOKE_POINT,
     XM_CYBER_INCIDENT_TYPE_SCORE,
+    XM_CYBER_INCIDENT_TYPE_TECHNIQUE,
+    Client,
+    affected_critical_assets_list_command,
+    affected_entities_list_command,
+    enrich_entity_from_fields,
+    enrich_from_entity_id,
+    enrich_from_ip,
+    fetch_incidents_command,
+    get_version_command,
+    is_xm_version_supported_command,
 )
-from XMCyberIntegration import fetch_incidents_command
-from CommonServerPython import *
-
 
 TEST_URL = "https://test.com/api"
 
@@ -38,7 +31,7 @@ TEST_URL = "https://test.com/api"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -62,9 +55,7 @@ def assert_response(response, prefix, key_field, outputs):
 def mock_request_and_get_xm_mock(json_path, requests_mock, url_to_mock):
     json = util_load_json(json_path)
     requests_mock.get(url_to_mock, json=json)
-    return mock_requests_and_get_xm_mock(
-        requests_mock, [{"json_path": json_path, "url_to_mock": url_to_mock}]
-    )
+    return mock_requests_and_get_xm_mock(requests_mock, [{"json_path": json_path, "url_to_mock": url_to_mock}])
 
 
 def mock_requests_and_get_xm_mock(requests_mock, mockArr):
@@ -88,13 +79,9 @@ def test_affected_critical_assets_list(requests_mock):
         f'{TEST_URL}{URLS.Critical_Assets_At_Risk.format(entity_id="15553084234424912589")}'
         f"{req_params}&pageSize={PAGE_SIZE}&page=1"
     )
-    xm = mock_request_and_get_xm_mock(
-        "test_data/affected_assets.json", requests_mock, mock_url
-    )
+    xm = mock_request_and_get_xm_mock("test_data/affected_assets.json", requests_mock, mock_url)
 
-    response = affected_critical_assets_list_command(
-        xm, {"entityId": "15553084234424912589"}
-    )
+    response = affected_critical_assets_list_command(xm, {"entityId": "15553084234424912589"})
 
     assert_response(
         response,
@@ -128,13 +115,9 @@ def test_affected_entities_list(requests_mock):
         f'{TEST_URL}{URLS.Affected_Entities.format(entity_id="gcpVirtualMachine-8891723672015628290")}'
         f"{req_params}&pageSize={PAGE_SIZE}&page=1"
     )
-    xm = mock_request_and_get_xm_mock(
-        "test_data/affected_entities.json", requests_mock, mock_url
-    )
+    xm = mock_request_and_get_xm_mock("test_data/affected_entities.json", requests_mock, mock_url)
 
-    response = affected_entities_list_command(
-        xm, {"entityId": "gcpVirtualMachine-8891723672015628290"}
-    )
+    response = affected_entities_list_command(xm, {"entityId": "gcpVirtualMachine-8891723672015628290"})
 
     assert_response(
         response,
@@ -169,13 +152,8 @@ def test_enrich_from_entity_id(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
 
-    mock_url = (
-        f'{TEST_URL}{URLS.Entities}?filter={{"entityId": "3110337924893579985"}}'
-        f"&pageSize={PAGE_SIZE}&page=1"
-    )
-    xm = mock_request_and_get_xm_mock(
-        "test_data/entity_id.json", requests_mock, mock_url
-    )
+    mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"entityId": "3110337924893579985"}}&pageSize={PAGE_SIZE}&page=1'
+    xm = mock_request_and_get_xm_mock("test_data/entity_id.json", requests_mock, mock_url)
 
     response = enrich_from_entity_id(xm, {"entityId": "3110337924893579985"})
 
@@ -259,9 +237,7 @@ def test_ip(requests_mock):
     """
 
     mock_url = f'{TEST_URL}{URLS.Entities}?filter={{"ipv4Str": "172.0.0.1"}}&pageSize={PAGE_SIZE}&page=1'
-    xm = mock_request_and_get_xm_mock(
-        "test_data/entity_id.json", requests_mock, mock_url
-    )
+    xm = mock_request_and_get_xm_mock("test_data/entity_id.json", requests_mock, mock_url)
 
     response = enrich_from_ip(xm, {"ip": "172.0.0.1"})
 
@@ -309,15 +285,11 @@ def test_get_version(requests_mock):
 def test_version_supported(requests_mock):
     mock_url = f"{TEST_URL}{URLS.Version}"
 
-    valid_xm = mock_request_and_get_xm_mock(
-        "test_data/version.json", requests_mock, mock_url
-    )
+    valid_xm = mock_request_and_get_xm_mock("test_data/version.json", requests_mock, mock_url)
     valid_response = is_xm_version_supported_command(valid_xm, {})
     assert_response(valid_response, "XMCyber.IsVersion", "entityId", {"valid": True})
 
-    invalid_xm = mock_request_and_get_xm_mock(
-        "test_data/invalid_version.json", requests_mock, mock_url
-    )
+    invalid_xm = mock_request_and_get_xm_mock("test_data/invalid_version.json", requests_mock, mock_url)
     invalid_response = is_xm_version_supported_command(invalid_xm, {})
     assert_response(invalid_response, "XMCyber.IsVersion", "entityId", {"valid": False})
 
@@ -942,29 +914,18 @@ def _get_top_techniques_incidents(create_time):
 
 
 def test_fetch_incident(requests_mock):
-
     time_id_param = f"?timeId={DEFAULT_TIME_ID}"
     page_parm = f"&page=1&pageSize={TOP_ENTITIES}"
     amount_of_result_param = f"&amountOfResults={TOP_ENTITIES}"
 
     risk_score_mock_url = f"{TEST_URL}{URLS.Risk_Score}{time_id_param}&resolution=1"
-    top_assets_at_risk_url = (
-        f"{TEST_URL}{URLS.Top_Assets_At_Risk}{time_id_param}{amount_of_result_param}"
-    )
-    choke_point_url = (
-        f"{TEST_URL}{URLS.Top_Choke_Points}{time_id_param}{amount_of_result_param}"
-    )
+    top_assets_at_risk_url = f"{TEST_URL}{URLS.Top_Assets_At_Risk}{time_id_param}{amount_of_result_param}"
+    choke_point_url = f"{TEST_URL}{URLS.Top_Choke_Points}{time_id_param}{amount_of_result_param}"
     top_technique_url = f"{TEST_URL}{URLS.Techniques}{time_id_param}{page_parm}"
-    top_technique_previous_url = (
-        f"{TEST_URL}{URLS.Techniques}?timeId={PREVIOUS_DEFAULT_TIME_ID}{page_parm}"
-    )
+    top_technique_previous_url = f"{TEST_URL}{URLS.Techniques}?timeId={PREVIOUS_DEFAULT_TIME_ID}{page_parm}"
     domain_credentials_remediation_url = f"{TEST_URL}{URLS.Techniques}/Exploit::DomainCredentials/remediation{time_id_param}"
-    taint_shared_content_remediation_url = (
-        f"{TEST_URL}{URLS.Techniques}/taintSharedContent/remediation{time_id_param}"
-    )
-    exploit_ms_remediation_url = (
-        f"{TEST_URL}{URLS.Techniques}/Exploit::Ms17010/remediation{time_id_param}"
-    )
+    taint_shared_content_remediation_url = f"{TEST_URL}{URLS.Techniques}/taintSharedContent/remediation{time_id_param}"
+    exploit_ms_remediation_url = f"{TEST_URL}{URLS.Techniques}/Exploit::Ms17010/remediation{time_id_param}"
 
     xm = mock_requests_and_get_xm_mock(
         requests_mock,
@@ -1005,9 +966,7 @@ def test_fetch_incident(requests_mock):
     create_time = timestamp_to_datestring(xm.date_created.timestamp() * 1000)
 
     desired_response = (
-        _get_risk_score_incidents(create_time)
-        + _get_entities_incidents(create_time)
-        + _get_top_techniques_incidents(create_time)
+        _get_risk_score_incidents(create_time) + _get_entities_incidents(create_time) + _get_top_techniques_incidents(create_time)
     )
 
     x = fetch_incidents_command(xm, {})

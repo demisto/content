@@ -1,18 +1,17 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
 
-import re
-
-
 LETTER_TO_REGEX_FLAGS = {
-    'i': re.IGNORECASE,
-    'm': re.MULTILINE,
-    's': re.DOTALL,
-    'u': re.UNICODE,
+    "i": re.IGNORECASE,
+    "m": re.MULTILINE,
+    "s": re.DOTALL,
+    "u": re.UNICODE,
 }
 
 
-def parse_regex_flags(raw_flags: str = 'gim'):
+def parse_regex_flags(raw_flags: str = "gim"):
     """
     parse flags user input and convert them to re flags.
 
@@ -23,26 +22,25 @@ def parse_regex_flags(raw_flags: str = 'gim'):
         (re flags, whether to return multiple matches)
 
     """
-    raw_flags = raw_flags.lstrip('-')  # compatibility with original MatchRegex script.
-    multiple_matches = 'g' in raw_flags
-    raw_flags = raw_flags.replace('g', '')
+    raw_flags = raw_flags.lstrip("-")  # compatibility with original MatchRegex script.
+    multiple_matches = "g" in raw_flags
+    raw_flags = raw_flags.replace("g", "")
     flags = re.RegexFlag(0)
     for c in raw_flags:
         if c in LETTER_TO_REGEX_FLAGS:
             flags |= LETTER_TO_REGEX_FLAGS[c]
         else:
-            raise ValueError(f'Invalid regex flag "{c}".\n'
-                             f'Supported flags are {", ".join(LETTER_TO_REGEX_FLAGS.keys())}')
+            raise ValueError(f'Invalid regex flag "{c}".\nSupported flags are {", ".join(LETTER_TO_REGEX_FLAGS.keys())}')
 
     return flags, multiple_matches
 
 
 def main(args: dict):
-    data: str = args.get('data')  # type: ignore[assignment]
-    raw_regex = args.get('regex', '')
-    group = int(args.get('group', '0'))
-    context_key = args.get('contextKey', '')
-    flags, multiple_matches = parse_regex_flags(args.get('flags', 'gim'))
+    data: str = args.get("data")  # type: ignore[assignment]
+    raw_regex = args.get("regex", "")
+    group = int(args.get("group", "0"))
+    context_key = args.get("contextKey", "")
+    flags, multiple_matches = parse_regex_flags(args.get("flags", "gim"))
 
     regex = re.compile(raw_regex, flags=flags)
     # in case group is out of range, fallback to all matching string
@@ -62,21 +60,22 @@ def main(args: dict):
 
     results = results[0] if len(results) == 1 else results
 
-    human_readable = json.dumps(results) if results else 'Regex does not match.'
+    human_readable = json.dumps(results) if results else "Regex does not match."
 
     context = {}
     if context_key:
         context = {context_key: results}
 
     # clearing the context field in order to override it instead of appending it.
-    demisto.setContext('MatchRegex.results', results)
-    return CommandResults(readable_output=human_readable,
-                          outputs=context,
-                          raw_response=results,
-                          )
+    demisto.setContext("MatchRegex.results", results)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs=context,
+        raw_response=results,
+    )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     try:
         return_results(main(demisto.args()))
     except Exception as exc:

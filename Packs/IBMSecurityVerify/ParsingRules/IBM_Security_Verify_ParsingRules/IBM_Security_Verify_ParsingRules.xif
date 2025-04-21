@@ -1,0 +1,2 @@
+[INGEST:vendor="ibm", product="security verify", target_dataset="ibm_security_verify_raw", no_hit=keep]
+alter haIntegrationEventID = id;

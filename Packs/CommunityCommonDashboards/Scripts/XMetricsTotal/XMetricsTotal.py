@@ -2,20 +2,48 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 EFFORTCOLORS = ["RoyalBlue", "SkyBlue", "ForestGreen", "LimeGreen"]
-SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid",
-             "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
-INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen",
-             "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
-             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen",
-             "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
+SLACOLORS = [
+    "Thistle",
+    "Violet",
+    "Orchid",
+    "Magenta",
+    "MediumOrchid",
+    "MediumPurple",
+    "BlueViolet",
+    "Purple",
+    "Indigo",
+    "DarkSlateBlue",
+]
+INCCOLORS = [
+    "PaleGreen",
+    "Bisque",
+    "LightGreen",
+    "Wheat",
+    "DarkSeaGreen",
+    "Tan",
+    "MediumSeaGreen",
+    "SandyBrown",
+    "SeaGreen",
+    "GoldenRod",
+    "ForestGreen",
+    "DarkGoldenRod",
+    "Green",
+    "Chocolate",
+    "DarkGreen",
+    "Sienna",
+    "DarkOliveGreen",
+    "Brown",
+    "Teal",
+    "Maroon",
+]
 
 METRICCOLORS = {
-    'Incident Effort': EFFORTCOLORS,
-    'SLA Metrics': SLACOLORS,
-    'Incidents': INCCOLORS,
-    'Closed Incidents': INCCOLORS,
+    "Incident Effort": EFFORTCOLORS,
+    "SLA Metrics": SLACOLORS,
+    "Incidents": INCCOLORS,
+    "Closed Incidents": INCCOLORS,
     "Incident Open Duration": INCCOLORS,
-    "Effort Reduction": INCCOLORS
+    "Effort Reduction": INCCOLORS,
 }
 
 
@@ -23,46 +51,45 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
     if metrictype in METRICCOLORS:
         colors = METRICCOLORS[metrictype]
     else:
-        return (wstats)
+        return wstats
 
     i = 0
-    for w in wstats:
-        wstats[i]['color'] = colors[i % len(colors)]
+    for _w in wstats:
+        wstats[i]["color"] = colors[i % len(colors)]
         i += 1
 
-    return (wstats)
+    return wstats
 
 
 def MetricWidget(wstats: list, name: str, data: list) -> list:
-    w = {'name': name, 'data': [data], 'color': ""}
+    w = {"name": name, "data": [data], "color": ""}
     wstats.append(w)
-    return (wstats)
+    return wstats
 
 
 def LoadList(listname: str) -> dict:
-    results = demisto.executeCommand("getList", {'listName': listname})[0]['Contents']
+    results = demisto.executeCommand("getList", {"listName": listname})[0]["Contents"]
     fields = {}
-    if "Item not found" not in results and (results is not None or results != ""):
-        if results != "":
-            fields = json.loads(results)
-    return (fields)
+    if "Item not found" not in results and (results is not None or results != "") and results != "":
+        fields = json.loads(results)
+    return fields
 
 
 def BuildIncidentTotal(incidents) -> dict:
     table = {}
     for inctype, v in incidents.items():
-        for month, cnt in v.items():
+        for _month, cnt in v.items():
             if inctype not in table:
                 table[inctype] = 0
             table[inctype] += int(cnt)
-    return (table)
+    return table
 
 
 def BuildIncidentAvg(incidents) -> dict:
     table = {}
     count = {}
     for inctype, v in incidents.items():
-        for month, cnt in v.items():
+        for _month, cnt in v.items():
             if inctype not in table:
                 table[inctype] = 0
                 count[inctype] = 0
@@ -70,11 +97,11 @@ def BuildIncidentAvg(incidents) -> dict:
             if int(cnt) != 0:
                 count[inctype] += 1
 
-    for inctype, v in table.items():
+    for inctype, _v in table.items():
         if count[inctype] > 0:
             table[inctype] = int(table[inctype] / count[inctype] / 60)
 
-    return (table)
+    return table
 
 
 def BuildEffortReductionAvg(incidents, efforts) -> dict:
@@ -83,8 +110,7 @@ def BuildEffortReductionAvg(incidents, efforts) -> dict:
     totalreduction = 0
 
     for inctype, v in incidents.items():
-
-        for month, val in v.items():
+        for _month, val in v.items():
             ival = int(val)
             if inctype in efforts:
                 manualeffort = int(ival * efforts[inctype][0])
@@ -100,13 +126,13 @@ def BuildEffortReductionAvg(incidents, efforts) -> dict:
                 count[inctype] += 1
                 totalreduction += reduction
 
-    for inctype, v in table.items():
+    for inctype, _v in table.items():
         if totalreduction > 0:
             table[inctype] = int((table[inctype] / totalreduction) * 100)
         else:
             table[inctype] = 0
 
-    return (table)
+    return table
 
 
 def BuildEffortTotal(incidents, efforts) -> dict:
@@ -114,16 +140,16 @@ def BuildEffortTotal(incidents, efforts) -> dict:
         "Manual Incident Effort": 0,
         "Manual Indicator Effort": 0,
         "Automated Incident Effort": 0,
-        "Automated Indicator Effort": 0
+        "Automated Indicator Effort": 0,
     }
 
     for inctype, v in incidents.items():
-        for month, val in v.items():
+        for _month, val in v.items():
             if inctype in efforts:
                 table["Manual Incident Effort"] += int((int(val) * efforts[inctype][0]) / 60)
                 table["Automated Incident Effort"] += int((int(val) * efforts[inctype][1]) / 60)
 
-    return (table)
+    return table
 
 
 def main():
@@ -164,8 +190,8 @@ def main():
         return_results(json.dumps(wstats))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"XMetricsTotal - exception failed to execute. Error: {str(ex)}")
+        return_error(f"XMetricsTotal - exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

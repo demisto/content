@@ -101,9 +101,7 @@ class Client(BaseClient):
     Client to use in the Threat Vault integration. Overrides BaseClient.
     """
 
-    def __init__(
-        self, base_url: str, api_key: str, verify: bool, proxy: bool, reliability: str
-    ):
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, reliability: str):
         super().__init__(
             base_url=base_url,
             verify=verify,
@@ -114,29 +112,24 @@ class Client(BaseClient):
         self.name = "ThreatVault"
         self.reliability = reliability
 
-    def ip_feed_get_request(self, arg: str, value: str) -> dict:    # pragma: no cover
+    def ip_feed_get_request(self, arg: str, value: str) -> dict:  # pragma: no cover
         suffix = "ip-feed"
         return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
 
-    def ip_feed_batch_post_request(self, arg: str, value: str) -> dict:    # pragma: no cover
+    def ip_feed_batch_post_request(self, arg: str, value: str) -> dict:  # pragma: no cover
         suffix = "ip-feed"
         payload = json.dumps({"ipaddr": value})
         return self._http_request(method="POST", url_suffix=suffix, data=payload)
 
-    def antivirus_signature_get_request(self, arg: str, value: str) -> dict:    # pragma: no cover
-
+    def antivirus_signature_get_request(self, arg: str, value: str) -> dict:  # pragma: no cover
         suffix = "threats"
         return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
 
     def release_notes_get_request(self, type_: str, version: str) -> dict:  # pragma: no cover
-
         suffix = "release-notes"
-        return self._http_request(
-            method="GET", url_suffix=suffix, params={"type": type_, "version": version}
-        )
+        return self._http_request(method="GET", url_suffix=suffix, params={"type": type_, "version": version})
 
     def threat_batch_search_request(self, arg: str, value: list, type_: str) -> dict:
-
         params: dict[str, Union[list, str]] = {arg: value}
         if type_:
             params["type"] = type_
@@ -145,19 +138,16 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=suffix, data=params)
 
     def threat_search_request(self, args: dict) -> dict:
-
         suffix = "threats"
         return self._http_request(method="GET", url_suffix=suffix, params=args)
 
     def atp_batch_report_request(self, args: str, value: list) -> dict:
-
         params: dict[str, Union[list, str]] = {args: value}
         params = json.dumps(params)
         suffix = "atp/reports"
         return self._http_request(method="POST", url_suffix=suffix, data=params)
 
     def atp_report_pcap_request(self, args: dict) -> dict:
-
         suffix = "atp/reports/pcaps"
 
         pcap_response = self._http_request(method="GET", url_suffix=suffix, params=args, resp_type="response")
@@ -171,7 +161,6 @@ HELP FUNCTIONS
 
 
 def reputation_type_to_hr(reputation_type: str) -> str:
-
     match reputation_type:
         case ReputationType.RTDNS | ReputationType.DNS:
             return reputation_type.upper()
@@ -193,11 +182,8 @@ def validate_arguments_search_command(
     release_version: str | None,
     type_: str | None,
 ) -> None:
-
     if sum(1 for x in (cve, vendor, name) if x) > 1:
-        raise ValueError(
-            "Only one of the following can be used at a time: cve, vendor, name"
-        )
+        raise ValueError("Only one of the following can be used at a time: cve, vendor, name")
 
     if sum(1 for x in (from_release_date, to_release_date) if x) == 1:
         raise ValueError(
@@ -212,23 +198,16 @@ def validate_arguments_search_command(
         )
 
     if release_date and release_version:
-        raise ValueError(
-            "There can only be one argument from the following list in the command: "
-            "release-date, release-version"
-        )
+        raise ValueError("There can only be one argument from the following list in the command: release-date, release-version")
 
-    if (from_release_date or from_release_version) and (
-        release_date or release_version
-    ):
+    if (from_release_date or from_release_version) and (release_date or release_version):
         raise ValueError(
             "When using a release version range or a release date range in a query"
             "it is not possible to use with the following arguments: release-date, release-version"
         )
 
     if from_release_date and from_release_version:
-        raise ValueError(
-            "from-release-version and from-release-date cannot be used together."
-        )
+        raise ValueError("from-release-version and from-release-date cannot be used together.")
 
     if not any(
         (
@@ -249,7 +228,6 @@ def validate_arguments_search_command(
 
 
 def parse_date(date: str = None) -> str | None:
-
     if not date:
         return None
     if re.match(DATE_REGEX, date):
@@ -260,9 +238,7 @@ def parse_date(date: str = None) -> str | None:
     return date_time.date().strftime("%Y-%m-%d")
 
 
-def pagination(
-    page: Optional[int], page_size: Optional[int], limit: Optional[int]
-) -> tuple[int, Optional[int]]:
+def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> tuple[int, Optional[int]]:
     """
     The page_size and page arguments are converted so they match the offset and limit parameters of the API call.
     """
@@ -275,14 +251,10 @@ def pagination(
     if not page and not page_size:
         return 0, limit
 
-    raise ValueError(
-        "When using a pagination, it must be used with the following two arguments -> "
-        "[page, page_size]"
-    )
+    raise ValueError("When using a pagination, it must be used with the following two arguments -> [page, page_size]")
 
 
 def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
-
     match type_:
         case ReputationType.FILE:
             antivirus = response.get("signatures", {}).get("antivirus", ({},))[0]
@@ -411,15 +383,9 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "New Spyware": spyware.get("new"),
                 "Modified Spyware": spyware.get("modified"),
                 "Disabled Spyware": spyware.get("disabled"),
-                "New Vulnerability": vulnerability.get("new")[0]
-                if vulnerability.get("new")
-                else None,
-                "Modified Vulnerability": vulnerability.get("modified")[0]
-                if vulnerability.get("modified")
-                else None,
-                "Disabled Vulnerability": vulnerability.get("disabled")[0]
-                if vulnerability.get("disabled")
-                else None,
+                "New Vulnerability": vulnerability.get("new")[0] if vulnerability.get("new") else None,
+                "Modified Vulnerability": vulnerability.get("modified")[0] if vulnerability.get("modified") else None,
+                "Disabled Vulnerability": vulnerability.get("disabled")[0] if vulnerability.get("disabled") else None,
                 "Release time": response.get("release_time"),
             }
 
@@ -431,7 +397,6 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
 
 
 def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandResults]:
-
     command_results_list: List[CommandResults] = []
     reputation_types = (
         (ReputationType.ANTIVIRUS, HEADERS_ANTIVIRUS),
@@ -463,9 +428,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                     CommandResults(
                         outputs_prefix=f"ThreatVault.{reputation_types_readable}",
                         outputs_key_field="id",
-                        outputs=result
-                        if expanded
-                        else response.get("data", {}).get(rep_type, []),
+                        outputs=result if expanded else response.get("data", {}).get(rep_type, []),
                         readable_output=readable_output,
                     )
                 )
@@ -490,17 +453,12 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
     """
 
     def headers_transform(header):
-        headers = {"ipaddr": "IP",
-                   "geo": "Country",
-                   "asn": "ASN",
-                   "name": "Feed Name"}
+        headers = {"ipaddr": "IP", "geo": "Country", "asn": "ASN", "name": "Feed Name"}
         return headers[header]
 
     ips = argToList(args["ip"])
     command_results_list: List[CommandResults] = []
-    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-        client.reliability
-    )
+    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
 
     try:
         if len(ips) == 1:
@@ -564,16 +522,12 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
     file_info: dict = {}
     hashes = argToList(args.get("file"))
     command_results_list: List[CommandResults] = []
-    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-        client.reliability
-    )
+    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
 
     for _hash in hashes:
         type_hash = get_hash_type(_hash)
         try:
-            response = client.antivirus_signature_get_request(
-                arg=type_hash, value=_hash
-            )
+            response = client.antivirus_signature_get_request(arg=type_hash, value=_hash)
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 response = {}
@@ -590,9 +544,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                     dbot_score=dbot_score,
                 )
 
-                readable_output = (
-                    f"Hash {_hash} antivirus reputation is unknown to Threat Vault."
-                )
+                readable_output = f"Hash {_hash} antivirus reputation is unknown to Threat Vault."
                 file_info = {}
             else:
                 raise
@@ -613,9 +565,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 dbot_score=dbot_score,
             )
 
-            table_for_md = resp_to_hr(
-                response=file_info, type_="file", expanded=args.get("expanded", False)
-            )
+            table_for_md = resp_to_hr(response=file_info, type_="file", expanded=args.get("expanded", False))
 
             readable_output = tableToMarkdown(
                 name=f"Antivirus Reputation for hash: {_hash}",
@@ -651,9 +601,7 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 response = {}
-                readable_output = (
-                    f"CVE {cve} vulnerability reputation is unknown to Threat Vault."
-                )
+                readable_output = f"CVE {cve} vulnerability reputation is unknown to Threat Vault."
                 _cve = None
                 vulnerability = None
             else:
@@ -688,7 +636,6 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
 
 
 def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResults]:
-
     args["file"] = args.get("sha256", "")
     if md5 := args.get("md5"):
         args["file"] += f",{md5}" if args["file"] else md5
@@ -696,9 +643,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     ids = argToList(args.get("signature_id"))
 
     if not any((ids, args["file"])):
-        raise ValueError(
-            "One of following arguments is required: signature_id, sha256, md5"
-        )
+        raise ValueError("One of following arguments is required: signature_id, sha256, md5")
 
     if ids and args["file"]:
         raise ValueError("The command cannot be run with more than one argument.")
@@ -716,9 +661,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
             if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = f"{_id} reputation is unknown to Threat Vault."
-                command_results_list.append(
-                    CommandResults(readable_output=readable_output)
-                )
+                command_results_list.append(CommandResults(readable_output=readable_output))
             else:
                 raise
 
@@ -729,7 +672,6 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
 
 
 def release_note_get_command(client: Client, args: Dict) -> CommandResults:
-
     if not args.get("version"):
         raise ValueError("The version argument is required")
 
@@ -738,17 +680,13 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
         response = client.release_notes_get_request("content", version)
     except DemistoException as err:
         if err.res is not None and err.res.status_code == 404:
-            return CommandResults(
-                readable_output=f"Release note {version} was not found."
-            )
+            return CommandResults(readable_output=f"Release note {version} was not found.")
         else:
             raise
 
     data = response.get("data", ({},))[0]
     table_for_md = resp_to_hr(response=data, type_="release_notes")
-    readable_output = tableToMarkdown(
-        name="Release notes:", t=table_for_md, removeNull=True
-    )
+    readable_output = tableToMarkdown(name="Release notes:", t=table_for_md, removeNull=True)
     return CommandResults(
         outputs_prefix="ThreatVault.ReleaseNote",
         outputs_key_field="release_version",
@@ -758,7 +696,6 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResults]:
-
     ids = argToList(args.get("id"))
     md5 = argToList(args.get("md5"))
     sha256 = argToList(args.get("sha256"))
@@ -767,25 +704,19 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
 
     argument_count = sum(1 for x in (ids, md5, sha256, names) if x)
     if argument_count != 1:
-        raise ValueError(
-            "Only one of the following can be used at a time: id, md5, sha256, name"
-        )
+        raise ValueError("Only one of the following can be used at a time: id, md5, sha256, name")
 
     command_results_list: List[CommandResults] = []
 
     if ids or names:
         type_ = "id" if ids else "name"
         try:
-            response = client.threat_batch_search_request(
-                arg=type_, value=ids if ids else names, type_=threat_type
-            )
+            response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = f"There is no information about the {str(ids) if ids else str(names)}"
-                command_results_list.append(
-                    CommandResults(readable_output=readable_output)
-                )
+                command_results_list.append(CommandResults(readable_output=readable_output))
             else:
                 raise
 
@@ -793,35 +724,26 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
             command_results_list.extend(parse_resp_by_type(response, True))
 
     elif md5 or sha256:
-        dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-            client.reliability
-        )
+        dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
         type_ = "md5" if md5 else "sha256"
         try:
-            response = client.threat_batch_search_request(
-                arg=type_, value=md5 or sha256, type_=threat_type
-            )
+            response = client.threat_batch_search_request(arg=type_, value=md5 or sha256, type_=threat_type)
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = f"There is no information about the {str(md5) if md5 else str(sha256)}"
-                command_results_list.append(
-                    CommandResults(readable_output=readable_output)
-                )
+                command_results_list.append(CommandResults(readable_output=readable_output))
             else:
                 raise
 
         if response:
             files_info: List[dict] = response.get("data", {}).get("fileinfo", [])
             for file_info in files_info:
-
                 dbot_score = Common.DBotScore(
                     indicator=file_info.get("sha256"),
                     indicator_type=DBotScoreType.FILE,
                     integration_name=client.name,
-                    score=SCORE_TABLE_FILE[
-                        file_info.get("wildfire_verdict", "unknown")
-                    ],
+                    score=SCORE_TABLE_FILE[file_info.get("wildfire_verdict", "unknown")],
                     reliability=dbot_reliability,
                 )
                 file = Common.File(
@@ -831,9 +753,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                     dbot_score=dbot_score,
                 )
 
-                table_for_md = resp_to_hr(
-                    response=file_info, type_="file", expanded=True
-                )
+                table_for_md = resp_to_hr(response=file_info, type_="file", expanded=True)
                 readable_output = tableToMarkdown(
                     name=f"File {file_info.get('sha256')}:",
                     t=table_for_md,
@@ -853,7 +773,6 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
 
 
 def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
-
     cve = args.get("cve")
     vendor = args.get("vendor")
     name = args.get("signature-name")
@@ -914,29 +833,24 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
 
 
 def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]:  # pragma: no cover
-
     report_ids = argToList(args.get("report_id"))
 
     command_results_list: List[CommandResults] = []
 
     if report_ids:
         try:
-            response = client.atp_batch_report_request(args='id', value=report_ids)
+            response = client.atp_batch_report_request(args="id", value=report_ids)
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 response = {}
-                readable_output = f"There is no information about the {str(report_ids)}"
-                command_results_list.append(
-                    CommandResults(readable_output=readable_output)
-                )
+                readable_output = f"There is no information about the {report_ids!s}"
+                command_results_list.append(CommandResults(readable_output=readable_output))
             else:
                 raise
 
         if response:
-
             report_infos: List[dict] = response.get("data", {}).get("reports", [])
             for report_info in report_infos:
-
                 readable_output = tableToMarkdown(
                     name=f"Advanced Threat Prevention Report ID: {report_info.get('report_id')}:",
                     t=report_info,
@@ -955,13 +869,10 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
 
 
 def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:  # pragma: no cover
-
     report_id = args.get("report_id")
 
     if report_id:
-        query = assign_params(
-            id=report_id
-        )
+        query = assign_params(id=report_id)
 
         command_results_list: List[CommandResults] = []
 
@@ -973,23 +884,20 @@ def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 response = {}
-                readable_output = f"There is no information about the {str(report_id)}"
-                command_results_list.append(
-                    CommandResults(readable_output=readable_output)
-                )
+                readable_output = f"There is no information about the {report_id!s}"
+                command_results_list.append(CommandResults(readable_output=readable_output))
             else:
                 raise
 
         # check for octet-stream response for PCAP
-        if response_data_headers.get("Content-Type") == 'application/octet-stream':
-
+        if response_data_headers.get("Content-Type") == "application/octet-stream":
             # set the pcap filename to the report_id.pcap
             pcap_name = report_id + ".pcap"
 
             # write the file prperties to the context
             return_results(fileResult(pcap_name, response_content))
 
-            ec = {'ID': report_id, 'Name': pcap_name}
+            ec = {"ID": report_id, "Name": pcap_name}
 
             readable_output = tableToMarkdown(
                 name="Advanced Threat Prevention PCAP Download:",
@@ -1005,11 +913,13 @@ def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
                 )
             )
         else:
-            return_results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': f'No PCAP response for ID: {str(report_id)}'
-            })
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["text"],
+                    "Contents": f"No PCAP response for ID: {report_id!s}",
+                }
+            )
 
     return command_results_list
 
@@ -1030,9 +940,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
         if first_fetch.strip().split(" ")[1].lower() not in frozenset(
             ("days", "month", "months", "year", "years")
         ):  # only these are allowed
-            raise ValueError(
-                "The unit of date_range is invalid. Must be days, months or years."
-            )
+            raise ValueError("The unit of date_range is invalid. Must be days, months or years.")
         start_time, now = parse_date_range(first_fetch)
     else:
         _, now = parse_date_range(first_fetch)
@@ -1045,9 +953,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
         try:
             # Bringing the daily date for the first api call
             demisto.debug(f"Time for request fetch-incidents -> {current}")
-            response = client.threat_search_request(
-                {"releaseDate": current.strftime("%Y-%m-%d")}
-            )
+            response = client.threat_search_request({"releaseDate": current.strftime("%Y-%m-%d")})
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
                 current += timedelta(days=1)
@@ -1055,21 +961,12 @@ def fetch_incidents(client: Client, args: dict) -> List:
             else:
                 raise
 
-        if keys_of_resp := tuple(
-            {"spyware", "vulnerability", "fileformat", "antivirus"}.intersection(
-                response["data"].keys()
-            )
-        ):
-
+        if keys_of_resp := tuple({"spyware", "vulnerability", "fileformat", "antivirus"}.intersection(response["data"].keys())):
             # The version of the release notes for the second API call can be extracted
             try:
-                number_version = response["data"][keys_of_resp[0]][0][
-                    "latest_release_version"
-                ]
+                number_version = response["data"][keys_of_resp[0]][0]["latest_release_version"]
             except KeyError as err:
-                raise Exception(
-                    f"Error parsing release note latest_release_version: {str(err)}"
-                )
+                raise Exception(f"Error parsing release note latest_release_version: {err!s}")
             # The API is called by the version number
             release = client.release_notes_get_request("content", number_version)
 
@@ -1105,7 +1002,6 @@ def test_module(client: Client, *_) -> str:
 
 
 def main():
-
     params = demisto.params()
     """PARAMS"""
     base_url = params.get("url", "") + "service/v1/"
@@ -1115,9 +1011,7 @@ def main():
     reliability = params.get("integrationReliability", "D - Not usually reliable")
 
     if not DBotScoreReliability.is_valid_type(reliability):
-        raise Exception(
-            "Please provide a valid value for the Source Reliability parameter."
-        )
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     try:
         command = demisto.command()
@@ -1157,7 +1051,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{err!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

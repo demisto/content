@@ -1,0 +1,166 @@
+commonfields:
+  id: CybelAngel
+  version: -1
+configuration:
+- section: Connect
+  additionalinfo: Client ID & Secret for OAuth 2.0 Authentication for CybelAngel API
+  display: CybelAngel Client ID
+  name: credentials
+  required: true
+  type: 9
+- section: Connect
+  additionalinfo: CybelAngel Tenant ID to create comments on reports
+  display: CybelAngel Tenant ID
+  name: tenant_id
+  required: true
+  type: 0
+- section: Collect
+  defaultvalue: 7
+  display: First fetch Interval (Select amount of days to fetch back in time)
+  name: first_fetch
+  required: true
+  type: 0
+- section: Collect
+  additionalinfo: Base Url for CybelAngel platform
+  defaultvalue: https://platform.cybelangel.com
+  display: Base URL
+  name: base_url
+  required: false
+  type: 0
+- section: Collect
+  additionalinfo: Maximum number of incidents to fetch per fetch cycle (This doesn't do anything)
+  defaultvalue: 50
+  display: Max Fetch
+  name: max_fetch
+  required: false
+  type: 0
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- section: Collect
+  defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- section: Collect
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: This integration connects your alerts from CybelAngel.
+display: CybelAngel EASM
+name: CybelAngel
+script:
+  commands:
+  - arguments:
+    - description: The ID of the report to retrieve.
+      name: report_id
+      required: true
+    description: Get a report by ID.
+    name: cybelangel-get-report-by-id
+    outputs:
+    - contextPath: CybelAngel.Report
+      description: Details of the report.
+      type: String
+  - arguments:
+    - description: The ID of the report to get the attachment from.
+      name: report_id
+      required: true
+    - description: The ID of the attachment to retrieve.
+      name: attachment_id
+      required: true
+    - description: The the name of the file.
+      name: file_name
+      required: true
+    description: Get an attachment of a report.
+    name: cybelangel-get-report-attachment
+    outputs:
+    - contextPath: CybelAngel.ReportAttachment
+      description: Attachment details.
+      type: String
+  - arguments:
+    - description: The ID of the report to download as PDF.
+      name: report_id
+      required: true
+    description: Downloads a PDF report from CybelAngel by report ID and saves it to the War Room.
+    name: cybelangel-get-report-pdf
+    outputs:
+    - contextPath: CybelAngel.PDFReport.fileID
+      description: The War Room file ID of the downloaded PDF.
+      type: String
+    - contextPath: CybelAngel.PDFReport.reportID
+      description: The report ID corresponding to the downloaded PDF.
+      type: String
+    - contextPath: CybelAngel.PDFReport.fileName
+      description: The filename of the downloaded PDF.
+      type: String
+  - arguments:
+    - description: The ID of the report to remediate.
+      name: report_id
+      required: true
+    - description: Email needed for the request.
+      name: email
+      required: true
+    - description: The full name of the requestor.
+      name: requester_fullname
+      required: true
+    description: Remediate a report by ID.
+    name: cybelangel-remediate
+    outputs:
+    - contextPath: CybelAngel.Remediation
+      description: Remediation status.
+      type: String
+  - arguments:
+    - description: The ID of the report to get comments for.
+      name: report_id
+      required: true
+    description: Get comments for a report.
+    name: cybelangel-get-comments
+    outputs:
+    - contextPath: CybelAngel.Comments
+      description: Comments on the report.
+      type: String
+  - arguments:
+    - description: The ID of the report to post a comment on.
+      name: report_id
+      required: true
+    - description: The comment to post.
+      name: comment
+      required: true
+    description: Post a comment on a report.
+    name: cybelangel-post-comment
+  - arguments:
+    - description: The ID of the report to update the status of.
+      name: report_id
+      required: true
+    - description: The new status of the report.
+      name: status
+      predefined:
+      - open
+      - in_progress
+      - resolved
+      - discarded
+      required: true
+      auto: PREDEFINED
+    description: Update the status of a report.
+    name: cybelangel-update-status
+    outputs:
+    - contextPath: CybelAngel.StatusUpdate
+      description: Status update details.
+      type: String
+  dockerimage: demisto/python3:3.12.8.1983910
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+category: "Data Enrichment & Threat Intelligence"
+sectionorder:
+- Connect
+- Collect

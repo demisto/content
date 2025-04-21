@@ -2,7 +2,7 @@
     "name": "DomainTools Iris Investigate",
     "description": "Facilitates automation of key infrastructure characterization and hunting portions of the incident response process. Organizations will have access to essential domain profile, web crawl, SSL, and infrastructure data from within Cortex XSOAR. Requires a DomainTools Iris Investigate API key.",
     "support": "partner",
-    "currentVersion": "2.1.2",
+    "currentVersion": "2.2.1",
     "author": "DomainTools",
     "url": "https://www.domaintools.com/support/",
     "email": "memberservices@domaintools.com",
@@ -16,6 +16,13 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

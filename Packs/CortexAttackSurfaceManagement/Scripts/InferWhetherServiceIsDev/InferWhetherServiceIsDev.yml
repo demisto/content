@@ -28,3 +28,8 @@ tests:
 - No tests (auto formatted)
 engineinfo: {}
 runonce: false
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

@@ -5,23 +5,30 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Mandiant
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence.
   display: API Key
   name: api_key
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence.
   display: Secret Key
   name: secret_key
   required: true
   type: 4
+  section: Connect
 - additionalinfo: API calls timeout.
   defaultvalue: '60'
   display: Timeout
   name: timeout
   type: 0
   required: false
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -36,6 +43,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators enriched.
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -47,17 +55,21 @@ configuration:
   type: 15
   defaultvalue: RED
   required: false
+  section: Collect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: tags
   type: 0
   required: false
+  section: Collect
 - name: map_to_mitre_attack
   display: Map Attack Pattern Relationships to Mitre ATT&CK.
   type: 8
   defaultvalue: 'false'
   additionalinfo: 'When enabled the integration will attempt to map Attack Pattern relationships to Attack Pattern Indicators created by the Mitre ATT&CK Integration.'
   required: false
+  section: Collect
+  advanced: true
 script:
   commands:
   - name: file
@@ -856,10 +868,12 @@ script:
       description: A list of alias objects associated with the Campaign.
       type: list
     description: Retrieve information about a Campaign from Mandiant.
-  dockerimage: demisto/python3:3.11.10.115887
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 6.6.0
+tests:
+- No tests (auto formatted)

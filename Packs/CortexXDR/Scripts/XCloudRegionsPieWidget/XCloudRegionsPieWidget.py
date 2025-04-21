@@ -1,8 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 def parse_data(regions_name):
@@ -14,36 +15,24 @@ def parse_data(regions_name):
     for region in top_regions:
         random_number = random.randint(0, 16777215)
         hex_number = str(hex(random_number))  # convert to hexadecimal
-        color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
+        color = f"#{hex_number[2:].zfill(6)}"  # remove 0x and prepend '#'
 
         region_widget_data = {
-            "data": [
-                region[1]
-            ],
+            "data": [region[1]],
             "groups": None,
             "name": str(region[0]),
             "label": str(region[0]),
-            "color": color
+            "color": color,
         }
 
         regions_name_data.append(region_widget_data)
 
-    return {
-        "Type": 17,
-        "ContentsFormat": "pie",
-        "Contents": {
-            "stats":
-                regions_name_data,
-            "params": {
-                "layout": "horizontal"
-            }
-        }
-    }
+    return {"Type": 17, "ContentsFormat": "pie", "Contents": {"stats": regions_name_data, "params": {"layout": "horizontal"}}}
 
 
 def main():
     incident = demisto.incidents()
-    regions_name = incident[0].get('CustomFields', {}).get('cloudregionlist', "0")
+    regions_name = incident[0].get("CustomFields", {}).get("cloudregionlist", "0")
     if regions_name:
         data = parse_data(regions_name)
 
@@ -53,20 +42,10 @@ def main():
             "ContentsFormat": "bar",
             "Contents": {
                 "stats": [
-                    {
-                        "data": [
-                            0
-                        ],
-                        "groups": None,
-                        "name": "N/A",
-                        "label": "N/A",
-                        "color": "rgb(255, 23, 68)"
-                    },
+                    {"data": [0], "groups": None, "name": "N/A", "label": "N/A", "color": "rgb(255, 23, 68)"},
                 ],
-                "params": {
-                    "layout": "horizontal"
-                }
-            }
+                "params": {"layout": "horizontal"},
+            },
         }
 
     return_results(data)

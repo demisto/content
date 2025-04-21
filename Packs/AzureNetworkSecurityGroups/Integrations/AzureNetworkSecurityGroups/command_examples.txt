@@ -1,0 +1,6 @@
+azure-nsg-public-ip-addresses-list
+azure-nsg-virtual-networks-list
+azure-nsg-security-group-create location=westeurope security_group_name=bar_tdemo
+azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=bar_test subnet_name=default vnet_name=compute-integration-vnet
+azure-nsg-network-interfaces-list all_results=false limit=3
+azure-nsg-network-interfaces-create ip_config_name=ipconfig1 location=westeurope nic_name=bar_test subnet_name=default vnet_name=compute-integration-vnet nsg_name=bar_tdemo

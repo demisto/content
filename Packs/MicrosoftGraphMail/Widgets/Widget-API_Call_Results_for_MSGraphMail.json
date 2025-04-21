@@ -79,5 +79,11 @@
   "widgetType": "line",
   "fromVersion": "6.8.0",
   "id": "API Call Results for Microsoft Graph Mail",
-  "description": ""
+  "description": "",
+  "supportedModules": [
+      "X1",
+      "X3",
+      "X5",
+      "ENT_PLUS"
+  ]
 }

@@ -1,4 +1,7 @@
 category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: VMware
   version: -1
@@ -9,6 +12,7 @@ configuration:
   defaultvalue:
   type: 0
   additionalinfo: The server URL of the VCenter.
+  section: Connect
 - name: credentials
   display: Credentials
   required: true
@@ -16,22 +20,26 @@ configuration:
   type: 9
   additionalinfo: Username and password used to login into the system.
   displaypassword: ""
+  section: Connect
 - name: redirect_std_out
   display: Redirect stdout
   type: 8
   additionalinfo: Used for troubleshooting purposes.
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 description: VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
 display: VMware
 name: VMware
@@ -471,7 +479,7 @@ script:
       description: Storage profile requirement for Virtual Machine's home directory.
     - auto: PREDEFINED
       name: priority
-      description: The task priorityץ.
+      description: The task priority.
       required: true
       predefined:
       - defaultPriority
@@ -526,7 +534,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:2.0.0.117325
+  dockerimage: demisto/vmware:2.0.0.2078040
   script: ""
   subtype: python3
   type: python

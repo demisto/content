@@ -3,12 +3,11 @@ from CommonServerPython import *  # noqa: F401
 
 
 def LoadList(listname: str) -> dict:
-    results = demisto.executeCommand("getList", {'listName': listname})[0]['Contents']
+    results = demisto.executeCommand("getList", {"listName": listname})[0]["Contents"]
     fields = {}
-    if "Item not found" not in results and (results is not None or results != ""):
-        if results != "":
-            fields = json.loads(results)
-    return (fields)
+    if "Item not found" not in results and (results is not None or results != "") and results != "":
+        fields = json.loads(results)
+    return fields
 
 
 def main():
@@ -21,8 +20,8 @@ def main():
             return_results("# No Data for Last Year")
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"XMetricsYear - exception failed to execute. Error: {str(ex)}")
+        return_error(f"XMetricsYear - exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

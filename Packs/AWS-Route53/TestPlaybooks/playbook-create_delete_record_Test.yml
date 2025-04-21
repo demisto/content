@@ -1,8 +1,7 @@
 id: playbook-create_delete_record_Test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: playbook-create_delete_record_Test
-description: Creation and deletion of AWS Route53 DNS record
+description: Creation and deletion of AWS Route53 DNS record.
 fromversion: 6.5.0
 starttaskid: "0"
 tasks:
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -43,8 +43,7 @@ tasks:
       id: 4f3a8eb1-0073-4648-893a-8215f1fa4c6c
       version: -1
       name: Create DNS record within the hosted zone
-      description: Creates a resource record set. Creates a resource record set that
-        has the specified values.
+      description: Creates a resource record set. Creates a resource record set that has the specified values.
       script: AWS - Route53|||aws-route53-create-record
       type: regular
       iscommand: true
@@ -54,7 +53,7 @@ tasks:
       - "9"
     scriptarguments:
       hostedZoneId:
-        simple: ${AWS.Route53.HostedZones.Id}
+        simple: ${AWS.Route53.HostedZones.[0].Id}
       source:
         simple: ${dns_record_name}
       target:
@@ -87,8 +86,7 @@ tasks:
       id: 421a0b18-3414-42e2-8963-7570a7a80e34
       version: -1
       name: List hosted zones
-      description: 'Retrieves a list of the public and private hosted zones that are
-        associated with the current AWS account. '
+      description: Retrieves a list of the public and private hosted zones that are associated with the current AWS account.
       script: AWS - Route53|||aws-route53-list-hosted-zones
       type: regular
       iscommand: true
@@ -159,8 +157,7 @@ tasks:
       id: ef2f4e6f-6e00-44e3-8e77-c0df125be64a
       version: -1
       name: Delete the DNS record to cleanup after the playbook
-      description: Deletes a resource record set. Deletes an existing resource record
-        set that has the specified values.
+      description: Deletes a resource record set. Deletes an existing resource record set that has the specified values.
       script: '|||aws-route53-delete-record'
       type: regular
       iscommand: true
@@ -170,7 +167,7 @@ tasks:
       - "14"
     scriptarguments:
       hostedZoneId:
-        simple: ${AWS.Route53.HostedZones.Id}
+        simple: ${AWS.Route53.HostedZones.[0].Id}
       source:
         simple: ${dns_record_name}
       target:
@@ -252,6 +249,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-

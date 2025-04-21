@@ -207,6 +207,22 @@ script:
       description: The creator ID of the channel.
       type: String
   - arguments:
+    - name: team_name
+      description: The name of the team to list channels from. Default is the team
+        name from the integration configuration.
+    - name: user_id
+      required: true
+      description: User ID to get channel memberships for.
+    outputs:
+    - contextPath: Mattermost.User.Channels
+      description: List of channels where the user is a member of.
+      type: Unknown
+    - contextPath: Mattermost.User.id
+      description: The ID of the user.
+      type: String
+    description: Get all the private channels on a team for a user.
+    name: mattermost-list-private-channels-for-user
+  - arguments:
     - description: The display name of the channel to create.
       name: display_name
       required: true
@@ -395,6 +411,7 @@ script:
       name: entry
       required: false
     - description: The username or email of the user to send the file to.
+      isArray: true
       name: to
       required: false
     - description: Adds the War Room link to the message.
@@ -521,12 +538,124 @@ script:
       - 'channel'
     description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
     name: mattermost-mirror-investigation
+  - arguments:
+    - name: page
+      description: The page number to retrieve. Default value is 0.
+    - name: page_size
+      description: The size of the page to retrieve. Default value is 50.
+    - name: limit
+      description: How many results to retrieve. Will override the page and page_size
+        arguments if given.
+    - name: group
+      description: Search for a specific group by this pattern.
+    name: mattermost-list-groups
+    outputs:
+    - contextPath: Mattermost.Groups.id
+      description: The ID of the group.
+      type: String
+    - contextPath: Mattermost.Groups.create_at
+      description: The datetime the group was created.
+      type: Unknown
+    - contextPath: Mattermost.Groups.update_at
+      description: The datetime the group was updated.
+      type: Unknown
+    - contextPath: Mattermost.Groups.delete_at
+      description: The datetime the group was deleted.
+      type: Unknown
+    - contextPath: Mattermost.Groups.display_name
+      description: The display name of the group.
+      type: String
+    - contextPath: Mattermost.Groups.name
+      description: The name of the group.
+      type: String
+    - contextPath: Mattermost.Groups.description
+      description: The description of the group.
+      type: String
+    - contextPath: Mattermost.Groups.source
+      description: The source of the group.
+      type: String
+    - contextPath: Mattermost.Groups.remote_id
+      description: The remote ID of the group.
+      type: String
+    - contextPath: Mattermost.Groups.has_syncables
+      description: If the group has any syncables.
+      type: boolean
+    description: 'Lists groups. Groups are available on Enterprise and Professional plans. Minimum server version: 5.11'
+  - name: mattermost-list-group-members
+    arguments:
+    - name: group_id
+      required: true
+      description: The group ID of the group to list members for. Use the command
+        'mattermost-list-groups' to fetch the group ID.
+    - name: page
+      description: The page number to retrieve. Default value is 0.
+    - name: page_size
+      description: The size of the page to retrieve. Default value is 50.
+    - name: limit
+      description: How many results to retrieve. Will override the page and page_size
+        arguments if given.
+    outputs:
+    - contextPath: Mattermost.Members.id
+      description: The ID of the group member.
+      type: String
+    - contextPath: Mattermost.Members.first_name
+      description: The first name of the group member.
+      type: String
+    - contextPath: Mattermost.Members.last_name
+      description: The last name of the group member.
+      type: String
+    - contextPath: Mattermost.Members.username
+      description: The username of the group member.
+      type: String
+    description: 'Lists group members. Groups are available on Enterprise and Professional plans. Minimum server version: 5.11'
+  - name: mattermost-add-group-member
+    arguments:
+    - name: group_id
+      required: true
+      description: The group ID of the group to add the user to. Use the command
+        'mattermost-list-groups' to fetch the group ID.
+    - name: user_ids
+      required: true
+      isArray: true
+      description: A comma-separated list of IDs of the users to add. Use the command 'mattermost-list-users'
+        to fetch the user ID(s).
+    description: 'Add group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
+  - name: mattermost-remove-group-member
+    arguments:
+    - name: group_id
+      required: true
+      description: The group ID of the group to remove the user from. Use the command
+        'mattermost-list-groups' to fetch the group ID.
+    - name: user_ids
+      required: true
+      isArray: true
+      description: A comma-separated list of IDs of the users to remove. Use the command 'mattermost-list-users'
+        to fetch the user ID(s).
+    description: 'Remove group member(s). Groups are available on Enterprise and Professional plans. Minimum server version: 6.3'
+  - name: mattermost-set-channel-role
+    arguments:
+    - name: channel_id
+      required: true
+      description: The channel ID to set the role in. Use the command 'mattermost-list-channels'
+        to fetch the channel ID.
+    - name: user_id
+      required: true
+      description: The ID of the user to set role for. Use the command 'mattermost-list-users'
+        to fetch the user ID.
+    - name: role
+      auto: PREDEFINED
+      predefined:
+      - Admin
+      - Member
+      description: The role to set for the user.
+      defaultValue: Member
+    description: Update a user's roles for a channel. The user has to already be a member of the channel.
   longRunning: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/netutils:1.0.0.118055
+  dockerimage: demisto/netutils:1.0.0.2550297
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook

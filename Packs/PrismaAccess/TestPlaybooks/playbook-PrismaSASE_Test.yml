@@ -2200,7 +2200,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9725
+          "y": 10215
         }
       }
     note: false
@@ -2527,7 +2527,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "49"
+      - "66"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2547,7 +2547,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9550
+          "y": 9555
         }
       }
     note: false
@@ -2584,6 +2584,107 @@ tasks:
         "position": {
           "x": 50,
           "y": 335
+        }
+      }
+  "66":
+    id: "66"
+    taskid: f208a5cd-83a4-4597-80bc-8fe8fbe160f4
+    type: title
+    task:
+      id: f208a5cd-83a4-4597-80bc-8fe8fbe160f4
+      version: -1
+      name: 'CIE '
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 11c79348-8423-496f-869e-4db03a8a6558
+    type: regular
+    task:
+      id: 11c79348-8423-496f-869e-4db03a8a6558
+      version: -1
+      name: Get CIE User
+      description: Get the CIE user.
+      script: '|||prisma-sase-cie-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      domain:
+        simple: uppercasedss.onmicrosoft.com
+      value_for_filter:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 825094d5-cb9f-489e-8978-466ffacea3c2
+    type: condition
+    task:
+      id: 825094d5-cb9f-489e-8978-466ffacea3c2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.CIE.User.name
+            iscontext: true
+          right:
+            value:
+              simple: test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10040
         }
       }
     note: false

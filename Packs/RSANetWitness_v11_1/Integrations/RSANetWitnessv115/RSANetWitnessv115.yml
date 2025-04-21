@@ -2050,7 +2050,7 @@ script:
   - arguments: []
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   ismappable: true
   isremotesyncin: true

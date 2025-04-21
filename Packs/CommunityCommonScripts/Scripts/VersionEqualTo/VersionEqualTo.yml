@@ -11,7 +11,7 @@ comment: |-
 commonfields:
   id: VersionEqualTo
   version: -1
-dockerimage: demisto/powershell:7.4.6.116823
+dockerimage: demisto/powershell:7.4.6.117357
 enabled: true
 name: VersionEqualTo
 runas: DBotWeakRole

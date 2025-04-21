@@ -1,18 +1,32 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from requests_ntlm import HttpNtlmAuth
 import tempfile
 
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
 
 # disable insecure warnings
 import urllib3
+from CommonServerPython import *  # noqa: F401
+from requests_ntlm import HttpNtlmAuth
+
+from CommonServerUserPython import *
+
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, server_url: str, use_ssl: bool, proxy: bool, app_id: str, folder: str, safe: str,
-                 credentials_object: str, username: str, password: str, cert_text: str, key_text: str):
+    def __init__(
+        self,
+        server_url: str,
+        use_ssl: bool,
+        proxy: bool,
+        app_id: str,
+        folder: str,
+        safe: str,
+        credentials_object: str,
+        username: str,
+        password: str,
+        cert_text: str,
+        key_text: str,
+    ):
         super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
         self._app_id = app_id
         self._folder = folder
@@ -36,20 +50,18 @@ class Client(BaseClient):
         if not self._cert_text and not self._key_text:
             return None, None, None
         elif not self._cert_text or not self._key_text:
-            raise Exception('You can not configure either certificate text or key, both are required.')
+            raise Exception("You can not configure either certificate text or key, both are required.")
         elif self._cert_text and self._key_text:
-            cert_text_list = self._cert_text.split('-----')
+            cert_text_list = self._cert_text.split("-----")
             # replace spaces with newline characters
-            cert_text_fixed = '-----'.join(
-                cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
+            cert_text_fixed = "-----".join(cert_text_list[:2] + [cert_text_list[2].replace(" ", "\n")] + cert_text_list[3:])
             cf = tempfile.NamedTemporaryFile(delete=False)
             cf.write(cert_text_fixed.encode())
             cf.flush()
 
-            key_text_list = self._key_text.split('-----')
+            key_text_list = self._key_text.split("-----")
             # replace spaces with newline characters
-            key_text_fixed = '-----'.join(
-                key_text_list[:2] + [key_text_list[2].replace(' ', '\n')] + key_text_list[3:])
+            key_text_fixed = "-----".join(key_text_list[:2] + [key_text_list[2].replace(" ", "\n")] + key_text_list[3:])
             kf = tempfile.NamedTemporaryFile(delete=False)
             kf.write(key_text_fixed.encode())
             kf.flush()
@@ -57,7 +69,7 @@ class Client(BaseClient):
         return None
 
     def get_credentials(self, creds_object: str):
-        url_suffix = '/AIMWebService/api/Accounts'
+        url_suffix = "/AIMWebService/api/Accounts"
         params = {
             "AppID": self._app_id,
             "Safe": self._safe,
@@ -86,8 +98,8 @@ def list_credentials_command(client):
     results = CommandResults(
         outputs=creds_list,
         raw_response=creds_list,
-        outputs_prefix='CyberArkAIM',
-        outputs_key_field='Name',
+        outputs_prefix="CyberArkAIM",
+        outputs_key_field="Name",
     )
     return results
 
@@ -98,8 +110,8 @@ def fetch_credentials(client, args: dict):
     :param args: demisto args dict
     :return: a credentials object
     """
-    creds_name = args.get('identifier')
-    demisto.debug('name of cred used: ', creds_name)
+    creds_name = args.get("identifier")
+    demisto.debug("name of cred used: ", creds_name)
 
     if creds_name:
         try:
@@ -111,11 +123,13 @@ def fetch_credentials(client, args: dict):
         creds_list = client.list_credentials()
     credentials = []
     for cred in creds_list:
-        credentials.append({
-            "user": cred.get("UserName"),
-            "password": cred.get("Content"),
-            "name": cred.get("Name"),
-        })
+        credentials.append(
+            {
+                "user": cred.get("UserName"),
+                "password": cred.get("Content"),
+                "name": cred.get("Name"),
+            }
+        )
     demisto.credentials(credentials)
 
 
@@ -131,8 +145,8 @@ def test_module(client: Client) -> str:
             # Running a dummy credential just to check connection itself.
             client.get_credentials("test_cred")
         except DemistoException as e:
-            if 'Error in API call [500]' in e.message or 'Error in API call [404]' in e.message:
-                return 'ok'
+            if "Error in API call [500]" in e.message or "Error in API call [404]" in e.message:
+                return "ok"
             else:
                 raise e
     return "ok"
@@ -141,46 +155,54 @@ def test_module(client: Client) -> str:
 def main():
     params = demisto.params()
 
-    url = params.get('url')
-    use_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    url = params.get("url")
+    use_ssl = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    app_id = params.get('app_id') or ""
-    folder = params.get('folder')
-    safe = params.get('safe')
-    credentials_object = params.get('credential_names') or ""
+    app_id = params.get("app_id") or ""
+    folder = params.get("folder")
+    safe = params.get("safe")
+    credentials_object = params.get("credential_names") or ""
 
-    cert_text = params.get('cert_text') or ""
-    key_text = (
-        params.get('key_text_creds', {}).get('password')
-        or params.get('key_text', ''))
+    cert_text = params.get("cert_text") or ""
+    key_text = params.get("key_text_creds", {}).get("password") or params.get("key_text", "")
 
     username = ""
     password = ""
-    if params.get('credentials'):
+    if params.get("credentials"):
         # credentials are not mandatory in this integration
-        username = params.get('credentials').get('identifier')
-        password = params.get('credentials').get('password')
+        username = params.get("credentials").get("identifier")
+        password = params.get("credentials").get("password")
 
     try:
-        client = Client(server_url=url, use_ssl=use_ssl, proxy=proxy, app_id=app_id, folder=folder, safe=safe,
-                        credentials_object=credentials_object, username=username, password=password,
-                        cert_text=cert_text, key_text=key_text)
+        client = Client(
+            server_url=url,
+            use_ssl=use_ssl,
+            proxy=proxy,
+            app_id=app_id,
+            folder=folder,
+            safe=safe,
+            credentials_object=credentials_object,
+            username=username,
+            password=password,
+            cert_text=cert_text,
+            key_text=key_text,
+        )
 
         command = demisto.command()
-        demisto.debug(f'Command being called in CyberArk AIM is: {command}')
+        demisto.debug(f"Command being called in CyberArk AIM is: {command}")
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'cyberark-aim-list-credentials':
+        elif command == "cyberark-aim-list-credentials":
             return_results(list_credentials_command(client))
-        elif command == 'fetch-credentials':
+        elif command == "fetch-credentials":
             fetch_credentials(client, demisto.args())
 
         else:
-            raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
+            raise NotImplementedError(f"{command} is not an existing CyberArk AIM command")
     except Exception as err:
-        return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+        return_error(f"Unexpected error: {err!s}", error=traceback.format_exc())
     finally:
         try:
             if client.crt:
@@ -192,8 +214,8 @@ def main():
                     client.kf.close()
                     os.remove(kf_name)
         except Exception as err:
-            return_error(f"CyberArk AIM error: {str(err)}")
+            return_error(f"CyberArk AIM error: {err!s}")
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

@@ -1,6 +1,7 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import json
 
 
 def calculate_overall(data: dict = None) -> str:
@@ -16,11 +17,8 @@ def calculate_overall(data: dict = None) -> str:
 
 
 def main():
-
     query = '-status:closed -category:job type:"NCSC CAF Assessment"'
-    incidents = demisto.executeCommand("getIncidents", {"query": query})[0]["Contents"][
-        "data"
-    ]
+    incidents = demisto.executeCommand("getIncidents", {"query": query})[0]["Contents"]["data"]
     if len(incidents) < 1:
         return ""
     incidents = sorted(incidents, key=lambda x: x["id"])
@@ -69,21 +67,27 @@ def main():
         else:
             not_achieved += 1
 
-        md += f"Out of the four objectives answered:\n\n### Achieved: **{achieved}**\n\n### Partially Achieved: " \
-              f"**{partially_achieved}**\n\n### Not Achieved: **{not_achieved}**\n\n"
+        md += (
+            f"Out of the four objectives answered:\n\n### Achieved: **{achieved}**\n\n### Partially Achieved: "
+            f"**{partially_achieved}**\n\n### Not Achieved: **{not_achieved}**\n\n"
+        )
 
         if not_achieved or partially_achieved:
-            md += "There is material available on the NCSC Website under [Table view of principles and related " \
-                  "guidance](https://www.ncsc.gov.uk/collection/caf/table-view-principles-and-related-guidance) that " \
-                  "will help with achieving all those that are either 'Not Achieved' or 'Partially Achived'.\n\n"
+            md += (
+                "There is material available on the NCSC Website under [Table view of principles and related "
+                "guidance](https://www.ncsc.gov.uk/collection/caf/table-view-principles-and-related-guidance) that "
+                "will help with achieving all those that are either 'Not Achieved' or 'Partially Achived'.\n\n"
+            )
 
         else:
-            md += "This assessment was fully 'Achieved', great work! There is nothing more to do than ensure that " \
-                  "your standards remain as high as they are now.\n\n"
+            md += (
+                "This assessment was fully 'Achieved', great work! There is nothing more to do than ensure that "
+                "your standards remain as high as they are now.\n\n"
+            )
 
     else:
         md = ""
-    demisto.results(md)
+    demisto.results(md)  # noqa: RET503
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

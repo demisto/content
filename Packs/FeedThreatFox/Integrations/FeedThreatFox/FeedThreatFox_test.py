@@ -1,9 +1,9 @@
-from CommonServerPython import DemistoException, FeedIndicatorType
 import json
-from freezegun import freeze_time
-import pytest
 
 import FeedThreatFox as ftf
+import pytest
+from CommonServerPython import DemistoException, FeedIndicatorType
+from freezegun import freeze_time
 
 CLIENT = ftf.Client(base_url="https://threatfox-api.abuse.ch/")
 
@@ -163,8 +163,8 @@ def test_threatfox_get_indicators_command__bad_args():
     Then:
         - An exception is thrown.
     """
-    from FeedThreatFox import threatfox_get_indicators_command
     from CommonServerPython import DemistoException
+    from FeedThreatFox import threatfox_get_indicators_command
 
     with pytest.raises(DemistoException):
         threatfox_get_indicators_command(CLIENT, {"days": 1, "tag": "bla"})
@@ -181,8 +181,8 @@ def test_threatfox_get_indicators_command__bad_response(mocker):
     Then:
         - An exception is thrown.
     """
-    from FeedThreatFox import threatfox_get_indicators_command
     from CommonServerPython import DemistoException
+    from FeedThreatFox import threatfox_get_indicators_command
 
     mocker.patch.object(CLIENT, "_http_request", return_value={"query_status": "not okay", "data": "details about the problem"})
     with pytest.raises(DemistoException):

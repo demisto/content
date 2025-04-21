@@ -1,20 +1,21 @@
-from CommonServerPython import *
 import unittest
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import ANY, MagicMock, patch
+
+from CommonServerPython import *
+from ThreatZone import Client as tz_client
 from ThreatZone import (
-    generate_dbotscore,
-    threatzone_return_results,
     encode_file_name,
-    threatzone_static_cdr_upload_sample,
-    threatzone_sandbox_upload_sample,
-    threatzone_check_limits,
+    generate_dbotscore,
     generate_indicator,
     get_reputation_reliability,
-    translate_score,
+    threatzone_check_limits,
     threatzone_get_result,
     threatzone_get_sanitized_file,
+    threatzone_return_results,
+    threatzone_sandbox_upload_sample,
+    threatzone_static_cdr_upload_sample,
+    translate_score,
 )
-from ThreatZone import Client as tz_client
 
 DBOT_SCORES = {
     "Reliability": "A - Completely reliable",
@@ -103,7 +104,6 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
 
 
 class TestTranslateScore(unittest.TestCase):
-
     def test_translate_score_zero(self):
         score = 0
         result = translate_score(score)
@@ -126,7 +126,6 @@ class TestTranslateScore(unittest.TestCase):
 
 
 class TestGetReputationReliability(unittest.TestCase):
-
     def test_get_reputation_reliability_A_PLUS(self):
         reliability = "A+ - 3rd party enrichment"
         result = get_reputation_reliability(reliability)

@@ -449,9 +449,12 @@ Verify if an email has been quarantined.
 
 | **Argument Name** | **Description**                           | **Required** |
 |-------------------|-------------------------------------------| --- |
-| message_id        | The ID value of an email.                  | Required | 
-| time              | The email delivery time (ISO8601 format).      | Required | 
-| recipient         | The email recipient. | Required | 
+| message_id        | The ID value of an email.                  | True | 
+| time              | The creation time of the incident in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | True | 
+| recipient         | The email recipient. | True | 
+| limit_quarantine_occurred_time | Whether or not to limit the results to include only quarantines that occurred within a limited time after alert creation. Automated quarantine actions for example typically occur within 120 seconds of alert firing. Manual actions executed by human may take longer. Default is True.| False |
+| quarantine_limit | Only used if 'limit_quarantine_occurred_time' argument is set to true. Sets a limit on the quarantines retrieved to include only those where the time difference between alert time and quarantined time is less than the number of seconds specified. The time is in seconds. Default is 120. | False|
+| fetch_delta | The time frame (in hours) used to identify the size of batches when retrieving the messages. e.g., 12. Default is 6. | False |
 
 
 #### Context Output

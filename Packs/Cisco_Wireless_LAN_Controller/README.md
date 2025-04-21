@@ -26,12 +26,15 @@ Open your Cisco WLC GUI, and follow these instructions:
 ## Timestamp Ingestion
 
 The following timestamp formats are currently supported for ingestion from Cisco WLC Syslog Messages in UTC time:
+
 * MMM dd hh:mm:ss.nnn
 * MMM dd hh:mm:ss.nnn TZ
+* MMM dd yyyy hh:mm:ss.nnn TZ
 * yyyy MMM dd hh:mm:ss.nnn
 * yyyy MMM dd hh:mm:ss.nnn TZ
 
 In order to configure one of the above formats, follow these instructions:
+
 1. Open your Cisco WLC CLI terminal, and type **enable** to enter Privileged EXEC mode.
 2. Enter Global Configuration Mode by either typing **configure terminal** or **conf t**.
 3. To configure the timezone in UTC format, type:

@@ -338,7 +338,7 @@ Lists all the accounts in the organization or a specific account by ID.
                     "Id": "111222333444",
                     "JoinedMethod": "INVITED",
                     "JoinedTimestamp": "2022-07-25 09:11:23.528000+00:00",
-                    "Name": "ferrum-techs",
+                    "Name": "John Doe",
                     "Status": "SUSPENDED"
                 }
             ],
@@ -354,7 +354,7 @@ Lists all the accounts in the organization or a specific account by ID.
 >|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 >|---|---|---|---|---|---|---|
 >| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Name | user@xsoar.com | CREATED | 2023-09-04 09:17:14.299000+00:00 | ACTIVE |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | ferrum-techs | user@xsoar.com | INVITED | 2022-07-25 09:11:23.528000+00:00 | SUSPENDED |
+>| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | john-doe | user@xsoar.com | INVITED | 2022-07-25 09:11:23.528000+00:00 | SUSPENDED |
 
 
 ### aws-org-organization-get

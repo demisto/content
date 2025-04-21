@@ -13,8 +13,7 @@ you are implementing with your integration
 import json
 
 import pytest
-
-from Neosec import NeosecClient, fetch_incidents, NeosecNodeClient, set_alert_status
+from Neosec import NeosecClient, NeosecNodeClient, fetch_incidents, set_alert_status
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_NODE_URL = "http://124-fake-api.com"
@@ -30,8 +29,8 @@ MOCK_ALL_EVENTS = {
             "status": "Open",
             "severity": "Low",
             "description": "* Endpoint 'DELETE /v2/invoicing/invoices/{invoices_id}' in service 'Invoicing' \n"
-                           "* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be"
-                           " high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
+            "* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be"
+            " high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
             "category": "Data Access",
             "source": None,
             "author": "Analytics",
@@ -43,25 +42,18 @@ MOCK_ALL_EVENTS = {
                     "pretty_name": None,
                     "class": "user",
                     "family": "actor",
-                    "value_type": "String"
+                    "value_type": "String",
                 },
                 {
                     "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___KlA7pxr0WeAlQPiFeEi-"
-                             "XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
+                    "XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
                     "name": "AccessToken",
                     "pretty_name": None,
                     "class": "token",
                     "family": "actor",
-                    "value_type": "String"
+                    "value_type": "String",
                 },
-                {
-                    "value": "127.0.0.1",
-                    "name": "IP",
-                    "pretty_name": None,
-                    "class": "ip",
-                    "family": "actor",
-                    "value_type": "IPv4"
-                }
+                {"value": "127.0.0.1", "name": "IP", "pretty_name": None, "class": "ip", "family": "actor", "value_type": "IPv4"},
             ],
             "endpoints": [
                 {
@@ -78,34 +70,24 @@ MOCK_ALL_EVENTS = {
                     "call_percentage": None,
                     "max_severity": None,
                     "first_seen": None,
-                    "last_seen": None
+                    "last_seen": None,
                 }
             ],
-            "caller_ips": [
-                "127.0.0.1"
-            ],
-            "labels": [
-                "OWASP API1",
-                "OWASP A5",
-                "OWASP API5",
-                "Data Leak",
-                "PII"
-            ],
+            "caller_ips": ["127.0.0.1"],
+            "labels": ["OWASP API1", "OWASP A5", "OWASP API5", "Data Leak", "PII"],
             "alert_type": "UserBehaviorAlert",
             "recommendations": "* Is the resource being accessed private to the actor entity type accessing it?"
-                               "\n* Is the actor entity accessing this resource an admin?\n* Investigate the"
-                               " behavior of the API consumer around the time of the alert",
+            "\n* Is the actor entity accessing this resource an admin?\n* Investigate the"
+            " behavior of the API consumer around the time of the alert",
             "alert_info": "Some functions and resources in the API are accessible only by high-privilege or "
-                          "admin users. When a low-privilege API consumer abnormally tries to use those functions,"
-                          " they may be looking for an authorization bypass vulnerability, often called BFLA"
-                          " (broken function level authorization).",
+            "admin users. When a low-privilege API consumer abnormally tries to use those functions,"
+            " they may be looking for an authorization bypass vulnerability, often called BFLA"
+            " (broken function level authorization).",
             "triggered_at": "2022-05-05T19:39:49.504000Z",
             "detection_model_id": "fa10ba69-89a0-4c15-876a-cdaf911fda25",
             "endpoint": "DELETE /v2/invoicing/invoices/{invoices_id}",
             "base_risk_score": 0,
-            "call_ids": [
-                "4fce6687-1c78-4083-a427-a82e1880d605"
-            ]
+            "call_ids": ["4fce6687-1c78-4083-a427-a82e1880d605"],
         },
         {
             "id": "a29ceff4-fccf-efba-aabc-87909d0fbff2",
@@ -114,21 +96,14 @@ MOCK_ALL_EVENTS = {
             "status": "Open",
             "severity": "Low",
             "description": "* Endpoint 'POST /v1/oauth2/token' in service 'Authentication'\n* It received 30"
-                           " or more bad requests in the last hour from IP 127.0.0.1\n* The average bad "
-                           "request ratio per 10 minutes per IP for this endpoint was 20 in the last 5 days.",
+            " or more bad requests in the last hour from IP 127.0.0.1\n* The average bad "
+            "request ratio per 10 minutes per IP for this endpoint was 20 in the last 5 days.",
             "category": "Account Takeover",
             "source": None,
             "author": "Analytics",
             "sequence_ids": None,
             "entities": [
-                {
-                    "value": "127.0.0.1",
-                    "name": "IP",
-                    "pretty_name": None,
-                    "class": "ip",
-                    "family": "actor",
-                    "value_type": "IPv4"
-                }
+                {"value": "127.0.0.1", "name": "IP", "pretty_name": None, "class": "ip", "family": "actor", "value_type": "IPv4"}
             ],
             "endpoints": [
                 {
@@ -145,27 +120,20 @@ MOCK_ALL_EVENTS = {
                     "call_percentage": None,
                     "max_severity": None,
                     "first_seen": None,
-                    "last_seen": None
+                    "last_seen": None,
                 }
             ],
-            "caller_ips": [
-                "127.0.0.1"
-            ],
-            "labels": [
-                "OWASP API2",
-                "OWASP A2",
-                "OWASP API4",
-                "Unauthenticated EP"
-            ],
+            "caller_ips": ["127.0.0.1"],
+            "labels": ["OWASP API2", "OWASP A2", "OWASP API4", "Unauthenticated EP"],
             "alert_type": "UserBehaviorAlert",
             "recommendations": "* Consider tightening rate limits for authentication endpoints\n* Look "
-                               "at adding IP addresses performing brute force attempts to your firewall's"
-                               " deny list\n* Any subsequent successful login from the alerted IP address "
-                               "should be treated as suspicious.",
+            "at adding IP addresses performing brute force attempts to your firewall's"
+            " deny list\n* Any subsequent successful login from the alerted IP address "
+            "should be treated as suspicious.",
             "alert_info": "In brute force attacks, malicious actors try to login to accounts using different"
-                          " passwords. These password could be part of a specified dictionary or simple "
-                          "guessing without any logic. This attack method is considered to be quite old"
-                          " but still effective and popular among hackers.",
+            " passwords. These password could be part of a specified dictionary or simple "
+            "guessing without any logic. This attack method is considered to be quite old"
+            " but still effective and popular among hackers.",
             "triggered_at": "2022-05-05T19:24:09.129000Z",
             "detection_model_id": "a7d9f57d-b0d7-48ed-82a7-23db1b83271c",
             "endpoint": "POST /v1/oauth2/token",
@@ -202,8 +170,8 @@ MOCK_ALL_EVENTS = {
                 "f432c9bd-e76d-4919-8ef4-970b9e9907cb",
                 "b29e5267-354d-4d00-a164-2a6df8d2289d",
                 "72d7daf8-9b00-46a0-b4c1-30a793515ab1",
-                "700032ed-c209-434f-b006-f4a939d0fad5"
-            ]
+                "700032ed-c209-434f-b006-f4a939d0fad5",
+            ],
         },
         {
             "id": "a299aff4-52f3-efba-aabc-87909d0fbff2",
@@ -212,10 +180,10 @@ MOCK_ALL_EVENTS = {
             "status": "Open",
             "severity": "Low",
             "description": "* Query parameter 'total_required' in endpoint 'GET /v2/invoicing/invoices' "
-                           "in service 'Invoicing'\n* IP '127.0.0.1' used 52 unique 'total_required'"
-                           " query parameter values in 10 minutes\n* 5 of IP requests returned 200 OK\n*"
-                           " On average, a single IP uses 6 unique query parameter values in 10 minutes, "
-                           "failing 2 of these requests.",
+            "in service 'Invoicing'\n* IP '127.0.0.1' used 52 unique 'total_required'"
+            " query parameter values in 10 minutes\n* 5 of IP requests returned 200 OK\n*"
+            " On average, a single IP uses 6 unique query parameter values in 10 minutes, "
+            "failing 2 of these requests.",
             "category": "Recon",
             "source": None,
             "author": "Analytics",
@@ -227,25 +195,18 @@ MOCK_ALL_EVENTS = {
                     "pretty_name": None,
                     "class": "user",
                     "family": "actor",
-                    "value_type": "String"
+                    "value_type": "String",
                 },
                 {
                     "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___"
-                             "KlA7pxr0WeAlQPiFeEi-XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
+                    "KlA7pxr0WeAlQPiFeEi-XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
                     "name": "AccessToken",
                     "pretty_name": None,
                     "class": "token",
                     "family": "actor",
-                    "value_type": "String"
+                    "value_type": "String",
                 },
-                {
-                    "value": "127.0.0.1",
-                    "name": "IP",
-                    "pretty_name": None,
-                    "class": "ip",
-                    "family": "actor",
-                    "value_type": "IPv4"
-                }
+                {"value": "127.0.0.1", "name": "IP", "pretty_name": None, "class": "ip", "family": "actor", "value_type": "IPv4"},
             ],
             "endpoints": [
                 {
@@ -262,32 +223,25 @@ MOCK_ALL_EVENTS = {
                     "call_percentage": None,
                     "max_severity": None,
                     "first_seen": None,
-                    "last_seen": None
+                    "last_seen": None,
                 }
             ],
-            "caller_ips": [
-                "127.0.0.1"
-            ],
-            "labels": [
-                "OWASP API1",
-                "OWASP API4",
-                "OWASP A5",
-                "PII"
-            ],
+            "caller_ips": ["127.0.0.1"],
+            "labels": ["OWASP API1", "OWASP API4", "OWASP A5", "PII"],
             "alert_type": "UserBehaviorAlert",
             "recommendations": "* Check whether the fuzzing originated from a company-sanctioned "
-                               "tool, or was part of an authorized penetration test\n* Has the same"
-                               " actor performed any subsequent operations against your APIs? If so,"
-                               " treat them as suspicious.",
+            "tool, or was part of an authorized penetration test\n* Has the same"
+            " actor performed any subsequent operations against your APIs? If so,"
+            " treat them as suspicious.",
             "alert_info": "Attackers fuzz query parameter values in order to find injection points "
-                          "and whether the API is leaking any information. An extreme case of information"
-                          " leaks is broken authorization, when attacker can access resources they should "
-                          "not be able to access.\nThis detection model triggers on an API consumer fuzzing a "
-                          "certain endpoint query parameter, and getting one or more successful responses."
-                          " This may mean that the attacker managed to access unauthorized data. Note that"
-                          " regardless of the success or failure of the calls themselves - the attacker may "
-                          "also have learned important information from the response codes, sizes, and other"
-                          " response attributes, such as the time it took to process each request.",
+            "and whether the API is leaking any information. An extreme case of information"
+            " leaks is broken authorization, when attacker can access resources they should "
+            "not be able to access.\nThis detection model triggers on an API consumer fuzzing a "
+            "certain endpoint query parameter, and getting one or more successful responses."
+            " This may mean that the attacker managed to access unauthorized data. Note that"
+            " regardless of the success or failure of the calls themselves - the attacker may "
+            "also have learned important information from the response codes, sizes, and other"
+            " response attributes, such as the time it took to process each request.",
             "triggered_at": "2022-05-05T19:10:09.169000Z",
             "detection_model_id": "96c02fc1-430a-4dd5-8aef-72d42927620d",
             "endpoint": "GET /v2/invoicing/invoices",
@@ -344,8 +298,8 @@ MOCK_ALL_EVENTS = {
                 "a382109b-651e-4cc6-a7e7-be4cbbda18c1",
                 "39ae1133-0ae2-4b15-9396-cb8b6bc771d2",
                 "455f84d5-1052-4555-9c9c-71b0ea51f61e",
-                "b10b7571-8de6-4fe7-a25b-03bd3ee5c98b"
-            ]
+                "b10b7571-8de6-4fe7-a25b-03bd3ee5c98b",
+            ],
         },
         {
             "id": "a299b804-52f3-48eb-abd1-87909d0f9ffd",
@@ -354,8 +308,8 @@ MOCK_ALL_EVENTS = {
             "status": "Open",
             "severity": "Low",
             "description": "* Endpoint 'GET /v2/checkout/orders/{order_id}' in service 'Invoicing'\n* The "
-                           "following query parameters are not documented: full_details\n* They had been"
-                           " used successfully 5 times in the last 30 days",
+            "following query parameters are not documented: full_details\n* They had been"
+            " used successfully 5 times in the last 30 days",
             "category": "Shadow API",
             "source": None,
             "author": "Analytics",
@@ -376,26 +330,18 @@ MOCK_ALL_EVENTS = {
                     "call_percentage": None,
                     "max_severity": None,
                     "first_seen": None,
-                    "last_seen": None
+                    "last_seen": None,
                 }
             ],
-            "caller_ips": [
-                "127.0.0.1"
-            ],
-            "labels": [
-                "OWASP API9",
-                "OWASP API7",
-                "OWASP A6",
-                "PII",
-                "Money Out"
-            ],
+            "caller_ips": ["127.0.0.1"],
+            "labels": ["OWASP API9", "OWASP API7", "OWASP A6", "PII", "Money Out"],
             "alert_type": "APIAlert",
             "recommendations": "* Review the endpoint and assess whether the parameter(s) should be exposed\n*"
-                               " Update the documentation, preferably adding documentation generation into your"
-                               " CI/CD pipeline",
+            " Update the documentation, preferably adding documentation generation into your"
+            " CI/CD pipeline",
             "alert_info": "Shadow parameters are undocumented parameters accepted by a documented API endpoint."
-                          " These undocumented parameters may not have been tested as thoroughly as the documented"
-                          " parameters, and therefore pose a greater security risk.",
+            " These undocumented parameters may not have been tested as thoroughly as the documented"
+            " parameters, and therefore pose a greater security risk.",
             "triggered_at": "2022-05-05T18:55:22.148000Z",
             "detection_model_id": "5a78eeb0-8be0-434f-9ddb-96f3e9c97a3e",
             "endpoint": "GET /v2/checkout/orders/{orders_id}",
@@ -405,12 +351,12 @@ MOCK_ALL_EVENTS = {
                 "73ab15a8-6292-4aff-85b8-5851f415c77d",
                 "28bc4173-c3e2-45aa-b0cc-4ca40a85e9e8",
                 "bc9a0fc4-e2ab-41c9-baf9-59d0a2e3dd56",
-                "77e70698-805e-4fa1-a228-fc123f823940"
-            ]
-        }
+                "77e70698-805e-4fa1-a228-fc123f823940",
+            ],
+        },
     ],
     "count": 4,
-    "total": 4
+    "total": 4,
 }
 
 MOCK_NODE_ALL_EVENTS = {"Message": json.dumps(MOCK_ALL_EVENTS["items"])}
@@ -426,8 +372,8 @@ MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT = {
             "status": "Open",
             "severity": "Low",
             "description": "* Endpoint 'DELETE /v2/invoicing/invoices/{invoices_id}' in service 'Invoicing' \n"
-                           "* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be"
-                           " high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
+            "* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be"
+            " high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
             "category": "Data Access",
             "source": None,
             "author": "Analytics",
@@ -439,25 +385,18 @@ MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT = {
                     "pretty_name": None,
                     "class": "user",
                     "family": "actor",
-                    "value_type": "String"
+                    "value_type": "String",
                 },
                 {
                     "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___KlA7pxr0WeAlQPiFeEi-"
-                             "XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
+                    "XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
                     "name": "AccessToken",
                     "pretty_name": None,
                     "class": "token",
                     "family": "actor",
-                    "value_type": "String"
+                    "value_type": "String",
                 },
-                {
-                    "value": "127.0.0.1",
-                    "name": "IP",
-                    "pretty_name": None,
-                    "class": "ip",
-                    "family": "actor",
-                    "value_type": "IPv4"
-                }
+                {"value": "127.0.0.1", "name": "IP", "pretty_name": None, "class": "ip", "family": "actor", "value_type": "IPv4"},
             ],
             "endpoints": [
                 {
@@ -474,101 +413,57 @@ MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT = {
                     "call_percentage": None,
                     "max_severity": None,
                     "first_seen": None,
-                    "last_seen": None
+                    "last_seen": None,
                 }
             ],
-            "caller_ips": [
-                "127.0.0.1"
-            ],
-            "labels": [
-                "OWASP API1",
-                "OWASP A5",
-                "OWASP API5",
-                "Data Leak",
-                "PII"
-            ],
+            "caller_ips": ["127.0.0.1"],
+            "labels": ["OWASP API1", "OWASP A5", "OWASP API5", "Data Leak", "PII"],
             "alert_type": "UserBehaviorAlert",
             "recommendations": "* Is the resource being accessed private to the actor entity type accessing it?"
-                               "\n* Is the actor entity accessing this resource an admin?\n* Investigate the"
-                               " behavior of the API consumer around the time of the alert",
+            "\n* Is the actor entity accessing this resource an admin?\n* Investigate the"
+            " behavior of the API consumer around the time of the alert",
             "alert_info": "Some functions and resources in the API are accessible only by high-privilege or "
-                          "admin users. When a low-privilege API consumer abnormally tries to use those functions,"
-                          " they may be looking for an authorization bypass vulnerability, often called BFLA"
-                          " (broken function level authorization).",
+            "admin users. When a low-privilege API consumer abnormally tries to use those functions,"
+            " they may be looking for an authorization bypass vulnerability, often called BFLA"
+            " (broken function level authorization).",
             "triggered_at": "201322-05-05T19:39:49.504000Z",
             "detection_model_id": "fa10ba69-89a0-4c15-876a-cdaf911fda25",
             "endpoint": "DELETE /v2/invoicing/invoices/{invoices_id}",
             "base_risk_score": 0,
-            "call_ids": [
-                "4fce6687-1c78-4083-a427-a82e1880d605"
-            ]
+            "call_ids": ["4fce6687-1c78-4083-a427-a82e1880d605"],
         }
     ],
     "count": 4,
-    "total": 4
+    "total": 4,
 }
 
 
 def test_first_fetch_incidents(requests_mock):
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
 
     next_run, incidents = fetch_incidents(
-        client=client,
-        node_client=None,
-        max_results=50,
-        last_run={},
-        first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
+        client=client, node_client=None, max_results=50, last_run={}, first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+    assert json.loads(incidents[3]["rawJSON"])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
 
 
 def test_first_fetch_incidents_invalid_triggered_at(requests_mock):
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
 
     with pytest.raises(ValueError):
-        fetch_incidents(
-            client=client,
-            node_client=None,
-            max_results=50,
-            last_run={},
-            first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
-        )
+        fetch_incidents(client=client, node_client=None, max_results=50, last_run={}, first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP)
 
 
 def test_first_fetch_incidents_with_filters(requests_mock):
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
 
     next_run, incidents = fetch_incidents(
         client=client,
@@ -578,52 +473,36 @@ def test_first_fetch_incidents_with_filters(requests_mock):
         first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP,
         alert_status="Open",
         severities=["Info"],
-        alert_type=["Posture"]
+        alert_type=["Posture"],
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+    assert json.loads(incidents[3]["rawJSON"])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
 
 
 def test_next_fetch(requests_mock):
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
 
     next_run, incidents = fetch_incidents(
         client=client,
         node_client=None,
         last_run={"last_fetch": MOCK_FIRST_TIME_TIMESTAMP},
         first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP,
-        max_results=50
+        max_results=50,
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+    assert json.loads(incidents[3]["rawJSON"])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
 
 
 def test_first_fetch_incidents_with_detok(requests_mock):
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
 
-    requests_mock.post(MOCK_NODE_URL + '/detokenize', json=MOCK_NODE_ALL_EVENTS)
+    requests_mock.post(MOCK_NODE_URL + "/detokenize", json=MOCK_NODE_ALL_EVENTS)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
 
     node_client = NeosecNodeClient(
         base_url=MOCK_NODE_URL,
@@ -632,51 +511,31 @@ def test_first_fetch_incidents_with_detok(requests_mock):
     )
 
     next_run, incidents = fetch_incidents(
-        client=client,
-        node_client=node_client,
-        max_results=50,
-        last_run={},
-        first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
+        client=client, node_client=node_client, max_results=50, last_run={}, first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+    assert json.loads(incidents[3]["rawJSON"])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
 
 
 def test_test_module_sanity(requests_mock):
     from Neosec import test_module
 
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
 
     result = test_module(client, None, None, None, None, 50)
-    assert result == 'ok'
+    assert result == "ok"
 
 
 def test_test_module_with_detok_sanity(requests_mock):
     from Neosec import test_module
 
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
-    requests_mock.get(MOCK_NODE_URL + '/healthcheck', json=MOCK_NODE_HEALTH_CHECK)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
+    requests_mock.get(MOCK_NODE_URL + "/healthcheck", json=MOCK_NODE_HEALTH_CHECK)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
     node_client = NeosecNodeClient(
         base_url=MOCK_NODE_URL,
         verify=True,
@@ -684,24 +543,16 @@ def test_test_module_with_detok_sanity(requests_mock):
     )
 
     result = test_module(client, node_client, None, None, None, 50)
-    assert result == 'ok'
+    assert result == "ok"
 
 
 def test_test_module_with_detok_failed(requests_mock):
     from Neosec import test_module
 
-    requests_mock.post(
-        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
-        json=MOCK_ALL_EVENTS)
-    requests_mock.get(MOCK_NODE_URL + '/healthcheck', json=MOCK_NODE_HEALTH_CHECK_FAILED)
+    requests_mock.post(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/query", json=MOCK_ALL_EVENTS)
+    requests_mock.get(MOCK_NODE_URL + "/healthcheck", json=MOCK_NODE_HEALTH_CHECK_FAILED)
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
     node_client = NeosecNodeClient(
         base_url=MOCK_NODE_URL,
         verify=True,
@@ -709,17 +560,11 @@ def test_test_module_with_detok_failed(requests_mock):
     )
 
     result = test_module(client, node_client, None, None, None, 50)
-    assert result != 'ok'
+    assert result != "ok"
 
 
 def test_set_alert_status_command(requests_mock):
-    requests_mock.patch(MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/{MOCK_ALERT_ID}', json={})
+    requests_mock.patch(MOCK_URL + f"/organizations/{MOCK_TENANT_KEY}/alerts/{MOCK_ALERT_ID}", json={})
 
-    client = NeosecClient(
-        base_url=MOCK_URL,
-        verify=True,
-        proxy=False,
-        tenant_key=MOCK_TENANT_KEY,
-        headers={}
-    )
+    client = NeosecClient(base_url=MOCK_URL, verify=True, proxy=False, tenant_key=MOCK_TENANT_KEY, headers={})
     set_alert_status(client, MOCK_ALERT_ID, "Closed")

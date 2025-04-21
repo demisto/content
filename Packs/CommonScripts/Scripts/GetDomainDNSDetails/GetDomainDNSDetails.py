@@ -2,9 +2,7 @@ import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-from typing import (
-    Any
-)
+from typing import Any
 import traceback
 
 import dns.resolver
@@ -17,7 +15,7 @@ DNS_QUERY_TTL = 10.0
 QTYPES = ["CNAME", "NS", "A", "AAAA"]
 
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp: bool) -> dict[str, Any]:
@@ -25,13 +23,7 @@ def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp:
     q_rdclass = dns.rdataclass.from_text("IN")
 
     try:
-        ans = resolver.resolve(
-            qname,
-            q_rdtype, q_rdclass,
-            tcp=use_tcp,
-            lifetime=DNS_QUERY_TTL,
-            raise_on_no_answer=True
-        )
+        ans = resolver.resolve(qname, q_rdtype, q_rdclass, tcp=use_tcp, lifetime=DNS_QUERY_TTL, raise_on_no_answer=True)
 
     except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         return {}
@@ -41,30 +33,26 @@ def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp:
 
     result: dict[str, list[str]] = {}
 
-    result[qtype] = [
-        rr.to_text()
-        for rr in ans.rrset
-        if (rr is not None and rr.rdtype == q_rdtype and rr.rdclass == q_rdclass)
-    ]
+    result[qtype] = [rr.to_text() for rr in ans.rrset if (rr is not None and rr.rdtype == q_rdtype and rr.rdclass == q_rdclass)]
 
     return result
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def get_domain_dns_details_command(args: dict[str, Any]) -> CommandResults:
     outputs: dict[str, dict[str, Any]] | None
     answer: str | dict[str, Any]
 
-    server = args.get('server')
-    use_tcp = argToBoolean(args.get('use_tcp', 'Yes'))
+    server = args.get("server")
+    use_tcp = argToBoolean(args.get("use_tcp", "Yes"))
 
     qtypes = QTYPES
-    if (arg_qtype := args.get('qtype')) is not None:
+    if (arg_qtype := args.get("qtype")) is not None:
         qtypes = argToList(arg_qtype)
 
-    qname = args.get('domain')
+    qname = args.get("domain")
     if qname is None:
         raise ValueError("domain is required")
 
@@ -72,33 +60,20 @@ def get_domain_dns_details_command(args: dict[str, Any]) -> CommandResults:
     if server is not None:
         resolver.nameservers = [server]
 
-    answer = {
-        'domain': qname,
-        'server': server if server is not None else 'system'
-    }
+    answer = {"domain": qname, "server": server if server is not None else "system"}
 
     # we ask specifically for CNAMEs
     for qtype in qtypes:
         answer.update(make_query(resolver, qname, qtype, use_tcp=use_tcp))
 
-    outputs = {
-        'DomainDNSDetails': answer
-    }
+    outputs = {"DomainDNSDetails": answer}
 
-    markdown = tableToMarkdown(
-        f'Domain DNS Details for {qname}',
-        answer,
-        headers=["domain", "server"] + qtypes
-    )
+    markdown = tableToMarkdown(f"Domain DNS Details for {qname}", answer, headers=["domain", "server"] + qtypes)
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs=outputs,
-        outputs_key_field=['domain', 'server']
-    )
+    return CommandResults(readable_output=markdown, outputs=outputs, outputs_key_field=["domain", "server"])
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -106,11 +81,11 @@ def main():
         return_results(get_domain_dns_details_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute GetDomainDNSDetails. Error: {str(ex)}')
+        return_error(f"Failed to execute GetDomainDNSDetails. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

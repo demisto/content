@@ -1,9 +1,11 @@
-''' IMPORTS '''
-from CommonServerPython import *
-from CommonServerUserPython import *
+"""IMPORTS"""
+
+from typing import Any
 
 import urllib3
-from typing import Any
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -22,16 +24,9 @@ class Client(BaseClient):
         self._password = password
 
     def login(self) -> dict[str, Any]:
-        data = {
-            "email": self._username,
-            "password": self._password
-        }
+        data = {"email": self._username, "password": self._password}
 
-        return self._http_request(
-            method='POST',
-            url_suffix='/login',
-            data=data
-        )
+        return self._http_request(method="POST", url_suffix="/login", data=data)
 
     def get_access_token(self):
         """
@@ -43,70 +38,65 @@ class Client(BaseClient):
         previous_token = get_integration_context()
 
         # check if there is an existing access token
-        if previous_token.get('access_token') and previous_token.get('expires') > int(time.time()):
-            return previous_token.get('access_token')
+        if previous_token.get("access_token") and previous_token.get("expires") > int(time.time()):
+            return previous_token.get("access_token")
         else:
             try:
                 res = self.login()
-                if res['access_token']:
+                if res["access_token"]:
                     integration_cotext = {
-                        'access_token': res['access_token'],
-                        'expires': res['expires'],
+                        "access_token": res["access_token"],
+                        "expires": res["expires"],
                     }
                     set_integration_context(integration_cotext)
-                    return res['access_token']
+                    return res["access_token"]
             except Exception as e:
                 return_error(
-                    f'Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}')
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
+                )
 
     def fetch_detections(self, token: str, hours: str) -> dict[str, Any]:
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
+        headers = {"Authorization": f"Bearer {token}"}
 
         return self._http_request(
-            method='GET',
+            method="GET",
             headers=headers,
-            url_suffix='/ioc-detections/' + hours,
+            url_suffix="/ioc-detections/" + hours,
         )
 
     def fetch_progressions(self, token: str, hours: str) -> dict[str, Any]:
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
+        headers = {"Authorization": f"Bearer {token}"}
 
         return self._http_request(
-            method='GET',
+            method="GET",
             headers=headers,
-            url_suffix='/trails/' + hours,
+            url_suffix="/trails/" + hours,
         )
 
     def fetch_trail_details(self, token: str, trail_id: str) -> dict[str, Any]:
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
+        headers = {"Authorization": f"Bearer {token}"}
 
         return self._http_request(
-            method='GET',
+            method="GET",
             headers=headers,
-            url_suffix='/trails/' + trail_id,
+            url_suffix="/trails/" + trail_id,
         )
 
 
 def test_module(client: Client, args: dict[str, Any]) -> str:
     token = client.get_access_token()
-    hours = args.get('hours', '72')
+    hours = args.get("hours", "72")
 
     if not token:
-        raise ValueError('Invalid access token')
+        raise ValueError("Invalid access token")
     if not hours:
-        raise ValueError('hours not specified')
+        raise ValueError("hours not specified")
 
     try:
         client.fetch_detections(token, hours)
     except DemistoException as e:
         raise e
-    return 'ok'
+    return "ok"
 
 
 def fetch_detections_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
@@ -129,44 +119,42 @@ def fetch_detections_command(client: Client, args: dict[str, Any]) -> list[Comma
     :rtype: ``CommandResults``
     """
     token = client.get_access_token()
-    hours = args.get('hours', None)
+    hours = args.get("hours", None)
 
     if not token:
-        raise ValueError('Access token not specified')
+        raise ValueError("Access token not specified")
     if not hours:
-        raise ValueError('hours not specified')
+        raise ValueError("hours not specified")
 
     result = client.fetch_detections(token, hours)
 
     command_results: list[CommandResults] = []
 
     total_detections = 0
-    for idx, ioc in enumerate(result):
+    for _idx, _ioc in enumerate(result):
         total_detections += 1
 
     # output 1
     detections_log = {
         "Total Detections": total_detections,
-        "Detections URL": client._server + '/#/detections',
+        "Detections URL": client._server + "/#/detections",
     }
-    command_results.append(CommandResults(
-        readable_output=tableToMarkdown('Detections Log: ', detections_log, url_keys=('Detections URL')),
-        outputs=detections_log
-    ))
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Detections Log: ", detections_log, url_keys=("Detections URL")),
+            outputs=detections_log,
+        )
+    )
 
     # output 2
     if total_detections != 0:
-        markdown = '### Successfully fetched ' + str(total_detections) + ' detections. \n'
+        markdown = "### Successfully fetched " + str(total_detections) + " detections. \n"
     else:
-        markdown = '### Detections Unavailable.'
+        markdown = "### Detections Unavailable."
 
-    markdown += tableToMarkdown('Detections:', result)
+    markdown += tableToMarkdown("Detections:", result)
 
-    command_results.append(CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Confluera.Detections',
-        outputs=result
-    ))
+    command_results.append(CommandResults(readable_output=markdown, outputs_prefix="Confluera.Detections", outputs=result))
 
     return command_results
 
@@ -191,44 +179,42 @@ def fetch_progressions_command(client: Client, args: dict[str, Any]) -> list[Com
     :rtype: ``CommandResults``
     """
     token = client.get_access_token()
-    hours = args.get('hours', None)
+    hours = args.get("hours", None)
 
     if not token:
-        raise ValueError('Access token not specified')
+        raise ValueError("Access token not specified")
     if not hours:
-        raise ValueError('hours not specified')
+        raise ValueError("hours not specified")
 
     result = client.fetch_progressions(token, hours)
 
     command_results: list[CommandResults] = []
 
     total_progressions = 0
-    for idx, ioc in enumerate(result):
+    for _idx, _ioc in enumerate(result):
         total_progressions += 1
 
     # output 1
     progressions_log = {
         "Total Progressions": total_progressions,
-        "Progressions URL": client._server + '/#/monitor/cyber-attacks/active',
+        "Progressions URL": client._server + "/#/monitor/cyber-attacks/active",
     }
-    command_results.append(CommandResults(
-        readable_output=tableToMarkdown('Progressions Log: ', progressions_log, url_keys=('Progressions URL')),
-        outputs=progressions_log
-    ))
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Progressions Log: ", progressions_log, url_keys=("Progressions URL")),
+            outputs=progressions_log,
+        )
+    )
 
     # output 2
     if total_progressions != 0:
-        markdown = '### Successfully fetched ' + str(total_progressions) + ' progressions. \n'
+        markdown = "### Successfully fetched " + str(total_progressions) + " progressions. \n"
     else:
-        markdown = '### Progressions Unavailable.'
+        markdown = "### Progressions Unavailable."
 
-    markdown += tableToMarkdown('Progressions:', result)
+    markdown += tableToMarkdown("Progressions:", result)
 
-    command_results.append(CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Confluera.Progressions',
-        outputs=result
-    ))
+    command_results.append(CommandResults(readable_output=markdown, outputs_prefix="Confluera.Progressions", outputs=result))
 
     return command_results
 
@@ -253,62 +239,52 @@ def fetch_trail_details_command(client: Client, args: dict[str, Any]) -> Command
     :rtype: ``CommandResults``
     """
     token = client.get_access_token()
-    trail_id = args.get('trail_id', None)
+    trail_id = args.get("trail_id", None)
 
     if not token:
-        raise ValueError('Access token not specified')
+        raise ValueError("Access token not specified")
     if not trail_id:
-        raise ValueError('hours not specified')
+        raise ValueError("hours not specified")
 
     result = client.fetch_trail_details(token, trail_id)
 
-    markdown = tableToMarkdown('Trail Details:', result)
+    markdown = tableToMarkdown("Trail Details:", result)
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Confluera.TrailDetails',
-        outputs=result
-    )
+    return CommandResults(readable_output=markdown, outputs_prefix="Confluera.TrailDetails", outputs=result)
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-    """
+    """main function, parses params and runs command functions"""
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    base_url = demisto.params().get('url')
-    username = demisto.params().get('username', None)['identifier']
-    password = demisto.params().get('username', None)['password']
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
+    base_url = demisto.params().get("url")
+    username = demisto.params().get("username", None)["identifier"]
+    password = demisto.params().get("username", None)["password"]
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url,
-            username=username,
-            password=password,
-            verify=verify_certificate,
-            proxy=proxy)
+        client = Client(base_url=base_url, username=username, password=password, verify=verify_certificate, proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             return_results(test_module(client, demisto.args()))
 
-        elif demisto.command() == 'confluera-fetch-progressions':
+        elif demisto.command() == "confluera-fetch-progressions":
             return_results(fetch_progressions_command(client, demisto.args()))
 
-        elif demisto.command() == 'confluera-fetch-detections':
+        elif demisto.command() == "confluera-fetch-detections":
             return_results(fetch_detections_command(client, demisto.args()))
 
-        elif demisto.command() == 'confluera-fetch-trail-details':
+        elif demisto.command() == "confluera-fetch-trail-details":
             return_results(fetch_trail_details_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

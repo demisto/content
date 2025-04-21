@@ -5,6 +5,9 @@ name: AnythingLLM
 display: AnythingLLM
 category: Utilities
 description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - section: Connect
   display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything LLM cloud url>
@@ -12,13 +15,19 @@ configuration:
   defaultvalue: http://localhost:3001
   type: 0
   required: true
-- section: Collect
+- section: Connect
   display: AnythingLLM API Key
   displaypassword: AnythingLLM API Key
   name: apikey
   type: 9
   required: true
   hiddenusername: true
+- section: Connect
+  display: Cloudflare Access Client Id
+  displaypassword: Cloudflare Access Client Secret
+  name: cf_auth
+  required: false
+  type: 9
 script:
   script: ''
   type: python
@@ -156,6 +165,14 @@ script:
       - query
       - chat
       description: Mode to chat, query or chat.
+    - auto: PREDEFINED
+      default: true
+      defaultValue: dictionary
+      name: format
+      predefined:
+      - markdown
+      - dictionary
+      description: Markdown or dictionary format output.
     description: Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
   - name: anyllm-workspace-stream-chat
     arguments:
@@ -204,7 +221,50 @@ script:
       - 'false'
       description: Set pin status to true or false.
     description: Set the pinned status of a document embedding.
-  dockerimage: demisto/python3:3.11.9.104657
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Name of the new conversation thread.
+      name: thread
+      required: true
+    description: Create a new conversation thread.
+    name: anyllm-workspace-thread-new
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Name of the conversation thread.
+      name: thread
+      required: true
+    - description: Message to send.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Mode to chat, query or chat.
+      name: mode
+      predefined:
+      - query
+      - chat
+      required: true
+    description: Send a chat a message to a conversation thread.
+    name: anyllm-workspace-thread-chat
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+    - description: Name of the thread.
+      name: thread
+    description: Delete a thread in a workspace.
+    name: anyllm-workspace-thread-delete
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Thread to delete.
+      name: thread
+    description: Get the conversation for a workspace thread.
+    name: anyllm-workspace-thread-chats
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   subtype: python3
 fromversion: 6.10.0

@@ -1,22 +1,22 @@
+import abc
+from collections.abc import Callable, Collection
+from datetime import datetime, timedelta
+from typing import Any, TypeAlias
+
+import dateparser
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
-
-import abc
-import dateparser
-from datetime import datetime, timedelta
-from typing import Any, TypeAlias
-from collections.abc import Collection, Callable
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 SMALLEST_TIME_UNIT = timedelta(seconds=1)
 
@@ -257,7 +257,7 @@ INCIDENT_TIMESTAMP_FIELD = "device_alert_updated_time"
 QueryFilterType: TypeAlias = dict[str, Any]
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -376,7 +376,7 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix="device-alert-status/set/", json_data=body)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def _device_alert_relation_id(device_alert_relation: dict) -> tuple[int, str]:
@@ -443,7 +443,7 @@ def _next_tick(date_time: str) -> str:
     return _format_date(parsed_time + SMALLEST_TIME_UNIT)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -460,15 +460,15 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
         client.get_device_alert_relations(fields=["device_uid", "alert_id"], limit=1)
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
@@ -545,12 +545,10 @@ class XDomeGetDeviceAlertRelationsCommand(XDomeCommand):
 
     def _generate_results(self, raw_response: list | dict) -> CommandResults:
         device_alert_pairs = raw_response
-        outputs = {
-            "XDome.DeviceAlert(val.device_uid == obj.device_uid && val.alert_id == obj.alert_id)": device_alert_pairs
-        }
+        outputs = {"XDome.DeviceAlert(val.device_uid == obj.device_uid && val.alert_id == obj.alert_id)": device_alert_pairs}
         human_readable_output = tableToMarkdown("xDome device-alert-pairs List", device_alert_pairs)
         return CommandResults(
-            outputs_prefix='XDome.DeviceAlert',
+            outputs_prefix="XDome.DeviceAlert",
             outputs=outputs,
             readable_output=human_readable_output,
             raw_response=raw_response,
@@ -583,7 +581,7 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
             "XDome.DeviceVulnerability(val.device_uid == obj.device_uid "
             "&& val.vulnerability_id == obj.vulnerability_id)": device_vulnerability_pairs
         }
-        human_readable_output = tableToMarkdown('xDome device-vulnerability-pairs List', device_vulnerability_pairs)
+        human_readable_output = tableToMarkdown("xDome device-vulnerability-pairs List", device_vulnerability_pairs)
         return CommandResults(
             outputs_prefix="XDome.DeviceVulnerability",
             outputs=outputs,
@@ -642,19 +640,19 @@ def fetch_incidents(
     start_time = _format_date(start_time)
     latest_ids = last_run.get("latest_ids", [])
 
-    only_unresolved_filter = (
-        _simple_filter("device_alert_status", "in", ["Unresolved"]) if fetch_only_unresolved else None
-    )
+    only_unresolved_filter = _simple_filter("device_alert_status", "in", ["Unresolved"]) if fetch_only_unresolved else None
     alert_types_filter = _build_alert_types_filter(alert_types) if alert_types else None
     if latest_ids:
         last_run_alert_id_device_uid_pairs = [_split_device_alert_relation_id(dar_id) for dar_id in latest_ids]
-        not_in_last_fetched_ids_filter = _and(*(
-            _or(
-                _simple_filter("alert_id", "not_in", [alert_id]),
-                _simple_filter("device_uid", "not_in", [device_uid]),
+        not_in_last_fetched_ids_filter = _and(
+            *(
+                _or(
+                    _simple_filter("alert_id", "not_in", [alert_id]),
+                    _simple_filter("device_uid", "not_in", [device_uid]),
+                )
+                for alert_id, device_uid in last_run_alert_id_device_uid_pairs
             )
-            for alert_id, device_uid in last_run_alert_id_device_uid_pairs
-        ))
+        )
         # should be the 'not_equals' or the 'greater' operation, but they're currently not working.
         # not_last_fetched_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "not_equals", start_time)
         # patch: use the 'greater_or_equal' operation on value 'Time + 1s'
@@ -680,7 +678,7 @@ def fetch_incidents(
             stop_after=fetch_limit,
         )
     except DemistoException as e:
-        demisto.error(f"An error occurred while fetching xDome incidents:\n{str(e)}")
+        demisto.error(f"An error occurred while fetching xDome incidents:\n{e!s}")
         return last_run, []
 
     for dar in device_alert_relations:
@@ -691,7 +689,8 @@ def fetch_incidents(
     if incidents:
         next_start_time = device_alert_relations[-1][INCIDENT_TIMESTAMP_FIELD]
         next_latest_ids = [
-            _device_alert_relation_id_str(dar) for dar in device_alert_relations
+            _device_alert_relation_id_str(dar)
+            for dar in device_alert_relations
             if dar[INCIDENT_TIMESTAMP_FIELD] == next_start_time
         ]
         if next_start_time == start_time:
@@ -707,7 +706,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -720,15 +719,15 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    api_key = params.get('credentials', {}).get('password')
+    api_key = params.get("credentials", {}).get("password")
 
     # get the service API url
-    base_url = urljoin(params['url'], '/api/v1')
+    base_url = urljoin(params["url"], "/api/v1")
 
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
         headers: dict = {"Authorization": f"Bearer {api_key}"}
 
@@ -739,27 +738,27 @@ def main() -> None:
             proxy=proxy,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        elif command == 'xdome-get-device-alert-relations':
+        elif command == "xdome-get-device-alert-relations":
             return_results(get_device_alert_relations_command(client, args))
 
-        elif command == 'xdome-get-device-vulnerability-relations':
+        elif command == "xdome-get-device-vulnerability-relations":
             return_results(get_device_vulnerability_relations_command(client, args))
 
-        elif command == 'xdome-set-status-for-device-alert-relations':
+        elif command == "xdome-set-status-for-device-alert-relations":
             return_results(set_device_alert_relations_command(client, args))
 
-        elif command == 'fetch-incidents':
-            initial_fetch_time = params.get('first_fetch').strip()
-            fetch_limit = params.get('max_fetch')
+        elif command == "fetch-incidents":
+            initial_fetch_time = params.get("first_fetch").strip()
+            fetch_limit = params.get("max_fetch")
             fetch_limit = int(fetch_limit) if fetch_limit is not None else DEFAULT_FETCH_LIMIT
             fetch_limit = min(fetch_limit, MAX_FETCH_LIMIT)
-            alert_types = params.get('alert_types')
-            fetch_only_unresolved = params.get('fetch_only_unresolved')
+            alert_types = params.get("alert_types")
+            fetch_only_unresolved = params.get("fetch_only_unresolved")
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -773,15 +772,15 @@ def main() -> None:
             demisto.incidents(incidents or [])
 
         else:
-            raise Exception('Unrecognized command: ' + command)
+            raise Exception("Unrecognized command: " + command)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

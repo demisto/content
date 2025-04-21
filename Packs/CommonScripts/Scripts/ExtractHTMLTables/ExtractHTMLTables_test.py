@@ -32,7 +32,7 @@ def test_extract_html_table():
         </table>
         """
     res = extract_html_table(html_table, [])
-    assert "Found 1 tables in HTML." in res['Contents']
+    assert "Found 1 tables in HTML." in res["Contents"]
 
 
 def test_no_html_table():

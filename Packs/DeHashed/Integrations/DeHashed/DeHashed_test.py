@@ -4,7 +4,7 @@ import pytest
 
 DEHASHED_URL = "https://url.com/"  # disable-secrets-detection
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
-DEFAULT_RELIABILITY = 'B - Usually reliable'
+DEFAULT_RELIABILITY = "B - Usually reliable"
 
 
 def load_test_data(json_path):
@@ -29,7 +29,7 @@ def test_module_command(requests_mock):
 
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
     res = test_module(client)
 
@@ -49,22 +49,14 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 2,
-            "DisplayedResults": 2,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 2, "DisplayedResults": 2, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": '"testgamil.co"'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
     markdown, context, raw = dehashed_search_command(client, test_data["is_op_single"])
 
@@ -84,26 +76,16 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 2,
-            "DisplayedResults": 2,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 2, "DisplayedResults": 2, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": "testgamil.co"}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(
-        client, test_data["contains_op_single"]
-    )
+    markdown, context, raw = dehashed_search_command(client, test_data["contains_op_single"])
 
     assert expected_result == context
 
@@ -121,26 +103,16 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 2,
-            "DisplayedResults": 2,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 2, "DisplayedResults": 2, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": "/joh?n(ath[oa]n)/"}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(
-        client, test_data["regex_op_single"]
-    )
+    markdown, context, raw = dehashed_search_command(client, test_data["regex_op_single"])
 
     assert expected_result == context
 
@@ -158,22 +130,14 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 2,
-            "DisplayedResults": 2,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 2, "DisplayedResults": 2, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": 'email:"testgamil.co" "test1gmail.com"'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
     markdown, context, raw = dehashed_search_command(client, test_data["is_op_multi"])
 
@@ -195,26 +159,16 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 2,
-            "DisplayedResults": 2,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 2, "DisplayedResults": 2, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": "name:(test1 OR test2)"}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(
-        client, test_data["contains_op_multi"]
-    )
+    markdown, context, raw = dehashed_search_command(client, test_data["contains_op_multi"])
 
     assert expected_result == context
 
@@ -234,26 +188,16 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 2,
-            "DisplayedResults": 2,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 2, "DisplayedResults": 2, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": "vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/"}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(
-        client, test_data["regex_op_multi"]
-    )
+    markdown, context, raw = dehashed_search_command(client, test_data["regex_op_multi"])
 
     assert expected_result == context
 
@@ -273,26 +217,16 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
-        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results_range"][
-            "full_results"
-        ],
-        "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 1,
-            "ResultsTo": 1,
-            "DisplayedResults": 1,
-            "TotalResults": 2,
-            "PageNumber": 1
-        },
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results_range"]["full_results"],
+        "DeHashed.LastQuery(true)": {"ResultsFrom": 1, "ResultsTo": 1, "DisplayedResults": 1, "TotalResults": 2, "PageNumber": 1},
     }
     url_params = {"query": "vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/"}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(
-        client, test_data["regex_op_multi_range"]
-    )
+    markdown, context, raw = dehashed_search_command(client, test_data["regex_op_multi_range"])
 
     assert expected_result == context
 
@@ -308,22 +242,20 @@ def test_email_command_malicious_dbot_score(mocker):
     """
     from DeHashed import Client, email_command
 
-    test_data = load_test_data('test_data/search.json')
+    test_data = load_test_data("test_data/search.json")
     expected_result = {
-        'DeHashed.Search(val.Id==obj.Id)': test_data['expected_results'][
-            'full_results'
-        ],
-        'DBotScore': {
-            'Indicator': 'testgamil.com',
-            'Type': 'email',
-            'Vendor': 'DeHashed',
-            'Score': 3,
-            'Reliability': DEFAULT_RELIABILITY
-        }
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DBotScore": {
+            "Indicator": "testgamil.com",
+            "Type": "email",
+            "Vendor": "DeHashed",
+            "Score": 3,
+            "Reliability": DEFAULT_RELIABILITY,
+        },
     }
-    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='MALICIOUS', email='', api_key='')
-    mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
-    markdown, context, raw = email_command(client, test_data['email_command'], DEFAULT_RELIABILITY)
+    client = Client(base_url=f"{DEHASHED_URL}", email_dbot_score="MALICIOUS", email="", api_key="")
+    mocker.patch.object(client, "dehashed_search", return_value=test_data["api_response"])
+    markdown, context, raw = email_command(client, test_data["email_command"], DEFAULT_RELIABILITY)
 
     assert expected_result == context
 
@@ -339,22 +271,20 @@ def test_email_command_suspicious_dbot_score(mocker):
     """
     from DeHashed import Client, email_command
 
-    test_data = load_test_data('test_data/search.json')
+    test_data = load_test_data("test_data/search.json")
     expected_result = {
-        'DeHashed.Search(val.Id==obj.Id)': test_data['expected_results'][
-            'full_results'
-        ],
-        'DBotScore': {
-            'Indicator': 'testgamil.com',
-            'Type': 'email',
-            'Vendor': 'DeHashed',
-            'Score': 2,
-            'Reliability': DEFAULT_RELIABILITY
-        }
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DBotScore": {
+            "Indicator": "testgamil.com",
+            "Type": "email",
+            "Vendor": "DeHashed",
+            "Score": 2,
+            "Reliability": DEFAULT_RELIABILITY,
+        },
     }
-    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS', email='', api_key='')
-    mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
-    markdown, context, raw = email_command(client, test_data['email_command'], DEFAULT_RELIABILITY)
+    client = Client(base_url=f"{DEHASHED_URL}", email_dbot_score="SUSPICIOUS", email="", api_key="")
+    mocker.patch.object(client, "dehashed_search", return_value=test_data["api_response"])
+    markdown, context, raw = email_command(client, test_data["email_command"], DEFAULT_RELIABILITY)
 
     assert expected_result == context
 
@@ -370,32 +300,35 @@ def test_email_command_no_entries_returned(mocker):
     """
     from DeHashed import Client, email_command
 
-    test_data = load_test_data('test_data/search.json')
+    test_data = load_test_data("test_data/search.json")
     expected_result = {
-        'DBotScore': {
-            'Indicator': 'testgamil.com',
-            'Type': 'email',
-            'Vendor': 'DeHashed',
-            'Score': 0,
-            'Reliability': DEFAULT_RELIABILITY
-
+        "DBotScore": {
+            "Indicator": "testgamil.com",
+            "Type": "email",
+            "Vendor": "DeHashed",
+            "Score": 0,
+            "Reliability": DEFAULT_RELIABILITY,
         }
     }
-    client = Client(base_url=f'{DEHASHED_URL}', email='', api_key='')
-    mocker.patch.object(client, 'dehashed_search', return_value={})
-    markdown, context, raw = email_command(client, test_data['email_command'], DEFAULT_RELIABILITY)
+    client = Client(base_url=f"{DEHASHED_URL}", email="", api_key="")
+    mocker.patch.object(client, "dehashed_search", return_value={})
+    markdown, context, raw = email_command(client, test_data["email_command"], DEFAULT_RELIABILITY)
 
     assert expected_result == context
 
 
-@pytest.mark.parametrize("reliability",
-                         ["A+ - 3rd party enrichment",
-                          "A - Completely reliable",
-                          "B - Usually reliable",
-                          "C - Fairly reliable",
-                          "D - Not usually reliable",
-                          "E - Unreliable",
-                          "F - Reliability cannot be judged"])
+@pytest.mark.parametrize(
+    "reliability",
+    [
+        "A+ - 3rd party enrichment",
+        "A - Completely reliable",
+        "B - Usually reliable",
+        "C - Fairly reliable",
+        "D - Not usually reliable",
+        "E - Unreliable",
+        "F - Reliability cannot be judged",
+    ],
+)
 def test_email_different_reliability(mocker, reliability):
     """
     Given:
@@ -407,21 +340,19 @@ def test_email_different_reliability(mocker, reliability):
     """
     from DeHashed import Client, email_command
 
-    test_data = load_test_data('test_data/search.json')
+    test_data = load_test_data("test_data/search.json")
     expected_result = {
-        'DeHashed.Search(val.Id==obj.Id)': test_data['expected_results'][
-            'full_results'
-        ],
-        'DBotScore': {
-            'Indicator': 'testgamil.com',
-            'Type': 'email',
-            'Vendor': 'DeHashed',
-            'Score': 2,
-            'Reliability': reliability
-        }
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"]["full_results"],
+        "DBotScore": {
+            "Indicator": "testgamil.com",
+            "Type": "email",
+            "Vendor": "DeHashed",
+            "Score": 2,
+            "Reliability": reliability,
+        },
     }
-    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS', email='', api_key='')
-    mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
-    markdown, context, raw = email_command(client, test_data['email_command'], reliability)
+    client = Client(base_url=f"{DEHASHED_URL}", email_dbot_score="SUSPICIOUS", email="", api_key="")
+    mocker.patch.object(client, "dehashed_search", return_value=test_data["api_response"])
+    markdown, context, raw = email_command(client, test_data["email_command"], reliability)
 
     assert expected_result == context

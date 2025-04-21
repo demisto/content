@@ -1,0 +1,18 @@
+{
+  "execution_id": "f22395542eca43_98885_inv",
+  "number_of_results": 1,
+  "query_cost": {
+    "3204872200335": 0.0023597222222222224
+  },
+  "query_name": "",
+  "remaining_quota": 64.96185611111112,
+  "results": [
+    {
+      "total_bytes_received": 2483750846,
+      "total_bytes_received_mb": 2368.7,
+      "total_bytes_sent": 1049529542,
+      "total_bytes_sent_mb": 1000.9
+    }
+  ],
+  "status": "SUCCESS"
+}

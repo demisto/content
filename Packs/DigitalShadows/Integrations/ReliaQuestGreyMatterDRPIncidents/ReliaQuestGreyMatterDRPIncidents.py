@@ -1,87 +1,88 @@
 """Digital Shadows for Cortex XSOAR."""
+
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from threading import RLock
 from time import monotonic, sleep
 
-import urllib3
-
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
+
 from CommonServerUserPython import *  # noqa
 
-''' IMPORTS '''
+""" IMPORTS """
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-utc_tzinfo = timezone(timedelta(), name='UTC')
+""" CONSTANTS """
+utc_tzinfo = timezone(timedelta(), name="UTC")
 THREAT_INTELLIGENCE = "Threat Intelligence"
 
 # STATUS Constants
-AUTO_CLOSED = 'auto-closed'
+AUTO_CLOSED = "auto-closed"
 
 RISK_TYPE_ALL = "all"
 RISK_LEVEL_ALL = "all"
 
-NON_INGESTIBLE_TRIAGE_ITEM_STATES = ['rejected', 'closed', 'resolved']
+NON_INGESTIBLE_TRIAGE_ITEM_STATES = ["rejected", "closed", "resolved"]
 
 # FIELDS Constants
-UPDATED = 'updated'
+UPDATED = "updated"
 
-STATE = 'state'
+STATE = "state"
 
-EVENT_ACTION_CREATE = 'create'
+EVENT_ACTION_CREATE = "create"
 
-EVENT_ACTION = 'event-action'
+EVENT_ACTION = "event-action"
 
-ALERT = 'alert'
+ALERT = "alert"
 
-INCIDENT_ID = 'incident-id'
+INCIDENT_ID = "incident-id"
 
-COMMENTS = 'comments'
+COMMENTS = "comments"
 
-ID = 'id'
+ID = "id"
 
-EXPOSED_ACCESS_KEY = 'exposed-access-key'
+EXPOSED_ACCESS_KEY = "exposed-access-key"
 
-UNAUTHORIZED_CODE_COMMIT = 'unauthorized-code-commit'
+UNAUTHORIZED_CODE_COMMIT = "unauthorized-code-commit"
 
-IMPERSONATING_SUBDOMAIN = 'impersonating-subdomain'
+IMPERSONATING_SUBDOMAIN = "impersonating-subdomain"
 
-IMPERSONATING_DOMAIN = 'impersonating-domain'
+IMPERSONATING_DOMAIN = "impersonating-domain"
 
-EXPOSED_CREDENTIAL = 'exposed-credential'
+EXPOSED_CREDENTIAL = "exposed-credential"
 
-ALERT_ID = 'alert-id'
+ALERT_ID = "alert-id"
 
-SOURCE = 'source'
+SOURCE = "source"
 
-TRIAGE_ITEM_ID = 'triage-item-id'
+TRIAGE_ITEM_ID = "triage-item-id"
 
-RISK_ASSESSMENT = 'risk-assessment'
+RISK_ASSESSMENT = "risk-assessment"
 
-CLASSIFICATION = 'classification'
+CLASSIFICATION = "classification"
 
-EVENT = 'event'
+EVENT = "event"
 
-RISK_TYPE = 'risk-type'
+RISK_TYPE = "risk-type"
 
-RISK_LEVEL = 'risk-level'
+RISK_LEVEL = "risk-level"
 
-ASSETS = 'assets'
+ASSETS = "assets"
 
-INCIDENT = 'incident'
+INCIDENT = "incident"
 
-TRIAGE_ITEM = 'triage_item'
+TRIAGE_ITEM = "triage_item"
 
-ALERT_FIELD = 'alert'
+ALERT_FIELD = "alert"
 
-DS_BASE_URL = 'https://portal-digitalshadows.com'
+DS_BASE_URL = "https://portal-digitalshadows.com"
 
-''' Utils'''
+""" Utils"""
 
 
 @dataclass(frozen=True)
@@ -97,11 +98,11 @@ def chunks(lst, n):
     From: https://stackoverflow.com/a/312464
     """
     to_chunk = lst
-    if not hasattr(lst, '__getitem__'):
+    if not hasattr(lst, "__getitem__"):
         # not subscriptable so push into a list
         to_chunk = list(lst)
     for i in range(0, len(to_chunk), n):
-        yield to_chunk[i:i + n]
+        yield to_chunk[i : i + n]
 
 
 def removing_unwanted_data(data_item):
@@ -114,7 +115,7 @@ def removing_unwanted_data(data_item):
 
     """
     # Removing source from triage as source already merged into triage
-    data_item[TRIAGE_ITEM].pop('source')
+    data_item[TRIAGE_ITEM].pop("source")
 
     # Removing risk-level, classification and risk-type from triage-item and event
     if data_item.get(ALERT_FIELD) and data_item[ALERT_FIELD].get(ASSETS):
@@ -151,11 +152,9 @@ def get_comments_map(triage_item_comments):
             comment_map[comment[TRIAGE_ITEM_ID]].append(comment)
         else:
             comment_map[comment[TRIAGE_ITEM_ID]] = [comment]
-    sorted_comment_map = {key: sorted(comments, key=lambda x: x[UPDATED], reverse=True) for key, comments in
-                          comment_map.items()}
+    sorted_comment_map = {key: sorted(comments, key=lambda x: x[UPDATED], reverse=True) for key, comments in comment_map.items()}
     # Keeping only latest 10 comments
-    latest_10_comments_map = {key: comments[:10] for key, comments in
-                              sorted_comment_map.items()}
+    latest_10_comments_map = {key: comments[:10] for key, comments in sorted_comment_map.items()}
 
     return latest_10_comments_map
 
@@ -163,12 +162,12 @@ def get_comments_map(triage_item_comments):
 def test_module(client):
     status, message = client.test_client()
     if status == 200:
-        return 'ok'
+        return "ok"
     else:
-        return 'Test failed because ......' + message
+        return "Test failed because ......" + message
 
 
-''' Rate Limiter'''
+""" Rate Limiter"""
 
 
 class RateLimiter:
@@ -196,15 +195,15 @@ class RateLimiter:
 
     def handle_response(self, resp):
         # re-initialise rate limit config if we find the header has changed
-        if 'ratelimit-limit' in resp.headers:
-            self.__set_ratelimit_from_header(resp.headers['ratelimit-limit'])
+        if "ratelimit-limit" in resp.headers:
+            self.__set_ratelimit_from_header(resp.headers["ratelimit-limit"])
         # check the remaining count and if it is getting too low, ensure we delay
         # our next request
-        if 'ratelimit-remaining' in resp.headers:
-            remaining = int(resp.headers.get('ratelimit-remaining', ''))
+        if "ratelimit-remaining" in resp.headers:
+            remaining = int(resp.headers.get("ratelimit-remaining", ""))
             if remaining <= 4:
                 # find the remaining seconds and backoff for that long so we don't hit the limit
-                reset_s = int(resp.headers.get('ratelimit-reset', ''))
+                reset_s = int(resp.headers.get("ratelimit-reset", ""))
                 # push the last_call for this url out a bit further to avoid the next call breaking
                 # the limit
                 self.last_call = self.clock() + reset_s
@@ -244,12 +243,12 @@ class RateLimiter:
                 self.last_call = self.clock()
 
 
-''' Client '''
+""" Client """
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, account_id, access_key, secret_key, verify, proxy, user_agent='unknown', **kwargs):
-        headers = {'Accept': 'application/json', 'searchlight-account-id': account_id, 'User-Agent': user_agent}
+    def __init__(self, base_url, account_id, access_key, secret_key, verify, proxy, user_agent="unknown", **kwargs):
+        headers = {"Accept": "application/json", "searchlight-account-id": account_id, "User-Agent": user_agent}
         super().__init__(base_url, auth=(access_key, secret_key), verify=verify, proxy=proxy, headers=headers, **kwargs)
         self.ratelimiter = RateLimiter(**kwargs)
 
@@ -265,7 +264,7 @@ class Client(BaseClient):
         Returns: response object
 
         """
-        r = self._http_request('GET', url_suffix=url, resp_type='response', params=params, headers=headers, **kwargs)
+        r = self._http_request("GET", url_suffix=url, resp_type="response", params=params, headers=headers, **kwargs)
         return self.rate_limit_response(r)
 
     def post(self, url, headers={}, data=None, **kwargs):
@@ -280,7 +279,7 @@ class Client(BaseClient):
         Returns: response object
 
         """
-        r = self._http_request("POST", url_suffix=url, resp_type='response', json_data=data, headers=headers, **kwargs)
+        r = self._http_request("POST", url_suffix=url, resp_type="response", json_data=data, headers=headers, **kwargs)
         return self.rate_limit_response(r)
 
     def rate_limit_response(self, response):
@@ -296,7 +295,7 @@ class Client(BaseClient):
 
     def test_client(self):
         try:
-            r = self.get('/v1/test')
+            r = self.get("/v1/test")
         except DemistoException as e:
             return 400, e.message
         except Exception:
@@ -304,7 +303,7 @@ class Client(BaseClient):
             return 400, "Something went wrong"
         r_data = r.json()
         demisto.info(f"response------->{json.dumps(r_data)}")
-        if r_data.get('message') and "'accountId' is invalid" in r_data.get('message'):
+        if r_data.get("message") and "'accountId' is invalid" in r_data.get("message"):
             return 400, "Account Id invalid"
         if not r_data.get("api-key-valid"):
             return 400, "Invalid API Key"
@@ -317,7 +316,7 @@ class Client(BaseClient):
         return r.status_code, r_data
 
 
-'''Incidents'''
+"""Incidents"""
 
 
 def get_incidents(request_handler: Client, incident_ids=[], **kwargs) -> list:
@@ -334,13 +333,13 @@ def get_incidents(request_handler: Client, incident_ids=[], **kwargs) -> list:
     demisto.info(f"Fetching incidents for ids: {incident_ids}")
     if not incident_ids:
         return []
-    params = {'id': incident_ids}
-    r = request_handler.get('/v1/incidents', params=params, **kwargs)
+    params = {"id": incident_ids}
+    r = request_handler.get("/v1/incidents", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-'''Assets'''
+"""Assets"""
 
 
 def get_assets(request_handler: Client, asset_ids=[], **kwargs) -> list:
@@ -359,18 +358,19 @@ def get_assets(request_handler: Client, asset_ids=[], **kwargs) -> list:
         return []
     results = []
     for chunk in chunks(asset_ids, 100):
-        params = {'id': chunk}
-        r = request_handler.get('/v1/assets', params=params, **kwargs)
+        params = {"id": chunk}
+        r = request_handler.get("/v1/assets", params=params, **kwargs)
         r.raise_for_status()
         results.extend(r.json())
     return results
 
 
-'''Triage'''
+"""Triage"""
 
 
-def get_triage_item_events(request_handler: Client, event_created_after: datetime, risk_types, event_num_after=0, limit=100,
-                           **kwargs) -> list:
+def get_triage_item_events(
+    request_handler: Client, event_created_after: datetime, risk_types, event_num_after=0, limit=100, **kwargs
+) -> list:
     """Retrieve a batch of triage item events
 
     Args:
@@ -380,13 +380,13 @@ def get_triage_item_events(request_handler: Client, event_created_after: datetim
         event_created_after (datetime): only return events created after this value
         limit (int): return up to this number of events, default 100
     """
-    params: dict[str, Any] = {'event-num-after': event_num_after, 'limit': limit}
+    params: dict[str, Any] = {"event-num-after": event_num_after, "limit": limit}
     if event_created_after is not None:
         utc_datetime = event_created_after.astimezone(utc_tzinfo)
-        params['event-created-after'] = utc_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        params["event-created-after"] = utc_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if len(risk_types) > 0:
-        params['risk-type'] = risk_types
-    r = request_handler.get('/v1/triage-item-events', params=params, **kwargs)
+        params["risk-type"] = risk_types
+    r = request_handler.get("/v1/triage-item-events", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
@@ -405,8 +405,8 @@ def get_triage_items(request_handler: Client, triage_item_ids, **kwargs) -> list
     demisto.info(f"Fetching triage items for ids: {triage_item_ids}")
     if not triage_item_ids:
         return []
-    params = {'id': triage_item_ids}
-    r = request_handler.get('/v1/triage-items', params=params, **kwargs)
+    params = {"id": triage_item_ids}
+    r = request_handler.get("/v1/triage-items", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
@@ -427,14 +427,14 @@ def get_triage_item_comments(request_handler: Client, triage_item_ids=[], **kwar
         return []
     data = []
     for chunk in chunks(triage_item_ids, 10):
-        params = {'id': chunk}
-        r = request_handler.get('/v1/triage-item-comments', params=params, **kwargs)
+        params = {"id": chunk}
+        r = request_handler.get("/v1/triage-item-comments", params=params, **kwargs)
         r.raise_for_status()
         data.extend(r.json())
     return data
 
 
-'''Alerts'''
+"""Alerts"""
 
 
 def get_alerts(request_handler: Client, alert_ids=[], **kwargs) -> list:
@@ -451,7 +451,7 @@ def get_alerts(request_handler: Client, alert_ids=[], **kwargs) -> list:
     demisto.info(f"Fetching alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = {'id': alert_ids}
+    params = {"id": alert_ids}
     r = request_handler.get("/v1/alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
@@ -471,14 +471,13 @@ def get_credential_exposure_alerts(request_handler: Client, alert_ids=[], **kwar
     demisto.info(f"Fetching credential exposure alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = {'id': alert_ids}
+    params = {"id": alert_ids}
     r = request_handler.get("/v1/exposed-credential-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-def get_impersonating_domain_alerts(request_handler: Client, alert_ids=[],
-                                    **kwargs) -> list:
+def get_impersonating_domain_alerts(request_handler: Client, alert_ids=[], **kwargs) -> list:
     """
     Fetch impersonating domain alerts
     Args:
@@ -492,14 +491,13 @@ def get_impersonating_domain_alerts(request_handler: Client, alert_ids=[],
     demisto.info(f"Fetching impersonating domain alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = {'id': alert_ids}
+    params = {"id": alert_ids}
     r = request_handler.get("/v1/impersonating-domain-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-def get_impersonating_subdomain_alerts(request_handler: Client, alert_ids=[],
-                                       **kwargs) -> list:
+def get_impersonating_subdomain_alerts(request_handler: Client, alert_ids=[], **kwargs) -> list:
     """
     Fetch impersonating subdomain alerts
     Args:
@@ -513,7 +511,7 @@ def get_impersonating_subdomain_alerts(request_handler: Client, alert_ids=[],
     demisto.info(f"Fetching impersonating subdomain alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = {'id': alert_ids}
+    params = {"id": alert_ids}
     r = request_handler.get("/v1/impersonating-subdomain-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
@@ -533,7 +531,7 @@ def get_unauthorized_code_commit(request_handler: Client, alert_ids=[], **kwargs
     demisto.info(f"Fetching unauthorized code commit for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = {'id': alert_ids}
+    params = {"id": alert_ids}
     r = request_handler.get("/v1/unauthorized-code-commit-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
@@ -553,13 +551,13 @@ def get_exposed_access_key_alerts(request_handler: Client, alert_ids=[], **kwarg
     demisto.info(f"Fetching exposed access key alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = {'id': alert_ids}
+    params = {"id": alert_ids}
     r = request_handler.get("/v1/exposed-access-key-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-'''DS-Find command'''
+"""DS-Find command"""
 
 
 def search_find(request_handler: Client, args):
@@ -569,11 +567,9 @@ def search_find(request_handler: Client, args):
       request_handler (HttpRequestHandler): the request handler to use to make HTTP requests
       args: arguments sent in the command as input
     """
-    url = '/api/search/find'
+    url = "/api/search/find"
     payload = {
-        "facets": [
-            "RESULTS_TYPE"
-        ],
+        "facets": ["RESULTS_TYPE"],
         "filter": {
             "dateRange": "P6M",
             "tags": [],
@@ -607,35 +603,37 @@ def search_find(request_handler: Client, args):
                 "EXPLOIT",
                 "VULNERABILITY_EXPLOIT",
                 "INDICATOR_FEED",
-                "TECHNIQUE"
-            ]
+                "TECHNIQUE",
+            ],
         },
-        "pagination": {
-            "offset": 0,
-            "size": 20
-        },
-        "sort": {
-            "direction": "DESCENDING",
-            "property": "relevance"
-        }
+        "pagination": {"offset": 0, "size": 20},
+        "sort": {"direction": "DESCENDING", "property": "relevance"},
     }
-    payload.update({"query": args.get('query')})
+    payload.update({"query": args.get("query")})
     r = request_handler.post(url, data=payload)
     r.raise_for_status()
     json_data = r.json()
     return json_data
 
 
-'''SearchLightTriagePoller'''
+"""SearchLightTriagePoller"""
 
 
 def flatten_comments(comments):
     """
     This method will flatten up the comments
     """
-    return [{"id": x["id"], "content": x['content'], "userid": x['user']['id'] if x.get('user') else None,
-             "username": x['user']['name'] if x.get('user') else None,
-             "created": x['created'], "updated": x['updated']} for x in comments]
+    return [
+        {
+            "id": x["id"],
+            "content": x["content"],
+            "userid": x["user"]["id"] if x.get("user") else None,
+            "username": x["user"]["name"] if x.get("user") else None,
+            "created": x["created"],
+            "updated": x["updated"],
+        }
+        for x in comments
+    ]
 
 
 class SearchLightTriagePoller:
@@ -678,11 +676,9 @@ class SearchLightTriagePoller:
             else:
                 other_alert_ids.add(ti[SOURCE][ALERT_ID])
 
-        other_alert_ids.difference(cred_alert_ids) \
-            .difference(domain_alert_ids) \
-            .difference(subdomain_alert_ids) \
-            .difference(code_commit_alert_ids) \
-            .difference(access_key_alert_ids)
+        other_alert_ids.difference(cred_alert_ids).difference(domain_alert_ids).difference(subdomain_alert_ids).difference(
+            code_commit_alert_ids
+        ).difference(access_key_alert_ids)
 
         cred_alerts = get_credential_exposure_alerts(self.request_handler, cred_alert_ids)
         domain_alerts = get_impersonating_domain_alerts(self.request_handler, domain_alert_ids)
@@ -745,15 +741,24 @@ class SearchLightTriagePoller:
             # a new boolean field “auto-closed”, is added → where the triage-event indicates that the triage item is\
             # auto-rejected, this is set to true. Otherwise, it is false
             # based on event-action="create" and status="rejected" on the triage item event
-            auto_closed = data_item[EVENT][EVENT_ACTION] == EVENT_ACTION_CREATE and data_item[TRIAGE_ITEM][
-                STATE] == NON_INGESTIBLE_TRIAGE_ITEM_STATES
+            auto_closed = (
+                data_item[EVENT][EVENT_ACTION] == EVENT_ACTION_CREATE
+                and data_item[TRIAGE_ITEM][STATE] == NON_INGESTIBLE_TRIAGE_ITEM_STATES
+            )
             data_item[AUTO_CLOSED] = auto_closed
             data_item = removing_unwanted_data(data_item)
             data.append(data_item)
         return data
 
-    def poll_triage(self, event_created_after, event_num_start=0, limit=100, alert_risk_types=[RISK_TYPE_ALL],
-                    risk_level=[RISK_LEVEL_ALL], should_ingest_closed=True):
+    def poll_triage(
+        self,
+        event_created_after,
+        event_num_start=0,
+        limit=100,
+        alert_risk_types=[RISK_TYPE_ALL],
+        risk_level=[RISK_LEVEL_ALL],
+        should_ingest_closed=True,
+    ):
         """
         A single poll of the triage API for new events, fully populating any new events found.
 
@@ -762,27 +767,32 @@ class SearchLightTriagePoller:
         Returns the largest event-num from the triage item events that were processed.
         """
         demisto.info(
-            "Polling triage items. Event num start: {}, Event created after: {}, Limit: {} risk_level: {} "
-            "alert_risk_types: {}".format(
-                event_num_start,
-                event_created_after,
-                limit, risk_level, alert_risk_types))
+            f"Polling triage items. Event num start: {event_num_start},"
+            f" Event created after: {event_created_after}, Limit: {limit} risk_level: {risk_level} "
+            f"alert_risk_types: {alert_risk_types}"
+        )
         risk_types_filter = []
 
         if RISK_TYPE_ALL not in alert_risk_types and len(alert_risk_types) > 0:
             risk_types_filter = alert_risk_types
 
-        events = get_triage_item_events(self.request_handler, event_created_after=event_created_after,
-                                        risk_types=risk_types_filter, event_num_after=event_num_start, limit=limit)
+        events = get_triage_item_events(
+            self.request_handler,
+            event_created_after=event_created_after,
+            risk_types=risk_types_filter,
+            event_num_after=event_num_start,
+            limit=limit,
+        )
         if not events:
             demisto.info(
-                "No events were fetched. Event num start: {}, Event created after: {}, Limit: {}, "
-                "risk_level: {}, alert_risk_types: {}".format(
-                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+                f"No events were fetched. Event num start: {event_num_start},"
+                f" Event created after: {event_created_after}, Limit: {limit}, "
+                f"risk_level: {risk_level}, alert_risk_types: {alert_risk_types}"
+            )
             return RQPollResult(event_num_start, [])
 
         else:
-            max_event_num = max([e['event-num'] for e in events])
+            max_event_num = max([e["event-num"] for e in events])
             # Only ingesting events with create action event
             events = [event for event in events if event[EVENT_ACTION].lower() == EVENT_ACTION_CREATE]
 
@@ -801,9 +811,11 @@ class SearchLightTriagePoller:
         if not triage_items:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
-            demisto.info("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {},  "
-                         "risk_level: {}, alert_risk_types: {}"
-                         .format(event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+            demisto.info(
+                f"No triage items were fetched. Event num start: {event_num_start},"
+                f" Event created after: {event_created_after}, Limit: {limit},  "
+                f"risk_level: {risk_level}, alert_risk_types: {alert_risk_types}"
+            )
             return RQPollResult(max_event_num, [])
 
         triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
@@ -816,19 +828,17 @@ class SearchLightTriagePoller:
         # credential we have found exposed in a specific field on the model
         alerts = self.get_alerts(alert_triage_items=alert_triage_items)
 
-        incident_ids = {ti[SOURCE][INCIDENT_ID] for ti in triage_items if
-                        INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]}
+        incident_ids = {ti[SOURCE][INCIDENT_ID] for ti in triage_items if INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]}
         incidents = get_incidents(self.request_handler, incident_ids=incident_ids)
 
-        asset_ids = {
-            asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]}
+        asset_ids = {asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]}
         assets = get_assets(self.request_handler, asset_ids=asset_ids)
 
         triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed)
         return RQPollResult(max_event_num, triage_data)
 
 
-''' FETCH INCIDENT '''
+""" FETCH INCIDENT """
 
 
 def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, search_light_request_handler, sinceDate):
@@ -843,25 +853,26 @@ def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, se
         search_light_request_handler: request handler to fetch data
         sinceDate: since when we want to ingest data
     """
-    last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
+    last_event_num = last_run.get("incidents", {}).get("last_fetch", 0)
     demisto.info(f"fetch_incidents last run: {last_event_num}")
     search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
-    poll_result = search_list_triage_poller.poll_triage(event_created_after=sinceDate, event_num_start=last_event_num,
-                                                        limit=fetchLimit, alert_risk_types=riskTypes, risk_level=riskLevel,
-                                                        should_ingest_closed=ingestClosed)
+    poll_result = search_list_triage_poller.poll_triage(
+        event_created_after=sinceDate,
+        event_num_start=last_event_num,
+        limit=fetchLimit,
+        alert_risk_types=riskTypes,
+        risk_level=riskLevel,
+        should_ingest_closed=ingestClosed,
+    )
     data = poll_result.triage_data
     last_polled_number = poll_result.max_event_number
     if last_polled_number == last_event_num:
         demisto.info(f"Polling done. last_event_num: {last_event_num}")
-        return {'incidents': {'last_fetch': last_event_num}}, []
+        return {"incidents": {"last_fetch": last_event_num}}, []
 
     if data:
         incidents = [
-            {
-                'name': item["triage_item"]['title'],
-                'occurred': item["triage_item"]['raised'],
-                'rawJSON': json.dumps(item)
-            }
+            {"name": item["triage_item"]["title"], "occurred": item["triage_item"]["raised"], "rawJSON": json.dumps(item)}
             for item in data
         ]
         demisto.info(f"data found for iteration last_polled_number:{last_polled_number}")
@@ -869,55 +880,53 @@ def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, se
         incidents = []
         demisto.info(f"No data found for iteration last_polled_number:{last_polled_number}")
 
-    return {'incidents': {'last_fetch': last_polled_number}}, incidents
+    return {"incidents": {"last_fetch": last_polled_number}}, incidents
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def get_base_url(command):
     """
     Returns base url for client
     """
-    if command == 'ds-search':
+    if command == "ds-search":
         return DS_BASE_URL
     else:
-        return demisto.params()['searchLightUrl']
+        return demisto.params()["searchLightUrl"]
 
 
 def main() -> None:
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    demisto.info(f'input config------: {demisto.params()}')
-    secretKey = demisto.params()["apiSecret"]['password']
-    accessKey = demisto.params()['apiKey']['password']
-    accountId = demisto.params()['accountId']
-    riskTypes = demisto.params()['riskTypes']
-    riskLevel = demisto.params()['riskLevel']
-    ingestClosed = demisto.params().get('ingestClosedIncidents')
+    demisto.info(f"input config------: {demisto.params()}")
+    secretKey = demisto.params()["apiSecret"]["password"]
+    accessKey = demisto.params()["apiKey"]["password"]
+    accountId = demisto.params()["accountId"]
+    riskTypes = demisto.params()["riskTypes"]
+    riskLevel = demisto.params()["riskLevel"]
+    ingestClosed = demisto.params().get("ingestClosedIncidents")
 
     if RISK_TYPE_ALL in riskTypes:
         riskTypes = [RISK_TYPE_ALL]
     if RISK_LEVEL_ALL in riskLevel:
         riskLevel = [RISK_LEVEL_ALL]
-    verify_certificate = not demisto.params().get('insecure', False)
-    fetchLimit: int = arg_to_number(demisto.params()['max_fetch'], "max_fetch", True)  # type:ignore
+    verify_certificate = not demisto.params().get("insecure", False)
+    fetchLimit: int = arg_to_number(demisto.params()["max_fetch"], "max_fetch", True)  # type:ignore
     if fetchLimit > 100:
         raise DemistoException("fetch limit must be less than 100")
     if fetchLimit < 0:
         raise DemistoException("fetch limit must be greater than 0")
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
-    first_fetch_datetime = arg_to_datetime(
-        arg=demisto.params()["first_fetch"], arg_name="First fetch time", required=True
-    )
+    first_fetch_datetime = arg_to_datetime(arg=demisto.params()["first_fetch"], arg_name="First fetch time", required=True)
     if not isinstance(first_fetch_datetime, datetime):
         raise ValueError("Failed to get first fetch time.")
 
     if first_fetch_datetime > datetime.now():
         raise DemistoException("Since date should not be greate than current date")
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.info(f"Command being called is {demisto.command()}")
     try:
         base_url = get_base_url(demisto.command())
         rq_client = Client(
@@ -926,29 +935,29 @@ def main() -> None:
             access_key=accessKey,
             secret_key=secretKey,
             verify=verify_certificate,
-            proxy=proxy
+            proxy=proxy,
         )
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(rq_client))
-        elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(fetchLimit, demisto.getLastRun(), ingestClosed, riskLevel, riskTypes, rq_client,
-                                                  first_fetch_datetime)
+        elif demisto.command() == "fetch-incidents":
+            next_run, incidents = fetch_incidents(
+                fetchLimit, demisto.getLastRun(), ingestClosed, riskLevel, riskTypes, rq_client, first_fetch_datetime
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif demisto.command() == 'ds-search':
+        elif demisto.command() == "ds-search":
             return_results(search_find(rq_client, demisto.args()))
         else:
-            raise NotImplementedError(f'{demisto.command()} command is not implemented.')
+            raise NotImplementedError(f"{demisto.command()} command is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+""" ENTRY POINT """
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

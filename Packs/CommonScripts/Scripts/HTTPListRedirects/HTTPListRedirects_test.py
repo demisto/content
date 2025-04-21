@@ -1,24 +1,23 @@
-from typing import Union
 import pytest
-import requests_mock
 import requests
+import requests_mock
 
-MOCK_ADDR = 'mock://'
+MOCK_ADDR = "mock://"
 
 
-def custom_matcher(request: requests.Request) -> Union[requests.Response, None]:
-    if request.url == f'{MOCK_ADDR}http://example.com':
+def custom_matcher(request: requests.Request) -> requests.Response | None:
+    if request.url == f"{MOCK_ADDR}http://example.com":
         first_history = requests.Response()
-        first_history.url = 'http://example.com/'
+        first_history.url = "http://example.com/"
         first_history.status_code = 301
 
         second_history = requests.Response()
-        second_history.url = 'https://example.com/'
+        second_history.url = "https://example.com/"
         second_history.status_code = 301
 
         resp = requests.Response()
         resp.status_code = 200
-        resp.url = 'https://www.example.org/'
+        resp.url = "https://www.example.org/"
         resp.history = [first_history, second_history]
         return resp
     return None
@@ -26,43 +25,25 @@ def custom_matcher(request: requests.Request) -> Union[requests.Response, None]:
 
 REDIRECTED_URL_CASES = [
     (
-        {'url': 'http://example.com', 'useHead': 'true'},
+        {"url": "http://example.com", "useHead": "true"},
         [
-            {
-                "Data": "http://example.com/",
-                "Status": 301
-            },
-            {
-                "Data": "https://example.com/",
-                "Status": 301
-            },
-            {
-                "Data": "https://www.example.org/",
-                "Status": 200
-            }
-        ]
+            {"Data": "http://example.com/", "Status": 301},
+            {"Data": "https://example.com/", "Status": 301},
+            {"Data": "https://www.example.org/", "Status": 200},
+        ],
     ),
     (
-        {'url': 'http://example.com', 'useHead': 'false'},
+        {"url": "http://example.com", "useHead": "false"},
         [
-            {
-                "Data": "http://example.com/",
-                "Status": 301
-            },
-            {
-                "Data": "https://example.com/",
-                "Status": 301
-            },
-            {
-                "Data": "https://www.example.org/",
-                "Status": 200
-            }
-        ]
+            {"Data": "http://example.com/", "Status": 301},
+            {"Data": "https://example.com/", "Status": 301},
+            {"Data": "https://www.example.org/", "Status": 200},
+        ],
     ),
 ]
 
 
-@pytest.mark.parametrize('params, expected_results', REDIRECTED_URL_CASES)
+@pytest.mark.parametrize("params, expected_results", REDIRECTED_URL_CASES)
 def test_valid_response_history(params, expected_results):
     """
     Given:
@@ -77,18 +58,18 @@ def test_valid_response_history(params, expected_results):
     """
     from HTTPListRedirects import get_response_history
 
-    url = params['url']
-    use_head = params['useHead']
-    request_using_head = True if use_head == 'true' else False
+    url = params["url"]
+    use_head = params["useHead"]
+    request_using_head = use_head == "true"
 
     adapter = requests_mock.Adapter()
     adapter.add_matcher(custom_matcher)
     session = requests.Session()
     session.mount(prefix=MOCK_ADDR, adapter=adapter)
     if request_using_head:
-        response = session.head(f'{MOCK_ADDR}{url}')
+        response = session.head(f"{MOCK_ADDR}{url}")
     else:
-        response = session.get(f'{MOCK_ADDR}{url}')
+        response = session.get(f"{MOCK_ADDR}{url}")
     urls = get_response_history(response=response)
     assert urls == expected_results
 
@@ -96,24 +77,15 @@ def test_valid_response_history(params, expected_results):
 HISTORY_URLS_CASES = [
     (
         [
-            {
-                "Data": "http://example.com/",
-                "Status": 301
-            },
-            {
-                "Data": "https://example.com/",
-                "Status": 301
-            },
-            {
-                "Data": "https://www.example.org/",
-                "Status": 200
-            }
+            {"Data": "http://example.com/", "Status": 301},
+            {"Data": "https://example.com/", "Status": 301},
+            {"Data": "https://www.example.org/", "Status": 200},
         ]
     )
 ]
 
 
-@pytest.mark.parametrize('history_urls', HISTORY_URLS_CASES)
+@pytest.mark.parametrize("history_urls", HISTORY_URLS_CASES)
 def test_valid_command_result(history_urls):
     """
     Given:
@@ -126,24 +98,26 @@ def test_valid_command_result(history_urls):
         - Validating the structure of the returned result to the user
 
     """
-    from CommonServerPython import (formats, entryTypes, tableToMarkdown)
+    from CommonServerPython import entryTypes, formats, tableToMarkdown
     from HTTPListRedirects import create_command_result
-    ec = {'URL(val.Data == obj.Data)': [{'Data': history_url['Data']} for history_url in history_urls]}
-    expected_command_result = {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': history_urls,
-                               'ReadableContentsFormat': formats['markdown'],
-                               'HumanReadable': tableToMarkdown('URLs', history_urls, ['Data', 'Status']), 'EntryContext': ec}
+
+    ec = {"URL(val.Data == obj.Data)": [{"Data": history_url["Data"]} for history_url in history_urls]}
+    expected_command_result = {
+        "ContentsFormat": formats["json"],
+        "Type": entryTypes["note"],
+        "Contents": history_urls,
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown("URLs", history_urls, ["Data", "Status"]),
+        "EntryContext": ec,
+    }
     command_result = create_command_result(history_urls=history_urls)
     assert command_result == expected_command_result
 
 
-SYSTEM_PROXY_CASES = [
-    (
-        {'use_system_proxy': 'false'}
-    )
-]
+SYSTEM_PROXY_CASES = [({"use_system_proxy": "false"})]
 
 
-@pytest.mark.parametrize('params', SYSTEM_PROXY_CASES)
+@pytest.mark.parametrize("params", SYSTEM_PROXY_CASES)
 def test_environment_variables(params):
     """
     Given:
@@ -156,27 +130,22 @@ def test_environment_variables(params):
         - Validating that the specific environment variables got deleted
 
     """
-    from HTTPListRedirects import delete_environment_variables
     import os
-    use_system_proxy = params['use_system_proxy']
+
+    from HTTPListRedirects import delete_environment_variables
+
+    use_system_proxy = params["use_system_proxy"]
     delete_environment_variables(use_system_proxy=use_system_proxy)
-    env_variables = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']
+    env_variables = ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]
     for env_var in env_variables:
         with pytest.raises(KeyError):
             os.environ[env_var]
 
 
-USE_HEAD_CASES = [
-    (
-        {'useHead': 'false'}
-    ),
-    (
-        {'useHead': 'true'}
-    )
-]
+USE_HEAD_CASES = [({"useHead": "false"}), ({"useHead": "true"})]
 
 
-@pytest.mark.parametrize('params', USE_HEAD_CASES)
+@pytest.mark.parametrize("params", USE_HEAD_CASES)
 def test_use_head_variable(requests_mock, params):
     """
     Given:
@@ -190,9 +159,13 @@ def test_use_head_variable(requests_mock, params):
 
     """
     from HTTPListRedirects import get_response
-    use_head = params['useHead']
-    requests_mock.get('http://examples.test.com')
-    requests_mock.head('http://examples.test.com')
-    get_response(url='http://examples.test.com', use_head=use_head, verify_ssl=False)
-    assert (requests_mock.request_history[0].method == 'HEAD' if use_head == 'true'
-            else requests_mock.request_history[0].method == 'GET')
+
+    use_head = params["useHead"]
+    requests_mock.get("http://examples.test.com")
+    requests_mock.head("http://examples.test.com")
+    get_response(url="http://examples.test.com", use_head=use_head, verify_ssl=False)
+    assert (
+        requests_mock.request_history[0].method == "HEAD"
+        if use_head == "true"
+        else requests_mock.request_history[0].method == "GET"
+    )

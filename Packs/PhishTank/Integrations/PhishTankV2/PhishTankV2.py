@@ -1,24 +1,23 @@
 import urllib3
-
 from CommonServerPython import *
 
 RESPONSE_LINE_LENGTH = 8
 
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-BASE_URL = 'http://data.phishtank.com'
-HTTPS_BASE_URL = 'https://data.phishtank.com'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+BASE_URL = "http://data.phishtank.com"
+HTTPS_BASE_URL = "https://data.phishtank.com"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 RELOAD_DATA_URL_SUFFIX = "data/online-valid.csv"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 def handle_error(res: requests.models.Response):
     if res.status_code in (404, 509, 429):
-        err_msg = f'PhishTankV2 - Error in API call {res.status_code} - {res.reason}'
+        err_msg = f"PhishTankV2 - Error in API call {res.status_code} - {res.reason}"
         if res.status_code == 429:
             err_msg += f', Please try again in {res.headers.get("Retry-after")} seconds'
         return_error(err_msg)
@@ -33,10 +32,11 @@ class Client(BaseClient):
            verify (bool): Whether to check for SSL certificate validity.
            fetch_interval_hours (str) : Database refresh interval (hours)
            use_https (bool): Whether to use HTTPS URL or HTTP URL.
-   """
+    """
 
-    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str,
-                 username: str = ''):
+    def __init__(
+        self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str, username: str = ""
+    ):
         super().__init__(proxy=proxy, verify=verify, base_url=HTTPS_BASE_URL if use_https else BASE_URL)
         self.fetch_interval_hours = fetch_interval_hours
         self.username = username
@@ -49,29 +49,23 @@ class Client(BaseClient):
     def get_http_request(self, url_suffix: str):
         headers = {}
         if self.username:
-            headers = {'User-Agent': f'phishtank/{self.username}'}
+            headers = {"User-Agent": f"phishtank/{self.username}"}
         result = self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            resp_type="text",
-            headers=headers,
-            error_handler=handle_error
+            method="GET", url_suffix=url_suffix, resp_type="text", headers=headers, error_handler=handle_error
         )
         return result
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-    """
+    """Tests API connectivity and authentication'"""
     data = reload(client)
     response_was_empty = len(data.keys()) == 0
     if response_was_empty:
-        return_error("Error - could not fetch PhishTankV2 database, "
-                     "API returned an empty response")
-    return 'ok'
+        return_error("Error - could not fetch PhishTankV2 database, API returned an empty response")
+    return "ok"
 
 
 def was_phishtank_data_ever_reloaded(context: dict):
@@ -85,10 +79,8 @@ def was_phishtank_data_ever_reloaded(context: dict):
     Returns: True if context contains PhishTank data (from a previous reload). False otherwise.
 
     """
-    was_phishtank_data_reloaded = context != dict()
-    if was_phishtank_data_reloaded:
-        return True
-    return False
+    was_phishtank_data_reloaded = context != {}
+    return bool(was_phishtank_data_reloaded)
 
 
 def is_phishtank_data_outdated(client: Client, context: dict):
@@ -148,16 +140,15 @@ def url_data_to_dbot_score(url_data: dict, url: str, reliability: DBotScoreRelia
         dbot_score = 3
     else:
         dbot_score = 2
-    return Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", dbot_score,
-                            "Match found in PhishTankV2 database", reliability)
+    return Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", dbot_score, "Match found in PhishTankV2 database", reliability)
 
 
 def create_verified_markdown(url_data: dict, url: str):
-    markdown = f'#### Found matches for URL {url} \n'
-    markdown += tableToMarkdown('', url_data)
+    markdown = f"#### Found matches for URL {url} \n"
+    markdown += tableToMarkdown("", url_data)
     phish_tank_url = f'http://www.phishtank.com/phish_detail.php?phish_id={url_data["phish_id"]}'
     phish_tank_url = create_clickable_url(phish_tank_url)
-    markdown += f'Additional details at {phish_tank_url} \n'
+    markdown += f"Additional details at {phish_tank_url} \n"
     return markdown
 
 
@@ -166,17 +157,19 @@ def url_command(client: Client, url_list: list) -> List[CommandResults]:
     for url in url_list:
         markdown = "### PhishTankV2 Database - URL Query \n"
         url_data, url = get_url_data(client, url)
-        url_data_is_valid = url_data and "verified" in url_data.keys()
+        url_data_is_valid = url_data and "verified" in url_data
         if url_data_is_valid:
             dbot = url_data_to_dbot_score(url_data, url, client.reliability)
             markdown += create_verified_markdown(url_data, url)
         else:
-            markdown += f'#### No matches for URL {url} \n'
+            markdown += f"#### No matches for URL {url} \n"
             dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0, "", client.reliability)
-        command_results.append(CommandResults(
-            indicator=Common.URL(url, dbot),
-            readable_output=markdown,
-        ))
+        command_results.append(
+            CommandResults(
+                indicator=Common.URL(url, dbot),
+                readable_output=markdown,
+            )
+        )
 
     return command_results
 
@@ -196,13 +189,12 @@ def phishtank_reload_command(client: Client):
     current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
     context = {"list": parsed_response, "timestamp": current_date}
     set_integration_context(context)
-    readable_output = 'PhishTankV2 Database reloaded \n'
+    readable_output = "PhishTankV2 Database reloaded \n"
     number_of_urls_loaded = len(parsed_response.keys())
-    readable_output += f'Total **{number_of_urls_loaded}** URLs loaded.\n'
+    readable_output += f"Total **{number_of_urls_loaded}** URLs loaded.\n"
     last_load = datetime.utcfromtimestamp(context["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
     output_to_context = {"value": last_load}
-    return CommandResults(readable_output=readable_output, outputs=output_to_context,
-                          outputs_prefix="LastReloadTime(obj)")
+    return CommandResults(readable_output=readable_output, outputs=output_to_context, outputs_prefix="LastReloadTime(obj)")
 
 
 def phishtank_status_command():
@@ -216,18 +208,16 @@ def phishtank_status_command():
     """
     data = get_integration_context()
     status = "PhishTankV2 Database Status\n"
-    data_was_not_reloaded_yet = data == dict()
+    data_was_not_reloaded_yet = data == {}
     last_load = ""
     if data_was_not_reloaded_yet:
         status += "Database not loaded.\n"
     else:
         last_load = datetime.utcfromtimestamp(data["timestamp"] / 1000.0).strftime("%a %b %d %Y %H:%M:%S (UTC)")
         number_of_urls_loaded = len(data["list"].keys())
-        status += f'Total **{number_of_urls_loaded}** URLs loaded.\n' \
-                  f'Last Load time **{last_load}**\n'
+        status += f"Total **{number_of_urls_loaded}** URLs loaded.\nLast Load time **{last_load}**\n"
     output_to_context = {"value": last_load}
-    return CommandResults(readable_output=status, outputs=output_to_context,
-                          outputs_prefix="LastReloadTime(obj)")
+    return CommandResults(readable_output=status, outputs=output_to_context, outputs_prefix="LastReloadTime(obj)")
 
 
 def reload(client: Client) -> dict:
@@ -247,7 +237,7 @@ def reload(client: Client) -> dict:
     response = client.get_http_request(RELOAD_DATA_URL_SUFFIX)
     response_is_empty = not response
     if response_is_empty:
-        return dict()
+        return {}
     response = response.splitlines()
     parsed_response = {}
     columns = response[0].strip().split(",")  # get csv headers
@@ -313,47 +303,48 @@ def is_number(fetch_interval_hours: str) -> bool:
         return False
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
     params = demisto.params()
-    use_https = params.get('use_https', False)
-    proxy = params.get('proxy')
-    verify = not params.get('insecure')
-    fetch_interval_hours = params.get('fetchIntervalHours')
-    reliability = params.get('integrationReliability')
-    username = params.get('username')
+    use_https = params.get("use_https", False)
+    proxy = params.get("proxy")
+    verify = not params.get("insecure")
+    fetch_interval_hours = params.get("fetchIntervalHours")
+    reliability = params.get("integrationReliability")
+    username = params.get("username")
 
     if not is_number(fetch_interval_hours):
-        return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
-                     "interval (hours)")
+        return_error(
+            "PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh interval (hours)"
+        )
 
     # initialize a client
     client = Client(proxy, verify, fetch_interval_hours, use_https, reliability, username)
 
     command = demisto.command()
-    demisto.debug(f'PhishTankV2: command is {command}')
+    demisto.debug(f"PhishTankV2: command is {command}")
 
     try:
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command == 'url':
+        elif command == "url":
             url = argToList(demisto.args().get("url"))
             return_results(url_command(client, url))
 
-        elif command == 'phishtank-reload':
+        elif command == "phishtank-reload":
             return_results(phishtank_reload_command(client))
 
-        elif command == 'phishtank-status':
+        elif command == "phishtank-status":
             return_results(phishtank_status_command())
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+""" ENTRY POINT """
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

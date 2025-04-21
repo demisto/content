@@ -24,6 +24,6 @@ dependson:
   must:
   - splunk-search
 fromversion: 6.5.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/splunksdk-py3:1.0.0.2074112
 tests:
 - No tests (auto formatted)

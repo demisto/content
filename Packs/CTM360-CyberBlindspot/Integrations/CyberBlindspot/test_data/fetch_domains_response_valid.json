@@ -1,0 +1,54 @@
+[
+    {
+        "first_seen": "22-12-2024 10:48:36 AM",
+        "last_seen": "22-12-2024 10:48:36 AM",
+        "id": "RD-D7A4ABBC5",
+        "remarks": "RD-D7A4ABBC5",
+        "confirmation_time": 1734864516150,
+        "subject": "thismosfet2.tooo",
+        "severity": "High",
+        "type": "Domain Infringement",
+        "risks": [
+            "Has DNS Record"
+        ],
+        "status": "monitoring",
+        "incident_status": "member_feedback",
+        "brand": "RiskAssess Demo",
+        "timestamp": 1734864516150
+    },
+    {
+        "first_seen": "31-10-2024 01:44:50 PM",
+        "last_seen": "04-12-2024 12:24:25 PM",
+        "id": "RD-E4F5B5E7E",
+        "remarks": "RD-E4F5B5E7E",
+        "subject": "thismosfet.tooo",
+        "severity": "High",
+        "type": "Domain Infringement",
+        "risks": [
+            "Has DNS Record",
+            "Has MX Record",
+            "Has A Record",
+            "Has NS Record"
+        ],
+        "status": "monitoring",
+        "brand": "RiskAssess Demo",
+        "timestamp": 1730382290000
+    },
+    {
+        "first_seen": "05-11-2024 09:01:00 PM",
+        "last_seen": "05-11-2024 09:01:00 PM",
+        "id": "RD-9F1AF54E4",
+        "remarks": "RD-9F1AF54E4",
+        "subject": "riksasis.too",
+        "severity": "High",
+        "type": "Domain Infringement",
+        "risks": [
+            "Has DNS Record",
+            "Has NS Record",
+            "Has A Record"
+        ],
+        "status": "monitoring",
+        "brand": "RiskAssess Demo",
+        "timestamp": 1730840460000
+    }
+]

@@ -1,8 +1,7 @@
 import os
+
 import demistomock as demisto
-
 from CommonServerPython import entryTypes
-
 
 TEST_DATA_DIR = "test_data"
 
@@ -13,6 +12,7 @@ def getFilePath_mock(entry_id):
 
 def test_json_to_csv():
     from JSONFileToCSV import json_to_csv
+
     data = [
         {"a": 1, "b": 2, "c": 3},
         {"a": 11, "b": 12, "c": 13},

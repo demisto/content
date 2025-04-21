@@ -1,4 +1,5 @@
 from pytest_mock import MockerFixture
+import pytest
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -492,17 +493,17 @@ def test_remove_system_user_with_system_users():
             "UserName": "administrator",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Source": [],
+            "Brand": "Microsoft Graph User",
         },
         {
             "UserName": "system",
             "Result": "Failed",
             "Message": "Skipping session clearing: User is a system user.",
-            "Source": [],
+            "Brand": "Microsoft Graph User",
         }
     ]
 
-    filtered_users, data_user = remove_system_user(users)
+    filtered_users, data_user = remove_system_user(users,["Microsoft Graph User"])
 
     # Assertions to verify the correctness of the result
     assert filtered_users == expected_filtered_users
@@ -516,7 +517,7 @@ def test_remove_system_user_no_system_users():
     expected_filtered_users = ["user1", "user2"]
     expected_data_user = []
 
-    filtered_users, data_user = remove_system_user(users)
+    filtered_users, data_user = remove_system_user(users,["Okta v2","Microsoft Graph User"])
 
     assert filtered_users == expected_filtered_users
     assert data_user == expected_data_user
@@ -527,19 +528,19 @@ def test_extract_usernames_with_ids():
         "Account(val.Username && val.Username == obj.Username)": [
             {
                 "ID": [{"Source": "Okta v2", "Value": "1234"}],
-                "Username": "user1@test.com",
+                "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}],
             },
             {
                 "ID": [{"Source": "Microsoft Graph User", "Value": "5678"}],
-                "Username": "user2@demistodev.onmicrosoft.com",
+                "Username": [{"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}],
             },
             {
                 "ID": [{"Source": "Okta v2", "Value": "789"}],
-                "Username": "user3@example.com",
+                "Username": [{"Source": "Okta v2", "Value": "user3@example.com"}],
             },
             {
                 "ID": [],
-                "Username": "user4@example.com",
+                "Username": [{"Source": "", "Value": "user4@example.com"}]
             }
         ]
     }
@@ -560,9 +561,11 @@ def test_get_user_data(mocker: MockerFixture):
     command = Command(name="get-user-data", args={"user_name": ["user1", "user2"], "brands": "brand_name"})
 
     expected_entry_context = [{"Account(val.Username && val.Username == obj.Username)": [
-        {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": "user1@test.com"},
-        {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": "user2@demistodev.onmicrosoft.com"}
+        {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}]},
+        {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": [
+            {"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}]}
     ]}]
+
     expected_id_info = {
         "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
         "user2@demistodev.onmicrosoft.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]
@@ -613,3 +616,88 @@ def test_clear_user_sessions(mocker: MockerFixture):
 
     _, _, error_message = clear_user_sessions(command)
     assert error_message == expected_error_message
+
+@pytest.mark.parametrize("inputs, get_user_data_context, expected_output",[
+    # Test one user with one brand
+    ({"user_name": ["user1@test.com"],
+      "brands": ["Okta v2"],},
+     
+     {"user1@test.com": [{"Source": "Okta v2", "Value": "1234"}]},
+     
+     [{"Message": "User session was cleared for user1@test.com",
+       "Result": "Success",
+       "Brand": "Okta v2",
+       "UserName": "user1@test.com"},]),
+    
+    # Test one user which exists in two brands
+    ({"user_name": ["user1@test.com"],
+      "brands": None,},
+     
+     {"user1@test.com": [{"Source": "Okta v2", "Value": "11"},
+                         {"Source": "Microsoft Graph User", "Value": "22"}]},
+     
+     [{"Message": "User session was cleared for user1@test.com",
+       "Result": "Success",
+       "Brand": "Okta v2",
+       "UserName": "user1@test.com"},
+      
+      {"Message": "User session was cleared for user1@test.com",
+       "Result": "Success",
+       "Brand": "Microsoft Graph User",
+       "UserName": "user1@test.com"}]),
+    
+    # Test one user which exists in one brand
+    ({"user_name": ["user1@test.com"],
+      "brands": None,},
+     
+     {"user1@test.com": [{"Source": "Okta v2", "Value": "11"}]},
+     
+     [{"Message": "User session was cleared for user1@test.com",
+       "Result": "Success",
+       "Brand": "Okta v2",
+       "UserName": "user1@test.com"},
+      
+      {"Message": "Username not found or no integration configured.",
+       "Result": "Failed",
+       "Brand": "Microsoft Graph User",
+       "UserName": "user1@test.com"}])
+    
+])
+def test_final_context_format(inputs, get_user_data_context, expected_output, mocker: MockerFixture):
+    """
+    Given:
+        Valid user name and brand with active session.
+    When:
+        The main function is called.
+    Then:
+        The function should clear the session and construct valid context.
+    """
+
+    # Mock get_user_data to return expected entry context
+    mocker.patch("ClearUserSession.get_user_data", return_value=([], get_user_data_context))
+
+    # Mock clear_user_sessions
+    mocker.patch("ClearUserSession.clear_user_sessions", return_value=("","successfully",None))
+    
+    # Mock demisto.args()
+    args_dict = {
+        "user_name": inputs["user_name"]
+    }
+
+    if inputs.get("brands"):
+        args_dict["brands"] = inputs["brands"]
+
+    mocker.patch.object(demisto, "args", return_value=args_dict)
+
+
+    # Mock return_results to capture its arguments
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    main()
+
+    # Message
+    # Validate the output
+    assert mock_return_results.called, "return_results should have been called"
+    result = mock_return_results.call_args[0][0]
+    assert result[0].outputs == expected_output
+

@@ -54,7 +54,7 @@ def main():
         return_results(load_and_parse_yaml_command(demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute ParseYAML script. Error: {str(e)}")
+        return_error(f"Failed to execute ParseYAML script. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -1,7 +1,7 @@
 # noqa: F401
+from CommonServerPython import *
 from flask import Flask, jsonify
 from gevent.pywsgi import WSGIServer
-from CommonServerPython import *
 
 FIRST_RUN_REPORT = {
     "Report_Entry": [
@@ -53,7 +53,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -104,7 +104,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - San Francisco",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -153,7 +153,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -203,7 +203,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -253,7 +253,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -302,7 +302,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -351,7 +351,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -400,7 +400,7 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         },
         {
             "Employee_Type": "Regular",
@@ -449,8 +449,8 @@ FIRST_RUN_REPORT = {
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
-        }
+            "Hire_Date": "01/01/2010",
+        },
     ]
 }
 
@@ -468,7 +468,7 @@ NEW_HIRE_REPORT = {
             "GDPR_Country_Flag": "0",
             "Director_Flag": "N",
             "Email_-_Primary_Home": "test6@testing.com",
-            "First_Name": 'first_name',
+            "First_Name": "first_name",
             "Last_Hire_Date": "06/15/2020",
             "People_Manager_Flag": "N",
             "Department": "Enterprise R&D:FWaaP",
@@ -481,38 +481,38 @@ NEW_HIRE_REPORT = {
             "Org_Level_2": "Enterprise R&D",
             "Emp_ID": "115074",
             "Job_Family": "Product Management",
-            "Preferred_Name_-_First_Name": 'first_name',
+            "Preferred_Name_-_First_Name": "first_name",
             "Nikesh Arora": "False",
             "Management_Level_1": "Nikesh Arora",
             "Work_Country_Abbrev": "US",
             "Management_Level_2": "Timmy Turner",
-            "Email_Address": 'user_email',
+            "Email_Address": "user_email",
             "Title": "Product Line Manager",
             "City": "Santa Clara",
             "Work_State_US_Only": "California",
             "Job_Code": "5225",
             "PAN_CF_Okta_Location_Region": "Americas",
-            "Last_Name": 'lsat_name',
+            "Last_Name": "lsat_name",
             "Job_Function": "Product Management Function",
             "State": "California",
             "Exec_Admin_Flag": "N",
             "Preferred_Name": "Chester McBadbat",
             "Regular_Employee_Flag": "Y",
-            "Preferred_Name_-_Last_Name": 'last_name',
+            "Preferred_Name_-_Last_Name": "last_name",
             "Cost_Center_Code": "651116",
             "Location": "Office - USA - CA - Headquarters",
             "Last_Day_of_Work": "02/15/2021",
             "Termination_Date": "02/15/2021",
-            "Hire_Date": "01/01/2010"
+            "Hire_Date": "01/01/2010",
         }
     ]
 }
 
 
-APP: Flask = Flask('xsoar-workday')
+APP: Flask = Flask("xsoar-workday")
 
 
-@APP.route('/', methods=['GET'])
+@APP.route("/", methods=["GET"])
 def get_full_reports():
     integration_context = get_integration_context()
     return jsonify(integration_context)
@@ -521,18 +521,18 @@ def get_full_reports():
 def get_full_report():
     set_integration_context(FIRST_RUN_REPORT)
     integration_context = get_integration_context()
-    return integration_context['Report_Entry'][0]
+    return integration_context["Report_Entry"][0]
 
 
 def test_module():
-    if int(demisto.params().get('longRunningPort', '')) and demisto.params().get("longRunning"):
+    if int(demisto.params().get("longRunningPort", "")) and demisto.params().get("longRunning"):
         user_report = get_full_report()
         if user_report:
-            demisto.results('ok')
+            demisto.results("ok")
         else:
-            return_error('Could not connect to the long running server. Please make sure everything is configured.')
+            return_error("Could not connect to the long running server. Please make sure everything is configured.")
     else:
-        return_error('Please make sure the long running port is filled and the long running checkbox is marked.')
+        return_error("Please make sure the long running port is filled and the long running checkbox is marked.")
 
 
 def get_employee_id():
@@ -544,8 +544,8 @@ def get_employee_id():
     """
     integration_context = get_integration_context()
     employee_ids = []
-    for report in integration_context['Report_Entry']:
-        employee_id = int(report.get('Emp_ID'))
+    for report in integration_context["Report_Entry"]:
+        employee_id = int(report.get("Emp_ID"))
         employee_ids.append(employee_id)
     max_employee_id = int(max(employee_ids)) + 1
 
@@ -553,134 +553,138 @@ def get_employee_id():
 
 
 def generate_new_hire_reports():
-    user_email = demisto.args().get('user_email')
-    first_name = demisto.args().get('first_name', '')
-    last_name = demisto.args().get('last_name', '')
+    user_email = demisto.args().get("user_email")
+    first_name = demisto.args().get("first_name", "")
+    last_name = demisto.args().get("last_name", "")
     integration_context = get_integration_context()
 
-    new_report = NEW_HIRE_REPORT['Report_Entry'][0]
-    for report in integration_context['Report_Entry']:
-        email_address = report.get('Email_Address')
+    new_report = NEW_HIRE_REPORT["Report_Entry"][0]
+    for report in integration_context["Report_Entry"]:
+        email_address = report.get("Email_Address")
         if user_email == email_address:
             raise Exception(f'User "{user_email}" already exist. Please try another user email.')
 
-    new_report['Email_Address'] = user_email
-    new_report['First_Name'] = first_name
-    new_report['Last_Name'] = last_name
-    new_report['Preferred_Name'] = f'{first_name} {last_name}'
-    new_report['Preferred_Name_-_First_Name'] = first_name
-    new_report['Preferred_Name_-_Last_Name'] = last_name
-    new_report['Emp_ID'] = get_employee_id()
-    integration_context['Report_Entry'].append(new_report)
+    new_report["Email_Address"] = user_email
+    new_report["First_Name"] = first_name
+    new_report["Last_Name"] = last_name
+    new_report["Preferred_Name"] = f"{first_name} {last_name}"
+    new_report["Preferred_Name_-_First_Name"] = first_name
+    new_report["Preferred_Name_-_Last_Name"] = last_name
+    new_report["Emp_ID"] = get_employee_id()
+    integration_context["Report_Entry"].append(new_report)
     set_integration_context(integration_context)
 
-    return_results('Successfully generated the new hire event.')
+    return_results("Successfully generated the new hire event.")
 
 
 def generate_terminate_report():
-    user_email = demisto.args().get('user_email')
+    user_email = demisto.args().get("user_email")
     integration_context = get_integration_context()
     now = datetime.now()
     current_date = now.strftime("%m/%d/%Y")
     user_report = None
-    for report in integration_context['Report_Entry']:
-        if report['Email_Address'] == user_email:
+    for report in integration_context["Report_Entry"]:
+        if report["Email_Address"] == user_email:
             user_report = report
     if not user_report:
-        raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
-                        f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
+        raise Exception(
+            f"The user email {user_email} does not exist. Please try one  of the followings: "
+            f"ttang@test.com, rrahardjo@test.com, sarnold@test.com"
+        )
 
-    is_terminated = user_report.get('Employment_Status')
-    rehired_status = user_report.get('Rehired_Employee')
-    if is_terminated == 'Terminated' and rehired_status == 'No':
-        raise Exception(f'The user {user_email} is already terminated.')
+    is_terminated = user_report.get("Employment_Status")
+    rehired_status = user_report.get("Rehired_Employee")
+    if is_terminated == "Terminated" and rehired_status == "No":
+        raise Exception(f"The user {user_email} is already terminated.")
 
-    user_report['Employment_Status'] = 'Terminated'
-    user_report['Last_Day_of_Work'] = demisto.args().get('last_day_of_work', str(current_date))
-    user_report['Termination_Date'] = demisto.args().get('termination_date', str(current_date))
+    user_report["Employment_Status"] = "Terminated"
+    user_report["Last_Day_of_Work"] = demisto.args().get("last_day_of_work", str(current_date))
+    user_report["Termination_Date"] = demisto.args().get("termination_date", str(current_date))
     set_integration_context(integration_context)
-    return_results('Successfully generated the Terminate user event.')
+    return_results("Successfully generated the Terminate user event.")
 
 
 def generate_update_report():
-    user_email = demisto.args().get('user_email')
+    user_email = demisto.args().get("user_email")
     integration_context = get_integration_context()
-    title = demisto.args().get('title')
-    city = demisto.args().get('city')
-    street_address = demisto.args().get('street_address')
-    last_day_of_work = demisto.args().get('last_day_of_work')
+    title = demisto.args().get("title")
+    city = demisto.args().get("city")
+    street_address = demisto.args().get("street_address")
+    last_day_of_work = demisto.args().get("last_day_of_work")
     user_report = None
-    for report in integration_context['Report_Entry']:
-        if report['Email_Address'] == user_email:
+    for report in integration_context["Report_Entry"]:
+        if report["Email_Address"] == user_email:
             user_report = report
     if not user_report:
-        raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
-                        f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
+        raise Exception(
+            f"The user email {user_email} does not exist. Please try one  of the followings: "
+            f"ttang@test.com, rrahardjo@test.com, sarnold@test.com"
+        )
     if title:
-        user_report['Title'] = title
+        user_report["Title"] = title
     if city:
-        user_report['City'] = city
+        user_report["City"] = city
     if street_address:
-        user_report['Street_Address'] = street_address
+        user_report["Street_Address"] = street_address
     if last_day_of_work:
-        user_report['Last_Day_of_Work'] = last_day_of_work
+        user_report["Last_Day_of_Work"] = last_day_of_work
     set_integration_context(integration_context)
-    return_results('Successfully generated the Update user event.')
+    return_results("Successfully generated the Update user event.")
 
 
 def generate_rehire_report():
-    user_email = demisto.args().get('user_email')
+    user_email = demisto.args().get("user_email")
     integration_context = get_integration_context()
     user_report = None
-    for report in integration_context['Report_Entry']:
-        if report['Email_Address'] == user_email:
+    for report in integration_context["Report_Entry"]:
+        if report["Email_Address"] == user_email:
             user_report = report
     if not user_report:
-        raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
-                        f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
+        raise Exception(
+            f"The user email {user_email} does not exist. Please try one  of the followings: "
+            f"ttang@test.com, rrahardjo@test.com, sarnold@test.com"
+        )
 
-    is_terminated = user_report.get('Employment_Status')
-    rehired_status = user_report.get('Rehired_Employee')
-    if is_terminated == 'Active' or rehired_status == 'Yes':
-        raise Exception(f'The user {user_email} is not terminated. Either he is still active or was already '
-                        f'rehired.')
+    is_terminated = user_report.get("Employment_Status")
+    rehired_status = user_report.get("Rehired_Employee")
+    if is_terminated == "Active" or rehired_status == "Yes":
+        raise Exception(f"The user {user_email} is not terminated. Either he is still active or was already rehired.")
 
-    user_report['Rehired_Employee'] = 'Yes'
-    user_report['Prehire_Flag'] = 'True'
+    user_report["Rehired_Employee"] = "Yes"
+    user_report["Prehire_Flag"] = "True"
     set_integration_context(integration_context)
-    return_results('Successfully generated the rehire user event.')
+    return_results("Successfully generated the rehire user event.")
 
 
 def main():
-
-    if demisto.command() == 'test-module':
+    if demisto.command() == "test-module":
         test_module()
 
-    elif demisto.command() == 'long-running-execution':
+    elif demisto.command() == "long-running-execution":
         integration_context = get_integration_context()
         if not integration_context:
             set_integration_context(FIRST_RUN_REPORT)
         while True:
-            port = int(demisto.params().get('longRunningPort', ''))
-            server = WSGIServer(('0.0.0.0', port), APP)
+            port = int(demisto.params().get("longRunningPort", ""))
+            server = WSGIServer(("0.0.0.0", port), APP)
             server.serve_forever()
 
-    elif demisto.command() == 'workday-generate-hire-event':
+    elif demisto.command() == "workday-generate-hire-event":
         generate_new_hire_reports()
 
-    elif demisto.command() == 'workday-generate-update-event':
+    elif demisto.command() == "workday-generate-update-event":
         generate_update_report()
 
-    elif demisto.command() == 'workday-generate-rehire-event':
+    elif demisto.command() == "workday-generate-rehire-event":
         generate_rehire_report()
 
-    elif demisto.command() == 'workday-generate-terminate-event':
+    elif demisto.command() == "workday-generate-terminate-event":
         generate_terminate_report()
 
-    elif demisto.command() == 'initialize-context':
+    elif demisto.command() == "initialize-context":
         set_integration_context(FIRST_RUN_REPORT)
-        return_results('The integration context has been initialized.')
+        return_results("The integration context has been initialized.")
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()

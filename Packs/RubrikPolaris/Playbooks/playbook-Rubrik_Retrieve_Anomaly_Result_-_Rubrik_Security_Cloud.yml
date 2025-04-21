@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 638d51e7-1872-4818-833f-cd73fd3cfdf0
+    taskid: d7d28cb6-19b3-43ec-8007-be1ae9e6bf7d
     type: start
     task:
-      id: 638d51e7-1872-4818-833f-cd73fd3cfdf0
+      id: d7d28cb6-19b3-43ec-8007-be1ae9e6bf7d
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 30
+          "y": -140
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 10ca3e7f-9eff-402e-8894-ccaf2fe0e53c
+    taskid: 440a3984-3f50-4a19-8bbe-f79fd326c20a
     type: title
     task:
-      id: 10ca3e7f-9eff-402e-8894-ccaf2fe0e53c
+      id: 440a3984-3f50-4a19-8bbe-f79fd326c20a
       version: -1
       name: Done
       type: title
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 874a043b-70ff-46d7-8fb3-408426140ed6
+    taskid: aafb5fb9-94e3-4782-8f03-6acbabf3e72c
     type: condition
     task:
-      id: 874a043b-70ff-46d7-8fb3-408426140ed6
+      id: aafb5fb9-94e3-4782-8f03-6acbabf3e72c
       version: -1
       name: Is Rubrik Polaris integration enabled?
       description: Checks whether Rubrik Polaris integration is enabled or not.
@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 160
+          "y": -10
         }
       }
     note: false
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e4bb03c1-45a4-41b6-865f-e8255037c414
+    taskid: e59a13b4-6aea-4219-8b85-2e148389c45a
     type: regular
     task:
-      id: e4bb03c1-45a4-41b6-865f-e8255037c414
+      id: e59a13b4-6aea-4219-8b85-2e148389c45a
       version: -1
       name: Retrieve anomaly results from RSC using the user-submitted form.
       description: Retrieve the suspicious list of files for a snapshot ID with detected file anomalies.
@@ -137,10 +137,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "40"
     scriptarguments:
       extend-context:
-        simple: suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath::suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath::anomaly_cluster_info=data.snapshot.cluster::anomaly_object_type=data.snapshot.snappableNew.objectType
+        simple: suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath::suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath::anomaly_cluster_info=data.snapshot.cluster::anomaly_object_type=data.snapshot.snappableNew.objectType::anomaly_cdm_id=data.snapshot.cdmId::anomaly_object_id=data.anomalyResultOpt.workloadId::cluster_id=data.snapshot.cluster.id
       snapshot_id:
         complex:
           root: inputs.snapshot_id
@@ -159,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1420
+          "y": 1250
         }
       }
     note: false
@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 6701c503-a90a-43d4-8ac7-314b64d6abd8
+    taskid: df554878-8ccb-4b06-88aa-5335dca7f594
     type: collection
     task:
-      id: 6701c503-a90a-43d4-8ac7-314b64d6abd8
+      id: df554878-8ccb-4b06-88aa-5335dca7f594
       version: -1
       name: Collect the anomaly file paths to generate the downloadable links.
       description: Collecting anomaly file paths to generate the downloadable links from RSC.
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 1c27b28b-15e8-4e86-8522-58fa456bdb8e
+    taskid: 8bea2f48-40d5-4976-8f94-d31d0e10d710
     type: condition
     task:
-      id: 1c27b28b-15e8-4e86-8522-58fa456bdb8e
+      id: 8bea2f48-40d5-4976-8f94-d31d0e10d710
       version: -1
       name: Check whether input file paths are available or not.
       description: Check whether file paths are available or not from the playbook input.
@@ -286,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: b369c2ad-9b39-4007-8bce-8c1ec9daecfe
+    taskid: 50c04e60-8f3d-4390-8fc1-18772ab3c9bf
     type: collection
     task:
-      id: b369c2ad-9b39-4007-8bce-8c1ec9daecfe
+      id: 50c04e60-8f3d-4390-8fc1-18772ab3c9bf
       version: -1
       name: Collect the anomaly information.
       description: Collecting Object name, type and the cluster ID to retrieve the anomaly events from RSC.
@@ -305,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 915
+          "y": 745
         }
       }
     note: false
@@ -381,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: c4ce2d39-291c-4c2a-803c-321018a5123e
+    taskid: 54f0133b-ede3-452b-8ee6-0df4c72e6887
     type: regular
     task:
-      id: c4ce2d39-291c-4c2a-803c-321018a5123e
+      id: 54f0133b-ede3-452b-8ee6-0df4c72e6887
       version: -1
       name: Retrieve the Activity Series ID using the meta information of Object retrieved from the user-submitted form.
       description: Retrieve the Activity Series ID using the meta information of Object retrieved from the user-submitted form.
@@ -435,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1080
+          "y": 910
         }
       }
     note: false
@@ -447,10 +447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b868d006-eb6a-413f-8cb1-ffc71b436cb8
+    taskid: 0d58ba2a-17f6-4675-8326-f37a92f74a14
     type: regular
     task:
-      id: b868d006-eb6a-413f-8cb1-ffc71b436cb8
+      id: 0d58ba2a-17f6-4675-8326-f37a92f74a14
       version: -1
       name: Delete context for the specified keys.
       description: |-
@@ -486,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 545
+          "y": 375
         }
       }
     note: false
@@ -498,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 29d7cc76-5a81-4c74-8a16-f0119083a3e9
+    taskid: e340543c-a4af-4b45-80df-bea6f71cdcb3
     type: condition
     task:
-      id: 29d7cc76-5a81-4c74-8a16-f0119083a3e9
+      id: e340543c-a4af-4b45-80df-bea6f71cdcb3
       version: -1
       name: Check whether the Snapshot ID is available or not.
       description: Check whether the snapshot ID is available or not from the playbook input.
@@ -532,7 +532,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 720
+          "y": 550
         }
       }
     note: false
@@ -544,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: c99395ec-6098-4e59-80c3-dd287af22cd6
+    taskid: 08a51dde-3814-4daf-8df4-5b1a4ce67ea2
     type: regular
     task:
-      id: c99395ec-6098-4e59-80c3-dd287af22cd6
+      id: 08a51dde-3814-4daf-8df4-5b1a4ce67ea2
       version: -1
       name: Generate request ID for the download of the malicious files.
       description: |-
@@ -611,10 +611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d6834637-ef22-4a2b-82c2-537bc6da20e3
+    taskid: d2d63254-cafc-42fe-873f-03e5becd394e
     type: playbook
     task:
-      id: d6834637-ef22-4a2b-82c2-537bc6da20e3
+      id: d2d63254-cafc-42fe-873f-03e5becd394e
       version: -1
       name: Rubrik Poll Async Result - Rubrik Polaris
       description: Poll async result for any asynchronous request made to rubrik.
@@ -677,10 +677,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 744ad786-4261-4c46-8268-aa07497d199b
+    taskid: 3a63557e-cfe4-46de-802d-ac749dd632d4
     type: regular
     task:
-      id: 744ad786-4261-4c46-8268-aa07497d199b
+      id: 3a63557e-cfe4-46de-802d-ac749dd632d4
       version: -1
       name: Set the delete keys.
       description: Set the delete keys in context.
@@ -697,14 +697,14 @@ tasks:
       key:
         simple: delete_keys_for_rubrik_retrieve_anomaly_result_playbook
       value:
-        simple: anomaly_snapshot_id,Collect Anomaly Information,suspicious_file_paths,Collect Anomaly File Paths,request_id_for_anomaly_file_download,anomaly_cluster_info,anomaly_object_type
+        simple: anomaly_snapshot_id,Collect Anomaly Information,suspicious_file_paths,Collect Anomaly File Paths,request_id_for_anomaly_file_download,anomaly_cluster_info,anomaly_object_type,anomaly_cdm_id,anomaly_object_id,cluster_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 500,
-          "y": 370
+          "y": 200
         }
       }
     note: false
@@ -716,10 +716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 8147aaab-adf5-4328-84ea-78a43a7438db
+    taskid: 722f49c2-a55b-4175-82ae-fa0e38f77588
     type: condition
     task:
-      id: 8147aaab-adf5-4328-84ea-78a43a7438db
+      id: 722f49c2-a55b-4175-82ae-fa0e38f77588
       version: -1
       name: Check whether the Activity Series ID is available or not.
       description: Check whether the Activity Series ID  is available or not from the command output.
@@ -750,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1245
+          "y": 1075
         }
       }
     note: false
@@ -762,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 9df747cc-4ae4-4793-8c5d-949605bd8a6c
+    taskid: 2a5b4d99-2fbd-4461-8f8a-81e2a1ed9257
     type: condition
     task:
-      id: 9df747cc-4ae4-4793-8c5d-949605bd8a6c
+      id: 2a5b4d99-2fbd-4461-8f8a-81e2a1ed9257
       version: -1
       name: Check whether suspicious file paths are available or not.
       description: Check whether suspicious file paths are available or not from the command output.
@@ -804,15 +804,69 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: fee64851-8009-4010-88ca-ebd293aa7488
+    type: regular
+    task:
+      id: fee64851-8009-4010-88ca-ebd293aa7488
+      version: -1
+      name: Download the analyzed CSV file for anomaly.
+      description: Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
+      script: RubrikPolaris|||rubrik-radar-anomaly-csv-analysis
+      type: regular
+      iscommand: true
+      brand: RubrikPolaris
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: cluster_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.rubrikpolariscdmclusterid
+                iscontext: true
+      download_file:
+        complex:
+          root: inputs.download_csv_file
+      object_id:
+        complex:
+          root: anomaly_object_id
+      snapshot_id:
+        complex:
+          root: anomaly_cdm_id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2505,
+        "height": 2675,
         "width": 717.5,
         "x": 162.5,
-        "y": 30
+        "y": -140
       }
     }
   }
@@ -834,6 +888,12 @@ inputs:
     The snapshot ID for which to retrieve the anomaly results. Default can be received from incident (activity series ID) if present.
 
     Note: Users can get the list of the snapshot IDs by executing the "rubrik-polaris-object-snapshot-list" command. For the Activity Series ID, the users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY".
+  playbookInputQuery:
+- key: download_csv_file
+  value:
+    simple: "True"
+  required: false
+  description: If set to True, the playbook downloads the anomaly analysis csv file directly on XSOAR server.
   playbookInputQuery:
 outputs:
 - contextPath: RubrikPolaris.SuspiciousFile.id

@@ -1,10 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import random
 import secrets
 import string
+
+import demistomock as demisto
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 DEFAULT_MIN = 0
 DEFAULT_MAX = 10
@@ -22,27 +23,29 @@ def randomize_number_in_range(min_val: int, max_val: int) -> int:
 
 def print_char_values(pw):
     ascii_values = [ord(char) for char in pw]
-    ascii_string = ', '.join(str(value) for value in ascii_values)
+    ascii_string = ", ".join(str(value) for value in ascii_values)
     demisto.debug(f"ASCII for password = {ascii_string}")
 
 
 def generate_password(args: Dict[str, Any]) -> CommandResults:
-    is_debug = argToBoolean(args.get('debug'))
-    min_lowercase = arg_to_number(args.get('min_lcase', DEFAULT_MIN))
-    max_lowercase = arg_to_number(args.get('max_lcase', DEFAULT_MAX))
-    min_uppercase = arg_to_number(args.get('min_ucase', DEFAULT_MIN))
-    max_uppercase = arg_to_number(args.get('max_ucase', DEFAULT_MAX))
-    min_digits = arg_to_number(args.get('min_digits', DEFAULT_MIN))
-    max_digits = arg_to_number(args.get('max_digits', DEFAULT_MAX))
-    min_symbols = arg_to_number(args.get('min_symbols', DEFAULT_MIN))
-    max_symbols = arg_to_number(args.get('max_symbols', DEFAULT_MAX))
+    is_debug = argToBoolean(args.get("debug"))
+    min_lowercase = arg_to_number(args.get("min_lcase", DEFAULT_MIN))
+    max_lowercase = arg_to_number(args.get("max_lcase", DEFAULT_MAX))
+    min_uppercase = arg_to_number(args.get("min_ucase", DEFAULT_MIN))
+    max_uppercase = arg_to_number(args.get("max_ucase", DEFAULT_MAX))
+    min_digits = arg_to_number(args.get("min_digits", DEFAULT_MIN))
+    max_digits = arg_to_number(args.get("max_digits", DEFAULT_MAX))
+    min_symbols = arg_to_number(args.get("min_symbols", DEFAULT_MIN))
+    max_symbols = arg_to_number(args.get("max_symbols", DEFAULT_MAX))
 
     if min(min_uppercase, min_lowercase, min_digits, min_symbols) < 0:  # type:ignore[type-var,operator]
         raise DemistoException("All numeral arguments must be positive.")
 
     if sum((min_uppercase, min_lowercase, min_digits, min_symbols)) == 0:  # type:ignore[arg-type]
-        raise DemistoException("error: At least one of the following arguments should be above 0: "
-                               "min_uppercase, min_lowercase, min_digits, min_symbols")
+        raise DemistoException(
+            "error: At least one of the following arguments should be above 0: "
+            "min_uppercase, min_lowercase, min_digits, min_symbols"
+        )
 
     # randomize the amount of characters we get as per parameters
     num_upper = randomize_number_in_range(min_uppercase, max_uppercase)  # type:ignore[arg-type]
@@ -67,15 +70,13 @@ def generate_password(args: Dict[str, Any]) -> CommandResults:
         pw.append(secrets.choice(SYMBOLS))
 
     # randomize our new password string
-    rpw = ''.join(random.sample(pw, len(pw)))
+    rpw = "".join(random.sample(pw, len(pw)))
 
     if is_debug:
         print_char_values(rpw)
 
     return CommandResults(
-        outputs_prefix="NEW_PASSWORD",
-        outputs=rpw,
-        readable_output=tableToMarkdown('Newly Generated Password', {'password': rpw})
+        outputs_prefix="NEW_PASSWORD", outputs=rpw, readable_output=tableToMarkdown("Newly Generated Password", {"password": rpw})
     )
 
 
@@ -87,5 +88,5 @@ def main():  # pragma: no cover
         return_error(str(e))
 
 
-if __name__ in ('__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__builtin__", "builtins"):  # pragma: no cover
     main()

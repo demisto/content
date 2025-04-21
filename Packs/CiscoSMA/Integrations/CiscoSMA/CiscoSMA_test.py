@@ -1,8 +1,8 @@
 import json
 import os
-import pytest
 from unittest.mock import patch
 
+import pytest
 
 """MOCK PARAMETERS"""
 CREDENTIALS = "credentials"
@@ -23,9 +23,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(
-        os.path.join("test_data/outputs", file_name), encoding="utf-8"
-    ) as mock_file:
+    with open(os.path.join("test_data/outputs", file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -310,9 +308,7 @@ def test_list_entry_get_command(
         )
     ],
 )
-def test_list_entry_add_command(
-    command_arguments, expected_message, requests_mock, mock_client
-):
+def test_list_entry_add_command(command_arguments, expected_message, requests_mock, mock_client):
     """
     Scenario: List entry add.
     Given:
@@ -349,9 +345,7 @@ def test_list_entry_add_command(
         )
     ],
 )
-def test_list_entry_append_command(
-    command_arguments, expected_message, requests_mock, mock_client
-):
+def test_list_entry_append_command(command_arguments, expected_message, requests_mock, mock_client):
     """
     Scenario: List entry append.
     Given:
@@ -388,9 +382,7 @@ def test_list_entry_append_command(
         )
     ],
 )
-def test_list_entry_edit_command(
-    command_arguments, expected_message, requests_mock, mock_client
-):
+def test_list_entry_edit_command(command_arguments, expected_message, requests_mock, mock_client):
     """
     Scenario: List entry edit.
     Given:
@@ -426,9 +418,7 @@ def test_list_entry_edit_command(
         )
     ],
 )
-def test_list_entry_delete_command(
-    command_arguments, expected_message, requests_mock, mock_client
-):
+def test_list_entry_delete_command(command_arguments, expected_message, requests_mock, mock_client):
     """
     Scenario: List entry delete.
     Given:
@@ -837,26 +827,10 @@ def test_format_custom_query_args(custom_query_argument, expected_result):
 @pytest.mark.parametrize(
     "timestamp,output_format,expected_result",
     [
-        (
-            "07 Sep 2022 09:08:03 (GMT)",
-            "%Y-%m-%dT%H:%M:%SZ",
-            "2022-09-07T09:08:03Z"
-        ),
-        (
-            "24 Apr 2023 10:14:50 (GMT -05:00)",
-            "%Y-%m-%dT%H:%M:00.000Z",
-            "2023-04-24T15:14:00.000Z"
-        ),
-        (
-            "24 Apr 2023 10:14:50 (GMT-06:00)",
-            "%Y-%m-%dT%H:%M:%SZ",
-            "2023-04-24T16:14:50Z"
-        ),
-        (
-            "24 Apr 2023 10:14:50 (GMT +01:00)",
-            "%Y-%m-%dT%H:%M:%SZ",
-            "2023-04-24T09:14:50Z"
-        )
+        ("07 Sep 2022 09:08:03 (GMT)", "%Y-%m-%dT%H:%M:%SZ", "2022-09-07T09:08:03Z"),
+        ("24 Apr 2023 10:14:50 (GMT -05:00)", "%Y-%m-%dT%H:%M:00.000Z", "2023-04-24T15:14:00.000Z"),
+        ("24 Apr 2023 10:14:50 (GMT-06:00)", "%Y-%m-%dT%H:%M:%SZ", "2023-04-24T16:14:50Z"),
+        ("24 Apr 2023 10:14:50 (GMT +01:00)", "%Y-%m-%dT%H:%M:%SZ", "2023-04-24T09:14:50Z"),
     ],
 )
 def test_format_timestamp(timestamp, output_format, expected_result):
@@ -891,23 +865,25 @@ def test_message_search_command_with_timout(requests_mock):
      - Ensure that the timeout argument was sent.
      - Validate outputs' fields.
     """
-    from CiscoSMA import message_search_command
-    from CiscoSMA import Client
+    from CiscoSMA import Client, message_search_command
+
     mock_client = Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False, timeout=90)
     mock_response = load_mock_response("message_search.json")
     url = f"{BASE_URL}/message-tracking/messages"
     mock_request = requests_mock.get(url=url, json=mock_response)
 
-    result = message_search_command(mock_client,
-                                    {
-                                        "start_date": "2 weeks",
-                                        "end_date": "1 day",
-                                        "page": "2",
-                                        "page_size": "4",
-                                        "recipient_filter_operator": "is",
-                                        "recipient_filter_value": "test@test.com",
-                                        "timeout": "90"
-                                    })
+    result = message_search_command(
+        mock_client,
+        {
+            "start_date": "2 weeks",
+            "end_date": "1 day",
+            "page": "2",
+            "page_size": "4",
+            "recipient_filter_operator": "is",
+            "recipient_filter_value": "test@test.com",
+            "timeout": "90",
+        },
+    )
     outputs = result.outputs
 
     assert "test%40test.com" in mock_request.last_request.query

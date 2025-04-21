@@ -1,17 +1,19 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
-import zlib
-import pyshark
-from datetime import datetime
 import re
 import sys
 import traceback
+import zlib
+from datetime import datetime
 from io import StringIO
+
+import pyshark
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 serr = sys.stderr
 sys.stderr = StringIO()
 
-''' GLOBAL VARIABLES '''
+""" GLOBAL VARIABLES """
 LIMIT = ""
 START = ""
 LIMIT_DATA = 0
@@ -20,7 +22,6 @@ ALLOWED_CONTENT_TYPES = ()
 # Used to convert pyshark keys to Demisto's conventions
 # Also used as a whitelist of relevant keys for outputs.
 PYSHARK_RES_TO_DEMISTO = {
-
     # Request
     "http.chat": "HttpChat",
     "http.request.method": "HttpRequestMethod",
@@ -36,7 +37,6 @@ PYSHARK_RES_TO_DEMISTO = {
     "http.accept_language": "HttpAcceptLanguage",
     "http.request.full_uri": "HttpRequestFullURI",
     "http.cookie": "HttpCookie",
-
     # Response
     "http.response.version": "HttpResponseVersion",
     "http.response.code": "HttpResponseCode",
@@ -73,23 +73,26 @@ def _find_entry_id_by_name(file_name, extensions=None):
     :param extensions:  filter more by the file extension.
     :return: the found entryID
     """
-    entries = demisto.executeCommand('getEntries', {})
+    entries = demisto.executeCommand("getEntries", {})
     found_entry_id = None
     for entry in entries:
-        entry_file_name = demisto.get(entry, 'File')
+        entry_file_name = demisto.get(entry, "File")
         is_correct_file = file_name.lower() == entry_file_name.lower()
         has_correct_extension = _file_has_extension(file_name, extensions) if extensions else True
 
         if is_correct_file and has_correct_extension:
-            found_entry_id = entry['ID']
+            found_entry_id = entry["ID"]
             break
 
     if not found_entry_id:
-        demisto.results({"Type": entryTypes["note"],
-                         "ContentsFormat": formats["markdown"],
-                         "Contents": "### No file found",
-                         "EntryContext": {"PcapHTTPExtractor.Flows": []}
-                         })
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["markdown"],
+                "Contents": "### No file found",
+                "EntryContext": {"PcapHTTPExtractor.Flows": []},
+            }
+        )
         sys.exit(0)
 
     return found_entry_id
@@ -104,20 +107,18 @@ def get_entry_from_args():
     """
     # Get the pcap file from arguments
     entry_id = None
-    if 'pcapFileName' in demisto.args() \
-            and 'entryID' not in demisto.args():
-
+    if "pcapFileName" in demisto.args() and "entryID" not in demisto.args():
         PCAP_FILE = demisto.args()["pcapFileName"]
         entry_id = _find_entry_id_by_name(PCAP_FILE, [".pcap", ".cap", ".pcapng"])
-    elif 'entryID' in demisto.args():
+    elif "entryID" in demisto.args():
         entry_id = demisto.args()["entryID"]
     else:
-        return_error('You must set pcapFileName or entryID when executing the PcapHTTPExtract script.')
+        return_error("You must set pcapFileName or entryID when executing the PcapHTTPExtract script.")
 
-    res = demisto.executeCommand('getFilePath', {'id': entry_id})
+    res = demisto.executeCommand("getFilePath", {"id": entry_id})
 
-    if len(res) > 0 and res[0]['Type'] == entryTypes['error']:
-        return_error(f'Failed to get the file path for entry: {entry_id}')
+    if len(res) > 0 and res[0]["Type"] == entryTypes["error"]:
+        return_error(f"Failed to get the file path for entry: {entry_id}")
 
     return res, entry_id
 
@@ -132,7 +133,7 @@ def _chunker(seq, size):
     """
     ret = []
     for i in range(0, len(seq), size):
-        chunk = seq[i: i + size]
+        chunk = seq[i : i + size]
 
         # Make sure the chunks are with a specified size
         padding = ["" for j in range(size - len(chunk))]
@@ -159,15 +160,12 @@ def _date_to_ISO(strdate):
     :type strdate: string of date (pyshark's output) that is not in ISO format
     :return: an ISO formatted date
     """
-    return datetime.strptime(strdate, '%a, %d %b %Y %H:%M:%S %Z').isoformat()
+    return datetime.strptime(strdate, "%a, %d %b %Y %H:%M:%S %Z").isoformat()
 
 
 def get_next_matching_index(http_packets, tcp_src, tcp_dst, ip_src, ip_dst):
     for i, p in enumerate(http_packets):
-        if p["TCP"].srcport == tcp_dst and \
-                p["TCP"].dstport == tcp_src and \
-                p["IP"].src == ip_dst and \
-                p["IP"].dst == ip_src:
+        if p["TCP"].srcport == tcp_dst and p["TCP"].dstport == tcp_src and p["IP"].src == ip_dst and p["IP"].dst == ip_src:
             return i
     return None
 
@@ -209,7 +207,7 @@ def get_http_flows(pcap_file_path):
     :param pcap_file_path:
     :return: list of requests/response pairs.
     """
-    capture_object = pyshark.FileCapture(pcap_file_path, display_filter='tcp')
+    capture_object = pyshark.FileCapture(pcap_file_path, display_filter="tcp")
 
     # Filter all non HTTP packets
     http_packets = [p for p in capture_object if "HTTP" in p]
@@ -223,17 +221,14 @@ def get_http_flows(pcap_file_path):
         sanitized_res = res
 
         if req:
-            req_fields = req['HTTP']._all_fields.keys()
+            req_fields = req["HTTP"]._all_fields.keys()
 
             # if the file contains only a response, the response will falsely appear in the 'req' variable
-            if 'http.response' in req_fields:
+            if "http.response" in req_fields:
                 sanitized_req = None
                 sanitized_res = req
 
-        http_flows.append({
-            "Request": sanitized_req,
-            "Response": sanitized_res
-        })
+        http_flows.append({"Request": sanitized_req, "Response": sanitized_res})
     return http_flows
 
 
@@ -250,7 +245,7 @@ def get_flow_info(http_flow):
         "IpSrc": http_flow["IP"].src,
         "IpDst": http_flow["IP"].dst,
         "MetaSniffTimeStamp": http_flow.sniff_timestamp,
-        "ResultIndex": http_flow.frame_info.number
+        "ResultIndex": http_flow.frame_info.number,
     }
 
 
@@ -285,9 +280,7 @@ def create_flow_object(flow, keys_transform_map, trim_file_data_size, allowed_co
     """
 
     if flow is None:
-        return {
-            "Not found": "No response found"
-        }
+        return {"Not found": "No response found"}
 
     # Get the HTTP and TCP, IP and Meta fields.
     r = flow["HTTP"]._all_fields
@@ -305,9 +298,8 @@ def create_flow_object(flow, keys_transform_map, trim_file_data_size, allowed_co
 
     # Trim a file data too big
     if "HttpFileData" in r:
-
         # Remove the \xef\xbf\xbd and \xa hex from the file data
-        if '\\xef\\xbf\\xbd' in r["HttpFileData"]:
+        if "\\xef\\xbf\\xbd" in r["HttpFileData"]:
             r["HttpFileData"] = re.sub("(\\\\xef\\\\xbf\\\\xbd)+", "[UNICODE]", r["HttpFileData"])
         r["HttpFileData"] = r["HttpFileData"].replace("\\xa", "")
 
@@ -341,34 +333,25 @@ def format_http_flows(http_flows, keys_transform_map, trim_file_data_size, allow
         req = create_flow_object(flow["Request"], keys_transform_map, trim_file_data_size, allowed_content_types)
         res = create_flow_object(flow["Response"], keys_transform_map, trim_file_data_size, allowed_content_types)
 
-        formatted_http_flows.append({
-            "Request": req,
-            "Response": res
-        })
+        formatted_http_flows.append({"Request": req, "Response": res})
 
     return formatted_http_flows
 
 
 def get_markdown_output(http_flows):
     """
-           Convert a list of http flows into a markdown table
+    Convert a list of http flows into a markdown table
 
-           :param http_flows: a list of http packets
-           :return: a string of markdown
-       """
+    :param http_flows: a list of http packets
+    :return: a string of markdown
+    """
     result_template = "---\n{req}\n{res}\n---"
     markdown_result = ""
 
     for i, flow in enumerate(http_flows):
         row = result_template.format(
-            req=tableToMarkdown(f"HTTPRequest #{i + 1}",
-                                flow["Request"],
-                                flow["Request"].keys()
-                                ),
-            res=tableToMarkdown(f"HTTPResponse #{i + 1}",
-                                flow["Response"],
-                                flow["Response"].keys()
-                                )
+            req=tableToMarkdown(f"HTTPRequest #{i + 1}", flow["Request"], flow["Request"].keys()),
+            res=tableToMarkdown(f"HTTPResponse #{i + 1}", flow["Response"], flow["Response"].keys()),
         )
         markdown_result += row
 
@@ -377,31 +360,38 @@ def get_markdown_output(http_flows):
 
 def main():
     try:
-        ''' GLOBAL VARIABLES '''
+        """ GLOBAL VARIABLES """
         global LIMIT, START, LIMIT_DATA, ALLOWED_CONTENT_TYPES
         LIMIT = demisto.args().get("limit")
         START = demisto.args().get("start")
         LIMIT_DATA = int(demisto.args().get("limitData"))
         if "allowedContentTypes" not in demisto.args():
-            ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",  # type: ignore
-                                     "application/xml", "application/xhtml+xml",
-                                     "application/ld+json", "application/javascript",
-                                     "multipart/alternative", "application/x-www-form-urlencoded")
+            ALLOWED_CONTENT_TYPES = (
+                "text",
+                "application/json",
+                "multipart/form-data",  # type: ignore
+                "application/xml",
+                "application/xhtml+xml",
+                "application/ld+json",
+                "application/javascript",
+                "multipart/alternative",
+                "application/x-www-form-urlencoded",
+            )
         else:
             ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
 
         # Parse the arguments
         pcap_file_path_in_container, pcap_entry_id = get_entry_from_args()
-        pcap_file_path_in_container = pcap_file_path_in_container[0]['Contents']['path']
+        pcap_file_path_in_container = pcap_file_path_in_container[0]["Contents"]["path"]
 
         # Work on the pcap file and return a result
         http_flows = get_http_flows(pcap_file_path_in_container)
 
         # Cut results according to the user args (times 2, because we are working on pairs of requests and responses).
         if START:
-            http_flows = http_flows[int(START):]
+            http_flows = http_flows[int(START) :]
         if LIMIT:
-            http_flows = http_flows[:int(LIMIT)]
+            http_flows = http_flows[: int(LIMIT)]
 
         # Format and get output representation of the flows
         formatted_http_flows = format_http_flows(http_flows, PYSHARK_RES_TO_DEMISTO, LIMIT_DATA, ALLOWED_CONTENT_TYPES)
@@ -409,17 +399,21 @@ def main():
         context_output = formatted_http_flows
 
         # Profit, send the output
-        demisto.results({"Type": entryTypes["note"],
-                         "ContentsFormat": formats["markdown"],
-                         "Contents": markdown_output,
-                         "EntryContext": {"PcapHTTPFlows": context_output}})
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["markdown"],
+                "Contents": markdown_output,
+                "EntryContext": {"PcapHTTPFlows": context_output},
+            }
+        )
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
+        return_error(f"Failed to execute PcapHTTPExtractor Script. Error: {e!s}")
     finally:
         sys.stderr = serr
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

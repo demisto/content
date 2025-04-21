@@ -1,7 +1,7 @@
+from datetime import datetime, timedelta
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-from datetime import datetime, timedelta
 
 # ##### Help #####
 # This is an example script. The script is used to change the Remediation SLA of an incident,
@@ -40,19 +40,19 @@ NONCRITICAL_SLA = 6  # In days
 
 def main():
     # ##### Logic #####
-    args_sev = demisto.args().get('new')
+    args_sev = demisto.args().get("new")
     now = datetime.utcnow()
 
-    if args_sev == 'Critical':
-        return_results('Severity changed to Critical')
-        demisto.executeCommand("setIncident", {'sla': CRITICAL_SLA, "slaField": "remediationsla"})
+    if args_sev == "Critical":
+        return_results("Severity changed to Critical")
+        demisto.executeCommand("setIncident", {"sla": CRITICAL_SLA, "slaField": "remediationsla"})
 
     else:
-        return_results('Severity changed to Not Critical')
+        return_results("Severity changed to Not Critical")
         newsla = now + timedelta(days=NONCRITICAL_SLA)
-        newsla = newsla.strftime('%Y-%m-%dT%H:%M:%S+00:00')
-        demisto.executeCommand("setIncident", {'sla': newsla, "slaField": "remediationsla"})
+        newsla = newsla.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+        demisto.executeCommand("setIncident", {"sla": newsla, "slaField": "remediationsla"})
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

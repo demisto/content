@@ -1,22 +1,18 @@
-{
-  "deviceUid": "02b9daa4-8e60-4640-8b15-76d41ecf6a94",
-  "esn": "2DE05RUEG0AA1V7S0003",
-  "cdfValues": [
-    {
-      "cdfUid": "njazpLrEQwqeFDqk4yQCfg",
-      "fieldKey": 1,
-      "fieldName": "Asset Number",
-      "categoryCode": "ESNCOLUMN",
-      "fieldValue": "No Asset Tag",
-      "type": "Text"
-    },
-    {
-      "cdfUid": "7PwIrjEXTAqvpb5WdV2w",
-      "fieldKey": 3,
-      "fieldName": "Assigned Username",
-      "categoryCode": "ESNCOLUMN",
-      "fieldValue": "",
-      "type": "Text"
-    }
-  ]
-}
+{"data": [
+      {
+        "cdfUid": "njazpLrEQwqeFDqk4yQCfg",
+        "cdfFieldKey": 1,
+        "cdfFieldName": "Asset Number",
+        "categoryCode": "ESNCOLUMN",
+        "cdfFieldValue": "No Asset Tag",
+        "type": "Text"
+      },
+      {
+        "cdfUid": "7PwIrjEXTAqvpb5WdV2w",
+        "cdfFieldKey": 3,
+        "cdfFieldName": "Assigned Username",
+        "categoryCode": "ESNCOLUMN",
+        "cdfFieldValue": "",
+        "type": "Text"
+      }
+  ]}

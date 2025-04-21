@@ -1,5 +1,5 @@
-name: CiscoCatalyst Parsing Rule
-id: CiscoCatalyst Parsing Rule
+name: Cisco Catalyst Parsing Rule
+id: Cisco_Catalyst_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

@@ -1,3 +1,6 @@
+import json
+from unittest.mock import patch
+
 from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main, \
     fetch_indicators_command, get_no_update_value
 import requests_mock
@@ -166,7 +169,7 @@ def test_get_feed_config():
         custom_fields_mapping=custom_fields_mapping
     )
     # Check that if an empty .get_feed_config is called, an empty dict returned
-    assert {} == client.get_feed_config()
+    assert client.get_feed_config() == {}
 
 
 def test_feed_main_fetch_indicators(mocker, requests_mock):
@@ -355,13 +358,13 @@ def test_get_indicators_with_relations():
         }
     }
     expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
-                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
-                                 'type': 'IP', 'tags': []},
+                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                  'type': 'IP', 'tags': []},
                       'relationships': [
-                         {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
-                          'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-                          'entityB': 'Test',
-                          'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}],
+                          {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+                           'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+                           'entityB': 'Test',
+                           'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}],
                       'fields': {'tags': []}}], True)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
@@ -425,8 +428,8 @@ def test_get_indicators_without_relations():
         }
     }
     expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
-                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
-                                 'type': 'IP', 'tags': []},
+                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                  'type': 'IP', 'tags': []},
                       'fields': {'tags': []}}], True)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
@@ -489,8 +492,8 @@ def test_fetch_indicators_exclude_enrichment():
         }
     }
     expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
-                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
-                                 'type': 'IP', 'tags': []},
+                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                  'type': 'IP', 'tags': []},
                       'fields': {'tags': []},
                       'enrichmentExcluded': True}], True)
 
@@ -506,6 +509,42 @@ def test_fetch_indicators_exclude_enrichment():
         )
         indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
                                               create_relationships=False, enrichment_excluded=True)
+
+        assert indicators == expected_res
+
+
+def test_fetch_indicators_ip_ranges_to_cidrs():
+    """
+    Given:
+        - Text containing incidicators as IP ranges.
+    When:
+        - Calling the fetch_indicators_command
+    Then:
+        - CIDR indicators should be returned.
+    """
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            "indicator_type": 'CIDR',
+            "indicator": {
+                "regex": r"^(\S+)-(\S+)$",
+                "transform": "\\1-\\2"
+            }
+        }
+    }
+    with open('test_data/expected_cidr_result.json') as expected_cidr_result:
+        expected_res = (json.loads(expected_cidr_result.read()), True)
+
+    ip_ranges = '14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255' \
+                '\nfe80::c000-fe80::cfff\n12.12.12.12'
+    with requests_mock.Mocker() as m:
+        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=ip_ranges.encode('utf-8'))
+        client = Client(
+            url="https://www.spamhaus.org/drop/asndrop.txt",
+            source_name='spamhaus',
+            feed_url_to_config=feed_url_to_config,
+            indicator_type='CIDR'
+        )
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='CIDR', auto_detect=False)
 
         assert indicators == expected_res
 
@@ -527,6 +566,7 @@ def test_get_no_update_value(mocker):
         headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
         status_code = 200
+
     no_update = get_no_update_value(MockResponse(), 'https://www.spamhaus.org/drop/asndrop.txt')
     assert not no_update
     assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
@@ -553,6 +593,7 @@ def test_get_no_update_value_etag_with_double_quotes(mocker):
         headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'ETag': f'"{etag}"'}  # guardrails-disable-line
         status_code = 200
+
     get_no_update_value(MockResponse(), url)
     assert demisto.setLastRun.mock_calls[0][1][0][url]['etag'] == etag
 
@@ -631,6 +672,7 @@ def test_get_no_update_value_without_headers(mocker):
     class MockResponse:
         headers = {}
         status_code = 200
+
     no_update = get_no_update_value(MockResponse(), 'https://www.spamhaus.org/drop/asndrop.txt')
     assert not no_update
     assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists,' \
@@ -698,3 +740,33 @@ def test_build_iterator_etag_with_double_quotes(mocker):
 
     client.build_iterator()
     assert mock_session.call_args[1]['headers']['If-None-Match'] == etag
+
+
+def test_feed_main_enrichment_excluded(mocker):
+    """
+        Given: params with tlp_color set to RED and enrichmentExcluded set to False
+        When: Calling feed_main
+        Then: validate enrichment_excluded is set to True
+    """
+    from HTTPFeedApiModule import feed_main
+
+    params = {
+        'tlp_color': 'RED',
+        'enrichmentExcluded': False
+    }
+    feed_name = 'test_feed'
+    prefix = 'test_prefix'
+
+    with patch('HTTPFeedApiModule.Client') as client_mock:
+        client_instance = mocker.Mock()
+        client_mock.return_value = client_instance
+        fetch_indicators_command_mock = mocker.patch('HTTPFeedApiModule.fetch_indicators_command', return_value=([], None))
+        mocker.patch('HTTPFeedApiModule.is_xsiam_or_xsoar_saas', return_value=True)
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'params', return_value=params)
+
+        # Call the function under test
+        feed_main(feed_name, params, prefix)
+
+        # Assertion - verify that enrichment_excluded is set to True
+        assert fetch_indicators_command_mock.call_args.kwargs['enrichment_excluded'] is True

@@ -1,59 +1,72 @@
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Salesforce
   version: -1
 name: Salesforce
 display: Salesforce
 category: Case Management
-description: CRM Services
+description: CRM Services.
 configuration:
 - display: Instance URL
   name: InstanceURL
   defaultvalue: https://login.salesforce.com
   type: 0
   required: true
+  section: Connect
 - display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
+  section: Connect
 - display: Consumer Key
   name: clientID
   defaultvalue: ""
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: Consumer Secret
   name: clientSecret
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Consumer Key
   displaypassword: Consumer Secret
   name: credentials_client_secret
   type: 9
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser automation)'
   name: fetchType
   defaultvalue: cases
   type: 0
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: useproxy
   type: 8
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Connect
 script:
   script: ''
   type: javascript
@@ -179,22 +192,22 @@ script:
       description: The email of the user.
       type: string
     - contextPath: SalesForce.Case.IsEscalated
-      description: Is Escalated for Case
+      description: Is Escalated for Case.
       type: boolean
     - contextPath: SalesForce.Case.SuppliedPhone
-      description: Case Supplied Phone
+      description: Case Supplied Phone.
       type: string
     - contextPath: SalesForce.Case.SuppliedCompany
-      description: Case Supplied Company
+      description: Case Supplied Company.
       type: string
     - contextPath: SalesForce.Case.ContactEmail
-      description: Case contact Email
+      description: Case contact Email.
       type: string
     - contextPath: SalesForce.Case.ContactId
-      description: Case contact Id
+      description: Case contact Id.
       type: string
     - contextPath: SalesForce.Case.AccountId
-      description: Case account ID
+      description: Case account ID.
       type: string
     description: Search records that contain values with pattern
   - name: salesforce-query
@@ -582,7 +595,7 @@ script:
       description: The Object ID of subject.
     - name: text
       required: true
-      description: Chat text
+      description: Chat text.
     - name: link
       description: Adds a link to the message.
     outputs:
@@ -613,7 +626,7 @@ script:
     - name: oid
       description: The Object ID of the case.
     - name: caseNumber
-      description: Case number of case
+      description: Case number of case.
     outputs:
     - contextPath: SalesForce.Case.ID
       description: The Object ID of the case.
@@ -818,16 +831,16 @@ script:
       description: The subject of the case.
       type: string
     - contextPath: SalesForce.Case.Description
-      description: Case Description
+      description: Case Description.
       type: string
     - contextPath: SalesForce.Case.CreateDate
-      description: Creation Time of Case
+      description: Creation Time of Case.
       type: date
     - contextPath: SalesForce.Case.ClosedDate
-      description: Closure Time of Case
+      description: Closure Time of Case.
       type: date
     - contextPath: SalesForce.Case.Owner
-      description: Case Owner
+      description: Case Owner.
       type: string
     - contextPath: SalesForce.Case.Priority
       description: Priority of the Case. one of Low, Medium, High.
@@ -839,7 +852,7 @@ script:
       description: 'Case Status. one of the following: New, Escalated, On Hold or Closed.'
       type: string
     - contextPath: SalesForce.Case.Reason
-      description: Reason for case creation
+      description: Reason for case creation.
       type: string
     important:
     - contextPath: SalesForce.Case.Status
@@ -850,19 +863,19 @@ script:
     arguments:
     - name: id
       required: true
-      description: The Chatter comment Thread ID
+      description: The Chatter comment Thread ID.
     - name: text
       required: true
-      description: The comment text
+      description: The comment text.
     outputs:
     - contextPath: SalesForce.Comment.Reply.Body
-      description: Reply body
+      description: Reply body.
       type: string
     - contextPath: SalesForce.Comment.Reply.CreatedDate
-      description: Reply created date
+      description: Reply created date.
       type: date
     - contextPath: SalesForce.Comment.Reply.URL
-      description: Reply URL link
+      description: Reply URL link.
       type: string
     description: Add the comment to the chatter thread. Use this command only after salesforce-push-comment
   - name: salesforce-delete-case
@@ -916,7 +929,7 @@ script:
     - name: caseNumber
       description: The case number of the case.
     - name: text
-      description: Added Text to context
+      description: Added Text to context.
     description: The post comment through the case number.
   - name: salesforce-get-user
     arguments:
@@ -973,3 +986,5 @@ script:
     description: 'Returns organization details from the case number. '
   isfetch: true
 fromversion: 5.0.0
+tests:
+- SalesforceTestPlaybook

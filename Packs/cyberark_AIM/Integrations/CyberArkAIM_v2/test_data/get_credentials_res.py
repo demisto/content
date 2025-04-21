@@ -35,7 +35,7 @@ LIST_CREDENTIALS_RAW = {
         "PolicyID": "WinDomain",
         "LastLogonDate": "1572451901",
         "DiscoveryPlatformType": "Windows Domain",
-        "PasswordChangeInProcess": "False"
+        "PasswordChangeInProcess": "False",
     },
     "name2": {
         "Content": "password2",
@@ -73,5 +73,6 @@ LIST_CREDENTIALS_RAW = {
         "PolicyID": "WinDomain",
         "LastLogonDate": "1572451901",
         "DiscoveryPlatformType": "Windows Domain",
-        "PasswordChangeInProcess": "False"
-    }}
+        "PasswordChangeInProcess": "False",
+    },
+}

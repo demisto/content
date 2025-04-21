@@ -1,17 +1,17 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import re
-
-from CommonServerUserPython import *  # noqa
-
-import urllib3
 import traceback
 from typing import Any
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
 
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 BASE_URL = "/api/v1/ip_lists"
-TABLE_HEADERS_GET_OBJECTS = ['ID', 'CIDR Range', 'Created At', 'Updated At']
+TABLE_HEADERS_GET_OBJECTS = ["ID", "CIDR Range", "Created At", "Updated At"]
 PAGE_NUMBER_PATTERN = r"(?<=page\[number]=).*?(?=&)"
 
 
@@ -29,7 +29,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = headers
 
-    def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type='json') -> dict:
+    def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type="json") -> dict:
         """
         Makes an HTTP request to F5 Silverline API by the given arguments.
         Args:
@@ -39,11 +39,14 @@ class Client(BaseClient):
             params (dict): URL parameters to specify the query.
             resp_type (str): Determines which data format to return from the HTTP request. The default is 'json'.
         """
-        demisto.debug(f'current request is: method={method}, body={body}, url suffix={url_suffix},'
-                      f'params={params}, resp_type={resp_type}')
+        demisto.debug(
+            f"current request is: method={method}, body={body}, url suffix={url_suffix},"
+            f"params={params}, resp_type={resp_type}"
+        )
 
-        return self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
-                                  headers=self._headers, resp_type=resp_type)
+        return self._http_request(
+            method=method, json_data=body, url_suffix=url_suffix, params=params, headers=self._headers, resp_type=resp_type
+        )
 
 
 def test_module(client: Client) -> str:
@@ -51,11 +54,11 @@ def test_module(client: Client) -> str:
     Tests API connectivity and authentication. Does a GET request for this purpose.
     """
     try:
-        client.request_ip_objects(body={}, method='GET', url_suffix='denylist/ip_objects', params={})
-        message = 'ok'
+        client.request_ip_objects(body={}, method="GET", url_suffix="denylist/ip_objects", params={})
+        message = "ok"
     except DemistoException as e:
-        if 'Unauthorized' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Unauthorized" in str(e):
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
@@ -71,7 +74,7 @@ def paging_args_to_params(page_size, page_number):
     except ValueError:
         raise ValueError("page_number and page_size should be numbers")
 
-    params = {'page[size]': page_size, 'page[number]': page_number}
+    params = {"page[size]": page_size, "page[number]": page_number}
     return params
 
 
@@ -81,11 +84,11 @@ def get_ip_and_mask_from_cidr(cidr_range):
     1. an IPv4 address (i.e the input does not include the separator '/'). In this case the default mask is 32 .
     2. a CIDR range which seems like this: IPv4/mask. for example : 1.2.3.4/32 .
     """
-    if '/' not in cidr_range:
+    if "/" not in cidr_range:
         ip_address = cidr_range
-        mask = '32'
+        mask = "32"
     else:
-        cidr_range = cidr_range.split('/')
+        cidr_range = cidr_range.split("/")
         ip_address = cidr_range[0]
         mask = cidr_range[1]
     return ip_address, mask
@@ -98,13 +101,13 @@ def add_ip_objects_command(client: Client, args: dict[str, Any]):
     Note: Human readable appears only if the HTTP request did not fail.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
     """
-    list_type = args['list_type']
-    cidr_range = args['cidr_range']
-    list_target = args.get('list_target', 'proxy-routed')
-    duration = int(args.get('duration', 0))
-    note = args.get('note', "")
-    tags = argToList(args.get('tags', []))
-    url_suffix = f'{list_type}/ip_objects'
+    list_type = args["list_type"]
+    cidr_range = args["cidr_range"]
+    list_target = args.get("list_target", "proxy-routed")
+    duration = int(args.get("duration", 0))
+    note = args.get("note", "")
+    tags = argToList(args.get("tags", []))
+    url_suffix = f"{list_type}/ip_objects"
 
     errors_list = []
     success_list = []
@@ -112,19 +115,18 @@ def add_ip_objects_command(client: Client, args: dict[str, Any]):
         body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
 
         try:
-            client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
+            client.request_ip_objects(body=body, method="POST", url_suffix=url_suffix, params={}, resp_type="content")
         except Exception as error:
             demisto.error(traceback.format_exc())
-            errors_list.append(f'could not add {ip_address}/{mask} to {list_type}. error: {error}')
-        success_list.append(f'| {ip_address}/{mask} |')
+            errors_list.append(f"could not add {ip_address}/{mask} to {list_type}. error: {error}")
+        success_list.append(f"| {ip_address}/{mask} |")
 
     if success_list:
-
-        success_lines = '\n'.join(success_list)
+        success_lines = "\n".join(success_list)
         human_readable = f"IP objects were added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
         return_results(CommandResults(readable_output=human_readable))
     if errors_list:
-        return_error('\n'.join(errors_list))
+        return_error("\n".join(errors_list))
 
 
 def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags):
@@ -132,24 +134,15 @@ def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
     prepares the body of a POST request in order to add an IP
     """
-    return \
-        {
-            "list_target": list_target,
-            "data":
-                {
-                    "id": "",
-                    "type": "ip_objects",
-                    "attributes": {
-                        "mask": mask,
-                        "ip": ip_address,
-                        "duration": duration
-                    },
-                    "meta": {
-                        "note": note,
-                        "tags": tags
-                    }
-                }
-        }
+    return {
+        "list_target": list_target,
+        "data": {
+            "id": "",
+            "type": "ip_objects",
+            "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
+            "meta": {"note": note, "tags": tags},
+        },
+    }
 
 
 def is_object_id_exist(client, object_id_list, list_type):
@@ -169,13 +162,13 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (DELETE section)
     """
 
-    list_type = args['list_type']
-    object_id = args.get('object_id')
-    object_ip = args.get('object_ip')
+    list_type = args["list_type"]
+    object_id = args.get("object_id")
+    object_ip = args.get("object_ip")
     object_id_list: list[Any] = []
-    list_target = args.get('list_target', 'proxy')
+    list_target = args.get("list_target", "proxy")
 
-    demisto.debug(f'debug-log: {list_type=}, {object_id=}, {object_ip=}, {list_target=}')
+    demisto.debug(f"debug-log: {list_type=}, {object_id=}, {object_ip=}, {list_target=}")
 
     if not object_id and not object_ip:
         raise DemistoException("At least one of the following arguments should be given: object_ip, object_id.")
@@ -190,11 +183,12 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     if object_id_list:
         human_readable = ""
         for object_id in object_id_list:
-            url_suffix = f'{list_type}/ip_objects/{object_id}'
+            url_suffix = f"{list_type}/ip_objects/{object_id}"
             # like the matching ip-object-add command, the list_target argument is added as a default value to the request if
             # no other value explicitly selected, and is only relevant for denylist (ignored for allowlist)
-            client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={
-                                      'list_target': list_target}, resp_type='content')
+            client.request_ip_objects(
+                body={}, method="DELETE", url_suffix=url_suffix, params={"list_target": list_target}, resp_type="content"
+            )
             human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
     return None
@@ -231,10 +225,10 @@ def get_object_id_by_ip(client, list_type, object_ip):
         while next_page := response.get("links", {}).get("links", {}).get("next", {}):
             page += 1
             demisto.debug(f"debug-log: next page found in response: {next_page=}, performing pagination for {page=}")
-            response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={'page': page})
+            response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={"page": page})
             if response:
                 demisto.debug(f"debug-log: response from {page=} has {len(response.get('data'))} objects")
-            all_objects.extend(response.get('data'))
+            all_objects.extend(response.get("data"))
     except Exception:
         demisto.debug("debug-log: exception raised while trying to paginate in get_object_id_by_ip: str (e)")
 
@@ -277,7 +271,7 @@ def add_paging_to_outputs(paging_dict, page_number):
     }
     we would like to get page numbers by regex filtering.
     """
-    link_to_current_obj = paging_dict.get('self')
+    link_to_current_obj = paging_dict.get("self")
     if not link_to_current_obj:
         demisto.debug(f"The paging response seems to be broken {paging_dict}")
         raise DemistoException("An error occurred when trying to parse paging response")
@@ -285,7 +279,7 @@ def add_paging_to_outputs(paging_dict, page_number):
     current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)  # guardrails-disable-line
     current_page_number = current_page_number.group(0) if current_page_number else page_number
 
-    link_to_last_obj = paging_dict.get('last')
+    link_to_last_obj = paging_dict.get("last")
     last_page_number = current_page_number
     if link_to_last_obj:
         last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj)  # guardrails-disable-line
@@ -295,11 +289,7 @@ def add_paging_to_outputs(paging_dict, page_number):
 
 
 def paging_outputs_dict(current_page_number, last_page_number, page_size):
-    return {
-        'current_page_number': current_page_number,
-        'current_page_size': page_size,
-        'last_page_number': last_page_number
-    }
+    return {"current_page_number": current_page_number, "current_page_size": page_size, "last_page_number": last_page_number}
 
 
 def paging_data_to_human_readable(current_page_number, last_page_number, page_size):
@@ -320,45 +310,48 @@ def get_ip_objects_list_command(client: Client, args: dict[str, Any]) -> Command
     the given list_type will be displayed.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (GET section)
     """
-    list_type = args['list_type']
-    object_ids = argToList(args.get('object_id'))
-    page_number = args.get('page_number')
-    page_size = args.get('page_size')
-    url_suffix = f'{list_type}/ip_objects'
+    list_type = args["list_type"]
+    object_ids = argToList(args.get("object_id"))
+    page_number = args.get("page_number")
+    page_size = args.get("page_size")
+    url_suffix = f"{list_type}/ip_objects"
     paging_data = []
     paging_data_human_readable = ""
     is_paging_required, params = handle_paging(page_number, page_size)
 
     if not object_ids:
         # in case the user wants to get all the IP objects and not specific ones
-        response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
-        outputs = response.get('data')
+        response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params=params)
+        outputs = response.get("data")
         human_results = parse_get_ip_object_list_results(response)
         if is_paging_required and outputs:
-            to_page = response.get('links')
+            to_page = response.get("links")
             if list_type == "allowlist":
                 current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
             else:
-                to_page = to_page.get('links')  # type: ignore
+                to_page = to_page.get("links")  # type: ignore
                 current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
             paging_data = paging_outputs_dict(current_page_number, last_page_number, page_size)
             paging_data_human_readable = paging_data_to_human_readable(current_page_number, last_page_number, page_size)
     else:
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)  # type: ignore
 
-    human_readable = tableToMarkdown(f'F5 Silverline {list_type} IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
-                                     removeNull=True)
+    human_readable = tableToMarkdown(
+        f"F5 Silverline {list_type} IP Objects", human_results, TABLE_HEADERS_GET_OBJECTS, removeNull=True
+    )
     human_readable += paging_data_human_readable
 
     if not human_results and is_paging_required:
-        human_readable = "No results were found. Please try to run the command without page_number and page_size to " \
-                         "get all existing IP objects."
+        human_readable = (
+            "No results were found. Please try to run the command without page_number and page_size to "
+            "get all existing IP objects."
+        )
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='F5Silverline',
-        outputs_key_field='id',
-        outputs={"IPObjectList": outputs, "Paging": paging_data}
+        outputs_prefix="F5Silverline",
+        outputs_key_field="id",
+        outputs={"IPObjectList": outputs, "Paging": paging_data},
     )
 
 
@@ -370,9 +363,9 @@ def get_ip_objects_by_ids(client: Client, object_ids: list, list_type: str, para
     human_results = []
     outputs = []
     for object_id in object_ids:
-        url_suffix = f'{list_type}/ip_objects/{object_id}'
-        res = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
-        outputs.append(res.get('data'))
+        url_suffix = f"{list_type}/ip_objects/{object_id}"
+        res = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params=params)
+        outputs.append(res.get("data"))
         human_results.append(parse_get_ip_object_list_results(res)[0])
     return human_results, outputs
 
@@ -385,7 +378,7 @@ def parse_get_ip_object_list_results(results: dict):
     Under the title "Success Response -> Body"
     """
     parsed_results = []
-    results_data = results.get('data')  # type: ignore
+    results_data = results.get("data")  # type: ignore
     demisto.debug(f"response is {results_data}")
     if isinstance(results_data, dict):
         # in case the response consist only single ip object, the result is a dict and not a list, but we want to handle
@@ -393,54 +386,52 @@ def parse_get_ip_object_list_results(results: dict):
         results_data = [results_data]
     for ip_object in results_data:  # type: ignore
         if ip_object:
-            ip_address = ip_object.get('attributes').get('ip')
-            mask = ip_object.get('attributes').get('mask')
-            cidr_range = f'{ip_address}/{mask}'
-            parsed_results.append({
-                'ID': ip_object.get('id'),
-                'CIDR Range': cidr_range,
-                'Created At': ip_object.get('meta').get('created_at'),
-                'Updated At': ip_object.get('meta').get('updated_at')
-            })
+            ip_address = ip_object.get("attributes").get("ip")
+            mask = ip_object.get("attributes").get("mask")
+            cidr_range = f"{ip_address}/{mask}"
+            parsed_results.append(
+                {
+                    "ID": ip_object.get("id"),
+                    "CIDR Range": cidr_range,
+                    "Created At": ip_object.get("meta").get("created_at"),
+                    "Updated At": ip_object.get("meta").get("updated_at"),
+                }
+            )
     return parsed_results
 
 
 def main() -> None:
     params = demisto.params()
-    access_token = params.get('token').get('password')
-    base_url = urljoin(params.get('url'), BASE_URL)
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    demisto.debug(f'Command being called is {demisto.command()}')
+    access_token = params.get("token").get("password")
+    base_url = urljoin(params.get("url"), BASE_URL)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        headers: dict = {"X-Authorization-Token": access_token, "Content-Type": 'application/json'}
+        headers: dict = {"X-Authorization-Token": access_token, "Content-Type": "application/json"}
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         args = demisto.args()
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             return_results(test_module(client))
 
-        elif demisto.command() == 'f5-silverline-ip-objects-list':
+        elif demisto.command() == "f5-silverline-ip-objects-list":
             return_results(get_ip_objects_list_command(client, args))
 
-        elif demisto.command() == 'f5-silverline-ip-object-add':
+        elif demisto.command() == "f5-silverline-ip-object-add":
             add_ip_objects_command(client, args)
 
-        elif demisto.command() == 'f5-silverline-ip-object-delete':
+        elif demisto.command() == "f5-silverline-ip-object-delete":
             return_results(delete_ip_objects_command(client, args))
         else:
-            raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
+            raise NotImplementedError(f"{demisto.command()} is not an existing F5 Silverline command")
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

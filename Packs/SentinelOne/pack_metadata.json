@@ -2,7 +2,7 @@
     "name": "SentinelOne",
     "description": "Endpoint protection",
     "support": "partner",
-    "currentVersion": "3.2.36",
+    "currentVersion": "3.2.40",
     "author": "SentinelOne",
     "url": "https://www.sentinelone.com/support/",
     "email": "support@sentinelone.com",
@@ -15,7 +15,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "SentinelOneEventCollector"
+    "defaultDataSource": "SentinelOneEventCollector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

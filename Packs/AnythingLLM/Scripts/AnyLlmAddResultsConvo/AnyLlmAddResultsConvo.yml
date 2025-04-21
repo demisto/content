@@ -1,0 +1,21 @@
+comment: Takes search results and adds them to the LLM conversation context.  Adding these results to the context is done invisibly in XSOAR, but is present in the LLM and will display in the conversation when the workspace is re-entered.
+commonfields:
+  id: AnyLlmAddResultsConvo
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmAddResultsConvo
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

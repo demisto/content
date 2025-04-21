@@ -1,10 +1,17 @@
 import json
+
 import dateparser
-import pytest
 import demistomock as demisto
+import pytest
 from XDome import (
-    Client, _split_device_alert_relation_id, _format_date, _build_alert_types_filter, _or, _simple_filter, _next_tick,
-    _ascending
+    Client,
+    _ascending,
+    _build_alert_types_filter,
+    _format_date,
+    _next_tick,
+    _or,
+    _simple_filter,
+    _split_device_alert_relation_id,
 )
 
 INTEGRATION_PARAMS = {
@@ -18,25 +25,15 @@ INTEGRATION_PARAMS = {
 
 @pytest.fixture(autouse=True)
 def set_mocks(mocker):
-    mocker.patch.object(demisto, 'params', return_value=INTEGRATION_PARAMS)
+    mocker.patch.object(demisto, "params", return_value=INTEGRATION_PARAMS)
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-DEVICE_ALERT_ERROR_RESPONSE = {
-    "detail": [
-        {
-            "loc": [
-                "string"
-            ],
-            "msg": "string",
-            "type": "string"
-        }
-    ]
-}
+DEVICE_ALERT_ERROR_RESPONSE = {"detail": [{"loc": ["string"], "msg": "string", "type": "string"}]}
 
 DEVICE_ALERT_SUCCESS_RESPONSE = {
     "devices_alerts": [
@@ -45,33 +42,19 @@ DEVICE_ALERT_SUCCESS_RESPONSE = {
             "alert_category": "Risk",
             "alert_class": "predefined",
             "alert_id": 2,
-            "alert_labels": [
-                "Top Priority"
-            ],
+            "alert_labels": ["Top Priority"],
             "alert_type_name": "Outdated Firmware",
             "device_alert_detected_time": "2023-10-19T16:21:01+00:00",
             "device_alert_status": "Unresolved",
             "device_alert_updated_time": "2023-10-19T16:21:01+00:00",
-            "device_assignees": [
-                "Admin"
-            ],
+            "device_assignees": ["Admin"],
             "device_category": "Medical",
-            "device_first_seen_list": [
-                "2023-10-19T16:32:04.127979+00:00"
-            ],
-            "device_ip_list": [
-                "1.1.1.1"
-            ],
+            "device_first_seen_list": ["2023-10-19T16:32:04.127979+00:00"],
+            "device_ip_list": ["1.1.1.1"],
             "device_labels": [],
-            "device_last_seen_list": [
-                "2023-10-19T16:32:01+00:00"
-            ],
-            "device_mac_list": [
-                "1a:2b:3c:d4:e5:f6"
-            ],
-            "device_network_list": [
-                "Corporate"
-            ],
+            "device_last_seen_list": ["2023-10-19T16:32:01+00:00"],
+            "device_mac_list": ["1a:2b:3c:d4:e5:f6"],
+            "device_network_list": ["Corporate"],
             "device_purdue_level": "Level 4",
             "device_retired": False,
             "device_risk_score": "Very Low",
@@ -93,9 +76,7 @@ DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
             "device_assignees": [],
             "device_category": "Medical",
             "device_labels": [],
-            "device_network_list": [
-                "Corporate"
-            ],
+            "device_network_list": ["Corporate"],
             "device_purdue_level": "Level 4",
             "device_retired": False,
             "device_risk_score": "Medium",
@@ -104,31 +85,31 @@ DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
             "device_type": "Nurse Call",
             "device_uid": "811997e7-cb4f-448f-9b68-68022d745404",
             "vulnerability_affected_products": "* All the Wi-Fi devices\n"
-                                               "* Aruba:\n"
-                                               "    - ArubaOS 6.4.x: prior to 6.4.4.25\n"
-                                               "    - ArubaOS 6.5.x: prior to 6.5.4.19\n"
-                                               "    - ArubaOS 8.3.x: prior to 8.3.0.15\n"
-                                               "    - ArubaOS 8.5.x: prior to 8.5.0.12\n"
-                                               "    - ArubaOS 8.6.x: prior to 8.6.0.8\n"
-                                               "    - ArubaOS 8.7.x: prior to 8.7.1.2\n"
-                                               "    - Aruba instant AP\n"
-                                               "* SUSE:\n"
-                                               "    - SUSE Linux Enterprise Server 15\n"
-                                               "    - SUSE Linux Enterprise Desktop 15\n"
-                                               "    - SUSE Linux Enterprise Server 12\n"
-                                               "    - SUSE Linux Enterprise Desktop 12\n"
-                                               "    - SUSE Linux Enterprise Server 11\n"
-                                               "    - SUSE Linux Enterprise Desktop 11\n"
-                                               "* Synology:\n"
-                                               "    - RT2600ac\n"
-                                               "    - MR2200ac\n"
-                                               "    - RT1900ac\n"
-                                               "* Microsoft - according to the affected versions detailed in the attached "
-                                               "advisories.\n"
-                                               "* Juniper:\n"
-                                               "    * the following models affected in specific versions and see attached "
-                                               "advisory:\n"
-                                               "        - AP12 / AP21 / AP32 / AP33 / AP41 / AP43 / AP61 / AP63 / SRX series",
+            "* Aruba:\n"
+            "    - ArubaOS 6.4.x: prior to 6.4.4.25\n"
+            "    - ArubaOS 6.5.x: prior to 6.5.4.19\n"
+            "    - ArubaOS 8.3.x: prior to 8.3.0.15\n"
+            "    - ArubaOS 8.5.x: prior to 8.5.0.12\n"
+            "    - ArubaOS 8.6.x: prior to 8.6.0.8\n"
+            "    - ArubaOS 8.7.x: prior to 8.7.1.2\n"
+            "    - Aruba instant AP\n"
+            "* SUSE:\n"
+            "    - SUSE Linux Enterprise Server 15\n"
+            "    - SUSE Linux Enterprise Desktop 15\n"
+            "    - SUSE Linux Enterprise Server 12\n"
+            "    - SUSE Linux Enterprise Desktop 12\n"
+            "    - SUSE Linux Enterprise Server 11\n"
+            "    - SUSE Linux Enterprise Desktop 11\n"
+            "* Synology:\n"
+            "    - RT2600ac\n"
+            "    - MR2200ac\n"
+            "    - RT1900ac\n"
+            "* Microsoft - according to the affected versions detailed in the attached "
+            "advisories.\n"
+            "* Juniper:\n"
+            "    * the following models affected in specific versions and see attached "
+            "advisory:\n"
+            "        - AP12 / AP21 / AP32 / AP33 / AP41 / AP43 / AP61 / AP63 / SRX series",
             "vulnerability_cve_ids": [
                 "CVE-2020-11111",
                 "CVE-2020-22222",
@@ -141,35 +122,35 @@ DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
                 "CVE-2020-99999",
                 "CVE-2020-00000",
                 "CVE-2020-12121",
-                "CVE-2020-13131"
+                "CVE-2020-13131",
             ],
             "vulnerability_cvss_v2_exploitability_subscore": 6.5,
             "vulnerability_cvss_v2_score": 3.3,
             "vulnerability_cvss_v3_exploitability_subscore": 2.8,
             "vulnerability_cvss_v3_score": 6.5,
             "vulnerability_description": "A collection of new 12 security vulnerabilities that affect Wi-Fi devices.\n"
-                                         "An adversary that is within range of a victim's Wi-Fi network can abuse these "
-                                         "vulnerabilities to\n"
-                                         "steal user information or attack devices.\n"
-                                         "Three of the discovered vulnerabilities are design flaws in the Wi-Fi standard and "
-                                         "therefore\n"
-                                         "affect most devices. On top of this, several other vulnerabilities were discovered that"
-                                         " are\n"
-                                         "caused by widespread programming mistakes in Wi-Fi products.\n"
-                                         "Experiments indicate that every Wi-Fi product is affected by at least one "
-                                         "vulnerability\n"
-                                         "and that most products are affected by several vulnerabilities.\n"
-                                         "The discovered vulnerabilities affect all modern security protocols of Wi-Fi, including"
-                                         " the\n"
-                                         "latest WPA3.\n"
-                                         "The design flaws are hard to abuse because doing so requires user interaction or is "
-                                         "only possible\n"
-                                         "when using uncommon network settings. As a result, in practice the biggest concern are "
-                                         "the\n"
-                                         "programming mistakes in Wi-Fi products since several of them are trivial to exploit.\n"
-                                         "When a website is configured with HSTS to always use HTTPS as an extra layer of "
-                                         "security,\n"
-                                         "the transmitted data cannot be stolen",
+            "An adversary that is within range of a victim's Wi-Fi network can abuse these "
+            "vulnerabilities to\n"
+            "steal user information or attack devices.\n"
+            "Three of the discovered vulnerabilities are design flaws in the Wi-Fi standard and "
+            "therefore\n"
+            "affect most devices. On top of this, several other vulnerabilities were discovered that"
+            " are\n"
+            "caused by widespread programming mistakes in Wi-Fi products.\n"
+            "Experiments indicate that every Wi-Fi product is affected by at least one "
+            "vulnerability\n"
+            "and that most products are affected by several vulnerabilities.\n"
+            "The discovered vulnerabilities affect all modern security protocols of Wi-Fi, including"
+            " the\n"
+            "latest WPA3.\n"
+            "The design flaws are hard to abuse because doing so requires user interaction or is "
+            "only possible\n"
+            "when using uncommon network settings. As a result, in practice the biggest concern are "
+            "the\n"
+            "programming mistakes in Wi-Fi products since several of them are trivial to exploit.\n"
+            "When a website is configured with HSTS to always use HTTPS as an extra layer of "
+            "security,\n"
+            "the transmitted data cannot be stolen",
             "vulnerability_id": "ALKIFVSA",
             "vulnerability_is_known_exploited": False,
             "vulnerability_last_updated": "2019-08-24T18:56:24.888211+00:00",
@@ -177,16 +158,11 @@ DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
             "vulnerability_published_date": "2021-05-12T00:00:00.485000+00:00",
             "vulnerability_recommendations": "some vulnerability recommendations",
             "vulnerability_relevance": "Potentially Relevant",
-            "vulnerability_relevance_sources": [
-                "Claroty"
-            ],
+            "vulnerability_relevance_sources": ["Claroty"],
             "vulnerability_sources": [
-                {
-                    "name": "vulnerability source name 1",
-                    "url": "https://not.really.vulnerability.source.url"
-                }
+                {"name": "vulnerability source name 1", "url": "https://not.really.vulnerability.source.url"}
             ],
-            "vulnerability_type": "Platform"
+            "vulnerability_type": "Platform",
         }
     ]
 }
@@ -197,9 +173,7 @@ def xdome_client_mock(mocker):
     def _xdome_client_mock():
         client = Client(base_url="https://not.really.api.claroty.com/api/v1/")
         mocker.patch.object(client, "get_device_alert_relations", return_value=DEVICE_ALERT_SUCCESS_RESPONSE)
-        mocker.patch.object(
-            client, "get_device_vulnerability_relations", return_value=DEVICE_VULNERABILITY_SUCCESS_RESPONSE
-        )
+        mocker.patch.object(client, "get_device_vulnerability_relations", return_value=DEVICE_VULNERABILITY_SUCCESS_RESPONSE)
         mocker.patch.object(client, "set_device_alert_relations", return_value=None)
         return client
 
@@ -208,13 +182,15 @@ def xdome_client_mock(mocker):
 
 DEVICE_ALERT_VALID_RAW_ARGS = {
     "limit": 1,
-    "filter_by": json.dumps({
-        "operation": "and",
-        "operands": [
-            {"field": "alert_id", "operation": "in", "value": [2]},
-            {"field": "device_uid", "operation": "in", "value": ["f342efb7-4f4a-4ac0-8045-0711fb2c5528"]},
-        ]
-    })
+    "filter_by": json.dumps(
+        {
+            "operation": "and",
+            "operands": [
+                {"field": "alert_id", "operation": "in", "value": [2]},
+                {"field": "device_uid", "operation": "in", "value": ["f342efb7-4f4a-4ac0-8045-0711fb2c5528"]},
+            ],
+        }
+    ),
 }
 
 
@@ -231,13 +207,15 @@ def test_get_device_alert_relations(xdome_client_mock):
 
 DEVICE_VULNERABILITY_VALID_RAW_ARGS = {
     "limit": 1,
-    "filter_by": json.dumps({
-        "operation": "and",
-        "operands": [
-            {"field": "vulnerability_id", "operation": "in", "value": ["ALKIFVSA"]},
-            {"field": "device_uid", "operation": "in", "value": ["811997e7-cb4f-448f-9b68-68022d745404"]},
-        ]
-    })
+    "filter_by": json.dumps(
+        {
+            "operation": "and",
+            "operands": [
+                {"field": "vulnerability_id", "operation": "in", "value": ["ALKIFVSA"]},
+                {"field": "device_uid", "operation": "in", "value": ["811997e7-cb4f-448f-9b68-68022d745404"]},
+            ],
+        }
+    ),
 }
 
 
@@ -300,9 +278,7 @@ def test_force_get_all_wrapper(xdome_client_mock):
         sort_by=None,
         count=False,
     ):
-        return {
-            "items": big_response_items[offset:min(offset + limit, response_len)]
-        }
+        return {"items": big_response_items[offset : min(offset + limit, response_len)]}
 
     client = xdome_client_mock()
     res = client._force_get_all_wrapper(
@@ -322,7 +298,7 @@ def test_force_get_all_wrapper(xdome_client_mock):
     assert res == big_response_items[9:60_009]
 
 
-''' Test Util Functions '''
+""" Test Util Functions """
 
 
 def test_split_device_alert_relation_id():
@@ -348,7 +324,9 @@ def test_format_date():
 def test_build_alert_types_filter():
     alert_types = ["  at1", "at2  ", " at3 ", " at4", "at5 "]
     assert _build_alert_types_filter(alert_types) == {
-        "field": "alert_type_name", "operation": "in", "value": ["at1", "at2", "at3", "at4", "at5"]
+        "field": "alert_type_name",
+        "operation": "in",
+        "value": ["at1", "at2", "at3", "at4", "at5"],
     }
 
 
@@ -358,7 +336,7 @@ def test_or_compound_filter():
     filter3 = _simple_filter("field3", "op3", ["val31", "val32", "val33"])
     assert _or(None, filter1, None, filter2, None, None, filter3, None) == {
         "operation": "or",
-        "operands": [filter1, filter2, filter3]
+        "operands": [filter1, filter2, filter3],
     }
 
 

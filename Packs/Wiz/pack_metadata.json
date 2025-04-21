@@ -2,7 +2,7 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "1.3.4",
+    "currentVersion": "1.3.5",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
@@ -26,6 +26,13 @@
     "githubUser": "ariel-wiz",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -1,7 +1,6 @@
-import pytest
 import demistomock as demisto
+import pytest
 from CommonServerPython import entryTypes
-
 
 NORMAL = [
     {
@@ -41,7 +40,7 @@ def test_cyren_feed_relationship_normal(mocker):
     args = {"indicator": {"some": "value"}}
     result = cyren_feed_relationship(args)
 
-    demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated", {"indicator": "{\"some\": \"value\"}"})
+    demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated", {"indicator": '{"some": "value"}'})
     assert result.readable_output == "tha output!"
 
 

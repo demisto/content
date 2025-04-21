@@ -1,4 +1,6 @@
+from base64 import urlsafe_b64decode
 import ipaddress
+import string
 import tldextract
 import urllib.parse
 from CommonServerPython import *
@@ -229,6 +231,7 @@ class URLCheck:
         index = self.base
         host: Any = ''
         is_ip = False
+        numerical_ip = False
 
         while index < len(self.modified_url) and self.modified_url[index] not in ('/', '?', '#'):
 
@@ -304,17 +307,31 @@ class URLCheck:
                 host += self.modified_url[index]
                 index += 1
 
-        if not is_ip:
-            try:
-                ip = ipaddress.ip_address(host)
+        if not is_ip and not re.search(r'(?i)[^0-9a-fx.]', host):
 
-                if ip.version == 6 and not self.output.endswith(']'):
-                    self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+            try:
+                parsed_ip = parse_mixed_ip(host)
+                numerical_ip = True
 
             except ValueError:
-                self.check_domain(host)
+                parsed_ip = host
 
-        self.url.hostname = host
+        else:
+            parsed_ip = host
+
+        try:
+            ip = ipaddress.ip_address(parsed_ip)
+
+            if ip.version == 6 and not self.output.endswith(']'):
+                self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+
+        except ValueError:
+            self.check_domain(host)
+
+        if numerical_ip:
+            self.url.hostname = ip.exploded
+            self.output = self.output.replace(host, ip.exploded)
+        self.url.hostname = str(parsed_ip)
         self.check_done(index)
 
     def port_check(self):
@@ -599,18 +616,78 @@ class URLCheck:
             self.modified_url = self.modified_url[beginning:end + 1]
 
 
+class ProofPointFormatter(object):
+    ud_pattern = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
+    v3_pattern = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
+    v3_token_pattern = re.compile(r"\*(\*.)?")
+    v3_single_slash = re.compile(r"^([a-z0-9+.-]+:/)([^/].+)", re.IGNORECASE)
+    v3_run_mapping: dict[Any, Any] = {}
+
+    def __init__(self, url):
+        self.url = url
+        run_values = string.ascii_uppercase + string.ascii_lowercase + string.digits + '-' + '_'
+        run_length = 2
+        for value in run_values:
+            self.v3_run_mapping[value] = run_length
+            run_length += 1
+
+    def decode_v3(self):
+        def replace_token(token):
+            if token == '*':
+                character = self.dec_bytes[self.current_marker]
+                self.current_marker += 1
+                return character
+            if token.startswith('**'):
+                run_length = self.v3_run_mapping[token[-1]]
+                run = self.dec_bytes[self.current_marker:self.current_marker + run_length]
+                self.current_marker += run_length
+                return run
+            return ''
+
+        def substitute_tokens(text, start_pos=0):
+            match = self.v3_token_pattern.search(text, start_pos)
+            if match:
+                start = text[start_pos:match.start()]
+                built_string = start
+                token = text[match.start():match.end()]
+                built_string += replace_token(token)
+                built_string += substitute_tokens(text, match.end())
+                return built_string
+            else:
+                return text[start_pos:len(text)]
+        match = self.ud_pattern.search(self.url)
+        if match and match.group(2) == 'v3':
+            match = self.v3_pattern.search(self.url)
+            if match:
+                url = match.group('url')
+                singleSlash = self.v3_single_slash.findall(url)
+                if singleSlash and len(singleSlash[0]) == 2:
+                    url = singleSlash[0][0] + "/" + singleSlash[0][1]
+                encoded_url = urllib.parse.unquote(url)
+                enc_bytes = match.group('enc_bytes')
+                enc_bytes += '=='
+                self.dec_bytes = (urlsafe_b64decode(enc_bytes)).decode('utf-8')
+                self.current_marker = 0
+                return substitute_tokens(encoded_url)
+
+            else:
+                raise ValueError('Error parsing URL')
+        else:
+            raise ValueError('Unrecognized v3 version in: ', self.url)
+
+
 class URLFormatter:
 
     # URL Security Wrappers
     ATP_regex = re.compile('.*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
-                                  'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
-    trendmicro_regex = re.compile('.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url[?]u=)?(.+?)(?:&amp|&d|$)|'
+                                  'https?(?::|%3A)//urldefense[.]\\w{2,3}/v3/__(.+?)(?:__;|$))')
+    trendmicro_regex = re.compile('.*?trendmicro[.]com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
                                   re.I)
 
     # Scheme slash fixer
-    scheme_fix = re.compile("https?(:[/|\\\]*)")
+    scheme_fix = re.compile("https?(:[/|\\\\]*)")
 
     def __init__(self, original_url):
         """
@@ -673,7 +750,7 @@ class URLFormatter:
                 url = URLFormatter.ATP_regex.findall(url)[0]
 
             elif URLFormatter.proofpoint_regex.findall(url):
-                url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0])
+                url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0], url)
 
             else:
                 wrapper = False
@@ -681,7 +758,7 @@ class URLFormatter:
         return url
 
     @staticmethod
-    def extract_url_proofpoint(url: str) -> str:
+    def extract_url_proofpoint(url: str, original_url: str) -> str:
         """
         Extracts the domain from the Proofpoint wrappers using a regex
 
@@ -698,7 +775,11 @@ class URLFormatter:
 
         else:
             # Proofpoint v3
-            return urllib.parse.unquote(url[1])
+            try:
+                result = ProofPointFormatter(original_url).decode_v3()
+                return result
+            except Exception:
+                return urllib.parse.unquote(url[1])
 
     @staticmethod
     def correct_and_refang_url(url: str) -> str:
@@ -768,3 +849,67 @@ def format_urls(raw_urls: list[str]) -> list[str]:
         finally:
             formatted_urls.append(formatted_url)
     return formatted_urls
+
+
+def parse_mixed_ip(ip_str: str) -> int:
+    """
+    Parse a mixed format IP address string and return an IPv4 or IPv6 address object.
+
+    This function can handle IP addresses in various formats including decimal, octal, and hexadecimal notations.
+    It converts the mixed format IP to a standard decimal IP and then creates an appropriate IP address object.
+
+    Args:
+        ip_str (str): A string representing an IP address in mixed format.
+
+    Returns:
+        int: An IPv4 in integer format.
+
+    Raises:
+        ValueError: If the resulting IP address is invalid.
+    """
+
+    def convert_octal_to_decimal(octet: str) -> int:
+        """Convert octal string to decimal."""
+        return int(octet, 8)
+
+    def convert_hex_to_decimal(octet: str) -> int:
+        """Convert hexadecimal string to decimal."""
+        return int(octet, 16)
+
+    def convert_decimal(octet: str) -> int:
+        """Convert decimal string to integer."""
+        return int(octet)
+
+    def convert_octet(octet: str) -> int:
+        """Convert a single octet to decimal if it is in octal, hex, or decimal format."""
+        if octet.startswith(('0x', '0X')):
+            # Hexadecimal
+            return convert_hex_to_decimal(octet)
+
+        elif octet.startswith('0') and len(octet) > 1:
+            # Assuming octal if it starts with '0' but more than one digit
+            return convert_octal_to_decimal(octet)
+
+        else:
+            # Decimal
+            return convert_decimal(octet)
+
+    numerical_ip: int = 0
+
+    # Split the IP address into octets
+    octets: list[str] = ip_str.split('.')
+
+    # Convert each octet to decimal
+    decimal_octets: list[int] = [convert_octet(octet) for octet in octets]
+
+    for index, octet in enumerate(decimal_octets, start=1):
+        if octet <= 255:
+            numerical_ip += octet << (32 - (index * 8))
+        else:
+            numerical_ip += octet
+
+    if numerical_ip > 4294967295:
+        # Maximum value for IPv4 address
+        raise ValueError("Invalid IP address format")
+
+    return numerical_ip

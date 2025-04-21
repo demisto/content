@@ -1,7 +1,6 @@
-import pytest
-
-from CommonServerPython import *
 import demistomock as demisto
+import pytest
+from CommonServerPython import *
 
 
 @pytest.mark.parametrize(
@@ -69,9 +68,7 @@ def test_main(mocker):
     """
     from AbuseIPDBPopulateIndicators import main
 
-    mocker.patch.object(
-        demisto, "args", return_value={"days": 30, "limit": 200, "confidence": 100}
-    )
+    mocker.patch.object(demisto, "args", return_value={"days": 30, "limit": 200, "confidence": 100})
     mocker.patch("AbuseIPDBPopulateIndicators.execute_command", return_value=None)
     mocker.patch("AbuseIPDBPopulateIndicators.get_contents", return_value=["1.1.1.1"])
     return_results_mock = mocker.patch("AbuseIPDBPopulateIndicators.return_results")

@@ -1,17 +1,18 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import traceback
+
+import demistomock as demisto  # noqa: F401
 
 # Disable insecure warnings
 import urllib3
+from CommonServerPython import *  # noqa: F401
+
 urllib3.disable_warnings()
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the Postmark Spamcheck API
-    """
+    """Client class to interact with the Postmark Spamcheck API"""
 
     def __init__(self, base_url: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
@@ -28,20 +29,21 @@ class Client(BaseClient):
         :return: Spam score result returned by the Postmark Spamcheck API as dict
         :rtype: ``dict``
         """
-        return self._http_request(method='POST', url_suffix='filter', data={'email': email, 'options': options},
-                                  resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="POST", url_suffix="filter", data={"email": email, "options": options}, resp_type="json", ok_codes=(200,)
+        )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module_command(client):
     """
     Tests Postmark Spamcheck API connectivity
     """
-    result = client.spamcheck(email='', options='short')
-    if result:
-        return 'ok'
+    result = client.spamcheck(email="", options="short")
+    if result:  # noqa: RET503
+        return "ok"
 
 
 def spamcheck_command(client: Client, file_path: str, args: dict) -> dict:
@@ -58,68 +60,61 @@ def spamcheck_command(client: Client, file_path: str, args: dict) -> dict:
     :rtype: ``dict``
     """
     if not file_path:
-        raise ValueError('entry file path not found')
+        raise ValueError("entry file path not found")
 
     email = open(file_path, "rb").read()
-    short = args.get('short', False)
+    short = args.get("short", False)
 
     if short:
-        options = 'short'
+        options = "short"
     else:
-        options = 'long'
+        options = "long"
 
     response = client.spamcheck(email=email, options=options)
 
-    if not response and not response.get('success'):
-        raise Exception('Failed submitting mail to Postmark Spamcheck API: %s\n' % file_path)
+    if not response and not response.get("success"):
+        raise Exception(f"Failed submitting mail to Postmark Spamcheck API: {file_path}\n")
     else:
         return response
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    """
+    """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
 
-    base_url = params.get('base_url')
-    verify = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    base_url = params.get("base_url")
+    verify = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify, proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module_command(client))
-        elif command == 'postmark-spamcheck':
-            entry_id = args.get('entryid')
-            file_path = demisto.getFilePath(entry_id).get('path')
+        elif command == "postmark-spamcheck":
+            entry_id = args.get("entryid")
+            file_path = demisto.getFilePath(entry_id).get("path")
             result = spamcheck_command(client=client, file_path=file_path, args=args)
-            result['entryid'] = entry_id
+            result["entryid"] = entry_id
             command_results = CommandResults(
-                readable_output=tableToMarkdown('Postmark - Spamcheck', result, metadata='Spamcheck completed',
-                                                removeNull=True),
-                outputs_prefix='Postmark.Spamcheck',
-                outputs_key_field='entryid',
-                outputs=result
+                readable_output=tableToMarkdown("Postmark - Spamcheck", result, metadata="Spamcheck completed", removeNull=True),
+                outputs_prefix="Postmark.Spamcheck",
+                outputs_key_field="entryid",
+                outputs=result,
             )
             return_results(command_results)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', 'builtin', 'builtins'):
+if __name__ in ("__main__", "builtin", "builtins"):
     main()

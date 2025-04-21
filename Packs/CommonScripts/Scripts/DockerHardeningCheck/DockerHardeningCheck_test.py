@@ -1,10 +1,16 @@
-from DockerHardeningCheck import (mem_size_to_bytes, check_pids, check_fd_limits,
-                                  get_default_gateway, check_network, CLOUD_METADATA_URL)
-import os
 import ipaddress
-import requests_mock
-from pytest_mock import MockerFixture
+import os
 
+import requests_mock
+from DockerHardeningCheck import (
+    CLOUD_METADATA_URL,
+    check_fd_limits,
+    check_network,
+    check_pids,
+    get_default_gateway,
+    mem_size_to_bytes,
+)
+from pytest_mock import MockerFixture
 
 # NOTE: Should be fixed in future versions (related to CIAC-11476)
 # def test_check_memory():
@@ -34,20 +40,21 @@ def test_get_default_gateway():
 
 
 def test_check_network(requests_mock: requests_mock.Mocker, mocker: MockerFixture):
-    default_gateway_mock = mocker.patch('DockerHardeningCheck.get_default_gateway', return_value='172.12.0.1')
-    requests_mock.get(CLOUD_METADATA_URL, text="access is open", headers={'test': 'mock header'})
-    requests_mock.get('https://172.12.0.1/', text="local access is open", headers={'test': 'mock local header'})
-    res = check_network('all')
+    default_gateway_mock = mocker.patch("DockerHardeningCheck.get_default_gateway", return_value="172.12.0.1")
+    requests_mock.get(CLOUD_METADATA_URL, text="access is open", headers={"test": "mock header"})
+    requests_mock.get("https://172.12.0.1/", text="local access is open", headers={"test": "mock local header"})
+    res = check_network("all")
     assert default_gateway_mock.call_count == 1
     assert CLOUD_METADATA_URL in res
-    assert 'mock header' in res
-    assert 'mock local header' in res
+    assert "mock header" in res
+    assert "mock local header" in res
 
 
 def test_podman(mocker):
     import DockerHardeningCheck
+
     mocker.patch.dict(os.environ, {"container": "podman"})
-    mock_return_error = mocker.patch('DockerHardeningCheck.return_error')
+    mock_return_error = mocker.patch("DockerHardeningCheck.return_error")
 
     DockerHardeningCheck.main()
 

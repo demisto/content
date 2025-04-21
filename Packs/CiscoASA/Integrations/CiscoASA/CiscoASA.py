@@ -1,44 +1,40 @@
-from requests import Response
+import traceback
+from collections.abc import Callable
+from copy import deepcopy
+from functools import wraps
+from http import HTTPStatus
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from typing import Any
-from collections.abc import Callable
-from functools import wraps
-from copy import deepcopy
-from http import HTTPStatus
-
 import urllib3
-import traceback
+from CommonServerPython import *  # noqa: F401
+from requests import Response
 
 from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBAL VARIABLES'''
+""" GLOBAL VARIABLES"""
 
 API_LIMIT = 100
 INTEGRATION_COMMAND = "cisco-asa"
-OBJECT_TYPES_DICT = {
-    'IPv4': 'IPv4Address',
-    'IP-Network': 'IPv4Network'
-}
+OBJECT_TYPES_DICT = {"IPv4": "IPv4Address", "IP-Network": "IPv4Network"}
 DEFAULT_LIMIT = 50
 DEFAULT_KEYS_MAPPING = {
-    'objectId': 'object_id',
-    'name': 'name',
-    'description': 'description',
-    'members': {
-        '_include': True,
-        'kind': 'kind',
-        'objectId': 'object_id',
-        'value': 'value',
+    "objectId": "object_id",
+    "name": "name",
+    "description": "description",
+    "members": {
+        "_include": True,
+        "kind": "kind",
+        "objectId": "object_id",
+        "value": "value",
     },
 }
 
 
-'''PAGINATION DECORATOR '''
+"""PAGINATION DECORATOR """
 
 
 class Pagination:
@@ -80,6 +76,7 @@ class Pagination:
         Returns:
             Callable: The wrapped function with added pagination functionality.
         """
+
         @wraps(func)
         def wrapper(
             client_instance: BaseClient,
@@ -103,11 +100,7 @@ class Pagination:
                 tuple[list | dict, list | dict]: All the items combined within raw response,
                     All the raw responses combined.
             """
-            remaining_items, offset = self._get_pagination_arguments(
-                page=page,
-                page_size=page_size,
-                limit=limit
-            )
+            remaining_items, offset = self._get_pagination_arguments(page=page, page_size=page_size, limit=limit)
 
             return self._handle_pagination(
                 client_instance,
@@ -121,10 +114,7 @@ class Pagination:
         return wrapper
 
     def _get_pagination_arguments(
-        self,
-        page: int | None,
-        page_size: int | None,
-        limit: int = DEFAULT_LIMIT
+        self, page: int | None, page_size: int | None, limit: int = DEFAULT_LIMIT
     ) -> tuple[int, int | None]:
         """
         Determine if pagination is automatic or manual and compute remaining items and offset values.
@@ -176,7 +166,7 @@ class Pagination:
             tuple[list | dict, list | dict]:
                 All the items combined within raw response, All the raw responses combined
         """
-        kwargs['self'] = client_instance
+        kwargs["self"] = client_instance
 
         raw_items: list[dict[str, Any]] = []
         raw_responses: list[dict[str, Any]] = []
@@ -185,8 +175,8 @@ class Pagination:
         while remaining_items > 0:
             limit = min(remaining_items, self.api_limit)
             kwargs |= {
-                'limit': limit,
-                'offset': offset,
+                "limit": limit,
+                "offset": offset,
             }
 
             raw_response = func(
@@ -215,7 +205,7 @@ class Pagination:
         return raw_items, raw_responses
 
 
-'''Client'''
+"""Client"""
 
 
 class Client(BaseClient):
@@ -231,9 +221,9 @@ class Client(BaseClient):
         """
         if isASAv:
             self.isASAv = True
-            res = self._http_request('POST', '/api/tokenservices', resp_type='response')
-            auth_token = res.headers._store.get('x-auth-token')[1]
-            self._headers['X-Auth-Token'] = auth_token
+            res = self._http_request("POST", "/api/tokenservices", resp_type="response")
+            auth_token = res.headers._store.get("x-auth-token")[1]
+            self._headers["X-Auth-Token"] = auth_token
             self.auth_token = auth_token
 
     def logoff(self):
@@ -242,12 +232,12 @@ class Client(BaseClient):
         """
         try:
             if self.isASAv and self.auth_token:
-                self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
+                self._http_request("DELETE", f"/api/tokenservices/{self.auth_token}", resp_type="response")
         except Exception as e:
             # if failed to logoof just write to log. no need to raise error
-            demisto.debug(f'Logoff error: {str(e)}')
+            demisto.debug(f"Logoff error: {e!s}")
 
-    def get_all_rules(self, specific_interface: str | None = None, rule_type: str = 'All') -> list:
+    def get_all_rules(self, specific_interface: str | None = None, rule_type: str = "All") -> list:
         """
         Gets a list all rules for the supplied interface.
 
@@ -260,53 +250,54 @@ class Client(BaseClient):
         """
         rules = []  # type: list
         # Get global rules
-        if specific_interface is None and rule_type in ['All', 'Global']:
-            res = self._http_request('GET', '/api/access/global/rules')
-            items = res.get('items', [])
+        if specific_interface is None and rule_type in ["All", "Global"]:
+            res = self._http_request("GET", "/api/access/global/rules")
+            items = res.get("items", [])
             for item in items:
-                item['interface_type'] = "Global"
+                item["interface_type"] = "Global"
             rules.extend(items)
 
         # Get in rules
-        if rule_type in ['All', 'In']:
-            res = self._http_request('GET', '/api/access/in')
+        if rule_type in ["All", "In"]:
+            res = self._http_request("GET", "/api/access/in")
             interfaces = []
-            for item in res.get('items', []):
-                interface_name = item.get('interface', {}).get('name')
+            for item in res.get("items", []):
+                interface_name = item.get("interface", {}).get("name")
                 if interface_name and specific_interface and specific_interface == interface_name:
                     interfaces.append(interface_name)
                 if interface_name and not specific_interface:
                     interfaces.append(interface_name)
             for interface in interfaces:
-                res = self._http_request('GET', f'/api/access/in/{interface}/rules')
-                items = res.get('items', [])
+                res = self._http_request("GET", f"/api/access/in/{interface}/rules")
+                items = res.get("items", [])
                 for item in items:
-                    item['interface'] = interface
-                    item['interface_type'] = "In"
+                    item["interface"] = interface
+                    item["interface_type"] = "In"
                 rules.extend(items)
 
         # Get out rules
-        if rule_type in ['All', 'Out']:
-            res = self._http_request('GET', '/api/access/out')
+        if rule_type in ["All", "Out"]:
+            res = self._http_request("GET", "/api/access/out")
             interfaces = []
-            for item in res.get('items', []):
-                interface_name = item.get('interface', {}).get('name')
+            for item in res.get("items", []):
+                interface_name = item.get("interface", {}).get("name")
                 if interface_name and specific_interface and specific_interface == interface_name:
                     interfaces.append(interface_name)
                 if interface_name and not specific_interface:
                     interfaces.append(interface_name)
             for interface in interfaces:
-                res = self._http_request('GET', f'/api/access/out/{interface}/rules')
-                items = res.get('items', [])
+                res = self._http_request("GET", f"/api/access/out/{interface}/rules")
+                items = res.get("items", [])
                 for item in items:
-                    item['interface'] = interface
-                    item['interface_type'] = "Out"
+                    item["interface"] = interface
+                    item["interface_type"] = "Out"
                 rules.extend(items)
 
         return rules
 
-    def rule_action(self, rule_id: str, interface_name: str, interface_type: str, command: str = 'GET',
-                    data: dict = None) -> dict:
+    def rule_action(
+        self, rule_id: str, interface_name: str, interface_type: str, command: str = "GET", data: dict = None
+    ) -> dict:
         """
         Get, update or delete a rule.
 
@@ -324,22 +315,22 @@ class Client(BaseClient):
             PATCH - edit rule
         """
         rule = {}
-        resp_type = {"GET": "json",
-                     "DELETE": "text",
-                     "PATCH": "response"
-                     }
+        resp_type = {"GET": "json", "DELETE": "text", "PATCH": "response"}
         if interface_type == "Global":
-            rule = self._http_request(command, f'/api/access/global/rules/{rule_id}', resp_type=resp_type[command],
-                                      json_data=data)
+            rule = self._http_request(
+                command, f"/api/access/global/rules/{rule_id}", resp_type=resp_type[command], json_data=data
+            )
         if interface_type == "In":
-            rule = self._http_request(command, f'/api/access/in/{interface_name}/rules/{rule_id}',
-                                      resp_type=resp_type[command], json_data=data)
-        if interface_type == 'Out':
-            rule = self._http_request(command, f'/api/access/out/{interface_name}/rules/{rule_id}',
-                                      resp_type=resp_type[command], json_data=data)
-        if command == 'GET':
-            rule['interface'] = interface_name
-            rule['interface_type'] = interface_type
+            rule = self._http_request(
+                command, f"/api/access/in/{interface_name}/rules/{rule_id}", resp_type=resp_type[command], json_data=data
+            )
+        if interface_type == "Out":
+            rule = self._http_request(
+                command, f"/api/access/out/{interface_name}/rules/{rule_id}", resp_type=resp_type[command], json_data=data
+            )
+        if command == "GET":
+            rule["interface"] = interface_name
+            rule["interface_type"] = interface_type
         return rule
 
     def create_rule(self, interface_type: str, interface_name: str, rule_body: dict) -> dict:
@@ -356,17 +347,15 @@ class Client(BaseClient):
         """
         res = Response()
         if interface_type == "Global":
-            res = self._http_request("POST", '/api/access/global/rules', json_data=rule_body, resp_type="response")
-        if interface_type == 'In':
-            res = self._http_request("POST", f'/api/access/in/{interface_name}/rules', json_data=rule_body,
-                                     resp_type="response")
-        if interface_type == 'Out':
-            res = self._http_request("POST", f'/api/access/out/{interface_name}/rules', json_data=rule_body,
-                                     resp_type="response")
+            res = self._http_request("POST", "/api/access/global/rules", json_data=rule_body, resp_type="response")
+        if interface_type == "In":
+            res = self._http_request("POST", f"/api/access/in/{interface_name}/rules", json_data=rule_body, resp_type="response")
+        if interface_type == "Out":
+            res = self._http_request("POST", f"/api/access/out/{interface_name}/rules", json_data=rule_body, resp_type="response")
         loc = res.headers.get("Location", "")
-        rule = self._http_request('GET', loc[loc.find('/api'):])
-        rule['interface'] = interface_name
-        rule['interface_type'] = interface_type
+        rule = self._http_request("GET", loc[loc.find("/api") :])
+        rule["interface"] = interface_name
+        rule["interface_type"] = interface_type
         return rule
 
     def test_command(self):
@@ -391,14 +380,14 @@ class Client(BaseClient):
         Args:
             data (dict): The backup name and passphrase.
         """
-        self._http_request("POST", "/api/restore", json_data=data, resp_type='response')
+        self._http_request("POST", "/api/restore", json_data=data, resp_type="response")
 
     def get_network_obejcts(self):
         """
         Gets a list of all the configured network objects.
         """
-        obj_res = self._http_request('GET', '/api/objects/networkobjects')
-        return obj_res.get('items', [])
+        obj_res = self._http_request("GET", "/api/objects/networkobjects")
+        return obj_res.get("items", [])
 
     def create_object(self, obj_name, obj_type, obj_value):
         """
@@ -415,14 +404,12 @@ class Client(BaseClient):
         data = {
             "kind": "object#NetworkObj",
             "name": obj_name,
-            "host": {
-                "kind": OBJECT_TYPES_DICT.get(obj_type),
-                "value": obj_value
-            }
+            "host": {"kind": OBJECT_TYPES_DICT.get(obj_type), "value": obj_value},
         }
         try:
-            return self._http_request('POST', '/api/objects/networkobjects', json_data=data, ok_codes=(200, 201, 204),
-                                      resp_type='response')
+            return self._http_request(
+                "POST", "/api/objects/networkobjects", json_data=data, ok_codes=(200, 201, 204), resp_type="response"
+            )
         except Exception:
             raise
 
@@ -431,12 +418,12 @@ class Client(BaseClient):
         Returns a list of interfaces.
         """
         interfaces = []  # type: ignore
-        for type in ['global', 'in', 'out']:
-            resp = self._http_request('GET', f'/api/access/{type}')
-            interfaces.extend(resp.get('items', []))
+        for type in ["global", "in", "out"]:
+            resp = self._http_request("GET", f"/api/access/{type}")
+            interfaces.extend(resp.get("items", []))
         return interfaces
 
-    @Pagination(api_limit=API_LIMIT, items_key_path=['items'])
+    @Pagination(api_limit=API_LIMIT, items_key_path=["items"])
     def list_network_object_group(self, limit: int = DEFAULT_LIMIT, offset: int = None) -> dict[str, Any]:
         """
         This command is decorated by Pagination class,
@@ -454,8 +441,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about network object groups.
         """
         return self._http_request(
-            method='GET',
-            url_suffix='api/objects/networkobjectgroups',
+            method="GET",
+            url_suffix="api/objects/networkobjectgroups",
             params=assign_params(limit=limit, offset=offset),
         )
 
@@ -470,11 +457,11 @@ class Client(BaseClient):
             dict[str, Any]: Information about a network object group.
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'api/objects/networkobjectgroups/{object_id}',
+            method="GET",
+            url_suffix=f"api/objects/networkobjectgroups/{object_id}",
         )
 
-    @Pagination(api_limit=API_LIMIT, items_key_path=['items'])
+    @Pagination(api_limit=API_LIMIT, items_key_path=["items"])
     def list_local_user_group(self, limit: int = DEFAULT_LIMIT, offset: int = None) -> dict[str, Any]:
         """
         This command is decorated by Pagination class,
@@ -492,8 +479,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about local user groups.
         """
         return self._http_request(
-            'GET',
-            'api/objects/localusergroups',
+            "GET",
+            "api/objects/localusergroups",
             params=assign_params(limit=limit, offset=offset),
         )
 
@@ -508,11 +495,11 @@ class Client(BaseClient):
             dict[str, Any]: Information about the local user group.
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'api/objects/localusergroups/{object_id}',
+            method="GET",
+            url_suffix=f"api/objects/localusergroups/{object_id}",
         )
 
-    @Pagination(api_limit=API_LIMIT, items_key_path=['items'])
+    @Pagination(api_limit=API_LIMIT, items_key_path=["items"])
     def list_local_user(self, limit: int = DEFAULT_LIMIT, offset: int = None) -> dict[str, Any]:
         """
         This command is decorated by Pagination class,
@@ -530,8 +517,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about local users.
         """
         return self._http_request(
-            method='GET',
-            url_suffix='api/objects/localusers',
+            method="GET",
+            url_suffix="api/objects/localusers",
             params=assign_params(limit=limit, offset=offset),
         )
 
@@ -546,11 +533,11 @@ class Client(BaseClient):
             dict[str, Any]: Information about the local user.
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'api/objects/localusers/{object_id}',
+            method="GET",
+            url_suffix=f"api/objects/localusers/{object_id}",
         )
 
-    @Pagination(api_limit=API_LIMIT, items_key_path=['items'])
+    @Pagination(api_limit=API_LIMIT, items_key_path=["items"])
     def list_time_range(self, limit: int = DEFAULT_LIMIT, offset: int = None) -> dict[str, Any]:
         """
         This command is decorated by Pagination class,
@@ -568,8 +555,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about time ranges.
         """
         return self._http_request(
-            method='GET',
-            url_suffix='api/objects/timeranges',
+            method="GET",
+            url_suffix="api/objects/timeranges",
             params=assign_params(limit=limit, offset=offset),
         )
 
@@ -584,11 +571,11 @@ class Client(BaseClient):
             dict[str, Any]: Information about the time range.
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'api/objects/timeranges/{object_id}',
+            method="GET",
+            url_suffix=f"api/objects/timeranges/{object_id}",
         )
 
-    @Pagination(api_limit=API_LIMIT, items_key_path=['items'])
+    @Pagination(api_limit=API_LIMIT, items_key_path=["items"])
     def list_security_object_group(self, limit: int = DEFAULT_LIMIT, offset: int = None) -> dict[str, Any]:
         """
         This command is decorated by Pagination class,
@@ -606,8 +593,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about security object groups.
         """
         return self._http_request(
-            method='GET',
-            url_suffix='api/objects/securityobjectgroups',
+            method="GET",
+            url_suffix="api/objects/securityobjectgroups",
             params=assign_params(limit=limit, offset=offset),
         )
 
@@ -622,11 +609,11 @@ class Client(BaseClient):
             dict[str, Any]: Information about the security object group.
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'api/objects/securityobjectgroups/{object_id}',
+            method="GET",
+            url_suffix=f"api/objects/securityobjectgroups/{object_id}",
         )
 
-    @Pagination(api_limit=API_LIMIT, items_key_path=['items'])
+    @Pagination(api_limit=API_LIMIT, items_key_path=["items"])
     def list_user_object(self, limit: int = DEFAULT_LIMIT, offset: int = None) -> dict[str, Any]:
         """
         This command is decorated by Pagination class,
@@ -644,8 +631,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about user objects.
         """
         return self._http_request(
-            method='GET',
-            url_suffix='api/objects/userobjects',
+            method="GET",
+            url_suffix="api/objects/userobjects",
             params=assign_params(limit=limit, offset=offset),
         )
 
@@ -660,8 +647,8 @@ class Client(BaseClient):
             dict[str, Any]: Information about the user object.
         """
         return self._http_request(
-            method='GET',
-            url_suffix=f'api/objects/userobjects/{object_id}',
+            method="GET",
+            url_suffix=f"api/objects/userobjects/{object_id}",
         )
 
     def write_memory(self) -> dict[str, Any]:
@@ -674,13 +661,11 @@ class Client(BaseClient):
                 The process is completed with an "[OK]" message.
         """
         return self._http_request(
-            method='POST',
-            url_suffix='api/commands/writemem',
-            headers=self._headers | {'Content-Type': 'application/json'}
+            method="POST", url_suffix="api/commands/writemem", headers=self._headers | {"Content-Type": "application/json"}
         )
 
 
-'''HELPER COMMANDS'''
+"""HELPER COMMANDS"""
 
 
 @logger
@@ -695,17 +680,13 @@ def set_up_ip_kind(dict_body: dict, field_to_add: str, data: str) -> None:
         data: the string to check its kind and insert to dict.
     """
     if is_ip_valid(data):
-        dict_body[field_to_add] = {"kind": "IPv4Address",
-                                   "value": data}
-    elif data == 'any':
-        dict_body[field_to_add] = {"kind": "AnyIPAddress",
-                                   "value": "any4"}
-    elif '/' in data:
-        dict_body[field_to_add] = {"kind": "IPv4Network",
-                                   "value": data}
+        dict_body[field_to_add] = {"kind": "IPv4Address", "value": data}
+    elif data == "any":
+        dict_body[field_to_add] = {"kind": "AnyIPAddress", "value": "any4"}
+    elif "/" in data:
+        dict_body[field_to_add] = {"kind": "IPv4Network", "value": data}
     else:
-        dict_body[field_to_add] = {"kind": "objectRef#NetworkObj",
-                                   "objectId": data}
+        dict_body[field_to_add] = {"kind": "objectRef#NetworkObj", "objectId": data}
 
 
 @logger
@@ -717,54 +698,57 @@ def raw_to_rules(raw_rules):
     """
     rules = []
     for rule in raw_rules:
-        source_services = rule.get('sourceService', {})
+        source_services = rule.get("sourceService", {})
 
         if isinstance(source_services, list):
-            source_services_list = [v['value'] for v in source_services]
+            source_services_list = [v["value"] for v in source_services]
         else:
-            source_services_list = source_services.get('value')
+            source_services_list = source_services.get("value")
 
-        dest_services = rule.get('destinationService', {})
+        dest_services = rule.get("destinationService", {})
         if isinstance(dest_services, list):
-            dest_services_list = [v['value'] for v in dest_services]
+            dest_services_list = [v["value"] for v in dest_services]
         else:
-            dest_services_list = dest_services.get('value')
+            dest_services_list = dest_services.get("value")
 
-        rule_object_mapping: dict = remove_empty_elements({
-            new_object_key: {
-                'kind': dict_safe_get(rule, [object_key, 'kind']),
-                'value': dict_safe_get(rule, [object_key, 'value']),
-                'objectId': dict_safe_get(rule, [object_key, 'objectId']),
+        rule_object_mapping: dict = remove_empty_elements(
+            {
+                new_object_key: {
+                    "kind": dict_safe_get(rule, [object_key, "kind"]),
+                    "value": dict_safe_get(rule, [object_key, "value"]),
+                    "objectId": dict_safe_get(rule, [object_key, "objectId"]),
+                }
+                for new_object_key, object_key in [
+                    ("SourceSecurity", "srcSecurity"),
+                    ("DestinationSecurity", "dstSecurity"),
+                    ("User", "user"),
+                    ("TimeRange", "timeRange"),
+                ]
             }
-            for new_object_key, object_key in [
-                ('SourceSecurity', 'srcSecurity'),
-                ('DestinationSecurity', 'dstSecurity'),
-                ('User', 'user'),
-                ('TimeRange', 'timeRange'),
-            ]
-        })
+        )
 
         rules.append(
             {
-                'Source': safe_get_all_values(obj=rule.get('sourceAddress'), key='value'),
-                'SourceService': source_services_list,
-                'Dest': safe_get_all_values(obj=rule.get('destinationAddress'), key='value'),
-                'DestService': dest_services_list,
-                'IsActive': rule.get('active'),
-                'Interface': rule.get('interface'),
-                'InterfaceType': rule.get('interface_type'),
-                'Remarks': rule.get('remarks'),
-                'Position': rule.get('position'),
-                'ID': rule.get('objectId'),
-                'Permit': rule.get('permit'),
-                'SourceKind': dict_safe_get(rule, ['sourceAddress', 'kind']),
-                'DestKind': dict_safe_get(rule, ['destinationAddress', 'kind']),
-            } | rule_object_mapping
+                "Source": safe_get_all_values(obj=rule.get("sourceAddress"), key="value"),
+                "SourceService": source_services_list,
+                "Dest": safe_get_all_values(obj=rule.get("destinationAddress"), key="value"),
+                "DestService": dest_services_list,
+                "IsActive": rule.get("active"),
+                "Interface": rule.get("interface"),
+                "InterfaceType": rule.get("interface_type"),
+                "Remarks": rule.get("remarks"),
+                "Position": rule.get("position"),
+                "ID": rule.get("objectId"),
+                "Permit": rule.get("permit"),
+                "SourceKind": dict_safe_get(rule, ["sourceAddress", "kind"]),
+                "DestKind": dict_safe_get(rule, ["destinationAddress", "kind"]),
+            }
+            | rule_object_mapping
         )
-        if not rules[-1].get('Source'):
-            rules[-1]['Source'] = safe_get_all_values(obj=rule.get('sourceAddress'), key='objectId')
-        if not rules[-1].get('Dest'):
-            rules[-1]['Dest'] = safe_get_all_values(obj=rule.get('destinationAddress'), key='objectId')
+        if not rules[-1].get("Source"):
+            rules[-1]["Source"] = safe_get_all_values(obj=rule.get("sourceAddress"), key="objectId")
+        if not rules[-1].get("Dest"):
+            rules[-1]["Dest"] = safe_get_all_values(obj=rule.get("destinationAddress"), key="objectId")
 
     return rules
 
@@ -788,16 +772,13 @@ def is_get_request_type(get_args: list, list_args: list) -> bool:
     is_list_request = any(list_args)
 
     if is_get_request and is_list_request:
-        raise ValueError('GET and LIST arguments can not be supported simultaneously.')
+        raise ValueError("GET and LIST arguments can not be supported simultaneously.")
 
     return is_get_request
 
 
 @logger
-def extract_data(
-    obj: list[dict | list] | dict[str, Any],
-    keys_mapping: dict[str, Any]
-) -> list[dict | list] | dict[str, Any]:
+def extract_data(obj: list[dict | list] | dict[str, Any], keys_mapping: dict[str, Any]) -> list[dict | list] | dict[str, Any]:
     """
     Extract specific keys from a nested dictionary or a list of dictionaries
     based on the provided keys_mapping structure.
@@ -836,7 +817,7 @@ def extract_data_from_dict(dict_obj: dict[str, Any], keys_mapping: dict[str, Any
     for key, new_key in keys_mapping.items():
         if isinstance(new_key, dict) and (nested_obj := dict_obj.get(key)) is not None:
             nested_keys_mapping = deepcopy(new_key)
-            include_key = nested_keys_mapping.pop('_include', True)
+            include_key = nested_keys_mapping.pop("_include", True)
 
             extracted_data = extract_data(nested_obj, nested_keys_mapping)
             extracted |= {key: extracted_data} if include_key else extracted_data
@@ -876,13 +857,13 @@ def setup_address(
         address_value (str): The value of the address.
         address_kind (str): The kind of the address.
     """
-    if address_kind in ['NetworkObj', 'NetworkObjGroup']:
-        key = 'objectId'
-        address_kind = f'objectRef#{address_kind}'
+    if address_kind in ["NetworkObj", "NetworkObjGroup"]:
+        key = "objectId"
+        address_kind = f"objectRef#{address_kind}"
     else:
-        key = 'value'
+        key = "value"
 
-    rule_body[address_direction] = {'kind': address_kind, key: address_value}
+    rule_body[address_direction] = {"kind": address_kind, key: address_value}
 
 
 def handle_address_in_rule(
@@ -902,7 +883,7 @@ def handle_address_in_rule(
         address_kind (str, optional): The kind of the address.
             Defaults to None.
     """
-    address_direction = f'{direction}Address'
+    address_direction = f"{direction}Address"
 
     if address_value and address_kind:
         setup_address(
@@ -938,14 +919,14 @@ def setup_service(
     Raises:
         ValueError: Incase the user has only provided one of the destination service arguments.
     """
-    rule_body['sourceService'] = {'kind': source_service_kind or 'NetworkProtocol', 'value': source_service}
+    rule_body["sourceService"] = {"kind": source_service_kind or "NetworkProtocol", "value": source_service}
 
     if destination_service and destination_service_kind:
-        rule_body['destinationService'] = {'kind': destination_service_kind, 'value': destination_service}
+        rule_body["destinationService"] = {"kind": destination_service_kind, "value": destination_service}
     elif destination_service or destination_service_kind:
-        raise ValueError('Missing arg in destination service, please provide both destination kind and value.')
+        raise ValueError("Missing arg in destination service, please provide both destination kind and value.")
     else:
-        rule_body['destinationService'] = {'kind': 'NetworkProtocol', 'value': source_service}
+        rule_body["destinationService"] = {"kind": "NetworkProtocol", "value": source_service}
 
 
 def setup_security(
@@ -969,16 +950,16 @@ def setup_security(
         ValueError: Incase the user has only provided one of the security arguments.
     """
     if security_kind and security_value:
-        if security_kind == 'SecurityObjGroup':
-            security_kind = f'objectRef#{security_kind}'
-            key = 'objectId'
+        if security_kind == "SecurityObjGroup":
+            security_kind = f"objectRef#{security_kind}"
+            key = "objectId"
         else:
-            key = 'value'
+            key = "value"
 
-        rule_body[f'{direction}Security'] = {'kind': security_kind, key: security_value}
+        rule_body[f"{direction}Security"] = {"kind": security_kind, key: security_value}
 
     elif security_kind or security_value:
-        raise ValueError(f'Missing arg in {direction} security, please provide both security kind and value.')
+        raise ValueError(f"Missing arg in {direction} security, please provide both security kind and value.")
 
 
 def setup_user(
@@ -1000,9 +981,9 @@ def setup_user(
         ValueError: Incase the user has only provided one of the user arguments.
     """
     if user_kind and user:
-        rule_body['user'] = {'kind': f'objectRef#{user_kind}', 'objectId': user}
+        rule_body["user"] = {"kind": f"objectRef#{user_kind}", "objectId": user}
     elif user_kind or user:
-        raise ValueError('Missing arg in user. Please provide both user kind and value.')
+        raise ValueError("Missing arg in user. Please provide both user kind and value.")
 
 
 def setup_time_range(rule_body: dict[str, Any], time_range: str = None) -> None:
@@ -1015,11 +996,11 @@ def setup_time_range(rule_body: dict[str, Any], time_range: str = None) -> None:
             Defaults to None.
     """
     if time_range:
-        rule_body['timeRange'] = {'kind': 'objectRef#TimeRange', 'objectId': time_range}
+        rule_body["timeRange"] = {"kind": "objectRef#TimeRange", "objectId": time_range}
 
 
 def handle_rule_configurations_setup(rule_body: dict[str, Any], args: dict[str, Any]) -> None:
-    """ Sets up the configurations for the rule.
+    """Sets up the configurations for the rule.
 
     Add to the given rule_body the service, security, user and time range objects if they exist within args.
 
@@ -1027,47 +1008,44 @@ def handle_rule_configurations_setup(rule_body: dict[str, Any], args: dict[str, 
         rule_body (dict[str, Any]): A reference to the dictionary to modify.
         args (dict[str, Any]): The args to add to the rule_body.
     """
-    if service := args.get('service'):
+    if service := args.get("service"):
         setup_service(
             rule_body=rule_body,
             source_service=service,
-            source_service_kind=args.get('service_kind'),
-            destination_service=args.get('destination_service'),
-            destination_service_kind=args.get('destination_service_kind'),
+            source_service_kind=args.get("service_kind"),
+            destination_service=args.get("destination_service"),
+            destination_service_kind=args.get("destination_service_kind"),
         )
 
     setup_security(
         rule_body=rule_body,
-        direction='src',
-        security_kind=args.get('source_security_kind'),
-        security_value=args.get('source_security'),
+        direction="src",
+        security_kind=args.get("source_security_kind"),
+        security_value=args.get("source_security"),
     )
     setup_security(
         rule_body=rule_body,
-        direction='dst',
-        security_kind=args.get('destination_security_kind'),
-        security_value=args.get('destination_security'),
+        direction="dst",
+        security_kind=args.get("destination_security_kind"),
+        security_value=args.get("destination_security"),
     )
     setup_user(
         rule_body=rule_body,
-        user=args.get('user'),
-        user_kind=args.get('user_kind'),
+        user=args.get("user"),
+        user_kind=args.get("user_kind"),
     )
-    setup_time_range(
-        rule_body=rule_body,
-        time_range=args.get('time_range')
-    )
+    setup_time_range(rule_body=rule_body, time_range=args.get("time_range"))
 
-    rule_body['active'] = argToBoolean(args['active'])
+    rule_body["active"] = argToBoolean(args["active"])
 
-    if position := args.get('position'):
-        rule_body['position'] = position
-    if log_level := args.get('log_level'):
-        rule_body['ruleLogging'] = {'logStatus': log_level}
-    if permit := args.get('permit'):
-        rule_body['permit'] = arg_to_optional_bool(permit)
-    if remarks := argToList(args.get('remarks')):
-        rule_body['remarks'] = remarks
+    if position := args.get("position"):
+        rule_body["position"] = position
+    if log_level := args.get("log_level"):
+        rule_body["ruleLogging"] = {"logStatus": log_level}
+    if permit := args.get("permit"):
+        rule_body["permit"] = arg_to_optional_bool(permit)
+    if remarks := argToList(args.get("remarks")):
+        rule_body["remarks"] = remarks
 
 
 def safe_get_all_values(
@@ -1075,7 +1053,7 @@ def safe_get_all_values(
     key: str,
     default_value: Any = None,
 ) -> Any:
-    """ Get all values from a list of dicts or a dict.
+    """Get all values from a list of dicts or a dict.
 
     Args:
         obj (list[dict[str, Any]] | dict[str, Any] | None): The object to extract values from.
@@ -1095,7 +1073,7 @@ def safe_get_all_values(
     return [item.get(key, default_value) for item in obj if key in obj]
 
 
-'''COMMANDS'''
+"""COMMANDS"""
 
 
 @logger
@@ -1116,17 +1094,31 @@ def list_rules_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the results of the rules.
     """
-    interface = args.get('interface_name')
-    interface_type = args.get('interface_type', 'All')
+    interface = args.get("interface_name")
+    interface_type = args.get("interface_type", "All")
 
     try:
         raw_rules = client.get_all_rules(interface, interface_type)  # demisto.getRules() #
         rules = raw_to_rules(raw_rules)
-        hr = tableToMarkdown("Rules:", rules, ["ID", "Source", "Dest", "Permit", "Interface", "InterfaceType",
-                                               "IsActive", "Position", "SourceService", "DestService"])
+        hr = tableToMarkdown(
+            "Rules:",
+            rules,
+            [
+                "ID",
+                "Source",
+                "Dest",
+                "Permit",
+                "Interface",
+                "InterfaceType",
+                "IsActive",
+                "Position",
+                "SourceService",
+                "DestService",
+            ],
+        )
         return CommandResults(
             readable_output=hr,
-            outputs_prefix='CiscoASA.Rules',
+            outputs_prefix="CiscoASA.Rules",
             outputs=rules,
             raw_response=raw_rules,
         )
@@ -1152,14 +1144,12 @@ def backup_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     location = "disk0:/" + args.get("backup_name", "")
     passphrase = args.get("passphrase")
-    data = {'location': location}
+    data = {"location": location}
     if passphrase:
-        data['passphrase'] = passphrase
+        data["passphrase"] = passphrase
 
     client.backup(data)
-    return CommandResults(
-        readable_output=f"Created backup successfully in:\nLocation: {location}\nPassphrase: {passphrase}"
-    )
+    return CommandResults(readable_output=f"Created backup successfully in:\nLocation: {location}\nPassphrase: {passphrase}")
 
 
 @logger
@@ -1176,9 +1166,9 @@ def restore_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     location = "disk0:/" + args.get("backup_name", "")
     passphrase = args.get("passphrase")
-    data = {'location': location}
+    data = {"location": location}
     if passphrase:
-        data['passphrase'] = passphrase
+        data["passphrase"] = passphrase
 
     client.restore(data)
     return CommandResults(readable_output="Restored backup successfully.")
@@ -1199,22 +1189,24 @@ def rule_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the results of the rule.
     """
-    rule_id = args.get('rule_id', '')
-    interface_type = args.get('interface_type', '')
-    interface = args.get('interface_name', '')
+    rule_id = args.get("rule_id", "")
+    interface_type = args.get("interface_type", "")
+    interface = args.get("interface_name", "")
 
     if interface_type != "Global" and not interface:
         raise ValueError("Please state the name of the interface when it's not a global interface.")
     interface = "" if interface_type == "Global" else interface
 
-    raw_rules = client.rule_action(rule_id, interface, interface_type, 'GET')
+    raw_rules = client.rule_action(rule_id, interface, interface_type, "GET")
     rules = raw_to_rules([raw_rules])
-    hr = tableToMarkdown(f"Rule {rule_id}:", rules, ["ID", "Source", "Dest", "Permit", "Interface",
-                                                     "InterfaceType", "IsActive", "Position", "SourceService",
-                                                     "DestService"])
+    hr = tableToMarkdown(
+        f"Rule {rule_id}:",
+        rules,
+        ["ID", "Source", "Dest", "Permit", "Interface", "InterfaceType", "IsActive", "Position", "SourceService", "DestService"],
+    )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix='CiscoASA.Rules',
+        outputs_prefix="CiscoASA.Rules",
         outputs=rules,
         raw_response=raw_rules,
     )
@@ -1238,31 +1230,31 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the results of the created rule.
     """
-    interface_name = args.get('interface_name')
-    interface_type = args.get('interface_type', '')
+    interface_name = args.get("interface_name")
+    interface_type = args.get("interface_type", "")
 
-    if interface_type == 'Global':
-        interface_name = ''
+    if interface_type == "Global":
+        interface_name = ""
     elif not interface_name:
-        raise ValueError('For In/Out interfaces, an interface name is mandatory.')
+        raise ValueError("For In/Out interfaces, an interface name is mandatory.")
 
     rule_body = {}  # type: dict
 
     # setup the source and destination address
     handle_address_in_rule(
         rule_body=rule_body,
-        direction='source',
-        address_value=args.get('source'),
-        address_kind=args.get('source_kind'),
+        direction="source",
+        address_value=args.get("source"),
+        address_kind=args.get("source_kind"),
     )
     handle_address_in_rule(
         rule_body=rule_body,
-        direction='destination',
-        address_value=args.get('destination'),
-        address_kind=args.get('destination_kind'),
+        direction="destination",
+        address_value=args.get("destination"),
+        address_kind=args.get("destination_kind"),
     )
 
-    args['service'] = args.get('service', 'ip')
+    args["service"] = args.get("service", "ip")
     handle_rule_configurations_setup(rule_body, args)
 
     try:
@@ -1273,33 +1265,33 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
             f'Created new rule. ID: {raw_rule.get("objectId")}',
             rules,
             [
-                'ID',
-                'Source',
-                'Dest',
-                'Permit',
-                'Interface',
-                'InterfaceType',
-                'IsActive',
-                'Position',
-                'SourceService',
-                'DestService'
-            ]
+                "ID",
+                "Source",
+                "Dest",
+                "Permit",
+                "Interface",
+                "InterfaceType",
+                "IsActive",
+                "Position",
+                "SourceService",
+                "DestService",
+            ],
         )
 
         return CommandResults(
             readable_output=hr,
-            outputs_prefix='CiscoASA.Rules',
+            outputs_prefix="CiscoASA.Rules",
             outputs=rules,
             raw_response=raw_rule,
         )
 
     except Exception as e:
-        if 'DUPLICATE' in str(e):
-            raise ValueError('You are trying to create a rule that already exists.') from e
-        if '[500]' in str(e):
-            raise ValueError(f'Could not find interface: {interface_name}') from e
+        if "DUPLICATE" in str(e):
+            raise ValueError("You are trying to create a rule that already exists.") from e
+        if "[500]" in str(e):
+            raise ValueError(f"Could not find interface: {interface_name}") from e
         else:
-            raise ValueError(f'Could not create rule. Error {str(e)}')
+            raise ValueError(f"Could not create rule. Error {e!s}")
 
 
 @logger
@@ -1319,19 +1311,19 @@ def delete_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the results of the deleted rule.
     """
-    rule_id = args.get('rule_id', '')
-    interface = args.get('interface_name', '')
-    interface_type = args.get('interface_type', '')
+    rule_id = args.get("rule_id", "")
+    interface = args.get("interface_name", "")
+    interface_type = args.get("interface_type", "")
     if interface_type != "Global" and not interface:
         raise ValueError("Please state the name of the interface when it's not a global interface.")
 
     try:
-        client.rule_action(rule_id, interface, interface_type, 'DELETE')
+        client.rule_action(rule_id, interface, interface_type, "DELETE")
     except Exception as e:
-        if 'Not Found' in str(e):
+        if "Not Found" in str(e):
             raise ValueError(f"Rule {rule_id} does not exist in interface {interface} of type {interface_type}.") from e
         else:
-            raise ValueError(f"Could not delete rule. Error {str(e)}")
+            raise ValueError(f"Could not delete rule. Error {e!s}")
 
     return CommandResults(readable_output=f"Rule {rule_id} deleted successfully.")
 
@@ -1353,41 +1345,41 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the results of the edited rule.
     """
-    rule_id = args.get('rule_id', '')
-    interface_type = args.get('interface_type', '')
-    interface_name = args.get('interface_name')
+    rule_id = args.get("rule_id", "")
+    interface_type = args.get("interface_type", "")
+    interface_name = args.get("interface_name")
 
-    if interface_type == 'Global':
-        interface_name = ''
+    if interface_type == "Global":
+        interface_name = ""
     elif not interface_name:
-        raise ValueError('Please state the name of the interface when it\'s not a global interface.')
+        raise ValueError("Please state the name of the interface when it's not a global interface.")
 
     rule_body = {}  # type: dict
 
     # setup the source and destination address
     handle_address_in_rule(
         rule_body=rule_body,
-        direction='source',
-        address_value=args.get('source'),
-        address_kind=args.get('source_kind'),
+        direction="source",
+        address_value=args.get("source"),
+        address_kind=args.get("source_kind"),
     )
     handle_address_in_rule(
         rule_body=rule_body,
-        direction='destination',
-        address_value=args.get('destination'),
-        address_kind=args.get('destination_kind'),
+        direction="destination",
+        address_value=args.get("destination"),
+        address_kind=args.get("destination_kind"),
     )
 
     handle_rule_configurations_setup(rule_body, args)
 
     try:
-        rule = client.rule_action(rule_id, interface_name, interface_type, 'PATCH', rule_body)
+        rule = client.rule_action(rule_id, interface_name, interface_type, "PATCH", rule_body)
         try:
-            raw_rule = client.rule_action(rule_id, interface_name, interface_type, 'GET')
+            raw_rule = client.rule_action(rule_id, interface_name, interface_type, "GET")
         except Exception:
-            location = rule.headers._store.get('location')[1]  # type: ignore
-            rule_id = location[location.rfind('/') + 1:]
-            raw_rule = client.rule_action(rule_id, interface_name, interface_type, 'GET')
+            location = rule.headers._store.get("location")[1]  # type: ignore
+            rule_id = location[location.rfind("/") + 1 :]
+            raw_rule = client.rule_action(rule_id, interface_name, interface_type, "GET")
 
         rules = raw_to_rules([raw_rule])
 
@@ -1395,32 +1387,32 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
             f'Edited rule {raw_rule.get("objectId")}',
             rules,
             [
-                'ID',
-                'Source',
-                'Dest',
-                'Permit',
-                'Interface',
-                'InterfaceType',
-                'IsActive',
-                'Position',
-                'SourceService',
-                'DestService',
+                "ID",
+                "Source",
+                "Dest",
+                "Permit",
+                "Interface",
+                "InterfaceType",
+                "IsActive",
+                "Position",
+                "SourceService",
+                "DestService",
             ],
         )
 
         return CommandResults(
             readable_output=hr,
-            outputs_prefix='CiscoASA.Rules',
+            outputs_prefix="CiscoASA.Rules",
             outputs=rules,
             raw_response=raw_rule,
         )
 
     except Exception as e:
-        if 'DUPLICATE' in str(e):
-            raise ValueError('You are trying to create a rule that already exists.') from e
+        if "DUPLICATE" in str(e):
+            raise ValueError("You are trying to create a rule that already exists.") from e
 
-        if '[500]' in str(e):
-            raise ValueError(f'Could not find interface: {interface_name}.') from e
+        if "[500]" in str(e):
+            raise ValueError(f"Could not find interface: {interface_name}.") from e
 
         raise
 
@@ -1438,21 +1430,21 @@ def list_objects_command(client: Client, args: dict[str, Any]) -> CommandResults
         CommandResults: A CommandResults object containing the results of network objects.
     """
     objects = client.get_network_obejcts()
-    obj_names = argToList(args.get('object_name'))
-    obj_ids = argToList(args.get('object_id'))
+    obj_names = argToList(args.get("object_name"))
+    obj_ids = argToList(args.get("object_id"))
     formated_objects = []
     for object in objects:
-        if (not obj_names and not obj_ids) or object.get('name') in obj_names or object.get('objectId') in obj_ids:
-            object.pop('selfLink')
-            object.pop('kind')
+        if (not obj_names and not obj_ids) or object.get("name") in obj_names or object.get("objectId") in obj_ids:
+            object.pop("selfLink")
+            object.pop("kind")
             formated_obj = camelize(object)
-            formated_obj['ID'] = formated_obj.pop('Objectid')
+            formated_obj["ID"] = formated_obj.pop("Objectid")
             formated_objects.append(formated_obj)
-    hr = tableToMarkdown("Network Objects", formated_objects, headers=['ID', 'Name', 'Host', 'Description'])
+    hr = tableToMarkdown("Network Objects", formated_objects, headers=["ID", "Name", "Host", "Description"])
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix='CiscoASA.NetworkObject',
+        outputs_prefix="CiscoASA.NetworkObject",
         outputs=formated_objects,
         raw_response=formated_objects,
     )
@@ -1473,13 +1465,13 @@ def create_object_command(client: Client, args: dict[str, Any]) -> CommandResult
     Returns:
         CommandResults: A CommandResults object containing the results of the created network object.
     """
-    obj_type = args.get('object_type')
-    obj_name = args.get('object_name')
-    obj_value = args.get('object_value')
-    if obj_type not in OBJECT_TYPES_DICT.keys():
+    obj_type = args.get("object_type")
+    obj_name = args.get("object_name")
+    obj_value = args.get("object_value")
+    if obj_type not in OBJECT_TYPES_DICT:
         raise ValueError("Please enter an object type from the given dropdown list.")
     client.create_object(obj_name, obj_type, obj_value)
-    return list_objects_command(client, {'object_name': obj_name})
+    return list_objects_command(client, {"object_name": obj_name})
 
 
 @logger
@@ -1497,13 +1489,14 @@ def list_interfaces_command(client: Client, args: dict[str, Any]) -> CommandResu
     raw_interfaces = client.list_interfaces()
     interface_list = []
     for interface in raw_interfaces:
-
-        temp_interface = {'Type': interface.get('direction', '').capitalize(),
-                          'ID': interface.get('interface', {}).get('objectId', '-1'),
-                          'Name': interface.get('interface', {}).get('name')}
+        temp_interface = {
+            "Type": interface.get("direction", "").capitalize(),
+            "ID": interface.get("interface", {}).get("objectId", "-1"),
+            "Name": interface.get("interface", {}).get("name"),
+        }
         interface_list.append(temp_interface)
-    ec = {'CiscoASA.Interface(val.ID && val.ID== obj.ID)': interface_list}
-    hr = tableToMarkdown('Interfaces', interface_list, ['Type', 'ID', 'Name'])
+    ec = {"CiscoASA.Interface(val.ID && val.ID== obj.ID)": interface_list}
+    hr = tableToMarkdown("Interfaces", interface_list, ["Type", "ID", "Name"])
     return CommandResults(
         readable_output=hr,
         outputs=ec,
@@ -1528,11 +1521,11 @@ def test_command(client: Client, isASAv: bool) -> str:
 
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code == HTTPStatus.UNAUTHORIZED:
-            return 'Authorization Error: invalid username or password'
+            return "Authorization Error: invalid username or password"
 
         return exc.message
 
-    return 'ok'
+    return "ok"
 
 
 @logger
@@ -1560,11 +1553,11 @@ def list_object_command(
         CommandResults: A CommandResults object containing the command's results.
     """
     # GET arguments
-    object_id = args.get('object_id', '')
+    object_id = args.get("object_id", "")
     # LIST arguments
-    limit = arg_to_number(args.get('limit'), required=False)
-    page = arg_to_number(args.get('page'), required=False)
-    page_size = arg_to_number(args.get('page_size'), required=False)
+    limit = arg_to_number(args.get("limit"), required=False)
+    page = arg_to_number(args.get("page"), required=False)
+    page_size = arg_to_number(args.get("page_size"), required=False)
 
     raw_items = None
 
@@ -1594,8 +1587,8 @@ def list_object_command(
     )
 
     return CommandResults(
-        outputs_prefix=f'CiscoASA.{outputs_prefix}',
-        outputs_key_field='object_id',
+        outputs_prefix=f"CiscoASA.{outputs_prefix}",
+        outputs_key_field="object_id",
         outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response,
@@ -1619,8 +1612,8 @@ def list_network_object_group_command(client: Client, args: dict[str, Any]) -> C
         client_list_command=client.list_network_object_group,
         args=args,
         keys_mapping=DEFAULT_KEYS_MAPPING,
-        title='Network Object Groups',
-        outputs_prefix='NetworkObjectGroup',
+        title="Network Object Groups",
+        outputs_prefix="NetworkObjectGroup",
     )
 
 
@@ -1641,8 +1634,8 @@ def list_local_user_group_command(client: Client, args: dict[str, Any]) -> Comma
         client_list_command=client.list_local_user_group,
         args=args,
         keys_mapping=DEFAULT_KEYS_MAPPING,
-        title='Local User Groups',
-        outputs_prefix='LocalUserGroup',
+        title="Local User Groups",
+        outputs_prefix="LocalUserGroup",
     )
 
 
@@ -1663,14 +1656,14 @@ def list_local_user_command(client: Client, args: dict[str, Any]) -> CommandResu
         client_list_command=client.list_local_user,
         args=args,
         keys_mapping={
-            'objectId': 'object_id',
-            'name': 'name',
-            'MSCHAPauthenticated': 'mschap_authenticated',
-            'privilegeLevel': 'privilege_level',
-            'ASDM_CLIAccessType': 'asdm_cli_access_type',
+            "objectId": "object_id",
+            "name": "name",
+            "MSCHAPauthenticated": "mschap_authenticated",
+            "privilegeLevel": "privilege_level",
+            "ASDM_CLIAccessType": "asdm_cli_access_type",
         },
-        title='Local Users',
-        outputs_prefix='LocalUser',
+        title="Local Users",
+        outputs_prefix="LocalUser",
     )
 
 
@@ -1691,25 +1684,25 @@ def list_time_range_command(client: Client, args: dict[str, Any]) -> CommandResu
         client_list_command=client.list_time_range,
         args=args,
         keys_mapping={
-            'objectId': 'object_id',
-            'name': 'name',
-            'value': {
-                '_include': False,
-                'start': 'start',
-                'end': 'end',
-                'periodic': {
-                    '_include': True,
-                    'frequency': 'frequency',
-                    'startHour': 'start_hour',
-                    'startMinute': 'start_minute',
-                    'endHour': 'end_hour',
-                    'endMinute': 'end_minute',
+            "objectId": "object_id",
+            "name": "name",
+            "value": {
+                "_include": False,
+                "start": "start",
+                "end": "end",
+                "periodic": {
+                    "_include": True,
+                    "frequency": "frequency",
+                    "startHour": "start_hour",
+                    "startMinute": "start_minute",
+                    "endHour": "end_hour",
+                    "endMinute": "end_minute",
                 },
             },
         },
-        title='Time Ranges',
-        outputs_prefix='TimeRange',
-        readable_headers=['object_id', 'name', 'start', 'end', 'periodic'],
+        title="Time Ranges",
+        outputs_prefix="TimeRange",
+        readable_headers=["object_id", "name", "start", "end", "periodic"],
     )
 
 
@@ -1730,8 +1723,8 @@ def list_security_object_group_command(client: Client, args: dict[str, Any]) -> 
         client_list_command=client.list_security_object_group,
         args=args,
         keys_mapping=DEFAULT_KEYS_MAPPING,
-        title='Security Object Groups',
-        outputs_prefix='SecurityObjectGroup',
+        title="Security Object Groups",
+        outputs_prefix="SecurityObjectGroup",
     )
 
 
@@ -1752,16 +1745,16 @@ def list_user_object_command(client: Client, args: dict[str, Any]) -> CommandRes
         client_list_command=client.list_user_object,
         args=args,
         keys_mapping={
-            'objectId': 'object_id',
-            'userName': 'user_name',
-            'user': {
-                '_include': False,
-                'objectId': 'local_user_object_id',
-                'value': 'value',
+            "objectId": "object_id",
+            "userName": "user_name",
+            "user": {
+                "_include": False,
+                "objectId": "local_user_object_id",
+                "value": "value",
             },
         },
-        title='User Objects',
-        outputs_prefix='UserObject',
+        title="User Objects",
+        outputs_prefix="UserObject",
     )
 
 
@@ -1781,14 +1774,10 @@ def write_memory_command(client: Client, *_) -> CommandResults:
     """
     raw_response = client.write_memory()
 
-    return CommandResults(
-        outputs_prefix='CiscoASA.WriteMemory',
-        outputs=raw_response,
-        raw_response=raw_response
-    )
+    return CommandResults(outputs_prefix="CiscoASA.WriteMemory", outputs=raw_response, raw_response=raw_response)
 
 
-'''MAIN'''
+"""MAIN"""
 
 
 def main():
@@ -1796,34 +1785,34 @@ def main():
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
 
-    username = params['credentials'].get('identifier')
-    password = params['credentials'].get('password')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    isASAv = params.get('isASAv', False)
+    username = params["credentials"].get("identifier")
+    password = params["credentials"].get("password")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    isASAv = params.get("isASAv", False)
     # Remove trailing slash to prevent wrong URL path to service
-    server_url = params.get('server', '').rstrip('/')
+    server_url = params.get("server", "").rstrip("/")
 
     commands = {
-        f'{INTEGRATION_COMMAND}-list-rules': list_rules_command,
-        f'{INTEGRATION_COMMAND}-backup': backup_command,
-        f'{INTEGRATION_COMMAND}-get-rule-by-id': rule_by_id_command,
-        f'{INTEGRATION_COMMAND}-create-rule': create_rule_command,
-        f'{INTEGRATION_COMMAND}-delete-rule': delete_rule_command,
-        f'{INTEGRATION_COMMAND}-edit-rule': edit_rule_command,
-        f'{INTEGRATION_COMMAND}-list-network-objects': list_objects_command,
-        f'{INTEGRATION_COMMAND}-create-network-object': create_object_command,
-        f'{INTEGRATION_COMMAND}-list-interfaces': list_interfaces_command,
-        f'{INTEGRATION_COMMAND}-list-network-object-group': list_network_object_group_command,
-        f'{INTEGRATION_COMMAND}-list-local-user-group': list_local_user_group_command,
-        f'{INTEGRATION_COMMAND}-list-local-user': list_local_user_command,
-        f'{INTEGRATION_COMMAND}-list-time-range': list_time_range_command,
-        f'{INTEGRATION_COMMAND}-list-security-object-group': list_security_object_group_command,
-        f'{INTEGRATION_COMMAND}-list-user-object': list_user_object_command,
-        f'{INTEGRATION_COMMAND}-write-memory': write_memory_command,
+        f"{INTEGRATION_COMMAND}-list-rules": list_rules_command,
+        f"{INTEGRATION_COMMAND}-backup": backup_command,
+        f"{INTEGRATION_COMMAND}-get-rule-by-id": rule_by_id_command,
+        f"{INTEGRATION_COMMAND}-create-rule": create_rule_command,
+        f"{INTEGRATION_COMMAND}-delete-rule": delete_rule_command,
+        f"{INTEGRATION_COMMAND}-edit-rule": edit_rule_command,
+        f"{INTEGRATION_COMMAND}-list-network-objects": list_objects_command,
+        f"{INTEGRATION_COMMAND}-create-network-object": create_object_command,
+        f"{INTEGRATION_COMMAND}-list-interfaces": list_interfaces_command,
+        f"{INTEGRATION_COMMAND}-list-network-object-group": list_network_object_group_command,
+        f"{INTEGRATION_COMMAND}-list-local-user-group": list_local_user_group_command,
+        f"{INTEGRATION_COMMAND}-list-local-user": list_local_user_command,
+        f"{INTEGRATION_COMMAND}-list-time-range": list_time_range_command,
+        f"{INTEGRATION_COMMAND}-list-security-object-group": list_security_object_group_command,
+        f"{INTEGRATION_COMMAND}-list-user-object": list_user_object_command,
+        f"{INTEGRATION_COMMAND}-write-memory": write_memory_command,
     }
 
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
     client = Client(
         server_url,
         auth=(username, password),
@@ -1833,21 +1822,21 @@ def main():
     )
 
     try:
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_command(client, isASAv))
         elif command in commands:
             client.login(isASAv)
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     # Log exceptions
     except Exception as exc:  # pylint: disable=broad-except
-        return_error(f'Failed to execute {command} command. Error: {exc}', error=traceback.format_exc())
+        return_error(f"Failed to execute {command} command. Error: {exc}", error=traceback.format_exc())
 
     finally:
         client.logoff()
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

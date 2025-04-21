@@ -286,13 +286,11 @@ args:
 - name: name
   description: Name of the desired user
 - name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
+  description: Include these AD attributes of the resulting objects in addition to the default ones
 - name: customFieldType
   description: Search user by this custom field type
 - name: customFieldData
-  description: Search user by this custom field data (relevant only if `customFieldType`
-    is provided)
+  description: Search user by this custom field data (relevant only if `customFieldType` is provided)
 - name: headers
   description: The columns headers to show by order
 - name: nestedSearch
@@ -359,3 +357,8 @@ dependson:
   - activedir|||ad-search
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

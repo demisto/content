@@ -53,3 +53,7 @@ There are no outputs for this playbook.
 ## Playbook Image
 ---
 ![Setup Account](./../doc_files/Rss_create_indicators_playbook_image.png)
+
+## Known Limitations
+Due to XSIAM not supporting the `!=` operator , it is advised to configure the indicator query in the XSIAM Indicators page. Save the created query. (Save icon found on the right side of the query).
+Finally, when configuring the playbook inputs, go to the "From indicators" tab, and pick the saved query.

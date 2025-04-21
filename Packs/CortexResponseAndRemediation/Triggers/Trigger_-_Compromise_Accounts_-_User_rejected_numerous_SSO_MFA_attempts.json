@@ -25,7 +25,12 @@
                             "SEARCH_VALUE": "Multiple SSO MFA attempts were rejected by a user with suspicious characteristics"
                         }
                     ]
-                }
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
             ]
         }
     }

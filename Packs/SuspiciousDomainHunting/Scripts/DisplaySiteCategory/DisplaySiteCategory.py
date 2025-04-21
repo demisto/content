@@ -35,7 +35,6 @@ def generate_html_for_context_keys(context_keys):
         # Get the value from the Demisto incident context
         context_data = demisto.get(demisto.context(), context_key)
         if context_data is not None:
-
             # Format the value, including nested dictionaries
             formatted_value = format_value(context_data)
 
@@ -66,20 +65,22 @@ def generate_html_for_context_keys(context_keys):
 def main():
     try:
         # Replace 'SomeContextKey1', 'SomeContextKey2', etc. with the actual context keys you want to use
-        context_keys = ['Panorama.URLFilter', 'VirusTotal.URL.attributes.categories']
+        context_keys = ["Panorama.URLFilter", "VirusTotal.URL.attributes.categories"]
 
         # Generate the HTML content for multiple context keys
         html_content = generate_html_for_context_keys(context_keys)
 
-        demisto.results({
-            'ContentsFormat': formats['html'],
-            'Type': entryTypes['note'],
-            'Contents': html_content,
-        })
+        demisto.results(
+            {
+                "ContentsFormat": formats["html"],
+                "Type": entryTypes["note"],
+                "Contents": html_content,
+            }
+        )
 
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,70 +1,59 @@
 """Main file for GoogleChronicleBackstory Integration."""
-from CommonServerPython import *
 
-from typing import Any, Mapping, Tuple, Iterator
-
-from google.oauth2 import service_account
-from google.auth.transport import requests as auth_requests
+from collections.abc import Iterator, Mapping
 from datetime import datetime
+from typing import Any
 
-''' CONSTANTS '''
+from CommonServerPython import *
+from google.auth.transport import requests as auth_requests
+from google.oauth2 import service_account
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+""" CONSTANTS """
 
-SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+SCOPES = ["https://www.googleapis.com/auth/chronicle-backstory"]
 MAX_CONSECUTIVE_FAILURES = 7
 
-BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
+BACKSTORY_API_V2_URL = "https://{}backstory.googleapis.com/v2"
 
 ENDPOINTS = {
     # Stream detections endpoint.
-    'STREAM_DETECTIONS_ENDPOINT': '/detect/rules:streamDetectionAlerts',
+    "STREAM_DETECTIONS_ENDPOINT": "/detect/rules:streamDetectionAlerts",
 }
 
 TIMEOUT = 300
 MAX_DETECTION_STREAM_BATCH_SIZE = 100
-MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS = '7 days'
-MAX_DELTA_TIME_STRINGS = ['7 day', '168 hour', '1 week']
+MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS = "7 days"
+MAX_DELTA_TIME_STRINGS = ["7 day", "168 hour", "1 week"]
 IDEAL_SLEEP_TIME_BETWEEN_BATCHES = 30
 IDEAL_BATCH_SIZE = 200
 DEFAULT_FIRST_FETCH = "now"
 
-REGIONS = {
-    "General": "",
-    "Europe": "europe-",
-    "Asia": "asia-southeast1-",
-    "Europe-west2": "europe-west2-"
-}
+REGIONS = {"General": "", "Europe": "europe-", "Asia": "asia-southeast1-", "Europe-west2": "europe-west2-"}
 
-SEVERITY_MAP = {
-    'unspecified': 0,
-    'informational': 0.5,
-    'low': 1,
-    'medium': 2,
-    'high': 3,
-    'critical': 4
-}
+SEVERITY_MAP = {"unspecified": 0, "informational": 0.5, "low": 1, "medium": 2, "high": 3, "critical": 4}
 
 MESSAGES = {
     "INVALID_DELTA_TIME_FOR_STREAMING_DETECTIONS": "First fetch time should not be greater than 7 days or 168 hours (in relative manner compared to current time).",  # noqa: E501
     "FUTURE_DATE": "First fetch time should not be in the future.",
-    "INVALID_JSON_RESPONSE": 'Invalid response received from Chronicle API. Response not in JSON format.',
+    "INVALID_JSON_RESPONSE": "Invalid response received from Chronicle API. Response not in JSON format.",
     "INVALID_REGION": 'Invalid response from Chronicle API. Check the provided "Other Region" parameter.',
-    "CONSECUTIVELY_FAILED": 'Exiting retry loop. Consecutive retries have failed {} times.',
-    "PERMISSION_DENIED": 'Permission denied.',
-    "INVALID_ARGUMENTS": "Connection refused due to invalid arguments"
+    "CONSECUTIVELY_FAILED": "Exiting retry loop. Consecutive retries have failed {} times.",
+    "PERMISSION_DENIED": "Permission denied.",
+    "INVALID_ARGUMENTS": "Connection refused due to invalid arguments",
 }
 
 DETECTION_TYPES_MAP = {
-    'RULE_DETECTION': 'Rule Detection Alerts',
-    'GCTI_FINDING': 'Curated Rule Detection Alerts',
+    "RULE_DETECTION": "Rule Detection Alerts",
+    "GCTI_FINDING": "Curated Rule Detection Alerts",
 }
 
-CHRONICLE_STREAM_DETECTIONS = '[CHRONICLE STREAM DETECTIONS]'
-SKIPPING_CURRENT_DETECTION = f'{CHRONICLE_STREAM_DETECTIONS} Skipping insertion of current detection since it already exists.'
-SKIPPING_DETECTION = 'Skipping current Detection: '
+CHRONICLE_STREAM_DETECTIONS = "[CHRONICLE STREAM DETECTIONS]"
+SKIPPING_CURRENT_DETECTION = f"{CHRONICLE_STREAM_DETECTIONS} Skipping insertion of current detection since it already exists."
+SKIPPING_DETECTION = "Skipping current Detection: "
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client:
@@ -82,21 +71,20 @@ class Client:
         :param proxy: whether to use environment proxy
         :param disable_ssl: whether to disable ssl
         """
-        encoded_service_account = str(params.get('credentials', {}).get('password', ''))
+        encoded_service_account = str(params.get("credentials", {}).get("password", ""))
         service_account_credential = json.loads(encoded_service_account, strict=False)
         # Create a credential using the Google Developer Service Account Credential and Chronicle API scope.
-        self.credentials = service_account.Credentials.from_service_account_info(service_account_credential,
-                                                                                 scopes=SCOPES)
+        self.credentials = service_account.Credentials.from_service_account_info(service_account_credential, scopes=SCOPES)
         self.proxy = proxy
         self.disable_ssl = disable_ssl
-        region = params.get('region', '')
-        other_region = params.get('other_region', '').strip()
+        region = params.get("region", "")
+        other_region = params.get("other_region", "").strip()
         if region:
-            if other_region and other_region[-1] != '-':
-                other_region = f'{other_region}-'
-            self.region = REGIONS[region] if region.lower() != 'other' else other_region
+            if other_region and other_region[-1] != "-":
+                other_region = f"{other_region}-"
+            self.region = REGIONS[region] if region.lower() != "other" else other_region
         else:
-            self.region = REGIONS['General']
+            self.region = REGIONS["General"]
         self.build_http_client()
 
         filter_alert_type = argToList(params.get("alert_type", []))
@@ -117,18 +105,18 @@ class Client:
         proxies = {}
         if self.proxy:
             proxies = handle_proxy()
-            if not proxies.get('https', True):
-                raise DemistoException('https proxy value is empty. Check XSOAR server configuration' + str(proxies))
-            https_proxy = proxies['https']
-            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-                proxies['https'] = 'https://' + https_proxy
+            if not proxies.get("https", True):
+                raise DemistoException("https proxy value is empty. Check XSOAR server configuration" + str(proxies))
+            https_proxy = proxies["https"]
+            if not https_proxy.startswith("https") and not https_proxy.startswith("http"):
+                proxies["https"] = "https://" + https_proxy
         else:
             skip_proxy()
         self.http_client = auth_requests.AuthorizedSession(self.credentials)
         self.proxy_info = proxies
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def remove_space_from_args(args):
@@ -138,13 +126,13 @@ def remove_space_from_args(args):
     :param args: Dictionary of arguments.
     :return: New dictionary with whitespace-stripped string values.
     """
-    for key in args.keys():
+    for key in args:
         if isinstance(args[key], str):
             args[key] = args[key].strip()
     return args
 
 
-def validate_response(client: Client, url, method='GET', body=None):
+def validate_response(client: Client, url, method="GET", body=None):
     """
     Get response from Chronicle Search API and validate it.
 
@@ -162,37 +150,42 @@ def validate_response(client: Client, url, method='GET', body=None):
 
     :return: response
     """
-    demisto.info(f'{CHRONICLE_STREAM_DETECTIONS}: Request URL: {url.format(client.region)}')
-    raw_response = client.http_client.request(url=url.format(client.region), method=method, data=body,
-                                              proxies=client.proxy_info, verify=not client.disable_ssl)
+    demisto.info(f"{CHRONICLE_STREAM_DETECTIONS}: Request URL: {url.format(client.region)}")
+    raw_response = client.http_client.request(
+        url=url.format(client.region), method=method, data=body, proxies=client.proxy_info, verify=not client.disable_ssl
+    )
 
     if 500 <= raw_response.status_code <= 599:
         raise ValueError(
-            'Internal server error occurred. Failed to execute request.\n'
-            f'Message: {parse_error_message(raw_response.text, client.region)}')
+            "Internal server error occurred. Failed to execute request.\n"
+            f"Message: {parse_error_message(raw_response.text, client.region)}"
+        )
     if raw_response.status_code == 429:
         raise ValueError(
-            'API rate limit exceeded. Failed to execute request.\n'
-            f'Message: {parse_error_message(raw_response.text, client.region)}')
+            "API rate limit exceeded. Failed to execute request.\n"
+            f"Message: {parse_error_message(raw_response.text, client.region)}"
+        )
     if raw_response.status_code == 400 or raw_response.status_code == 404:
         raise ValueError(
-            f'Status code: {raw_response.status_code}\n'
-            f'Error: {parse_error_message(raw_response.text, client.region)}')
+            f"Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}"
+        )
     if raw_response.status_code != 200:
         raise ValueError(
-            f'Status code: {raw_response.status_code}\n'
-            f'Error: {parse_error_message(raw_response.text, client.region)}')
+            f"Status code: {raw_response.status_code}\nError: {parse_error_message(raw_response.text, client.region)}"
+        )
     if not raw_response.text:
-        raise ValueError('Technical Error while making API call to Chronicle. '
-                         f'Empty response received with the status code: {raw_response.status_code}.')
+        raise ValueError(
+            "Technical Error while making API call to Chronicle. "
+            f"Empty response received with the status code: {raw_response.status_code}."
+        )
     try:
         response = remove_empty_elements(raw_response.json())
         return response
     except json.decoder.JSONDecodeError:
-        raise ValueError(MESSAGES['INVALID_JSON_RESPONSE'])
+        raise ValueError(MESSAGES["INVALID_JSON_RESPONSE"])
 
 
-def validate_configuration_parameters(param: dict[str, Any], command: str) -> Tuple[Optional[datetime]]:
+def validate_configuration_parameters(param: dict[str, Any], command: str) -> tuple[Optional[datetime]]:
     """
     Check whether entered configuration parameters are valid or not.
 
@@ -206,34 +199,35 @@ def validate_configuration_parameters(param: dict[str, Any], command: str) -> Tu
     :rtype: Tuple[str]
     """
     # get configuration parameters
-    service_account_json = param.get('credentials', {}).get('password', '')
-    first_fetch = param.get('first_fetch', '').strip().lower() or DEFAULT_FIRST_FETCH
+    service_account_json = param.get("credentials", {}).get("password", "")
+    first_fetch = param.get("first_fetch", "").strip().lower() or DEFAULT_FIRST_FETCH
 
     try:
         # validate service_account_credential configuration parameter
         json.loads(service_account_json, strict=False)
 
         # validate first_fetch parameter
-        first_fetch_datetime = arg_to_datetime(first_fetch, 'First fetch time')
+        first_fetch_datetime = arg_to_datetime(first_fetch, "First fetch time")
         if not first_fetch_datetime.tzinfo:  # type: ignore
             first_fetch_datetime = first_fetch_datetime.astimezone(timezone.utc)  # type: ignore
         if any(ts in first_fetch.lower() for ts in MAX_DELTA_TIME_STRINGS):  # type: ignore
             first_fetch_datetime += timedelta(minutes=1)  # type: ignore
         integration_context: dict = get_integration_context()
-        continuation_time = integration_context.get('continuation_time')
+        continuation_time = integration_context.get("continuation_time")
         raise_exception_for_date_difference = False
         date_difference_greater_than_expected = first_fetch_datetime < arg_to_datetime(  # type: ignore
-            MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS).astimezone(timezone.utc)  # type: ignore
-        if command == 'test-module' or not continuation_time:  # type: ignore
+            MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS
+        ).astimezone(timezone.utc)  # type: ignore
+        if command == "test-module" or not continuation_time:  # type: ignore
             if first_fetch_datetime > arg_to_datetime(DEFAULT_FIRST_FETCH).astimezone(timezone.utc):  # type: ignore
-                raise ValueError(MESSAGES['FUTURE_DATE'])
+                raise ValueError(MESSAGES["FUTURE_DATE"])
             raise_exception_for_date_difference = date_difference_greater_than_expected
         if raise_exception_for_date_difference:
-            raise ValueError(MESSAGES['INVALID_DELTA_TIME_FOR_STREAMING_DETECTIONS'])
+            raise ValueError(MESSAGES["INVALID_DELTA_TIME_FOR_STREAMING_DETECTIONS"])
         return (first_fetch_datetime,)
 
     except json.decoder.JSONDecodeError:
-        raise ValueError('User\'s Service Account JSON has invalid format.')
+        raise ValueError("User's Service Account JSON has invalid format.")
 
 
 def parse_error_message(error: str, region: str):
@@ -253,16 +247,16 @@ def parse_error_message(error: str, region: str):
         if isinstance(json_error, list):
             json_error = json_error[0]
     except json.decoder.JSONDecodeError:
-        if region not in REGIONS.values() and '404' in error:
-            error_message = MESSAGES['INVALID_REGION']
+        if region not in REGIONS.values() and "404" in error:
+            error_message = MESSAGES["INVALID_REGION"]
         else:
-            error_message = MESSAGES['INVALID_JSON_RESPONSE']
-        demisto.debug(f'{CHRONICLE_STREAM_DETECTIONS} {error_message} Response - {error}')
+            error_message = MESSAGES["INVALID_JSON_RESPONSE"]
+        demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} {error_message} Response - {error}")
         return error_message
 
-    if json_error.get('error', {}).get('code') == 403:
-        return 'Permission denied'
-    return json_error.get('error', {}).get('message', '')
+    if json_error.get("error", {}).get("code") == 403:
+        return "Permission denied"
+    return json_error.get("error", {}).get("message", "")
 
 
 def generic_sleep_function(sleep_duration: int, ingestion: bool = False, error_statement: str = ""):
@@ -292,8 +286,7 @@ def generic_sleep_function(sleep_duration: int, ingestion: bool = False, error_s
     time.sleep(sleep_duration)
 
 
-def deduplicate_detections(detection_context: list[dict[str, Any]],
-                           detection_identifiers: list[dict[str, Any]]):
+def deduplicate_detections(detection_context: list[dict[str, Any]], detection_identifiers: list[dict[str, Any]]):
     """
     De-duplicates the fetched detections and creates a list of unique detections to be created.
 
@@ -307,8 +300,10 @@ def deduplicate_detections(detection_context: list[dict[str, Any]],
     """
     unique_detections = []
     for detection in detection_context:
-        current_detection_identifier = {'id': detection.get('id', ''),
-                                        'ruleVersion': detection.get('detection', [])[0].get('ruleVersion', '')}
+        current_detection_identifier = {
+            "id": detection.get("id", ""),
+            "ruleVersion": detection.get("detection", [])[0].get("ruleVersion", ""),
+        }
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info(f"{SKIPPING_CURRENT_DETECTION} Detection: {current_detection_identifier}")
             continue
@@ -317,8 +312,7 @@ def deduplicate_detections(detection_context: list[dict[str, Any]],
     return unique_detections
 
 
-def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]],
-                                       detection_identifiers: list[dict[str, Any]]):
+def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]], detection_identifiers: list[dict[str, Any]]):
     """
     De-duplicates the fetched curated rule detections and creates a list of unique detections to be created.
 
@@ -332,7 +326,7 @@ def deduplicate_curatedrule_detections(detection_context: list[dict[str, Any]],
     """
     unique_detections = []
     for detection in detection_context:
-        current_detection_identifier = {'id': detection.get('id', '')}
+        current_detection_identifier = {"id": detection.get("id", "")}
         if detection_identifiers and current_detection_identifier in detection_identifiers:
             demisto.info(f"{SKIPPING_CURRENT_DETECTION} Curated Detection: {current_detection_identifier}")
             continue
@@ -355,24 +349,24 @@ def convert_events_to_actionable_incidents(events: list) -> list:
     for event in events:
         event["IncidentType"] = "DetectionAlert"
 
-        detection = event.get('detection', [])
+        detection = event.get("detection", [])
         rule_labels = []
         for element in detection:
-            if isinstance(element, dict) and element.get('ruleLabels'):
-                rule_labels = element.get('ruleLabels', [])
+            if isinstance(element, dict) and element.get("ruleLabels"):
+                rule_labels = element.get("ruleLabels", [])
                 break
 
-        event_severity = 'unspecified'
+        event_severity = "unspecified"
         for label in rule_labels:
-            if label.get('key', '').lower() == 'severity':
-                event_severity = label.get('value', '').lower()
+            if label.get("key", "").lower() == "severity":
+                event_severity = label.get("value", "").lower()
                 break
         incident = {
-            'name': event['detection'][0]['ruleName'],
-            'occurred': event.get('detectionTime'),
-            'details': json.dumps(event),
-            'rawJSON': json.dumps(event),
-            'severity': SEVERITY_MAP.get(str(event_severity).lower(), 0),
+            "name": event["detection"][0]["ruleName"],
+            "occurred": event.get("detectionTime"),
+            "details": json.dumps(event),
+            "rawJSON": json.dumps(event),
+            "severity": SEVERITY_MAP.get(str(event_severity).lower(), 0),
         }
         incidents.append(incident)
 
@@ -393,11 +387,11 @@ def convert_curatedrule_events_to_actionable_incidents(events: list) -> list:
     for event in events:
         event["IncidentType"] = "CuratedRuleDetectionAlert"
         incident = {
-            'name': event['detection'][0]['ruleName'],
-            'occurred': event.get('detectionTime'),
-            'details': json.dumps(event),
-            'rawJSON': json.dumps(event),
-            'severity': SEVERITY_MAP.get(str(event['detection'][0].get('severity')).lower(), 0),
+            "name": event["detection"][0]["ruleName"],
+            "occurred": event.get("detectionTime"),
+            "details": json.dumps(event),
+            "rawJSON": json.dumps(event),
+            "severity": SEVERITY_MAP.get(str(event["detection"][0].get("severity")).lower(), 0),
         }
         incidents.append(incident)
 
@@ -416,8 +410,8 @@ def get_event_list_for_detections_context(result_events: Dict[str, Any]) -> List
     """
     events = []
     if result_events:
-        for event in result_events.get('references', []):
-            events.append(event.get('event', {}))
+        for event in result_events.get("references", []):
+            events.append(event.get("event", {}))
     return events
 
 
@@ -431,12 +425,12 @@ def get_asset_identifier_details(asset_identifier):
     :return: asset identifier name
     :rtype: str
     """
-    if asset_identifier.get('hostname', ''):
-        return asset_identifier.get('hostname', '')
-    if asset_identifier.get('ip', []):
-        return '\n'.join(asset_identifier.get('ip', []))
-    if asset_identifier.get('mac', []):
-        return '\n'.join(asset_identifier.get('mac', []))
+    if asset_identifier.get("hostname", ""):
+        return asset_identifier.get("hostname", "")
+    if asset_identifier.get("ip", []):
+        return "\n".join(asset_identifier.get("ip", []))
+    if asset_identifier.get("mac", []):  # noqa: RET503
+        return "\n".join(asset_identifier.get("mac", []))
 
 
 def get_events_context_for_detections(result_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -455,17 +449,17 @@ def get_events_context_for_detections(result_events: List[Dict[str, Any]]) -> Li
         events = get_event_list_for_detections_context(collection_element)
         for event in events:
             event_dict = {}
-            if 'metadata' in event.keys():
-                event_dict.update(event.pop('metadata'))
-            principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
-            target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
+            if "metadata" in event:
+                event_dict.update(event.pop("metadata"))
+            principal_asset_identifier = get_asset_identifier_details(event.get("principal", {}))
+            target_asset_identifier = get_asset_identifier_details(event.get("target", {}))
             if principal_asset_identifier:
-                event_dict.update({'principalAssetIdentifier': principal_asset_identifier})
+                event_dict.update({"principalAssetIdentifier": principal_asset_identifier})
             if target_asset_identifier:
-                event_dict.update({'targetAssetIdentifier': target_asset_identifier})
+                event_dict.update({"targetAssetIdentifier": target_asset_identifier})
             event_dict.update(event)
             reference.append(event_dict)
-        collection_element_dict = {'references': reference, 'label': collection_element.get('label', '')}
+        collection_element_dict = {"references": reference, "label": collection_element.get("label", "")}
         events_ec.append(collection_element_dict)
 
     return events_ec
@@ -487,24 +481,24 @@ def get_events_context_for_curatedrule_detections(result_events: List[Dict[str, 
         events = get_event_list_for_detections_context(collection_element)
         for event in events:
             event_dict = {}
-            if 'metadata' in event.keys():
-                event_dict.update(event.pop('metadata'))
-            principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
-            target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
-            if event.get('securityResult'):
+            if "metadata" in event:
+                event_dict.update(event.pop("metadata"))
+            principal_asset_identifier = get_asset_identifier_details(event.get("principal", {}))
+            target_asset_identifier = get_asset_identifier_details(event.get("target", {}))
+            if event.get("securityResult"):
                 severity = []
-                for security_result in event.get('securityResult', []):
-                    if isinstance(security_result, dict) and 'severity' in security_result:
-                        severity.append(security_result.get('severity'))
+                for security_result in event.get("securityResult", []):
+                    if isinstance(security_result, dict) and "severity" in security_result:
+                        severity.append(security_result.get("severity"))
                 if severity:
-                    event_dict.update({'eventSeverity': ','.join(severity)})  # type: ignore
+                    event_dict.update({"eventSeverity": ",".join(severity)})  # type: ignore
             if principal_asset_identifier:
-                event_dict.update({'principalAssetIdentifier': principal_asset_identifier})
+                event_dict.update({"principalAssetIdentifier": principal_asset_identifier})
             if target_asset_identifier:
-                event_dict.update({'targetAssetIdentifier': target_asset_identifier})
+                event_dict.update({"targetAssetIdentifier": target_asset_identifier})
             event_dict.update(event)
             reference.append(event_dict)
-        collection_element_dict = {'references': reference, 'label': collection_element.get('label', '')}
+        collection_element_dict = {"references": reference, "label": collection_element.get("label", "")}
         events_ec.append(collection_element_dict)
 
     return events_ec
@@ -523,13 +517,12 @@ def add_detections_in_incident_list(detections: List, detection_incidents: List)
     """
     if detections and len(detections) > 0:
         for detection in detections:
-            events_ec = get_events_context_for_detections(detection.get('collectionElements', []))
-            detection['collectionElements'] = events_ec
+            events_ec = get_events_context_for_detections(detection.get("collectionElements", []))
+            detection["collectionElements"] = events_ec
         detection_incidents.extend(detections)
 
 
-def add_curatedrule_detections_in_incident_list(curatedrule_detections: List,
-                                                curatedrule_detection_to_process: List) -> None:
+def add_curatedrule_detections_in_incident_list(curatedrule_detections: List, curatedrule_detection_to_process: List) -> None:
     """
     Add found detection in incident list.
 
@@ -542,8 +535,8 @@ def add_curatedrule_detections_in_incident_list(curatedrule_detections: List,
     """
     if curatedrule_detections and len(curatedrule_detections) > 0:
         for detection in curatedrule_detections:
-            events_ec = get_events_context_for_curatedrule_detections(detection.get('collectionElements', []))
-            detection['collectionElements'] = events_ec
+            events_ec = get_events_context_for_curatedrule_detections(detection.get("collectionElements", []))
+            detection["collectionElements"] = events_ec
         curatedrule_detection_to_process.extend(curatedrule_detections)
 
 
@@ -586,15 +579,22 @@ def parse_stream(response: requests.Response) -> Iterator[Mapping[str, Any]]:
                 "code": 503,
                 "status": "UNAVAILABLE",
                 "message": "Exception caught while reading stream response. This "
-                           "python client is catching all errors and is returning "
-                           "error code 503 as a catch-all. The original error "
-                           f"message is as follows: {repr(e)}",
+                "python client is catching all errors and is returning "
+                "error code 503 as a catch-all. The original error "
+                f"message is as follows: {e!r}",
             }
         }
 
 
-def filter_detections(detections: List, filter_alert_type: List, filter_severity: List, filter_rule_names: List,
-                      filter_exclude_rule_names: bool, filter_rule_ids: List, filter_exclude_rule_ids: bool):
+def filter_detections(
+    detections: List,
+    filter_alert_type: List,
+    filter_severity: List,
+    filter_rule_names: List,
+    filter_exclude_rule_names: bool,
+    filter_rule_ids: List,
+    filter_exclude_rule_ids: bool,
+):
     """
     Filters detections based on the provided parameters.
 
@@ -640,8 +640,8 @@ def filter_detections(detections: List, filter_alert_type: List, filter_severity
         else:
             detection_rule_labels = []
             for element in detection_info:
-                if isinstance(element, dict) and element.get('ruleLabels'):
-                    detection_rule_labels = element.get('ruleLabels', [])
+                if isinstance(element, dict) and element.get("ruleLabels"):
+                    detection_rule_labels = element.get("ruleLabels", [])
                     break
 
             detection_severity = "unspecified"
@@ -680,7 +680,7 @@ def filter_detections(detections: List, filter_alert_type: List, filter_severity
     return filtered_detections
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client_obj: Client, params: dict[str, Any]) -> str:
@@ -698,16 +698,15 @@ def test_module(client_obj: Client, params: dict[str, Any]) -> str:
     """
     demisto.debug(f'{CHRONICLE_STREAM_DETECTIONS} Running Test having Proxy {params.get("proxy")}')
 
-    response_code, disconnection_reason, _ = stream_detection_alerts(
-        client_obj, {'detectionBatchSize': 1}, {}, True)
+    response_code, disconnection_reason, _ = stream_detection_alerts(client_obj, {"detectionBatchSize": 1}, {}, True)
     if response_code == 200 and not disconnection_reason:
-        return 'ok'
+        return "ok"
 
-    demisto.debug(f'{CHRONICLE_STREAM_DETECTIONS} Test Connection failed.\nMessage: {disconnection_reason}')
+    demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} Test Connection failed.\nMessage: {disconnection_reason}")
     if 500 <= response_code <= 599:
-        return f'Internal server error occurred.\nMessage: {disconnection_reason}'
+        return f"Internal server error occurred.\nMessage: {disconnection_reason}"
     if response_code == 429:
-        return f'API rate limit exceeded.\nMessage: {disconnection_reason}'
+        return f"API rate limit exceeded.\nMessage: {disconnection_reason}"
 
     error_message = disconnection_reason
     if response_code in [400, 404, 403]:
@@ -715,12 +714,12 @@ def test_module(client_obj: Client, params: dict[str, Any]) -> str:
             error_message = f'{MESSAGES["INVALID_ARGUMENTS"]}.'
         elif response_code == 404:
             if client_obj.region not in REGIONS.values():
-                error_message = MESSAGES['INVALID_REGION']
+                error_message = MESSAGES["INVALID_REGION"]
             else:
                 return error_message
         elif response_code == 403:
-            error_message = MESSAGES['PERMISSION_DENIED']
-        return f'Status code: {response_code}\nError: {error_message}'
+            error_message = MESSAGES["PERMISSION_DENIED"]
+        return f"Status code: {response_code}\nError: {error_message}"
 
     return disconnection_reason
 
@@ -738,16 +737,13 @@ def fetch_samples() -> list:
     :rtype: list
     """
     integration_context = get_integration_context()
-    sample_events = json.loads(integration_context.get('sample_events', '[]'))
+    sample_events = json.loads(integration_context.get("sample_events", "[]"))
     return sample_events
 
 
 def stream_detection_alerts(
-        client: Client,
-        req_data: dict[str, Any],
-        integration_context: dict[str, Any],
-        test_mode: bool = False
-) -> Tuple[int, str, str]:
+    client: Client, req_data: dict[str, Any], integration_context: dict[str, Any], test_mode: bool = False
+) -> tuple[int, str, str]:
     """Makes one call to stream_detection_alerts, and runs until disconnection.
 
     Each call to stream_detection_alerts streams all detection alerts found after
@@ -824,8 +820,14 @@ def stream_detection_alerts(
     # as a safety measure.
     # If no messages are received after this timeout, the client cancels
     # connection (then retries).
-    with client.http_client.post(url=url.format(client.region), stream=True, data=req_data, timeout=TIMEOUT,
-                                 proxies=client.proxy_info, verify=not client.disable_ssl) as response:
+    with client.http_client.post(
+        url=url.format(client.region),
+        stream=True,
+        data=req_data,
+        timeout=TIMEOUT,
+        proxies=client.proxy_info,
+        verify=not client.disable_ssl,
+    ) as response:
         # Expected server response is a continuous stream of
         # bytes that represent a never-ending JSON array. The parsing
         # is handed by parse_stream. See docstring above for
@@ -854,7 +856,7 @@ def stream_detection_alerts(
                     disconnection_reason = f"Connection closed with error: {error_dump}"
                     break
                 if demisto_health_needs_to_update:
-                    demisto.updateModuleHealth('')
+                    demisto.updateModuleHealth("")
                     demisto_health_needs_to_update = False
                 if test_mode:
                     break
@@ -867,9 +869,9 @@ def stream_detection_alerts(
                 continuation_time = batch["continuationTime"]
                 if "detections" not in batch:
                     demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got a new continuationTime={continuation_time}, no detections.")
-                    integration_context.update({'continuation_time': continuation_time})
+                    integration_context.update({"continuation_time": continuation_time})
                     set_integration_context(integration_context)
-                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
+                    demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
                     continue
                 else:
                     demisto.info(f"{CHRONICLE_STREAM_DETECTIONS} Got detection batch with continuationTime={continuation_time}.")
@@ -879,68 +881,80 @@ def stream_detection_alerts(
 
                 demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections fetched: {len(detections)}.")
                 # Filter the detections.
-                detections = filter_detections(detections, client.filter_alert_type, client.filter_severity,
-                                               client.filter_rule_names, client.filter_exclude_rule_names,
-                                               client.filter_rule_ids, client.filter_exclude_rule_ids)
+                detections = filter_detections(
+                    detections,
+                    client.filter_alert_type,
+                    client.filter_severity,
+                    client.filter_rule_names,
+                    client.filter_exclude_rule_names,
+                    client.filter_rule_ids,
+                    client.filter_exclude_rule_ids,
+                )
 
                 demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections received after filter: {len(detections)}.")
                 if not detections:
-                    integration_context.update({'continuation_time': continuation_time})
+                    integration_context.update({"continuation_time": continuation_time})
                     set_integration_context(integration_context)
-                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
+                    demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
                     continue
                 user_rule_detections = []
                 chronicle_rule_detections = []
-                detection_identifiers = integration_context.get('detection_identifiers', [])
-                curatedrule_detection_identifiers = integration_context.get('curatedrule_detection_identifiers', [])
+                detection_identifiers = integration_context.get("detection_identifiers", [])
+                curatedrule_detection_identifiers = integration_context.get("curatedrule_detection_identifiers", [])
 
                 for raw_detection in detections:
-                    raw_detection_type = str(raw_detection.get('type', ''))
-                    if raw_detection_type.upper() == 'RULE_DETECTION':
+                    raw_detection_type = str(raw_detection.get("type", ""))
+                    if raw_detection_type.upper() == "RULE_DETECTION":
                         user_rule_detections.append(raw_detection)
-                    elif raw_detection_type.upper() == 'GCTI_FINDING':
+                    elif raw_detection_type.upper() == "GCTI_FINDING":
                         chronicle_rule_detections.append(raw_detection)
 
                 user_rule_detections = deduplicate_detections(user_rule_detections, detection_identifiers)
                 chronicle_rule_detections = deduplicate_curatedrule_detections(
-                    chronicle_rule_detections, curatedrule_detection_identifiers)
+                    chronicle_rule_detections, curatedrule_detection_identifiers
+                )
                 detection_to_process: list[dict] = []
                 add_detections_in_incident_list(user_rule_detections, detection_to_process)
                 detection_incidents: list[dict] = convert_events_to_actionable_incidents(detection_to_process)
                 curatedrule_detection_to_process: list[dict] = []
                 add_curatedrule_detections_in_incident_list(chronicle_rule_detections, curatedrule_detection_to_process)
                 curatedrule_incidents: list[dict] = convert_curatedrule_events_to_actionable_incidents(
-                    curatedrule_detection_to_process)
+                    curatedrule_detection_to_process
+                )
                 sample_events = detection_incidents[:5]
                 sample_events.extend(curatedrule_incidents[:5])
                 if sample_events:
-                    integration_context.update({'sample_events': json.dumps(sample_events)})
+                    integration_context.update({"sample_events": json.dumps(sample_events)})
                     set_integration_context(integration_context)
                 incidents = detection_incidents
                 incidents.extend(curatedrule_incidents)
-                integration_context.update({'continuation_time': continuation_time})
+                integration_context.update({"continuation_time": continuation_time})
                 if not incidents:
                     set_integration_context(integration_context)
-                    demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
+                    demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
                     continue
                 total_ingested_incidents = 0
                 length_of_incidents = len(incidents)
                 while total_ingested_incidents < len(incidents):
-                    current_batch = IDEAL_BATCH_SIZE if (
-                        total_ingested_incidents + IDEAL_BATCH_SIZE <= length_of_incidents) else (
-                            length_of_incidents - total_ingested_incidents)
+                    current_batch = (
+                        IDEAL_BATCH_SIZE
+                        if (total_ingested_incidents + IDEAL_BATCH_SIZE <= length_of_incidents)
+                        else (length_of_incidents - total_ingested_incidents)
+                    )
                     demisto.debug(f"{CHRONICLE_STREAM_DETECTIONS} No. of detections being ingested: {current_batch}.")
-                    demisto.createIncidents(incidents[total_ingested_incidents: total_ingested_incidents + current_batch])
+                    demisto.createIncidents(incidents[total_ingested_incidents : total_ingested_incidents + current_batch])
                     total_ingested_incidents = total_ingested_incidents + current_batch
                     if current_batch == IDEAL_BATCH_SIZE:
                         generic_sleep_function(IDEAL_SLEEP_TIME_BETWEEN_BATCHES, ingestion=True)
 
-                integration_context.update({
-                    'detection_identifiers': detection_identifiers,
-                    'curatedrule_detection_identifiers': curatedrule_detection_identifiers,
-                })
+                integration_context.update(
+                    {
+                        "detection_identifiers": detection_identifiers,
+                        "curatedrule_detection_identifiers": curatedrule_detection_identifiers,
+                    }
+                )
                 set_integration_context(integration_context)
-                demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
+                demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
 
     return response_code, disconnection_reason, continuation_time
 
@@ -963,7 +977,7 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
     """
     integration_context: dict = get_integration_context()
     initial_continuation_time_str = initial_continuation_time.astimezone(timezone.utc).strftime(DATE_FORMAT)
-    continuation_time = integration_context.get('continuation_time', initial_continuation_time_str)
+    continuation_time = integration_context.get("continuation_time", initial_continuation_time_str)
 
     # Our retry loop uses exponential backoff with a retry limit.
     # For simplicity, we retry for all types of errors.
@@ -972,14 +986,14 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
     while True:
         try:
             if consecutive_failures > MAX_CONSECUTIVE_FAILURES:
-                raise RuntimeError(MESSAGES['CONSECUTIVELY_FAILED'].format(consecutive_failures))
+                raise RuntimeError(MESSAGES["CONSECUTIVELY_FAILED"].format(consecutive_failures))
 
             if consecutive_failures:
-                sleep_duration = 2 ** consecutive_failures
+                sleep_duration = 2**consecutive_failures
                 generic_sleep_function(sleep_duration, error_statement=disconnection_reason)
 
             req_data = {} if not continuation_time else {"continuationTime": continuation_time}
-            req_data.update({'detectionBatchSize': MAX_DETECTION_STREAM_BATCH_SIZE})
+            req_data.update({"detectionBatchSize": MAX_DETECTION_STREAM_BATCH_SIZE})
 
             # Connections may last hours. Make a new authorized session every retry loop
             # to avoid session expiration.
@@ -987,15 +1001,16 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
 
             # This function runs until disconnection.
             response_code, disconnection_reason, most_recent_continuation_time = stream_detection_alerts(
-                client, req_data, integration_context)
+                client, req_data, integration_context
+            )
 
             if most_recent_continuation_time:
                 consecutive_failures = 0
                 disconnection_reason = ""
                 continuation_time = most_recent_continuation_time
-                integration_context.update({'continuation_time': most_recent_continuation_time or continuation_time})
+                integration_context.update({"continuation_time": most_recent_continuation_time or continuation_time})
                 set_integration_context(integration_context)
-                demisto.debug(f'Updated integration context checkpoint with continuationTime={continuation_time}.')
+                demisto.debug(f"Updated integration context checkpoint with continuationTime={continuation_time}.")
                 if test_mode:
                     return integration_context
             else:
@@ -1005,8 +1020,7 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
                 # We assume a disconnection was due to invalid arguments if the connection
                 # was refused with HTTP status code 400.
                 if response_code == 400:
-                    raise RuntimeError(disconnection_reason.replace(
-                        'Connection refused', MESSAGES['INVALID_ARGUMENTS'], 1))
+                    raise RuntimeError(disconnection_reason.replace("Connection refused", MESSAGES["INVALID_ARGUMENTS"], 1))
                 elif 400 < response_code < 500 and response_code != 429:
                     raise RuntimeError(disconnection_reason)
 
@@ -1019,11 +1033,14 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
             if response_code == 400 and initial_continuation_time_str != continuation_time:
                 # The continuation time coming from integration context is older than 7 days. Update it to a 7 days.
                 new_continuation_time = arg_to_datetime(MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS).astimezone(  # type: ignore
-                    timezone.utc) + timedelta(minutes=1)
+                    timezone.utc
+                ) + timedelta(minutes=1)
                 new_continuation_time_str = new_continuation_time.strftime(DATE_FORMAT)
-                demisto.updateModuleHealth('Got the continuation time from the integration context which is '
-                                           f'older than {MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS}.\n'
-                                           f'Changing the continuation time to {new_continuation_time_str}.')
+                demisto.updateModuleHealth(
+                    "Got the continuation time from the integration context which is "
+                    f"older than {MAX_DELTA_TIME_FOR_STREAMING_DETECTIONS}.\n"
+                    f"Changing the continuation time to {new_continuation_time_str}."
+                )
                 continuation_time = new_continuation_time_str
             elif consecutive_failures <= MAX_CONSECUTIVE_FAILURES:
                 generic_sleep_function(IDEAL_SLEEP_TIME_BETWEEN_BATCHES, error_statement=str(runtime_error))
@@ -1047,8 +1064,8 @@ def main():
     # initialize configuration parameter
     params = remove_space_from_args(demisto.params())
     remove_nulls_from_dictionary(params)
-    proxy = params.get('proxy')
-    disable_ssl = params.get('insecure', False)
+    proxy = params.get("proxy")
+    disable_ssl = params.get("insecure", False)
     command = demisto.command()
 
     try:
@@ -1058,18 +1075,18 @@ def main():
         client_obj = Client(params, proxy, disable_ssl)
 
         # trigger command based on input
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client_obj, demisto.args()))
-        elif command == 'long-running-execution':
+        elif command == "long-running-execution":
             stream_detection_alerts_in_retry_loop(client_obj, first_fetch_timestamp)  # type: ignore
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             demisto.incidents(fetch_samples())
 
     except Exception as e:
         demisto.updateModuleHealth(str(e))
-        return_error(f'Failed to execute {demisto.command()} command.\nError: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError: {e!s}")
 
 
 # initial flow of execution
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

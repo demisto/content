@@ -1,21 +1,21 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
-from CommonServerUserPython import *  # noqa
 import asyncio
 import concurrent
-import aiohttp
-import urllib3
 from typing import Any
 from urllib.parse import urlparse
+
+import aiohttp
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+""" CONSTANTS """
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_PAGE_NUMBER = 0
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
@@ -38,11 +38,11 @@ LONG_RUNNING: bool
 CACHED_INTEGRATION_CONTEXT: dict
 VERIFY_CERT: bool
 CACHE_EXPIRY: float
-MESSAGE_FOOTER = '\n**From Mattermost**'
-MIRROR_TYPE = 'mirrorEntry'
+MESSAGE_FOOTER = "\n**From Mattermost**"
+MIRROR_TYPE = "mirrorEntry"
 OBJECTS_TO_KEYS = {
-    'mirrors': 'investigation_id',
-    'messages': 'entitlement',
+    "mirrors": "investigation_id",
+    "messages": "entitlement",
 }
 DEFAULT_OPTIONS: Dict[str, Any] = {
     "timeout": 100,
@@ -55,21 +55,15 @@ DEFAULT_OPTIONS: Dict[str, Any] = {
     "debug": False,
     "http2": False,
 }
-GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
-ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
+GUID_REGEX = r"(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
+ENTITLEMENT_REGEX = rf"{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b"
 PERMITTED_NOTIFICATION_TYPES: list[str]
-INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
-''' CLIENT CLASS '''
+INCIDENT_NOTIFICATION_CHANNEL = "incidentNotificationChannel"
+""" CLIENT CLASS """
 
 
 class WebSocketClient:  # pragma: no cover
-    def __init__(
-        self,
-        base_url: str,
-        token: str,
-        verify: bool,
-        proxy: bool
-    ):
+    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool):
         self.base_url = base_url
         self.token = token
         self.alive = False
@@ -88,35 +82,37 @@ class WebSocketClient:  # pragma: no cover
         :type event_handler: Function(message)
         :return:
         """
-        if 'https://' in self.base_url:
+        if "https://" in self.base_url:
             uri = self.base_url.replace("https://", "wss://", 1)
         else:
             uri = self.base_url.replace("http://", "ws://", 1)
-        uri += '/api/v4/websocket'
-        url = self.base_url + '/api/v4/websocket'
-        demisto.debug(f'MM: The uri for the websocket is {uri}, the url is {url}')
+        uri += "/api/v4/websocket"
+        url = self.base_url + "/api/v4/websocket"
+        demisto.debug(f"MM: The uri for the websocket is {uri}, the url is {url}")
 
         self.alive = True
 
         while True:
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.ws_connect(
+                async with (
+                    aiohttp.ClientSession() as session,
+                    session.ws_connect(
                         uri,
                         ssl=SSL_CONTEXT,  # type: ignore[arg-type]
                         proxy=PROXY_URL,
-                    ) as websocket:
-                        demisto.debug('MM: starting to authenticate')
-                        await self.authenticate(websocket, event_handler)
-                        while self.alive:
-                            try:
-                                await self.start_loop(websocket, event_handler)
-                            except aiohttp.ClientError:
-                                break
-                        if (not self.options["keepalive"]) or (not self.alive):
+                    ) as websocket,
+                ):
+                    demisto.debug("MM: starting to authenticate")
+                    await self.authenticate(websocket, event_handler)
+                    while self.alive:
+                        try:
+                            await self.start_loop(websocket, event_handler)
+                        except aiohttp.ClientError:
                             break
+                    if (not self.options["keepalive"]) or (not self.alive):
+                        break
             except Exception as e:
-                demisto.info(f"MM: Failed to establish websocket connection: {type(e)} thrown - {str(e)}")
+                demisto.info(f"MM: Failed to establish websocket connection: {type(e)} thrown - {e!s}")
                 await asyncio.sleep(float("inf"))
 
     async def start_loop(self, websocket, event_handler):
@@ -177,8 +173,7 @@ class WebSocketClient:  # pragma: no cover
 
 
 class HTTPClient(BaseClient):
-    """Client class to interact with the MatterMost API
-    """
+    """Client class to interact with the MatterMost API"""
 
     def __init__(
         self,
@@ -199,103 +194,124 @@ class HTTPClient(BaseClient):
 
     def get_team_request(self, team_name: str) -> dict[str, str]:
         """Gets a team details based on its name"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/teams/name/{team_name}')
+        response = self._http_request(method="GET", url_suffix=f"/api/v4/teams/name/{team_name}")
 
         return response
 
     def list_channel_request(self, team_id: str, params: dict, get_private: bool = False) -> list[dict[str, Any]]:
         """lists channels in a specific team"""
         if get_private:
-            response = self._http_request(method='GET', url_suffix=f'/api/v4/teams/{team_id}/channels/private', params=params)
+            response = self._http_request(method="GET", url_suffix=f"/api/v4/teams/{team_id}/channels/private", params=params)
         else:
-            response = self._http_request(method='GET', url_suffix=f'/api/v4/teams/{team_id}/channels', params=params)
+            response = self._http_request(method="GET", url_suffix=f"/api/v4/teams/{team_id}/channels", params=params)
 
+        return response
+
+    def list_channels_for_user_request(self, team_id: str, user: str) -> list[dict[str, Any]]:
+        """lists channels by user in a specific team"""
+        response = self._http_request(method='GET', url_suffix=f'/api/v4/users/{user}/teams/{team_id}/channels')
         return response
 
     def create_channel_request(self, params: dict) -> dict[str, str]:
         """Creates a channel"""
-        response = self._http_request(method='POST', url_suffix='/api/v4/channels', json_data=params)
+        response = self._http_request(method="POST", url_suffix="/api/v4/channels", json_data=params)
 
         return response
 
     def get_channel_by_name_and_team_name_request(self, team_name: str, channel_name: str) -> dict[str, Any]:
         """Gets a channel based on name and team name"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/teams/name/{team_name}/channels/name/{channel_name}')
+        response = self._http_request(method="GET", url_suffix=f"/api/v4/teams/name/{team_name}/channels/name/{channel_name}")
+
+        return response
+
+    def set_channel_role_request(self, channel_id: str, user_id: str, roles: str) -> dict[str, str]:
+        """Set a channel role for channel member"""
+        data = {"roles": roles}
+        response = self._http_request(
+            method='PUT', url_suffix=f'/api/v4/channels/{channel_id}/members/{user_id}/roles', json_data=data)
 
         return response
 
     def add_channel_member_request(self, channel_id: str, data: dict) -> dict[str, str]:
         """Adds a channel member"""
-        response = self._http_request(method='POST', url_suffix=f'/api/v4/channels/{channel_id}/members', json_data=data)
+        response = self._http_request(method="POST", url_suffix=f"/api/v4/channels/{channel_id}/members", json_data=data)
 
         return response
 
     def remove_channel_member_request(self, channel_id: str, user_id: str) -> dict[str, str]:
         """Removes a channel member"""
-        response = self._http_request(method='DELETE', url_suffix=f'/api/v4/channels/{channel_id}/members/{user_id}')
+        response = self._http_request(method="DELETE", url_suffix=f"/api/v4/channels/{channel_id}/members/{user_id}")
 
         return response
 
     def list_users_request(self, params: dict) -> list[dict[str, Any]]:
         """lists users"""
-        response = self._http_request(method='GET', url_suffix='/api/v4/users', params=params)
+        response = self._http_request(method="GET", url_suffix="/api/v4/users", params=params)
 
         return response
 
     def close_channel_request(self, channel_id: str) -> list[dict[str, Any]]:
         """Closes a channel"""
-        response = self._http_request(method='DELETE', url_suffix=f'/api/v4/channels/{channel_id}')
+        response = self._http_request(method="DELETE", url_suffix=f"/api/v4/channels/{channel_id}")
 
         return response
 
     def send_file_request(self, file_info: dict, params: dict) -> dict[str, Any]:
         "Sends a file"
-        files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
+        files = {"file": (file_info["name"], open(file_info["path"], "rb"))}
 
         response = self._http_request(
-            method='POST',
-            url_suffix='/api/v4/files',
+            method="POST",
+            url_suffix="/api/v4/files",
             files=files,
             params=params,
-            json_data={'channel_id': params.get('channel_id')}
+            json_data={"channel_id": params.get("channel_id")},
         )
         return response
 
     def create_post_with_file_request(self, data: dict) -> list[dict[str, Any]]:
         """Creates a post with a file request"""
-        response = self._http_request(method='POST', url_suffix='/api/v4/posts', json_data=data)
+        response = self._http_request(method="POST", url_suffix="/api/v4/posts", json_data=data)
 
         return response
 
     def update_channel_request(self, channel_id: str, params: dict) -> list[dict[str, Any]]:
         """Updates a channel"""
-        response = self._http_request(method='PUT', url_suffix=f'/api/v4/channels/{channel_id}', json_data=params)
+        response = self._http_request(method="PUT", url_suffix=f"/api/v4/channels/{channel_id}", json_data=params)
 
         return response
 
-    def get_user_request(self, user_id: str = '', bot_user: bool = False) -> dict[str, Any]:
+    def get_user_request(self, user_id: str = "", bot_user: bool = False) -> dict[str, Any]:
         """Gets a user"""
         if not user_id:
-            user_id = 'me'
+            user_id = "me"
         if bot_user:
-            response = self._http_request(method='GET', url_suffix=f'/api/v4/users/{user_id}',
-                                          headers={'authorization': f'Bearer {self.bot_access_token}'})
+            response = self._http_request(
+                method="GET", url_suffix=f"/api/v4/users/{user_id}", headers={"authorization": f"Bearer {self.bot_access_token}"}
+            )
         else:
-            response = self._http_request(method='GET', url_suffix=f'/api/v4/users/{user_id}')
+            response = self._http_request(method="GET", url_suffix=f"/api/v4/users/{user_id}")
 
         return response
 
-    def send_notification_request(self, channel_id: str, message: str, file_ids: list[str] = [], root_id: str = '', props: dict = {}) -> dict[str, Any]:  # noqa: E501
+    def send_notification_request(
+        self, channel_id: str, message: str, file_ids: list[str] = [], root_id: str = "", props: dict = {}
+    ) -> dict[str, Any]:  # noqa: E501
         "Sends a notification"
-        data = {"channel_id": channel_id,
-                "message": message,
-                "props": props,
-                "root_id": root_id,
-                "file_ids": file_ids,
-                }
+        data = {
+            "channel_id": channel_id,
+            "message": message,
+            "props": props,
+            "root_id": root_id,
+            "file_ids": file_ids,
+        }
         remove_nulls_from_dictionary(data)
-        response = self._http_request(method='POST', url_suffix='/api/v4/posts', json_data=data,
-                                      headers={'authorization': f'Bearer {self.bot_access_token}'})
+        response = self._http_request(
+            method="POST",
+            url_suffix="/api/v4/posts",
+            json_data=data,
+            headers={"authorization": f"Bearer {self.bot_access_token}"},
+        )
 
         return response
 
@@ -307,45 +323,75 @@ class HTTPClient(BaseClient):
         }
         demisto.debug(f"MM: {data=}")
         remove_nulls_from_dictionary(data)
-        response = self._http_request(method='PUT', url_suffix=f'/api/v4/posts/{root_id}', json_data=data,
-                                      headers={'authorization': f'Bearer {self.bot_access_token}'})
+        response = self._http_request(
+            method="PUT",
+            url_suffix=f"/api/v4/posts/{root_id}",
+            json_data=data,
+            headers={"authorization": f"Bearer {self.bot_access_token}"},
+        )
 
         demisto.debug(f"MM: response fom update message. {response=}")
         return response
 
     def get_user_by_email_request(self, user_email: str) -> dict[str, Any]:
         "Gets a user by email"
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/users/email/{user_email}')
+        response = self._http_request(method="GET", url_suffix=f"/api/v4/users/email/{user_email}")
 
         return response
 
     def get_user_by_username_request(self, username: str) -> dict[str, Any]:
         "Gets a user by username"
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/users/username/{username}')
+        response = self._http_request(method="GET", url_suffix=f"/api/v4/users/username/{username}")
 
         return response
 
-    def create_direct_channel_request(self, user_id: str, bot_id: str) -> dict[str, Any]:
+    def create_direct_channel_request(self, user_id: list, bot_id: str) -> dict[str, Any]:
         "creates a direct channel"
-        response = self._http_request(method='POST', url_suffix='/api/v4/channels/direct', json_data=[bot_id, user_id])
+        user_id.append(bot_id)
+        url_suffix = '/api/v4/channels/direct' if len(user_id) == 2 else '/api/v4/channels/group'
+        response = self._http_request(method='POST', url_suffix=url_suffix, json_data=user_id)
+
+        return response
+
+    def list_groups_request(self, params: dict) -> list[dict[str, Any]]:
+        """lists groups in a specific team"""
+        response = self._http_request(method='GET', url_suffix='/api/v4/groups', params=params)
+
+        return response
+
+    def list_group_members_request(self, group_id: str, params: dict[str, Any]) -> dict[str, Any]:
+        """list group members based on group id"""
+        response = self._http_request(method='GET', url_suffix=f'/api/v4/groups/{group_id}/members', params=params)
+
+        return response
+
+    def add_group_member_request(self, group_id: str, data: dict) -> dict[str, str]:
+        """Adds a group member"""
+        response = self._http_request(method='POST', url_suffix=f'/api/v4/groups/{group_id}/members', json_data=data)
+
+        return response
+
+    def remove_group_member_request(self, group_id: str, data: dict) -> dict[str, str]:
+        """Removes a group member"""
+        response = self._http_request(method='DELETE', url_suffix=f'/api/v4/groups/{group_id}/members', json_data=data)
 
         return response
 
 
 CLIENT: HTTPClient
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
-def get_war_room_url(url: str, incident_id: str = '') -> str:
+def get_war_room_url(url: str, incident_id: str = "") -> str:
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
     if is_xsiam():
         if not incident_id:
-            incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+            incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
         incident_url = urlparse(url)
         war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
         # executed from the incident War Room
-        if incident_id and incident_id.startswith('INCIDENT-'):
+        if incident_id and incident_id.startswith("INCIDENT-"):
             war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
         # executed from the alert War Room
         else:
@@ -380,23 +426,23 @@ async def check_and_handle_entitlement(answer_text: str, root_id: str, user_name
         If the message contains entitlement, return a reply.
     """
     integration_context = fetch_context(force_refresh=True)
-    messages = integration_context.get('messages', [])
-    reply = ''
+    messages = integration_context.get("messages", [])
+    reply = ""
     if not messages:
         return reply
     messages = json.loads(messages)
     demisto.debug(f"MM: messages with entitlements. {messages=}")
-    message_filter = list(filter(lambda q: q.get('root_id') == root_id, messages))
+    message_filter = list(filter(lambda q: q.get("root_id") == root_id, messages))
     if message_filter:
         demisto.debug("MM: Found correct message")
         message = message_filter[0]
-        entitlement = message.get('entitlement')
-        reply = message.get('reply')
+        entitlement = message.get("entitlement")
+        reply = message.get("reply")
         guid, incident_id, task_id = extract_entitlement(entitlement)
         demisto.handleEntitlementForUser(incident_id, guid, user_name, answer_text, task_id)
         demisto.debug(f"MM: Handled entitlement for {incident_id=}, {task_id=} with {answer_text=}")
-        message['remove'] = True
-        set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
+        message["remove"] = True
+        set_to_integration_context_with_retries({"messages": messages}, OBJECTS_TO_KEYS)
     return reply
 
 
@@ -407,14 +453,14 @@ def run_long_running():  # pragma: no cover
     try:
         asyncio.run(start_listening())
     except Exception as e:
-        demisto.error(f"MM: The Loop has failed to run {str(e)}")
+        demisto.error(f"MM: The Loop has failed to run {e!s}")
     finally:
         loop = asyncio.get_running_loop()
         try:
             loop.stop()
             loop.close()
         except Exception as e_:
-            demisto.error(f'MM: Failed to gracefully close the loop - {e_}')
+            demisto.error(f"MM: Failed to gracefully close the loop - {e_}")
 
 
 async def start_listening():  # pragma: no cover
@@ -422,7 +468,7 @@ async def start_listening():  # pragma: no cover
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
-        demisto.debug('MM: Starting to listen')
+        demisto.debug("MM: Starting to listen")
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -433,14 +479,13 @@ async def start_listening():  # pragma: no cover
 
 
 async def mattermost_loop():  # pragma: no cover
-
     try:
         exception_await_seconds = 1
         while True:
             ws_client = WebSocketClient(BASE_URL, SECRET_TOKEN, VERIFY, PROXY)
 
             try:
-                demisto.debug('MM: Trying to connect')
+                demisto.debug("MM: Trying to connect")
                 await ws_client.connect(event_handler)
                 # After successful connection, we reset the backoff time.
                 exception_await_seconds = 1
@@ -462,16 +507,16 @@ def long_running_loop():  # pragma: no cover
     global MIRRORING_ENABLED
     tts = 30 if MIRRORING_ENABLED else 60
     while True:
-        error = ''
+        error = ""
         try:
             check_for_unanswered_messages()
             time.sleep(tts)
         except requests.exceptions.ConnectionError as e:
-            error = f'Could not connect to the MatterMost endpoint: {str(e)}'
+            error = f"Could not connect to the MatterMost endpoint: {e!s}"
         except Exception as e:
-            error = f'An error occurred: {e}'
+            error = f"An error occurred: {e}"
         finally:
-            demisto.updateModuleHealth('')
+            demisto.updateModuleHealth("")
             if error:
                 demisto.error(error)
                 demisto.updateModuleHealth(error)
@@ -479,28 +524,27 @@ def long_running_loop():  # pragma: no cover
 
 def check_for_unanswered_messages():
     integration_context = fetch_context()
-    messages = integration_context.get('messages')
+    messages = integration_context.get("messages")
     if messages:
         messages = json.loads(messages)
         now = datetime.utcnow()
         updated_messages = []
 
         for message in messages:
-            if message.get('expiry'):
+            if message.get("expiry"):
                 # Check if the question expired - if it did, answer it with the default response
                 # and remove it
-                expiry = datetime.strptime(message['expiry'], DATE_FORMAT)
+                expiry = datetime.strptime(message["expiry"], DATE_FORMAT)
                 if expiry < now:
                     demisto.debug(f"MM: message expired: {message}, answering it with the default response")
-                    answer_question(message.get('default_response'), message, email='')
-                    message['remove'] = True
+                    answer_question(message.get("default_response"), message, email="")
+                    message["remove"] = True
                     updated_messages.append(message)
                     continue
             updated_messages.append(message)
 
         if updated_messages:
-
-            set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
+            set_to_integration_context_with_retries({"messages": messages}, OBJECTS_TO_KEYS)
 
 
 async def event_handler(client: WebSocketClient, req: str):
@@ -508,19 +552,18 @@ async def event_handler(client: WebSocketClient, req: str):
     demisto.debug(f"MM: Got events: {req} - with type {type(req)}")
     payload = json.loads(req)
 
-    if 'error' in payload:
-        error = payload.get('error', {})
-        error_code = error.get('id')
-        error_msg = error.get('message')
-        await handle_listen_error(
-            f'MatterMost API has thrown an error. Code: {error_code}, Message: {error_msg}.')
+    if "error" in payload:
+        error = payload.get("error", {})
+        error_code = error.get("id")
+        error_msg = error.get("message")
+        await handle_listen_error(f"MatterMost API has thrown an error. Code: {error_code}, Message: {error_msg}.")
         return
 
-    if payload.get('event') == 'hello' or payload.get('seq_reply') == 1:
+    if payload.get("event") == "hello" or payload.get("seq_reply") == 1:
         # we handle hello and authentication events afterwards
         return
 
-    if payload.get('event') == 'posted':
+    if payload.get("event") == "posted":
         await handle_posts(payload)
         return
 
@@ -532,11 +575,11 @@ def is_bot_message(payload: dict) -> bool:
     :return: bool: True indicates the message was from a Bot, False indicates it was from an individual
     """
     global CLIENT
-    from_bot = payload.get('props', {}).get('from_bot', '')
+    from_bot = payload.get("props", {}).get("from_bot", "")
     bot_id = get_user_id_from_token(CLIENT, bot_user=True)
     post = json.loads(payload.get("data", {}).get("post"))
 
-    if bot_id and bot_id == post.get('user_id', ''):
+    if bot_id and bot_id == post.get("user_id", ""):
         return True
     elif from_bot:
         return True
@@ -549,8 +592,8 @@ def is_dm(payload: dict):
     :param channel: str: The channel ID to check.
     :return: bool: Boolean indicating if the channel is a DM or not.
     """
-    channel_type = payload.get('data', {}).get('channel_type')
-    return channel_type == 'D'
+    channel_type = payload.get("data", {}).get("channel_type")
+    return channel_type == "D"
 
 
 def is_thread(post: dict):
@@ -559,8 +602,8 @@ def is_thread(post: dict):
     :param post: str: The post to check.
     :return: bool: Boolean indicating if the post is part of a thread or not.
     """
-    root_id = post.get('root_id', '')
-    return root_id != ''
+    root_id = post.get("root_id", "")
+    return root_id != ""
 
 
 def get_user_id_from_token(client: HTTPClient, bot_user: bool = False) -> str:
@@ -570,7 +613,7 @@ def get_user_id_from_token(client: HTTPClient, bot_user: bool = False) -> str:
     """
     result = client.get_user_request(bot_user=bot_user)
 
-    return result.get('id', '')
+    return result.get("id", "")
 
 
 def get_user_id_by_email(client: HTTPClient, email: str) -> str:
@@ -580,7 +623,7 @@ def get_user_id_by_email(client: HTTPClient, email: str) -> str:
     :return: str: The id of the user
     """
     result = client.get_user_by_email_request(email)
-    return result.get('id', '')
+    return result.get("id", "")
 
 
 def get_user_id_by_username(client: HTTPClient, username: str) -> str:
@@ -590,7 +633,7 @@ def get_user_id_by_username(client: HTTPClient, username: str) -> str:
     :return: str: The id of the user
     """
     result = client.get_user_by_username_request(username)
-    return result.get('id', '')
+    return result.get("id", "")
 
 
 def get_username_by_email(client: HTTPClient, email: str) -> str:
@@ -600,7 +643,7 @@ def get_username_by_email(client: HTTPClient, email: str) -> str:
     :return: str: The username of the user
     """
     result = client.get_user_by_email_request(email)
-    return result.get('username', '')
+    return result.get("username", "")
 
 
 def get_username_by_id(client: HTTPClient, user_id: str) -> str:
@@ -610,7 +653,7 @@ def get_username_by_id(client: HTTPClient, user_id: str) -> str:
     :return: str: The username of the user
     """
     result = client.get_user_request(user_id)
-    return result.get('username', '')
+    return result.get("username", "")
 
 
 def get_team_id_from_team_name(client: HTTPClient, team_name: str):
@@ -620,7 +663,7 @@ def get_team_id_from_team_name(client: HTTPClient, team_name: str):
     :return: str: The username of the user
     """
     result = client.get_team_request(team_name)
-    return result.get('id', '')
+    return result.get("id", "")
 
 
 def fetch_context(force_refresh: bool = False) -> dict:
@@ -634,15 +677,16 @@ def fetch_context(force_refresh: bool = False) -> dict:
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
     now = int(datetime.now(timezone.utc).timestamp())
     if (now >= CACHE_EXPIRY) or force_refresh:
-        demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
-                      'Fetching new context')
+        demisto.debug(
+            f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. Fetching new context"
+        )
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context()
 
     return CACHED_INTEGRATION_CONTEXT
 
 
-def get_channel_id_from_context(channel_name: str = '', investigation_id=None):
+def get_channel_id_from_context(channel_name: str = "", investigation_id=None):
     """
     Retrieves a MatterMost channel ID based on the provided criteria.
 
@@ -654,7 +698,7 @@ def get_channel_id_from_context(channel_name: str = '', investigation_id=None):
     if not channel_name and not investigation_id:
         return None
     integration_context = fetch_context()
-    mirrors = json.loads(integration_context.get('mirrors', '[]'))
+    mirrors = json.loads(integration_context.get("mirrors", "[]"))
 
     # Filter mirrors based on the provided criteria.
     if investigation_id:
@@ -662,27 +706,30 @@ def get_channel_id_from_context(channel_name: str = '', investigation_id=None):
     else:
         mirrored_channel_filter = next((m for m in mirrors if m["channel_name"] == channel_name), None)
     if mirrored_channel_filter:
-        return mirrored_channel_filter.get('channel_id')
+        return mirrored_channel_filter.get("channel_id")
     return None
 
 
-def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str | None, investigation_id: str) -> str:
+def get_channel_id_to_send_notif(client: HTTPClient, to: list, channel_name: str | None, investigation_id: str) -> str:
     """
     Gets a channel ID for the correct channel to send the notification to
     :return: str: The channel id of the channel
     """
-    channel_id = ''
+    channel_id = ""
     if to:
-        # create a new channel and send the message there
-        if re.match(emailRegex, to):
-            to = get_user_id_by_email(client, to)
-        else:
-            to = get_user_id_by_username(client, to)
+        # resolve users to list
+        users = []
+        for user in to:
+            if re.match(emailRegex, user):
+                uid = get_user_id_by_email(client, user)
+            else:
+                uid = get_user_id_by_username(client, user)
+            users.append(uid)
 
         bot_id = get_user_id_from_token(client, bot_user=True)
-        channel_object = client.create_direct_channel_request(to, bot_id)
+        channel_object = client.create_direct_channel_request(users, bot_id)
         channel_id = channel_object.get('id', '')
-        demisto.debug(f'MM: Created a new direct channel to: {to} with channel_id: {channel_id}')
+        demisto.debug(f'MM: Created a new direct channel to: {users} with channel_id: {channel_id}')
 
     elif channel_name:  # if channel name provided and the channel was mirrored
         channel_id = get_channel_id_from_context(channel_name, investigation_id)
@@ -690,28 +737,33 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
         if not channel_id:
             try:
                 channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, channel_name)
-                channel_id = channel_details.get('id', '')
+                channel_id = channel_details.get("id", "")
             except Exception as e:
                 if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
                     try:
-                        demisto.debug(f'MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to.')
-                        params = {'team_id': get_team_id_from_team_name(client, client.team_name),
-                                  'name': INCIDENT_NOTIFICATION_CHANNEL.lower(),
-                                  'display_name': INCIDENT_NOTIFICATION_CHANNEL,
-                                  'type': "O"}
+                        demisto.debug(f"MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to.")
+                        params = {
+                            "team_id": get_team_id_from_team_name(client, client.team_name),
+                            "name": INCIDENT_NOTIFICATION_CHANNEL.lower(),
+                            "display_name": INCIDENT_NOTIFICATION_CHANNEL,
+                            "type": "O",
+                        }
                         channel_details = client.create_channel_request(params)
-                        channel_id = channel_details.get('id', '')
+                        channel_id = channel_details.get("id", "")
                     except Exception as sec_e:
-                        if 'Channel does not exist.' in str(sec_e):
-                            hr = 'Could not create a new channel. An archived channel with the same name may exist' \
-                                'in the provided team, choose a different name.'
+                        if "Channel does not exist." in str(sec_e):
+                            hr = (
+                                "Could not create a new channel. An archived channel with the same name may exist"
+                                "in the provided team, choose a different name."
+                            )
                             raise DemistoException(hr)
                         else:
                             raise sec_e
                 else:
                     raise DemistoException(
                         f"Did not find channel with name {channel_name}. Make sure it exists or choose a "
-                        f"different one to send notifications to. Error: {e}")
+                        f"different one to send notifications to. Error: {e}"
+                    )
 
     return channel_id
 
@@ -729,19 +781,21 @@ def save_entitlement(entitlement, message_id, reply, expiry, default_response, t
         to_id: the user id the message was sent to
     """
     integration_context = get_integration_context()
-    messages = integration_context.get('messages', [])
+    messages = integration_context.get("messages", [])
     if messages:
-        messages = json.loads(integration_context['messages'])
-    messages.append({
-        'root_id': message_id,
-        'entitlement': entitlement,
-        'reply': reply,
-        'expiry': expiry,
-        'sent': datetime.strftime(datetime.utcnow(), DATE_FORMAT),
-        'default_response': default_response,
-        'to_id': to_id
-    })
-    set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
+        messages = json.loads(integration_context["messages"])
+    messages.append(
+        {
+            "root_id": message_id,
+            "entitlement": entitlement,
+            "reply": reply,
+            "expiry": expiry,
+            "sent": datetime.strftime(datetime.utcnow(), DATE_FORMAT),
+            "default_response": default_response,
+            "to_id": to_id,
+        }
+    )
+    set_to_integration_context_with_retries({"messages": messages}, OBJECTS_TO_KEYS)
 
 
 def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
@@ -753,13 +807,13 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     Returns:
         Entitlement components
     """
-    parts = entitlement.split('@')
+    parts = entitlement.split("@")
     if len(parts) < 2:
         raise DemistoException("Entitlement cannot be parsed")
     guid = parts[0]
-    id_and_task = parts[1].split('|')
+    id_and_task = parts[1].split("|")
     incident_id = id_and_task[0]
-    task_id = ''
+    task_id = ""
 
     if len(id_and_task) > 1:
         task_id = id_and_task[1]
@@ -767,24 +821,23 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     return guid, incident_id, task_id
 
 
-def answer_question(text: str, message: dict, email: str = ''):
-    """Answers a question from MattermostAskUser
-    """
+def answer_question(text: str, message: dict, email: str = ""):
+    """Answers a question from MattermostAskUser"""
     global CLIENT
-    entitlement = message.get('entitlement', '')
-    root_id = message.get('root_id', '')
+    entitlement = message.get("entitlement", "")
+    root_id = message.get("root_id", "")
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
         process_entitlement_reply(text, root_id)
         demisto.debug(f"MM: Handled question for {incident_id=}, {task_id=} with {text=}")
     except Exception as e:
-        demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
-    message['remove'] = True
+        demisto.error(f"Failed handling entitlement {entitlement}: {e!s}")
+    message["remove"] = True
     return incident_id
 
 
-async def send_notification_async(client: HTTPClient, channel_id, message, root_id=''):
+async def send_notification_async(client: HTTPClient, channel_id, message, root_id=""):
     client.send_notification_request(channel_id, message, root_id=root_id)
 
 
@@ -794,7 +847,7 @@ async def update_post_async(client: HTTPClient, message, root_id):
 
 def process_entitlement_reply(  # pragma: no cover
     entitlement_reply: str,
-    root_id: str = '',
+    root_id: str = "",
     user_name: str | None = None,
     answer_text: str | None = None,
 ):
@@ -806,11 +859,11 @@ def process_entitlement_reply(  # pragma: no cover
     :return: None
     """
     global CLIENT
-    if '{user}' in entitlement_reply:
-        entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
-    if '{response}' in entitlement_reply and answer_text:
-        entitlement_reply = entitlement_reply.replace('{response}', str(answer_text))
-    demisto.debug(f'MM: process entitlement reply with {entitlement_reply} for {root_id}')
+    if "{user}" in entitlement_reply:
+        entitlement_reply = entitlement_reply.replace("{user}", str(user_name))
+    if "{response}" in entitlement_reply and answer_text:
+        entitlement_reply = entitlement_reply.replace("{response}", str(answer_text))
+    demisto.debug(f"MM: process entitlement reply with {entitlement_reply} for {root_id}")
     CLIENT.update_post_request(entitlement_reply, root_id)
 
 
@@ -825,12 +878,7 @@ async def handle_text_received_from_mm(investigation_id: str, text: str, operato
         operator_name: The sender name
     """
     if text:
-        demisto.addEntry(id=investigation_id,
-                         entry=text,
-                         username=operator_name,
-                         email=operator_email,
-                         footer=MESSAGE_FOOTER
-                         )
+        demisto.addEntry(id=investigation_id, entry=text, username=operator_name, email=operator_email, footer=MESSAGE_FOOTER)
 
 
 async def handle_posts(payload):
@@ -843,9 +891,9 @@ async def handle_posts(payload):
     """
     global CLIENT
     post = json.loads(payload.get("data", {}).get("post"))
-    message = post.get('message', {})
+    message = post.get("message", {})
     channel_id = post.get("channel_id")
-    user_id = post.get('user_id')
+    user_id = post.get("user_id")
     if not channel_id:
         return
 
@@ -857,8 +905,8 @@ async def handle_posts(payload):
     if is_thread(post):
         demisto.debug(f"MM: Got a thread message. {payload=}")
         username = get_username_by_id(CLIENT, user_id)
-        answer_text = post.get('message', '')
-        root_id = post.get('root_id', '')
+        answer_text = post.get("message", "")
+        root_id = post.get("root_id", "")
         entitlement_reply = await check_and_handle_entitlement(answer_text, root_id, username)
         demisto.debug(f"MM: Got {entitlement_reply=}")
         if entitlement_reply:
@@ -875,35 +923,33 @@ async def handle_posts(payload):
         return
 
     integration_context = fetch_context()
-    if not integration_context or 'mirrors' not in integration_context:
+    if not integration_context or "mirrors" not in integration_context:
         return
-    mirrors = json.loads(integration_context['mirrors'])
-    mirror_filter = list(filter(lambda m: m['channel_id'] == channel_id, mirrors))
+    mirrors = json.loads(integration_context["mirrors"])
+    mirror_filter = list(filter(lambda m: m["channel_id"] == channel_id, mirrors))
 
     if not mirror_filter:
         return
     for mirror in mirror_filter:
-        if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
+        if mirror["mirror_direction"] == "FromDemisto" or mirror["mirror_type"] == "none":
             return
-        if not mirror['mirrored']:
+        if not mirror["mirrored"]:
             # In case the investigation is not mirrored yet
             mirror = mirrors.pop(mirrors.index(mirror))
-            if mirror['mirror_direction'] and mirror['mirror_type']:
-                investigation_id = mirror['investigation_id']
-                mirror_type = mirror['mirror_type']
-                auto_close = mirror['auto_close']
-                direction = mirror['mirror_direction']
-                demisto.mirrorInvestigation(investigation_id,
-                                            f'{mirror_type}:{direction}', auto_close)
-                mirror['mirrored'] = True
+            if mirror["mirror_direction"] and mirror["mirror_type"]:
+                investigation_id = mirror["investigation_id"]
+                mirror_type = mirror["mirror_type"]
+                auto_close = mirror["auto_close"]
+                direction = mirror["mirror_direction"]
+                demisto.mirrorInvestigation(investigation_id, f"{mirror_type}:{direction}", auto_close)
+                mirror["mirrored"] = True
                 mirrors.append(mirror)
-                set_to_integration_context_with_retries({'mirrors': mirrors},
-                                                        OBJECTS_TO_KEYS)
+                set_to_integration_context_with_retries({"mirrors": mirrors}, OBJECTS_TO_KEYS)
 
         user_details = CLIENT.get_user_request(user_id)
-        operator_name = user_details.get('username', '')
-        operator_email = user_details.get('email', '')
-        investigation_id = mirror['investigation_id']
+        operator_name = user_details.get("username", "")
+        operator_email = user_details.get("email", "")
+        investigation_id = mirror["investigation_id"]
         await handle_text_received_from_mm(investigation_id, message, operator_email, operator_name)
 
 
@@ -932,21 +978,20 @@ async def handle_dm(user_id: str, text: str, channel_id: str, client: HTTPClient
     """
     message: str = text.lower()
     user_details = client.get_user_request(user_id)
-    user_name = user_details.get('username', '')
-    user_email = user_details.get('email', '')
-    if message.find('incident') != -1 and (message.find('create') != -1
-                                           or message.find('open') != -1
-                                           or message.find('new') != -1):
-
+    user_name = user_details.get("username", "")
+    user_email = user_details.get("email", "")
+    if message.find("incident") != -1 and (
+        message.find("create") != -1 or message.find("open") != -1 or message.find("new") != -1
+    ):
         demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=user_name)
 
         if not demisto_user and not ALLOW_INCIDENTS:
-            data = 'You are not allowed to create incidents.'
+            data = "You are not allowed to create incidents."
         else:
             try:
                 data = await translate_create(text, user_name, user_email, demisto_user)
             except Exception as e:
-                data = f'Failed creating incidents: {str(e)}'
+                data = f"Failed creating incidents: {e!s}"
     else:
         try:
             data = demisto.directMessage(text, user_name, user_email, ALLOW_INCIDENTS)
@@ -954,7 +999,7 @@ async def handle_dm(user_id: str, text: str, channel_id: str, client: HTTPClient
             data = str(e)
 
     if not data:
-        data = 'Sorry, I could not perform the selected operation.'
+        data = "Sorry, I could not perform the selected operation."
 
     await send_notification_async(client, channel_id, data)
 
@@ -971,65 +1016,65 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
     Returns:
         Creation result
     """
-    json_pattern = r'(?<=json=).*'
-    name_pattern = r'(?<=name=).*'
-    type_pattern = r'(?<=type=).*'
-    message = message.replace("\n", '').replace('`', '')
+    json_pattern = r"(?<=json=).*"
+    name_pattern = r"(?<=name=).*"
+    type_pattern = r"(?<=type=).*"
+    message = message.replace("\n", "").replace("`", "")
     json_match = re.search(json_pattern, message)
     created_incident = None
-    data = ''
-    user_demisto_id = ''
-    request_fields = {'ReporterEmail': user_email, 'Message': message}
+    data = ""
+    user_demisto_id = ""
+    request_fields = {"ReporterEmail": user_email, "Message": message}
     incidents = []
     if demisto_user:
-        user_demisto_id = demisto_user.get('id', '')
+        user_demisto_id = demisto_user.get("id", "")
 
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
-            data = 'No other properties other than json should be specified.'
+            data = "No other properties other than json should be specified."
         else:
             incidents_json = json_match.group()
-            incidents = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
+            incidents = json.loads(incidents_json.replace("“", '"').replace("”", '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
             add_req_data_to_incidents(incidents, request_fields)
             created_incident = await create_incidents(incidents, user_name, user_email, user_demisto_id)
 
             if not created_incident:
-                data = 'Failed creating incidents.'
+                data = "Failed creating incidents."
     else:
         name_match = re.search(name_pattern, message)
         if not name_match:
-            data = 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
+            data = "Please specify arguments in the following manner: name=<name> type=[type] or json=<json>."
         else:
-            incident_name = re.sub('type=.*', '', name_match.group()).strip()
-            incident_type = ''
+            incident_name = re.sub("type=.*", "", name_match.group()).strip()
+            incident_type = ""
 
             type_match = re.search(type_pattern, message)
             if type_match:
-                incident_type = re.sub('name=.*', '', type_match.group()).strip()
+                incident_type = re.sub("name=.*", "", type_match.group()).strip()
 
-            incident = {'name': incident_name}
+            incident = {"name": incident_name}
 
             incident_type = incident_type or INCIDENT_TYPE
             if incident_type:
-                incident['type'] = incident_type
+                incident["type"] = incident_type
             incidents = add_req_data_to_incidents([incident], request_fields)
             created_incident = await create_incidents([incident], user_name, user_email, user_demisto_id)
             if not created_incident:
-                data = 'Failed creating incidents.'
+                data = "Failed creating incidents."
 
     if created_incident:
-        demisto.debug(f'Created {len(incidents)} incidents')
+        demisto.debug(f"Created {len(incidents)} incidents")
         update_integration_context_samples(incidents)
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
         server_links = demisto.demistoUrls()
-        server_link = server_links.get('server')
-        incident_name = created_incident['name']
-        incident_id = created_incident['id']
-        incident_url = get_war_room_url(f'{server_link}#/WarRoom/{incident_id}', incident_id)
-        data = f'Successfully created incident {incident_name}.\n View it on: {incident_url}'
+        server_link = server_links.get("server")
+        incident_name = created_incident["name"]
+        incident_id = created_incident["id"]
+        incident_url = get_war_room_url(f"{server_link}#/WarRoom/{incident_id}", incident_id)
+        data = f"Successfully created incident {incident_name}.\n View it on: {incident_url}"
 
     return data
 
@@ -1039,11 +1084,11 @@ def add_req_data_to_incidents(incidents: list, request_fields: dict) -> list:  #
     Adds the request_fields as a rawJSON to every created incident for further information on the incident
     """
     for incident in incidents:
-        incident['rawJSON'] = json.dumps(request_fields)
+        incident["rawJSON"] = json.dumps(request_fields)
     return incidents
 
 
-async def create_incidents(incidents: list, user_name: str, user_email: str, user_demisto_id: str = ''):
+async def create_incidents(incidents: list, user_name: str, user_email: str, user_demisto_id: str = ""):
     """
     Creates incidents according to a provided JSON object
     Args:
@@ -1058,18 +1103,17 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
 
     for incident in incidents:
         # Add relevant labels to context
-        labels = incident.get('labels', [])
-        keys = [label.get('type') for label in labels]
-        if 'Reporter' not in keys:
-            labels.append({'type': 'Reporter', 'value': user_name})
-        if 'ReporterEmail' not in keys:
-            labels.append({'type': 'ReporterEmail', 'value': user_email})
-        if 'Source' not in keys:
-            labels.append({'type': 'Source', 'value': 'Slack'})
-        incident['labels'] = labels
+        labels = incident.get("labels", [])
+        keys = [label.get("type") for label in labels]
+        if "Reporter" not in keys:
+            labels.append({"type": "Reporter", "value": user_name})
+        if "ReporterEmail" not in keys:
+            labels.append({"type": "ReporterEmail", "value": user_email})
+        if "Source" not in keys:
+            labels.append({"type": "Source", "value": "Slack"})
+        incident["labels"] = labels
 
-    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(
-        incidents)
+    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(incidents)
 
     return data
 
@@ -1083,8 +1127,8 @@ def update_integration_context_samples(incidents: list, max_samples: int = MAX_S
         max_samples (int): Max samples size.
     """
     ctx = get_integration_context()
-    updated_samples_list: List[Dict] = incidents + ctx.get('samples', [])
-    ctx['samples'] = updated_samples_list[:max_samples]
+    updated_samples_list: List[Dict] = incidents + ctx.get("samples", [])
+    ctx["samples"] = updated_samples_list[:max_samples]
     set_integration_context(ctx)
 
 
@@ -1104,37 +1148,35 @@ def find_mirror_by_investigation() -> dict:
     investigation = demisto.investigation()
     if investigation:
         integration_context = get_integration_context()
-        if integration_context.get('mirrors'):
-            mirrors = json.loads(integration_context['mirrors'])
-            investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
-                                               mirrors))
+        if integration_context.get("mirrors"):
+            mirrors = json.loads(integration_context["mirrors"])
+            investigation_filter = list(filter(lambda m: investigation.get("id") == m["investigation_id"], mirrors))
             if investigation_filter:
                 mirror = investigation_filter[0]
 
     return mirror
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: HTTPClient) -> str:  # pragma: no cover
-    """Tests connectivity with the client.
-    """
+    """Tests connectivity with the client."""
     try:
-        client.get_user_request(user_id='me', bot_user=False)  # Validating the Personal Access Token
+        client.get_user_request(user_id="me", bot_user=False)  # Validating the Personal Access Token
     except Exception as e:
         demisto.debug(str(e))
-        if 'Invalid or expired session, please login again.' in str(e):
-            raise DemistoException('Invalid or expired session. Make sure the Personal Access Token is configured properly.')
+        if "Invalid or expired session, please login again." in str(e):
+            raise DemistoException("Invalid or expired session. Make sure the Personal Access Token is configured properly.")
         else:
             raise e
 
     try:
-        client.get_user_request(user_id='me', bot_user=True)  # Validating the Bot Access Token
+        client.get_user_request(user_id="me", bot_user=True)  # Validating the Bot Access Token
     except Exception as e:
         demisto.debug(str(e))
-        if 'Invalid or expired session, please login again.' in str(e):
-            raise DemistoException('Invalid or expired session. Make sure the Bot Access Token is configured properly.')
+        if "Invalid or expired session, please login again." in str(e):
+            raise DemistoException("Invalid or expired session. Make sure the Bot Access Token is configured properly.")
         else:
             raise e
 
@@ -1142,42 +1184,42 @@ def test_module(client: HTTPClient) -> str:  # pragma: no cover
         if client.notification_channel and client.team_name:
             # Validating the default team and channel exists
             channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, client.notification_channel)
-            client.send_notification_request(channel_details.get('id', ''), 'Hi there! This is a test message from XSOAR.')
+            client.send_notification_request(channel_details.get("id", ""), "Hi there! This is a test message from XSOAR.")
 
     except Exception as e:
         demisto.debug(str(e))
-        if 'Unable to find the existing team' in str(e):
-            raise DemistoException('Could not find the team, make sure it is valid and/or exists.')
-        elif 'Channel does not exist' in str(e):
-            raise DemistoException('Channel does not exist or archived, choose a different channel to send notifications to')
+        if "Unable to find the existing team" in str(e):
+            raise DemistoException("Could not find the team, make sure it is valid and/or exists.")
+        elif "Channel does not exist" in str(e):
+            raise DemistoException("Channel does not exist or archived, choose a different channel to send notifications to")
         else:
             raise e
 
-    return 'ok'
+    return "ok"
 
 
 def get_team_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Gets a team """
-    team_name = args.get('team_name', client.team_name)
+    """Gets a team"""
+    team_name = args.get("team_name", client.team_name)
 
     team_details = client.get_team_request(team_name)
 
-    hr = tableToMarkdown('Team details:', team_details, headers=['name', 'display_name', 'type', 'id'])
+    hr = tableToMarkdown("Team details:", team_details, headers=["name", "display_name", "type", "id"])
     return CommandResults(
-        outputs_prefix='Mattermost.Team',
-        outputs_key_field='name',
+        outputs_prefix="Mattermost.Team",
+        outputs_key_field="name",
         outputs=team_details,
         readable_output=hr,
     )
 
 
 def list_channels_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Lists channels """
-    team_name = args.get('team', client.team_name)
-    include_private_channels = argToBoolean(args.get('include_private_channels', False))
-    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
-    limit = args.get('limit', '')
+    """Lists channels"""
+    team_name = args.get("team", client.team_name)
+    include_private_channels = argToBoolean(args.get("include_private_channels", False))
+    page = arg_to_number(args.get("page", DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
+    limit = args.get("limit", "")
     channel_details = []
     if limit:
         page = DEFAULT_PAGE_NUMBER
@@ -1185,38 +1227,69 @@ def list_channels_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
 
     team_details = client.get_team_request(team_name)
 
-    params = {'page': page, 'per_page': page_size}
-    channel_details = client.list_channel_request(team_details.get('id', ''), params)
+    params = {"page": page, "per_page": page_size}
+    channel_details = client.list_channel_request(team_details.get("id", ""), params)
 
     if include_private_channels:
-        channel_details.extend(client.list_channel_request(team_details.get('id', ''), params, get_private=True))
+        channel_details.extend(client.list_channel_request(team_details.get("id", ""), params, get_private=True))
 
-    hr = tableToMarkdown('Channels:', channel_details, headers=['name', 'display_name', 'type', 'id'])
+    hr = tableToMarkdown("Channels:", channel_details, headers=["name", "display_name", "type", "id"])
     return CommandResults(
-        outputs_prefix='Mattermost.Channel',
-        outputs_key_field='name',
+        outputs_prefix="Mattermost.Channel",
+        outputs_key_field="name",
         outputs=channel_details,
         readable_output=hr,
     )
 
 
-def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Creates a channel """
-    team_name = args.get('team', client.team_name)
-    channel_name = args.get('name', '')
-    channel_display_name = args.get('display_name')
-    channel_type = 'O' if args.get('type') == 'public' else 'P'
-    purpose = args.get('purpose', '')
-    header = args.get('header', '')
+def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all private channels which belong to team_name and user is member
+    """
+    team_name = args.get('team_name', client.team_name)
+    user_id = args.get('user_id', '')
 
     team_details = client.get_team_request(team_name)
 
-    params = {'team_id': team_details.get('id', ''),
-              'name': channel_name,
-              'display_name': channel_display_name,
-              'type': channel_type,
-              'purpose': purpose,
-              'header': header}
+    channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
+    # filter for private channels only
+    channels = list(filter(lambda x: x.get("type", "O") == 'P', channels))
+
+    user_details = client.get_user_request(user_id)
+
+    hr = tableToMarkdown(f'Channels for {user_details.get("username", user_id)}:',
+                         channels, headers=['name', 'display_name', 'type', 'id'])
+    return CommandResults(
+        outputs_prefix='Mattermost.User',
+        outputs_key_field='id',
+        outputs={
+            'id': user_id,
+            'channels': channels
+        },
+        raw_response=channels,
+        readable_output=hr,
+    )
+
+
+def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """Creates a channel"""
+    team_name = args.get("team", client.team_name)
+    channel_name = args.get("name", "")
+    channel_display_name = args.get("display_name")
+    channel_type = "O" if args.get("type") == "public" else "P"
+    purpose = args.get("purpose", "")
+    header = args.get("header", "")
+
+    team_details = client.get_team_request(team_name)
+
+    params = {
+        "team_id": team_details.get("id", ""),
+        "name": channel_name,
+        "display_name": channel_display_name,
+        "type": channel_type,
+        "purpose": purpose,
+        "header": header,
+    }
 
     remove_nulls_from_dictionary(params)
 
@@ -1224,14 +1297,16 @@ def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandR
         channel_details = client.create_channel_request(params)
         hr = f'The channel {channel_display_name} was created successfully, with channel ID: {channel_details.get("id")}'
     except Exception as e:
-        if 'A channel with that name already exists' in str(e):
+        if "A channel with that name already exists" in str(e):
             try:
                 channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
                 hr = f"Channel {channel_display_name} already exists."
             except Exception as sec_e:
-                if 'Channel does not exist.' in str(sec_e):
-                    hr = 'Could not create a new channel. An archived channel with the same name may exist' \
-                        'in the provided team. Please choose a different name.'
+                if "Channel does not exist." in str(sec_e):
+                    hr = (
+                        "Could not create a new channel. An archived channel with the same name may exist"
+                        "in the provided team. Please choose a different name."
+                    )
                     raise DemistoException(hr)
                 else:
                     raise sec_e
@@ -1239,146 +1314,136 @@ def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandR
             raise e
 
     return CommandResults(
-        outputs_prefix='Mattermost.Channel',
-        outputs_key_field='id',
-        outputs=channel_details,
-        readable_output=hr
+        outputs_prefix="Mattermost.Channel", outputs_key_field="id", outputs=channel_details, readable_output=hr
     )
 
 
 def add_channel_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Adds a channel member """
-    team_name = args.get('team', client.team_name)
-    channel_name = args.get('channel', '')
-    user_id = args.get('user_id', '')
+    """Adds a channel member"""
+    team_name = args.get("team", client.team_name)
+    channel_name = args.get("channel", "")
+    user_id = args.get("user_id", "")
 
     channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
 
-    data = {'user_id': user_id}
-    client.add_channel_member_request(channel_details.get('id', ''), data)
+    data = {"user_id": user_id}
+    client.add_channel_member_request(channel_details.get("id", ""), data)
 
     user_details = client.get_user_request(user_id)
 
     hr = f'The member {user_details.get("username", user_id)} was added to the channel successfully, with channel ID: {channel_details.get("id")}'  # noqa: E501
-    return CommandResults(
-        readable_output=hr
-    )
+    return CommandResults(readable_output=hr)
 
 
 def remove_channel_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Removes a channel member """
-    team_name = args.get('team', client.team_name)
-    channel_name = args.get('channel', '')
-    user_id = args.get('user_id', '')
+    """Removes a channel member"""
+    team_name = args.get("team", client.team_name)
+    channel_name = args.get("channel", "")
+    user_id = args.get("user_id", "")
 
     channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
 
-    client.remove_channel_member_request(channel_details.get('id', ''), user_id)
+    client.remove_channel_member_request(channel_details.get("id", ""), user_id)
 
     user_details = client.get_user_request(user_id)
 
     hr = f'The member {user_details.get("username", user_id)} was removed from the channel successfully.'
-    return CommandResults(
-        readable_output=hr
-    )
+    return CommandResults(readable_output=hr)
 
 
 def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Closes a channels """
-    team_name = args.get('team_name', client.team_name)
-    channel_name = args.get('channel', '')
+    """Closes a channels"""
+    team_name = args.get("team_name", client.team_name)
+    channel_name = args.get("channel", "")
 
     channel_details = {}
-    channel_id = ''
+    channel_id = ""
     if channel_name:
         try:
             channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
         except Exception as e:
-            if 'Channel does not exist.' in str(e):
-                hr = f'The channel {channel_name} was not found. It may have been already deleted, or not in the team provided.'
+            if "Channel does not exist." in str(e):
+                hr = f"The channel {channel_name} was not found. It may have been already deleted, or not in the team provided."
                 return CommandResults(readable_output=hr)
             else:
                 raise e
 
     try:
-        client.close_channel_request(channel_details.get('id', '') or channel_id)
-        hr = f'The channel {channel_name} was delete successfully.'
+        client.close_channel_request(channel_details.get("id", "") or channel_id)
+        hr = f"The channel {channel_name} was delete successfully."
     except Exception as e:
-        if 'Channel does not exist.' in str(e):
-            hr = f'The channel {channel_name} was already deleted.'
+        if "Channel does not exist." in str(e):
+            hr = f"The channel {channel_name} was already deleted."
         else:
             raise e
 
     mirror = find_mirror_by_investigation()
     integration_context = get_integration_context()
     if mirror:
-        demisto.debug('MM: Found mirrored channel to close.')
-        channel_id = mirror.get('channel_id', '')
-        mirrors = json.loads(integration_context['mirrors'])
+        demisto.debug("MM: Found mirrored channel to close.")
+        channel_id = mirror.get("channel_id", "")
+        mirrors = json.loads(integration_context["mirrors"])
         # Check for mirrors on the archived channel
-        channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
+        channel_mirrors = list(filter(lambda m: channel_id == m["channel_id"], mirrors))
         for mirror in channel_mirrors:
-            mirror['remove'] = True
-            demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
-                                        mirror['auto_close'])
+            mirror["remove"] = True
+            demisto.mirrorInvestigation(mirror["investigation_id"], f'none:{mirror["mirror_direction"]}', mirror["auto_close"])
 
-        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS)
+        set_to_integration_context_with_retries({"mirrors": mirrors}, OBJECTS_TO_KEYS)
 
-    return CommandResults(
-        readable_output=hr
-    )
+    return CommandResults(readable_output=hr)
 
 
 def list_users_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Lists users """
-    team_name = args.get('team_name', '')
-    channel_name = args.get('channel', '')
-    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
-    limit = arg_to_number(args.get('limit', ''))
+    """Lists users"""
+    team_name = args.get("team_name", "")
+    channel_name = args.get("channel", "")
+    page = arg_to_number(args.get("page", DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
+    limit = arg_to_number(args.get("limit", ""))
 
     if limit:
         page = DEFAULT_PAGE_NUMBER
         page_size = limit
 
-    team_id = ''
+    team_id = ""
     if team_name:
         team_details = client.get_team_request(team_name)
-        team_id = team_details.get('id', '')
+        team_id = team_details.get("id", "")
 
-    channel_id = ''
+    channel_id = ""
     if channel_name:
         if not team_name:
             raise DemistoException("Must provide a team name if a channel name was provided.")
         channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
-        channel_id = channel_details.get('id', '')
-        team_id = ''  # The search in Mattermost is done with an OR operator
+        channel_id = channel_details.get("id", "")
+        team_id = ""  # The search in Mattermost is done with an OR operator
 
-    params = {'page': page, 'per_page': page_size, 'in_team': team_id, 'in_channel': channel_id}
+    params = {"page": page, "per_page": page_size, "in_team": team_id, "in_channel": channel_id}
     remove_nulls_from_dictionary(params)
 
     users = client.list_users_request(params)
 
-    hr = tableToMarkdown('Users:', users, headers=['username', 'email', 'role', 'id'])
+    hr = tableToMarkdown("Users:", users, headers=["username", "email", "role", "id"])
     return CommandResults(
-        outputs_prefix='Mattermost.User',
-        outputs_key_field='id',
+        outputs_prefix="Mattermost.User",
+        outputs_key_field="id",
         outputs=users,
         readable_output=hr,
     )
 
 
 def send_file_command(client: HTTPClient, args) -> CommandResults:
-    """ Sends a file """
-    channel_name = args.get('channel', '')
-    team_name = args.get('team_name', client.team_name)
-    message = args.get('message')
-    entry_id = args.get('entry_id') or args.get('file')
-    to = args.get('to', '')
+    """Sends a file"""
+    channel_name = args.get("channel", "")
+    team_name = args.get("team_name", client.team_name)
+    message = args.get("message")
+    entry_id = args.get("entry_id") or args.get("file")
+    to = args.get("to", "")
 
-    demisto.debug(f'{to=}, {channel_name=}')
+    demisto.debug(f"{to=}, {channel_name=}")
 
-    if (to and channel_name):
+    if to and channel_name:
         raise DemistoException("Cannot use both to and channel_name arguments")
 
     if not to and not channel_name:
@@ -1392,28 +1457,27 @@ def send_file_command(client: HTTPClient, args) -> CommandResults:
             to = get_user_id_by_username(client, to)
 
         bot_id = get_user_id_from_token(client, bot_user=True)
-        channel_details = client.create_direct_channel_request(to, bot_id)
+        channel_details = client.create_direct_channel_request([to], bot_id)
         demisto.debug(f'MM: Created a new direct channel to: {to} with channel_id: {channel_details.get("id")}')
     else:
         channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
 
     file_info = demisto.getFilePath(entry_id)
-    params = {'channel_id': channel_details.get('id'),
-              'filename': file_info['name']}
+    params = {"channel_id": channel_details.get("id"), "filename": file_info["name"]}
 
     upload_response = client.send_file_request(file_info, params)
-    demisto.debug('MM: Uploaded the file successfully to mattermost')
+    demisto.debug("MM: Uploaded the file successfully to mattermost")
 
-    data = {'channel_id': channel_details.get('id'),
-            'message': message,
-            'file_ids': [upload_response.get('file_infos', [])[0].get('id', '')]}   # always uploading a single file
+    data = {
+        "channel_id": channel_details.get("id"),
+        "message": message,
+        "file_ids": [upload_response.get("file_infos", [])[0].get("id", "")],
+    }  # always uploading a single file
     remove_nulls_from_dictionary(params)
 
     client.create_post_with_file_request(data)
 
-    return CommandResults(
-        readable_output=f'file {file_info["name"]} was successfully sent to channel {channel_name}'
-    )
+    return CommandResults(readable_output=f'file {file_info["name"]} was successfully sent to channel {channel_name}')
 
 
 def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
@@ -1423,119 +1487,124 @@ def mirror_investigation(client: HTTPClient, **args) -> CommandResults:
     if not MIRRORING_ENABLED:
         raise DemistoException("Couldn't mirror investigation, Mirroring is disabled")
     if not LONG_RUNNING:
-        raise DemistoException('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
-                               ' long running must be enabled.')
+        raise DemistoException(
+            "Mirroring is enabled, however long running is disabled. For mirrors to work correctly,"
+            " long running must be enabled."
+        )
     client = client
-    mirror_type = args.get('type', 'all')
-    direction = args.get('direction', 'Both')
-    channel_name = args.get('channel', '')
-    team_name = args.get('team_name', client.team_name)
-    mirror_to = args.get('mirrorTo', 'group')
+    mirror_type = args.get("type", "all")
+    direction = args.get("direction", "Both")
+    channel_name = args.get("channel", "")
+    team_name = args.get("team_name", client.team_name)
+    mirror_to = args.get("mirrorTo", "group")
 
-    autoclose = argToBoolean(args.get('autoclose', True))
+    autoclose = argToBoolean(args.get("autoclose", True))
     send_first_message = False
-    kick_admin = argToBoolean(args.get('kickAdmin', False))
+    kick_admin = argToBoolean(args.get("kickAdmin", False))
 
     investigation = demisto.investigation()
-    investigation_id = str(investigation.get('id'))
-    if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
-        raise DemistoException('This action cannot be performed in the playground.')
+    investigation_id = str(investigation.get("id"))
+    if investigation.get("type") == PLAYGROUND_INVESTIGATION_TYPE:
+        raise DemistoException("This action cannot be performed in the playground.")
 
     integration_context = get_integration_context()
-    if not integration_context or not integration_context.get('mirrors', []):
+    if not integration_context or not integration_context.get("mirrors", []):
         mirrors: list = []
         current_mirror = []
     else:
-        mirrors = json.loads(integration_context['mirrors'])
-        current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
+        mirrors = json.loads(integration_context["mirrors"])
+        current_mirror = list(filter(lambda m: m["investigation_id"] == investigation_id, mirrors))
 
-    demisto.debug(f'MM: {mirrors=}')
-    demisto.debug(f'MM: {current_mirror=}')
+    demisto.debug(f"MM: {mirrors=}")
+    demisto.debug(f"MM: {current_mirror=}")
     # get admin user id from token
     admin_user_id = get_user_id_from_token(client)
 
     channel_filter: list = []
-    channel_id = ''
+    channel_id = ""
     if channel_name:
         # check if channel already exists
-        channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
+        channel_filter = list(filter(lambda m: m["channel_name"] == channel_name, mirrors))
 
     if not current_mirror:
-        channel_name = channel_name or f'incident-{investigation_id}'
+        channel_name = channel_name or f"incident-{investigation_id}"
         if not channel_filter:
             channel_details: dict = {}
             try:
                 channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
                 send_first_message = False
             except Exception as e:
-                if '404' in str(e):
+                if "404" in str(e):
                     # create new channel
-                    demisto.debug(f'MM: Creating a new channel for mirroring with name: {channel_name}')
-                    channel_type = 'public' if mirror_to == 'channel' else 'private'
-                    args = {'team_name': team_name, 'name': channel_name.lower(),
-                            'display_name': channel_name, 'type': channel_type}
+                    demisto.debug(f"MM: Creating a new channel for mirroring with name: {channel_name}")
+                    channel_type = "public" if mirror_to == "channel" else "private"
+                    args = {
+                        "team_name": team_name,
+                        "name": channel_name.lower(),
+                        "display_name": channel_name,
+                        "type": channel_type,
+                    }
                     result = create_channel_command(client=client, args=args)
                     channel_details = result.outputs  # type: ignore
                     send_first_message = True
                 else:
                     raise e
 
-            channel_id = channel_details.get('id', '')
-            channel_team_id = channel_details.get('team_id')
+            channel_id = channel_details.get("id", "")
+            channel_team_id = channel_details.get("team_id")
         else:
             mirrored_channel = channel_filter[0]
-            channel_team_id = mirrored_channel['channel_team_id']
-            channel_id = mirrored_channel['channel_id']
-            channel_name = mirrored_channel['channel_name']
+            channel_team_id = mirrored_channel["channel_team_id"]
+            channel_id = mirrored_channel["channel_id"]
+            channel_name = mirrored_channel["channel_name"]
 
         mirror = {
-            'channel_team_id': channel_team_id,
-            'channel_id': channel_id,
-            'channel_name': channel_name,
-            'investigation_id': investigation.get('id'),
-            'mirror_type': mirror_type,
-            'mirror_direction': direction,
-            'auto_close': bool(autoclose),
-            'mirrored': True
+            "channel_team_id": channel_team_id,
+            "channel_id": channel_id,
+            "channel_name": channel_name,
+            "investigation_id": investigation.get("id"),
+            "mirror_type": mirror_type,
+            "mirror_direction": direction,
+            "auto_close": bool(autoclose),
+            "mirrored": True,
         }
     else:
         mirror = mirrors.pop(mirrors.index(current_mirror[0]))
-        channel_id = mirror['channel_id']
+        channel_id = mirror["channel_id"]
         if mirror_type:
-            mirror['mirror_type'] = mirror_type
+            mirror["mirror_type"] = mirror_type
         if autoclose:
-            mirror['auto_close'] = autoclose
+            mirror["auto_close"] = autoclose
         if direction:
-            mirror['mirror_direction'] = direction
+            mirror["mirror_direction"] = direction
         if channel_name:
             # update channel name if needed
-            demisto.debug(f'MM: Updating channel name to {channel_name}')
-            params = {'name': channel_name, 'display_name': channel_name, 'id': channel_id}
+            demisto.debug(f"MM: Updating channel name to {channel_name}")
+            params = {"name": channel_name, "display_name": channel_name, "id": channel_id}
             client.update_channel_request(channel_id=channel_id, params=params)
-            mirror['channel_name'] = channel_name
-        channel_name = mirror['channel_name']
-        mirror['mirrored'] = True
-    demisto.mirrorInvestigation(investigation_id, f'{mirror_type}:{direction}', autoclose)
+            mirror["channel_name"] = channel_name
+        channel_name = mirror["channel_name"]
+        mirror["mirrored"] = True
+    demisto.mirrorInvestigation(investigation_id, f"{mirror_type}:{direction}", autoclose)
 
     mirrors.append(mirror)
-    set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS)
+    set_to_integration_context_with_retries({"mirrors": mirrors}, OBJECTS_TO_KEYS)
 
     if send_first_message:
         server_links = demisto.demistoUrls()
-        server_link = server_links.get('server')
-        incident_url = get_war_room_url(f'{server_link}#/WarRoom/{investigation_id}', investigation_id)
-        message_to_send = (f'This channel was created to mirror incident {investigation_id}.'
-                           f' \n View it on: {incident_url}')
+        server_link = server_links.get("server")
+        incident_url = get_war_room_url(f"{server_link}#/WarRoom/{investigation_id}", investigation_id)
+        message_to_send = f"This channel was created to mirror incident {investigation_id}. \n View it on: {incident_url}"
 
         client.send_notification_request(channel_id, message_to_send)
     if kick_admin:
         try:
             client.remove_channel_member_request(channel_id, admin_user_id)
         except Exception as e:
-            demisto.debug(f'Could not kick admin from channel. Error: {e}')
+            demisto.debug(f"Could not kick admin from channel. Error: {e}")
 
     return CommandResults(
-        readable_output=f'Investigation mirrored successfully with mirror type {mirror_type},\n channel name: {channel_name}'
+        readable_output=f"Investigation mirrored successfully with mirror type {mirror_type},\n channel name: {channel_name}"
     )
 
 
@@ -1544,112 +1613,236 @@ def send_notification(client: HTTPClient, **args):
     Sends notification for a MatterMost channel
     """
     demisto.debug(f'MM: Sending notification with {args=}')
-    to = args.get('to', '')
+    to = argToList(args.get('to', ''))
     entry = args.get('entry')
     channel_name = args.get('channel', '')
     message_to_send = args.get("message", "")
-    ignore_add_url = argToBoolean(args.get('ignoreAddURL', False))
-    mattermost_ask = argToBoolean(args.get('mattermost_ask', False))
-    entitlement = ''
-    reply = ''
-    expiry = ''
-    default_response = ''
+    ignore_add_url = argToBoolean(args.get("ignoreAddURL", False))
+    mattermost_ask = argToBoolean(args.get("mattermost_ask", False))
+    entitlement = ""
+    reply = ""
+    expiry = ""
+    default_response = ""
 
     if mattermost_ask:
-        parsed_message = json.loads(args.get("message", ''))
-        entitlement = parsed_message.get('entitlement', '')
-        expiry = parsed_message.get('expiry', '')
-        default_response = parsed_message.get('default_response', '')
-        reply = parsed_message.get('reply', '')
-        message_to_send = parsed_message.get('message', '')
+        parsed_message = json.loads(args.get("message", ""))
+        entitlement = parsed_message.get("entitlement", "")
+        expiry = parsed_message.get("expiry", "")
+        default_response = parsed_message.get("default_response", "")
+        reply = parsed_message.get("reply", "")
+        message_to_send = parsed_message.get("message", "")
 
-    message_type = args.get('messageType', '')  # From server
-    original_message = args.get('originalMessage', '')  # From server
-    entry_object = args.get('entryObject')  # From server
-    investigation_id = ''
+    message_type = args.get("messageType", "")  # From server
+    original_message = args.get("originalMessage", "")  # From server
+    entry_object = args.get("entryObject")  # From server
+    investigation_id = ""
     poll: dict = {}
 
-    if (to and channel_name):
+    if to and channel_name:
         raise DemistoException("Cannot use both to and channel_name arguments")
 
     channel_name = channel_name or client.notification_channel
 
     if entry_object:
-        investigation_id = entry_object.get('investigationId')  # From server, available from demisto v6.1 and above
+        investigation_id = entry_object.get("investigationId")  # From server, available from demisto v6.1 and above
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != MIRROR_TYPE:
-        demisto.debug(f'MM: Will not mirror the message type: {message_type}')
-        return (f"Message type is not in permitted options. Received: {message_type}")
+        demisto.debug(f"MM: Will not mirror the message type: {message_type}")
+        return f"Message type is not in permitted options. Received: {message_type}"
 
     if message_type and message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
-        return ("Message already mirrored")
+        return "Message already mirrored"
 
     if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
         if client.notification_channel:
             # change the notification channel to the one in the configuration
             channel_name = client.notification_channel
         else:
-            demisto.debug('MM: No notification channel was configured, '
-                          f'will send notification to {INCIDENT_NOTIFICATION_CHANNEL}')
+            demisto.debug(
+                f"MM: No notification channel was configured, will send notification to {INCIDENT_NOTIFICATION_CHANNEL}"
+            )
 
     if not ignore_add_url:
         investigation = demisto.investigation()
         server_links = demisto.demistoUrls()
         if investigation:
-            if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
-                link = server_links.get('warRoom')
+            if investigation.get("type") != PLAYGROUND_INVESTIGATION_TYPE:
+                link = server_links.get("warRoom")
                 if link:
                     link = get_war_room_url(link)
                     if entry:
-                        link += '/' + entry
-                    message_to_send += f'\nView it on: {link}'
+                        link += "/" + entry
+                    message_to_send += f"\nView it on: {link}"
             else:
-                link = server_links.get('server', '')
+                link = server_links.get("server", "")
                 if link:
-                    message_to_send += f'\nView it on: {link}#/home'
+                    message_to_send += f"\nView it on: {link}#/home"
     channel_id = get_channel_id_to_send_notif(client, to, channel_name, investigation_id)
 
     raw_data = client.send_notification_request(channel_id, message_to_send, props=poll)
     message_id = raw_data.get("id")
-    demisto.debug(f'MM: Got replay from post: {raw_data}')
+    demisto.debug(f"MM: Got replay from post: {raw_data}")
     if entitlement:
-        demisto.debug(f'MM: Found entitlement, saving message to context: {entitlement}')
+        demisto.debug(f"MM: Found entitlement, saving message to context: {entitlement}")
         save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
     return CommandResults(
-        readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}'
+        readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}',
+        raw_response=raw_data
     )
 
 
-''' MAIN FUNCTION '''
+def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """ Lists groups """
+    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
+    limit = arg_to_number(args.get('limit', ''))
+    q = args.get('group', '')
+    group_details: list[Any] = []
+    if limit:
+        page = DEFAULT_PAGE_NUMBER
+        page_size = limit
+
+    params = {'page': page, 'per_page': page_size}
+    if q:
+        params['q'] = q
+    group_details = client.list_groups_request(params)
+
+    hr = tableToMarkdown('Groups:', group_details, headers=['name', 'display_name', 'description', 'id'])
+    return CommandResults(
+        outputs_prefix='Mattermost.Groups',
+        outputs_key_field='id',
+        outputs=group_details,
+        raw_response=group_details,
+        readable_output=hr,
+    )
+
+
+def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """ List the members of a group """
+    group_id = args.get('group_id', '')
+    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
+    limit = arg_to_number(args.get('limit', ''))
+    member_details = {}
+    if limit:
+        page = DEFAULT_PAGE_NUMBER
+        page_size = limit
+
+    params = {'page': page, 'per_page': page_size}
+    member_details = client.list_group_members_request(group_id, params)
+
+    hr = tableToMarkdown(f'Group {group_id} members ({len(member_details.get("members",[]))}/'
+                         f'{member_details.get("total_member_count", "Unknown")}):', member_details.get("members", []),
+                         headers=['username', 'email', 'id'])
+    return CommandResults(
+        outputs_prefix='Mattermost.Members',
+        outputs_key_field='id',
+        outputs=member_details.get("members", []),
+        readable_output=hr,
+        raw_response=member_details
+    )
+
+
+def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """ Adds member(s) to a group """
+    group_id = args.get('group_id', '')
+    user_ids = argToList(args.get('user_ids', ''))
+
+    data = {'user_ids': user_ids}
+    try:
+        response = client.add_group_member_request(group_id, data)
+    except DemistoException as ex:
+        if ex.res.status_code == 500:
+            raise DemistoException("Got 500 from the server - this error could indicate that the user ID is invalid")
+        raise ex
+
+    hr = []
+    for user in user_ids:
+        user_details = client.get_user_request(user)
+        hr.append(f'The member {user_details.get("username", user)} was added to the group successfully, with group ID: '
+                  f'{group_id}')
+
+    return CommandResults(
+        readable_output="\n".join(hr),
+        raw_response=response
+    )
+
+
+def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """ Removes member(s) form a group """
+    group_id = args.get('group_id', '')
+    user_ids = argToList(args.get('user_ids', ''))
+
+    data = {'user_ids': user_ids}
+    try:
+        response = client.remove_group_member_request(group_id, data)
+    except DemistoException as ex:
+        if ex.res.status_code == 500:
+            raise DemistoException(
+                "Got 500 from the server - this error could indicate that the user does not exist in the group or is invalid"
+            )
+        raise ex
+
+    hr = []
+    for user in user_ids:
+        user_details = client.get_user_request(user)
+        hr.append(f'The member {user_details.get("username", user)} was removed from the group successfully, with group ID:'
+                  f' {group_id}')
+
+    return CommandResults(
+        readable_output="\n".join(hr),
+        raw_response=response
+    )
+
+
+def set_channel_role_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
+    """ Set channel role for a channel member """
+    channel_id = args.get('channel_id', '')
+    user_id = args.get('user_id', '')
+    channel_role = "channel_user" + (" channel_admin" if args.get("role", "member").lower() == "admin" else "")
+
+    raw_response = client.set_channel_role_request(channel_id, user_id, channel_role)
+
+    user_details = client.get_user_request(user_id)
+    hr = f'Set channel role for {user_details.get("username", user_id)} successfully to ' \
+         f'{"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'
+
+    return CommandResults(
+        readable_output=hr,
+        raw_response=raw_response
+    )
+
+
+""" MAIN FUNCTION """
 
 
 def handle_global_parameters(params: dict):  # pragma: no cover
     """Initializing the global parameters"""
-    url = params.get('url', '')
-    bot_access_token = params.get('bot_access_token', {}).get('password')
-    personal_access_token = params.get('personal_access_token', {}).get('password')
-    proxy = params.get('proxy', False)
+    url = params.get("url", "")
+    bot_access_token = params.get("bot_access_token", {}).get("password")
+    personal_access_token = params.get("personal_access_token", {}).get("password")
+    proxy = params.get("proxy", False)
 
     # Initializing global variables
     global SECRET_TOKEN, LONG_RUNNING, MIRRORING_ENABLED, CACHE_EXPIRY, CACHED_INTEGRATION_CONTEXT, DEMISTO_URL
     global BASE_URL, PROXY, SSL_CONTEXT, VERIFY_CERT, PROXIES, ALLOW_INCIDENTS, INCIDENT_TYPE, PROXY_URL
     global WEBSOCKET_URL, PORT, PERMITTED_NOTIFICATION_TYPES
-    LONG_RUNNING = params.get('longRunning', False)
-    MIRRORING_ENABLED = params.get('mirroring', False)
+    LONG_RUNNING = params.get("longRunning", False)
+    MIRRORING_ENABLED = params.get("mirroring", False)
     SECRET_TOKEN = personal_access_token
     BASE_URL = url
     PROXY = proxy
     demisto_urls = demisto.demistoUrls()
-    DEMISTO_URL = demisto_urls.get('server', '')
+    DEMISTO_URL = demisto_urls.get("server", "")
     PROXIES, _ = handle_proxy_for_long_running()
-    PROXY_URL = PROXIES.get('http', '')  # aiohttp only supports http proxy
-    ALLOW_INCIDENTS = params.get('allow_incidents', True)
-    INCIDENT_TYPE = params.get('incidentType', 'Unclassified')
-    default_permitted_notification_types = ['externalAskSubmit', 'externalFormSubmit']
-    custom_permitted_notification_types = demisto.params().get('permitted_notifications', [])
+    PROXY_URL = PROXIES.get("http", "")  # aiohttp only supports http proxy
+    ALLOW_INCIDENTS = params.get("allow_incidents", True)
+    INCIDENT_TYPE = params.get("incidentType", "Unclassified")
+    default_permitted_notification_types = ["externalAskSubmit", "externalFormSubmit"]
+    custom_permitted_notification_types = demisto.params().get("permitted_notifications", [])
     PERMITTED_NOTIFICATION_TYPES = default_permitted_notification_types + custom_permitted_notification_types
-    VERIFY_CERT = not params.get('insecure', False)
+    VERIFY_CERT = not params.get("insecure", False)
     if not VERIFY_CERT:
         SSL_CONTEXT = ssl.create_default_context()
         SSL_CONTEXT.check_hostname = False
@@ -1658,11 +1851,11 @@ def handle_global_parameters(params: dict):  # pragma: no cover
         # Use default SSL context
         SSL_CONTEXT = None
 
-    if 'https://' in url:
+    if "https://" in url:
         uri = url.replace("https://", "wss://", 1)
     else:
         uri = url.replace("http://", "ws://", 1)
-    uri += '/api/v4/websocket'
+    uri += "/api/v4/websocket"
     WEBSOCKET_URL = uri
 
     # Pull initial Cached context and set the Expiry
@@ -1680,13 +1873,13 @@ Bot Access Token""")
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
-    url = params.get('url', '')
-    bot_access_token = params.get('bot_access_token', {}).get('password')
-    personal_access_token = params.get('personal_access_token', {}).get('password')
-    team_name = params.get('team_name', '')
-    notification_channel = params.get('notification_channel')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    url = params.get("url", "")
+    bot_access_token = params.get("bot_access_token", {}).get("password")
+    personal_access_token = params.get("personal_access_token", {}).get("password")
+    team_name = params.get("team_name", "")
+    notification_channel = params.get("notification_channel")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     handle_global_parameters(params)
 
@@ -1694,7 +1887,7 @@ def main():  # pragma: no cover
     try:
         global CLIENT
 
-        headers = {'Authorization': f'Bearer {personal_access_token}'}
+        headers = {"Authorization": f"Bearer {personal_access_token}"}
         client = HTTPClient(
             base_url=url,
             headers=headers,
@@ -1706,45 +1899,57 @@ def main():  # pragma: no cover
             notification_channel=notification_channel,
         )
         CLIENT = client
-        demisto.debug(f'Command being called is {command}')
-        if command == 'test-module':
+        demisto.debug(f"Command being called is {command}")
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'mirror-investigation':
+        elif command == "mirror-investigation":
             return_results(mirror_investigation(client, **args))
-        elif command == 'mattermost-mirror-investigation':
+        elif command == "mattermost-mirror-investigation":
             return_results(mirror_investigation(client, **args))
-        elif command == 'send-notification':
+        elif command == "send-notification":
             return_results(send_notification(client, **args))
-        elif command == 'long-running-execution':
+        elif command == "long-running-execution":
             run_long_running()
-        elif command == 'mattermost-get-team':
+        elif command == "mattermost-get-team":
             return_results(get_team_command(client, args))
-        elif command == 'mattermost-list-channels':
+        elif command == "mattermost-list-channels":
             return_results(list_channels_command(client, args))
+        elif command == 'mattermost-list-private-channels-for-user':
+            return_results(list_private_channels_for_user_command(client, args))
         elif command == 'mattermost-create-channel':
             return_results(create_channel_command(client, args))
-        elif command == 'mattermost-add-channel-member':
+        elif command == "mattermost-add-channel-member":
             return_results(add_channel_member_command(client, args))
-        elif command == 'mattermost-remove-channel-member':
+        elif command == "mattermost-remove-channel-member":
             return_results(remove_channel_member_command(client, args))
-        elif command == 'mattermost-list-users':
+        elif command == "mattermost-list-users":
             return_results(list_users_command(client, args))
-        elif command == 'mattermost-close-channel':
+        elif command == "mattermost-close-channel":
             return_results(close_channel_command(client, args))
-        elif command == 'close-channel':
+        elif command == "close-channel":
             return_results(close_channel_command(client, args))
-        elif command == 'mattermost-send-file':
+        elif command == "mattermost-send-file":
             return_results(send_file_command(client, args))
+        elif command == 'mattermost-list-groups':
+            return_results(list_groups_command(client, args))
+        elif command == 'mattermost-list-group-members':
+            return_results(list_group_members_command(client, args))
+        elif command == 'mattermost-add-group-member':
+            return_results(add_group_member_command(client, args))
+        elif command == 'mattermost-remove-group-member':
+            return_results(remove_group_member_command(client, args))
+        elif command == 'mattermost-set-channel-role':
+            return_results(set_channel_role_command(client, args))
         else:
-            raise DemistoException('Unrecognized command: ' + demisto.command())
+            raise DemistoException("Unrecognized command: " + demisto.command())
 
     except Exception as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Error: {str(e)}.')
+        return_error(f"Failed to execute {command} command. Error: {e!s}.")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

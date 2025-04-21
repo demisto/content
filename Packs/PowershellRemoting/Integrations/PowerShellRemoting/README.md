@@ -18,6 +18,9 @@ For more information about setting up PowerShell Remoting, see the [PowerShell R
 | Trust any certificate (not secure) |  | False |
 | Use SSL (HTTPS) |  | False |
 
+### Configuration Notes
+Please note that in order for the integration to function properly, *Basic Authentication* is required to be enabled for the target host. This is due to the library relying on Basic Auth headers to pass an authentication token even when MFA is enabled.
+
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

@@ -1,0 +1,31 @@
+{
+    "id": "incident_ctm360_cyberblindspot_module",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "name": "CTM360 CyberBlindspot Module",
+    "ownerOnly": false,
+    "description": "Module the incident belongs to.",
+    "cliName": "ctm360cyberblindspotmodule",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyberBlindspot Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

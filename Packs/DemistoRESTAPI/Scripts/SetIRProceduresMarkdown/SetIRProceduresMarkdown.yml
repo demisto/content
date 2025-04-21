@@ -14,3 +14,8 @@ tests:
 - GetTasksWithSections SetIRProcedures end to end test
 dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

@@ -1,15 +1,15 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import random
 import string
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 MAX_LENGTH = 10000
 
 
 def set_length(length):
     if length <= 0:
-        return_error("Length must be greater than 0. Maximum value is {}.".format(MAX_LENGTH))
+        return_error(f"Length must be greater than 0. Maximum value is {MAX_LENGTH}.")
 
     return min(length, MAX_LENGTH)
 
@@ -18,25 +18,27 @@ def set_characters(characters: str, digits: bool, lowercase: bool, punctuation: 
     if not any([uppercase, lowercase, digits, punctuation]):
         return_error("Punctuation, Digits, Uppercase or Lowercase must be True.")
 
-    characters += string.ascii_lowercase if lowercase else ''
-    characters += string.ascii_uppercase if uppercase else ''
-    characters += string.digits if digits else ''
-    characters += string.punctuation if punctuation else ''
+    characters += string.ascii_lowercase if lowercase else ""
+    characters += string.ascii_uppercase if uppercase else ""
+    characters += string.digits if digits else ""
+    characters += string.punctuation if punctuation else ""
     return characters
 
 
 def create_password(characters, length):
     password = ""
-    for x in range(0, length):
+    for _x in range(length):
         password += random.SystemRandom(random.seed(time.time())).choice(characters)  # type: ignore
 
-    entry_context = {'RandomString': password}
+    entry_context = {"RandomString": password}
     raw = json.loads(json.dumps(entry_context))
-    results = CommandResults(content_format=EntryFormat.JSON,
-                             entry_type=EntryType.NOTE,
-                             outputs=entry_context,
-                             readable_output=tableToMarkdown('RandomString Generated.', raw) if raw else 'No result were found',
-                             raw_response=raw)
+    results = CommandResults(
+        content_format=EntryFormat.JSON,
+        entry_type=EntryType.NOTE,
+        outputs=entry_context,
+        readable_output=tableToMarkdown("RandomString Generated.", raw) if raw else "No result were found",
+        raw_response=raw,
+    )
     return results
 
 

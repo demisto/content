@@ -1,0 +1,35 @@
+{
+  "execution_id": "xxxxxxxxx",
+  "number_of_results": 3,
+  "query_name": "",
+  "results": [
+    {
+      "_time": 1734264000000,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM",
+      "total_bytes_received": 14627898,
+      "total_bytes_received_mb": 14,
+      "total_bytes_sent": 27683591,
+      "total_bytes_sent_mb": 26.4
+    },
+    {
+      "_time": 1734267600000,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM",
+      "total_bytes_received": 19655736,
+      "total_bytes_received_mb": 18.7,
+      "total_bytes_sent": 29369380,
+      "total_bytes_sent_mb": 28
+    },
+    {
+      "_time": 1734271200000,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM",
+      "total_bytes_received": 225363876,
+      "total_bytes_received_mb": 214.9,
+      "total_bytes_sent": 33866202,
+      "total_bytes_sent_mb": 32.3
+    }
+  ],
+  "status": "SUCCESS"
+}

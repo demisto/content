@@ -8,21 +8,26 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
-  hiddenpassword: true
   name: api_key
   required: true
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 description: Rapid7 AppSec integration allows the management of applications vulnerabilities and scans.
 display: Rapid7AppSec
 name: rapid7appsec
@@ -723,7 +728,7 @@ script:
     - contextPath: Rapid7AppSec.EngineGroup.description
       description: Description about the engine group.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   feed: false
   isfetch: false
   longRunning: false
@@ -735,3 +740,6 @@ script:
 fromversion: 6.9.0
 tests:
 - No tests
+sectionOrder:
+- Connect
+- Collect

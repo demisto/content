@@ -1,0 +1,23 @@
+{
+    "trigger_id": "374ea382e50cb02c3d1ae7b5858b98c5",
+    "playbook_id": "silent-Intense SSO failures with suspicious characteristics",
+    "suggestion_reason": "Recommended for 'Intense SSO failures with suspicious characteristics' alert",
+    "description": "This trigger is responsible for handling the 'Intense SSO failures with suspicious characteristics' alert",
+    "trigger_name": "silent-Intense SSO failures with suspicious characteristics",
+    "issilent": true,
+    "fromVersion": "8.9.0",
+    "alerts_filter":
+    {
+        "filter":
+        {
+            "AND":
+            [
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Intense SSO failures with suspicious characteristics"
+                }
+            ]
+        }
+    }
+}

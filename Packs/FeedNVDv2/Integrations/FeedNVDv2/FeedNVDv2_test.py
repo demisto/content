@@ -1,12 +1,20 @@
 import json
-import pytest
-from dateparser import parse
-from FeedNVDv2 import parse_cpe_command, build_indicators, Client, calculate_dbotscore, get_cvss_version_and_score
-from FeedNVDv2 import cves_to_war_room, retrieve_cves, fetch_indicators_command
 from unittest.mock import patch
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
+import demistomock as demisto  # noqa: F401
+import pytest
+from CommonServerPython import *  # noqa: F401
+from dateparser import parse
+from FeedNVDv2 import (
+    Client,
+    build_indicators,
+    calculate_dbotscore,
+    cves_to_war_room,
+    fetch_indicators_command,
+    get_cvss_version_and_score,
+    parse_cpe_command,
+    retrieve_cves,
+)
 
 BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -39,29 +47,22 @@ def test_build_indicators_command():
     Returns:
         Assertions if the tests fail for tag/relationship parsing of a CPE
     """
-    raw_cve = open_json('./test_data/nist_response.json')
+    raw_cve = open_json("./test_data/nist_response.json")
     cves = raw_cve["vulnerabilities"]
     response = build_indicators(client, cves)
-    expected_response = open_json('./test_data/indicator.json')
+    expected_response = open_json("./test_data/indicator.json")
     assert all(item in expected_response[0] for item in response[0]), "BuildIndicators dictionaries are not equal"
 
 
 def test_cves_to_war_room():
-    raw_cve = open_json('./test_data/nist_response.json')
+    raw_cve = open_json("./test_data/nist_response.json")
     cves = raw_cve["vulnerabilities"]
     entry = cves_to_war_room(cves).to_context()
-    expected_entry = open_json('./test_data/war_room_entry.json')
+    expected_entry = open_json("./test_data/war_room_entry.json")
     assert entry == expected_entry
 
 
-@pytest.mark.parametrize("cvss_score, expected_result", [
-    (10.0, 3),
-    ('10.0', 3),
-    (10, 3),
-    (6, 2),
-    (3, 1),
-    (-1, 0)
-])
+@pytest.mark.parametrize("cvss_score, expected_result", [(10.0, 3), ("10.0", 3), (10, 3), (6, 2), (3, 1), (-1, 0)])
 def test_calculate_dbotscore(cvss_score, expected_result):
     score = calculate_dbotscore(cvss_score)
     assert score == expected_result
@@ -85,30 +86,33 @@ def test_get_cvss_version_and_score(input_metrics, expected_version, expected_sc
     assert score == expected_score
 
 
-@pytest.mark.parametrize("cpe, expected_output, expected_relationships", [
-    (["cpe:2.3:a:vendor:product"],
-     ["Vendor", "Product", "Application"],
-     [EntityRelationship(name="targets",
-                         entity_a='CVE-2022-1111',
-                         entity_a_type="cve",
-                         entity_b='Vendor',
-                         entity_b_type="identity").to_context(),
-      EntityRelationship(name="targets",
-                         entity_a='CVE-2022-1111',
-                         entity_a_type="cve",
-                         entity_b='Product',
-                         entity_b_type="software").to_context()]),
-    (["cpe:2.3:h:a\:_vendor"],
-     ["A: vendor", "Hardware"],
-     [EntityRelationship(name="targets",
-                         entity_a='CVE-2022-1111',
-                         entity_a_type="cve",
-                         entity_b='A: vendor',
-                         entity_b_type="identity").to_context()]),
-    (["cpe:2.3:o:::"],
-     ["Operating-System"],
-     []),
-])
+@pytest.mark.parametrize(
+    "cpe, expected_output, expected_relationships",
+    [
+        (
+            ["cpe:2.3:a:vendor:product"],
+            ["Vendor", "Product", "Application"],
+            [
+                EntityRelationship(
+                    name="targets", entity_a="CVE-2022-1111", entity_a_type="cve", entity_b="Vendor", entity_b_type="identity"
+                ).to_context(),
+                EntityRelationship(
+                    name="targets", entity_a="CVE-2022-1111", entity_a_type="cve", entity_b="Product", entity_b_type="software"
+                ).to_context(),
+            ],
+        ),
+        (
+            ["cpe:2.3:h:a\:_vendor"],
+            ["A: vendor", "Hardware"],
+            [
+                EntityRelationship(
+                    name="targets", entity_a="CVE-2022-1111", entity_a_type="cve", entity_b="A: vendor", entity_b_type="identity"
+                ).to_context()
+            ],
+        ),
+        (["cpe:2.3:o:::"], ["Operating-System"], []),
+    ],
+)
 def test_parse_cpe(cpe, expected_output, expected_relationships):
     """
     Given:
@@ -121,7 +125,7 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
         return a tuple of a list of tags (no empty strings) and a list of EntityRelationship objects.
     """
 
-    tags, relationships = parse_cpe_command(cpe, 'CVE-2022-1111')
+    tags, relationships = parse_cpe_command(cpe, "CVE-2022-1111")
     assert set(tags) == set(expected_output)
     assert [relationship.to_context() for relationship in relationships] == expected_relationships
 
@@ -148,17 +152,17 @@ def test_build_param_string(input_params, expected_param_string):
 )
 def test_retrieve_cves(start_date, end_date, publish_date, expected_results):
     # Mocking the client.get_cves method
-    with patch('FeedNVDv2.Client.get_cves') as mock_get_cves:
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
         mock_get_cves.return_value = open_json("./test_data/nist_response.json")
         raw_cves = retrieve_cves(client, parse(start_date), parse(end_date), publish_date)
         assert raw_cves[0] == expected_results
 
 
 def test_fetch_indicators_command():
-    with patch('FeedNVDv2.retrieve_cves') as mock_retrieve_cves, patch('FeedNVDv2.demisto') as demisto_mock:
+    with patch("FeedNVDv2.retrieve_cves") as mock_retrieve_cves, patch("FeedNVDv2.demisto") as demisto_mock:
         expected_result = open_json("./test_data/nist_response.json")["vulnerabilities"][0]
         mock_retrieve_cves.return_value = [expected_result]
-        demisto_mock.command.return_value = 'nvd-get-indicators'
+        demisto_mock.command.return_value = "nvd-get-indicators"
         demisto_mock.getArg.return_value = "130 days"
         fetch_indicators_command(client)
         assert mock_retrieve_cves.call_count == 2

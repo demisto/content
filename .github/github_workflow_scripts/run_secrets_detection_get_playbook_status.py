@@ -31,7 +31,7 @@ def get_playbook_state(client: demisto_client, inv_id: str):
 
 
 def wait_for_playbook_to_complete(investigation_id, client):
-    investigation_url = f'<Content Gold URL>/WorkPlan/{investigation_id}'
+    investigation_url = f'<Content Gold URL>/Custom/caseinfoid/{investigation_id}'
     print(f'Investigation URL: {investigation_url}')
 
     timeout = time.time() + DEFAULT_TIMEOUT

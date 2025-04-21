@@ -544,7 +544,7 @@ tasks:
       - "10"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -576,7 +576,7 @@ tasks:
       - "42"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -608,7 +608,7 @@ tasks:
       - "11"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -640,7 +640,7 @@ tasks:
       - "12"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -672,7 +672,7 @@ tasks:
       - "13"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -704,7 +704,7 @@ tasks:
       - "14"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -736,7 +736,7 @@ tasks:
       - "19"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -768,7 +768,7 @@ tasks:
       - "21"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -800,7 +800,7 @@ tasks:
       - "45"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -832,7 +832,7 @@ tasks:
       - "43"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -1004,7 +1004,7 @@ tasks:
       - "46"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -1033,3 +1033,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+

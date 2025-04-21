@@ -1,6 +1,7 @@
-from CommonServerPython import *
-from typing import Any
 from enum import Enum
+from typing import Any
+
+from CommonServerPython import *
 
 
 class ReputationEnum(Enum):
@@ -16,22 +17,21 @@ def find_age(first_seen: str) -> int:
 
 
 def find_indicator_reputation(domain_age: int, proximity_score: int, threat_profile_score: int) -> ReputationEnum:
-    proximity_score_threshold = arg_to_number(
-        demisto.args().get('proximity_score_threshold')) or 70
-    age_threshold = arg_to_number(demisto.args().get('age_threshold')) or 7
-    threat_profile_score_threshold = arg_to_number(
-        demisto.args().get('threat_profile_score_threshold')) or 70
+    proximity_score_threshold = arg_to_number(demisto.args().get("proximity_score_threshold")) or 70
+    age_threshold = arg_to_number(demisto.args().get("age_threshold")) or 7
+    threat_profile_score_threshold = arg_to_number(demisto.args().get("threat_profile_score_threshold")) or 70
 
     if proximity_score > proximity_score_threshold or threat_profile_score > threat_profile_score_threshold:
         return ReputationEnum.BAD
     elif domain_age < age_threshold and (
-            proximity_score < proximity_score_threshold or threat_profile_score < threat_profile_score_threshold):
+        proximity_score < proximity_score_threshold or threat_profile_score < threat_profile_score_threshold
+    ):
         return ReputationEnum.SUSPICIOUS
     else:
         return ReputationEnum.GOOD
 
 
-def format_attribute(attribute: list[dict], key: str = '') -> str:
+def format_attribute(attribute: list[dict], key: str = "") -> str:
     """Format list of attribute to str
 
     Args:
@@ -58,9 +58,7 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
     required_keys = ("Name", "Hosting", "Identity", "Analytics")
 
     domaintools_data = args["domaintools_data"]
-    if isinstance(domaintools_data, dict) and all(
-        k in domaintools_data for k in required_keys
-    ):
+    if isinstance(domaintools_data, dict) and all(k in domaintools_data for k in required_keys):
         domain_name = domaintools_data.get("Name")
         domaintools_hosting_data = domaintools_data.get("Hosting", {})
         domaintools_identity_data = domaintools_data.get("Identity", {})
@@ -72,13 +70,9 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             domain_age = find_age(first_seen)
 
         try:
-            threat_profile_score = domaintools_analytics_data.get(
-                "ThreatProfileRiskScore", {}
-            ).get("RiskScore") or 0
-            proximity_risk_score = domaintools_analytics_data.get(
-                "ProximityRiskScore") or 0
-            reputation = find_indicator_reputation(
-                domain_age, proximity_risk_score, threat_profile_score)
+            threat_profile_score = domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("RiskScore") or 0
+            proximity_risk_score = domaintools_analytics_data.get("ProximityRiskScore") or 0
+            reputation = find_indicator_reputation(domain_age, proximity_risk_score, threat_profile_score)
 
         except Exception:
             reputation = ReputationEnum.UNKNOWN
@@ -88,7 +82,7 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             "MalwareRiskScore": domaintools_analytics_data.get("MalwareRiskScore") or "",
             "PhishingRiskScore": domaintools_analytics_data.get("PhishingRiskScore") or "",
             "SpamRiskScore": domaintools_analytics_data.get("SpamRiskScore") or "",
-            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("Evidence")}
+            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("Evidence")},
         }
 
         domaintools_iris_indicator = {
@@ -102,9 +96,12 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             "domaintoolsirisriskscore": domaintools_analytics_data.get("OverallRiskScore"),
             "domaintoolsirisfirstseen": first_seen,
             "domaintoolsiristags": format_attribute(domaintools_analytics_data.get("Tags"), key="label"),
-            "domaintoolsirisadditionalwhoisemails": format_attribute(domaintools_identity_data.get(
-                "AdditionalWhoisEmails",
-            ), key="value"),
+            "domaintoolsirisadditionalwhoisemails": format_attribute(
+                domaintools_identity_data.get(
+                    "AdditionalWhoisEmails",
+                ),
+                key="value",
+            ),
             "emaildomains": format_attribute(domaintools_identity_data.get("EmailDomains")),
             "nameservers": format_attribute(domaintools_hosting_data.get("NameServers"), key="host.value"),
             "domaintoolsirisipaddresses": format_attribute(domaintools_hosting_data.get("IPAddresses"), key="address.value"),
@@ -114,13 +111,11 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             "registrantname": domaintools_identity_data.get("RegistrantName"),
             "domaintoolsirissoaemail": format_attribute(domaintools_identity_data.get("SOAEmail"), key="value"),
             "domaintoolsirisexpirationdate": domaintools_data.get("Registration", {}).get("ExpirationDate"),
-            "domaintoolsirisriskscorecomponents": riskscore_component_mapping
+            "domaintoolsirisriskscorecomponents": riskscore_component_mapping,
         }
 
-        demisto.info(
-            f"Creating new domaintools iris indicator: {domaintools_iris_indicator}")
-        demisto.executeCommand("createNewIndicator",
-                               domaintools_iris_indicator)
+        demisto.info(f"Creating new domaintools iris indicator: {domaintools_iris_indicator}")
+        demisto.executeCommand("createNewIndicator", domaintools_iris_indicator)
 
         human_readable_str = f"Data for {domain_name} enriched."
 
@@ -131,8 +126,7 @@ def main():
     try:
         return_results(set_indicator_table_data(demisto.args()))
     except Exception as ex:
-        return_error(
-            f"Failed to execute SetIndicatorTableData. Error: {str(ex)}")
+        return_error(f"Failed to execute SetIndicatorTableData. Error: {ex!s}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

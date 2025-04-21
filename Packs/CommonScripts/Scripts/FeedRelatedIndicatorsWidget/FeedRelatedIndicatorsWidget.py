@@ -13,10 +13,7 @@ def create_related_indicator_object(value: str, type_: str, description: str):
     Returns:
         Dict. Related indicator object.
     """
-    indicator_object = {
-        'Value': value,
-        'Type': type_
-    }
+    indicator_object = {"Value": value, "Type": type_}
 
     descriptions = []
 
@@ -24,44 +21,42 @@ def create_related_indicator_object(value: str, type_: str, description: str):
         desc = desc.strip()
 
         if re.match(urlRegex, desc):
-            descriptions.append(f'[{desc}]({desc})')
+            descriptions.append(f"[{desc}]({desc})")
         else:
             descriptions.append(desc)
 
-    indicator_object['Description'] = f"{', '.join(descriptions)}\n\n"
+    indicator_object["Description"] = f"{', '.join(descriptions)}\n\n"
 
     return indicator_object
 
 
 def feed_related_indicator(args) -> CommandResults:
-    indicator = args['indicator']
-    feed_related_indicators = indicator.get('CustomFields', {}).get('feedrelatedindicators', [])
+    indicator = args["indicator"]
+    feed_related_indicators = indicator.get("CustomFields", {}).get("feedrelatedindicators", [])
 
     content = []
 
     for item in feed_related_indicators:
-        ioc_value = item.get('value', '')
+        ioc_value = item.get("value", "")
         search_indicators = IndicatorsSearcher()
-        results = search_indicators.search_indicators_by_version(value=ioc_value).get('iocs', [])
+        results = search_indicators.search_indicators_by_version(value=ioc_value).get("iocs", [])
 
         if results:
-            ioc_id = results[0].get('id')
+            ioc_id = results[0].get("id")
 
-            content.append(create_related_indicator_object(
-                f"[{item.get('value')}](#/indicator/{ioc_id})" if item.get('value') else '',
-                item.get('type'),
-                item.get('description')
-            ))
+            content.append(
+                create_related_indicator_object(
+                    f"[{item.get('value')}](#/indicator/{ioc_id})" if item.get("value") else "",
+                    item.get("type"),
+                    item.get("description"),
+                )
+            )
 
         else:
             # In case that no related indicators were found, return the table without the link.
-            content.append(create_related_indicator_object(
-                item.get('value', ''),
-                item.get('type'),
-                item.get('description')
-            ))
+            content.append(create_related_indicator_object(item.get("value", ""), item.get("type"), item.get("description")))
 
-    output = tableToMarkdown('', content, ['Type', 'Value', 'Description'], removeNull=True)
+    output = tableToMarkdown("", content, ["Type", "Value", "Description"], removeNull=True)
     return CommandResults(readable_output=output)
 
 
@@ -69,8 +64,8 @@ def main(args):
     try:
         return_results(feed_related_indicator(args))
     except Exception as e:
-        return_error(f'Failed to execute FeedRelatedIndicatorsWidget. Error: {str(e)}')
+        return_error(f"Failed to execute FeedRelatedIndicatorsWidget. Error: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main(demisto.args())

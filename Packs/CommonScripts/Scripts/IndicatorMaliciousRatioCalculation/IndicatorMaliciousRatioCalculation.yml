@@ -46,4 +46,4 @@ timeout: 300ns
 fromversion: 5.0.0
 tests:
 - IndicatorMaliciousRatioCalculation_test
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.1983910

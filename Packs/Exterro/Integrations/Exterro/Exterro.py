@@ -1,11 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 # python 3.9 imports
 from json import JSONDecodeError
 from traceback import format_exc
 
+import demistomock as demisto  # noqa: F401
+
 # accessdata imports
 from accessdata.client import Client
+from CommonServerPython import *  # noqa: F401
 
 # xsoar imports
 from CommonServerUserPython import *
@@ -16,19 +17,17 @@ def _trigger_workflow(client, **kwargs):
     if result.get("Status") is not True:
         raise ValueError("Failed to trigger automation workflow.", result.get("Status"))
 
-    return CommandResults(outputs_prefix='Accessdata.Workflow',
-                          outputs_key_field='Status',
-                          outputs=result)
+    return CommandResults(outputs_prefix="Accessdata.Workflow", outputs_key_field="Status", outputs=result)
 
 
 def _test_module(client):  # pragma: no cover
     # test the client can reach the case list
     try:
-        client.cases
+        client.cases  # noqa: B018
     except JSONDecodeError as exc:
-        raise RuntimeError('False API key provided to FTK Connect.', exc)
+        raise RuntimeError("False API key provided to FTK Connect.", exc)
     except DemistoException as exc:
-        raise RuntimeError('Authentication with FTK Connect failed.', exc)
+        raise RuntimeError("Authentication with FTK Connect failed.", exc)
 
     return "ok"
 
@@ -44,7 +43,7 @@ def main():  # pragma: no cover
     url = f"{protocol}://{address}:{port}/"
     apikey = params.get("apikey", "")
     # check if using ssl
-    is_secure = protocol[-1] == 's'
+    is_secure = protocol[-1] == "s"
 
     # build client
     client = Client(url, apikey, validate=not is_secure)
@@ -67,10 +66,10 @@ def main():  # pragma: no cover
             return_results(_test_module(client))
     except Exception as exception:
         demisto.error(format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(exception)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{exception!s}")
 
 
 """ Entry Point """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

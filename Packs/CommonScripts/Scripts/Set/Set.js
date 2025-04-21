@@ -1,23 +1,15 @@
 var ec = {};
 var value;
 try {
-    if (args.stringify === 'true') {
+    if (args.stringify === 'true' ) {
         if (typeof args.value === 'string') {
             value = args.value
         } else {
             value = JSON.stringify(args.value)
         }
     } else {
-        if (!isNaN(args.value)) {
-            // This means that the value is a number
-            if (args.value.includes('.')) {
-                // It is a decimal number
-                value = JSON.parse(args.value);
-            }
-            else {
-                // If the number is large
-                value = BigInt(args.value);
-            }
+        if (!isNaN(args.value) && !args.value.includes('.') && Number(args.value) >= Number.MAX_SAFE_INTEGER) {
+            value = BigInt(args.value);
         }
         else {
             value = JSON.parse(args.value);

@@ -1,9 +1,7 @@
-from typing import Tuple
-
 from CommonServerPython import *
 
 
-def get_default_from_date(date_range: str) -> str:
+def get_default_from_date(date_range: str) -> str:  # pragma: no cover
     """
     Gets a range string (eg. 30 days) and return a date string in the relevant Demisto query format.
     :param date_range: string
@@ -12,11 +10,11 @@ def get_default_from_date(date_range: str) -> str:
         Date string in the relevant Demisto query format, e.g: 2016-01-02T15:04:05Z.
     """
     from_date, _ = parse_date_range(date_range=date_range)
-    str_from_date = from_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    str_from_date = from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
     return str_from_date
 
 
-def get_relevant_incidents(email_to, email_from, from_date) -> Tuple[int, int]:
+def get_relevant_incidents(email_to, email_from, from_date) -> tuple[int, int]:
     """
     Gets a email to and from addresses, and a date from string.
     :param email_to: string
@@ -28,14 +26,12 @@ def get_relevant_incidents(email_to, email_from, from_date) -> Tuple[int, int]:
     :return: int, int
         number of relevant to and from incidents
     """
-    resp = demisto.executeCommand("getIncidents",
-                                  {"query": f"email_to:{email_to} --status:Closed fromdate: {from_date}"})
+    resp = demisto.executeCommand("getIncidents", {"query": f"email_to:{email_to} --status:Closed fromdate: {from_date}"})
     if isError(resp[0]):
         raise Exception(resp)
     email_to_total = demisto.get(resp[0], "Contents.total")
 
-    resp = demisto.executeCommand("getIncidents",
-                                  {"query": f"email_from:{email_from} --status:Closed fromdate: {from_date}"})
+    resp = demisto.executeCommand("getIncidents", {"query": f"email_from:{email_from} --status:Closed fromdate: {from_date}"})
     if isError(resp[0]):
         raise Exception(resp)
     email_from_total = demisto.get(resp[0], "Contents.total")
@@ -63,42 +59,36 @@ def create_widget_entry(email_to, email_from, email_to_total, email_from_total) 
         "Contents": {
             "stats": [
                 {
-                    "data": [
-                        email_to_total
-                    ],
+                    "data": [email_to_total],
                     "groups": None,
                     "name": str(email_to),
-                    "label": f"To: {str(email_to)}",
-                    "color": "rgb(255, 23, 68)"
+                    "label": f"To: {email_to!s}",
+                    "color": "rgb(255, 23, 68)",
                 },
                 {
-                    "data": [
-                        email_from_total
-                    ],
+                    "data": [email_from_total],
                     "groups": None,
                     "name": str(email_from),
-                    "label": f"From: {str(email_from)}",
-                    "color": "rgb(255, 144, 0)"
-                }
+                    "label": f"From: {email_from!s}",
+                    "color": "rgb(255, 144, 0)",
+                },
             ],
-            "params": {
-                "layout": "vertical"
-            }
-        }
+            "params": {"layout": "vertical"},
+        },
     }
 
     return data
 
 
-def main():
+def main():  # pragma: no cover
     try:
         # Get current incident data
-        email_to = demisto.get(demisto.incidents()[0], 'CustomFields.email_to')
-        email_from = demisto.get(demisto.incidents()[0], 'CustomFields.email_from')
+        email_to = demisto.get(demisto.incidents()[0], "CustomFields.email_to")
+        email_from = demisto.get(demisto.incidents()[0], "CustomFields.email_from")
         if not (email_to and email_from):
             demisto.results("None")
         else:
-            default_from_date = get_default_from_date('30 days')
+            default_from_date = get_default_from_date("30 days")
             email_to_total, email_from_total = get_relevant_incidents(email_to, email_from, default_from_date)
             data = create_widget_entry(email_to, email_from, email_to_total, email_from_total)
             demisto.results(data)
@@ -106,5 +96,5 @@ def main():
         return_error(str(err))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

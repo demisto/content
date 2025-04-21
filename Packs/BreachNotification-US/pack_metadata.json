@@ -10,7 +10,9 @@
         "Case Management"
     ],
     "tags": [
-        "Use Case"
+        "Use Case",
+        "PII",
+        "Security"
     ],
     "created": "2020-05-06T18:47:57Z",
     "useCases": [
@@ -25,6 +27,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

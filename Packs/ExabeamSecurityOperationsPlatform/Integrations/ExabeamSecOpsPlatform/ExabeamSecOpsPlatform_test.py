@@ -1,25 +1,26 @@
 import json
-from freezegun import freeze_time
-import pytest
 from datetime import datetime, timezone
-from CommonServerPython import DemistoException, CommandResults
+
+import pytest
+from CommonServerPython import CommandResults, DemistoException
 from ExabeamSecOpsPlatform import (
     Client,
-    event_search_command,
-    get_limit,
-    get_date,
-    transform_string,
-    process_string,
     _parse_group_by,
     case_search_command,
-    context_table_list_command,
     context_table_delete_command,
-    table_record_list_command,
-    generic_search_command,
-    transform_dicts,
+    context_table_list_command,
     convert_all_timestamp_to_datestring,
+    event_search_command,
     fetch_incidents,
+    generic_search_command,
+    get_date,
+    get_limit,
+    process_string,
+    table_record_list_command,
+    transform_dicts,
+    transform_string,
 )
+from freezegun import freeze_time
 
 
 class MockClient(Client):
@@ -45,26 +46,26 @@ def test_event_search_command_success(mocker):
     # Mock the response from the client's search_request method
     mock_response = {
         "rows": [
-                    {
-                        "id": "123",
-                        "rawLogIds": "1",
-                        "tier": "Tier",
-                        "parsed": "false",
-                        "rawLogs": "fictive",
-                        "time": "2024-01-30T11:20:07.000000+00:00",
-                        "message": "Log message 1",
-                        "activity": "trigger",
-                        "platform": "blackberry protect",
-                        "vendor": "BlackBerry"
-                    },
             {
-                        "id": "456",
-                        "time": "2024-01-30T11:21:06.976000+00:00",
-                        "message": "Log message 2",
-                        "activity": "trigger",
-                        "platform": "blackberry protect",
-                        "vendor": "BlackBerry"
-                    }
+                "id": "123",
+                "rawLogIds": "1",
+                "tier": "Tier",
+                "parsed": "false",
+                "rawLogs": "fictive",
+                "time": "2024-01-30T11:20:07.000000+00:00",
+                "message": "Log message 1",
+                "activity": "trigger",
+                "platform": "blackberry protect",
+                "vendor": "BlackBerry",
+            },
+            {
+                "id": "456",
+                "time": "2024-01-30T11:21:06.976000+00:00",
+                "message": "Log message 2",
+                "activity": "trigger",
+                "platform": "blackberry protect",
+                "vendor": "BlackBerry",
+            },
         ]
     }
 
@@ -74,11 +75,11 @@ def test_event_search_command_success(mocker):
 
     # Define test arguments
     args = {
-        'query': '',
-        'fields': 'message',
-        'limit': '50',
-        'start_time': '2024-05-01T00:00:00',
-        'end_time': '2024-05-08T00:00:00'
+        "query": "",
+        "fields": "message",
+        "limit": "50",
+        "start_time": "2024-05-01T00:00:00",
+        "end_time": "2024-05-08T00:00:00",
     }
 
     # Call the event_search_command function
@@ -113,11 +114,11 @@ def test_event_search_command_failure(mocker):
     mocker.patch.object(client, "event_search_request", return_value={"errors": {"message": "Error occurred"}})
 
     args = {
-        'query': '',
-        'fields': 'message',
-        'limit': '50',
-        'start_time': '2024-05-01T00:00:00',
-        'end_time': '2024-05-08T00:00:00'
+        "query": "",
+        "fields": "message",
+        "limit": "50",
+        "start_time": "2024-05-01T00:00:00",
+        "end_time": "2024-05-08T00:00:00",
     }
 
     with pytest.raises(DemistoException, match="Error occurred"):
@@ -135,8 +136,8 @@ def test_get_date(mocker):
     THEN:
         it should return the date part of the provided time string in the 'YYYY-MM-DD' format.
     """
-    time = '2024.05.01T14:00:00'
-    expected_result = '2024-05-01T14:00:00Z'
+    time = "2024.05.01T14:00:00"
+    expected_result = "2024-05-01T14:00:00Z"
 
     with mocker.patch("CommonServerPython.arg_to_datetime", return_value=time):
         result = get_date(time, "start_time")
@@ -144,20 +145,9 @@ def test_get_date(mocker):
     assert result == expected_result
 
 
-@pytest.mark.parametrize('input_str, expected_output', [
-    (
-        "key:Some Value",
-        'key:"Some Value"'
-    ),
-    (
-        "key:TrUe",
-        "key:true"
-    ),
-    (
-        "key:false",
-        "key:false"
-    )
-])
+@pytest.mark.parametrize(
+    "input_str, expected_output", [("key:Some Value", 'key:"Some Value"'), ("key:TrUe", "key:true"), ("key:false", "key:false")]
+)
 def test_transform_string(input_str, expected_output):
     """
     GIVEN:
@@ -170,24 +160,15 @@ def test_transform_string(input_str, expected_output):
     assert transform_string(input_str) == expected_output
 
 
-@pytest.mark.parametrize('input_str, expected_output', [
-    (
-        "key1:true AND key2:false OR key3:true TO key4:false",
-        'key1:true AND key2:false OR key3:true TO key4:false'
-    ),
-    (
-        "key1:true",
-        'key1:true'
-    ),
-    (
-        "",
-        ''
-    ),
-    (
-        "key1:true AND key2:some value OR key3:another value",
-        'key1:true AND key2:"some value" OR key3:"another value"'
-    )
-])
+@pytest.mark.parametrize(
+    "input_str, expected_output",
+    [
+        ("key1:true AND key2:false OR key3:true TO key4:false", "key1:true AND key2:false OR key3:true TO key4:false"),
+        ("key1:true", "key1:true"),
+        ("", ""),
+        ("key1:true AND key2:some value OR key3:another value", 'key1:true AND key2:"some value" OR key3:"another value"'),
+    ],
+)
 def test_process_string(input_str, expected_output):
     """
     GIVEN:
@@ -212,14 +193,13 @@ def test_event_search_request(mocker):
     THEN:
         It should send a POST request to the specified URL with the provided data and headers.
     """
-    mocker.patch('ExabeamSecOpsPlatform.Client._authenticate')
-    mock_http_request = mocker.patch('ExabeamSecOpsPlatform.Client._http_request')
+    mocker.patch("ExabeamSecOpsPlatform.Client._authenticate")
+    mock_http_request = mocker.patch("ExabeamSecOpsPlatform.Client._http_request")
     base_url = "https://example-api.com"
     client_id = "your_client_id"
     client_secret = "your_client_secret"
 
-    instance = Client(base_url=base_url, client_id=client_id, client_secret=client_secret,
-                      verify=False, proxy=False)
+    instance = Client(base_url=base_url, client_id=client_id, client_secret=client_secret, verify=False, proxy=False)
     instance.access_token = "dummy_token"
     data_dict = {"key": "value"}
     expected_url = "https://example-api.com/search/v2/events"
@@ -241,12 +221,9 @@ def test_event_search_request(mocker):
     assert result == mocked_response
 
 
-@pytest.mark.parametrize('args, expected_output', [
-    ({}, 50),
-    ({'limit': None}, 50),
-    ({'limit': 1000}, 1000),
-    ({'limit': 5000}, 3000)
-])
+@pytest.mark.parametrize(
+    "args, expected_output", [({}, 50), ({"limit": None}, 50), ({"limit": 1000}, 1000), ({"limit": 5000}, 3000)]
+)
 def test_get_limit(args, expected_output):
     """
     GIVEN:
@@ -276,19 +253,14 @@ def test_parse_group_by():
         empty elements should be removed.
     """
     entry = {
-        'Id': '123',
-        'Vendor': 'Vendor X',
-        'Product': '',
-        'Created_at': '2024-05-26T12:00:00',
-        'Message': 'This is a message.'
+        "Id": "123",
+        "Vendor": "Vendor X",
+        "Product": "",
+        "Created_at": "2024-05-26T12:00:00",
+        "Message": "This is a message.",
     }
-    titles = ['Id', 'Vendor', 'Created_at', 'Message']
-    expected_result = {
-        'Id': '123',
-        'Vendor': 'Vendor X',
-        'Created_at': '2024-05-26T12:00:00',
-        'Message': 'This is a message.'
-    }
+    titles = ["Id", "Vendor", "Created_at", "Message"]
+    expected_result = {"Id": "123", "Vendor": "Vendor X", "Created_at": "2024-05-26T12:00:00", "Message": "This is a message."}
     assert _parse_group_by(entry, titles) == expected_result
 
 
@@ -303,7 +275,7 @@ expired_expiry_time = (datetime(2024, 7, 23, 11, 0, tzinfo=timezone.utc)).isofor
         ("token", expired_expiry_time, False),
         (None, valid_expiry_time, False),
         ("token", None, False),
-    ]
+    ],
 )
 @freeze_time("2024-07-23 12:00:00")
 def test_is_token_valid(mocker, access_token, expiry_time_str, expected_result):
@@ -357,12 +329,22 @@ def test_get_new_token(mocker, expected_response, expected_token):
                 "queue": "Tier 1 Analyst",
                 "rules": [{"ruleSource": "CR"}],
             },
-            [{'caseId': '123', 'alertId': '456', 'riskScore': 75, 'groupedbyKey': 'Src Ip',
-                'srcIps': ["1.1.1.1"], 'priority': 'LOW', 'stage': 'NEW', 'queue': 'Tier 1 Analyst'}],
+            [
+                {
+                    "caseId": "123",
+                    "alertId": "456",
+                    "riskScore": 75,
+                    "groupedbyKey": "Src Ip",
+                    "srcIps": ["1.1.1.1"],
+                    "priority": "LOW",
+                    "stage": "NEW",
+                    "queue": "Tier 1 Analyst",
+                }
+            ],
             "### Case\n"
             "|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
             "|---|---|---|---|---|---|---|---|\n"
-            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n"
+            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n",
         ),
         (
             {"limit": "1"},
@@ -421,7 +403,7 @@ def test_case_search_request(mocker):
 
     base_url = "https://example.com"
     client = Client(base_url, "", "", False, False)
-    request = mocker.patch.object(client, 'request', return_value={})
+    request = mocker.patch.object(client, "request", return_value={})
 
     client.case_search_request(data_dict)
 
@@ -463,7 +445,7 @@ def test_context_table_list_command(mocker, args, mock_response, expected_output
     result = context_table_list_command(client, args)
 
     if "table_id" in args:
-        mock_get.assert_called_once_with(args['table_id'])
+        mock_get.assert_called_once_with(args["table_id"])
     else:
         mock_list.assert_called_once()
 
@@ -483,8 +465,8 @@ def test_context_table_list_command(mocker, args, mock_response, expected_output
             {"table_id": "12345", "delete_unused_custom_attributes": "False"},
             {"id": "12345"},
             "The context table with ID 12345 has been successfully deleted.",
-        )
-    ]
+        ),
+    ],
 )
 def test_context_table_delete_command(mocker, args, mock_response, expected_output):
     client = MockClient("example.com", "", "", False, False)
@@ -509,7 +491,7 @@ def test_context_table_delete_command(mocker, args, mock_response, expected_outp
                 {"id": "2", "name": "Record2"},
             ],
         )
-    ]
+    ],
 )
 def test_table_record_list_command(mocker, args, mock_response, expected_output):
     client = MockClient("example.com", "", "", False, False)
@@ -518,7 +500,7 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
     result = table_record_list_command(client, args)
 
     assert result.outputs == expected_output
-    mock_get.assert_called_once_with("12345", {"limit": 2, 'offset': 0})
+    mock_get.assert_called_once_with("12345", {"limit": 2, "offset": 0})
 
 
 @pytest.mark.parametrize(
@@ -572,18 +554,14 @@ def test_generic_search_command(mocker, args, item_type, mock_response, expected
     "dict_input, dict_expected",
     [
         (
-            {
-                "name": ["Alice", "Bob", "Charlie"],
-                "age": ["25", "30", "35"],
-                "city": ["city1", "city2", "city3"]
-            },
+            {"name": ["Alice", "Bob", "Charlie"], "age": ["25", "30", "35"], "city": ["city1", "city2", "city3"]},
             [
                 {"name": "Alice", "age": "25", "city": "city1"},
                 {"name": "Bob", "age": "30", "city": "city2"},
-                {"name": "Charlie", "age": "35", "city": "city3"}
-            ]
+                {"name": "Charlie", "age": "35", "city": "city3"},
+            ],
         ),
-    ]
+    ],
 )
 def test_transform_dicts(dict_input, dict_expected):
     result = transform_dicts(dict_input)
@@ -595,9 +573,9 @@ def test_transform_dicts(dict_input, dict_expected):
     [
         (
             {"caseCreationTimestamp": 1672531200000000, "lastModifiedTimestamp": 1672617600000000},
-            {"caseCreationTimestamp": "2023-01-01T00:00:00Z", "lastModifiedTimestamp": "2023-01-02T00:00:00Z"}
+            {"caseCreationTimestamp": "2023-01-01T00:00:00Z", "lastModifiedTimestamp": "2023-01-02T00:00:00Z"},
         ),
-    ]
+    ],
 )
 def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
     result = convert_all_timestamp_to_datestring(attributes_input)
@@ -611,21 +589,30 @@ def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
             CommandResults(
                 outputs_prefix="ExabeamPlatform.Case",
                 readable_output="",
-                outputs=[{"caseId": "aa11", "alertName": "alert1", "caseCreationTimestamp": 1723212955501077, },
-                         {"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": 1723212955501077, }]),
-            {
-                "fetch_query": "priority:LOW",
-                "max_fetch": "2",
-                "first_fetch": "3 days"
-            },
-            {'time': '2024-08-12T01:55:36Z', 'last_ids': ['aa11']},
+                outputs=[
+                    {
+                        "caseId": "aa11",
+                        "alertName": "alert1",
+                        "caseCreationTimestamp": 1723212955501077,
+                    },
+                    {
+                        "caseId": "bb22",
+                        "alertName": "alert2",
+                        "caseCreationTimestamp": 1723212955501077,
+                    },
+                ],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-12T01:55:36Z", "last_ids": ["aa11"]},
             [
-                {'Name': 'alert2',
-                 'rawJSON': '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}'}
+                {
+                    "Name": "alert2",
+                    "rawJSON": '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}',
+                }
             ],
-            {'time': '2024-08-09T14:15:55Z', 'last_ids': ['bb22']}
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["bb22"]},
         ),
-    ]
+    ],
 )
 def test_fetch_incidents(mocker, mock_response, params, last_run, expected_incidents, expected_last_run):
     client = MockClient("example.com", "", "", False, False)

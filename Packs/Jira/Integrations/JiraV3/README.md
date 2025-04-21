@@ -8,7 +8,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Atlassian Jira V3.
-3. **Authentication**: Basic Authentication and OAuth 2.0 are used for both Jira Cloud, and OnPrem. Read the [Authentication](#authentication) process in order to configure your instance
+3. **Authentication**: Basic Authentication, Personal Access Token, and OAuth 2.0 are used for Jira Cloud and On-prem. Read the [Authentication](#authentication) process in order to configure your instance
 4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -20,6 +20,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Callback URL | used only for OAuth 2.0 method | False |
     | Client ID | used only for OAuth 2.0 method | False |
     | Client Secret | used only for OAuth 2.0 method | False |
+    | Personal Access Token | used only for the Personal Access Token method | False |
     | Query (in JQL) for fetching incidents | The field that was selected in the "Issue Field to fetch by" can't be used. in the query. | False |
     | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: created &amp;gt;= \{created date in last run\} ORDER BY created ASC | False |
     | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query. | False |
@@ -54,8 +55,8 @@ Configure only one of the following fields:
 
 ## Authentication
 ### Basic Authentication
-Leave the *Client ID* and *Client Secret* fields empty and fill in the following fields:
-- *User name* -Enter your user email.
+Leave the *Client ID*, *Client Secret* and *Personal Access Token* fields empty and fill in the following fields:
+- *User name* - Enter your user email.
 - *API key* - Enter the API token. To generate API token, see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
 
 ##### Basic Authentication permissions
@@ -70,6 +71,9 @@ Locate permissions for the tasks listed below:
 * Add comments
 * Link issues
 
+### Personal Access Token Authentication
+Leave the *User name*, *API key*, *Client ID* and *Client Secret* empty and fill in the following fields:
+- *Personal Access Token* - Enter the Personal Access Token you created for a user, see [here](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html)
 
 
 ### OAuth 2.0
@@ -151,6 +155,8 @@ If `created time`, or `updated time` is selected when fetching incidents for the
 By default, 50 issues are fetched for each call.
 If `Fetch comments` is enabled, The fetched incidents will include the comments in the Jira issue, and preview them in the form of a table in the incident info tab.
 If `Fetch attachments` is enabled, The fetched incidents will include the attachments in the Jira issue.
+
+**Note**: Changing certain incidents fetching configuration parameters, such as `Issue Field to fetch by` on the fly may result in unintended side effects and behaviors, including duplicate or missing incidents. It is recommended to reset the "last run" timestamp before applying such changes or, preferably, configure a new integration instance with the new fetch configuration.
 
 ## Commands
 
@@ -467,6 +473,7 @@ Scope: `read:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's description. |
+| Ticket.RawDescription | String | The ticket's raw description. |
 | Ticket.Labels | Array | The ticket's labels. |
 | Ticket.Components | Array | The ticket's components. |
 | Ticket.Status | String | The ticket status. |
@@ -827,6 +834,7 @@ Scope: `write:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's project description. |
+| Ticket.RawDescription | String | The ticket's project raw description. |
 | Ticket.Labels | Array | The ticket's project labels. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Priority | String | The ticket priority. |
@@ -922,6 +930,7 @@ Scope: `write:jira-work`
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
 | Ticket.Description | String | The ticket's project description. |
+| Ticket.RawDescription | String | The ticket's project raw description. | 
 | Ticket.Labels | Array | The ticket's project labels. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Priority | String | The ticket priority. |
@@ -986,9 +995,6 @@ Scope: `write:jira-work`
 >|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
-
-
-
 
 ### jira-create-issue
 
@@ -1099,6 +1105,8 @@ Scope: `read:jira-work`
 | Ticket.Assignee | String | The user assigned to the ticket, in the form \`Username\(User email address\)\`. |
 | Ticket.Creator | String | The user who created the ticket. |
 | Ticket.Summary | String | The ticket summary. |
+| Ticket.Description | String | The ticket's project description. |
+| Ticket.RawDescription | String | The ticket's project raw description. |
 | Ticket.Status | String | The ticket status. |
 | Ticket.Labels | Array | The ticket's labels. |
 | Ticket.Components | Array | The ticket's components. |
@@ -3194,3 +3202,27 @@ Returns a page of field metadata for a specified project and issue type.
 | Jira.IssueField.Schema.customId | Number | If the field is a custom field, the custom ID of the field. | 
 | Jira.IssueField.Schema.configuration | Object | If the field is a custom field, the configuration of the field. | 
 
+### jira-reset-timezone-cache
+
+***
+Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
+
+#### Base Command
+
+`jira-reset-timezone-cache`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-reset-timezone-cache```
+
+#### Human Readable Output
+
+>The Jira user timezone was successfully cleared from the cache

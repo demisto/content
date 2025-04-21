@@ -1780,3 +1780,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+marketplaces:
+- xsoar
+# Should not appear in marketplacev2

@@ -18,7 +18,8 @@ An API key of type **Advanced** with an **Administrator** role.
 | apikey_id | API Key ID | True |  
 | apikey | API Key | True |  
 | feed | Fetch indicators | False |  
-| severity | the severity in Cortex XDR | True |  
+| severity | The severity in Cortex XDR | True |  
+| Tags | Appears in Cortex XSOAR if a modification was made on the Cortex XDR side and is being "mirrored" to Cortex XSOAR | False |  
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | xsoar_severity_field | The Cortex XSOAR indicator field used as severity. | True |  

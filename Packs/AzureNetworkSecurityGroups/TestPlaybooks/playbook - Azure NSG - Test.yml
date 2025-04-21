@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -49,6 +49,7 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -130,13 +131,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: DemistoRule
+              simple: alerts-nsg
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 905
         }
       }
     note: false
@@ -548,7 +549,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2995
         }
       }
@@ -703,13 +704,379 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c881a9de-ecb6-44a5-8f60-fabab6eb19d6
+    type: regular
+    task:
+      id: c881a9de-ecb6-44a5-8f60-fabab6eb19d6
+      version: -1
+      name: List public ip address
+      description: Get public IP addresses in a resource group.
+      script: '|||azure-nsg-public-ip-addresses-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 29202b41-0e94-41c4-8c79-35aac23e57e4
+    type: condition
+    task:
+      id: 29202b41-0e94-41c4-8c79-35aac23e57e4
+      version: -1
+      name: Check output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${AzureNSG.PublicIPAddress.name}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 373b4199-5e79-44bc-8a0c-8c62ee873980
+    type: regular
+    task:
+      id: 373b4199-5e79-44bc-8a0c-8c62ee873980
+      version: -1
+      name: List virtual networks
+      description: Gets virtual networks in a resource group.
+      script: '|||azure-nsg-virtual-networks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b14709be-08fd-4534-8129-c133ce7b3bd2
+    type: condition
+    task:
+      id: b14709be-08fd-4534-8129-c133ce7b3bd2
+      version: -1
+      name: Check output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureNSG.VirtualNetwork
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 236b7b86-848b-4dc3-8d1d-811ebc459afc
+    type: regular
+    task:
+      id: 236b7b86-848b-4dc3-8d1d-811ebc459afc
+      version: -1
+      name: Create security group
+      description: Creates a network security group in the specified resource group.
+      script: '|||azure-nsg-security-group-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      location:
+        simple: westeurope
+      security_group_name:
+        simple: ptest
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 035f46ad-437e-447d-84da-fb14dd6cf30f
+    type: regular
+    task:
+      id: 035f46ad-437e-447d-84da-fb14dd6cf30f
+      version: -1
+      name: List security group
+      description: List all network security groups.
+      script: '|||azure-nsg-security-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b88a32f5-062a-4184-8784-f37c541bcc1c
+    type: condition
+    task:
+      id: b88a32f5-062a-4184-8784-f37c541bcc1c
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: ptest
+          right:
+            value:
+              simple: AzureNSG.SecurityGroup.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: aca6d2b5-e4f0-496b-813f-d56510a9207d
+    type: regular
+    task:
+      id: aca6d2b5-e4f0-496b-813f-d56510a9207d
+      version: -1
+      name: Create network interface
+      description: Creates or updates a network interface.
+      script: '|||azure-nsg-network-interfaces-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      ip_config_name:
+        simple: ipconfig1
+      location:
+        simple: westeurope
+      nic_name:
+        simple: test
+      subnet_name:
+        simple: default
+      vnet_name:
+        simple: cloud-shell-storage-eastus-vnet
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 70366091-92e4-454e-854e-d30b9adee5ad
+    type: regular
+    task:
+      id: 70366091-92e4-454e-854e-d30b9adee5ad
+      version: -1
+      name: List network interfaces
+      description: Gets network interfaces in a resource group.
+      script: '|||azure-nsg-network-interfaces-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3a5aafd3-b1be-44d3-8bed-19f0fee3e925
+    type: condition
+    task:
+      id: 3a5aafd3-b1be-44d3-8bed-19f0fee3e925
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: test
+          right:
+            value:
+              simple: AzureNSG.NetworkInterface.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3010,
-        "width": 492.5,
+        "width": 820,
         "x": 50,
         "y": 50
       }

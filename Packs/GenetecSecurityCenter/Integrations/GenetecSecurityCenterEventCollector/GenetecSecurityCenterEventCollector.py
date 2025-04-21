@@ -1,12 +1,13 @@
 import html
-import demistomock as demisto
-from urllib3 import disable_warnings
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-from requests.auth import HTTPBasicAuth
 import json
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from requests.auth import HTTPBasicAuth
+from urllib3 import disable_warnings
 from xmltodict import parse
 
+from CommonServerUserPython import *  # noqa
 
 disable_warnings()
 
@@ -17,9 +18,26 @@ PRODUCT = "Security center"
 DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S"
 AUDIT_TRAIL_ENDPOINT = "/WebSdk/report/AuditTrail"
 GET_EVENTS_HEADERS = [
-    "Id", "Guid", "ModificationTimeStamp", "ModifiedBy", "SourceApplicationGuid", "Name", "ModifiedByAsString",
-    "SourceApplicationAsString", "Machine", "SourceApplicationType", "OldValue", "NewValue", "CustomFieldId", "CustomFieldName",
-    "CustomFieldValueType", "AuditTrailModificationType", "Type", "Description", "AuditTrailModificationSubTypes", "Value"
+    "Id",
+    "Guid",
+    "ModificationTimeStamp",
+    "ModifiedBy",
+    "SourceApplicationGuid",
+    "Name",
+    "ModifiedByAsString",
+    "SourceApplicationAsString",
+    "Machine",
+    "SourceApplicationType",
+    "OldValue",
+    "NewValue",
+    "CustomFieldId",
+    "CustomFieldName",
+    "CustomFieldValueType",
+    "AuditTrailModificationType",
+    "Type",
+    "Description",
+    "AuditTrailModificationSubTypes",
+    "Value",
 ]
 
 
@@ -38,9 +56,7 @@ class Client(BaseClient):
     :param proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(
-        self, base_url: str, username: str, password: str, verify: bool, proxy: bool, max_fetch: str, app_id: str
-    ):
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool, max_fetch: str, app_id: str):
         auth = self._encode_authorization(username, password, app_id)
         self.limit = max_fetch
 
@@ -51,7 +67,7 @@ class Client(BaseClient):
         return HTTPBasicAuth(updated_username, password)
 
     def http_request(self, url_suffix):
-        response_audit = self._http_request('GET', url_suffix=url_suffix, resp_type='response')
+        response_audit = self._http_request("GET", url_suffix=url_suffix, resp_type="response")
         response = json.loads(response_audit.content)["Rsp"]
         if response["Status"] == "Fail":
             raise DemistoException(response["Result"])
@@ -104,7 +120,7 @@ def fetch_events_command(
     if end_time := args.get("end_time"):
         time_now_str = end_time
     time_range = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
-    limit: int = int(args.get('limit') or client.limit)
+    limit: int = int(args.get("limit") or client.limit)
     query: str = f"{time_range},SortOrder=Ascending"
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
     demisto.info(f"executing fetch events with the following query: {query}")
@@ -112,13 +128,14 @@ def fetch_events_command(
     results = response[:limit]
     for result in results:
         result["Value"] = parse(html.unescape(result.get("Value")))
-        result['_time'] = result["ModificationTimeStamp"]
-    cached_audits: List[str] = last_run.get('audit_cache', [])
+        result["_time"] = result["ModificationTimeStamp"]
+    cached_audits: List[str] = last_run.get("audit_cache", [])
     updated_results, updated_cached_audits = remove_duplicated_events(results, cached_audits)
-    last_run['audit_cache'] = updated_cached_audits
+    last_run["audit_cache"] = updated_cached_audits
     if updated_results:
-        last_run["start_time"] = (datetime.strptime(updated_results[-1]["ModificationTimeStamp"],
-                                                    "%Y-%m-%dT%H:%M:%S.%fZ")).strftime(DATE_FORMAT_EVENT)
+        last_run["start_time"] = (
+            datetime.strptime(updated_results[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        ).strftime(DATE_FORMAT_EVENT)
     else:
         demisto.info("No new events were fetched. Therefore, setting last_run object to point to now.")
         last_run["start_time"] = time_now_str
@@ -171,16 +188,12 @@ def main() -> None:  # pragma: no cover
 
         elif command == "genetec-security-center-get-events":
             events, _ = fetch_events_command(client, args, {})
-            return_results(
-                CommandResults(readable_output=tableToMarkdown("Events:", events, headers=GET_EVENTS_HEADERS))
-            )
+            return_results(CommandResults(readable_output=tableToMarkdown("Events:", events, headers=GET_EVENTS_HEADERS)))
 
         elif command == "fetch-events":
             should_push_events, should_save_last_run = True, True
             last_run = demisto.getLastRun()
-            events, last_run = fetch_events_command(
-                client, params, last_run=last_run
-            )
+            events, last_run = fetch_events_command(client, params, last_run=last_run)
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
         if should_push_events:
@@ -192,9 +205,7 @@ def main() -> None:  # pragma: no cover
             demisto.info(f"set last run time: {last_run.get('start_time')}")
 
     except Exception as e:
-        return_error(
-            f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration [{e}]."
-        )
+        return_error(f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration [{e}].")
 
 
 """ ENTRY POINT """

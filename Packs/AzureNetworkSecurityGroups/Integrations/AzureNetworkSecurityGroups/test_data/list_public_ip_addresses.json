@@ -1,0 +1,40 @@
+{
+    "value": [
+      {
+        "name": "testDNS-ip",
+        "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/testDNS-ip",
+        "location": "westus",
+        "etag": "123etag3",
+        "properties": {
+          "securityRules": [],
+          "provisioningState": "Succeeded",
+          "publicIPAddressVersion": "IPv4",
+          "publicIPAllocationMethod": "Dynamic",
+          "ipAddress": "1.1.1.1",
+          "idleTimeoutInMinutes": 4,
+          "dnsSettings": {
+          "domainNameLabel": "testlbl",
+          "fqdn": "testlbl.westus.cloudapp.azure.com"
+        },
+          "ipConfiguration": {
+            "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/testDNS649/ipConfigurations/ipconfig1"
+          },
+          "ddosSettings": {
+            "protectionMode": "VirtualNetworkInherited",
+            "fqdn": "testlbl.westus.cloudapp.azure.com"
+          },
+          "ipTags": [
+            {
+              "ipTagType": "FirstPartyUsage",
+              "tag": "SQL"
+            },
+            {
+              "ipTagType": "FirstPartyUsage",
+              "tag": "Storage"
+            }
+          ]
+        },
+        "type": "Microsoft.Network/publicIPAddresses"
+      }
+    ]
+  }

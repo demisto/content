@@ -1,23 +1,22 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any
-
-
 TASK_STATES = {
-    'new': '',
-    'inprogress': 'inprogress',
-    'completed': 'Completed',
-    'waiting': 'Waiting',
-    'error': 'Error',
-    'looperror': 'LoopError',
-    'skipped': 'WillNotBeExecuted',
-    'willnotbeexecuted': 'WillNotBeExecuted',
-    'blocked': 'Blocked'
+    "new": "",
+    "inprogress": "inprogress",
+    "completed": "Completed",
+    "waiting": "Waiting",
+    "error": "Error",
+    "looperror": "LoopError",
+    "skipped": "WillNotBeExecuted",
+    "willnotbeexecuted": "WillNotBeExecuted",
+    "blocked": "Blocked",
 }
 
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def get_playbook_tasks(tasks: list) -> list:
@@ -31,7 +30,7 @@ def get_playbook_tasks(tasks: list) -> list:
     """
     ready_tasks = []
     for task in tasks:
-        if task.get('type') == 'playbook' and task.get('subPlaybook'):
+        if task.get("type") == "playbook" and task.get("subPlaybook"):
             sub_playbook_tasks = task.get("subPlaybook", {}).get("tasks", {}).values()
             ready_tasks.extend(get_playbook_tasks(list(sub_playbook_tasks)))
         ready_tasks.append(task)
@@ -48,8 +47,8 @@ def get_states(states: list[str]) -> list[str]:
     Returns:
         list[str]: a list of the internal names of the states given in the input or all possible states, if input was empty
     """
-    if 'error' in states:
-        states.append('loopError')
+    if "error" in states:
+        states.append("loopError")
 
     ready_states = []
     for state in states:
@@ -77,71 +76,76 @@ def is_task_match(task: dict, name: str | None, tag: str | None, states: list[st
     Returns:
         bool: `True` if the task matches the given name, tag an/or state, otherwise `False`
     """
-    task_task = task.get('task', {})
-    name_match = name is None or task_task.get('name', '').lower() == name.lower()
-    tag_match = tag is None or tag in task_task.get('tags', [])
-    state_match = len(states) == 0 or task.get('state') in states
+    task_task = task.get("task", {})
+    name_match = name is None or task_task.get("name", "").lower() == name.lower()
+    tag_match = tag is None or tag in task_task.get("tags", [])
+    state_match = len(states) == 0 or task.get("state") in states
 
     return name_match and tag_match and state_match
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def get_task_command(args: dict[str, Any]) -> CommandResults:
-    name = args.get('name')
-    tag = args.get('tag')
-    states = get_states(argToList(args.get('states')))
-    inc_id = args['inc_id']
-    res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
+    name = args.get("name")
+    tag = args.get("tag")
+    states = get_states(argToList(args.get("states")))
+    inc_id = args["inc_id"]
+    res = demisto.executeCommand("core-api-get", {"uri": f"/investigation/{inc_id}/workplan"})
     if not res or isError(res[0]):
         raise Exception(res)
 
-    tasks: dict = dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {})
+    tasks: dict = dict_safe_get(res[0], ["Contents", "response", "invPlaybook", "tasks"], {})
     if not tasks:
-        return CommandResults(readable_output=f'Workplan for incident {inc_id} has no tasks.')
+        return CommandResults(readable_output=f"Workplan for incident {inc_id} has no tasks.")
 
     allTasks = get_playbook_tasks(list(tasks.values()))
     res = []
 
     for task in allTasks:
         if is_task_match(task, name, tag, states):
-            res.append({
-                'id': task.get('id'),
-                'name': task.get('task', {}).get('name', ''),
-                'type': task.get('type'),
-                'owner': task.get('assignee'),
-                'state': task.get('state'),
-                'scriptId': task.get('task', {}).get('scriptId'),
-                'startDate': task.get('startDate'),
-                'dueDate': task.get('dueDate'),
-                'completedDate': task.get('completedDate'),
-                'parentPlaybookID': task.get('parentPlaybookID'),
-                'completedBy': task.get('completedBy')
-            })
+            res.append(
+                {
+                    "id": task.get("id"),
+                    "name": task.get("task", {}).get("name", ""),
+                    "type": task.get("type"),
+                    "owner": task.get("assignee"),
+                    "state": task.get("state"),
+                    "scriptId": task.get("task", {}).get("scriptId"),
+                    "startDate": task.get("startDate"),
+                    "dueDate": task.get("dueDate"),
+                    "completedDate": task.get("completedDate"),
+                    "parentPlaybookID": task.get("parentPlaybookID"),
+                    "completedBy": task.get("completedBy"),
+                }
+            )
 
-    return CommandResults(outputs_prefix='Tasks',
-                          outputs_key_field='id',
-                          outputs=res,
-                          readable_output=tableToMarkdown(
-                              name=f'Incident #{inc_id} Playbook Tasks',
-                              t=res,
-                              headers=['id', 'name', 'state', 'owner', 'scriptId'],
-                              removeNull=True))
+    return CommandResults(
+        outputs_prefix="Tasks",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=tableToMarkdown(
+            name=f"Incident #{inc_id} Playbook Tasks",
+            t=res,
+            headers=["id", "name", "state", "owner", "scriptId"],
+            removeNull=True,
+        ),
+    )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
         return_results(get_task_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute Script Error: {str(ex)}')
+        return_error(f"Failed to execute Script Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

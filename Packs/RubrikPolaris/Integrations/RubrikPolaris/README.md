@@ -682,7 +682,7 @@ Retrieve the download link for the requested scanned file.
 
 ### rubrik-radar-anomaly-csv-analysis
 ***
-Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
+Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
 
 
 #### Base Command
@@ -695,6 +695,7 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 | cluster_id | The unique ID of the cluster.<br/><br/>Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command. | Required | 
 | snapshot_id | The CDM snapshot ID.<br/><br/>Note: Users can retrieve the list of snapshot IDs by executing the "rubrik-polaris-vm-object-snapshot-list" command.<br/>Use the "rubrik-radar-suspicious-file-list" command to retrieve the actual CDM ID from the Anomaly ID.<br/>Example format to get the snapshot CDM ID from Anomaly ID: "&lt;Cluster-ID&gt;:::VirtualMachine:::&lt;Snappable-ID&gt;:::&lt;CDM-ID&gt;". | Required | 
 | object_id | The VM object ID (Snappable ID).<br/><br/>Note: Users can retrieve the list of Snappable IDs by executing the "rubrik-polaris-vm-objects-list" command.<br/>Example format to get the Snappable ID: "VirtualMachine:::&lt;Snappable-ID&gt;". | Required | 
+| download_file | If set to True, the command downloads the anomaly analysis CSV file directly on XSOAR server.<br/><br/>Possible values are: True, False. Default is False. | Optional |
 
 
 #### Context Output
@@ -705,16 +706,40 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 | RubrikPolaris.RadarAnomalyCSV.snapshotId | String | Snapshot ID of the CSV. | 
 | RubrikPolaris.RadarAnomalyCSV.objectId | String | Object ID of the CSV. | 
 | RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink | String | The download link of the CSV analysis. | 
+| File.Size | String | File size in bytes. | 
+| File.SHA1 | String | SHA1 hash of file. | 
+| File.SHA256 | String | SHA256 hash of file. | 
+| File.SHA512 | String | SHA512 hash of file. | 
+| File.Name | String | File name. | 
+| File.SSDeep | String | SSDeep hash of the file. | 
+| File.EntryID | Unknown | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
 
 
 #### Command Example
-```!rubrik-radar-anomaly-csv-analysis cluster_id="cc19573c-db6c-418a-9d48-067a256543ba" snapshot_id="7b71d588-911c-4165-b6f3-103a1684d2a3" object_id="868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-4335"```
+```!rubrik-radar-anomaly-csv-analysis cluster_id="0000-000-000-000-0000" snapshot_id="0000-000-000-000-0000" object_id="0000-000-000-000-vm-0000" download_file=True```
 
 #### Human Readable Output
-### Radar Anomaly CSV Analysis
-|CSV Download Link|
-|---|
-| Download the analyzed [CSV](https://www.example.com/csv_file) file. |
+>### Radar Anomaly CSV Analysis
+>|CSV Download Link|
+>|---|
+>| Download the analyzed [CSV](https://www.example.com/snapshot_000-000-000-000.csv) file. |
+
+>Uploaded file: snapshot_000-000-000-000.csv Download
+>
+>|Property|Value|
+>|---|---|
+>| Type | text/csv; charset=utf-8 |
+>| Size | 10,069 bytes |
+>| Info | ASCII text, with very long lines |
+>| MD5 | 10000000000000000000000000 |
+>| SHA1 | 1000000000000000000000000000000 |
+>| SHA256 | 1000000000000000000000000000000000000000000000000000000000 |
+>| SHA512 | 10000000000000000000000000000000000000000000000000000000000000000000000 |
+>| SSDeep | 1:100000000000000000000000000000000000000000000000000000000: |
 
 
 

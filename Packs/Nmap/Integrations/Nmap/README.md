@@ -6,25 +6,27 @@ This integration was integrated and tested with version 7.70 of nmap. The nmap b
 
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nmap-scan
+
 ***
-Scan targets with the given parameters
+Scan targets with the given parameters.
 
-
-##### Base Command
+#### Base Command
 
 `nmap-scan`
-##### Input
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | targets | The targets to scan. Accepts comma-separated list. | Required | 
 | options | The nmap options to use as documented by nmap. | Required | 
 
-
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -34,24 +36,26 @@ Scan targets with the given parameters
 | NMAP.Scan.Ended | unknown | End time epoch. | 
 | NMAP.Scan.CommandLine | unknown | The command line being used. | 
 | NMAP.Scan.ScanType | unknown | The type of discovery scan. | 
-| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned hostץ | 
+| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host. | 
 | NMAP.Scan.Hosts.Address | unknown | Scanned host address. | 
-| NMAP.Scan.Hosts.Status | unknown | Is the host up or down? | 
+| NMAP.Scan.Hosts.Status | unknown | Is the host up or down. | 
 | NMAP.Scan.Hosts.Services.Port | unknown | The port of the service. | 
 | NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service. | 
 | NMAP.Scan.Hosts.Services.State | unknown | The state of the service. | 
 | NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service. | 
 | NMAP.Scan.Hosts.Services.Service | unknown | The service name. | 
-| NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. |
-| NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. |
-| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. |
+| NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. | 
+| NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. | 
+| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. | 
 
 
 #### Command Example
+
 ```!nmap-scan options="-sV" targets=scanme.nmap.org```
 
 #### Context Example
-```
+
+```json
 {
     "NMAP": {
         "Scan": {

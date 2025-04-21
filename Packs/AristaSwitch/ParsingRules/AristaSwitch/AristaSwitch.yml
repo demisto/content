@@ -1,4 +1,4 @@
-id: Arista_Switch_Parsing_Rules
+id: Arista_Switch_ParsingRule
 name: Arista Switch Parsing Rules
 fromversion: 8.2.0
 tags: [Arista, Switch, EOS]

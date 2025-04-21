@@ -23,12 +23,12 @@ def search(context, path, value):
         return len(path) == 0 and context == value
 
 
-path = demisto.args().get('path', '')
-value = demisto.args().get('value')
+path = demisto.args().get("path", "")
+value = demisto.args().get("value")
 
 results = {
-    True: 'yes',
-    False: 'no',
+    True: "yes",
+    False: "no",
 }
 
-demisto.results(results[search(demisto.context(), path.split('.'), value)])
+demisto.results(results[search(demisto.context(), path.split("."), value)])
