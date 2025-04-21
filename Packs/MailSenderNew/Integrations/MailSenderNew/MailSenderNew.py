@@ -34,13 +34,16 @@ def support_utf8_patch():
     smtplib currently only supports ascii characters in credentials.
     This patch should be removed once support is added by smtplib. (https://github.com/python/cpython/issues/73936)
     """
+    from smtplib import _MAXCHALLENGE, SMTPException, SMTPAuthenticationError # type: ignore[attr-defined]
+    from email.base64mime import body_encode as encode_base64
+    import hmac
     # Original lines left as comments for reference
     def auth(self, mechanism, authobject, *, initial_response_ok=True):
         mechanism = mechanism.upper()
         initial_response = (authobject() if initial_response_ok else None)
         if initial_response is not None:
-            #response = smtplib.encode_base64(initial_response.encode('ascii'), eol='')
-            response = smtplib.encode_base64(initial_response.encode('utf-8'), eol='')
+            #response = encode_base64(initial_response.encode('ascii'), eol='')
+            response = encode_base64(initial_response.encode('utf-8'), eol='')
             (code, resp) = self.docmd("AUTH", mechanism + " " + response)
             self._auth_challenge_count = 1
         else:
@@ -49,28 +52,28 @@ def support_utf8_patch():
         while code == 334:
             self._auth_challenge_count += 1
             challenge = base64.decodebytes(resp)
-            response = smtplib.encode_base64(
+            response = encode_base64(
                 #authobject(challenge).encode('ascii'), eol='')
                 authobject(challenge).encode('utf-8'), eol='')
             (code, resp) = self.docmd(response)
-            if self._auth_challenge_count > smtplib._MAXCHALLENGE:
-                raise smtplib.SMTPException(
+            if self._auth_challenge_count > _MAXCHALLENGE:
+                raise SMTPException(
                     "Server AUTH mechanism infinite loop. Last response: "
                     + repr((code, resp))
                 )
         if code in (235, 503):
             return (code, resp)
-        raise smtplib.SMTPAuthenticationError(code, resp)
+        raise SMTPAuthenticationError(code, resp)
 
     def auth_cram_md5(self, challenge=None):
         if challenge is None:
             return None
-        return self.user + " " + smtplib.hmac.HMAC(
+        return self.user + " " + hmac.HMAC(
             #self.password.encode('ascii'), challenge, 'md5').hexdigest()
             self.password.encode('utf-8'), challenge, 'md5').hexdigest()
 
-    SMTP.auth = auth
-    SMTP.auth_cram_md5 = auth_cram_md5
+    SMTP.auth = auth # type: ignore[assignment]
+    SMTP.auth_cram_md5 = auth_cram_md5 # type: ignore[assignment]
 
 def randomword(length):
     """
