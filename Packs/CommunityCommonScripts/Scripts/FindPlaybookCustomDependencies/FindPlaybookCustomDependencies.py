@@ -17,8 +17,14 @@ def get_custom_scripts_playbooks():
             results['User'] = item['user']
             results['Modified'] = item['modified']
             query = {"query": "script.name:" + str(item['name']) + " AND hidden:F AND deprecated:F"}
-            playbooksUsingScripts = demisto.executeCommand(
-                "demisto-api-post", {"uri": "playbook/search", "body": query})[0].get('Contents', {}).get('response', {}).get('playbooks')
+            playbooksUsingScripts = (
+                demisto.executeCommand(
+                    "demisto-api-post", {"uri": "playbook/search", "body": query}
+                )[0]
+                .get("Contents", {})
+                .get("response", {})
+                .get("playbooks")
+            )
             if not playbooksUsingScripts:
                 pbnamelist = []
                 for item in playbooksUsingScripts:
@@ -29,16 +35,16 @@ def get_custom_scripts_playbooks():
             final_results.append(results.copy())
         markdown = ''
         markdown = tableToMarkdown('Custom scripts Used in Playbooks', final_results)
-        results = CommandResults(
+        command_results_results = CommandResults(
             readable_output=markdown,
             outputs_prefix='CustomScripts',
             outputs_key_field='CustomDependencies.Info',
             outputs=final_results
         )
-        return_results(results)
+        return_results(command_results_results)
 
 
-def get_integrations_playbooks():
+def get_integrations_playbooks() -> None:
     results = {}
     final_results = []
     incident = demisto.incidents()[0]
@@ -59,10 +65,16 @@ def get_integrations_playbooks():
         integrations_list = list(set(integrations_list))
         for brand in integrations_list:
             results['IntegrationBrands'] = brand
-            string_brand = ('"{}"'.format(str(brand)))
+            string_brand = (f'"{str(brand)}"')
             query = {"query": "brands:" + str(string_brand) + " AND hidden:F AND deprecated:F"}
-            playbooksUsingIntegrations = demisto.executeCommand(
-                "demisto-api-post", {"uri": "playbook/search", "body": query})[0].get('Contents', {}).get('response', {}).get('playbooks')
+            playbooksUsingIntegrations = (
+                demisto.executeCommand(
+                    "demisto-api-post", {"uri": "playbook/search", "body": query}
+                )[0]
+                .get("Contents", {})
+                .get("response", {})
+                .get("playbooks")
+            )
             if playbooksUsingIntegrations is not None:
                 pbnamelist = []
                 for item in playbooksUsingIntegrations:
@@ -73,15 +85,15 @@ def get_integrations_playbooks():
             final_results.append(results.copy())
         markdown = ''
         markdown = tableToMarkdown('Integrations Used in Playbooks', final_results)
-        results = CommandResults(
+        command_results_results = CommandResults(
             readable_output=markdown,
             outputs_prefix='Integrations',
             outputs_key_field='Info',
             outputs=final_results
         )
-        return_results(results)
+        return_results(command_results_results)
     else:
-        return "No integrations are enabled"
+        return_results("No integrations are enabled")
 
 
 def main():
