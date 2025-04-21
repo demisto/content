@@ -375,6 +375,7 @@ def create_user_command(client: MsGraphClient, args: dict):
 
     return CommandResults(
         outputs=outputs,
+        outputs_key_field='ID',
         readable_output=human_readable,
         raw_response=user_data
     )
@@ -401,9 +402,7 @@ def change_password_user_command(client: MsGraphClient, args: dict):
     human_readable = f"User {user} password was changed successfully."
 
     return CommandResults(
-        outputs={},
-        readable_output=human_readable,
-        raw_response={}
+        readable_output=human_readable
     )
 
 
@@ -417,6 +416,7 @@ def get_delta_command(client: MsGraphClient, args: dict):
 
     return CommandResults(
         outputs_prefix='MSGraphUser',
+        outputs_key_field='ID',
         outputs=users_outputs,
         readable_output=human_readable,
         raw_response=users_data
@@ -473,9 +473,7 @@ def list_users_command(client: MsGraphClient, args: dict):
 
     if result_next_page:
         metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
-
-        # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
-        # outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
+        # Ensures the NextPage token is inserted as the first element only if it's a valid URL
         outputs['MSGraphUser'].insert(0, {'NextPage': result_next_page})
     human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
 
@@ -539,7 +537,6 @@ def assign_manager_command(client: MsGraphClient, args: dict):
     )
 
     return CommandResults(
-        outputs_key_field='ID',
         readable_output=human_readable
     )
 
@@ -551,7 +548,6 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
 
     return CommandResults(
-        outputs_key_field='ID',
         readable_output=human_readable
     )
 
@@ -625,7 +621,6 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict):
     human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted'
 
     return CommandResults(
-        outputs_key_field='ID',
         readable_output=human_readable
     )
 

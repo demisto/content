@@ -229,16 +229,27 @@ def test_suppress_errors(mocker):
             "args": {"user": "123456789"},
             "expected_result": "#### User -> 123456789 does not exist",
         },
-
-       {'fun': get_tap_policy_list_command, 'mock_fun': 'list_tap_policy',
-         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
-         'expected_result': '#### User -> 123456789 does not exist'},
-        {'fun': delete_tap_policy_command, 'mock_fun': 'delete_tap_policy',
-         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789', 'policy_id': '987654321'},
-         'expected_result': '#### User -> 123456789 does not exist'},
-        {'fun': create_tap_policy_command, 'mock_fun': 'create_tap_policy',
-         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789', 'zip_password': '12345'},
-         'expected_result': '#### User -> 123456789 does not exist'}
+        {
+           'fun': get_tap_policy_list_command,
+           'mock_fun': 'list_tap_policy',
+           'mock_value': NotFoundError('123456789'),
+           'args': {'user': '123456789'},
+           'expected_result': '#### User -> 123456789 does not exist',
+        },
+        {
+            'fun': delete_tap_policy_command,
+            'mock_fun': 'delete_tap_policy',
+            'mock_value': NotFoundError('123456789'),
+            'args': {'user': '123456789', 'policy_id': '987654321'},
+            'expected_result': '#### User -> 123456789 does not exist'
+        },
+        {
+            'fun': create_tap_policy_command,
+            'mock_fun': 'create_tap_policy',
+            'mock_value': NotFoundError('123456789'),
+            'args': {'user': '123456789', 'zip_password': '12345'},
+            'expected_result': '#### User -> 123456789 does not exist'
+        }
     ]
 
     client = MsGraphClient(

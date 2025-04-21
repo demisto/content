@@ -632,7 +632,7 @@ script:
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
   - arguments:
-    - description: User ID.
+    - description: The Azure AD user ID.
       name: user_id
       required: true
     - description: Policy ID.
@@ -668,7 +668,7 @@ script:
       description: TAP policy's start date and time.
       type: String
   - arguments:
-    - description: User ID.
+    - description: The Azure AD user ID.
       name: user_id
       required: true
     - description: Password for the Zip file.
@@ -723,7 +723,7 @@ script:
       description: TAP policy's start date and time.
       type: String
   - arguments:
-    - description: User ID.
+    - description: The Azure AD user ID.
       name: user_id
       required: true
     - description: Policy ID.
