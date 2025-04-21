@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 from AWSApiModule import *
+from CommonServerPython import *  # noqa: F401
 
 """ CONSTANTS """
 
@@ -698,7 +697,7 @@ def main():  # pragma: no cover
     # Log exceptions and return errors
     except Exception as e:
         demisto.info(str(e))
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
