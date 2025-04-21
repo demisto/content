@@ -3,6 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, labeled, unlabeled]
 
+
 permissions:
   contents: read
 
