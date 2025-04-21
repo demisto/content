@@ -1,11 +1,11 @@
+import copy
+
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
+from MicrosoftApiModule import *  # noqa: E402
 
 from CommonServerUserPython import *
-
-import urllib3
-import copy
-from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -266,7 +266,7 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, str], resourc
     if isinstance(server_list_raw, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=server_list_raw)
 
-    server_list_fixed = copy.deepcopy(server_list_raw.get("value", "")[offset_int: (offset_int + limit_int)])
+    server_list_fixed = copy.deepcopy(server_list_raw.get("value", "")[offset_int : (offset_int + limit_int)])
     for server in server_list_fixed:
         if properties := server.get("properties", {}):
             server.update(properties)
@@ -307,7 +307,7 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
     if isinstance(database_list_raw, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=database_list_raw)
 
-    database_list_fixed = copy.deepcopy(database_list_raw.get("value", "")[offset_int: (offset_int + limit_int)])
+    database_list_fixed = copy.deepcopy(database_list_raw.get("value", "")[offset_int : (offset_int + limit_int)])
 
     for db in database_list_fixed:
         properties = db.get("properties", {})
@@ -360,7 +360,7 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str],
     if isinstance(audit_list_raw, str):  # if there is 404 then, error message will return
         return CommandResults(readable_output=audit_list_raw)
 
-    audit_list_fixed = copy.deepcopy(audit_list_raw.get("value", "")[offset_int: (offset_int + limit_int)])
+    audit_list_fixed = copy.deepcopy(audit_list_raw.get("value", "")[offset_int : (offset_int + limit_int)])
     for db in audit_list_fixed:
         db["serverName"] = server_name
         db["databaseName"] = db_name
@@ -812,7 +812,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

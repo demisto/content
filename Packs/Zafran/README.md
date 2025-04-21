@@ -2,7 +2,7 @@
 
 ## Overview  
 In today’s complex security landscape, resource-constrained teams struggle to efficiently mitigate exposure risks across large infrastructures. The Zafran Integration with Palo XSOAR helps you implement **Automated, High Impact Mitigations at scale**. With this integration, teams can prioritize mitigation actions, trigger playbooks with a single click, and streamline their response efforts, all from within the Palo XSOAR environment.
-# Zafran Integration for Palo XSOAR
+## Zafran Integration for Palo XSOAR
 
 ### What Does This Pack Do?
 - **Automated, High Impact Mitigations:** Zafran’s integration enables teams to view a **stack-ranked list of actions** that address exposure risks. For instance, it might recommend a configuration change in your Firewall to counter a vulnerability affecting over 7,000 assets.

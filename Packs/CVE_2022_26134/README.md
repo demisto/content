@@ -17,8 +17,7 @@ This playbook includes the following tasks:
 
 **More information:**
 
-[Threat Brief: Atlassian Confluence Remote Code Execution Vulnerability (CVE-2022-26134)
-](https://unit42.paloaltonetworks.com/cve-2022-26134-atlassian-code-execution-vulnerability/)
+[Threat Brief: Atlassian Confluence Remote Code Execution Vulnerability (CVE-2022-26134)](https://unit42.paloaltonetworks.com/cve-2022-26134-atlassian-code-execution-vulnerability/)
 
 [Confluence Security Advisory 2022-06-02](https://confluence.atlassian.com/doc/confluence-security-advisory-2022-06-02-1130377146.html)
 
