@@ -9,7 +9,7 @@ def get_custom_scripts_playbooks():
         "demisto-api-post", {"uri": "automation/search", "body": "{\"query\":\"system:F AND hidden:F AND deprecated:F\"}"})
     list_scripts = req_response[0].get('Contents', {}).get('response', {}).get('scripts')
     if not list_scripts:
-        return_error("No custom scripts found.")
+        return_results("No custom scripts found.")
     else:
         for item in list_scripts:
             results['ScriptName'] = item['name']
