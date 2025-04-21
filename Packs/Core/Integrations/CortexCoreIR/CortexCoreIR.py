@@ -193,7 +193,7 @@ def reformat_readable_output(script_res: list) -> None:
                 new_d[key] = res.get(key)
             new_d['command'] = new_d['command'][1:]
             reformated_results.append(new_d)
-    script_res[0].readable_output = tableToMarkdown(f'Script Execution Results - {script_res[0].outputs["action_id"]}',
+    script_res[0].readable_output = tableToMarkdown(f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
                                                     reformated_results, EXECUTE_COMMAND_READABLE_FIELDS, removeNull=True,
                                                     headerTransform=string_to_table_header)
 
