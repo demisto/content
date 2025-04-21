@@ -64,6 +64,14 @@ repos:
 
 - repo: local
   hooks:
+  - id: mdx-validation
+    name: Validate README.md files with MDX
+    entry: node .hooks/validate-mdx.js
+    language: node
+    files: "^(.*/)?README\\.md$"
+    additional_dependencies:
+      - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
+      - "fs-extra@11.3.0"
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
@@ -372,3 +380,11 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
+
+- repo: https://github.com/DavidAnson/markdownlint-cli2
+  rev: v0.17.2
+  hooks:
+    - id: markdownlint-cli2
+      files: "^(.*/)?README\\.md$"
+      args: [ "--config", ".markdownlint-cli2.jsonc" ]
+      exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
