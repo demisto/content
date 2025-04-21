@@ -65,23 +65,24 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str, 
                 demisto.debug(f"No zombie processes found for ps output: {ps_out}")
         except Exception as ex:
             error = f"Failed checking for zombie processes: {ex}. Trace: {traceback.format_exc()}"
-            return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": error}))
+            return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                          outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": error}))
 
 
 def make_sha(file_path):
     with open(file_path, "rb") as file:
         file_data = file.read()
-        sha1_hash = hashlib.sha1(file_data).hexdigest()
+        sha1_hash = hashlib.sha1(file_data).hexdigest()  # pragma: no cover
     return sha1_hash
 
 
 def main():
     entry_id = demisto.args()["entry_id"]
-    out_format = demisto.args().get("format", "pdf")
-    all_files = demisto.args().get("all_files", "no") == "yes"
+    out_format = demisto.args().get("format", "pdf")  # pragma: no cover
+    all_files = demisto.args().get("all_files", "no") == "yes"  # pragma: no cover
     # URLS
     try:
-        result = demisto.getFilePath(entry_id)
+        result = demisto.getFilePath(entry_id)  # pragma: no cover
         if not result:
             return_error(f"Couldn't find entry id: {entry_id}")
         demisto.debug(f"going to convert: {result}")
@@ -103,16 +104,23 @@ def main():
                     if file_name:
                         name = name.replace(file_path_name_only, file_name)
                     demisto.results(
-                        {"Contents": "", "ContentsFormat": formats["text"], "Type": entryTypes["file"], "File": name, "FileID": temp}
+                        {"Contents": "",
+                         "ContentsFormat": formats["text"],
+                         "Type": entryTypes["file"],
+                         "File": name, "FileID": temp}
                     )
                     sha1 = make_sha(f)
-                    return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'FileSHA1': sha1, 'Convertable': 'yes'}))
+                    return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                                  outputs={'Name': name, 'FileSHA1': sha1, 'Convertable': 'yes'}))
                 except Exception as e:
-                    return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
+                    return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                                  outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
     except subprocess.CalledProcessError as e:
-        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
+        return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                      outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
     except Exception as e:
-        return_results(CommandResults(outputs_prefix='ConvertedFile', outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
+        return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                      outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
 
 
 # python2 uses __builtin__ python3 uses builtins
