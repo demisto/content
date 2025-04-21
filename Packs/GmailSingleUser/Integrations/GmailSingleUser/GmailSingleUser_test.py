@@ -559,10 +559,10 @@ def test_get_incidents_command(mocker):
 @pytest.mark.parametrize(
     "test_input, expected_output",
     [
-        (("date", "2023-01-01T12:00:00Z"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
-        (("date", datetime(2023, 1, 1, 12, 0)), datetime(2023, 1, 1, 12, 0)),
-        (("isoformat", datetime(2023, 1, 1, 12, 0)), "2023-01-01T12:00:00Z"),
-        (("isoformat", "2023-01-01T12:00:00Z"), "2023-01-01T12:00:00Z"),
+        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
+        ((datetime(2023, 1, 1, 12, 0), "date"), datetime(2023, 1, 1, 12, 0)),
+        ((datetime(2023, 1, 1, 12, 0)), "2023-01-01T12:00:00Z"),
+        (("2023-01-01T12:00:00Z"), "2023-01-01T12:00:00Z"),
     ],
     ids=["date_str_to_datetime", "date_datetime_pass", "datetime_to_iso_str", "iso_str_pass"]
 )
@@ -625,7 +625,7 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
       - After the first call, 'setLastRun' should contain exactly two messages with IDs '1' and '3'.
       - After the second call, 'setLastRun' should contain exactly three messages with IDs '1', '2', and '3', reflecting the updated fetch.
       - The 'lookback_msg' field in the data sent to 'setLastRun' should reflect the correct IDs of the messages fetched in each incident fetch.
-    """
+    """  # noqa: E501
     from GmailSingleUser import fetch_incidents
     import GmailSingleUser
     gmail_single_user_client = Client()
@@ -638,7 +638,7 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
     # Patch the service object in the Client class to use the mocked service
     mocker.patch.object(GmailSingleUser.Client, "get_service", new=mock_service)
     fetch_count = 0
-        
+
     def execute_gmail_action_side_effect(service, action, args):
         nonlocal fetch_count
         if action == "list":
@@ -651,17 +651,17 @@ def test_fetch_incidents_set_last_run_called_correctly(mocker):
                 if item.get("id") == message_id:
                     return item
         return {}
-    
+
     # Mocking external functions and globals
     mocker.patch('GmailSingleUser.execute_gmail_action', side_effect=execute_gmail_action_side_effect)
     mocker.patch('GmailSingleUser.demisto.getLastRun', return_value={"gmt_time": "2025-02-24T15:17:05Z"})
     mock_set_last_run = mocker.patch('GmailSingleUser.demisto.setLastRun')
-    
+
     fetch_incidents(gmail_single_user_client)
-    
+
     last_args = mock_set_last_run.call_args[0][0]
     assert len(last_args['lookback_msg']) == 2, "lookback_msg does not contain exactly three messages in the first fetch"
-    
+
     fetch_count += 1
     fetch_incidents(gmail_single_user_client)
 

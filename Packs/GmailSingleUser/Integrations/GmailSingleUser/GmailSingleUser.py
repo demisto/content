@@ -37,7 +37,7 @@ EMAIL = params.get("email", "")
 SEND_AS = params.get("send_as")
 PROXIES = handle_proxy()
 DISABLE_SSL = params.get("insecure", False)
-FETCH_TIME = params.get("fetch_time", "1 hour")
+FETCH_TIME = params.get("fetch_time", "1 days")
 MAX_FETCH = int(params.get("fetch_limit") or 50)
 AUTH_CODE = params.get("auth_code_creds", {}).get("password") or params.get("code")
 AUTH_CODE_UNQUOTE_PREFIX = "code="
@@ -1260,11 +1260,11 @@ def fetch_incidents(client: Client):
             ignore_ids = []
         if emails_ids_and_dates:
             # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
-            latest_msg = max([parse_date(client, "date", msg_date)
+            latest_msg = max([parse_date(client, msg_date, "date")
                              for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
             next_last_fetch = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
             msg_to_exclude_in_next_fetch = [
-                (msg_id, parse_date(client, "str", msg_date))
+                (msg_id, parse_date(client, msg_date))
                 for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
                 if msg_date >= next_last_fetch
             ]
@@ -1284,7 +1284,22 @@ def fetch_incidents(client: Client):
     return incidents
 
 
-def parse_date(client: Client, return_type, date) -> datetime | str:
+def parse_date(client: Client, date: str|datetime, return_type:str = "str") -> datetime | str:
+    """
+    Parses a date value using the client's server format utilities.
+
+    Args:
+        client (Client): The client instance with server date parsing methods.
+        date (str | datetime): The date to parse. Can be a string or datetime object.
+        return_type (str, optional): Determines the return format.
+                                     - If "date": returns a `datetime` object.
+                                     - If "str": returns an ISO-formatted date string.
+                                     Defaults to "str".
+
+    Returns:
+        datetime | str: The date in the format specified by `return_type`.
+                        Returns the input unmodified if the type doesn't match the expected conversion.
+    """
     if return_type == "date":
         return client.parse_date_isoformat_server(date) if isinstance(date, str) else date
     return client.get_date_isoformat_server(date) if isinstance(date, datetime) else date
@@ -1316,13 +1331,24 @@ def auth_test_command(client):
 
 
 def get_unix_date(args: dict) -> tuple[str, str]:
-    before = arg_to_datetime(args.get("before", "now"))
-    after = arg_to_datetime(args.get("after", "1 day ago"))
-    if isinstance(before, datetime):
-        before = str(int(before.timestamp()))
-    if isinstance(after, datetime):
-        after = str(int(after.timestamp()))
-    return before, after  # type: ignore
+    """
+    Converts 'before' and 'after' date arguments to Unix timestamp strings.
+
+    Args:
+        args (dict): Dictionary containing optional 'before' and 'after' keys.
+                     Defaults to 'now' and '1 day ago' respectively if not provided.
+
+    Returns:
+        tuple[str, str]: A tuple containing the Unix timestamp strings for 'before' and 'after'.
+                         Returns empty strings if the input could not be parsed to a datetime.
+    """
+    before_dt = arg_to_datetime(args.get("before", "now"))
+    after_dt = arg_to_datetime(args.get("after", "1 day ago"))
+
+    before = str(int(before_dt.timestamp())) if isinstance(before_dt, datetime) else ""
+    after = str(int(after_dt.timestamp())) if isinstance(after_dt, datetime) else ""
+
+    return before, after
 
 
 def get_incidents_command(client: Client):
@@ -1434,7 +1460,6 @@ def main():  # pragma: no cover
         if command == "gmail-get-incidents":
             return_results(get_incidents_command(client))
     except Exception as e:
-        # demisto.updateModuleHealth("Error fetching emails: " + str(e), is_error=True)
         return_error(f"An error occurred: {e}", error=e)
     finally:
         return_metrics()
