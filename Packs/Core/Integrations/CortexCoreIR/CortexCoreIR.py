@@ -267,7 +267,7 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
         args (dict): Dictionary containing the arguments for the command.
 
     Returns:
-        PollResult: Reformated script_run_polling_command result.
+        PollResult: Reformatted script_run_polling_command result.
     """
     reformate_args(args)
     script_res = script_run_polling_command(args, client, statuses=('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
