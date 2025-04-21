@@ -1,10 +1,11 @@
+from typing import Any
+
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
-from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
 
-import urllib3
-from typing import Any
+from CommonServerUserPython import *
 
 urllib3.disable_warnings()
 
@@ -107,7 +108,7 @@ def generic_command(client: MsGraphClient, args: dict[str, Any]) -> CommandResul
         try:
             request_body = json.loads(request_body)
         except json.decoder.JSONDecodeError as e:
-            raise ValueError(f"Invalid request body - {str(e)}")
+            raise ValueError(f"Invalid request body - {e!s}")
     headers = args.get("headers")
 
     http_method = args.get("http_method", "GET")
@@ -196,7 +197,7 @@ def main() -> None:  # pragma: no cover
         elif command == "msgraph-api-generate-login-url":
             return_results(generate_login_url(client.ms_client))
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
