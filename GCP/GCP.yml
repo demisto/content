@@ -1,58 +1,317 @@
-category: Cloud Services
 commonfields:
   id: GCP
   version: -1
-configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- display: API Key
-  additionalinfo: The API Key to use for the connection
-  name: apikey
-  required: true
-  type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: GCP
 name: GCP
+display: GCP
+category: Cloud Services
+description: Quick remediation actions for GCP environments used in CIEM playbooks.
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy2
-      required: false
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - name: gcp-compute-patch-firewall
+      description: Updates the specified firewall rule with the data included in the request.
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+        - name: resource_name
+          required: true
+          description: Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+        - description: An optional description of this resource. Provide this property when you create the resource.
+          name: description
+        - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
+          name: network
+        - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules having equal priority.
+          name: priority
+        - description: 'If source ranges are specified, the firewall will apply only to traffic that has source IP address in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported. comma separated. '
+          name: sourceRanges
+        - description: If destination ranges are specified, the firewall will apply only to traffic that has destination IP address in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. comma separated.
+          name: destinationRanges
+        - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address, it only applies to traffic between instances in the same virtual network. Because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. comma separated.
+          name: sourceTags
+        - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. comma separated.
+          name: targetTags
+        - description: If source service accounts are specified, the firewall will apply only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP belongs to an instance with service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used at the same time as sourceTags or targetTags. comma separated.
+          name: sourceServiceAccounts
+        - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. comma separated.
+          name: targetServiceAccounts
+        - description: 'The list of ALLOW rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. Ex: ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+          name: allowed
+        - description: 'The list of DENY rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. Ex: ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+          name: denied
+        - description: 'Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.'
+          name: direction
+        - auto: PREDEFINED
+          description: This field denotes whether to enable logging for a particular firewall rule.
+          name: logConfigEnable
+          predefined:
+            - 'true'
+            - 'false'
+        - auto: PREDEFINED
+          description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
+          name: disabled
+          predefined:
+            - 'true'
+            - 'false'
+      outputs:
+        - contextPath: GCP.Compute.Operations.id
+          description: The unique identifier for the resource. This identifier is defined by the server.
+          type: string
+        - contextPath: GCP.Compute.Operations.name
+          description: Name of the resource.
+          type: string
+        - contextPath: GCP.Compute.Operations.zone
+          description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+          type: string
+        - contextPath: GCP.Compute.Operations.clientOperationId
+          description: The value of requestId if you provided it in the request. Not present otherwise.
+          type: string
+        - contextPath: GCP.Compute.Operations.operationType
+          description: The type of operation, such as insert, update, or delete, and so on.
+          type: string
+        - contextPath: GCP.Compute.Operations.targetLink
+          description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+          type: string
+        - contextPath: GCP.Compute.Operations.targetId
+          description: The unique target ID, which identifies a specific incarnation of the target resource.
+          type: string
+        - contextPath: GCP.Compute.Operations.status
+          description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+          type: string
+        - contextPath: GCP.Compute.Operations.statusMessage
+          description: An optional textual description of the current status of the operation.
+          type: string
+        - contextPath: GCP.Compute.Operations.user
+          description: User who requested the operation for example EMAILADDRESS.
+          type: string
+        - contextPath: GCP.Compute.Operations.progress
+          description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+          type: number
+        - contextPath: GCP.Compute.Operations.insertTime
+          description: The time that this operation was requested. This value is in RFC3339 text format.
+          type: string
+        - contextPath: GCP.Compute.Operations.startTime
+          description: The time that this operation was started by the server. This value is in RFC3339 text format.
+          type: string
+        - contextPath: GCP.Compute.Operations.endTime
+          description: The time that this operation was completed. This value is in RFC3339 text format.
+          type: string
+        - contextPath: GCP.Compute.Operations.error
+          description: If errors are generated during processing of the operation, this field will be populated.
+          type: string
+        - contextPath: GCP.Compute.Operations.error.errors
+          description: The array of errors encountered while processing this operation.
+          type: string
+        - contextPath: GCP.Compute.Operations.error.errors.code
+          description: The error type identifier for this error.
+          type: string
+        - contextPath: GCP.Compute.Operations.error.errors.location
+          description: Indicates the field in the request that caused the error. This property is optional.
+          type: string
+        - contextPath: GCP.Compute.Operations.error.errors.message
+          description: An optional, human-readable error message.
+          type: string
+        - contextPath: GCP.Compute.Operations.warnings
+          description: If warning messages are generated during processing of the operation, this field will be populated.
+          type: string
+        - contextPath: GCP.Compute.Operations.warnings.code
+          description: A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.
+          type: string
+        - contextPath: GCP.Compute.Operations.warnings.message
+          description: A human-readable description of the warning code.
+          type: string
+        - contextPath: GCP.Compute.Operations.warnings.data
+          description: 'Metadata about this warning in key: value format.'
+          type: string
+        - contextPath: GCP.Compute.Operations.warnings.data.key
+          description: A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding).
+          type: string
+        - contextPath: GCP.Compute.Operations.warnings.data.value
+          description: A warning data value corresponding to the key.
+          type: string
+        - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+          description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
+          type: number
+        - contextPath: GCP.Compute.Operations.httpErrorMessage
+          description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+          type: string
+        - contextPath: GCP.Compute.Operations.selfLink
+          description: Server-defined URL for the resource.
+          type: string
+        - contextPath: GCP.Compute.Operations.region
+          description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+          type: string
+        - contextPath: GCP.Compute.Operations.description
+          description: A textual description of the operation, which is set when the operation is created.
+          type: string
+        - contextPath: GCP.Compute.Operations.kind
+          description: Type of the resource. Always compute#operation for Operation resources.
+          type: string
+
+    - name: gcp-storage-delete-bucket-policy
+      description: Removes an entity from a bucket's Access Control List.
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+        - name: resource_name
+          required: true
+          description: Name of the GCS bucket.
+        - name: entity
+          auto: PREDEFINED
+          defaultValue: "allUsers"
+          required: false
+          isArray: true
+          description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
+    - name: gcp-compute-update-subnet
+      description: Enables flow logs or Private Google Access on a subnet.
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+        - name: region
+          required: true
+          description: GCP region.
+        - name: resource_name
+          required: true
+          description: Subnet name.
+        - name: enable_flow_logs
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Enable VPC Flow Logs.
+        - name: enable_private_ip_google_access
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Enable Private Google Access.
+      outputs:
+        - contextPath: GCP.Compute.Operations
+          description: Result of subnet update.
+          type: Unknown
+
+    - name: gcp-compute-project-info-add-metadata
+      description: Sets metadata for the specified instance to the data included in the request.
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+        - name: zone
+          required: true
+          description: The name of the zone for this request.
+        - name: resource_name
+          required: true
+          description: Name of the instance scoping this request.
+        - name: metadata
+          required: true
+          description: 'Metadata to be made available to the guest operating system running on the instances. Each entry is a key/value pair separated by '';'' like so: key=abc,value=123;key=abc,value=123.'
+      outputs:
+        - contextPath: GCP.Compute.ProjectMetadata.operationType
+          description: The type of operation, such as insert, update, or delete.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetadata.insertTime
+          description: The time that this operation was started by the server.
+          type: Date
+        - contextPath: GCP.Compute.ProjectMetadata.selfLink
+          description: Server-defined URL for the project.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetadata.targetLink
+          description: The URL of the resource that the operation modifies.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetadata.name
+          description: Name of the operation.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetada.progress
+          description: Progress indicator that ranges from 0 to 100.
+          type: number
+        - contextPath: GCP.Compute.ProjectMetadata.targetId
+          description: The unique target ID, which identifies a specific incarnation of the target resource.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetadata.startTime
+          description: The time that this operation was started by the server.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetadata.status
+          description: The status of the operation, which can be one of the following PENDING, RUNNING, or DONE.
+          type: String
+        - contextPath: GCP.Compute.ProjectMetadata.kind
+          description: Type of the resource. Always compute#operation.
+          type: String
+
+    - name: gcp-container-cluster-update-security-config
+      description: Enables security settings for GKE clusters.
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+        - name: region
+          required: true
+          description: GCP region.
+        - name: resource_name
+          required: true
+          description: Name of the GKE cluster.
+        - name: enable_intra_node_visibility
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Enable intra-node visibility.
+        - name: enable_master_authorized_networks
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Enable Master Authorized Networks.
+      outputs:
+        - contextPath: GCP.Container.Operation
+          description: Cluster update response.
+          type: Unknown
+
+    - name: gcp-storage-update-bucket-metadata
+      description: Updates GCS bucket metadata (versioning, UBLA).
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+        - name: resource_name
+          required: true
+          description: Name of the bucket.
+        - name: enable_versioning
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Enable versioning.
+        - name: enable_uniform_access
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Enable uniform bucket-level access.
+      outputs:
+        - contextPath: GCP.Storage.Bucket.Metadata
+          description: Updated bucket metadata.
+          type: Unknown
+
+    - name: test-module
+      description: Test connectivity and permission validation
+      arguments:
+        - name: project_id
+          required: true
+          description: GCP project ID.
+      outputs: []
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/googleapi-python3:1.0.0.1839740
 fromversion: 6.1.0
 marketplaces:
 - xsoar

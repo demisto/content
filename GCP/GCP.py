@@ -1,332 +1,396 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-from typing import Any, Dict, Optional
-
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+#common
 
-""" CONSTANTS """
-
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-
-""" CLIENT CLASS """
-
-
-class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+#taken from GoogleCloudCompute
+def parse_resource_ids(resource_id):
     """
+    Split the resource ids to a list
+    parameter: (string) resource_id
+    Return the resource_ids as a list
+    """
+    id_list = resource_id.replace(" ", "")
+    resource_ids = id_list.split(",")
+    return resource_ids
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(
-        self, dummy: str, dummy2: Optional[int]
-    ) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+def parse_firewall_rule(rule_str):
+    """
+    Transforms a string of multiple inputes to a dictionary list
+    parameter: (string) rules
+        A firewall rule in the specified project
+    Return firewall rules as dictionary list
+    """
+    rules = []
+    regex = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
+    for f in rule_str.split(";"):
+        match = regex.match(f)
+        if match is None:
+            raise ValueError(
+                f"Could not parse field: {f}. Please make sure you provided like so: "
+                "ipprotocol=abc,ports=123;ipprotocol=fed,ports=456"
+            )
 
-        Args:
-            dummy: string to add in the dummy dict that is returned. This is a required argument.
-            dummy2: int to limit the number of results. This is an optional argument.
+        rules.append({"IPProtocol": match.group(1), "ports": match.group(2).split(",")})
 
-        Returns:
-            The dict with the arguments
-        """
-        return {"dummy": dummy, "dummy2": dummy2}
+    return rules
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+### 
+
+urllib3.disable_warnings()
+REQUIRED_PERMISSIONS: Dict[str, List[str]] = {
+    "gcp-compute-patch-firewall": ["compute.firewalls.update"],
+    "gcp-compute-update-subnet": [
+        "compute.subnetworks.setPrivateIpGoogleAccess",
+        "compute.subnetworks.update"
+    ],
+    "gcp-compute-project-info-add-metadata": ["compute.instances.setMetadata"],
+    "gcp-storage-delete-bucket-policy": [
+        "storage.buckets.getIamPolicy",
+        "storage.buckets.setIamPolicy"
+    ],
+    "gcp-container-cluster-update-security-config": ["container.clusters.update"],
+    "gcp-storage-update-bucket-metadata": ["storage.buckets.update"],
+}
 
 
-""" HELPER FUNCTIONS """
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-""" COMMAND FUNCTIONS """
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises:
-     exceptions if something goes wrong.
+def get_access_token(
+    args: Dict[str, Any]) -> str:
+    """
+    Retrieves a valid access token using the default GCP configuration.
 
     Args:
-        Client: client to use
+        args (Dict[str, Any]): Dictionary containing 'project_id' which is used to get the token.
 
     Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
+        str: Access token for GCP.
 
-    # TODO: ADD HERE some code to test connectivity and authentication to your service.
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-    client.baseintegration_dummy("dummy", 10)  # No errors, the api is working
+    Raises:
+        ValueError: If 'project_id' is not provided.
+    """
+    if not args.get("project_id"):
+        raise ValueError("project_id is required to retrieve a token.")
+
+    params = {
+        "cloud_type": "GCP",
+        "account_id": args.get("project_id"),
+    }
+    return {}
+    # return demisto.get_token(params)
+
+
+def compute_patch_firewall(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+    """
+    Disables a firewall rule in a GCP project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (Dict[str, Any]): Must include 'project_id' and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the firewall patch operation.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    config = {}
+
+    if args.get("description"):
+        config["description"] = args.get("description")
+
+    if args.get("network"):
+        config["network"] = args.get("network")
+
+    if args.get("priority"):
+        config["priority"] = int(args.get("priority"))
+
+    if args.get("sourceRanges"):
+        config["sourceRanges"] = parse_resource_ids(args.get("sourceRanges"))
+
+    if args.get("destinationRanges"):
+        config["destinationRanges"] = parse_resource_ids(args.get("destinationRanges"))
+
+    if args.get("sourceTags"):
+        config["sourceTags"] = parse_resource_ids(args.get("sourceTags"))
+
+    if args.get("targetTags"):
+        config["targetTags"] = parse_resource_ids(args.get("targetTags"))
+
+    if args.get("sourceServiceAccounts"):
+        config["sourceServiceAccounts"] = parse_resource_ids(
+            args.get("sourceServiceAccounts")
+        )
+
+    if args.get("targetServiceAccounts"):
+        config["targetServiceAccounts"] = parse_resource_ids(
+            args.get("targetServiceAccounts")
+        )
+
+    if args.get("allowed"):
+        config["allowed"] = parse_firewall_rule(args.get("allowed"))
+
+    if args.get("denied"):
+        config["denied"] = parse_firewall_rule(args.get("denied"))
+
+    if args.get("direction"):
+        config["direction"] = args.get("direction")
+
+    if args.get("logConfigEnable"):
+        log_config_enable = args.get("logConfigEnable") == "true"
+        config["logConfig"] = {"enable": log_config_enable}
+
+    if args.get("disabled"):
+        disabled = args.get("disabled") == "true"
+        config["disabled"] = disabled
+
+    compute = build("compute", "v1", credentials=creds)
+
+    response = compute.firewalls().patch(
+        project=project_id,
+        firewall=resource_name,
+        body=config
+    ).execute()
+
+    hr = f"Firewall rule {resource_name} was successfully patched (disabled) in project {project_id}."
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def gcp_storage_delete_bucket_policy(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes public IAM policy bindings from a GCS bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (Dict[str, Any]): Must include 'resource_name' (bucket name) and optional 'entity'.
+
+    Returns:
+        CommandResults: Result of the policy removal operation.
+    """
+    bucket = args.get("resource_name")
+    entities = argToList(args.get("entity", "allUsers"))
+    storage = build("storage", "v1", credentials=creds)
+
+    policy = storage.buckets().getIamPolicy(bucket=bucket).execute()
+    bindings = policy.get("bindings", [])
+
+    modified = False
+    for b in bindings[:]:
+        b["members"] = [m for m in b.get("members", []) if m not in entities]
+        if not b["members"]:
+            bindings.remove(b)
+            modified = True
+
+    if modified:
+        policy["bindings"] = bindings
+        storage.buckets().setIamPolicy(bucket=bucket, body={"policy": policy}).execute()
+
+    hr = f"Public access permissions were successfully revoked from bucket {bucket}."
+    return CommandResults(readable_output=hr)
+
+
+def compute_update_subnet(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates subnet properties such as flow logs and private Google access.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (Dict[str, Any]): Must include 'project_id', 'region', 'resource_name', and optional flow log and private access flags.
+
+    Returns:
+        CommandResults: Result of the subnet patch operation.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    resource_name = args.get("resource_name")
+    enable_flow_logs = argToBoolean(args.get("enable_flow_logs"))
+    enable_private_access = argToBoolean(args.get("enable_private_ip_google_access"))
+
+    compute = build("compute", "v1", credentials=creds)
+
+    if enable_private_access is not None:
+        compute.subnetworks().setPrivateIpGoogleAccess(
+            project=project_id,
+            region=region,
+            subnetwork=resource_name,
+            body={"privateIpGoogleAccess": enable_private_access}
+        ).execute()
+
+    patch_body = {"enableFlowLogs": enable_flow_logs} if enable_flow_logs is not None else {}
+    response = compute.subnetworks().patch(
+        project=project_id,
+        region=region,
+        subnetwork=resource_name,
+        body=patch_body
+    ).execute()
+
+    hr = f"Subnet configuration for {resource_name} was successfully updated in project {project_id}."
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def compute_add_metadata(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+    """
+    Adds metadata key-value pairs to a GCE instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (Dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'metadata' in key=value format.
+
+    Returns:
+        CommandResults: Result of the metadata update operation.
+    """
+    project_id = args.get("project_id")
+    zone = args.get("zone")
+    resource_name = args.get("resource_name")
+    metadata_str = args.get("metadata")
+    compute = build("compute", "v1", credentials=creds)
+
+    instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()
+    fingerprint = instance.get("metadata", {}).get("fingerprint")
+
+    items = [
+        {"key": k.strip(), "value": v.strip()}
+        for part in metadata_str.split(",")
+        for k, v in [part.split("=")]
+    ]
+
+    body = {"fingerprint": fingerprint, "items": items}
+    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name, body=body).execute()
+
+    hr = f"Metadata was successfully added to instance {resource_name} in project {project_id}."
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.ProjectMetadata", outputs=response)
+
+
+def gcp_container_cluster_update_security_config(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates security-related configurations for a GKE cluster.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (Dict[str, Any]): Must include 'project_id', 'region', 'resource_name' and optional security flags.
+
+    Returns:
+        CommandResults: Result of the cluster update operation.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    resource_name = args.get("resource_name")
+    enable_intra = argToBoolean(args.get("enable_intra_node_visibility"))
+    enable_master = argToBoolean(args.get("enable_master_authorized_networks"))
+
+    container = build("container", "v1", credentials=creds)
+    update_fields = {}
+    if enable_intra:
+        update_fields["intraNodeVisibilityConfig"] = {"enabled": True}
+    if enable_master:
+        update_fields["masterAuthorizedNetworksConfig"] = {"enabled": True, "cidrBlocks": []}
+
+    response = container.projects().locations().clusters().update(
+        name=f"projects/{project_id}/locations/{region}/clusters/{resource_name}",
+        body={"update": update_fields}
+    ).execute()
+
+    hr = f"Cluster security configuration for {resource_name} was successfully updated in project {project_id}."
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operation", outputs=response)
+
+
+def gcp_storage_update_bucket_metadata(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates metadata configuration for a GCS bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (Dict[str, Any]): Must include 'resource_name' (bucket name) and optional versioning/uniform access flags.
+
+    Returns:
+        CommandResults: Result of the metadata update operation.
+    """
+    bucket = args.get("resource_name")
+    enable_versioning = argToBoolean(args.get("enable_versioning"))
+    enable_uniform_access = argToBoolean(args.get("enable_uniform_access"))
+
+    storage = build("storage", "v1", credentials=creds)
+    body: Dict[str, Any] = {}
+    if enable_versioning is not None:
+        body["versioning"] = {"enabled": enable_versioning}
+    if enable_uniform_access is not None:
+        body.setdefault("iamConfiguration", {})["uniformBucketLevelAccess"] = {"enabled": enable_uniform_access}
+
+    response = storage.buckets().patch(bucket=bucket, body=body).execute()
+    hr = f"Metadata for bucket {bucket} was successfully updated."
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Storage.Bucket.Metadata", outputs=response)
+
+
+def test_module(creds: Credentials, args: Dict[str, Any]) -> str:
+    """
+    Verifies that the provided GCP credentials have the necessary permissions for each command.
+
+    Args:
+        creds (Credentials): Authenticated GCP credentials.
+        args (Dict[str, Any]): Command arguments, must include 'project_id'.
+
+    Returns:
+        str: 'ok' if all required permissions are present, raises an error otherwise.
+    """
+    project_id = args.get("project_id")
+    if not project_id:
+        raise ValueError("project_id is required for testing permissions.")
+
+    all_permissions = list({perm for perms in REQUIRED_PERMISSIONS.values() for perm in perms})
+    cloudresourcemanager = build("cloudresourcemanager", "v1", credentials=creds)
+    body = {"permissions": all_permissions}
+
+    try:
+        response = cloudresourcemanager.projects().testIamPermissions(
+            resource=project_id,
+            body=body
+        ).execute()
+    except Exception as e:
+        raise Exception(f"Failed to test permissions: {str(e)}")
+
+    granted = set(response.get("permissions", []))
+    missing_per_command: Dict[str, List[str]] = {}
+
+    for command, perms in REQUIRED_PERMISSIONS.items():
+        missing = [perm for perm in perms if perm not in granted]
+        if missing:
+            missing_per_command[command] = missing
+
+    if missing_per_command:
+        missing_str = "\n".join(
+            f"- `{cmd}`: missing permissions: {', '.join(perms)}"
+            for cmd, perms in missing_per_command.items()
+        )
+        raise Exception(f"The following required permissions are missing:\n{missing_str}")
+
     return "ok"
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
-    dummy = args.get("dummy")  # dummy is a required argument, no default
-    dummy2 = args.get("dummy2")  # dummy2 is not a required argument
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy, dummy2)
-
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
-    )
-
-
-def get_access_token(service_name=None, user_id=None):
-    """
-    Black-box function to get a valid Google OAuth2 access token.
-
-    Args:
-        service_name (str): The service the token is needed for (e.g., 'gsuite', 'compute', 'storage', 'iam').
-        user_id (str): The user identity for delegated access, used mostly for GSuite.
-
-    Returns:
-        str: OAuth2 token string.
-    """
-
-    if service_name == 'gsuite':
-        if not user_id:
-            raise ValueError("user_id is required for GSuite token delegation.")
-        return get_gsuite_token(user_id)
-
-    elif service_name == 'compute':
-        return get_compute_token()
-
-    elif service_name == 'storage':
-        return get_storage_token()
-
-    elif service_name == 'iam':
-        return get_iam_token()
-
-    elif service_name == 'gke':
-        return get_gke_token()
-
-    # Add more services as needed here
-    # e.g., elif service_name == 'bigquery': return get_bigquery_token()
-
-    # Default fallback (e.g., for general-purpose APIs or development)
-    return get_default_token()
-
-
-def get_service_name_for_command(command):
-    """
-    Determines the service name for the given command.
-
-    Args:
-        command (str): The command name as provided by the XSOAR playbook.
-
-    Returns:
-        str: The service name (e.g., 'gsuite', 'compute', 'storage') or None if not recognized.
-    """
-    # Mapping commands to their respective service names
-    service_map = {
-        # GCP commands
-        "gcp-compute-start-instance": "compute",
-        "gcp-compute-stop-instance": "compute",
-        "gcp-compute-patch-firewall": "compute",
-        "gcp-compute-update-subnet-config": "compute",
-        "gcp-compute-project-info-add-metadata": "compute",
-        "gcp-compute-instance-set-service-account": "compute",
-        "gcp-compute-instance-remove-service-account": "compute",
-
-        # GCS commands
-        "gcs-set-uniform-bucket-access": "storage",
-        "gcs-enable-bucket-versioning": "storage",
-        "gcs-delete-bucket-policy": "storage",
-
-        # GKE commands
-        "gcloud-clusters-update-security-config": "gke",
-
-        # IAM commands
-        "gcp-iam-service-account-delete": "iam",
-        "gcp-remove-iam-policy-binding": "iam",
-        "gcp-iam-project-iam-deny-policy-create": "iam",
-        "gcp-iam-project-iam-policy-binding-remove": "iam",
-        "gcp-iam-group-membership-delete": "iam",
-
-        # GSuite commands
-        "gsuite-user-update": "gsuite",
-        "gsuite-user-reset-password": "gsuite",
-        "gsuite-user-signout": "gsuite",
-    }
-
-    # Check if the command has a quick-action variant and map it to the same service
-    quick_action_command = f"{command}-quick-action"
-    if quick_action_command in service_map:
-        return service_map[quick_action_command]
-
-    # If the command exists in the service map, return the associated service
-    return service_map.get(command)
-
-
 def main():
-    """main function, parses params and runs command functions"""
-
+    """Main function to route commands and execute logic"""
     try:
         command = demisto.command()
         args = demisto.args()
 
-        # Initialize GCP API client using black box token
-        # Determine which service/token to use
-        service_name = get_service_name_for_command(command)  # e.g., 'gsuite' or 'compute'
-        user_id = args.get('user_id')  # If GSuite, this might be passed in args
+        command_map = {
+            "test-module": test_module,
+            "gcp-compute-patch-firewall": compute_patch_firewall,
+            "gcp-compute-patch-firewall-quick-action": compute_patch_firewall,
+            "gcp-storage-delete-bucket-policy": gcp_storage_delete_bucket_policy,
+            "gcp-compute-update-subnet": compute_update_subnet,
+            "gcp-compute-project-info-add-metadata": compute_add_metadata,
+            "gcp-container-cluster-update-security-config": gcp_container_cluster_update_security_config,
+            "gcp-storage-update-bucket-metadata": gcp_storage_update_bucket_metadata,
+        }
 
-        # Get the access token based on service name and user ID
-        client = get_access_token(service_name=service_name, user_id=user_id)  # Returns the appropriate token
-        creds = Credentials(client)
-
-        if command in [
-            "gcp-compute-start-instance",
-            "gcp-compute-start-instance-quick-action",
-        ]:
-            result = compute_start_instance(creds, args)
-
-        elif command in [
-            "gcp-compute-stop-instance",
-            "gcp-compute-stop-instance-quick-action",
-        ]:
-            result = compute_stop_instance(creds, args)
-
-        elif command in [
-            "gcp-compute-patch-firewall",
-            "gcp-compute-patch-firewall-quick-action",
-        ]:
-            result = compute_patch_firewall(creds, args)
-
-        elif command in [
-            "gcs-delete-bucket-policy",
-            "gcs-delete-bucket-policy-quick-action",
-        ]:
-            result = gcs_delete_bucket_policy(creds, args)
-
-        elif command in [
-            "gcp-compute-update-subnet-config",
-            "gcp-compute-update-subnet-config-quick-action",
-        ]:
-            result = compute_update_subnet(creds, args)
-
-        elif command in [
-            "gcp-compute-project-info-add-metadata",
-            "gcp-compute-project-info-add-metadata-quick-action",
-        ]:
-            result = compute_add_metadata(creds, args)
-
-        elif command in [
-            "gcs-set-uniform-bucket-access",
-            "gcs-set-uniform-bucket-access-quick-action",
-        ]:
-            result = gcs_set_ubla(creds, args)
-
-        elif command in [
-            "gcloud-clusters-update-security-config",
-            "gcloud-clusters-update-security-config-quick-action",
-        ]:
-            result = gke_update_master_auth_networks(creds, args)
-
-        elif command in [
-            "gcs-enable-bucket-versioning",
-            "gcs-enable-bucket-versioning-quick-action",
-        ]:
-            result = gcs_enable_bucket_versioning(creds, args)
-
-        elif command in [
-            "gcp-iam-service-account-delete",
-            "gcp-iam-service-account-delete-quick-action",
-        ]:
-            result = iam_delete_service_account(creds, args)
-
-        elif command in [
-            "gcp-remove-iam-policy-binding",
-            "gcp-remove-iam-policy-binding-quick-action",
-        ]:
-            result = iam_remove_policy_binding(creds, args)
-
-        elif command in [
-            "gcp-iam-project-iam-deny-policy-create",
-            "gcp-iam-project-iam-deny-policy-create-quick-action",
-        ]:
-            result = iam_create_deny_policy(creds, args)
-
-        elif command in [
-            "gcp-iam-project-iam-policy-binding-remove",
-            "gcp-iam-project-iam-policy-binding-remove-quick-action",
-        ]:
-            result = iam_remove_project_binding(creds, args)
-
-        elif command in [
-            "gcp-compute-instance-set-service-account",
-            "gcp-compute-instance-set-service-account-quick-action",
-        ]:
-            result = compute_instance_set_service_account(creds, args)
-
-        elif command in [
-            "gcp-compute-instance-remove-service-account",
-            "gcp-compute-instance-remove-service-account-quick-action",
-        ]:
-            result = compute_instance_remove_service_account(creds, args)
-
-        elif command in [
-            "gcp-iam-group-membership-delete",
-            "gcp-iam-group-membership-delete-quick-action",
-        ]:
-            result = iam_group_membership_delete(creds, args)
-
-        elif command in [
-            "gsuite-user-update",
-            "gsuite-user-update-quick-action",
-        ]:
-            result = gsuite_user_update(creds, args)
-
-        elif command in [
-            "gsuite-user-reset-password",
-            "gsuite-user-reset-password-quick-action",
-        ]:
-            result = gsuite_user_reset_password(creds, args)
-
-        elif command in [
-            "gsuite-user-signout",
-            "gsuite-user-signout-quick-action",
-        ]:
-            result = gsuite_user_signout(creds, args)
-
-        else:
+        if command not in command_map:
             raise NotImplementedError(f"Command not implemented: {command}")
 
+        token = get_access_token(args)
+        creds = Credentials(token)
+
+        result = command_map[command](creds, args)
         return_results(result)
 
     except Exception as e:
