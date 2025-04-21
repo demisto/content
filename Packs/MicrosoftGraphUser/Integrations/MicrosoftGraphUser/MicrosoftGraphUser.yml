@@ -639,8 +639,8 @@ script:
       name: policy_id
       required: false
     description:  |-
-      This command will only return a single object in the collection 
-      as a user can have only one Temporary Access Pass method.
+      Lists all TAP policies for a user.
+      This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
     name: msgraph-user-tap-policy-list
     outputs:
     - contextPath: MSGraphUser.TAPPolicy.ID
@@ -671,14 +671,16 @@ script:
     - description: The Azure AD user ID.
       name: user_id
       required: true
-    - description: Password for the Zip file.
+    - description: A password for the locked zip file that will include the password of the new TAP.
       name: zip_password
       required: true
-    - description: Lifetime in minutes.
+    - description: The Duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days).
       name: lifetime_in_minutes
       required: false
       defaultValue: 60
-    - description: Is useable only once.
+    - description: |-
+        Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. 
+        A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   
       name: is_usable_once
       required: false
       defaultValue: false
@@ -687,15 +689,15 @@ script:
         - 'true'
         - 'false'
     - description: |-
-        Start time - Specify the start time for the Temporary Access Pass. 
-        The start time can be specified in various formats, such as "now", "in 2 days", etc.
-        Also a valid start time can be an ISO 8601 date-time string in the format "YYYY-MM-DDThh:mm:ssZ".
+        The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",
+        for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days".
       name: start_time
       required: false
       defaultValue: now
     description:  |-
-      Create a new temporaryAccessPassAuthenticationMethod object on a user. 
-      A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
+      Create a new TAP policy for a user.
+      During the command execution, a locked zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+      A user can only have one Temporary Access Pass that's usable within its specified lifetime.  
     name: msgraph-user-tap-policy-create
     outputs:
     - contextPath: MSGraphUser.TAPPolicy.ID
@@ -729,7 +731,7 @@ script:
     - description: Policy ID.
       name: policy_id
       required: true
-    description:  This command will delete a specific Temporary Access Pass policy 
+    description: Deletes a specific TAP policy. 
     name: msgraph-user-tap-policy-delete
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-user-generate-login-url

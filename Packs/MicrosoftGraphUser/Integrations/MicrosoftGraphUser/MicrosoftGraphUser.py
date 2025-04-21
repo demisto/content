@@ -553,11 +553,11 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
 
 
 @suppress_errors_with_404_code
-def get_tap_policy_list_command(client: MsGraphClient, args: dict):
+def list_tap_policy_command(client: MsGraphClient, args: dict):
     user_id = args.get('user_id')
-    policy_id = args.get('policy_id', None)
-    client_tap_data = client.list_tap_policy(user_id, policy_id)
-    tap_readable, tap_policy_output = parse_outputs(client_tap_data)
+    policy_id = args.get('policy_id', '')
+    tap_data = client.list_tap_policy(user_id, policy_id)
+    tap_readable, tap_policy_output = parse_outputs(tap_data)
 
     # change HR from ID to Policy ID
     if isinstance(tap_readable, list) and tap_readable:
@@ -566,42 +566,37 @@ def get_tap_policy_list_command(client: MsGraphClient, args: dict):
         tap_readable_dict = tap_readable
 
     if isinstance(tap_readable_dict, dict):
-        tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID', None)
+        tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID', '')
     headers = ['Policy ID', 'Start Date Time', 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
-
-    human_readable = tableToMarkdown(name='All TAP Policy Users', headers=headers, t=tap_readable_dict, removeNull=True)
-
+    human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict, removeNull=True)
+    
     return CommandResults(
         outputs_prefix='MSGraphUser.TAPPolicy',
         outputs_key_field='ID',
         outputs=tap_policy_output,
         readable_output=human_readable,
-        raw_response=client_tap_data
+        raw_response=tap_data
     )
 
 
 @suppress_errors_with_404_code
 def create_tap_policy_command(client: MsGraphClient, args: dict):
     user_id = args.get('user_id')
-    zip_password = args.get('zip_password')
+    zip_password = args.get('zip_password', '')
     lifetime_in_minutes = arg_to_number(args.get('lifetime_in_minutes'))
     is_usable_once = argToBoolean(args.get('is_usable_once', False))
-    start_time = args.get('start_time', None)
+    start_time = args.get('start_time')
     start_time_iso = arg_to_datetime(start_time, required=False)
 
     fields = {
         'lifetimeInMinutes': lifetime_in_minutes,
         'isUsableOnce': is_usable_once,
-        'startDateTime': start_time_iso.strftime("%Y-%m-%dT%H:%M:%S.000Z") if start_time_iso is not None else None
+        'startDateTime': start_time_iso.strftime("%Y-%m-%dT%H:%M:%S.000Z") if start_time_iso else None
     }
-    body = dict(fields.items())
-    res = client.create_tap_policy(user_id, body)
+    res = client.create_tap_policy(user_id, fields)
 
-    if zip_password:
-        generated_password = res.get('temporaryAccessPass')
-        return_results(
-            create_zip_with_password(generated_password=generated_password, zip_password=zip_password)
-        )
+    generated_password = res.get('temporaryAccessPass')
+    return_results(create_zip_with_password(generated_tap_password=generated_password, zip_password=zip_password))
     human_readable = f'Temporary Access Pass Authentication methods policy {user_id} was successfully created'
     _, tap_policy_output = parse_outputs(res)
 
@@ -618,14 +613,14 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict):
     user_id = args.get('user_id')
     policy_id = args.get('policy_id')
     client.delete_tap_policy(user_id, policy_id)
-    human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted'
+    human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted.'
 
     return CommandResults(
         readable_output=human_readable
     )
 
 
-def create_zip_with_password(generated_password: str, zip_password: str):
+def create_zip_with_password(generated_tap_password: str, zip_password: str):
     """
     Create a zip file with a password containing the generated_password.
     The function no longer writes a plaintext file to disk.
@@ -637,7 +632,7 @@ def create_zip_with_password(generated_password: str, zip_password: str):
 
         with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
             zf.pwd = bytes(zip_password, 'utf-8')
-            zf.writestr('TAPPolicyPass.txt', generated_password)
+            zf.writestr('TAPPolicyPass.txt', generated_tap_password)
 
         with open(zip_file_name, 'rb') as zip_file:
             zip_content = zip_file.read()
@@ -702,7 +697,7 @@ def main():
         "msgraph-user-get-manager": get_manager_command,
         "msgraph-user-assign-manager": assign_manager_command,
         "msgraph-user-session-revoke": revoke_user_session_command,
-        'msgraph-user-tap-policy-list': get_tap_policy_list_command,
+        'msgraph-user-tap-policy-list': list_tap_policy_command,
         'msgraph-user-tap-policy-create': create_tap_policy_command,
         'msgraph-user-tap-policy-delete': delete_tap_policy_command,
     }

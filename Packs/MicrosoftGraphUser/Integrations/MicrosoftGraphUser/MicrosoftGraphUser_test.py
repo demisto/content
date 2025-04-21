@@ -153,7 +153,7 @@ def test_suppress_errors(mocker):
         revoke_user_session_command,
         unblock_user_command,
         update_user_command,
-        get_tap_policy_list_command,
+        list_tap_policy_command,
         delete_tap_policy_command,
         create_tap_policy_command
     )
@@ -230,7 +230,7 @@ def test_suppress_errors(mocker):
             "expected_result": "#### User -> 123456789 does not exist",
         },
         {
-           'fun': get_tap_policy_list_command,
+           'fun': list_tap_policy_command,
            'mock_fun': 'list_tap_policy',
            'mock_value': NotFoundError('123456789'),
            'args': {'user': '123456789'},
