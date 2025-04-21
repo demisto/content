@@ -656,3 +656,1126 @@ There is no context output for this command.
 #### Human Readable Output
 
 >✅ Dismissed successfully.
+### msgraph-identity-ca-policy-create
+
+***
+Creates a Conditional Access policy.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.<br/>. | Optional | 
+| policy_name | The name of the Conditional Access policy to be created. | Optional | 
+| state | The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.<br/>. | Optional | 
+| sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
+| user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
+| client_app_types | Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>. | Optional | 
+| include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional | 
+| exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional | 
+| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. | Optional | 
+| include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional | 
+| exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional | 
+| include_groups | List of group IDs to be included in the policy.<br/>. | Optional | 
+| exclude_groups | List of group IDs to be excluded from the policy.<br/>. | Optional | 
+| include_roles | List of role IDs to be included in the policy.<br/>. | Optional | 
+| exclude_roles | List of role IDs to be excluded from the policy.<br/>. | Optional | 
+| include_platforms | List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.<br/>. | Optional | 
+| exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional | 
+| include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
+| exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
+| grant_control_operator | The operator for grant control. Can be `AND` or `OR`. Default is `AND`.<br/>. | Optional | 
+| built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.ConditionalAccessPolicy.id | string | The unique ID of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.displayName | string | The display name of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.createdDateTime | date | The date and time the policy was created. | 
+| MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime | date | The date and time the policy was last modified. | 
+| MSGraphIdentity.ConditionalAccessPolicy.state | string | The state of the policy \(enabled/disabled\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels | list | List of sign-in risk levels this policy applies to. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes | list | Client application types this policy targets. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications | list | List of applications included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications | list | List of applications excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions | list | User actions included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers | list | User IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers | list | User IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups | list | Group IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups | list | Group IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles | list | Role IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles | list | Role IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms | list | Platforms included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms | list | Platforms excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations | list | Location IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations | list | Location IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator | string | Logical operator used in the grant controls \(e.g., AND, OR\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls | list | List of built-in access controls \(e.g., MFA, compliant device\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors | list | Custom authentication factors used in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse | list | List of Terms of Use policy IDs applied. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType | string | The type of cloud app security control. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled | boolean | Whether cloud app security is enabled. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value | number | Sign-in frequency value. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type | string | Unit of the sign-in frequency \(e.g., hours, days\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. | 
+
+#### Command example
+```!msgraph-identity-ca-policy-create policy_name="Test Merge Cases Policy" state="disabled" include_users="All"```
+#### Human Readable Output
+
+>Error creating Conditional Access policy: Code - BadRequest, Message - 1011: 'applications' condition must specify the applications to include. Try 'includeApplications' = ['none'] to start with. For examples, please see API documentation at https:<span>//</span>docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-policies?view=graph-rest-1.0.
+
+### msgraph-identity-ca-policy-update
+
+***
+Updates a Conditional Access policy.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Required. The ID of the Conditional Access policy to update. | Required | 
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.<br/>. | Optional | 
+| policy_name | The name of the Conditional Access policy to be created. | Optional | 
+| state | The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.<br/>. | Optional | 
+| sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
+| user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
+| client_app_types | Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>. | Optional | 
+| include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional | 
+| exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional | 
+| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. | Optional | 
+| include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional | 
+| exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional | 
+| include_groups | List of group IDs to be included in the policy.<br/>. | Optional | 
+| exclude_groups | List of group IDs to be excluded from the policy.<br/>. | Optional | 
+| include_roles | List of role IDs to be included in the policy.<br/>. | Optional | 
+| exclude_roles | List of role IDs to be excluded from the policy.<br/>. | Optional | 
+| include_platforms | List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.<br/>. | Optional | 
+| exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional | 
+| include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
+| exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
+| grant_control_operator | The operator for grant control. Can be `AND` or `OR`. Default is `AND`.<br/>. | Optional | 
+| built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
+| update_action | Defines how to update fields in the policy.<br/>- `override` (default): Replaces existing values.<br/>- `append`: Adds new values to existing ones without removing them.<br/>. Possible values are: override, append. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### msgraph-identity-ca-policy-delete
+
+***
+Delete specific Conditional Access policy by id.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Required. The ID of the Conditional Access policy to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!msgraph-identity-ca-policy-delete policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d"```
+#### Human Readable Output
+
+>Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
+
+### msgraph-identity-ca-policies-list
+
+***
+Retrieve one or all Conditional Access policies from Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-identity-ca-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Optional. The ID of the Conditional Access policy to retrieve. If not provided, all policies will be returned. | Optional | 
+| filter | Optional. The OData filter query to retrieve specific Conditional Access policies. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.ConditionalAccessPolicy.id | string | The unique ID of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.displayName | string | The display name of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.createdDateTime | date | The date and time the policy was created. | 
+| MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime | date | The date and time the policy was last modified. | 
+| MSGraphIdentity.ConditionalAccessPolicy.state | string | The state of the policy \(enabled/disabled\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels | list | List of sign-in risk levels this policy applies to. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes | list | Client application types this policy targets. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications | list | List of applications included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications | list | List of applications excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions | list | User actions included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers | list | User IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers | list | User IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups | list | Group IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups | list | Group IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles | list | Role IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles | list | Role IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms | list | Platforms included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms | list | Platforms excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations | list | Location IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations | list | Location IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator | string | Logical operator used in the grant controls \(e.g., AND, OR\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls | list | List of built-in access controls \(e.g., MFA, compliant device\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors | list | Custom authentication factors used in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse | list | List of Terms of Use policy IDs applied. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType | string | The type of cloud app security control. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled | boolean | Whether cloud app security is enabled. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value | number | Sign-in frequency value. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type | string | Unit of the sign-in frequency \(e.g., hours, days\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. | 
+
+#### Command example
+```!msgraph-identity-ca-policies-list```
+#### Context Example
+```json
+{
+    "MSGraphIdentity": {
+        "ConditionalAccessPolicy": [
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "Office365"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "d629c370-61c9-4851-8f3d-80ea6c07655f"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-02-12T11:58:25.6358652Z",
+                "displayName": "block office test policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('24d40f2e-1998-4bf1-96ff-db841b6d51e6')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "24d40f2e-1998-4bf1-96ff-db841b6d51e6",
+                "modifiedDateTime": "2025-02-13T06:51:23.575868Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "All"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [
+                        "high"
+                    ],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [
+                            "66b0b57b-25c5-4ef3-9d4f-b7bdea0e8794"
+                        ],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": []
+                    }
+                },
+                "createdDateTime": "2025-02-12T22:01:32.2461656Z",
+                "displayName": "Microsoft-managed: Multifactor authentication and reauthentication for risky sign-ins",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('f1b54946-07ee-4c43-a78a-3f33ee248495')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "f1b54946-07ee-4c43-a78a-3f33ee248495",
+                "modifiedDateTime": null,
+                "sessionControls": {
+                    "applicationEnforcedRestrictions": null,
+                    "cloudAppSecurity": null,
+                    "disableResilienceDefaults": null,
+                    "persistentBrowser": null,
+                    "signInFrequency": {
+                        "authenticationType": "primaryAndSecondaryAuthentication",
+                        "frequencyInterval": "everyTime",
+                        "isEnabled": true,
+                        "type": null,
+                        "value": null
+                    }
+                },
+                "state": "enabledForReportingButNotEnforced",
+                "templateId": "4200930c-0da2-4e33-ca01-000000000007"
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "None"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "None"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-03-23T12:09:34.2117467Z",
+                "displayName": "Sec&Compliance new 2",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('fc271abb-e52c-4c40-aff9-5fd1e534a58d')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "fc271abb-e52c-4c40-aff9-5fd1e534a58d",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "None"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [
+                        "low"
+                    ],
+                    "userRiskLevels": [
+                        "low"
+                    ],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "None"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-03-23T12:12:06.3478454Z",
+                "displayName": "Sec&Compliance new",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('e3896ed7-c582-4651-bd49-c96efe551c50')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa",
+                        "compliantDevice"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "e3896ed7-c582-4651-bd49-c96efe551c50",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "None"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [
+                        "low"
+                    ],
+                    "userRiskLevels": [
+                        "low"
+                    ],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "None"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-03-23T12:15:11.114812Z",
+                "displayName": "Sec&Compliance new 2",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('af3f21c0-17be-4c9e-a784-953578a57b63')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa",
+                        "compliantDevice"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "af3f21c0-17be-4c9e-a784-953578a57b63",
+                "modifiedDateTime": "2025-03-23T12:19:46.9137636Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "None"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "None"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-03-23T12:16:08.7685977Z",
+                "displayName": "Sec&Compliance new 4",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('960cf63d-2407-41c5-8c70-e221908ed6d5')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "960cf63d-2407-41c5-8c70-e221908ed6d5",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "browser",
+                        "mobileAppsAndDesktopClients"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [
+                            "AllTrusted"
+                        ],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [
+                            "ba8e7ded-8b0f-4836-ba06-8ff1ecc5c8ba"
+                        ],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": []
+                    }
+                },
+                "createdDateTime": "2025-04-07T07:48:06.9161561Z",
+                "displayName": "Access to EXO requires MFA",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('730485cc-43e2-4881-8f77-4aa2b8aab396')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "730485cc-43e2-4881-8f77-4aa2b8aab396",
+                "modifiedDateTime": "2025-04-21T11:24:46.5688152Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "browser",
+                        "mobileAppsAndDesktopClients"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [
+                            "AllTrusted"
+                        ],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [
+                            "ba8e7ded-8b0f-4836-ba06-8ff1ecc5c8ba"
+                        ],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": []
+                    }
+                },
+                "createdDateTime": "2025-04-07T09:23:59.3002724Z",
+                "displayName": "Access to EXO requires MFA",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('b11e2ba5-bb10-4338-81ca-cf8f73016460')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "b11e2ba5-bb10-4338-81ca-cf8f73016460",
+                "modifiedDateTime": "2025-04-21T11:25:34.2354405Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "browser",
+                        "mobileAppsAndDesktopClients"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [
+                            "AllTrusted"
+                        ],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [
+                            "ba8e7ded-8b0f-4836-ba06-8ff1ecc5c8ba"
+                        ],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": []
+                    }
+                },
+                "createdDateTime": "2025-04-08T07:32:14.1858836Z",
+                "displayName": "Access to EXO requires MFA",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('6e4f64e8-d091-4e80-9938-7109230a37d9')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "6e4f64e8-d091-4e80-9938-7109230a37d9",
+                "modifiedDateTime": "2025-04-21T11:25:24.0112199Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [
+                            "a8aee26b-19e5-49d9-81c1-8e0e4371cd26"
+                        ],
+                        "includeLocations": [
+                            "03aadcc4-4e53-4786-bced-d5b26988f2be"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [
+                        "high",
+                        "medium"
+                    ],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [
+                            "124c5b6a-ffa5-483a-9b88-04c3fce5574a"
+                        ],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "a702a13d-a437-4a07-8a7e-8c052de62dfd"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-04-08T08:08:50.1211703Z",
+                "displayName": "Block access to EXO non-trusted regions.",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('88be28c0-9a44-4b9a-a1bf-a2e134e85ae3')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "block"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "88be28c0-9a44-4b9a-a1bf-a2e134e85ae3",
+                "modifiedDateTime": "2025-04-21T11:26:26.9629371Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "43dc85d1-5547-4ff2-9e62-736387c41d92"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-04-21T12:40:56.6589666Z",
+                "displayName": "Test Merge Cases Policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('ec99df4a-a740-4d75-a095-5b714ec4bc26')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "ec99df4a-a740-4d75-a095-5b714ec4bc26",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "43dc85d1-5547-4ff2-9e62-736387c41d92"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-04-21T12:57:06.2260524Z",
+                "displayName": "Test Merge Cases Policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('4ac6be4e-1afb-41a9-ada4-3ccfaa31f2db')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "4ac6be4e-1afb-41a9-ada4-3ccfaa31f2db",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "43dc85d1-5547-4ff2-9e62-736387c41d92"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-04-21T13:04:18.1054699Z",
+                "displayName": "Test Merge Cases Policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('29e9719f-72bb-4c8a-b5bc-b2be7bf724c8')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "29e9719f-72bb-4c8a-b5bc-b2be7bf724c8",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "43dc85d1-5547-4ff2-9e62-736387c41d92"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-04-21T13:04:48.839779Z",
+                "displayName": "Test Merge Cases Policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('00b1fe9d-ac6c-472c-b2c2-45c9a4a96e3f')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "00b1fe9d-ac6c-472c-b2c2-45c9a4a96e3f",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "00000002-0000-0ff1-ce00-000000000000"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "43dc85d1-5547-4ff2-9e62-736387c41d92"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-04-21T13:13:54.0334681Z",
+                "displayName": "Test Merge Cases Policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('9c8a743e-bdcb-4970-ae4b-c997c67afb27')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "9c8a743e-bdcb-4970-ae4b-c997c67afb27",
+                "modifiedDateTime": null,
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Conditional Access Policies
+>|CreatedDateTime|DisplayName|ID|State|
+>|---|---|---|---|
+>| 2025-02-12T11:58:25.6358652Z | block office test policy | 24d40f2e-1998-4bf1-96ff-db841b6d51e6 | disabled |
+>| 2025-02-12T22:01:32.2461656Z | Microsoft-managed: Multifactor authentication and reauthentication for risky sign-ins | f1b54946-07ee-4c43-a78a-3f33ee248495 | enabledForReportingButNotEnforced |
+>| 2025-03-23T12:09:34.2117467Z | Sec&Compliance new 2 | fc271abb-e52c-4c40-aff9-5fd1e534a58d | disabled |
+>| 2025-03-23T12:12:06.3478454Z | Sec&Compliance new | e3896ed7-c582-4651-bd49-c96efe551c50 | disabled |
+>| 2025-03-23T12:15:11.114812Z | Sec&Compliance new 2 | af3f21c0-17be-4c9e-a784-953578a57b63 | disabled |
+>| 2025-03-23T12:16:08.7685977Z | Sec&Compliance new 4 | 960cf63d-2407-41c5-8c70-e221908ed6d5 | disabled |
+>| 2025-04-07T07:48:06.9161561Z | Access to EXO requires MFA | 730485cc-43e2-4881-8f77-4aa2b8aab396 | disabled |
+>| 2025-04-07T09:23:59.3002724Z | Access to EXO requires MFA | b11e2ba5-bb10-4338-81ca-cf8f73016460 | disabled |
+>| 2025-04-08T07:32:14.1858836Z | Access to EXO requires MFA | 6e4f64e8-d091-4e80-9938-7109230a37d9 | disabled |
+>| 2025-04-08T08:08:50.1211703Z | Block access to EXO non-trusted regions. | 88be28c0-9a44-4b9a-a1bf-a2e134e85ae3 | disabled |
+>| 2025-04-21T12:40:56.6589666Z | Test Merge Cases Policy | ec99df4a-a740-4d75-a095-5b714ec4bc26 | disabled |
+>| 2025-04-21T12:57:06.2260524Z | Test Merge Cases Policy | 4ac6be4e-1afb-41a9-ada4-3ccfaa31f2db | disabled |
+>| 2025-04-21T13:04:18.1054699Z | Test Merge Cases Policy | 29e9719f-72bb-4c8a-b5bc-b2be7bf724c8 | disabled |
+>| 2025-04-21T13:04:48.839779Z | Test Merge Cases Policy | 00b1fe9d-ac6c-472c-b2c2-45c9a4a96e3f | disabled |
+>| 2025-04-21T13:13:54.0334681Z | Test Merge Cases Policy | 9c8a743e-bdcb-4970-ae4b-c997c67afb27 | disabled |
+
+
