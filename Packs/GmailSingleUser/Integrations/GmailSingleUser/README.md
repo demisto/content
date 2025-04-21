@@ -320,3 +320,35 @@ Retrieves attachments from a sent Gmail message.
 ```!gmail-get-attachments message-id=16d4316a25a332e4 user-id=admin@demistodev.com```
 
 
+### gmail-get-incidents
+
+***
+Retrieves a list of emails from Gmail within a specific date range and formats them as incidents.
+
+
+#### Base Command
+
+`gmail-get-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| max_results | Maximum number of emails to retrieve. Default is 10. | Optional | 
+| labels | List of label IDs to filter emails. | Optional | 
+| query | Additional Gmail search query string. | Optional | 
+| subject | Filter emails by subject. | Optional | 
+| from | Filter emails sent from a specific sender. | Optional | 
+| to | Filter emails sent to a specific recipient. | Optional | 
+| filename | Filter emails by attached filename. | Optional | 
+| in | Specify the email folder to search (e.g., 'inbox', 'sent'). | Optional | 
+| has_attachments | Whether to filter emails that contain attachments. Possible values are: true, false. Default is false. | Optional | 
+| before | Filter emails before this date. | Optional | 
+| after | Filter emails after this date. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gmail-get-incidents from="admin@demistodev.com"```
