@@ -1,6 +1,7 @@
 Extract payloads of each stream from a pcap file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Extract payloads of each stream from a pcap file.
 | Tags | pcap, file, Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +25,7 @@ Extract payloads of each stream from a pcap file.
 | server_ports | Default server port numbers by which to decide the direction. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

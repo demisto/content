@@ -2,7 +2,6 @@ Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the i
 
 ## Configure Prisma Access Egress IP feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | Fetch indicators | False |
@@ -22,30 +21,32 @@ Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the i
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### prisma-access-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 ##### Base Command
 
 `prisma-access-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return.  By default all IPs are returned. | Optional | 
-
+| limit | The maximum number of results to return.  By default all IPs are returned. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAccess.Egress.IP.Address | string | Prisma Access Egress IP address | 
-| PrismaAccess.Egress.IP.Zone | string | Prisma Access Egress IP zone | 
-
+| PrismaAccess.Egress.IP.Address | string | Prisma Access Egress IP address |
+| PrismaAccess.Egress.IP.Zone | string | Prisma Access Egress IP zone |
 
 ##### Command Example
+
 ```!prisma-access-get-indicators limit=300```
