@@ -742,7 +742,7 @@ def find_indicators_loop(indicator_query: str):
 
     finish_time: float = time.time()
     demisto.info(
-        f"TS1: Finished searching for indicators using query: {indicator_query} and page size: {PAGE_SIZE}. "
+        f"Finished searching for indicators using query: {indicator_query} and page size: {PAGE_SIZE}. "
         f"Found {len(iocs)} indicators. Total query time: {finish_time - start_time} seconds."
     )
     return iocs
