@@ -26,6 +26,7 @@ class AWSServices(Enum):
     # SAGEMAKER = "sagemaker"
 
 class AWSService(ABC):
+    COMMANDS = []
     def __init__(self, service_id: str, aws_client: AWSClient):
         self.service_id = service_id
         self.service_client = aws_client.aws_session(service=service_id, region=)
@@ -35,7 +36,7 @@ class AWSService(ABC):
     
 class S3(AWSService):
     OUTPUT_PREFIX = 'AWS.S3'
-    
+    COMMANDS = [...]
     def test_module(self, ):
         
         pass
