@@ -6,7 +6,7 @@ This integration was integrated and tested with version 6.2 of DarktraceEmail.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://example.net) |  | True |
+| Server URL (e.g. <https://example.net>) |  | True |
 | Fetch incidents |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -71,6 +71,7 @@ Apply "hold" action to a specified Email.
 #### Context Output
 
 There is no context output for this command.
+
 ### darktrace-email-release-email
 
 ***

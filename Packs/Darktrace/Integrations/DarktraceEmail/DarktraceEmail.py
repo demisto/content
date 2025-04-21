@@ -24,15 +24,15 @@ GET_EMAIL_ENDPOINT = f'{EMAIL_ENDPOINT}/emails'
 EMAIL_TAGS_ENDPOINT = f'{EMAIL_ENDPOINT}/resources/tags'
 EMAIL_FILTERS_ENDPOINT = f'{EMAIL_ENDPOINT}/resources/filters'
 EMAIL_FILTERS = {
-    "anomaly_score":"Email.Antigena Email Anomaly",
-    "action_taken":"Action.Action Taken",
-    "tag":"Antigena Tag",
-    "tag_severity":"Model Tag Severity",
-    "direction":"Connection.Direction",
-    }
+    "anomaly_score": "Email.Antigena Email Anomaly",
+    "action_taken": "Action.Action Taken",
+    "tag": "Antigena Tag",
+    "tag_severity": "Model Tag Severity",
+    "direction": "Connection.Direction",
+}
 EMAIL_SEVERITY_MAPPER = {
-    "Critical" : "critical",
-    "Warning" : "warn",
+    "Critical": "critical",
+    "Warning": "warn",
     "Informational": "info"
 }
 
@@ -171,7 +171,6 @@ class Client(BaseClient):
         email = self.get(query_uri)
         return email
 
-
     def search_emails(
         self, min_score: float, actioned: bool, tag_severity: list[str],
         start_time: int, end_time: int, direction: str | None
@@ -194,7 +193,7 @@ class Client(BaseClient):
         query_uri = SEARCH_EMAILS_ENDPOINT
         filter_triads: list[TRIAD] = [("anomaly_score", min_score, '>')]
         if len(tag_severity) == 1:
-             filter_triads.append(("tag_severity", tag_severity[0], '='))
+            filter_triads.append(("tag_severity", tag_severity[0], '='))
         if direction:
             filter_triads.append(("direction", direction, '='))
 
@@ -218,7 +217,7 @@ class Client(BaseClient):
         all_emails_details = [self.get(f"{GET_EMAIL_ENDPOINT}/{email[0]}?dtime={email[1]}") for email in all_emails]
         return all_emails_details
 
-    def action_email(self, uuid: str, action: str = 'hold', recipients:str = None) -> dict[str, Any]:
+    def action_email(self, uuid: str, action: str = 'hold', recipients: str = None) -> dict[str, Any]:
         """Apply a given action to the specified Email.
         :type uuid: ``str``
         :param uuid: Unique ID of Email to apply action to.
@@ -233,11 +232,10 @@ class Client(BaseClient):
             recipients = email['rcpts'][0]['rcpt_to']
             previous_status = email['rcpts'][0]['rcpt_status']
         query_uri = f"{GET_EMAIL_ENDPOINT}/{uuid}/action"
-        params = {"action":action,"recipients":[recipients]}
+        params = {"action": action, "recipients": [recipients]}
         response = self.post(query_uri, json=params)
         response['previous_status'] = previous_status
         return response
-
 
     def get_tag_mapper(self):
         """Get a list of all available tags with their details.
@@ -247,7 +245,7 @@ class Client(BaseClient):
         query_uri = EMAIL_TAGS_ENDPOINT
         tags = self.get(query_uri)
         if isinstance(tags, list) and all(isinstance(tag, dict) for tag in tags):
-            tag_mapper = {tag.get("name"):tag.get("status") for tag in tags}
+            tag_mapper = {tag.get("name"): tag.get("status") for tag in tags}
             self.tag_mapper = tag_mapper
 
 
@@ -255,38 +253,40 @@ class Client(BaseClient):
 
 
 def email_query_builder(page: int, filter_triads: list[TRIAD], init_date: int, end_date: int) -> dict[str, Any]:
-        '''
-        Summary:
-            Function to build the dictionary used to query the API given certain API filters.
-        Inputs:
-            page: int: required,
-            filter_triads: List[tuple[Any]]: required,
-            init_date: int: required,
-            end_date: int: required,
-        Defaults:
-            init_date: 24 hours ago
-            end_date: current time
-        Returns:
-            Dictionary: Containing the page number, items per page, start and end times,
-            and query parameters such as the API filter and value to compare query results to.
-        '''
-        criteria_list = []
-        for triad in filter_triads:
-            api_filter, value, operator = triad
-            criteria_list.append({"apiFilter":f"{EMAIL_FILTERS[api_filter]}", "value":f"{value}","operator": f"{operator}"})
-        return {
-            "page": page,
-            "itemsPerPage": ITEMS_PER_PAGE,
-            "timeFrom": init_date,
-            "timeTo": end_date,
-            "query": {
-                "criteriaList": criteria_list,
-                "mode": "and"
-            }
+    '''
+    Summary:
+        Function to build the dictionary used to query the API given certain API filters.
+    Inputs:
+        page: int: required,
+        filter_triads: List[tuple[Any]]: required,
+        init_date: int: required,
+        end_date: int: required,
+    Defaults:
+        init_date: 24 hours ago
+        end_date: current time
+    Returns:
+        Dictionary: Containing the page number, items per page, start and end times,
+        and query parameters such as the API filter and value to compare query results to.
+    '''
+    criteria_list = []
+    for triad in filter_triads:
+        api_filter, value, operator = triad
+        criteria_list.append({"apiFilter": f"{EMAIL_FILTERS[api_filter]}", "value": f"{value}", "operator": f"{operator}"})
+    return {
+        "page": page,
+        "itemsPerPage": ITEMS_PER_PAGE,
+        "timeFrom": init_date,
+        "timeTo": end_date,
+        "query": {
+            "criteriaList": criteria_list,
+            "mode": "and"
         }
+    }
+
 
 def format_timestamp(timestamp: int) -> str:
     return datetime.strftime(datetime.fromtimestamp(timestamp), '%Y-%m-%dT%H:%M:%SZ')
+
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
@@ -358,6 +358,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
         hashlib.sha1,
     ).hexdigest()
 
+
 def format_JSON_for_email(email: dict[str, Any], tag_mapper: dict[str, str]) -> dict[str, Any]:
     """Formats JSON for get-email command.
     :type email: ``Dict[str, Any]``
@@ -395,16 +396,16 @@ def format_JSON_for_email(email: dict[str, Any], tag_mapper: dict[str, str]) -> 
     return relevant_info
 
 
-def _compute_xsoar_severity(tags: list['str'], actions: list['str'], score: int, tag_mapper:dict) -> int:
+def _compute_xsoar_severity(tags: list['str'], actions: list['str'], score: int, tag_mapper: dict) -> int:
     """Translates Darktrace email tags into XSOAR Severity"""
     if 'critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 75 and 'Hold message' not in actions:
         return 4
     elif 'critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 50 and 'Hold message' not in actions:
         return 3
-    elif (('warn' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 50) or
-          ('critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and
-           score < 50)) and 'Hold message' not in actions:
-           return 2
+    elif (('warn' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and score > 50)
+          or ('critical' in [tag_mapper[tag] for tag in tags if tag_mapper[tag]] and
+              score < 50)) and 'Hold message' not in actions:
+        return 2
     return 1
 
 
@@ -496,13 +497,13 @@ def fetch_incidents(client: Client, max_alerts: int,
     # Get current time
     end_time = int(datetime.now().timestamp())
 
-    #Get emails from timeframe
+    # Get emails from timeframe
     emails = client.search_emails(min_score=min_score, actioned=actioned,
                                   tag_severity=tag_severity, direction=direction,
                                   start_time=last_fetch, end_time=end_time)
 
-    #Sort emails from oldest to newest
-    emails = sorted(emails, key = lambda d: d['dtime_unix'])
+    # Sort emails from oldest to newest
+    emails = sorted(emails, key=lambda d: d['dtime_unix'])
 
     for email in emails:
         # If no created_time set is as epoch (0). We use time in ms, which
@@ -540,6 +541,7 @@ def fetch_incidents(client: Client, max_alerts: int,
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
+
 
 def get_email_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """darktrace-email-get-email command: Return a Darktrace email
@@ -721,7 +723,7 @@ def main() -> None:     # pragma: no cover
             elif isinstance(tag_severity, list):
                 tag_severity = [EMAIL_SEVERITY_MAPPER[tag_sev] for tag_sev in tag_severity]
 
-            #Get direction to filter by
+            # Get direction to filter by
             direction = demisto.params().get('direction', False)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
